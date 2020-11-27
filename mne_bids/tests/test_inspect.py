@@ -62,7 +62,9 @@ def test_inspect_single_file(return_bids_test_dir, save_changes):
     """Test inspecting a dataset consisting of only a single file."""
     from mne.utils._testing import _click_ch_name
     import matplotlib
+    import matplotlib.pyplot as plt
     matplotlib.use('Agg')
+    plt.close('all')
 
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
@@ -101,7 +103,9 @@ def test_inspect_single_file(return_bids_test_dir, save_changes):
 def test_inspect_multiple_files(return_bids_test_dir):
     """Test inspecting a dataset consisting of more than one file."""
     import matplotlib
+    import matplotlib.pyplot as plt
     matplotlib.use('Agg')
+    plt.close('all')
 
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
 
@@ -124,7 +128,9 @@ def test_inspect_set_and_unset_bads(return_bids_test_dir):
     """Test marking channels as bad and later marking them as good again."""
     from mne.utils._testing import _click_ch_name
     import matplotlib
+    import matplotlib.pyplot as plt
     matplotlib.use('Agg')
+    plt.close('all')
 
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
@@ -165,7 +171,9 @@ def test_inspect_set_and_unset_bads(return_bids_test_dir):
 def test_inspect_annotations(return_bids_test_dir):
     """Test inspection of Annotations."""
     import matplotlib
+    import matplotlib.pyplot as plt
     matplotlib.use('Agg')
+    plt.close('all')
 
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
@@ -227,7 +235,9 @@ def test_inspect_annotations(return_bids_test_dir):
 def test_inspect_annotations_remove_all(return_bids_test_dir):
     """Test behavior if all Annotations are removed by the user."""
     import matplotlib
+    import matplotlib.pyplot as plt
     matplotlib.use('Agg')
+    plt.close('all')
 
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
     events_tsv_fpath = (bids_path.copy()
