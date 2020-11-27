@@ -34,10 +34,6 @@ bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
 bids_path = BIDSPath(subject='01', session='01', task='audiovisual', run='01',
                      root=bids_root)
 
-raw = mne.io.read_raw_fif(raw_fname, verbose=False)
-raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
-write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
-
 ###############################################################################
 # To ensure the output path doesn't contain any leftover files from previous
 # tests and example runs, we simply delete it.
@@ -47,6 +43,13 @@ write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
 
 if op.exists(bids_root):
     shutil.rmtree(bids_root)
+
+###############################################################################
+# Now write the raw data to BIDS.
+
+raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
+write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
 
 ###############################################################################
 # Interactive use
