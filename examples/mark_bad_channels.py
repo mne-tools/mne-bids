@@ -11,7 +11,9 @@ Bad channel selection can also be performed non-interactively.
 
 Furthermore, you can view and edit the experimental events and mark time
 segments as "bad".
-"""
+
+.. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html#annotating-raw-objects-interactively
+"""  # noqa:E501
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 # License: BSD (3-clause)
@@ -88,9 +90,6 @@ inspect_dataset(bids_path, l_freq=1., h_freq=30.)
 # you will be prompted whether you wish to save the changes. Your raw data and
 # the `*_events.tsv` sidecar file will be updated upon saving.
 #
-# .. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html#annotating-raw-objects-interactively  # noqa:E501
-
-###############################################################################
 # Non-interactive (programmatic) bad channel selection
 # ----------------------------------------------------
 #
