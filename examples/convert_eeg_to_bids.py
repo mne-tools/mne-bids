@@ -28,8 +28,8 @@ data. Specifically, we will follow these steps:
 
 ###############################################################################
 # We are importing everything we need for this example:
-import os
-import shutil as sh
+import os.path as op
+import shutil
 
 import mne
 from mne.datasets import eegbci
@@ -69,7 +69,7 @@ eegbci.load_data(subject=subject, runs=run, update_path=True)
 
 # get MNE directory with example data
 mne_data_dir = mne.get_config('MNE_DATASETS_EEGBCI_PATH')
-data_dir = os.path.join(mne_data_dir, 'MNE-eegbci-data')
+data_dir = op.join(mne_data_dir, 'MNE-eegbci-data')
 
 print_dir_tree(data_dir)
 
@@ -116,7 +116,7 @@ raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
 # Get the electrode coordinates
 testing_data = mne.datasets.testing.data_path()
-captrak_path = os.path.join(testing_data, 'montage', 'captrak_coords.bvct')
+captrak_path = op.join(testing_data, 'montage', 'captrak_coords.bvct')
 montage = mne.channels.read_dig_captrak(captrak_path)
 
 # Rename the montage channel names only for this example, because as said
@@ -157,10 +157,17 @@ subject_id = '001'
 
 # define a task name and a directory where to save the data to
 task = 'RestEyesClosed'
-bids_root = os.path.join(mne_data_dir, 'eegmmidb_bids_eeg_example')
+bids_root = op.join(mne_data_dir, 'eegmmidb_bids_eeg_example')
 
-# Start with a clean directory in case the directory existed beforehand
-sh.rmtree(bids_root, ignore_errors=True)
+###############################################################################
+# To ensure the output path doesn't contain any leftover files from previous
+# tests and example runs, we simply delete it.
+#
+# .. warning:: Do not delete directories that may contain important data!
+#
+
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
 
 ###############################################################################
 # The data contains annotations; which will be converted to events
@@ -212,7 +219,7 @@ counts
 #
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = os.path.join(bids_root, 'README')
+readme = op.join(bids_root, 'README')
 with open(readme, 'r', encoding='utf-8-sig') as fid:
     text = fid.read()
 print(text)
