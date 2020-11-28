@@ -134,8 +134,7 @@ def test_mark_bad_chanels_single_file(tmpdir):
 
     args = tuple(args)
     with ArgvSetter(args):
-        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
-            mne_bids_mark_bad_channels.run()
+        mne_bids_mark_bad_channels.run()
 
     # Check the data was properly written
     with pytest.warns(RuntimeWarning, match='The unit for chann*'):
@@ -147,8 +146,7 @@ def test_mark_bad_chanels_single_file(tmpdir):
             '--bids_root', output_path, '--type', datatype,
             '--ch_name', '', '--overwrite')
     with ArgvSetter(args):
-        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
-            mne_bids_mark_bad_channels.run()
+        mne_bids_mark_bad_channels.run()
 
     # Check the data was properly written
     with pytest.warns(RuntimeWarning, match='The unit for chann*'):
@@ -188,8 +186,7 @@ def test_mark_bad_chanels_multiple_files(tmpdir):
 
     args = tuple(args)
     with ArgvSetter(args):
-        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
-            mne_bids_mark_bad_channels.run()
+        mne_bids_mark_bad_channels.run()
 
     # Check the data was properly written
     for subject in subjects:
