@@ -100,10 +100,10 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
 
         if not new_annotations:
             # Ensure it's not an empty list, but an empty set of Annotations.
-            new_annotations = (mne_raw_fig.mne.inst.copy()
-                               .set_annotations(None)
-                               .annotations
-                               .copy())
+            new_annotations = mne.Annotations(
+                onset=[], duration=[], description=[],
+                orig_time=mne_raw_fig.mne.info['meas_date']
+            )
 
         _save_raw_if_changed(old_bads=old_bads,
                              new_bads=new_bads,
@@ -128,10 +128,10 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
         fig._clear_annotations()
         fig._toggle_annotation_fig = lambda: None
         # Ensure it's not an empty list, but an empty set of Annotations.
-        old_annotations = (raw.copy()
-                           .set_annotations(None)
-                           .annotations
-                           .copy())
+        old_annotations = mne.Annotations(
+            onset=[], duration=[], description=[],
+            orig_time=raw.info['meas_date']
+        )
 
     if matplotlib.get_backend() != 'agg':
         plt.show(block=True)
