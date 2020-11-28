@@ -5,7 +5,7 @@ from mne.utils import logger
 
 from mne_bids import read_raw_bids, mark_bad_channels
 from mne_bids.read import _from_tsv, _read_events
-from mne_bids.write import _write_raw_brainvision, _events_tsv
+from mne_bids.write import _events_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
