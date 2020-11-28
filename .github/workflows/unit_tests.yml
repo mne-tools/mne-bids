@@ -43,7 +43,6 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.8]
     steps:
-    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -53,28 +52,31 @@ jobs:
       run: python -m pip install --upgrade pip wheel
 
     - name: Build sdist
+      uses: actions/checkout@v2
       run: python setup.py sdist
     - name: Install sdist
-      run: |
-        pip install ./dist/mne-bids-*
-        python -c 'import mne_bids; print(mne_bids.__version__)'
+      run: pip install ./dist/mne-bids-*
+    - name: Clean up working directory
+      run: rm -rf ./*
+    - name: Try importing mne_bids
+      run: python -c 'import mne_bids; print(mne_bids.__version__)'
     - name: Remove sdist install
-      run: |
-        pip uninstall -y mne-bids
-        rm -rf build/ dist/
+      run: pip uninstall -y mne-bids
 
     - name: Build wheel
+      uses: actions/checkout@v2
       run: python setup.py bdist_wheel
     - name: Install wheel
-      run: |
-        pip install ./dist/mne_bids-*.whl
-        python -c 'import mne_bids; print(mne_bids.__version__)'
+      run: pip install ./dist/mne_bids-*.whl
+    - name: Clean up working directory
+      run: rm -rf ./*
+    - name: Try importing mne_bids
+      run: python -c 'import mne_bids; print(mne_bids.__version__)'
     - name: Remove wheel install
-      run: |
-        pip uninstall -y mne-bids
-        rm -rf build/ dist/
+      run: pip uninstall -y mne-bids
     
     - name: Test extras install
+      uses: actions/checkout@v2
       run: |
         pip install .[full]
         python -c 'import mne_bids; print(mne_bids.__version__)'
