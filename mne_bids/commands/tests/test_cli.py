@@ -138,7 +138,8 @@ def test_mark_bad_chanels_single_file(tmpdir):
             mne_bids_mark_bad_channels.run()
 
     # Check the data was properly written
-    raw = read_raw_bids(bids_path=bids_path)
+    with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+        raw = read_raw_bids(bids_path=bids_path)
     assert set(old_bads + ch_names) == set(raw.info['bads'])
 
     # Test resettig bad channels.
@@ -146,10 +147,12 @@ def test_mark_bad_chanels_single_file(tmpdir):
             '--bids_root', output_path, '--type', datatype,
             '--ch_name', '', '--overwrite')
     with ArgvSetter(args):
-        mne_bids_mark_bad_channels.run()
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            mne_bids_mark_bad_channels.run()
 
     # Check the data was properly written
-    raw = read_raw_bids(bids_path=bids_path)
+    with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+        raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['bads'] == []
 
 
@@ -190,7 +193,9 @@ def test_mark_bad_chanels_multiple_files(tmpdir):
 
     # Check the data was properly written
     for subject in subjects:
-        raw = read_raw_bids(bids_path=bids_path.copy().update(subject=subject))
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            raw = read_raw_bids(bids_path=bids_path.copy()
+                                .update(subject=subject))
         assert set(old_bads + ch_names) == set(raw.info['bads'])
 
 
