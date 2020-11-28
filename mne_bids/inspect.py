@@ -280,7 +280,7 @@ def _save_bads(*, bads, bids_path, verbose):
 def _save_annotations(*, annotations, bids_path, verbose):
     # Read the raw data, set our new Annotations, and convert them to events
     # which we can then stored in the *_events.tsv sidecar.
-    extra_params = dict(preload=True)
+    extra_params = dict()
     if bids_path.extension == '.fif':
         extra_params['allow_maxshield'] = True
 
@@ -290,18 +290,6 @@ def _save_annotations(*, annotations, bids_path, verbose):
 
     events, durs, descrs = _read_events(events_data=None, event_id=None,
                                         raw=raw, verbose=False)
-
-    # Write raw data.
-    if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
-        # XXX We should write durations too, this is supported by pybv.
-        _write_raw_brainvision(raw, bids_path.fpath, events)
-    elif isinstance(raw, mne.io.RawFIF):
-        raw.save(raw.filenames[0], overwrite=True, split_naming='bids',
-                 verbose=False)
-    else:
-        raise RuntimeError('Can only write events / annotations for '
-                           'FIFF and BrainVision files for now. Please '
-                           'mark bad channels manually.')
 
     # Write sidecar – or remove it if no events are left.
     events_tsv_fname = (bids_path.copy()
