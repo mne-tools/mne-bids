@@ -1528,8 +1528,10 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                          'to set the root of the BIDS folder to read.')
 
     # Read raw and sidecar file.
-    raw = read_raw_bids(bids_path=bids_path,
-                        extra_params=dict(allow_maxshield=True, preload=True),
+    extra_params = dict()
+    if bids_path.extension == '.fif':
+        extra_params['allow_maxshield'] = True
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
                         verbose=False)
     bads_raw = raw.info['bads']
 
@@ -1581,22 +1583,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         tsv_data['status_description'][idx] = description
 
     _write_tsv(channels_fname, tsv_data, overwrite=True, verbose=verbose)
-
-    # Update info['bads']
-    bads = _get_bads_from_tsv_data(tsv_data)
-    raw.info['bads'] = bads
-    if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
-        # XXX We should write durations too, this is supported by pybv.
-        events, _, _ = _read_events(events_data=None, event_id=None,
-                                    raw=raw, verbose=False)
-        _write_raw_brainvision(raw, bids_path.fpath, events)
-    elif isinstance(raw, mne.io.RawFIF):
-        raw.save(raw.filenames[0], overwrite=True, split_naming='bids',
-                 verbose=False)
-    else:
-        raise RuntimeError('Can only mark bad channels for '
-                           'FIFF and BrainVision files for now. Please '
-                           'mark bad channels manually.')
 
 
 def write_meg_calibration(calibration, bids_path, verbose=None):

@@ -80,8 +80,10 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
     import matplotlib
     import matplotlib.pyplot as plt
 
-    raw = read_raw_bids(bids_path, extra_params=dict(allow_maxshield=True),
-                        verbose='error')
+    extra_params = dict()
+    if bids_path.extension == '.fif':
+        extra_params['allow_maxshield'] = True
+    raw = read_raw_bids(bids_path, extra_params=extra_params, verbose='error')
     old_bads = raw.info['bads'].copy()
     old_annotations = raw.annotations.copy()
 
