@@ -170,7 +170,6 @@ def test_inspect_set_and_unset_bads(tmp_path):
 
 def _add_annotation(raw_fig):
     """Add an Annotation to a Raw plot."""
-    # Create Annotation.
     data_ax = raw_fig.mne.ax_main
     raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
     ann_fig = raw_fig.mne.fig_annotation
