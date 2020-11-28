@@ -168,6 +168,25 @@ def test_inspect_set_and_unset_bads(tmp_path):
     assert set(new_bads) == set(expected_bads)
 
 
+def _add_annotation(raw_fig):
+    """Add an Annotation to a Raw plot."""
+    # Create Annotation.
+    data_ax = raw_fig.mne.ax_main
+    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
+    ann_fig = raw_fig.mne.fig_annotation
+    for key in 'test':  # Annotation will be named: BAD_test
+        ann_fig.canvas.key_press_event(key)
+    ann_fig.canvas.key_press_event('enter')
+
+    # Draw a 4 second long Annotation.
+    _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=1,
+                kind='press')
+    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
+                kind='motion')
+    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
+                kind='release')
+
+
 @requires_matplotlib
 @requires_version('mne', '0.22')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -185,22 +204,7 @@ def test_inspect_annotations(tmp_path):
 
     inspect_dataset(bids_path)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
-
-    # Create Annotation.
-    data_ax = raw_fig.mne.ax_main
-    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
-    ann_fig = raw_fig.mne.fig_annotation
-    for key in 'test':  # Annotation will be named: BAD_test
-        ann_fig.canvas.key_press_event(key)
-    ann_fig.canvas.key_press_event('enter')
-
-    # Draw a 4 second long Annotation.
-    _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=1,
-                kind='press')
-    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
-                kind='motion')
-    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
-                kind='release')
+    _add_annotation(raw_fig)
 
     # Close window and save changes.
     raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
@@ -218,7 +222,6 @@ def test_inspect_annotations(tmp_path):
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
     raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
-    ann_fig = raw_fig.mne.fig_annotation
     _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=3,
                 kind='press')
 
@@ -263,20 +266,7 @@ def test_inspect_annotations_remove_all(tmp_path):
     # Add custom Annotation.
     inspect_dataset(bids_path)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
-
-    data_ax = raw_fig.mne.ax_main
-    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
-    ann_fig = raw_fig.mne.fig_annotation
-    for key in 'test':  # Annotation will be named: BAD_test
-        ann_fig.canvas.key_press_event(key)
-    ann_fig.canvas.key_press_event('enter')
-
-    _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=1,
-                kind='press')
-    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
-                kind='motion')
-    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
-                kind='release')
+    _add_annotation(raw_fig)
 
     # Close window and save changes.
     raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
@@ -291,7 +281,6 @@ def test_inspect_annotations_remove_all(tmp_path):
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
     raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
-    ann_fig = raw_fig.mne.fig_annotation
     _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=3,
                 kind='press')
 
@@ -344,19 +333,7 @@ def test_inspect_bads_and_annotations(tmp_path):
     _click_ch_name(raw_fig, ch_index=0, button=1)
 
     # Add custom Annotation.
-    data_ax = raw_fig.mne.ax_main
-    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
-    ann_fig = raw_fig.mne.fig_annotation
-    for key in 'test':  # Annotation will be named: BAD_test
-        ann_fig.canvas.key_press_event(key)
-    ann_fig.canvas.key_press_event('enter')
-
-    _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=1,
-                kind='press')
-    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
-                kind='motion')
-    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
-                kind='release')
+    _add_annotation(raw_fig)
 
     # Close window and save changes.
     raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
