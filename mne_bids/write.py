@@ -1249,10 +1249,10 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                deface=False, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
-    Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
-    format the MRI scan to be in BIDS format and put it into the correct
-    location in the bids_dir. If a transformation matrix is supplied, a
-    sidecar JSON file will be written for the T1 weighted data.
+    Given an MRI scan, format and store the MR data according to BIDS in the
+    correct location inside the specified :class:`mne_bids.BIDSPath`. If a
+    transformation matrix is supplied, this information will be stored in a
+    sidecar JSON file..
 
     Parameters
     ----------
@@ -1263,16 +1263,16 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     bids_path : BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``root`` and ``subject`` attributes set.
-        The suffix is assumed to be 'T1w' is not present. It can
-        also be `'FLASH'` for example.
-    raw : instance of Raw | None
-        The raw data of `subject` corresponding to `t1w`. If `raw` is None,
-        `trans` has to be None as well
+        The suffix is assumed to be ``'T1w'`` if not present. It can
+        also be ``'FLASH'``, for example, to indicate FLASH MRI.
+    raw : instance of mne.io.Raw | None
+        The raw data of ``subject`` corresponding to the MR scan in ``image``.
+        If ``None``, ``trans`` has to be ``None`` as well
     trans : instance of mne.transforms.Transform | str | None
-        The transformation matrix from head coordinates to MRI coordinates. Can
-        also be a string pointing to a .trans file containing the
-        transformation matrix. If None, no sidecar JSON file will be written
-        for `t1w`
+        The transformation matrix from head to MRI coordinates. Can
+        also be a string pointing to a ``.trans`` file containing the
+        transformation matrix. If ``None``, no sidecar JSON file will be
+        created.
     deface : bool | dict
         If False, no defacing is performed.
         If True, deface with default parameters.
@@ -1301,13 +1301,13 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         If overwrite is False, no existing data will be overwritten or
         replaced.
     verbose : bool
-        If verbose is True, this will print a snippet of the sidecar files. If
-        False, no content will be printed.
+        If ``True``, this will print a snippet of the sidecar files. If
+        ``False``, no content will be printed.
 
     Returns
     -------
     bids_path : BIDSPath
-        Path to the anatomical scan in the BIDS directory.
+        Path to the written MRI data.
 
     """
     if not has_nibabel():  # pragma: no cover
@@ -1325,31 +1325,39 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                          'to set the root of the BIDS folder to read.')
     # create a copy
     bids_path = bids_path.copy()
+
+    # BIDS demands anatomical scans have no task associated with them
+    bids_path.update(task=None)
+
+    # XXX For now, only support writing a single run.
+    bids_path.update(run=None)
+
     # this file is anat
     if bids_path.datatype is None:
         bids_path.update(datatype='anat')
 
-    # set extension and suffix hard-coded to T1w and compressed Nifti
+    # default to T1w
     if not bids_path.suffix:
         bids_path.update(suffix='T1w')
 
-    bids_path.update(task=None, run=None, extension='.nii.gz')
+    #  data is compressed Nifti
+    bids_path.update(extension='.nii.gz')
 
     # create the directory for the MRI data
     bids_path.directory.mkdir(exist_ok=True, parents=True)
 
-    # Try to read our T1 file and convert to MGH representation
+    # Try to read our MRI file and convert to MGH representation
     try:
         image = _path_to_str(image)
     except ValueError:
-        # t1w -> str conversion failed, so maybe the user passed an nibabel
+        # image -> str conversion failed, so maybe the user passed an nibabel
         # object instead of a path.
         if type(image) not in nib.all_image_classes:
             raise ValueError('`image` must be a path to an MRI data '
                              'file , or a nibabel image object, but it is of '
                              'type "{}"'.format(type(image)))
     else:
-        # t1w -> str conversion in the try block was successful, so load the
+        # image -> str conversion in the try block was successful, so load the
         # file from the specified location. We do this here and not in the try
         # block to keep the try block as short as possible.
         image = nib.load(image)
