@@ -39,15 +39,14 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _handle_datatype, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
-from mne_bids import read_raw_bids
-from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p, _path_to_str
+from mne_bids import BIDSPath
+from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit,
                                 copyfile_edf)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
-from mne_bids.read import (_get_bads_from_tsv_data, _find_matching_sidecar,
-                           _read_events)
+from mne_bids.read import _find_matching_sidecar, _read_events
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
@@ -1531,10 +1530,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
                                             extension='.tsv')
     tsv_data = _from_tsv(channels_fname)
-    if 'status' in tsv_data:
-        bads_tsv = _get_bads_from_tsv_data(tsv_data)
-    else:
-        bads_tsv = []
 
     # Read sidecar and create required columns if they do not exist.
     if 'status' not in tsv_data:

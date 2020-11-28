@@ -649,66 +649,24 @@ def test_handle_channel_type_casing():
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_bads_reading():
     bids_root = _TempDir()
-    bids_path = _bids_path.copy().update(root=bids_root)
-    data_path = BIDSPath(
-        subject=subject_id, session=session_id, datatype='meg',
-        root=bids_root).mkdir().directory
-    ch_path = (bids_path.copy().update(suffix='channels',
-                                       extension='.tsv'))
-    channels_fname = op.join(data_path, ch_path.basename)
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    bads_raw = ['MEG 0112', 'MEG 0113']
+    bads_sidecar = ['EEG 053', 'MEG 2443']
 
-    raw_bids_fname = (bids_path.copy()
-                      .update(root=bids_root, datatype='meg',
-                              suffix='meg', extension='.fif'))
+    # Produce conflicting information between raw and sidecar file.
     raw = _read_raw_fif(raw_fname, verbose=False)
+    raw.info['bads'] = bads_sidecar
+    write_raw_bids(raw, bids_path, verbose=False)
 
-    ###########################################################################
-    # bads in FIF only, no `status` column in channels.tsv
-    bads = ['EEG 053', 'MEG 2443']
-    raw.info['bads'] = bads
-    write_raw_bids(raw, bids_path, overwrite=True,
-                   verbose=False)
-
-    # Delete `status` column
-    tsv_data = _from_tsv(channels_fname)
-    del tsv_data['status'], tsv_data['status_description']
-    _to_tsv(tsv_data, fname=channels_fname)
-
-    raw = read_raw_bids(bids_path=bids_path, verbose=False)
-    assert raw.info['bads'] == bads
-
-    ###########################################################################
-    # bads in `status` column in channels.tsv, no bads in raw.info['bads']
-    bads = ['EEG 053', 'MEG 2443']
-    raw.info['bads'] = bads
-    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
-
-    # Remove info['bads'] from the raw file.
-    raw = _read_raw_fif(raw_bids_fname, preload=True, verbose=False)
-    raw.info['bads'] = []
-    raw.save(raw_bids_fname, overwrite=True, verbose=False)
-
-    raw = read_raw_bids(bids_path=bids_path, verbose=False)
-    assert type(raw.info['bads']) is list
-    assert set(raw.info['bads']) == set(bads)
-
-    ###########################################################################
-    # Different bads in `status` column and raw.info['bads']
-    bads_bids = ['EEG 053', 'MEG 2443']
-    bads_raw = ['MEG 0112', 'MEG 0131']
-
-    raw.info['bads'] = bads_bids
-    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
-
-    # Replace info['bads'] in the raw file.
-    raw = _read_raw_fif(raw_bids_fname, preload=True, verbose=False)
+    raw = _read_raw(bids_path.copy().update(extension='.fif').fpath,
+                    preload=True)
     raw.info['bads'] = bads_raw
-    raw.save(raw_bids_fname, overwrite=True, verbose=False)
+    raw.save(raw.filenames[0], overwrite=True)
 
-    with pytest.warns(RuntimeWarning, match='conflicting information'):
-        raw = read_raw_bids(bids_path=bids_path, verbose=False)
-    assert type(raw.info['bads']) is list
-    assert set(raw.info['bads']) == set(bads_bids)
+    # Upon reading the data, only the sidecar info should be present.
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    assert len(raw.info['bads']) == len(bads_sidecar)
+    assert set(raw.info['bads']) == set(bads_sidecar)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

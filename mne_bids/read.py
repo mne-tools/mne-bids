@@ -336,28 +336,10 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     # Set the channel types in the raw data according to channels.tsv
     raw.set_channel_types(channel_type_dict)
 
-    # Check whether there is the optional "status" column from which to infer
-    # good and bad channels
+    # Set bad channels based on _channels.tsv sidecar
     if 'status' in channels_dict:
-        # find bads from channels.tsv
-        bads_from_tsv = _get_bads_from_tsv_data(channels_dict)
-
-        if raw.info['bads'] and set(bads_from_tsv) != set(raw.info['bads']):
-            warn(f'Encountered conflicting information on channel status '
-                 f'between {op.basename(channels_fname)} and the associated '
-                 f'raw data file.\n'
-                 f'Channels marked as bad in '
-                 f'{op.basename(channels_fname)}: {bads_from_tsv}\n'
-                 f'Channels marked as bad in '
-                 f'raw.info["bads"]: {raw.info["bads"]}\n'
-                 f'Setting list of bad channels to: {bads_from_tsv}')
-
-        raw.info['bads'] = bads_from_tsv
-    elif raw.info['bads']:
-        # We do have info['bads'], but no `status` in channels.tsv
-        logger.info(f'No "status" column found in '
-                    f'{op.basename(channels_fname)}; using list of bad '
-                    f'channels found in raw.info["bads"]: {raw.info["bads"]}')
+        bads = _get_bads_from_tsv_data(channels_dict)
+        raw.info['bads'] = bads
 
     return raw
 
