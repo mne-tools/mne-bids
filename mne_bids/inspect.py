@@ -106,7 +106,6 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
                 onset=[], duration=[], description=[],
                 orig_time=mne_raw_fig.mne.info['meas_date']
             )
-
         _save_raw_if_changed(old_bads=old_bads,
                              new_bads=new_bads,
                              old_annotations=old_annotations,
@@ -114,7 +113,6 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
                              bids_path=bids_path,
                              verbose=verbose)
         _global_vars['raw_fig'] = None
-        _global_vars['mne_close_key'] = None
 
     def _keypress_callback(event):
         if event.key == _global_vars['mne_close_key']:
@@ -240,7 +238,7 @@ def _save_raw_dialog_box(*, bads, annotations, bids_path, verbose):
         _global_vars['dialog_fig'] = None
 
     def _keypress_callback(event):
-        if event.key == 'return':
+        if event.key in ['enter', 'return']:
             _save_callback(event)
         elif event.key == _global_vars['mne_close_key']:
             _dont_save_callback(event)
