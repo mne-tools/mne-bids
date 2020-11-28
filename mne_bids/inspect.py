@@ -175,10 +175,13 @@ def _save_raw_dialog_box(*, bads, annotations, bids_path, verbose):
     message = 'You have modified '
     if bads is not None and annotations is None:
         message += 'the bad channel selection '
+        figsize = (7.5, 2.5)
     elif bads is None and annotations is not None:
         message += 'the bad segments selection '
+        figsize = (7.5, 2.5)
     else:
-        message += 'the bad channel and\nsegments selection '
+        message += 'the bad channel and\nannotations selection '
+        figsize = (8.5, 3)
 
     message += (f'of\n'
                 f'{bids_path.basename}.\n\n'
@@ -187,7 +190,7 @@ def _save_raw_dialog_box(*, bads, annotations, bids_path, verbose):
     icon_fname = Path(__file__).parent / 'assets' / 'help-128px.png'
     icon = plt.imread(icon_fname)
 
-    fig = figure_nobar(figsize=(7.5, 2))
+    fig = figure_nobar(figsize=figsize)
     fig.canvas.set_window_title('MNE-BIDS Inspector')
     fig.suptitle(title, y=0.95, fontsize='xx-large', fontweight='bold')
 
