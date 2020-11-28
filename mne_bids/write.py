@@ -1527,14 +1527,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # Read raw and sidecar file.
-    extra_params = dict()
-    if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = True
-    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
-                        verbose=False)
-    bads_raw = raw.info['bads']
-
+    # Read sidecar file.
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
                                             extension='.tsv')
     tsv_data = _from_tsv(channels_fname)
@@ -1562,13 +1555,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         logger.info('Resetting status and description for all channels.')
         tsv_data['status'] = ['good'] * len(tsv_data['name'])
         tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
-    elif not overwrite and not bads_tsv and bads_raw:
-        # No bads are marked in channels.tsv, but in raw.info['bads'], and
-        # the user requested to UPDATE (overwrite=False) the channel status.
-        # -> Inject bads from info['bads'] into channels.tsv before proceeding!
-        for ch_name in bads_raw:
-            idx = tsv_data['name'].index(ch_name)
-            tsv_data['status'][idx] = 'bad'
 
     # Now actually mark the user-requested channels as bad.
     for ch_name, description in zip(ch_names, descriptions):
