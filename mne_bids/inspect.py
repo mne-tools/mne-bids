@@ -280,8 +280,8 @@ def _save_bads(*, bads, bids_path, verbose):
 
 
 def _save_annotations(*, annotations, bids_path, verbose):
-    # Read the raw data, set our new Annotations, and convert them to events
-    # which we can then stored in the *_events.tsv sidecar.
+    # Attach the new Annotations to our raw data so we can easily convert them
+    # to events, which will be stored in the *_events.tsv sidecar.
     extra_params = dict()
     if bids_path.extension == '.fif':
         extra_params['allow_maxshield'] = True
@@ -289,7 +289,6 @@ def _save_annotations(*, annotations, bids_path, verbose):
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
                         verbose='warning')
     raw.set_annotations(annotations)
-
     events, durs, descrs = _read_events(events_data=None, event_id=None,
                                         raw=raw, verbose=False)
 
