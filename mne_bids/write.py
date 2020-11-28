@@ -1326,7 +1326,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     # create a copy
     bids_path = bids_path.copy()
 
-    # BIDS demans anatomical scans have no task associated with them
+    # BIDS demands anatomical scans have no task associated with them
     bids_path.update(task=None)
 
     # XXX For now, only support writing a single run.
