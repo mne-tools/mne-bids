@@ -1,4 +1,4 @@
-name: build
+name: test_suite
 
 on:
   push:
