@@ -126,7 +126,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
         # we cannot directly and easily remove the associated `a` keyboard
         # event callback.
         fig._clear_annotations()
-        fig._toggle_annotation_fig = lambda x: None
+        fig._toggle_annotation_fig = lambda: None
         # Ensure it's not an empty list, but an empty set of Annotations.
         old_annotations = (raw.copy()
                            .set_annotations(None)

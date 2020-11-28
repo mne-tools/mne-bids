@@ -23,10 +23,8 @@ _bids_path = BIDSPath(subject='01', session='01', run='01', task='testing',
                       datatype='meg')
 
 
-@pytest.fixture(scope='session')
-def return_bids_test_dir(tmpdir_factory):
+def setup_bids_test_dir(bids_root):
     """Return path to a written test BIDS dir."""
-    bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -58,7 +56,7 @@ def return_bids_test_dir(tmpdir_factory):
 @requires_version('mne', '0.22')
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect_single_file(return_bids_test_dir, save_changes):
+def test_inspect_single_file(tmp_path, save_changes):
     """Test inspecting a dataset consisting of only a single file."""
     from mne.utils._testing import _click_ch_name
     import matplotlib
@@ -66,7 +64,8 @@ def test_inspect_single_file(return_bids_test_dir, save_changes):
     matplotlib.use('Agg')
     plt.close('all')
 
-    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     old_bads = raw.info['bads'].copy()
 
@@ -100,14 +99,15 @@ def test_inspect_single_file(return_bids_test_dir, save_changes):
 @requires_matplotlib
 @requires_version('mne', '0.22')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect_multiple_files(return_bids_test_dir):
+def test_inspect_multiple_files(tmp_path):
     """Test inspecting a dataset consisting of more than one file."""
     import matplotlib
     import matplotlib.pyplot as plt
     matplotlib.use('Agg')
     plt.close('all')
 
-    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
 
     # Create a second subject
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
@@ -124,7 +124,7 @@ def test_inspect_multiple_files(return_bids_test_dir):
 @requires_matplotlib
 @requires_version('mne', '0.22')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect_set_and_unset_bads(return_bids_test_dir):
+def test_inspect_set_and_unset_bads(tmp_path):
     """Test marking channels as bad and later marking them as good again."""
     from mne.utils._testing import _click_ch_name
     import matplotlib
@@ -132,7 +132,8 @@ def test_inspect_set_and_unset_bads(return_bids_test_dir):
     matplotlib.use('Agg')
     plt.close('all')
 
-    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     orig_bads = raw.info['bads'].copy()
 
@@ -162,20 +163,23 @@ def test_inspect_set_and_unset_bads(return_bids_test_dir):
 
     # Check marking the channels as good has actually worked.
     expected_bads = orig_bads + ['MEG 0113']
-    assert set(orig_bads) == set(expected_bads)
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+    new_bads = raw.info['bads']
+    assert set(new_bads) == set(expected_bads)
 
 
 @requires_matplotlib
 @requires_version('mne', '0.22')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect_annotations(return_bids_test_dir):
+def test_inspect_annotations(tmp_path):
     """Test inspection of Annotations."""
     import matplotlib
     import matplotlib.pyplot as plt
     matplotlib.use('Agg')
     plt.close('all')
 
-    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     orig_annotations = raw.annotations.copy()
 
@@ -232,14 +236,15 @@ def test_inspect_annotations(return_bids_test_dir):
 @requires_matplotlib
 @requires_version('mne', '0.22')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect_annotations_remove_all(return_bids_test_dir):
+def test_inspect_annotations_remove_all(tmp_path):
     """Test behavior if all Annotations are removed by the user."""
     import matplotlib
     import matplotlib.pyplot as plt
     matplotlib.use('Agg')
     plt.close('all')
 
-    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
     events_tsv_fpath = (bids_path.copy()
                         .update(suffix='events', extension='.tsv')
                         .fpath)
@@ -301,13 +306,81 @@ def test_inspect_annotations_remove_all(return_bids_test_dir):
 
 @requires_matplotlib
 @requires_version('mne', '0.22')
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_inspect_dont_show_annotations(tmp_path):
+    """Test if show_annotations=False works."""
+    import matplotlib
+    import matplotlib.pyplot as plt
+    matplotlib.use('Agg')
+    plt.close('all')
+
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
+    inspect_dataset(bids_path, show_annotations=False)
+    raw_fig = mne_bids.inspect._global_vars['raw_fig']
+    assert not raw_fig.mne.annotations
+
+
+@requires_matplotlib
+@requires_version('mne', '0.22')
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_inspect_bads_and_annotations(tmp_path):
+    """Test adding bads and Annotations in one go."""
+    from mne.utils._testing import _click_ch_name
+    import matplotlib
+    import matplotlib.pyplot as plt
+    matplotlib.use('Agg')
+    plt.close('all')
+
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+    orig_bads = raw.info['bads'].copy()
+
+    inspect_dataset(bids_path)
+    raw_fig = mne_bids.inspect._global_vars['raw_fig']
+
+    # Mark some channels as bad by clicking on their name.
+    _click_ch_name(raw_fig, ch_index=0, button=1)
+
+    # Add custom Annotation.
+    data_ax = raw_fig.mne.ax_main
+    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
+    ann_fig = raw_fig.mne.fig_annotation
+    for key in 'test':  # Annotation will be named: BAD_test
+        ann_fig.canvas.key_press_event(key)
+    ann_fig.canvas.key_press_event('enter')
+
+    _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=1,
+                kind='press')
+    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
+                kind='motion')
+    _fake_click(raw_fig, data_ax, [5., 1.], xform='data', button=1,
+                kind='release')
+
+    # Close window and save changes.
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
+    fig_dialog.canvas.key_press_event('return')
+
+    # Check that the changes were saved.
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+    new_bads = raw.info['bads']
+    expected_bads = orig_bads + ['MEG 0113']
+    assert set(new_bads) == set(expected_bads)
+    assert 'BAD_test' in raw.annotations.description
+
+
+@requires_matplotlib
+@requires_version('mne', '0.22')
 @pytest.mark.parametrize(('l_freq', 'h_freq'),
                          [(None, None),
                           (1, None),
                           (None, 30),
                           (1, 30)])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect_freq_filter(return_bids_test_dir, l_freq, h_freq):
+def test_inspect_freq_filter(tmp_path, l_freq, h_freq):
     """Test frequency filter for Raw display."""
-    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
     inspect_dataset(bids_path, l_freq=l_freq, h_freq=h_freq)
