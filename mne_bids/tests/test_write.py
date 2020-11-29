@@ -1830,10 +1830,7 @@ def test_mark_bad_channels_files():
 
     # mark bad channels that get stored as uV in write_brain_vision
     bads = ['CP5', 'CP6']
-
-    with pytest.warns(RuntimeWarning,
-                      match='Encountered data in "short" format'):
-        mark_bad_channels(bads, bids_path=bids_path, overwrite=False)
+    mark_bad_channels(bads, bids_path=bids_path, overwrite=False)
     raw.info['bads'].extend(bads)
 
     # the raw data should match if you drop the bads
@@ -1842,7 +1839,7 @@ def test_mark_bad_channels_files():
     raw_2.drop_channels(raw_2.info['bads'])
     assert_array_almost_equal(raw.get_data(), raw_2.get_data())
 
-    # EDF won't work
+    # test EDF too
     dir_name = 'EDF'
     fname = 'test_reduced.edf'
     bids_root = _TempDir()
@@ -1850,13 +1847,8 @@ def test_mark_bad_channels_files():
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
     raw = _read_raw_edf(raw_fname)
-
-    # write edf
     write_raw_bids(raw, bids_path, overwrite=True)
-
-    # try to mark bad channels
-    with pytest.raises(RuntimeError, match='Can only mark bad'):
-        mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
+    mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
 
 
 def test_write_meg_calibration(_bids_validate):

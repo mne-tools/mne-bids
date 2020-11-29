@@ -39,15 +39,14 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _handle_datatype, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
-from mne_bids import read_raw_bids
-from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p, _path_to_str
+from mne_bids import BIDSPath
+from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit,
                                 copyfile_edf)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
-from mne_bids.read import (_get_bads_from_tsv_data, _find_matching_sidecar,
-                           _read_events)
+from mne_bids.read import _find_matching_sidecar, _read_events
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
@@ -171,11 +170,6 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
         Defaults to False.
     verbose : bool
         Set verbose output to True or False.
-
-    Notes
-    -----
-    The function writes durations of zero for each event.
-
     """
     # Start by filling all data that we know into an ordered dictionary
     first_samp = raw.first_samp
@@ -1540,19 +1534,10 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # Read raw and sidecar file.
-    raw = read_raw_bids(bids_path=bids_path,
-                        extra_params=dict(allow_maxshield=True, preload=True),
-                        verbose=False)
-    bads_raw = raw.info['bads']
-
+    # Read sidecar file.
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
                                             extension='.tsv')
     tsv_data = _from_tsv(channels_fname)
-    if 'status' in tsv_data:
-        bads_tsv = _get_bads_from_tsv_data(tsv_data)
-    else:
-        bads_tsv = []
 
     # Read sidecar and create required columns if they do not exist.
     if 'status' not in tsv_data:
@@ -1573,13 +1558,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         logger.info('Resetting status and description for all channels.')
         tsv_data['status'] = ['good'] * len(tsv_data['name'])
         tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
-    elif not overwrite and not bads_tsv and bads_raw:
-        # No bads are marked in channels.tsv, but in raw.info['bads'], and
-        # the user requested to UPDATE (overwrite=False) the channel status.
-        # -> Inject bads from info['bads'] into channels.tsv before proceeding!
-        for ch_name in bads_raw:
-            idx = tsv_data['name'].index(ch_name)
-            tsv_data['status'][idx] = 'bad'
 
     # Now actually mark the user-requested channels as bad.
     for ch_name, description in zip(ch_names, descriptions):
@@ -1594,22 +1572,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         tsv_data['status_description'][idx] = description
 
     _write_tsv(channels_fname, tsv_data, overwrite=True, verbose=verbose)
-
-    # Update info['bads']
-    bads = _get_bads_from_tsv_data(tsv_data)
-    raw.info['bads'] = bads
-    if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
-        # XXX We should write durations too, this is supported by pybv.
-        events, _, _ = _read_events(events_data=None, event_id=None,
-                                    raw=raw, verbose=False)
-        _write_raw_brainvision(raw, bids_path.fpath, events)
-    elif isinstance(raw, mne.io.RawFIF):
-        # XXX (How) will this handle split files?
-        raw.save(raw.filenames[0], overwrite=True, verbose=False)
-    else:
-        raise RuntimeError('Can only mark bad channels for '
-                           'FIFF and BrainVision files for now. Please '
-                           'mark bad channels manually.')
 
 
 def write_meg_calibration(calibration, bids_path, verbose=None):
