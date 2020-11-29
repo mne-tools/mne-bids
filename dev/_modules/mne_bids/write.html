@@ -155,15 +155,14 @@
                             <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
                             <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">,</span>
                                 <span class="n">copyfile_edf</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
                                   <span class="n">_combine_rows</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_bads_from_tsv_data</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
-                           <span class="n">_read_events</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
@@ -287,11 +286,6 @@
 <span class="sd">        Defaults to False.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Set verbose output to True or False.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    The function writes durations of zero for each event.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Start by filling all data that we know into an ordered dictionary</span>
     <span class="n">first_samp</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">first_samp</span>
@@ -1365,10 +1359,10 @@
                <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
 
-<span class="sd">    Given a BIDS directory and a T1 weighted MRI scan for a certain subject,</span>
-<span class="sd">    format the MRI scan to be in BIDS format and put it into the correct</span>
-<span class="sd">    location in the bids_dir. If a transformation matrix is supplied, a</span>
-<span class="sd">    sidecar JSON file will be written for the T1 weighted data.</span>
+<span class="sd">    Given an MRI scan, format and store the MR data according to BIDS in the</span>
+<span class="sd">    correct location inside the specified :class:`mne_bids.BIDSPath`. If a</span>
+<span class="sd">    transformation matrix is supplied, this information will be stored in a</span>
+<span class="sd">    sidecar JSON file..</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1379,16 +1373,16 @@
 <span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``root`` and ``subject`` attributes set.</span>
-<span class="sd">        The suffix is assumed to be &#39;T1w&#39; is not present. It can</span>
-<span class="sd">        also be `&#39;FLASH&#39;` for example.</span>
-<span class="sd">    raw : instance of Raw | None</span>
-<span class="sd">        The raw data of `subject` corresponding to `t1w`. If `raw` is None,</span>
-<span class="sd">        `trans` has to be None as well</span>
+<span class="sd">        The suffix is assumed to be ``&#39;T1w&#39;`` if not present. It can</span>
+<span class="sd">        also be ``&#39;FLASH&#39;``, for example, to indicate FLASH MRI.</span>
+<span class="sd">    raw : instance of mne.io.Raw | None</span>
+<span class="sd">        The raw data of ``subject`` corresponding to the MR scan in ``image``.</span>
+<span class="sd">        If ``None``, ``trans`` has to be ``None`` as well</span>
 <span class="sd">    trans : instance of mne.transforms.Transform | str | None</span>
-<span class="sd">        The transformation matrix from head coordinates to MRI coordinates. Can</span>
-<span class="sd">        also be a string pointing to a .trans file containing the</span>
-<span class="sd">        transformation matrix. If None, no sidecar JSON file will be written</span>
-<span class="sd">        for `t1w`</span>
+<span class="sd">        The transformation matrix from head to MRI coordinates. Can</span>
+<span class="sd">        also be a string pointing to a ``.trans`` file containing the</span>
+<span class="sd">        transformation matrix. If ``None``, no sidecar JSON file will be</span>
+<span class="sd">        created.</span>
 <span class="sd">    deface : bool | dict</span>
 <span class="sd">        If False, no defacing is performed.</span>
 <span class="sd">        If True, deface with default parameters.</span>
@@ -1417,13 +1411,13 @@
 <span class="sd">        If overwrite is False, no existing data will be overwritten or</span>
 <span class="sd">        replaced.</span>
 <span class="sd">    verbose : bool</span>
-<span class="sd">        If verbose is True, this will print a snippet of the sidecar files. If</span>
-<span class="sd">        False, no content will be printed.</span>
+<span class="sd">        If ``True``, this will print a snippet of the sidecar files. If</span>
+<span class="sd">        ``False``, no content will be printed.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bids_path : BIDSPath</span>
-<span class="sd">        Path to the anatomical scan in the BIDS directory.</span>
+<span class="sd">        Path to the written MRI data.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
@@ -1441,31 +1435,39 @@
                          <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
     <span class="c1"># create a copy</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># BIDS demands anatomical scans have no task associated with them</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># XXX For now, only support writing a single run.</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
     <span class="c1"># this file is anat</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;anat&#39;</span><span class="p">)</span>
 
-    <span class="c1"># set extension and suffix hard-coded to T1w and compressed Nifti</span>
+    <span class="c1"># default to T1w</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">)</span>
 
-    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+    <span class="c1">#  data is compressed Nifti</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
 
     <span class="c1"># create the directory for the MRI data</span>
     <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="c1"># Try to read our T1 file and convert to MGH representation</span>
+    <span class="c1"># Try to read our MRI file and convert to MGH representation</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">image</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-        <span class="c1"># t1w -&gt; str conversion failed, so maybe the user passed an nibabel</span>
+        <span class="c1"># image -&gt; str conversion failed, so maybe the user passed an nibabel</span>
         <span class="c1"># object instead of a path.</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nib</span><span class="o">.</span><span class="n">all_image_classes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`image` must be a path to an MRI data &#39;</span>
                              <span class="s1">&#39;file , or a nibabel image object, but it is of &#39;</span>
                              <span class="s1">&#39;type &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># t1w -&gt; str conversion in the try block was successful, so load the</span>
+        <span class="c1"># image -&gt; str conversion in the try block was successful, so load the</span>
         <span class="c1"># file from the specified location. We do this here and not in the try</span>
         <span class="c1"># block to keep the try block as short as possible.</span>
         <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
@@ -1648,19 +1650,10 @@
                          <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
                          <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
 
-    <span class="c1"># Read raw and sidecar file.</span>
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
-                        <span class="n">extra_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">bads_raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span>
-
+    <span class="c1"># Read sidecar file.</span>
     <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
                                             <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
     <span class="n">tsv_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
-        <span class="n">bads_tsv</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">bads_tsv</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Read sidecar and create required columns if they do not exist.</span>
     <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
@@ -1681,13 +1674,6 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Resetting status and description for all channels.&#39;</span><span class="p">)</span>
         <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;good&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
         <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status_description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bads_tsv</span> <span class="ow">and</span> <span class="n">bads_raw</span><span class="p">:</span>
-        <span class="c1"># No bads are marked in channels.tsv, but in raw.info[&#39;bads&#39;], and</span>
-        <span class="c1"># the user requested to UPDATE (overwrite=False) the channel status.</span>
-        <span class="c1"># -&gt; Inject bads from info[&#39;bads&#39;] into channels.tsv before proceeding!</span>
-        <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads_raw</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
-            <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bad&#39;</span>
 
     <span class="c1"># Now actually mark the user-requested channels as bad.</span>
     <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">description</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">descriptions</span><span class="p">):</span>
@@ -1701,23 +1687,7 @@
         <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bad&#39;</span>
         <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status_description&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
 
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">tsv_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-
-    <span class="c1"># Update info[&#39;bads&#39;]</span>
-    <span class="n">bads</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">)</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">brainvision</span><span class="o">.</span><span class="n">brainvision</span><span class="o">.</span><span class="n">RawBrainVision</span><span class="p">):</span>
-        <span class="c1"># XXX We should write durations too, this is supported by pybv.</span>
-        <span class="n">events</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                    <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawFIF</span><span class="p">):</span>
-        <span class="c1"># XXX (How) will this handle split files?</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Can only mark bad channels for &#39;</span>
-                           <span class="s1">&#39;FIFF and BrainVision files for now. Please &#39;</span>
-                           <span class="s1">&#39;mark bad channels manually.&#39;</span><span class="p">)</span></div>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">tsv_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="write_meg_calibration"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration">[docs]</a><span class="k">def</span> <span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1829,7 +1799,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-29.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

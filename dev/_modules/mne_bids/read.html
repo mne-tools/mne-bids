@@ -190,7 +190,7 @@
 <span class="sd">        ``raw.annotations``.</span>
 <span class="sd">    event_id : dict | None</span>
 <span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv,</span>
-<span class="sd">        mapping a description key to an integer valued event code.</span>
+<span class="sd">        mapping a description key to an integer-valued event code.</span>
 <span class="sd">    raw : instance of Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    verbose : bool | str | int | None</span>
@@ -452,28 +452,10 @@
     <span class="c1"># Set the channel types in the raw data according to channels.tsv</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">channel_type_dict</span><span class="p">)</span>
 
-    <span class="c1"># Check whether there is the optional &quot;status&quot; column from which to infer</span>
-    <span class="c1"># good and bad channels</span>
+    <span class="c1"># Set bad channels based on _channels.tsv sidecar</span>
     <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
-        <span class="c1"># find bads from channels.tsv</span>
-        <span class="n">bads_from_tsv</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">bads_from_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]):</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Encountered conflicting information on channel status &#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;between </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span><span class="si">}</span><span class="s1"> and the associated &#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;raw data file.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;Channels marked as bad in &#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">bads_from_tsv</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;Channels marked as bad in &#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;raw.info[&quot;bads&quot;]: </span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;Setting list of bad channels to: </span><span class="si">{</span><span class="n">bads_from_tsv</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads_from_tsv</span>
-    <span class="k">elif</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]:</span>
-        <span class="c1"># We do have info[&#39;bads&#39;], but no `status` in channels.tsv</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No &quot;status&quot; column found in &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span><span class="si">}</span><span class="s1">; using list of bad &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;channels found in raw.info[&quot;bads&quot;]: </span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">bads</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
@@ -733,7 +715,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-29.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

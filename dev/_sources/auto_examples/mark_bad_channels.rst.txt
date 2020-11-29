@@ -14,11 +14,15 @@
 =========================================================
 
 You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
-Problematic channels can be marked as "bad", for
-example if the connected sensor produced mostly noise – or no signal at
-all. Similarly, you can declare channels as "good", should you discover they
-were incorrectly marked as bad. Bad channel selection can also be performed
-non-interactively.
+Problematic channels can be marked as "bad", for example if the connected
+sensor produced mostly noise – or no signal at all. Similarly, you can declare
+channels as "good", should you discover they were incorrectly marked as bad.
+Bad channel selection can also be performed non-interactively.
+
+Furthermore, you can view and edit the experimental events and mark time
+segments as "bad".
+
+.. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html#annotating-raw-objects-interactively
 
 
 .. code-block:: default
@@ -53,6 +57,9 @@ Let's start by importing the required modules and functions, reading the
 
     data_path = mne.datasets.sample.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
     bids_path = BIDSPath(subject='01', session='01', task='audiovisual', run='01',
                          root=bids_root)
@@ -92,7 +99,8 @@ Now write the raw data to BIDS.
 
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
-    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, events_data=events_fname,
+                   event_id=event_id, overwrite=True, verbose=False)
 
 
 
@@ -104,8 +112,6 @@ Now write the raw data to BIDS.
 
  .. code-block:: none
 
-    /home/circleci/project/mne_bids/read.py:151: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events_data and event_id parameters.
-      warn('No events found or provided. Please add annotations to the raw '
 
     BIDSPath(
     root: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids
@@ -123,7 +129,8 @@ respective traces or channel names. If there are any SSP projectors stored
 with the data, a small popup window will allow you to toggle the projectors
 on and off. If you changed the selection of bad channels, you will be
 prompted whether you would like to save the changes when closing the main
-window.
+window. Your raw data and the `*_channels.tsv` sidecar file will be updated
+upon saving.
 
 
 .. code-block:: default
@@ -163,10 +170,7 @@ window.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
@@ -217,16 +221,20 @@ apply filters with a 1-Hz high-pass cutoff, and a 30-Hz low-pass cutoff:
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
 
 
 
+
+By pressing the ``A`` key, you can toggle annotation mode to add, edit, or
+remove experimental events, or to mark entire time periods as bad. Please see
+the `MNE-Python Annotations tutorial`_ for an introduction to the interactive
+interface. If you're closing the main window after changing the annotations,
+you will be prompted whether you wish to save the changes. Your raw data and
+the `*_events.tsv` sidecar file will be updated upon saving.
 
 Non-interactive (programmatic) bad channel selection
 ----------------------------------------------------
@@ -259,10 +267,7 @@ marked as bad.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
@@ -296,21 +301,6 @@ To do that, we simply add them to a list, which we then pass to
 
  .. code-block:: none
 
-    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
-        Read a total of 3 projection items:
-            PCA-v1 (1 x 102)  idle
-            PCA-v2 (1 x 102)  idle
-            PCA-v3 (1 x 102)  idle
-        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
-    Ready.
-    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
-    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-    /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
-      raw.set_channel_types(channel_type_dict)
     Processing channel MEG 0112:
         status: bad
         description: n/a
@@ -348,11 +338,10 @@ That's it! Let's verify the result.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
     After marking MEG 0112 and MEG 0131 as bad, the following channels are now marked as bad:
         MEG 0112, MEG 0131, MEG 2443, EEG 053
 
@@ -394,19 +383,6 @@ entirely, pass the argument ``overwrite=True``:
 
  .. code-block:: none
 
-    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
-        Read a total of 3 projection items:
-            PCA-v1 (1 x 102)  idle
-            PCA-v2 (1 x 102)  idle
-            PCA-v3 (1 x 102)  idle
-        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
-    Ready.
-    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
-    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     Resetting status and description for all channels.
     Processing channel MEG 0112:
         status: bad
@@ -421,11 +397,10 @@ entirely, pass the argument ``overwrite=True``:
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
     After marking MEG 0112 and MEG 0131 as bad and passing `overwrite=True`, the following channels are now marked as bad:
         MEG 0112, MEG 0131
 
@@ -457,19 +432,6 @@ pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
  .. code-block:: none
 
-    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
-        Read a total of 3 projection items:
-            PCA-v1 (1 x 102)  idle
-            PCA-v2 (1 x 102)  idle
-            PCA-v3 (1 x 102)  idle
-        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
-    Ready.
-    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
-    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     Resetting status and description for all channels.
     Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
         Read a total of 3 projection items:
@@ -478,11 +440,10 @@ pass an empty list as ``ch_names``, combined with ``overwrite=True``:
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
-      warn(msg)
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
     After passing `ch_names=[]` and `overwrite=True`, the following channels are now marked as bad:
     
 
@@ -493,7 +454,7 @@ pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  10.996 seconds)
+   **Total running time of the script:** ( 0 minutes  4.270 seconds)
 
 
 .. _sphx_glr_download_auto_examples_mark_bad_channels.py:

@@ -117,7 +117,7 @@
 <h1>mne_bids.inspect_dataset<a class="headerlink" href="#mne-bids-inspect-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.inspect_dataset">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">inspect_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">l_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/inspect.html#inspect_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.inspect_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">inspect_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">l_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_annotations</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/inspect.html#inspect_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.inspect_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inspect and annotate BIDS raw data.</p>
 <p>This function allows you to browse MEG, EEG, and iEEG raw data stored in a
 BIDS dataset. You can toggle the status of a channel (bad or good) by
@@ -128,13 +128,14 @@ discard them.</p>
 <p class="admonition-title">Warning</p>
 <p>This functionality is still experimental and will be extended
 in the future. Its API will likely change. Planned features
-include modification of annotations and automated bad channel
-detection.</p>
+include automated bad channel detection and visualization of
+MRI images.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Currently, only MEG, EEG, and iEEG data can be inspected.</p>
 </div>
+<p>To add or modify annotations, press <code class="docutils literal notranslate"><span class="pre">A</span></code> to toggle annotation mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -154,6 +155,10 @@ data. This can be useful when inspecting data with slow drifts. If
 <dt><strong>h_freq</strong><span class="classifier">float | None</span></dt><dd><p>The low-pass filter cutoff frequency to apply when displaying the
 data. This can be useful when inspecting data with high-frequency
 artifacts. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no low-pass filter will be applied.</p>
+</dd>
+<dt><strong>show_annotations</strong><span class="classifier">bool</span></dt><dd><p>Whether to show annotations (events, bad segments, …) or not. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, toggling annotations mode by pressing <code class="docutils literal notranslate"><span class="pre">A</span></code> will be disabled
+as well.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier">bool | None</span></dt><dd><p>If a boolean, whether or not to produce verbose output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 use the default log level.</p>
@@ -185,7 +190,7 @@ use the default log level.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-29.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
