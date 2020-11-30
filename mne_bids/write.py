@@ -310,7 +310,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
             raise FileExistsError(f'"{subject_id}" already exists in '  # noqa: E501 F821
                                   f'the participant list. Please set '
                                   f'overwrite to True.')
-        col_name = 'participant_id'
 
         # Append any columns the original data did not have
         # that mne-bids is trying to write. This handles
@@ -326,6 +325,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         # Append any additional columns that original data had.
         # Keep the original order of the data by looping over
         # the original OrderedDict keys
+        col_name = 'participant_id'
         for key in orig_data.keys():
             if key in data:
                 continue
