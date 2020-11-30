@@ -121,6 +121,45 @@ def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     return bids_root
 
 
+def test_write_participants():
+    """Test that participants data is written correctly."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    # add fake participants data
+    raw.set_meas_date(datetime(year=1994, month=1, day=26,
+                               tzinfo=timezone.utc))
+    raw.info['subject_info'] = {'his_id': subject_id2,
+                                'birthday': (1993, 1, 26),
+                                'sex': 1, 'hand': 2}
+
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root)
+    write_raw_bids(raw, bids_path)
+
+    # assert age of participant is correct
+    participants_tsv = op.join(bids_root, 'participants.tsv')
+    data = _from_tsv(participants_tsv)
+    assert data['age'][data['participant_id'].index('sub-01')] == '1'
+
+    # if we remove some fields, they should be filled back in upon
+    # re-writing with 'n/a'
+    data = _from_tsv(participants_tsv)
+    data.pop('hand')
+    _to_tsv(data, participants_tsv)
+
+    bids_path.update(subject='02')
+    write_raw_bids(raw, bids_path)
+    data = _from_tsv(participants_tsv)
+
+    # hand should have been written properly with now 'n/a' for sub-01
+    # but 'L' for sub-02
+    assert data['hand'][data['participant_id'].index('sub-01')] == 'n/a'
+    assert data['hand'][data['participant_id'].index('sub-02')] == 'L'
+
+
 def test_write_correct_inputs():
     """Test that inputs of write_raw_bids is correct."""
     data_path = testing.data_path()
