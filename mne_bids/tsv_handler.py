@@ -70,11 +70,9 @@ def _contains_row(data, row_data):
     """
     mask = None
     for key, row_value in row_data.items():
+        # if any of the columns don't even exist in the keys
+        # this data_value will return False
         data_value = np.array(data.get(key))
-
-        # if any of the columns don't even exist, return False
-        if data_value is None:
-            return False
 
         # Cast row_value to the same dtype as data_value to avoid a NumPy
         # FutureWarning, see
