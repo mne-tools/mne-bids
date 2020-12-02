@@ -355,7 +355,7 @@ def test_inspect_bads_and_annotations(tmp_path):
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_auto_flats(tmp_path, save_changes):
-    """Test flat channel detection."""
+    """Test flat channel & segment detection."""
     import matplotlib
     import matplotlib.pyplot as plt
     matplotlib.use('Agg')
@@ -368,9 +368,11 @@ def test_inspect_auto_flats(tmp_path, save_changes):
 
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
 
-    # Inject a flat channel.
+    # Inject an entirely flat channel.
     raw.load_data()
     raw._data[10] = np.zeros_like(raw._data[10], dtype=raw._data.dtype)
+    # Add a a flat time segment (approx. 100 ms) to another channel
+    raw._data[20, 500:500 + int(np.ceil(0.1 * raw.info['sfreq']))] = 0
     raw.save(raw.filenames[0], overwrite=True)
     old_bads = raw.info['bads'].copy()
 
@@ -388,16 +390,17 @@ def test_inspect_auto_flats(tmp_path, save_changes):
     fig_dialog.canvas.key_press_event(key)
 
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
-    new_bads = raw.info['bads'].copy()
 
     if save_changes:
-        assert old_bads != new_bads
-        assert raw.ch_names[10] in new_bads
+        assert old_bads != raw.info['bads']
+        assert raw.ch_names[10] in  raw.info['bads']
         channels_tsv_data = _from_tsv(channels_tsv_fname)
         assert (channels_tsv_data['status_description'][10] ==
                 'Flat channel, auto-detected via MNE-BIDS')
+        assert 'BAD_flat' in raw.annotations.description
     else:
-        assert old_bads == new_bads
+        assert old_bads == raw.info['bads']
+        assert 'BAD_flat' not in raw.annotations.description
 
 
 @requires_matplotlib
