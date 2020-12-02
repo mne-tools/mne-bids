@@ -12,7 +12,7 @@ from mne_bids.write import _events_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
-def inspect_dataset(bids_path, l_freq=None, h_freq=None, find_flat=True,
+def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
                     show_annotations=True, verbose=None):
     """Inspect and annotate BIDS raw data.
 
@@ -42,6 +42,9 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None, find_flat=True,
         To read a specific file, set all the :class:`mne_bids.BIDSPath`
         attributes required to uniquely identify the file: If this ``BIDSPath``
         is accepted by :func:`mne_bids.read_raw_bids`, it will work here.
+    find_flat : bool
+        Whether to auto-detect channels producing "flat" signals, i.e., with
+        unusually low variability.
     l_freq : float | None
         The high-pass filter cutoff frequency to apply when displaying the
         data. This can be useful when inspecting data with slow drifts. If
@@ -50,9 +53,6 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None, find_flat=True,
         The low-pass filter cutoff frequency to apply when displaying the
         data. This can be useful when inspecting data with high-frequency
         artifacts. If ``None``, no low-pass filter will be applied.
-    find_flat : bool
-        Whether to auto-detect channels producing "flat" signals, i.e., with
-        unusually low variability.
     show_annotations : bool
         Whether to show annotations (events, bad segments, …) or not. If
         ``False``, toggling annotations mode by pressing ``A`` will be disabled
