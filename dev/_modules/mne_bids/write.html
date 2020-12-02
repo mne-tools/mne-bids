@@ -427,6 +427,17 @@
                                   <span class="sa">f</span><span class="s1">&#39;the participant list. Please set &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;overwrite to True.&#39;</span><span class="p">)</span>
 
+        <span class="c1"># Append any columns the original data did not have</span>
+        <span class="c1"># that mne-bids is trying to write. This handles</span>
+        <span class="c1"># the edge case where users write participants data for</span>
+        <span class="c1"># a subset of `hand`, `age` and `sex`.</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># add &#39;n/a&#39; if any missing columns</span>
+            <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+
         <span class="c1"># Append any additional columns that original data had.</span>
         <span class="c1"># Keep the original order of the data by looping over</span>
         <span class="c1"># the original OrderedDict keys</span>
@@ -1799,7 +1810,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-29.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-02.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

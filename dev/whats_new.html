@@ -176,6 +176,7 @@
 <li><p>Fix a bug in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, where original format of data was not kept when writing to FIFF, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a>, <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a>, and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/610">#610</a>)</p></li>
 <li><p>Fix a bug where conversion to BrainVision format was done even when non-Volt channel types were present in the data (BrainVision conversion is done by <code class="docutils literal notranslate"><span class="pre">pybv</span></code>, which currently only supports Volt channel types), by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/619">#619</a>)</p></li>
 <li><p>Ensure sidecar files (<em class="xref py py-obj">tsv</em> and <a class="reference external" href="https://docs.python.org/3/library/json.html#module-json" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">json</span></code></a>) are always read and written in UTF-8, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/625">#625</a>)</p></li>
+<li><p>Fix a bug where <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> was not being appended to correctly when it contained a subset of <code class="docutils literal notranslate"><span class="pre">hand</span></code>, <code class="docutils literal notranslate"><span class="pre">age</span></code> and <code class="docutils literal notranslate"><span class="pre">sex</span></code>, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/648">#648</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="api-changes">
@@ -210,7 +211,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-29.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-02.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
