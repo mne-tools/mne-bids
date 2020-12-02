@@ -121,6 +121,95 @@ def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     return bids_root
 
 
+def test_write_participants(_bids_validate):
+    """Test participants.tsv/.json file writing.
+
+    Test that user modifications of the participants
+    files are kept, and mne-bids correctly writes all
+    the subject info it can using ``raw.info['subject_info']``.
+    """
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    # add fake participants data
+    raw.set_meas_date(datetime(year=1994, month=1, day=26,
+                               tzinfo=timezone.utc))
+    raw.info['subject_info'] = {'his_id': subject_id2,
+                                'birthday': (1993, 1, 26),
+                                'sex': 1, 'hand': 2}
+
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root)
+    write_raw_bids(raw, bids_path)
+
+    # assert age of participant is correct
+    participants_tsv = op.join(bids_root, 'participants.tsv')
+    data = _from_tsv(participants_tsv)
+    assert data['age'][data['participant_id'].index('sub-01')] == '1'
+
+    # if we remove some fields, they should be filled back in upon
+    # re-writing with 'n/a'
+    data = _from_tsv(participants_tsv)
+    data.pop('hand')
+    _to_tsv(data, participants_tsv)
+
+    # write in now another subject
+    bids_path.update(subject='02')
+    write_raw_bids(raw, bids_path, verbose=False)
+    data = _from_tsv(participants_tsv)
+
+    # hand should have been written properly with now 'n/a' for sub-01
+    # but 'L' for sub-02
+    assert data['hand'][data['participant_id'].index('sub-01')] == 'n/a'
+    assert data['hand'][data['participant_id'].index('sub-02')] == 'L'
+
+    # check to make sure participant data is overwritten, but keeps the fields
+    # if there are extra fields that were user defined
+    data = _from_tsv(participants_tsv)
+    participant_idx = data['participant_id'].index(f'sub-{subject_id}')
+    # create a new test column in participants file tsv
+    data['subject_test_col1'] = ['n/a'] * len(data['participant_id'])
+    data['subject_test_col1'][participant_idx] = 'S'
+    data['test_col2'] = ['n/a'] * len(data['participant_id'])
+    orig_key_order = list(data.keys())
+    _to_tsv(data, participants_tsv)
+    # crate corresponding json entry
+    participants_json_fpath = op.join(bids_root, 'participants.json')
+    json_field = {
+        'Description': 'trial-outcome',
+        'Levels': {
+            'S': 'success',
+            'F': 'failure'
+        }
+    }
+    _update_sidecar(participants_json_fpath, 'subject_test_col1', json_field)
+    # bids root should still be valid because json reflects changes in tsv
+    _bids_validate(bids_root)
+    write_raw_bids(raw, bids_path, overwrite=True)
+    data = _from_tsv(participants_tsv)
+    with open(participants_json_fpath, 'r', encoding='utf-8') as fin:
+        participants_json = json.load(fin)
+    assert 'subject_test_col1' in participants_json
+    assert data['subject_test_col1'][participant_idx] == 'S'
+    # in addition assert the original ordering of the new overwritten file
+    assert list(data.keys()) == orig_key_order
+
+    # if overwrite is False, then nothing should change from the above
+    with pytest.raises(FileExistsError, match='already exists'):
+        raw.info['subject_info'] = None
+        write_raw_bids(raw, bids_path, overwrite=False)
+    data = _from_tsv(participants_tsv)
+    with open(participants_json_fpath, 'r', encoding='utf-8') as fin:
+        participants_json = json.load(fin)
+    assert 'subject_test_col1' in participants_json
+    assert data['age'][data['participant_id'].index('sub-01')] == '1'
+    assert data['subject_test_col1'][participant_idx] == 'S'
+    # in addition assert the original ordering of the new overwritten file
+    assert list(data.keys()) == orig_key_order
+
+
 def test_write_correct_inputs():
     """Test that inputs of write_raw_bids is correct."""
     data_path = testing.data_path()
@@ -376,58 +465,8 @@ def test_fif(_bids_validate):
 
     # give the raw object some fake participant data (potentially overwriting)
     raw = _read_raw_fif(raw_fname)
-    raw.info['subject_info'] = {'his_id': subject_id2,
-                                'birthday': (1993, 1, 26), 'sex': 1, 'hand': 2}
     write_raw_bids(raw, bids_path, events_data=events,
                    event_id=event_id, overwrite=True)
-    # assert age of participant is correct
-    participants_tsv = op.join(bids_root, 'participants.tsv')
-    data = _from_tsv(participants_tsv)
-    assert data['age'][data['participant_id'].index('sub-01')] == '9'
-
-    # check to make sure participant data is overwritten, but keeps the fields
-    data = _from_tsv(participants_tsv)
-    participant_idx = data['participant_id'].index(f'sub-{subject_id}')
-    # create a new test column in participants file tsv
-    data['subject_test_col1'] = ['n/a'] * len(data['participant_id'])
-    data['subject_test_col1'][participant_idx] = 'S'
-    data['test_col2'] = ['n/a'] * len(data['participant_id'])
-    orig_key_order = list(data.keys())
-    _to_tsv(data, participants_tsv)
-    # crate corresponding json entry
-    participants_json_fpath = op.join(bids_root, 'participants.json')
-    json_field = {
-        'Description': 'trial-outcome',
-        'Levels': {
-            'S': 'success',
-            'F': 'failure'
-        }
-    }
-    _update_sidecar(participants_json_fpath, 'subject_test_col1', json_field)
-    # bids root should still be valid because json reflects changes in tsv
-    _bids_validate(bids_root)
-    write_raw_bids(raw, bids_path, overwrite=True)
-    data = _from_tsv(participants_tsv)
-    with open(participants_json_fpath, 'r', encoding='utf-8') as fin:
-        participants_json = json.load(fin)
-    assert 'subject_test_col1' in participants_json
-    assert data['age'][data['participant_id'].index('sub-01')] == '9'
-    assert data['subject_test_col1'][participant_idx] == 'S'
-    # in addition assert the original ordering of the new overwritten file
-    assert list(data.keys()) == orig_key_order
-
-    # if overwrite is False, then nothing should change from the above
-    with pytest.raises(FileExistsError, match='already exists'):
-        raw.info['subject_info'] = None
-        write_raw_bids(raw, bids_path, overwrite=False)
-    data = _from_tsv(participants_tsv)
-    with open(participants_json_fpath, 'r', encoding='utf-8') as fin:
-        participants_json = json.load(fin)
-    assert 'subject_test_col1' in participants_json
-    assert data['age'][data['participant_id'].index('sub-01')] == '9'
-    assert data['subject_test_col1'][participant_idx] == 'S'
-    # in addition assert the original ordering of the new overwritten file
-    assert list(data.keys()) == orig_key_order
 
     # try and write preloaded data
     raw = _read_raw_fif(raw_fname, preload=True)

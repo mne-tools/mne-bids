@@ -311,6 +311,17 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                                   f'the participant list. Please set '
                                   f'overwrite to True.')
 
+        # Append any columns the original data did not have
+        # that mne-bids is trying to write. This handles
+        # the edge case where users write participants data for
+        # a subset of `hand`, `age` and `sex`.
+        for key in data.keys():
+            if key in orig_data:
+                continue
+
+            # add 'n/a' if any missing columns
+            orig_data[key] = ['n/a'] * len(next(iter(data.values())))
+
         # Append any additional columns that original data had.
         # Keep the original order of the data by looping over
         # the original OrderedDict keys
