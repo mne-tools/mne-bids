@@ -2134,6 +2134,7 @@ def test_find_and_mark_flat(_bids_validate):
     # Add a a flat time segment (approx. 100 ms) to another channel
     raw._data[20, 500:500 + int(np.ceil(0.1 * raw.info['sfreq']))] = 0
     raw.save(raw.filenames[0], overwrite=True)
+    assert 'BAD_flat' in raw.annotations.description
 
     find_and_mark_flat(bids_path=bids_path)
     raw = read_raw_bids(bids_path=bids_path)

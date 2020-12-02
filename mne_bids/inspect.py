@@ -11,7 +11,7 @@ from mne_bids.write import _save_annotations
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
-def inspect_dataset(bids_path, l_freq=None, h_freq=None, find_flats=True,
+def inspect_dataset(bids_path, l_freq=None, h_freq=None, find_flat=True,
                     show_annotations=True, verbose=None):
     """Inspect and annotate BIDS raw data.
 
@@ -49,7 +49,7 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None, find_flats=True,
         The low-pass filter cutoff frequency to apply when displaying the
         data. This can be useful when inspecting data with high-frequency
         artifacts. If ``None``, no low-pass filter will be applied.
-    find_flats : bool
+    find_flat : bool
         Whether to auto-detect channels producing "flat" signals, i.e., with
         unusually low variability.
     show_annotations : bool
@@ -70,7 +70,7 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None, find_flats=True,
 
     for bids_path_ in bids_paths:
         _inspect_raw(bids_path=bids_path_, l_freq=l_freq, h_freq=h_freq,
-                     find_flats=find_flats, show_annotations=show_annotations,
+                     find_flat=find_flat, show_annotations=show_annotations,
                      verbose=verbose)
 
 
@@ -80,7 +80,7 @@ _global_vars = dict(raw_fig=None,
                     mne_close_key=None)
 
 
-def _inspect_raw(*, bids_path, l_freq, h_freq, find_flats, show_annotations,
+def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations,
                  verbose=None):
     """Raw data inspection."""
     # Delay the import
@@ -94,7 +94,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flats, show_annotations,
     old_bads = raw.info['bads'].copy()
     old_annotations = raw.annotations.copy()
 
-    if find_flats:
+    if find_flat:
         raw.load_data()  # Speeds up processing dramatically
         flat_annot, flat_chans = annotate_flat(raw=raw, min_duration=0.05,
                                                verbose=verbose)
