@@ -47,7 +47,6 @@ Enhancements
 - Add support for anonymizing EDF and BDF files without converting to BrainVision format, by `Austin Hurst`_ (:gh:`636`)
 - Add support for writing FLASH MRI data with :func:`mne_bids.write_anat`, by `Alexandre Gramfort`_ (:gh:`641`)
 - Add interactive data inspector :func:`mne_bids.inspect_dataset`, by `Richard Höchenberger`_ (:gh:`561`)
-- Flat channels and time segments can now be marked using :func:`mne_bids.find_and_mark_flat`, by `Richard Höchenberger`_ (:gh:`649`)
 
 Bug fixes
 ^^^^^^^^^

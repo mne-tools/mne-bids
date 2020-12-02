@@ -41,8 +41,7 @@ from mne.io.kit.kit import get_kit_info
 from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_bad_channels, write_meg_calibration,
-                      write_meg_crosstalk, get_entities_from_fname,
-                      find_and_mark_flat)
+                      write_meg_crosstalk, get_entities_from_fname)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -2115,29 +2114,3 @@ def test_sidecar_encoding(_bids_validate):
     raw_read = read_raw_bids(bids_path)
     assert_array_equal(raw.annotations.description,
                        raw_read.annotations.description)
-
-
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_find_and_mark_flat(_bids_validate):
-    """Test we're properly encoding text as UTF8."""
-    bids_root = _TempDir()
-    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
-    data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
-    raw = _read_raw_fif(raw_fname)
-    write_raw_bids(raw=raw, bids_path=bids_path)
-
-    # Inject an entirely flat channel.
-    raw.load_data()
-    raw._data[10] = np.zeros_like(raw._data[10], dtype=raw._data.dtype)
-    # Add a a flat time segment (approx. 100 ms) to another channel
-    raw._data[20, 500:500 + int(np.ceil(0.1 * raw.info['sfreq']))] = 0
-    raw.save(raw.filenames[0], overwrite=True)
-    assert 'BAD_flat' not in raw.annotations.description
-
-    find_and_mark_flat(bids_path=bids_path)
-    raw = read_raw_bids(bids_path=bids_path)
-    assert raw.ch_names[10] in raw.info['bads']
-    assert raw.ch_names[20] not in raw.info['bads']
-    assert 'BAD_flat' in raw.annotations.description

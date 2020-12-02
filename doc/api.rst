@@ -40,7 +40,6 @@ mne_bids
    get_datatypes
    update_sidecar_json
    inspect_dataset
-   find_and_mark_flat
 
 mne_bids.stats
 --------------

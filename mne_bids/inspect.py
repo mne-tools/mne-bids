@@ -4,10 +4,11 @@ import numpy as np
 
 import mne
 from mne.preprocessing import annotate_flat
+from mne.utils import logger
 
 from mne_bids import read_raw_bids, mark_bad_channels
-from mne_bids.read import _from_tsv
-from mne_bids.write import _save_annotations
+from mne_bids.read import _from_tsv, _read_events
+from mne_bids.write import _events_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
@@ -172,6 +173,35 @@ def _annotations_almost_equal(old_annotations, new_annotations):
         return True
     else:
         return False
+
+
+def _save_annotations(*, annotations, bids_path, verbose):
+    # Attach the new Annotations to our raw data so we can easily convert them
+    # to events, which will be stored in the *_events.tsv sidecar.
+    extra_params = dict()
+    if bids_path.extension == '.fif':
+        extra_params['allow_maxshield'] = True
+
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
+                        verbose='warning')
+    raw.set_annotations(annotations)
+    events, durs, descrs = _read_events(events_data=None, event_id=None,
+                                        raw=raw, verbose=False)
+
+    # Write sidecar – or remove it if no events are left.
+    events_tsv_fname = (bids_path.copy()
+                        .update(suffix='events',
+                                extension='.tsv')
+                        .fpath)
+
+    if len(events) > 0:
+        _events_tsv(events=events, durations=durs, raw=raw,
+                    fname=events_tsv_fname, trial_type=descrs,
+                    overwrite=True, verbose=verbose)
+    elif events_tsv_fname.exists():
+        logger.info(f'No events remaining after interactive inspection, '
+                    f'removing {events_tsv_fname.name}')
+        events_tsv_fname.unlink()
 
 
 def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
