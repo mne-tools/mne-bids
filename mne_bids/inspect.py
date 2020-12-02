@@ -45,6 +45,15 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
     find_flat : bool
         Whether to auto-detect channels producing "flat" signals, i.e., with
         unusually low variability.
+
+        .. note::
+            This function calls :func:`mne.preprocessing.annotate_flat` and
+            will only consider segments of a duration of at least 50 ms
+            consecutive flatness as "flat". If more than 5% of a channel's data
+            has been marked as flat, the  entire channel will be added to the
+            list of bad channels. Only flat time segments applying to channels
+            **not** marked as bad will be added to ``*_events.tsv``.
+
     l_freq : float | None
         The high-pass filter cutoff frequency to apply when displaying the
         data. This can be useful when inspecting data with slow drifts. If
