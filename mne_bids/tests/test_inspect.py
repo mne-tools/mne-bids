@@ -4,6 +4,8 @@ import os.path as op
 import pytest
 from functools import partial
 
+import numpy as np
+
 import mne
 from mne.datasets import testing
 from mne.utils import requires_version
@@ -13,6 +15,7 @@ from mne.viz.utils import _fake_click
 from mne_bids import (BIDSPath, read_raw_bids, write_raw_bids, inspect_dataset,
                       write_meg_calibration, write_meg_crosstalk)
 import mne_bids.inspect
+from mne_bids.read import _from_tsv
 
 from test_read import warning_str
 
@@ -345,6 +348,56 @@ def test_inspect_bads_and_annotations(tmp_path):
     expected_bads = orig_bads + ['MEG 0113']
     assert set(new_bads) == set(expected_bads)
     assert 'BAD_test' in raw.annotations.description
+
+
+@requires_matplotlib
+@requires_version('mne', '0.22')
+@pytest.mark.parametrize('save_changes', (True, False))
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_inspect_auto_flats(tmp_path, save_changes):
+    """Test flat channel detection."""
+    import matplotlib
+    import matplotlib.pyplot as plt
+    matplotlib.use('Agg')
+    plt.close('all')
+
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
+    channels_tsv_fname = bids_path.copy().update(suffix='channels',
+                                                 extension='.tsv')
+
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+
+    # Inject a flat channel.
+    raw.load_data()
+    raw._data[10] = np.zeros_like(raw._data[10], dtype=raw._data.dtype)
+    raw.save(raw.filenames[0], overwrite=True)
+    old_bads = raw.info['bads'].copy()
+
+    inspect_dataset(bids_path)
+    raw_fig = mne_bids.inspect._global_vars['raw_fig']
+
+    # Closing the window should open a dialog box.
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
+
+    if save_changes:
+        key = 'return'
+    else:
+        key = 'escape'
+    fig_dialog.canvas.key_press_event(key)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+    new_bads = raw.info['bads'].copy()
+
+    if save_changes:
+        assert old_bads != new_bads
+        assert raw.ch_names[10] in new_bads
+        channels_tsv_data = _from_tsv(channels_tsv_fname)
+        assert (channels_tsv_data['status_description'][10] ==
+                'Flat channel, auto-detected via MNE-BIDS')
+    else:
+        assert old_bads == new_bads
 
 
 @requires_matplotlib

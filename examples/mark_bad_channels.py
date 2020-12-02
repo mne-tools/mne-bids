@@ -25,6 +25,7 @@ segments as "bad".
 # Let's start by importing the required modules and functions, reading the
 # "sample" data, and writing it in the BIDS format.
 
+# %%
 import os.path as op
 import shutil
 
@@ -56,6 +57,7 @@ if op.exists(bids_root):
 
 raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
+# %%
 write_raw_bids(raw, bids_path=bids_path, events_data=events_fname,
                event_id=event_id, overwrite=True, verbose=False)
 
