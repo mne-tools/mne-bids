@@ -141,7 +141,7 @@ def test_inspect_set_and_unset_bads(tmp_path):
     orig_bads = raw.info['bads'].copy()
 
     # Mark some channels as bad by clicking on their name.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flats=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _click_ch_name(raw_fig, ch_index=0, button=1)
     _click_ch_name(raw_fig, ch_index=1, button=1)
@@ -154,7 +154,7 @@ def test_inspect_set_and_unset_bads(tmp_path):
 
     # Inspect the data again, click on two of the bad channels to mark them as
     # good.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flats=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _click_ch_name(raw_fig, ch_index=1, button=1)
     _click_ch_name(raw_fig, ch_index=4, button=1)
@@ -204,7 +204,7 @@ def test_inspect_annotations(tmp_path):
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     orig_annotations = raw.annotations.copy()
 
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flats=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _add_annotation(raw_fig)
 
@@ -220,7 +220,7 @@ def test_inspect_annotations(tmp_path):
     assert raw.annotations.duration[annot_idx].squeeze() == 4
 
     # Remove the Annotation.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flats=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
     raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
@@ -266,7 +266,7 @@ def test_inspect_annotations_remove_all(tmp_path):
      .unlink())
 
     # Add custom Annotation.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flats=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _add_annotation(raw_fig)
 
@@ -279,7 +279,7 @@ def test_inspect_annotations_remove_all(tmp_path):
     assert events_tsv_fpath.exists()
 
     # Remove the Annotation.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flats=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
     raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
@@ -307,7 +307,7 @@ def test_inspect_dont_show_annotations(tmp_path):
 
     bids_root = setup_bids_test_dir(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root)
-    inspect_dataset(bids_path, show_annotations=False)
+    inspect_dataset(bids_path, find_flats=False, show_annotations=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     assert not raw_fig.mne.annotations
 
@@ -328,7 +328,7 @@ def test_inspect_bads_and_annotations(tmp_path):
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     orig_bads = raw.info['bads'].copy()
 
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flats=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
 
     # Mark some channels as bad by clicking on their name.
@@ -418,4 +418,4 @@ def test_inspect_freq_filter(tmp_path, l_freq, h_freq):
     """Test frequency filter for Raw display."""
     bids_root = setup_bids_test_dir(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root)
-    inspect_dataset(bids_path, l_freq=l_freq, h_freq=h_freq)
+    inspect_dataset(bids_path, l_freq=l_freq, h_freq=h_freq, find_flats=False)
