@@ -211,16 +211,14 @@ def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
 
         del channels_tsv_data, channels_tsv_fname,
 
-    if old_annotations == new_annotations:
-        annotations = None
-    elif (np.array_equal(old_annotations.description,
-                         new_annotations.description) and
-          np.array_equal(old_annotations.orig_time,
-                         new_annotations.orig_time) and
-          np.allclose(old_annotations.onset,
-                      new_annotations.onset) and
-          np.allclose(old_annotations.duration,
-                      new_annotations.duration)):
+    if (np.array_equal(old_annotations.description,
+                       new_annotations.description) and
+        np.array_equal(old_annotations.orig_time,
+                       new_annotations.orig_time) and
+        np.allclose(old_annotations.onset,
+                    new_annotations.onset) and
+        np.allclose(old_annotations.duration,
+                    new_annotations.duration)):
         # Allows for a tiny bit of floating point precision loss.
         annotations = None
     else:
