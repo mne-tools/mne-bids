@@ -48,6 +48,9 @@ def run():
     parser.add_option('--ext', dest='extension',
                       help='The filename extension, including the leading '
                            'period, e.g. .fif')
+    parser.add_option('--find_flat', dest='find_flat',
+                      help='Whether to auto-detect flat channels and time '
+                           'segments')
     parser.add_option('--l_freq', dest='l_freq',
                       help='The high-pass filter cutoff frequency')
     parser.add_option('--h_freq', dest='h_freq',
@@ -71,11 +74,14 @@ def run():
                          recording=opt.recording, datatype=opt.datatype,
                          suffix=opt.suffix, extension=opt.extension,
                          root=opt.bids_root)
+
+    find_flat = None if opt.find_flat is None else bool(opt.find_flat)
     l_freq = None if opt.l_freq is None else float(opt.l_freq)
     h_freq = None if opt.h_freq is None else float(opt.h_freq)
 
     logger.info(f'Inspecting {bids_path.basename} …')
-    inspect_dataset(bids_path=bids_path, l_freq=l_freq, h_freq=h_freq,
+    inspect_dataset(bids_path=bids_path, find_flat=find_flat,
+                    l_freq=l_freq, h_freq=h_freq,
                     verbose=opt.verbose)
 
 

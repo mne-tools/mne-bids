@@ -295,7 +295,8 @@ def test_inspect(tmpdir):
 
     h_freqs = (30.0, 30, '30')
     for h_freq in h_freqs:
-        args = ('--bids_root', bids_root, '--h_freq', h_freq)
+        args = ('--bids_root', bids_root, '--h_freq', h_freq,
+                '--find_flat', 0)
         with ArgvSetter(args):
             with pytest.warns(RuntimeWarning, match='The unit for chann*'):
                 mne_bids_inspect.run()
