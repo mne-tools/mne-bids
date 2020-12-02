@@ -60,6 +60,14 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
     verbose : bool | None
         If a boolean, whether or not to produce verbose output. If ``None``,
         use the default log level.
+
+    Examples
+    --------
+    Disable flat channel & segment detection, and apply a filter with a
+    passband of 1–30 Hz.
+
+    >>> inspect_dataset(bids_path=bids_path, find_flat=False,
+                        l_freq=1, h_freq=30)
     """
     bids_paths = []
     for datatype in ('meg', 'eeg', 'ieeg'):
