@@ -32,6 +32,7 @@ from mne.channels.channels import _unit2human
 from mne.defaults import _handle_default
 from mne.utils import check_version, has_nibabel, logger, warn, _validate_type
 import mne.preprocessing
+from mne.preprocessing import annotate_flat
 
 from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _coordsystem_json
@@ -46,7 +47,7 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_edf)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
-from mne_bids.read import _find_matching_sidecar, _read_events
+from mne_bids.read import _find_matching_sidecar, _read_events, read_raw_bids
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
@@ -1572,6 +1573,96 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         tsv_data['status_description'][idx] = description
 
     _write_tsv(channels_fname, tsv_data, overwrite=True, verbose=verbose)
+
+
+def _save_annotations(*, annotations, bids_path, verbose):
+    # Attach the new Annotations to our raw data so we can easily convert them
+    # to events, which will be stored in the *_events.tsv sidecar.
+    extra_params = dict()
+    if bids_path.extension == '.fif':
+        extra_params['allow_maxshield'] = True
+
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
+                        verbose='warning')
+    raw.set_annotations(annotations)
+    events, durs, descrs = _read_events(events_data=None, event_id=None,
+                                        raw=raw, verbose=False)
+
+    # Write sidecar – or remove it if no events are left.
+    events_tsv_fname = (bids_path.copy()
+                        .update(suffix='events',
+                                extension='.tsv')
+                        .fpath)
+
+    if len(events) > 0:
+        _events_tsv(events=events, durations=durs, raw=raw,
+                    fname=events_tsv_fname, trial_type=descrs,
+                    overwrite=True, verbose=verbose)
+    elif events_tsv_fname.exists():
+        logger.info(f'No events remaining after interactive inspection, '
+                    f'removing {events_tsv_fname.name}')
+        events_tsv_fname.unlink()
+
+
+def find_and_mark_flat(bids_path, *, verbose=True):
+    """Find flat channels and time segments, and mark them accordingly.
+
+    Flat channels will be marked as ``bad`` in ``*_channels.tsv``, while
+    flat time segments will be added as entries to ``*_events.tsv`` with
+    the ``trial_type`` ``'BAD_flat'``.
+
+    .. note::
+        This function calls :func:`mne.preprocessing.annotate_flat` and will
+        only consider segments of a duration of at least 50 ms consecutive
+        flatness as "flat". If more than 5% of a channel's data has been marked
+        as flat, the  entire channel will be added to the list of bad channels.
+        Only flat time segments applying to channels **not** marked as bad will
+        be added to ``*_events.tsv``.
+
+    Parameters
+    ----------
+    bids_path : BIDSPath
+        The file to process.
+    verbose : bool
+        The verbosity level.
+
+    """
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
+                           'instantiate using mne_bids.BIDSPath().')
+
+    if bids_path.root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
+
+    extra_params = dict()
+    if bids_path.extension == '.fif':
+        extra_params['allow_maxshield'] = True
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
+                        verbose=verbose)
+    raw.load_data()  # Speeds up processing dramatically
+    flat_annot, flat_chans = annotate_flat(raw=raw,
+                                           min_duration=0.05,
+                                           verbose=verbose)
+
+    if not flat_annot and not flat_chans:
+        logger.info('No flat channels or time segments found.')
+        return
+
+    if flat_chans:
+        logger.info(f'Found {len(flat_chans)} flat channels.')
+        descriptions = (['Flat channel, auto-detected via MNE-BIDS'] *
+                        len(flat_chans))
+        mark_bad_channels(ch_names=flat_chans, descriptions=descriptions,
+                          bids_path=bids_path, overwrite=False,
+                          verbose=verbose)
+
+    if flat_annot:
+        logger.info(f'Found {len(flat_annot)} flat time segments.')
+        new_annot = raw.annotations + flat_annot
+        _save_annotations(annotations=new_annot, bids_path=bids_path,
+                          verbose=verbose)
 
 
 def write_meg_calibration(calibration, bids_path, verbose=None):
