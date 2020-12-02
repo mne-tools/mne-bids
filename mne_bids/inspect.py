@@ -160,7 +160,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flats, show_annotations,
 
 
 def _annotations_almost_equal(old_annotations, new_annotations):
-    """ Allows for a tiny bit of floating point precision loss."""
+    """Allow for a tiny bit of floating point precision loss."""
     if (np.array_equal(old_annotations.description,
                        new_annotations.description) and
         np.array_equal(old_annotations.orig_time,
