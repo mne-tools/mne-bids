@@ -393,10 +393,13 @@ def test_inspect_auto_flats(tmp_path, save_changes):
 
     if save_changes:
         assert old_bads != raw.info['bads']
-        assert raw.ch_names[10] in  raw.info['bads']
+        assert raw.ch_names[10] in raw.info['bads']
         channels_tsv_data = _from_tsv(channels_tsv_fname)
         assert (channels_tsv_data['status_description'][10] ==
                 'Flat channel, auto-detected via MNE-BIDS')
+        # This channel should not have been added to `bads`, but produced a
+        # flat annotation.
+        assert raw.ch_names[20] not in raw.info['bads']
         assert 'BAD_flat' in raw.annotations.description
     else:
         assert old_bads == raw.info['bads']
