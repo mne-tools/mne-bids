@@ -44,15 +44,18 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
         is accepted by :func:`mne_bids.read_raw_bids`, it will work here.
     find_flat : bool
         Whether to auto-detect channels producing "flat" signals, i.e., with
-        unusually low variability.
+        unusually low variability. Flat **segments** will be added to
+        ``*_events.tsv``, while channels with more than 5% of flat data will be
+        marked as ``bad`` in ``*_channels.tsv``.
 
         .. note::
             This function calls :func:`mne.preprocessing.annotate_flat` and
-            will only consider segments of a duration of at least 50 ms
-            consecutive flatness as "flat". If more than 5% of a channel's data
-            has been marked as flat, the  entire channel will be added to the
-            list of bad channels. Only flat time segments applying to channels
-            **not** marked as bad will be added to ``*_events.tsv``.
+            will only consider segments of at least **50 ms consecutive
+            flatness** as "flat" (deviating from MNE-Python's default of 5 ms).
+            If more than 5% of a channel's data has been marked as flat, the 
+            entire channel will be added to the list of bad channels. Only flat
+            time segments applying to channels **not** marked as bad will be
+            added to ``*_events.tsv``.
 
     l_freq : float | None
         The high-pass filter cutoff frequency to apply when displaying the
