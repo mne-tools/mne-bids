@@ -52,7 +52,7 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
             This function calls :func:`mne.preprocessing.annotate_flat` and
             will only consider segments of at least **50 ms consecutive
             flatness** as "flat" (deviating from MNE-Python's default of 5 ms).
-            If more than 5% of a channel's data has been marked as flat, the 
+            If more than 5% of a channel's data has been marked as flat, the
             entire channel will be added to the list of bad channels. Only flat
             time segments applying to channels **not** marked as bad will be
             added to ``*_events.tsv``.
