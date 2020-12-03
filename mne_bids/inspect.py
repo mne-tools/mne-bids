@@ -1,6 +1,9 @@
 from pathlib import Path
 
+import numpy as np
+
 import mne
+from mne.preprocessing import annotate_flat
 from mne.utils import logger
 
 from mne_bids import read_raw_bids, mark_bad_channels
@@ -9,7 +12,7 @@ from mne_bids.write import _events_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
-def inspect_dataset(bids_path, l_freq=None, h_freq=None,
+def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
                     show_annotations=True, verbose=None):
     """Inspect and annotate BIDS raw data.
 
@@ -39,6 +42,21 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None,
         To read a specific file, set all the :class:`mne_bids.BIDSPath`
         attributes required to uniquely identify the file: If this ``BIDSPath``
         is accepted by :func:`mne_bids.read_raw_bids`, it will work here.
+    find_flat : bool
+        Whether to auto-detect channels producing "flat" signals, i.e., with
+        unusually low variability. Flat **segments** will be added to
+        ``*_events.tsv``, while channels with more than 5% of flat data will be
+        marked as ``bad`` in ``*_channels.tsv``.
+
+        .. note::
+            This function calls :func:`mne.preprocessing.annotate_flat` and
+            will only consider segments of at least **50 ms consecutive
+            flatness** as "flat" (deviating from MNE-Python's default of 5 ms).
+            If more than 5% of a channel's data has been marked as flat, the
+            entire channel will be added to the list of bad channels. Only flat
+            time segments applying to channels **not** marked as bad will be
+            added to ``*_events.tsv``.
+
     l_freq : float | None
         The high-pass filter cutoff frequency to apply when displaying the
         data. This can be useful when inspecting data with slow drifts. If
@@ -54,6 +72,14 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None,
     verbose : bool | None
         If a boolean, whether or not to produce verbose output. If ``None``,
         use the default log level.
+
+    Examples
+    --------
+    Disable flat channel & segment detection, and apply a filter with a
+    passband of 1–30 Hz.
+
+    >>> inspect_dataset(bids_path=bids_path, find_flat=False,
+                        l_freq=1, h_freq=30)
     """
     bids_paths = []
     for datatype in ('meg', 'eeg', 'ieeg'):
@@ -65,7 +91,8 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None,
 
     for bids_path_ in bids_paths:
         _inspect_raw(bids_path=bids_path_, l_freq=l_freq, h_freq=h_freq,
-                     show_annotations=show_annotations, verbose=verbose)
+                     find_flat=find_flat, show_annotations=show_annotations,
+                     verbose=verbose)
 
 
 # XXX This this should probably be refactored into a class attribute someday.
@@ -74,7 +101,8 @@ _global_vars = dict(raw_fig=None,
                     mne_close_key=None)
 
 
-def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
+def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations,
+                 verbose=None):
     """Raw data inspection."""
     # Delay the import
     import matplotlib
@@ -86,6 +114,17 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
     raw = read_raw_bids(bids_path, extra_params=extra_params, verbose='error')
     old_bads = raw.info['bads'].copy()
     old_annotations = raw.annotations.copy()
+
+    if find_flat:
+        raw.load_data()  # Speeds up processing dramatically
+        flat_annot, flat_chans = annotate_flat(raw=raw, min_duration=0.05,
+                                               verbose=verbose)
+        new_annot = raw.annotations + flat_annot
+        raw.set_annotations(new_annot)
+        raw.info['bads'] = list(set(raw.info['bads'] + flat_chans))
+        del new_annot, flat_annot
+    else:
+        flat_chans = []
 
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
                    highpass=l_freq, lowpass=h_freq, show_options=True,
@@ -108,6 +147,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
             )
         _save_raw_if_changed(old_bads=old_bads,
                              new_bads=new_bads,
+                             flat_chans=flat_chans,
                              old_annotations=old_annotations,
                              new_annotations=new_annotations,
                              bids_path=bids_path,
@@ -140,15 +180,102 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
     _global_vars['mne_close_key'] = fig.mne.close_key
 
 
-def _save_raw_if_changed(*, old_bads, new_bads,
+def _annotations_almost_equal(old_annotations, new_annotations):
+    """Allow for a tiny bit of floating point precision loss."""
+    if (np.array_equal(old_annotations.description,
+                       new_annotations.description) and
+        np.array_equal(old_annotations.orig_time,
+                       new_annotations.orig_time) and
+        np.allclose(old_annotations.onset,
+                    new_annotations.onset) and
+        np.allclose(old_annotations.duration,
+                    new_annotations.duration)):
+        return True
+    else:
+        return False
+
+
+def _save_annotations(*, annotations, bids_path, verbose):
+    # Attach the new Annotations to our raw data so we can easily convert them
+    # to events, which will be stored in the *_events.tsv sidecar.
+    extra_params = dict()
+    if bids_path.extension == '.fif':
+        extra_params['allow_maxshield'] = True
+
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
+                        verbose='warning')
+    raw.set_annotations(annotations)
+    events, durs, descrs = _read_events(events_data=None, event_id=None,
+                                        raw=raw, verbose=False)
+
+    # Write sidecar – or remove it if no events are left.
+    events_tsv_fname = (bids_path.copy()
+                        .update(suffix='events',
+                                extension='.tsv')
+                        .fpath)
+
+    if len(events) > 0:
+        _events_tsv(events=events, durations=durs, raw=raw,
+                    fname=events_tsv_fname, trial_type=descrs,
+                    overwrite=True, verbose=verbose)
+    elif events_tsv_fname.exists():
+        logger.info(f'No events remaining after interactive inspection, '
+                    f'removing {events_tsv_fname.name}')
+        events_tsv_fname.unlink()
+
+
+def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
                          old_annotations, new_annotations,
                          bids_path, verbose):
+    """Save bad channel selection if it has been changed.
+
+    Parameters
+    ----------
+    old_bads : list
+        The original bad channels.
+    new_bads : list
+        The updated set of bad channels (i.e. **all** of them, not only the
+        changed ones).
+    flat_chans : list
+        The auto-detected flat channels. This is either an empty list or a
+        subset of ``new_bads``.
+    old_annotations : mne.Annotations
+        The original Annotations.
+    new_annotations : mne.Annotations
+        The new Annotations.
+    """
+    assert set(flat_chans).issubset(set(new_bads))
+
     if set(old_bads) == set(new_bads):
         bads = None
+        bad_descriptions = []
     else:
         bads = new_bads
+        bad_descriptions = []
 
-    if old_annotations == new_annotations:
+        # Generate entries for the `status_description` column.
+        channels_tsv_fname = bids_path.copy().update(suffix='channels',
+                                                     extension='.tsv')
+        channels_tsv_data = _from_tsv(channels_tsv_fname)
+
+        for ch_name in bads:
+            idx = channels_tsv_data['name'].index(ch_name)
+            if channels_tsv_data['status'][idx] == 'bad':
+                # Channel was already marked as bad in the data, so retain
+                # existing description.
+                description = channels_tsv_data['status_description'][idx]
+            elif ch_name in flat_chans:
+                description = 'Flat channel, auto-detected via MNE-BIDS'
+            else:
+                # Channel has been manually marked as bad during inspection
+                description = 'Interactive inspection via MNE-BIDS'
+
+            bad_descriptions.append(description)
+            del ch_name, description
+
+        del channels_tsv_data, channels_tsv_fname,
+
+    if _annotations_almost_equal(old_annotations, new_annotations):
         annotations = None
     else:
         annotations = new_annotations
@@ -157,11 +284,14 @@ def _save_raw_if_changed(*, old_bads, new_bads,
         # Nothing has changed, so we can just exit.
         return None
 
-    return _save_raw_dialog_box(bads=bads, annotations=annotations,
+    return _save_raw_dialog_box(bads=bads,
+                                bad_descriptions=bad_descriptions,
+                                annotations=annotations,
                                 bids_path=bids_path, verbose=verbose)
 
 
-def _save_raw_dialog_box(*, bads, annotations, bids_path, verbose):
+def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path,
+                         verbose):
     """Display a dialog box asking whether to save the changes."""
     # Delay the imports
     import matplotlib
@@ -228,7 +358,8 @@ def _save_raw_dialog_box(*, bads, annotations, bids_path, verbose):
         _global_vars['dialog_fig'] = None
 
         if bads is not None:
-            _save_bads(bads=bads, bids_path=bids_path, verbose=verbose)
+            _save_bads(bads=bads, descriptions=bad_descriptions,
+                       bids_path=bids_path, verbose=verbose)
         if annotations is not None:
             _save_annotations(annotations=annotations, bids_path=bids_path,
                               verbose=verbose)
@@ -255,55 +386,17 @@ def _save_raw_dialog_box(*, bads, annotations, bids_path, verbose):
     _global_vars['dialog_fig'] = fig
 
 
-def _save_bads(*, bads, bids_path, verbose):
-    """Update the set of channels marked as bad."""
-    channels_tsv_fname = bids_path.copy().update(suffix='channels',
-                                                 extension='.tsv')
-    channels_tsv_data = _from_tsv(channels_tsv_fname)
+def _save_bads(*, bads, descriptions, bids_path, verbose):
+    """Update the set of channels marked as bad.
 
-    descriptions = []
-    for ch_name in bads:
-        idx = channels_tsv_data['name'].index(ch_name)
-        if channels_tsv_data['status'][idx] == 'bad':
-            # Channel was already marked as bad, retain existing description.
-            description = channels_tsv_data['status_description'][idx]
-        else:
-            # Channel has been manually marked as bad during inspection, assign
-            # default description.
-            description = 'Interactive inspection via MNE-BIDS'
-
-        descriptions.append(description)
-
+    Parameters
+    ----------
+    bads : list
+        The complete list of bad channels.
+    descriptions : list
+        The values to be written to the `status_description` column.
+    """
     # We pass overwrite=True, causing all channels not passed as bad here to
     # be marked as good.
     mark_bad_channels(ch_names=bads, descriptions=descriptions,
                       bids_path=bids_path, overwrite=True, verbose=verbose)
-
-
-def _save_annotations(*, annotations, bids_path, verbose):
-    # Attach the new Annotations to our raw data so we can easily convert them
-    # to events, which will be stored in the *_events.tsv sidecar.
-    extra_params = dict()
-    if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = True
-
-    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
-                        verbose='warning')
-    raw.set_annotations(annotations)
-    events, durs, descrs = _read_events(events_data=None, event_id=None,
-                                        raw=raw, verbose=False)
-
-    # Write sidecar – or remove it if no events are left.
-    events_tsv_fname = (bids_path.copy()
-                        .update(suffix='events',
-                                extension='.tsv')
-                        .fpath)
-
-    if len(events) > 0:
-        _events_tsv(events=events, durations=durs, raw=raw,
-                    fname=events_tsv_fname, trial_type=descrs,
-                    overwrite=True, verbose=verbose)
-    elif events_tsv_fname.exists():
-        logger.info(f'No events remaining after interactive inspection, '
-                    f'removing {events_tsv_fname.name}')
-        events_tsv_fname.unlink()

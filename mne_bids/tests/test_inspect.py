@@ -4,6 +4,8 @@ import os.path as op
 import pytest
 from functools import partial
 
+import numpy as np
+
 import mne
 from mne.datasets import testing
 from mne.utils import requires_version
@@ -13,6 +15,7 @@ from mne.viz.utils import _fake_click
 from mne_bids import (BIDSPath, read_raw_bids, write_raw_bids, inspect_dataset,
                       write_meg_calibration, write_meg_crosstalk)
 import mne_bids.inspect
+from mne_bids.read import _from_tsv
 
 from test_read import warning_str
 
@@ -138,7 +141,7 @@ def test_inspect_set_and_unset_bads(tmp_path):
     orig_bads = raw.info['bads'].copy()
 
     # Mark some channels as bad by clicking on their name.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _click_ch_name(raw_fig, ch_index=0, button=1)
     _click_ch_name(raw_fig, ch_index=1, button=1)
@@ -151,7 +154,7 @@ def test_inspect_set_and_unset_bads(tmp_path):
 
     # Inspect the data again, click on two of the bad channels to mark them as
     # good.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _click_ch_name(raw_fig, ch_index=1, button=1)
     _click_ch_name(raw_fig, ch_index=4, button=1)
@@ -201,7 +204,7 @@ def test_inspect_annotations(tmp_path):
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     orig_annotations = raw.annotations.copy()
 
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _add_annotation(raw_fig)
 
@@ -217,7 +220,7 @@ def test_inspect_annotations(tmp_path):
     assert raw.annotations.duration[annot_idx].squeeze() == 4
 
     # Remove the Annotation.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
     raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
@@ -263,7 +266,7 @@ def test_inspect_annotations_remove_all(tmp_path):
      .unlink())
 
     # Add custom Annotation.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     _add_annotation(raw_fig)
 
@@ -276,7 +279,7 @@ def test_inspect_annotations_remove_all(tmp_path):
     assert events_tsv_fpath.exists()
 
     # Remove the Annotation.
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
     raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
@@ -304,7 +307,7 @@ def test_inspect_dont_show_annotations(tmp_path):
 
     bids_root = setup_bids_test_dir(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root)
-    inspect_dataset(bids_path, show_annotations=False)
+    inspect_dataset(bids_path, find_flat=False, show_annotations=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     assert not raw_fig.mne.annotations
 
@@ -325,7 +328,7 @@ def test_inspect_bads_and_annotations(tmp_path):
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     orig_bads = raw.info['bads'].copy()
 
-    inspect_dataset(bids_path)
+    inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
 
     # Mark some channels as bad by clicking on their name.
@@ -349,6 +352,62 @@ def test_inspect_bads_and_annotations(tmp_path):
 
 @requires_matplotlib
 @requires_version('mne', '0.22')
+@pytest.mark.parametrize('save_changes', (True, False))
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_inspect_auto_flats(tmp_path, save_changes):
+    """Test flat channel & segment detection."""
+    import matplotlib
+    import matplotlib.pyplot as plt
+    matplotlib.use('Agg')
+    plt.close('all')
+
+    bids_root = setup_bids_test_dir(tmp_path)
+    bids_path = _bids_path.copy().update(root=bids_root)
+    channels_tsv_fname = bids_path.copy().update(suffix='channels',
+                                                 extension='.tsv')
+
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+
+    # Inject an entirely flat channel.
+    raw.load_data()
+    raw._data[10] = np.zeros_like(raw._data[10], dtype=raw._data.dtype)
+    # Add a a flat time segment (approx. 100 ms) to another channel
+    raw._data[20, 500:500 + int(np.ceil(0.1 * raw.info['sfreq']))] = 0
+    raw.save(raw.filenames[0], overwrite=True)
+    old_bads = raw.info['bads'].copy()
+
+    inspect_dataset(bids_path)
+    raw_fig = mne_bids.inspect._global_vars['raw_fig']
+
+    # Closing the window should open a dialog box.
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
+
+    if save_changes:
+        key = 'return'
+    else:
+        key = 'escape'
+    fig_dialog.canvas.key_press_event(key)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+
+    if save_changes:
+        assert old_bads != raw.info['bads']
+        assert raw.ch_names[10] in raw.info['bads']
+        channels_tsv_data = _from_tsv(channels_tsv_fname)
+        assert (channels_tsv_data['status_description'][10] ==
+                'Flat channel, auto-detected via MNE-BIDS')
+        # This channel should not have been added to `bads`, but produced a
+        # flat annotation.
+        assert raw.ch_names[20] not in raw.info['bads']
+        assert 'BAD_flat' in raw.annotations.description
+    else:
+        assert old_bads == raw.info['bads']
+        assert 'BAD_flat' not in raw.annotations.description
+
+
+@requires_matplotlib
+@requires_version('mne', '0.22')
 @pytest.mark.parametrize(('l_freq', 'h_freq'),
                          [(None, None),
                           (1, None),
@@ -359,4 +418,4 @@ def test_inspect_freq_filter(tmp_path, l_freq, h_freq):
     """Test frequency filter for Raw display."""
     bids_root = setup_bids_test_dir(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root)
-    inspect_dataset(bids_path, l_freq=l_freq, h_freq=h_freq)
+    inspect_dataset(bids_path, l_freq=l_freq, h_freq=h_freq, find_flat=False)
