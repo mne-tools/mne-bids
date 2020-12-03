@@ -179,6 +179,8 @@ Options
                         extension
   --ext=EXTENSION       The filename extension, including the leading period,
                         e.g. .fif
+  --find_flat=FIND_FLAT
+                        Whether to auto-detect flat channels and time segments
   --l_freq=L_FREQ       The high-pass filter cutoff frequency
   --h_freq=H_FREQ       The low-pass filter cutoff frequency
   --verbose             Whether do generate additional diagnostic output

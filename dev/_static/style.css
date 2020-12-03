@@ -51,3 +51,8 @@ h4 {
   font-weight: bold;
   text-decoration: underline;
 }
+
+/* Links in "Note" boxes */
+.alert-info a code span {
+  color: white;
+}

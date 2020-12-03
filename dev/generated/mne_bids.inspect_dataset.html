@@ -117,7 +117,7 @@
 <h1>mne_bids.inspect_dataset<a class="headerlink" href="#mne-bids-inspect-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.inspect_dataset">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">inspect_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">l_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_annotations</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/inspect.html#inspect_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.inspect_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">inspect_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">find_flat</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">l_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_annotations</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/inspect.html#inspect_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.inspect_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inspect and annotate BIDS raw data.</p>
 <p>This function allows you to browse MEG, EEG, and iEEG raw data stored in a
 BIDS dataset. You can toggle the status of a channel (bad or good) by
@@ -136,9 +136,9 @@ MRI images.</p>
 <p>Currently, only MEG, EEG, and iEEG data can be inspected.</p>
 </div>
 <p>To add or modify annotations, press <code class="docutils literal notranslate"><span class="pre">A</span></code> to toggle annotation mode.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
+<dd class="field-odd"><dl>
 <dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>A <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> containing at least a <code class="docutils literal notranslate"><span class="pre">root</span></code>. All
 matching files will be inspected. To select only a subset of the data,
 set more <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> attributes. If <code class="docutils literal notranslate"><span class="pre">datatype</span></code> is not
@@ -147,6 +147,21 @@ following order: MEG, EEG, iEEG.
 To read a specific file, set all the <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>
 attributes required to uniquely identify the file: If this <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>
 is accepted by <a class="reference internal" href="mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a>, it will work here.</p>
+</dd>
+<dt><strong>find_flat</strong><span class="classifier">bool</span></dt><dd><p>Whether to auto-detect channels producing “flat” signals, i.e., with
+unusually low variability. Flat <strong>segments</strong> will be added to
+<code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>, while channels with more than 5% of flat data will be
+marked as <code class="docutils literal notranslate"><span class="pre">bad</span></code> in <code class="docutils literal notranslate"><span class="pre">*_channels.tsv</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function calls <a class="reference external" href="https://mne.tools/dev/generated/mne.preprocessing.annotate_flat.html#mne.preprocessing.annotate_flat" title="(in MNE v0.22.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.preprocessing.annotate_flat()</span></code></a> and
+will only consider segments of at least <strong>50 ms consecutive
+flatness</strong> as “flat” (deviating from MNE-Python’s default of 5 ms).
+If more than 5% of a channel’s data has been marked as flat, the
+entire channel will be added to the list of bad channels. Only flat
+time segments applying to channels <strong>not</strong> marked as bad will be
+added to <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>.</p>
+</div>
 </dd>
 <dt><strong>l_freq</strong><span class="classifier">float | None</span></dt><dd><p>The high-pass filter cutoff frequency to apply when displaying the
 data. This can be useful when inspecting data with slow drifts. If
@@ -166,6 +181,13 @@ use the default log level.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>Disable flat channel &amp; segment detection, and apply a filter with a
+passband of 1–30 Hz.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">inspect_dataset</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">find_flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="go">                    l_freq=1, h_freq=30)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <div class="section" id="examples-using-mne-bids-inspect-dataset">
@@ -190,7 +212,7 @@ use the default log level.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-02.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-03.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
