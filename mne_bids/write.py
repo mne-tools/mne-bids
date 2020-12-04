@@ -621,21 +621,13 @@ def _deface(image, mri_landmarks, deface):
         raise ValueError('theta should be between 0 and 90 '
                          'degrees. Got %s' % theta)
 
+    # compute affine inverse before reorientation to go back
+    inv_affine = linalg.inv(image.affine)
+    # reorient to RAS
+    image = image.as_reoriented(nib.orientations.io_orientation(image.affine))
     # get image data, make a copy
     image_data = image.get_fdata().copy()
-    # get original image orientation
-    image_orientation = nib.orientations.axcodes2ornt(
-        nib.orientations.aff2axcodes(image.affine))
-    # define ras orientation
-    ras_orientation = nib.orientations.axcodes2ornt('RAS')
-    # compute forward orienation transform
-    image2ras_trans = nib.orientations.ornt_transform(
-        image_orientation, ras_orientation)
-    # compute reverse orienation transform to put image back
-    ras2image_trans = nib.orientations.ornt_transform(
-        ras_orientation, image_orientation)
-    image_data = nib.orientations.apply_orientation(
-        image_data, image2ras_trans)
+
     # make indices to move around so that the image doesn't have to
     idxs = np.meshgrid(np.arange(image_data.shape[0]),
                        np.arange(image_data.shape[1]),
@@ -659,10 +651,9 @@ def _deface(image, mri_landmarks, deface):
     # smooth decided against for potential lack of anonymizaton
     # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
 
-    # convert back to original orientation before saving
-    image_data = nib.orientations.apply_orientation(
-        image_data, ras2image_trans)
     image = nib.Nifti1Image(image_data, image.affine, image.header)
+    # convert back to original orientation before saving
+    image = image.as_reoriented(nib.orientations.io_orientation(inv_affine))
     return image
 
 
