@@ -211,7 +211,7 @@ flash_bids_path = write_anat(
     bids_path=flash_bids_path,
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
-    deface=dict(inset=5),  # adjust due to obliquity of image
+    deface=dict(inset=5, theta=25),  # adjust due to obliquity of image
     overwrite=True,
     verbose=True  # this will print out the sidecar file
 )
