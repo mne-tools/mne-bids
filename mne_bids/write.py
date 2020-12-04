@@ -638,7 +638,7 @@ def _deface(image, mri_landmarks, deface):
         raise ValueError('inset should be positive, '
                          'Got %s' % inset)
 
-    if not 0 < theta < 90:
+    if not 0 <= theta < 90:
         raise ValueError('theta should be between 0 and 90 '
                          'degrees. Got %s' % theta)
 
@@ -658,11 +658,10 @@ def _deface(image, mri_landmarks, deface):
     image_data = nib.orientations.apply_orientation(
         image_data, image2ras_trans)
     # make indices to move around so that the image doesn't have to
-    idxs = np.meshgrid(
-        np.arange(image_data.shape[0]) - image_data.shape[0] // 2,
-        np.arange(image_data.shape[1]) - image_data.shape[1] // 2,
-        np.arange(image_data.shape[2]) - image_data.shape[2] // 2,
-        indexing='ij')
+    idxs = np.meshgrid(np.arange(image_data.shape[0]),
+                       np.arange(image_data.shape[1]),
+                       np.arange(image_data.shape[2]),
+                       indexing='ij')
     idxs = np.array(idxs)  # (3, *image_data.shape)
     idxs = np.transpose(idxs, [1, 2, 3, 0])  # (*image_data.shape, 3)
     idxs = idxs.reshape(-1, 3)  # (n_voxels, 3)
@@ -675,8 +674,7 @@ def _deface(image, mri_landmarks, deface):
     idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
     idxs = apply_trans(rotation(x=-np.pi / 4 - np.deg2rad(theta)), idxs)
     coords = idxs.reshape(image_data.shape + (3,))
-    mask = (coords[..., 2] < 0)   # z < 0
-
+    mask = (coords[..., 2] < -image_data.shape[2] / 2)   # z < middle
     image_data[mask] = 0.
 
     # smooth decided against for potential lack of anonymizaton
@@ -1434,10 +1432,9 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                     raise ValueError('`trans` was provided but `landmark` '
                                      'data is in mri space. Please use '
                                      'only one of these.')
-                if coord_frame == FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
-                    landmarks = _mri_voxels_to_ras(landmarks, img_mgh)
-                else:
-                    landmarks *= 1e3
+                if coord_frame == FIFF.FIFFV_COORD_MRI:
+                    landmarks = _mri_landmarks_to_mri_voxels(
+                        landmarks * 1e3, img_mgh)
                 mri_landmarks = landmarks
             else:
                 raise ValueError('Coordinate frame not recognized, '
@@ -1458,16 +1455,15 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                                         coords_dict['rpa']))
             mri_landmarks = _meg_landmarks_to_mri_landmarks(
                 meg_landmarks, trans)
+            mri_landmarks = _mri_landmarks_to_mri_voxels(
+                mri_landmarks, img_mgh)
 
-        # convert to voxels
-        mri_landmarks_vox = _mri_landmarks_to_mri_voxels(
-            mri_landmarks, img_mgh)
         # Write sidecar.json
         img_json = dict()
         img_json['AnatomicalLandmarkCoordinates'] = \
-            {'LPA': list(mri_landmarks_vox[0, :]),
-             'NAS': list(mri_landmarks_vox[1, :]),
-             'RPA': list(mri_landmarks_vox[2, :])}
+            {'LPA': list(mri_landmarks[0, :]),
+             'NAS': list(mri_landmarks[1, :]),
+             'RPA': list(mri_landmarks[2, :])}
         fname = bids_path.copy().update(extension='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
