@@ -211,7 +211,7 @@ flash_bids_path = write_anat(
     bids_path=flash_bids_path,
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
-    deface=dict(inset=10),  # adjust due to obliquity of image
+    deface=dict(inset=5),  # adjust due to obliquity of image
     overwrite=True,
     verbose=True  # this will print out the sidecar file
 )
@@ -222,7 +222,7 @@ flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
 
 # Plot it
 fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced')
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
 plt.show()
 
 ###############################################################################
