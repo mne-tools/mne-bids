@@ -15,11 +15,9 @@ import shutil
 from collections import defaultdict, OrderedDict
 
 import numpy as np
-from scipy import linalg
 from numpy.testing import assert_array_equal
 import mne
-from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
-                            rotation, translation)
+from mne.transforms import (_get_trans, apply_trans, rotation, translation)
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
@@ -452,8 +450,8 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
 
-def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
-    """Convert landmarks from MRI RAS space to MRI voxel space.
+def _mri_voxels_to_ras(mri_landmarks, t1_mgh):
+    """Convert landmarks from MRI voxel space to MRI RAS space.
 
     Parameters
     ----------
@@ -469,8 +467,7 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     """
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-    ras2vox_tkr = linalg.inv(vox2ras_tkr)
-    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    mri_landmarks = apply_trans(vox2ras_tkr, mri_landmarks)  # in vox
     return mri_landmarks
 
 
@@ -594,7 +591,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     return fname
 
 
-def _deface(t1w, mri_landmarks, deface):
+def _deface(image, mri_landmarks, deface):
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
@@ -622,40 +619,38 @@ def _deface(t1w, mri_landmarks, deface):
         raise ValueError('theta should be between 0 and 90 '
                          'degrees. Got %s' % theta)
 
-    # x: L/R L+, y: S/I I+, z: A/P A+
-    t1w_data = t1w.get_fdata().copy()
-    idxs_vox = np.meshgrid(np.arange(t1w_data.shape[0]),
-                           np.arange(t1w_data.shape[1]),
-                           np.arange(t1w_data.shape[2]),
+    image = nib.as_closest_canonical(image)  # convert to RAS
+    image_data = image.get_fdata().copy()
+    idxs_vox = np.meshgrid(np.arange(image_data.shape[0]),
+                           np.arange(image_data.shape[1]),
+                           np.arange(image_data.shape[2]),
                            indexing='ij')
     idxs_vox = np.array(idxs_vox)  # (3, *t1w_data.shape)
     idxs_vox = np.transpose(idxs_vox,
                             [1, 2, 3, 0])  # (*t1w_data.shape, 3)
     idxs_vox = idxs_vox.reshape(-1, 3)  # (n_voxels, 3)
 
-    mri_landmarks_ras = apply_trans(t1w.affine, mri_landmarks)
-    ras_meg_t = \
-        get_ras_to_neuromag_trans(*mri_landmarks_ras[[1, 0, 2]])
-
-    idxs_ras = apply_trans(t1w.affine, idxs_vox)
-    idxs_meg = apply_trans(ras_meg_t, idxs_ras)
+    idxs_ras = apply_trans(image.affine, idxs_vox)  # shifts indices
 
     # now comes the actual defacing
     # 1. move center of voxels to (nasion - inset)
     # 2. rotate the head by theta from the normal to the plane passing
     # through anatomical coordinates
-    trans_y = -mri_landmarks_ras[1, 1] + inset
-    idxs_meg = apply_trans(translation(y=trans_y), idxs_meg)
-    idxs_meg = apply_trans(rotation(x=-np.deg2rad(theta)), idxs_meg)
-    coords = idxs_meg.reshape(t1w.shape + (3,))  # (*t1w_data.shape, 3)
+    x, y, z = mri_landmarks[1]
+    idxs_ras = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs_ras)
+    idxs_ras = apply_trans(
+        rotation(x=-np.pi / 4 - np.deg2rad(theta)), idxs_ras)
+    coords = idxs_ras.reshape(image.shape + (3,))
     mask = (coords[..., 2] < 0)   # z < 0
 
-    t1w_data[mask] = 0.
+    image_data[mask] = 0.
+
     # smooth decided against for potential lack of anonymizaton
     # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
 
-    t1w = nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
-    return t1w
+    # note: saves image in RAS
+    image = nib.Nifti1Image(image_data, image.affine, image.header)
+    return image
 
 
 def _write_raw_fif(raw, bids_fname):
@@ -1397,17 +1392,14 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                                      '`trans` required')
                 mri_landmarks = _meg_landmarks_to_mri_landmarks(
                     landmarks, trans)
-                mri_landmarks = _mri_landmarks_to_mri_voxels(
-                    mri_landmarks, img_mgh)
             elif coord_frame in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                                  FIFF.FIFFV_COORD_MRI):
                 if trans is not None:
                     raise ValueError('`trans` was provided but `landmark` '
                                      'data is in mri space. Please use '
                                      'only one of these.')
-                if coord_frame == FIFF.FIFFV_COORD_MRI:
-                    landmarks = _mri_landmarks_to_mri_voxels(landmarks * 1e3,
-                                                             img_mgh)
+                if coord_frame == FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
+                    landmarks = _mri_voxels_to_ras(landmarks * 1e3, img_mgh)
                 mri_landmarks = landmarks
             else:
                 raise ValueError('Coordinate frame not recognized, '
@@ -1428,8 +1420,6 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                                         coords_dict['rpa']))
             mri_landmarks = _meg_landmarks_to_mri_landmarks(
                 meg_landmarks, trans)
-            mri_landmarks = _mri_landmarks_to_mri_voxels(
-                mri_landmarks, img_mgh)
 
         # Write sidecar.json
         img_json = dict()
