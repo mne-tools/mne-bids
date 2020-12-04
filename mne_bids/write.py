@@ -16,6 +16,7 @@ from collections import defaultdict, OrderedDict
 
 import numpy as np
 from numpy.testing import assert_array_equal
+from scipy import linalg
 import mne
 from mne.transforms import (_get_trans, apply_trans, rotation, translation)
 from mne import Epochs
@@ -468,6 +469,26 @@ def _mri_voxels_to_ras(mri_landmarks, t1_mgh):
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
     mri_landmarks = apply_trans(vox2ras_tkr, mri_landmarks)  # in vox
+    return mri_landmarks
+
+
+def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
+    """Convert landmarks from MRI RAS space to MRI voxel space.
+    Parameters
+    ----------
+    mri_landmarks : array, shape (3, 3)
+        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
+    t1_mgh : nib.MGHImage
+        The image data in MGH format.
+    Returns
+    -------
+    mri_landmarks : array, shape (3, 3)
+        The MRI voxel-space landmark data.
+    """
+    # Get landmarks in voxel space, using the T1 data
+    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+    ras2vox_tkr = linalg.inv(vox2ras_tkr)
+    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
     return mri_landmarks
 
 
@@ -1423,12 +1444,15 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
             mri_landmarks = _meg_landmarks_to_mri_landmarks(
                 meg_landmarks, trans)
 
+        # convert to voxels
+        mri_landmarks_vox = _mri_landmarks_to_mri_voxels(
+            mri_landmarks, img_mgh)
         # Write sidecar.json
         img_json = dict()
         img_json['AnatomicalLandmarkCoordinates'] = \
-            {'LPA': list(mri_landmarks[0, :]),
-             'NAS': list(mri_landmarks[1, :]),
-             'RPA': list(mri_landmarks[2, :])}
+            {'LPA': list(mri_landmarks_vox[0, :]),
+             'NAS': list(mri_landmarks_vox[1, :]),
+             'RPA': list(mri_landmarks_vox[2, :])}
         fname = bids_path.copy().update(extension='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
