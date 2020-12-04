@@ -1399,7 +1399,9 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                                      'data is in mri space. Please use '
                                      'only one of these.')
                 if coord_frame == FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
-                    landmarks = _mri_voxels_to_ras(landmarks * 1e3, img_mgh)
+                    landmarks = _mri_voxels_to_ras(landmarks, img_mgh)
+                else:
+                    landmarks *= 1e3
                 mri_landmarks = landmarks
             else:
                 raise ValueError('Coordinate frame not recognized, '
