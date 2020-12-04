@@ -1283,7 +1283,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         `trans` and `raw` must not be `None` if True.
         If dict, accepts the following keys:
 
-        - `inset`: how far back in millimeters to start defacing
+        - `inset`: how far back in voxels to start defacing
           relative to the nasion (default 20)
 
         - `theta`: is the angle of the defacing shear in degrees relative
