@@ -1426,6 +1426,8 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                                      '`trans` required')
                 mri_landmarks = _meg_landmarks_to_mri_landmarks(
                     landmarks, trans)
+                mri_landmarks = _mri_landmarks_to_mri_voxels(
+                    mri_landmarks, img_mgh)
             elif coord_frame in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                                  FIFF.FIFFV_COORD_MRI):
                 if trans is not None:
