@@ -642,28 +642,39 @@ def _deface(image, mri_landmarks, deface):
         raise ValueError('theta should be between 0 and 90 '
                          'degrees. Got %s' % theta)
 
-    image = nib.as_closest_canonical(image)  # convert to RAS
+    # get image data, make a copy
     image_data = image.get_fdata().copy()
-    idxs_vox = np.meshgrid(np.arange(image_data.shape[0]),
-                           np.arange(image_data.shape[1]),
-                           np.arange(image_data.shape[2]),
-                           indexing='ij')
-    idxs_vox = np.array(idxs_vox)  # (3, *t1w_data.shape)
-    idxs_vox = np.transpose(idxs_vox,
-                            [1, 2, 3, 0])  # (*t1w_data.shape, 3)
-    idxs_vox = idxs_vox.reshape(-1, 3)  # (n_voxels, 3)
-
-    idxs_ras = apply_trans(image.affine, idxs_vox)  # shifts indices
+    # get original image orientation
+    image_orientation = nib.orientations.axcodes2ornt(
+        nib.orientations.aff2axcodes(image.affine))
+    # define ras orientation
+    ras_orientation = nib.orientations.axcodes2ornt('RAS')
+    # compute forward orienation transform
+    image2ras_trans = nib.orientations.ornt_transform(
+        image_orientation, ras_orientation)
+    # compute reverse orienation transform to put image back
+    ras2image_trans = nib.orientations.ornt_transform(
+        ras_orientation, image_orientation)
+    image_data = nib.orientations.apply_orientation(
+        image_data, image2ras_trans)
+    # make indices to move around so that the image doesn't have to
+    idxs = np.meshgrid(
+        np.arange(image_data.shape[0]) - image_data.shape[0] // 2,
+        np.arange(image_data.shape[1]) - image_data.shape[1] // 2,
+        np.arange(image_data.shape[2]) - image_data.shape[2] // 2,
+        indexing='ij')
+    idxs = np.array(idxs)  # (3, *image_data.shape)
+    idxs = np.transpose(idxs, [1, 2, 3, 0])  # (*image_data.shape, 3)
+    idxs = idxs.reshape(-1, 3)  # (n_voxels, 3)
 
     # now comes the actual defacing
     # 1. move center of voxels to (nasion - inset)
     # 2. rotate the head by theta from the normal to the plane passing
     # through anatomical coordinates
     x, y, z = mri_landmarks[1]
-    idxs_ras = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs_ras)
-    idxs_ras = apply_trans(
-        rotation(x=-np.pi / 4 - np.deg2rad(theta)), idxs_ras)
-    coords = idxs_ras.reshape(image.shape + (3,))
+    idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
+    idxs = apply_trans(rotation(x=-np.pi / 4 - np.deg2rad(theta)), idxs)
+    coords = idxs.reshape(image_data.shape + (3,))
     mask = (coords[..., 2] < 0)   # z < 0
 
     image_data[mask] = 0.
@@ -671,7 +682,9 @@ def _deface(image, mri_landmarks, deface):
     # smooth decided against for potential lack of anonymizaton
     # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
 
-    # note: saves image in RAS
+    # convert back to original orientation before saving
+    image_data = nib.orientations.apply_orientation(
+        image_data, ras2image_trans)
     image = nib.Nifti1Image(image_data, image.affine, image.header)
     return image
 
