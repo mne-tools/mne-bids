@@ -206,6 +206,27 @@ plot_anat(t1_nii_fname, axes=ax, title='Defaced')
 plt.show()
 
 ###############################################################################
+# We can also deface the FLASH.
+flash_bids_path = write_anat(
+    image=flash_mgh_fname,  # path to the MRI scan
+    bids_path=flash_bids_path,
+    raw=raw,  # the raw MEG data file connected to the MRI
+    trans=trans,  # our transformation matrix
+    deface=True,
+    overwrite=True,
+    verbose=True  # this will print out the sidecar file
+)
+anat_dir = flash_bids_path.directory
+
+# Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
+flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
+
+# Plot it
+fig, ax = plt.subplots()
+plot_anat(flash_nii_fname, axes=ax, title='Defaced')
+plt.show()
+
+###############################################################################
 # .. LINKS
 #
 # .. _coregistration GUI:
