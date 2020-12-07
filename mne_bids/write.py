@@ -1369,10 +1369,9 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    if deface and (t1w is None or (trans is None or raw is None) and
-            landmarks is None):
-        raise ValueError('`t1w` and either `raw` and `trans` or '
-                         '`landmarks` must be provided to deface the image')
+    if deface and (trans is None or raw is None) and landmarks is None:
+        raise ValueError('Either `raw` and `trans` or `landmarks` '
+                         'must be provided to deface the image')
 
     # Check if the root is available
     if bids_path.root is None:
