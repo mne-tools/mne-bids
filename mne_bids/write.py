@@ -451,8 +451,51 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
 
-def _mri_landmarks_to_mri_voxels(mri_landmarks, img_mgh):
-    """Convert landmarks from MRI RAS space to MRI voxel space.
+def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
+    """Convert landmarks from MRI surface RAS space to MRI voxel space.
+
+    Parameters
+    ----------
+    mri_landmarks : array, shape (3, 3)
+        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
+    t1_mgh : nib.MGHImage
+        The image data in MGH format.
+
+    Returns
+    -------
+    mri_landmarks : array, shape (3, 3)
+        The MRI voxel-space landmark data.
+    """
+    # Get landmarks in voxel space, using the T1 data
+    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+    ras2vox_tkr = linalg.inv(vox2ras_tkr)
+    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    return mri_landmarks
+
+
+def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
+    """Convert landmarks from MRI voxel space to MRI scanner RAS space.
+
+    Parameters
+    ----------
+    mri_landmarks : array, shape (3, 3)
+        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
+    img_mgh : nib.MGHImage
+        The image data in MGH format.
+
+    Returns
+    -------
+    mri_landmarks : array, shape (3, 3)
+        The MRI scanner RAS landmark data.
+    """
+    # Get landmarks in voxel space, using the T1 data
+    vox2ras = img_mgh.header.get_vox2ras()
+    mri_landmarks = apply_trans(vox2ras, mri_landmarks)  # in scanner RAS
+    return mri_landmarks
+
+
+def _mri_scanner_ras_to_mri_voxels(mri_landmarks, img_mgh):
+    """Convert landmarks from MRI scanner RAS space to MRI to MRI voxel space.
 
     Parameters
     ----------
@@ -593,7 +636,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     return fname
 
 
-def _deface(image, mri_landmarks, deface):
+def _deface(image, t1_mgh, mri_landmarks, deface):
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
@@ -621,7 +664,15 @@ def _deface(image, mri_landmarks, deface):
         raise ValueError('theta should be between 0 and 90 '
                          'degrees. Got %s' % theta)
 
-    # inv_affine = linalg.inv(image.affine)
+    # go from freesurfer surface RAS to scanner RAS
+    mri_landmarks = _mri_voxels_to_mri_scanner_ras(mri_landmarks, t1_mgh)
+
+    # make an MGH image version
+    img_mgh = nib.MGHImage(image.dataobj, image.affine)
+
+    # go from scanner RAS to image voxels
+    mri_landmarks = _mri_scanner_ras_to_mri_voxels(mri_landmarks, img_mgh)
+
     # get image data, make a copy
     image_data = image.get_fdata().copy()
 
@@ -1246,14 +1297,14 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
-def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
-               deface=False, overwrite=False, verbose=False):
+def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
+               landmarks=None, deface=False, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given an MRI scan, format and store the MR data according to BIDS in the
     correct location inside the specified :class:`mne_bids.BIDSPath`. If a
     transformation matrix is supplied, this information will be stored in a
-    sidecar JSON file..
+    sidecar JSON file.
 
     Parameters
     ----------
@@ -1266,6 +1317,10 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
+    t1w : str | pathlib.Path | nibabel image object
+        Path to the T1 scan used for the freesurfer reconstruction. If
+        'auto', the image will be assumed to be the T1 if "T1" is in the
+        filepath.
     raw : instance of mne.io.Raw | None
         The raw data of ``subject`` corresponding to the MR scan in ``image``.
         If ``None``, ``trans`` has to be ``None`` as well
@@ -1314,9 +1369,10 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    if deface and (trans is None or raw is None) and landmarks is None:
-        raise ValueError('The raw object, trans and raw or the landmarks '
-                         'must be provided to deface the T1')
+    if deface and (t1w is None or (trans is None or raw is None) and
+            landmarks is None):
+        raise ValueError('`t1w` and either `raw` and `trans` or '
+                         '`landmarks` must be provided to deface the image')
 
     # Check if the root is available
     if bids_path.root is None:
@@ -1347,20 +1403,36 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     bids_path.directory.mkdir(exist_ok=True, parents=True)
 
     # Try to read our MRI file and convert to MGH representation
-    try:
-        image = _path_to_str(image)
-    except ValueError:
-        # image -> str conversion failed, so maybe the user passed an nibabel
-        # object instead of a path.
-        if type(image) not in nib.all_image_classes:
+    if type(image) not in nib.all_image_classes:
+        try:
+            image = _path_to_str(image)
+        except ValueError:
             raise ValueError('`image` must be a path to an MRI data '
-                             'file , or a nibabel image object, but it is of '
+                             'file or a nibabel image object, but it is of '
                              'type "{}"'.format(type(image)))
+        else:
+            # image -> str conversion in the try block was successful,
+            # so load the file from the specified location. We do this
+            # here to keep the try block as short as possible.
+            image = nib.load(image)
+
+    if t1w == 'auto':
+        if 'T1' not in image.get_filename():
+            raise ValueError('`image` argument filepath did not contain "T1", '
+                             'please supply the T1 image as `t1w`')
+        else:
+            t1_img = image
     else:
-        # image -> str conversion in the try block was successful, so load the
-        # file from the specified location. We do this here and not in the try
-        # block to keep the try block as short as possible.
-        image = nib.load(image)
+        if type(t1w) not in nib.all_image_classes:
+            # assume image is T1 if auto and check later
+            try:
+                t1w = _path_to_str(t1w)
+            except ValueError:
+                raise ValueError('`t1w` must be a path to a T1 data '
+                                 'file or a nibabel image object, but it is '
+                                 'of type "{}"'.format(type(image)))
+            else:
+                t1_img = nib.load(t1w)
 
     image = nib.Nifti1Image(image.dataobj, image.affine)
     # XYZT_UNITS = NIFT_UNITS_MM (10 in binary or 2 in decimal)
@@ -1371,7 +1443,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:
-        img_mgh = nib.MGHImage(image.dataobj, image.affine)
+        t1_mgh = nib.MGHImage(t1_img.dataobj, t1_img.affine)
 
         if landmarks is not None:
             if raw is not None:
@@ -1393,7 +1465,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                 mri_landmarks = _meg_landmarks_to_mri_landmarks(
                     landmarks, trans)
                 mri_landmarks = _mri_landmarks_to_mri_voxels(
-                    mri_landmarks, img_mgh)
+                    mri_landmarks, t1_mgh)
             elif coord_frame in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                                  FIFF.FIFFV_COORD_MRI):
                 if trans is not None:
@@ -1402,7 +1474,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                                      'only one of these.')
                 if coord_frame == FIFF.FIFFV_COORD_MRI:
                     landmarks = _mri_landmarks_to_mri_voxels(
-                        landmarks * 1e3, img_mgh)
+                        landmarks * 1e3, t1_mgh)
                 mri_landmarks = landmarks
             else:
                 raise ValueError('Coordinate frame not recognized, '
@@ -1424,7 +1496,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
             mri_landmarks = _meg_landmarks_to_mri_landmarks(
                 meg_landmarks, trans)
             mri_landmarks = _mri_landmarks_to_mri_voxels(
-                mri_landmarks, img_mgh)
+                mri_landmarks, t1_mgh)
 
         # Write sidecar.json
         img_json = dict()
@@ -1440,7 +1512,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         _write_json(fname, img_json, overwrite, verbose)
 
         if deface:
-            image = _deface(image, mri_landmarks, deface)
+            image = _deface(image, t1_mgh, mri_landmarks, deface)
 
     # Save anatomical data
     if op.exists(bids_path):

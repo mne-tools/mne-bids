@@ -209,6 +209,7 @@ plt.show()
 flash_bids_path = write_anat(
     image=flash_mgh_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
+    t1w=t1_mgh_fname,
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
     deface=True,

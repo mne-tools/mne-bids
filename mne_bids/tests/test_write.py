@@ -1400,7 +1400,6 @@ def test_write_anat(_bids_validate):
         coords = anat_dict[point_list[i]]
         np.testing.assert_array_equal(np.asarray(coords, dtype=int),
                                       point)
-
         # BONUS: test also that we can find the matching sidecar
         side_fname = _find_matching_sidecar(sidecar_basename,
                                             suffix='T1w',
@@ -1490,11 +1489,15 @@ def test_write_anat(_bids_validate):
 
     assert vox_sum > vox_sum3
 
-    with pytest.raises(ValueError,
-                       match='The raw object, trans and raw or the landmarks'):
+    flash_mgh = \
+        op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+    with pytest.raises(ValueError, match='did not contain "T1"'):
+        write_anat(flash_mgh, bids_path=bids_path, raw=raw,
+                   trans=trans, verbose=True, deface=True, overwrite=True)
+
+    with pytest.raises(ValueError, match='must be provided to deface'):
         write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   trans=None, verbose=True, deface=True,
-                   overwrite=True)
+                   verbose=True, deface=True, overwrite=True)
 
     with pytest.raises(ValueError, match='inset must be numeric'):
         write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
@@ -1602,14 +1605,10 @@ def test_write_anat(_bids_validate):
         write_anat(t1w_mgh, bids_path=bids_path, deface=True,
                    landmarks=fail_landmarks, verbose=True, overwrite=True)
 
-    # Get the FLASH MRI data file
-    flash_mgh = \
-        op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
-
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix='FLASH', root=bids_root)
-    write_anat(flash_mgh, bids_path=bids_path,
-               raw=raw, overwrite=True)
+    write_anat(flash_mgh, bids_path=bids_path, t1w=t1w_mgh,
+               raw=raw, trans=trans, overwrite=True)
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     _bids_validate(bids_root)
 
