@@ -1603,7 +1603,7 @@ def test_write_anat(_bids_validate):
     fail_landmarks.dig[2]['coord_frame'] = 3
 
     with pytest.raises(ValueError, match='Coordinate frame not recognized'):
-        write_anat(t1w_mgh, bids_path=bids_path, deface=True,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, deface=True,
                    landmarks=fail_landmarks, verbose=True, overwrite=True)
 
     bids_path = BIDSPath(subject=subject_id, session=session_id,
