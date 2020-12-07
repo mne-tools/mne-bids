@@ -1371,7 +1371,7 @@ def test_write_anat(_bids_validate):
 
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+    bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                            raw=raw, trans=trans, deface=True, verbose=True,
                            overwrite=True)
     anat_dir = bids_path.directory
@@ -1409,13 +1409,13 @@ def test_write_anat(_bids_validate):
     # Now try some anat writing that will fail
     # We already have some MRI data there
     with pytest.raises(IOError, match='`overwrite` is set to False'):
-        write_anat(t1w_mgh, bids_path=bids_path,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                    raw=raw, trans=trans, verbose=True, deface=False,
                    overwrite=False)
 
     # pass some invalid type as T1 MRI
     with pytest.raises(ValueError, match='must be a path to an MRI'):
-        write_anat(9999999999999, bids_path=bids_path, raw=raw,
+        write_anat(9999999999999, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=trans, verbose=True, deface=False, overwrite=True)
 
     # Return without writing sidecar
@@ -1440,11 +1440,11 @@ def test_write_anat(_bids_validate):
     wrong_fname = 'not_a_trans'
     match = 'trans file "{}" not found'.format(wrong_fname)
     with pytest.raises(IOError, match=match):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=wrong_fname, verbose=True, overwrite=True)
 
     # However, reading trans if it is a string pointing to trans is fine
-    write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+    write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                trans=trans_fname, verbose=True, deface=False,
                overwrite=True)
 
@@ -1458,18 +1458,18 @@ def test_write_anat(_bids_validate):
     # specify trans but not raw
     with pytest.raises(ValueError, match='must be specified if `trans`'):
         bids_path.update(session=session_id)
-        write_anat(t1w_mgh, bids_path=bids_path, raw=None,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=None,
                    trans=trans, verbose=True, deface=False, overwrite=True)
 
     # test deface
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+    bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                            raw=raw, trans=trans_fname,
                            verbose=True, deface=True, overwrite=True)
     anat_dir = bids_path.directory
     t1w = nib.load(op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz'))
     vox_sum = t1w.get_fdata().sum()
 
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+    bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                            raw=raw, trans=trans_fname,
                            verbose=True, deface=dict(inset=25.),
                            overwrite=True)
@@ -1479,7 +1479,7 @@ def test_write_anat(_bids_validate):
 
     assert vox_sum > vox_sum2
 
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+    bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                            raw=raw, trans=trans_fname,
                            verbose=True, deface=dict(theta=25),
                            overwrite=True)
@@ -1492,31 +1492,31 @@ def test_write_anat(_bids_validate):
     flash_mgh = \
         op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
     with pytest.raises(ValueError, match='did not contain "T1"'):
-        write_anat(flash_mgh, bids_path=bids_path, raw=raw,
+        write_anat(flash_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=trans, verbose=True, deface=True, overwrite=True)
 
     with pytest.raises(ValueError, match='must be provided to deface'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    verbose=True, deface=True, overwrite=True)
 
     with pytest.raises(ValueError, match='inset must be numeric'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=trans, verbose=True, deface=dict(inset='small'),
                    overwrite=True)
 
     with pytest.raises(ValueError, match='inset should be positive'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=trans, verbose=True, deface=dict(inset=-2.),
                    overwrite=True)
 
     with pytest.raises(ValueError, match='theta must be numeric'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=trans, verbose=True, deface=dict(theta='big'),
                    overwrite=True)
 
     with pytest.raises(ValueError,
                        match='theta should be between 0 and 90 degrees'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=trans, verbose=True, deface=dict(theta=100),
                    overwrite=True)
 
@@ -1541,7 +1541,7 @@ def test_write_anat(_bids_validate):
 
     # test mri voxel landmarks
     bids_path.update(acquisition=acq)
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+    bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                            deface=True, landmarks=mri_voxel_landmarks,
                            verbose=True, overwrite=True)
     anat_dir = bids_path.directory
@@ -1551,9 +1551,9 @@ def test_write_anat(_bids_validate):
     vox1 = t1w1.get_fdata()
 
     # test mri landmarks
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path, deface=True,
-                           landmarks=mri_landmarks, verbose=True,
-                           overwrite=True)
+    bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
+                           deface=True, landmarks=mri_landmarks,
+                           verbose=True, overwrite=True)
     anat_dir = bids_path.directory
     _bids_validate(bids_root)
 
@@ -1566,20 +1566,21 @@ def test_write_anat(_bids_validate):
 
     # crash for raw also
     with pytest.raises(ValueError, match='Please use either `landmarks`'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw, trans=trans,
-                   deface=True, landmarks=mri_landmarks, verbose=True,
-                   overwrite=True)
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
+                   trans=trans, deface=True, landmarks=mri_landmarks,
+                   verbose=True, overwrite=True)
 
     # crash for trans also
     with pytest.raises(ValueError, match='`trans` was provided'):
-        write_anat(t1w_mgh, bids_path=bids_path, trans=trans, deface=True,
-                   landmarks=mri_landmarks, verbose=True, overwrite=True)
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, trans=trans,
+                   deface=True, landmarks=mri_landmarks, verbose=True,
+                   overwrite=True)
 
     # test meg landmarks
     tmp_dir = _TempDir()
     meg_landmarks.save(op.join(tmp_dir, 'meg_landmarks.fif'))
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path, deface=True,
-                           trans=trans,
+    bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
+                           deface=True, trans=trans,
                            landmarks=op.join(tmp_dir, 'meg_landmarks.fif'),
                            verbose=True, overwrite=True)
     anat_dir = bids_path.directory
@@ -1592,7 +1593,7 @@ def test_write_anat(_bids_validate):
 
     # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='Head space landmarks provided'):
-        write_anat(t1w_mgh, bids_path=bids_path, deface=True,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, deface=True,
                    landmarks=meg_landmarks, verbose=True, overwrite=True)
 
     # test unsupported (any coord_frame other than head and mri) coord_frame
@@ -1607,6 +1608,7 @@ def test_write_anat(_bids_validate):
 
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix='FLASH', root=bids_root)
+    write_anat(flash_mgh, bids_path=bids_path, overwrite=True)
     write_anat(flash_mgh, bids_path=bids_path, t1w=t1w_mgh,
                raw=raw, trans=trans, overwrite=True)
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
@@ -1668,7 +1670,8 @@ def test_write_anat_pathlike():
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
-    bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path, raw=raw,
+    bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path,
+                           t1w=t1w_mgh_fname, raw=raw,
                            trans=trans, deface=True, verbose=True,
                            overwrite=True)
 

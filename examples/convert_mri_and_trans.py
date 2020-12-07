@@ -118,6 +118,7 @@ t1w_bids_path = \
 t1w_bids_path = write_anat(
     image=t1_mgh_fname,  # path to the MRI scan
     bids_path=t1w_bids_path,
+    t1w=t1_mgh_fname,  # will be found with default 'auto' as well
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
     verbose=True  # this will print out the sidecar file
@@ -188,6 +189,7 @@ write_anat(
 t1w_bids_path = write_anat(
     image=t1_mgh_fname,  # path to the MRI scan
     bids_path=bids_path,
+    t1w=t1_mgh_fname,  # will be found with default 'auto' as well
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
     deface=True,
@@ -209,7 +211,8 @@ plt.show()
 flash_bids_path = write_anat(
     image=flash_mgh_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
-    t1w=t1_mgh_fname,
+    t1w=t1_mgh_fname,  # need the freesurfer recon T1
+                       # because the FLASH isn't in the same space
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
     deface=True,
