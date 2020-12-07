@@ -1426,7 +1426,8 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
     if trans is not None or landmarks is not None:
         # load the T1 image if not already loaded, deal with auto setting
         if t1w == 'auto':
-            if 'T1' not in image.get_filename():
+            t1_fname = image.get_filename()
+            if t1_fname is None or 'T1' not in t1_fname:
                 raise ValueError('`image` argument filepath did not contain '
                                  '"T1", please supply the T1 image as `t1w`')
             t1_img = image
