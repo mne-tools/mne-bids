@@ -451,14 +451,14 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
 
-def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
+def _mri_landmarks_to_mri_voxels(mri_landmarks, img_mgh):
     """Convert landmarks from MRI RAS space to MRI voxel space.
 
     Parameters
     ----------
     mri_landmarks : array, shape (3, 3)
         The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
-    t1_mgh : nib.MGHImage
+    img_mgh : nib.MGHImage
         The image data in MGH format.
 
     Returns
@@ -467,9 +467,9 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
         The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
-    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-    ras2vox_tkr = linalg.inv(vox2ras_tkr)
-    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    vox2ras = img_mgh.header.get_vox2ras()
+    ras2vox = linalg.inv(vox2ras)
+    mri_landmarks = apply_trans(ras2vox, mri_landmarks)  # in vox
     return mri_landmarks
 
 
@@ -598,7 +598,7 @@ def _deface(image, mri_landmarks, deface):
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    inset, theta = (20, 35.)
+    inset, theta = (20, 20.)
     if isinstance(deface, dict):
         if 'inset' in deface:
             inset = deface['inset']
@@ -621,10 +621,7 @@ def _deface(image, mri_landmarks, deface):
         raise ValueError('theta should be between 0 and 90 '
                          'degrees. Got %s' % theta)
 
-    # compute affine inverse before reorientation to go back
-    inv_affine = linalg.inv(image.affine)
-    # reorient to RAS
-    image = image.as_reoriented(nib.orientations.io_orientation(image.affine))
+    # inv_affine = linalg.inv(image.affine)
     # get image data, make a copy
     image_data = image.get_fdata().copy()
 
@@ -637,23 +634,23 @@ def _deface(image, mri_landmarks, deface):
     idxs = np.transpose(idxs, [1, 2, 3, 0])  # (*image_data.shape, 3)
     idxs = idxs.reshape(-1, 3)  # (n_voxels, 3)
 
+    # convert to RAS by applying affine
+    idxs = nib.affines.apply_affine(image.affine, idxs)
+
     # now comes the actual defacing
     # 1. move center of voxels to (nasion - inset)
-    # 2. rotate the head by theta from the normal to the plane passing
-    # through anatomical coordinates
-    x, y, z = mri_landmarks[1]
+    # 2. rotate the head by theta from vertical
+    x, y, z = nib.affines.apply_affine(image.affine, mri_landmarks)[1]
     idxs = apply_trans(translation(x=-x, y=-y + inset, z=-z), idxs)
-    idxs = apply_trans(rotation(x=-np.pi / 4 - np.deg2rad(theta)), idxs)
-    coords = idxs.reshape(image_data.shape + (3,))
-    mask = (coords[..., 2] < -image_data.shape[2] / 2)   # z < middle
+    idxs = apply_trans(rotation(x=-np.pi / 2 + np.deg2rad(theta)), idxs)
+    idxs = idxs.reshape(image_data.shape + (3,))
+    mask = (idxs[..., 2] < 0)  # z < middle
     image_data[mask] = 0.
 
     # smooth decided against for potential lack of anonymizaton
     # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
 
     image = nib.Nifti1Image(image_data, image.affine, image.header)
-    # convert back to original orientation before saving
-    image = image.as_reoriented(nib.orientations.io_orientation(inv_affine))
     return image
 
 
@@ -1287,8 +1284,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
           relative to the nasion (default 20)
 
         - `theta`: is the angle of the defacing shear in degrees relative
-          to the normal to the plane passing through the anatomical
-          landmarks (default 35).
+          to vertical (default 20).
 
     landmarks: instance of DigMontage | str
         The DigMontage or filepath to a DigMontage with landmarks that can be
