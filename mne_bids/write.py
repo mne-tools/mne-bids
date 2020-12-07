@@ -510,28 +510,6 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     return mri_landmarks
 
 
-def _mri_voxels_to_mri_landmarks(mri_landmarks, t1_mgh):
-    """Convert landmarks from MRI surface RAS space to MRI voxel space.
-
-    Parameters
-    ----------
-    mri_landmarks : array, shape (3, 3)
-        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
-    t1_mgh : nib.MGHImage
-        The image data in MGH format.
-
-    Returns
-    -------
-    mri_landmarks : array, shape (3, 3)
-        The MRI voxel-space landmark data.
-    """
-    # Get landmarks in voxel space, using the T1 data
-    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-    ras2vox_tkr = linalg.inv(vox2ras_tkr)
-    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
-    return mri_landmarks
-
-
 def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
     """Convert landmarks from MRI voxel space to MRI scanner RAS space.
 

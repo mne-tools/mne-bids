@@ -1413,6 +1413,11 @@ def test_write_anat(_bids_validate):
                    raw=raw, trans=trans, verbose=True, deface=False,
                    overwrite=False)
 
+    # check overwrite no JSON
+    with pytest.raises(IOError, match='it already exists'):
+        write_anat(t1w_mgh, bids_path=bids_path, verbose=True,
+                   overwrite=False)
+
     # pass some invalid type as T1 MRI
     with pytest.raises(ValueError, match='must be a path to an MRI'):
         write_anat(9999999999999, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
@@ -1497,6 +1502,11 @@ def test_write_anat(_bids_validate):
         op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
     with pytest.raises(ValueError, match='did not contain "T1"'):
         write_anat(flash_mgh, bids_path=bids_path, raw=raw,
+                   trans=trans, verbose=True, deface=True, overwrite=True)
+
+    flash_img = nib.load(flash_mgh)
+    with pytest.raises(ValueError, match='did not contain "T1"'):
+        write_anat(flash_img, bids_path=bids_path, raw=raw,
                    trans=trans, verbose=True, deface=True, overwrite=True)
 
     with pytest.raises(ValueError, match='must be provided to deface'):
