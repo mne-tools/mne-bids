@@ -1432,7 +1432,7 @@ def test_write_anat(_bids_validate):
     ex = TypeError
 
     with pytest.raises(ex, match=match):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=wrong_type, verbose=True, deface=False,
                    overwrite=True)
 
