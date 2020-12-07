@@ -1431,8 +1431,9 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
                                  '"T1", please supply the T1 image as `t1w`')
             t1_img = image
         else:
-            if type(t1w) not in nib.all_image_classes:
-                # assume image is T1 if auto and check later
+            if type(t1w) in nib.all_image_classes:
+                t1_img = t1w
+            else:
                 try:
                     t1w = _path_to_str(t1w)
                 except ValueError:
@@ -1441,6 +1442,7 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
                                      'is of type "{}"'.format(type(image)))
                 else:
                     t1_img = nib.load(t1w)
+        # Make MGH image for header properties
         t1_mgh = nib.MGHImage(t1_img.dataobj, t1_img.affine)
 
         if landmarks is not None:

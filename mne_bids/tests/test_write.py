@@ -1492,7 +1492,7 @@ def test_write_anat(_bids_validate):
     flash_mgh = \
         op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
     with pytest.raises(ValueError, match='did not contain "T1"'):
-        write_anat(flash_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
+        write_anat(flash_mgh, bids_path=bids_path, raw=raw,
                    trans=trans, verbose=True, deface=True, overwrite=True)
 
     with pytest.raises(ValueError, match='must be provided to deface'):
