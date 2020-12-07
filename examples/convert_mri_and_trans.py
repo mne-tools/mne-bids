@@ -118,7 +118,6 @@ t1w_bids_path = \
 t1w_bids_path = write_anat(
     image=t1_mgh_fname,  # path to the MRI scan
     bids_path=t1w_bids_path,
-    t1w=t1_mgh_fname,  # will be found with default 'auto' as well
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
     verbose=True  # this will print out the sidecar file
@@ -189,7 +188,6 @@ write_anat(
 t1w_bids_path = write_anat(
     image=t1_mgh_fname,  # path to the MRI scan
     bids_path=bids_path,
-    t1w=t1_mgh_fname,  # will be found with default 'auto' as well
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
     deface=True,
@@ -207,12 +205,21 @@ plot_anat(t1_nii_fname, axes=ax, title='Defaced')
 plt.show()
 
 ###############################################################################
-# We can also deface the FLASH.
+# Defacing the FLASH is a bit more complicated because it uses different
+# coordinates than the T1. Since, in the example dataset, we used the head
+# surface (which was reconstructed by freesurfer from the T1) to align the
+# digitization points, the points are relative to the T1-defined coordinate
+# system (called surface or TkReg RAS). Thus, you can either pass the T1
+# as `t1w` or use your favorite 3D image viewer (e.g. freeview) to find the
+# fiducials in FLASH voxel space.
+
+# first option: pass the T1 as an argument
 flash_bids_path = write_anat(
     image=flash_mgh_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
-    t1w=t1_mgh_fname,  # need the freesurfer recon T1
-                       # because the FLASH isn't in the same space
+    t1w=t1_mgh_fname,  # need the freesurfer recon T1 because
+                       # the FLASH isn't in the same space and
+                       # we used the recon head to align
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
     deface=True,
@@ -228,6 +235,35 @@ flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
 fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
 plt.show()
+
+
+# second option: pass FLASH voxel coordinates
+# find with 3D image viewer (e.g. freeview)
+flash_voxel_landmarks = \
+    np.array([[124.51988917, 156.75548088, 164.52500434],
+              [28.62012668, 116.11852612, 95.42797291],
+              [120.5694072, 157.7559367, 17.93735356]])
+
+landmarks = mne.channels.make_dig_montage(
+    lpa=flash_voxel_landmarks[0],
+    nasion=flash_voxel_landmarks[1],
+    rpa=flash_voxel_landmarks[2],
+    coord_frame='mri_voxel'
+)
+flash_bids_path = write_anat(
+    image=flash_mgh_fname,  # path to the MRI scan
+    bids_path=flash_bids_path,
+    landmarks=landmarks,
+    deface=True,
+    overwrite=True,
+    verbose=True  # this will print out the sidecar file
+)
+
+# Plot it
+fig, ax = plt.subplots()
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
+plt.show()
+
 
 ###############################################################################
 # .. LINKS

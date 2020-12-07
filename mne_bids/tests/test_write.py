@@ -1418,6 +1418,10 @@ def test_write_anat(_bids_validate):
         write_anat(9999999999999, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
                    trans=trans, verbose=True, deface=False, overwrite=True)
 
+    with pytest.warns(RuntimeWarning, match='Ignoring `raw`'):
+        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+                   verbose=True, overwrite=True)
+
     # Return without writing sidecar
     sh.rmtree(anat_dir)
     write_anat(t1w_mgh, bids_path=bids_path)
@@ -1496,7 +1500,7 @@ def test_write_anat(_bids_validate):
                    trans=trans, verbose=True, deface=True, overwrite=True)
 
     with pytest.raises(ValueError, match='must be provided to deface'):
-        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, raw=raw,
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                    verbose=True, deface=True, overwrite=True)
 
     with pytest.raises(ValueError, match='inset must be numeric'):
@@ -1574,6 +1578,11 @@ def test_write_anat(_bids_validate):
     with pytest.raises(ValueError, match='`trans` was provided'):
         write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, trans=trans,
                    deface=True, landmarks=mri_landmarks, verbose=True,
+                   overwrite=True)
+
+    with pytest.raises(ValueError, match='`trans` was provided'):
+        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, trans=trans,
+                   deface=True, landmarks=mri_voxel_landmarks, verbose=True,
                    overwrite=True)
 
     # test meg landmarks
