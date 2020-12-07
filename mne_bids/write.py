@@ -1415,24 +1415,6 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
             # here to keep the try block as short as possible.
             image = nib.load(image)
 
-    if t1w == 'auto':
-        if 'T1' not in image.get_filename():
-            raise ValueError('`image` argument filepath did not contain "T1", '
-                             'please supply the T1 image as `t1w`')
-        else:
-            t1_img = image
-    else:
-        if type(t1w) not in nib.all_image_classes:
-            # assume image is T1 if auto and check later
-            try:
-                t1w = _path_to_str(t1w)
-            except ValueError:
-                raise ValueError('`t1w` must be a path to a T1 data '
-                                 'file or a nibabel image object, but it is '
-                                 'of type "{}"'.format(type(image)))
-            else:
-                t1_img = nib.load(t1w)
-
     image = nib.Nifti1Image(image.dataobj, image.affine)
     # XYZT_UNITS = NIFT_UNITS_MM (10 in binary or 2 in decimal)
     # seems to be the default for Nifti files
@@ -1442,6 +1424,24 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:
+        # load the T1 image if not already loaded, deal with auto setting
+        if t1w == 'auto':
+            if 'T1' not in image.get_filename():
+                raise ValueError('`image` argument filepath did not contain '
+                                 '"T1", please supply the T1 image as `t1w`')
+            else:
+                t1_img = image
+        else:
+            if type(t1w) not in nib.all_image_classes:
+                # assume image is T1 if auto and check later
+                try:
+                    t1w = _path_to_str(t1w)
+                except ValueError:
+                    raise ValueError('`t1w` must be a path to a T1 data '
+                                     'file or a nibabel image object, but it '
+                                     'is of type "{}"'.format(type(image)))
+                else:
+                    t1_img = nib.load(t1w)
         t1_mgh = nib.MGHImage(t1_img.dataobj, t1_img.affine)
 
         if landmarks is not None:
