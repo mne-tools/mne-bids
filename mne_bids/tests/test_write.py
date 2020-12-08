@@ -1490,7 +1490,7 @@ def test_write_anat(_bids_validate):
 
     bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
                            raw=raw, trans=trans_fname,
-                           verbose=True, deface=dict(theta=25),
+                           verbose=True, deface=dict(theta=45),
                            overwrite=True)
     anat_dir3 = bids_path.directory
     t1w3 = nib.load(op.join(anat_dir3, 'sub-01_ses-01_T1w.nii.gz'))
@@ -1614,12 +1614,9 @@ def test_write_anat(_bids_validate):
     assert abs(vox1 - vox3).sum() / abs(vox1).sum() < 0.2
 
     # test mri scanner ras landmarks
-    mri_scanner_ras_landmarks.save(
-        op.join(tmp_dir, 'mri_scanner_ras_landmarks.fif'))
     bids_path = write_anat(
         t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, deface=True,
-        landmarks=op.join(tmp_dir, 'mri_scanner_ras_landmarks.fif'),
-        verbose=True, overwrite=True)
+        landmarks=mri_scanner_ras_landmarks, verbose=True, overwrite=True)
     anat_dir = bids_path.directory
     _bids_validate(bids_root)
 
