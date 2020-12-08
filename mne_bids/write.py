@@ -1471,26 +1471,28 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
                                     coords_dict['rpa']))
         # check if coord frame is supported
         if coord_frame not in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI,
-                               FIFF.FIFFV_MNE_COORD_MRI_VOXEL):
+                               FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+                               FIFF.FIFFV_MNE_COORD_RAS):
             raise ValueError('Coordinate frame not recognized, '
                              f'found {coord_frame}')
 
-        # If the coordinate frame is voxels, we don't need the T1
-        no_trans_needed = ('`trans` was provided but `landmark` data is '
-                           'in mri space. Please use only one of these.')
-        if coord_frame == FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
+        # If the `coord_frame` isn't in head space, we don't need the `trans`
+        if coord_frame != FIFF.FIFFV_COORD_HEAD:
             if trans is not None:
-                raise ValueError(no_trans_needed)
-        else:
+                raise ValueError('`trans` was provided but `landmark` data is '
+                                 'in mri space. Please use only one of these.')
+
+        # do the transforms
+        # head --[trans]--> surface RAS --[vox2ras_tkr, vox2ras inverse]-->
+        # T1 scanner RAS ==[image alignment]== image scanner RAS
+        # --[vox2ras]--> image voxels
+        if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
+            # if the coordinate frame is in head or mri, we need the T1
             t1_img = _load_image(image if t1w == 'auto' else t1w,
                                  check_t1w=True)
             # Make MGH image for header properties
-            img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
             t1_mgh = nib.MGHImage(t1_img.dataobj, t1_img.affine)
 
-            # head --[trans]--> surface RAS --[vox2ras_tkr, vox2ras inverse]-->
-            # T1 scanner RAS ==[image alignment]== image scanner RAS
-            # --[vox2ras]--> image voxels
             if coord_frame == FIFF.FIFFV_COORD_HEAD:
                 if trans is None:
                     raise ValueError('Head space landmarks provided, '
@@ -1498,9 +1500,7 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
 
                 landmarks = _meg_landmarks_to_mri_landmarks(
                     landmarks, trans)
-            else:  # coord_frame == FIFF.FIFFV_COORD_MRI, i.e. surface RAS
-                if trans is not None:
-                    raise ValueError(no_trans_needed)
+            elif coord_frame == FIFF.FIFFV_COORD_MRI:
                 landmarks *= 1e3  # m to mm conversion
 
             # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer space
@@ -1512,6 +1512,9 @@ def write_anat(image, bids_path, t1w='auto', raw=None, trans=None,
             # image must be aligned with T1 so
             # T1 scanner RAS == image scanner RAS
 
+        if coord_frame != FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
+            # Make MGH image for header properties
+            img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
             # go from T1 scanner RAS to image voxels
             landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)
 

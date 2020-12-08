@@ -211,7 +211,7 @@ plt.show()
 # digitization points, the points are relative to the T1-defined coordinate
 # system (called surface or TkReg RAS). Thus, you can either pass the T1
 # as `t1w` or use your favorite 3D image viewer (e.g. freeview) to find the
-# fiducials in FLASH voxel space.
+# fiducials in FLASH voxel space or scanner RAS coordinates.
 
 # first option: pass the T1 as an argument
 flash_bids_path = write_anat(
@@ -249,6 +249,34 @@ landmarks = mne.channels.make_dig_montage(
     nasion=flash_voxel_landmarks[1],
     rpa=flash_voxel_landmarks[2],
     coord_frame='mri_voxel'
+)
+flash_bids_path = write_anat(
+    image=flash_mgh_fname,  # path to the MRI scan
+    bids_path=flash_bids_path,
+    landmarks=landmarks,
+    deface=True,
+    overwrite=True,
+    verbose=True  # this will print out the sidecar file
+)
+
+# Plot it
+fig, ax = plt.subplots()
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
+plt.show()
+
+# third option: pass FLASH scanner RAS coordinates
+# find with 3D image viewer (e.g. freeview)
+# Note that, in freeview, this is "RAS" and not "TkReg RAS"
+flash_ras_landmarks = \
+    np.array([[-74.53102838, 19.62854953, -52.2888194],
+              [-1.89454315, 103.69850925, 4.97120376],
+              [72.01200673, 21.09274883, -57.53678375]])
+
+landmarks = mne.channels.make_dig_montage(
+    lpa=flash_ras_landmarks[0],
+    nasion=flash_ras_landmarks[1],
+    rpa=flash_ras_landmarks[2],
+    coord_frame='ras'
 )
 flash_bids_path = write_anat(
     image=flash_mgh_fname,  # path to the MRI scan

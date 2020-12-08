@@ -1553,6 +1553,12 @@ def test_write_anat(_bids_validate):
         rpa=[7.52676800e-02, 0.00000000e+00, 5.58793545e-09],
         coord_frame='head')
 
+    mri_scanner_ras_landmarks = mne.channels.make_dig_montage(
+        lpa=[-74.53101434, 19.62855196, -52.28881913],
+        nasion=[-1.89452708, 103.69850393, 4.97122087],
+        rpa=[72.01202598, 21.09274957, -57.53678129],
+        coord_frame='ras')
+
     # test mri voxel landmarks
     bids_path.update(acquisition=acq)
     bids_path = write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh,
@@ -1585,15 +1591,12 @@ def test_write_anat(_bids_validate):
                    verbose=True, overwrite=True)
 
     # crash for trans also
-    with pytest.raises(ValueError, match='`trans` was provided'):
-        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, trans=trans,
-                   deface=True, landmarks=mri_landmarks, verbose=True,
-                   overwrite=True)
-
-    with pytest.raises(ValueError, match='`trans` was provided'):
-        write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, trans=trans,
-                   deface=True, landmarks=mri_voxel_landmarks, verbose=True,
-                   overwrite=True)
+    for landmarks in (mri_landmarks, mri_voxel_landmarks,
+                      mri_scanner_ras_landmarks):
+        with pytest.raises(ValueError, match='`trans` was provided'):
+            write_anat(t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, trans=trans,
+                       deface=True, landmarks=landmarks, verbose=True,
+                       overwrite=True)
 
     # test meg landmarks
     tmp_dir = _TempDir()
@@ -1609,6 +1612,21 @@ def test_write_anat(_bids_validate):
     vox3 = t1w3.get_fdata()
 
     assert abs(vox1 - vox3).sum() / abs(vox1).sum() < 0.2
+
+    # test mri scanner ras landmarks
+    mri_scanner_ras_landmarks.save(
+        op.join(tmp_dir, 'mri_scanner_ras_landmarks.fif'))
+    bids_path = write_anat(
+        t1w_mgh, bids_path=bids_path, t1w=t1w_mgh, deface=True,
+        landmarks=op.join(tmp_dir, 'mri_scanner_ras_landmarks.fif'),
+        verbose=True, overwrite=True)
+    anat_dir = bids_path.directory
+    _bids_validate(bids_root)
+
+    t1w4 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    vox4 = t1w4.get_fdata()
+
+    assert abs(vox1 - vox4).sum() / abs(vox1).sum() < 0.2
 
     # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='Head space landmarks provided'):
