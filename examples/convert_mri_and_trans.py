@@ -293,7 +293,7 @@ plt.show()
 flash_bids_path = write_anat(
     image=flash_mgh_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
-    landmarks=montage_t1_vox,
+    landmarks=montage_flash_vox,
     deface=True,
     overwrite=True,
     verbose=True  # this will print out the sidecar file
