@@ -528,7 +528,7 @@ def copyfile_eeglab(src, dest):
                          f' but got {ext_src}, {ext_dest}')
 
     # Extract matlab struct "EEG" from EEGLAB file
-    mat = loadmat(src, squeeze_me=False, chars_as_strings=False,
+    mat = loadmat(src, squeeze_me=False, chars_as_strings=True,
                   mat_dtype=False, struct_as_record=True)
     if 'EEG' not in mat:
         raise ValueError(f'Could not find "EEG" field in {src}')
@@ -536,7 +536,7 @@ def copyfile_eeglab(src, dest):
 
     # If the data field is a string, it points to a .fdt file in src dir
     data = eeg[0][0]['data']
-    if all([item in data[0, -4:] for item in '.fdt']):
+    if data[0].endswith('.fdt'):
         head, tail = op.split(src)
         fdt_pointer = ''.join(data.tolist()[0])
         fdt_path = op.join(head, fdt_pointer)
