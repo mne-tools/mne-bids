@@ -1498,14 +1498,6 @@ def test_write_anat(_bids_validate):
 
     assert vox_sum > vox_sum3
 
-    flash_mgh = \
-        op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
-    bids_path.update(suffix='FLASH')
-    with pytest.raises(ValueError, match='`trans` only applies to the T1'):
-        write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
-                   deface=True, verbose=True, overwrite=True)
-
-    bids_path.update(suffix='T1w')
     with pytest.raises(ValueError, match='must be provided to deface'):
         write_anat(t1w_mgh, bids_path=bids_path,
                    verbose=True, deface=True, overwrite=True)
@@ -1635,17 +1627,42 @@ def test_write_anat(_bids_validate):
         write_anat(t1w_mgh, bids_path=bids_path, deface=True,
                    landmarks=fail_landmarks, verbose=True, overwrite=True)
 
+    flash_mgh = \
+        op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix='FLASH', root=bids_root)
+    with pytest.raises(ValueError, match='The T1 must be passed as `t1w`'):
+        write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
+                   deface=True, verbose=True, overwrite=True)
     write_anat(flash_mgh, bids_path=bids_path, overwrite=True)
     write_anat(flash_mgh, bids_path=bids_path,
                landmarks=mri_scanner_ras_landmarks, overwrite=True)
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     _bids_validate(bids_root)
 
-    with pytest.raises(ValueError, match='must be passed in `mri_voxel`'):
-        write_anat(flash_mgh, bids_path=bids_path,
-                   landmarks=mri_landmarks, overwrite=True)
+    flash1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    fvox1 = flash1.get_fdata()
+
+    # test raw + trans + t1w
+    write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
+               t1w=t1w_mgh, overwrite=True)
+    flash2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    fvox2 = flash2.get_fdata()
+    assert abs(fvox1 - fvox2).sum() / abs(fvox1).sum() < 0.2
+
+    # test landmarks surface RAS coordinates
+    write_anat(flash_mgh, bids_path=bids_path, landmarks=mri_landmarks,
+               t1w=t1w_mgh, overwrite=True)
+    flash3 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    fvox3 = flash3.get_fdata()
+    assert abs(fvox1 - fvox3).sum() / abs(fvox3).sum() < 0.2
+
+    # test landmarks in head coordinates
+    write_anat(flash_mgh, bids_path=bids_path, landmarks=meg_landmarks,
+               trans=trans, t1w=t1w_mgh, overwrite=True)
+    flash4 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    fvox4 = flash4.get_fdata()
+    assert abs(fvox1 - fvox4).sum() / abs(fvox4).sum() < 0.2
 
 
 def test_write_raw_pathlike():

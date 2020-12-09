@@ -432,7 +432,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     _write_tsv(fname, data, True, verbose)
 
 
-def _load_image(image):
+def _load_image(image, name='image'):
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
@@ -443,9 +443,9 @@ def _load_image(image):
             # image -> str conversion in the try block was successful,
             # so load the file from the specified location. We do this
             # here to keep the try block as short as possible.
-            raise ValueError('`image` must be a path to an MRI data '
+            raise ValueError('`{}` must be a path to an MRI data '
                              'file or a nibabel image object, but it '
-                             'is of type "{}"'.format(type(image)))
+                             'is of type "{}"'.format(name, type(image)))
         else:
             image = nib.load(image)
 
@@ -496,6 +496,25 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
     ras2vox_tkr = linalg.inv(vox2ras_tkr)
     mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    return mri_landmarks
+
+
+def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
+    """Convert landmarks from MRI voxel space to MRI scanner RAS space.
+    Parameters
+    ----------
+    mri_landmarks : array, shape (3, 3)
+        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
+    img_mgh : nib.MGHImage
+        The image data in MGH format.
+    Returns
+    -------
+    mri_landmarks : array, shape (3, 3)
+        The MRI scanner RAS landmark data.
+    """
+    # Get landmarks in voxel space, using the T1 data
+    vox2ras = img_mgh.header.get_vox2ras()
+    mri_landmarks = apply_trans(vox2ras, mri_landmarks)  # in scanner RAS
     return mri_landmarks
 
 
@@ -1294,7 +1313,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
 
 def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
-               deface=False, overwrite=False, verbose=False):
+               t1w=None, deface=False, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given an MRI scan, format and store the MR data according to BIDS in the
@@ -1321,6 +1340,11 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         also be a string pointing to a ``.trans`` file containing the
         transformation matrix. If ``None``, no sidecar JSON file will be
         created.
+    t1w : str | pathlib.Path | nibabel image object
+        If an image that is not a T1 is to have a sidecar or be defaced,
+        this can be done using `raw`, `trans` and `t1w`. The T1 must be
+        passed because the coregistration uses freesurfer surfaces which
+        are in T1 space.
     deface : bool | dict
         If False, no defacing is performed.
         If True, deface with default parameters.
@@ -1420,16 +1444,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                 landmarks = np.asarray((coords_dict['lpa'],
                                         coords_dict['nasion'],
                                         coords_dict['rpa']))
-            if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI) \
-                    and bids_path.suffix != 'T1w':
-                raise ValueError('`landmarks` must be passed in `mri_voxel` '
-                                 'or `ras` (scanner RAS) coordinate frame for '
-                                 'non-T1 images')
         elif trans is not None:
-            if bids_path.suffix != 'T1w':
-                raise ValueError('`trans` only applies to the T1, '
-                                 '`landmarks` must be passed in `mri_voxel` '
-                                 'or `ras` (scanner RAS) coordinate frame')
             # get trans and ensure it is from head to MRI
             trans, _ = _get_trans(trans, fro='head', to='mri')
 
@@ -1450,10 +1465,15 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                              f'found {coord_frame}')
 
         # If the `coord_frame` isn't in head space, we don't need the `trans`
-        if coord_frame != FIFF.FIFFV_COORD_HEAD:
-            if trans is not None:
-                raise ValueError('`trans` was provided but `landmark` data is '
-                                 'in mri space. Please use only one of these.')
+        if coord_frame != FIFF.FIFFV_COORD_HEAD and trans is not None:
+            raise ValueError('`trans` was provided but `landmark` data is '
+                             'in mri space. Please use only one of these.')
+
+        if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI) \
+                and bids_path.suffix != 'T1w' and t1w is None:
+            raise ValueError('The T1 must be passed as `t1w` or `landmarks` '
+                             'must be passed in `mri_voxel` or `ras` (scanner '
+                             'RAS) coordinate frames for non T1-images')
 
         if coord_frame != FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
             # Make MGH image for header properties
@@ -1469,6 +1489,18 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
             elif coord_frame == FIFF.FIFFV_COORD_MRI:
                 landmarks *= 1e3  # m to mm conversion
 
+            # need get scanner RAS: MRI--[inv vox2ras_tkr]-->scanner RAS
+            if bids_path.suffix != 'T1w' and coord_frame in \
+                    (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
+                t1w_img = _load_image(t1w, name='t1w')
+                t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
+                # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
+                landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
+                # go to T1 scanner space from T1 voxel space
+                landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
+                coord_frame = FIFF.FIFFV_MNE_COORD_RAS
+
+            # convert to voxels from surface or scanner RAS depending on above
             if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
                 # go from scanner RAS to image voxels
                 landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)

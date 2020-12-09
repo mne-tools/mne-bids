@@ -210,11 +210,35 @@ plt.show()
 # coordinates than the T1. Since, in the example dataset, we used the head
 # surface (which was reconstructed by freesurfer from the T1) to align the
 # digitization points, the points are relative to the T1-defined coordinate
-# system (called surface or TkReg RAS). Thus, you can either find the
-# fiducials in FLASH voxel space or scanner RAS coordinates using your
-# favorite 3D image view (e.g. freeview) or by applying the `trans`.
+# system (called surface or TkReg RAS). Thus, you can you can provide the T1
+# or you can find the fiducials in FLASH voxel space or scanner RAS coordinates
+# using your favorite 3D image view (e.g. freeview), or you can also read the
+# fiducial coordinates from the `raw` and apply the `trans` yourself.
 
-# pass FLASH scanner RAS coordinates
+###############################################################################
+# Pass `t1w` with `raw` and `trans`
+flash_bids_path = write_anat(
+    image=flash_mgh_fname,  # path to the MRI scan
+    bids_path=flash_bids_path,
+    raw=raw,
+    trans=trans,
+    t1w=t1_mgh_fname,
+    deface=True,
+    overwrite=True,
+    verbose=True  # this will print out the sidecar file
+)
+
+# Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
+flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
+
+# Plot it
+fig, ax = plt.subplots()
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
+plt.show()
+
+###############################################################################
+# Pass FLASH scanner RAS coordinates
+
 # find with 3D image viewer (e.g. freeview)
 # Note that, in freeview, this is "RAS" and not "TkReg RAS"
 flash_ras_landmarks = \
@@ -237,13 +261,14 @@ flash_bids_path = write_anat(
     overwrite=True,
     verbose=True  # this will print out the sidecar file
 )
-# Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
-flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
 
 # Plot it
 fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
 plt.show()
+
+###############################################################################
+# Extract the landmarks in scanner RAS or mri voxel space yourself
 
 # Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
 # and the 'r' key will provide us with the xyz coordinates
