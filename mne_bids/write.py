@@ -501,12 +501,14 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
 
 def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
     """Convert landmarks from MRI voxel space to MRI scanner RAS space.
+
     Parameters
     ----------
     mri_landmarks : array, shape (3, 3)
         The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
     img_mgh : nib.MGHImage
         The image data in MGH format.
+
     Returns
     -------
     mri_landmarks : array, shape (3, 3)
