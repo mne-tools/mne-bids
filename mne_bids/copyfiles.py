@@ -534,9 +534,13 @@ def copyfile_eeglab(src, dest):
     # XXX advantage of MNE's checks in _check_load_mat()
     uint16_codec = None
     eeg = _check_load_mat(fname=src, uint16_codec=uint16_codec)
-    mat = read_mat(filename=src, uint16_codec=uint16_codec)
+    del eeg
 
-    data = eeg['data']
+    # mat = read_mat(filename=src, uint16_codec=uint16_codec)
+    from scipy.io import loadmat
+    mat = loadmat(src, appendmat=False)
+
+    data = mat['EEG']['data']
     if isinstance(data, str) and data.endswith('.fdt'):
         # If the data field is a string, it points to a .fdt file in src dir
         head, tail = op.split(src)
@@ -560,8 +564,10 @@ def copyfile_eeglab(src, dest):
         #     in the EEGLAB file,
         #   - and if so, we set the channel types to "EEG" explicitly before
         #     writing.
-        if all(ch_type.shape == (0,)
-               for ch_type in mat['EEG']['chanlocs']['type']):
+        if (isinstance(mat['EEG']['chanlocs'], dict) and
+                'type' in mat['EEG']['chanlocs'] and
+                all(ch_type.shape == (0,)
+                    for ch_type in mat['EEG']['chanlocs']['type'])):
             mat['EEG']['chanlocs']['type'] = \
                 ['EEG'] * len(mat['EEG']['chanlocs']['type'])
         savemat(dest, mat, appendmat=False)
