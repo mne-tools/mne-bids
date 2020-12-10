@@ -549,6 +549,21 @@ def copyfile_eeglab(src, dest):
         # Now adjust the pointer in the set file
         head, tail = op.split(fname_dest + '.fdt')
         mat['EEG']['data'] = tail
+
+        # Reading EEGLAB files that don't have channel types set will produce a
+        # list of empty NumPy arrays (dimensionality (0,)). During an I/O
+        # roundtrip via savemat / loadmat, this will result in an empty list,
+        # causing the MNE EEGLAB reader to fail (and probably rightfully so,
+        # as the number of channel types would then not match the number of
+        # channels anymore). To work around this, we
+        #   - check if we have a situation where no channel types were present
+        #     in the EEGLAB file,
+        #   - and if so, we set the channel types to "EEG" explicitly before
+        #     writing.
+        if all(ch_type.shape == (0,)
+               for ch_type in mat['EEG']['chanlocs']['type']):
+            mat['EEG']['chanlocs']['type'] = \
+                ['EEG'] * len(mat['EEG']['chanlocs']['type'])
         savemat(dest, mat, appendmat=False)
     else:
         # If no .fdt file, simply copy the .set file, no modifications
