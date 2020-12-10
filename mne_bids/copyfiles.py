@@ -20,12 +20,11 @@ import re
 
 import shutil as sh
 from datetime import datetime
-from scipy.io import savemat
+from scipy.io import loadmat, savemat
 
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
 from mne.io.eeglab.eeglab import _check_load_mat
-from mne.externals.pymatreader import read_mat
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -529,30 +528,31 @@ def copyfile_eeglab(src, dest):
         raise ValueError('Need to move data with same extension'
                          f' but got {ext_src}, {ext_dest}')
 
-    # Extract matlab struct "EEG" from EEGLAB file
-    # XXX We're essentially reading the file twice, but this way we can take
-    # XXX advantage of MNE's checks in _check_load_mat()
+    # Load the data and use MNE's _check_load_mat() to ensure the
+    # "EEG" struct is present.
+    # XXX We're reading the file twice.
     uint16_codec = None
     eeg = _check_load_mat(fname=src, uint16_codec=uint16_codec)
     del eeg
 
-    # mat = read_mat(filename=src, uint16_codec=uint16_codec)
-    from scipy.io import loadmat
-    mat = loadmat(src, appendmat=False)
+    mat = loadmat(src, appendmat=False, squeeze_me=False,
+                  struct_as_record=True, chars_as_strings=True)
+    eeg = mat['EEG']
+    data = eeg['data']
 
-    data = mat['EEG']['data']
-    if isinstance(data, str) and data.endswith('.fdt'):
+    if data.size == 1 and data.dtype == 'O':
         # If the data field is a string, it points to a .fdt file in src dir
+        fdt_fname = str(data)
+        assert fdt_fname.endswith('.fdt')
         head, tail = op.split(src)
-        fdt_pointer = data
-        fdt_path = op.join(head, fdt_pointer)
+        fdt_path = op.join(head, fdt_fname)
 
-        # Copy the fdt file and give it a new name
+        # Copy the .fdt file and give it a new name
         sh.copyfile(fdt_path, fname_dest + '.fdt')
 
-        # Now adjust the pointer in the set file
+        # Now adjust the pointer in the .set file
         head, tail = op.split(fname_dest + '.fdt')
-        mat['EEG']['data'] = tail
+        eeg['data'] = tail
 
         # Reading EEGLAB files that don't have channel types set will produce a
         # list of empty NumPy arrays (dimensionality (0,)). During an I/O
@@ -564,12 +564,11 @@ def copyfile_eeglab(src, dest):
         #     in the EEGLAB file,
         #   - and if so, we set the channel types to "EEG" explicitly before
         #     writing.
-        if (isinstance(mat['EEG']['chanlocs'], dict) and
-                'type' in mat['EEG']['chanlocs'] and
+        if (isinstance(eeg['chanlocs'], dict) and
+                'type' in eeg['chanlocs'] and
                 all(ch_type.shape == (0,)
-                    for ch_type in mat['EEG']['chanlocs']['type'])):
-            mat['EEG']['chanlocs']['type'] = \
-                ['EEG'] * len(mat['EEG']['chanlocs']['type'])
+                    for ch_type in eeg['chanlocs']['type'])):
+            eeg['chanlocs']['type'] = ['EEG'] * len(eeg['chanlocs']['type'])
         savemat(dest, mat, appendmat=False)
     else:
         # If no .fdt file, simply copy the .set file, no modifications
