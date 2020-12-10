@@ -23,7 +23,9 @@ from datetime import datetime
 
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
-from scipy.io import loadmat, savemat
+from mne.io.eeglab.eeglab import _check_load_mat
+from mne.externals.pymatreader import read_mat
+from scipy.io import savemat
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -521,40 +523,36 @@ def copyfile_eeglab(src, dest):
 
     """
     # Get extenstion of the EEGLAB file
-    fname_src, ext_src = _parse_ext(src)
+    _, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
         raise ValueError('Need to move data with same extension'
                          f' but got {ext_src}, {ext_dest}')
 
     # Extract matlab struct "EEG" from EEGLAB file
-    mat = loadmat(src, squeeze_me=False, chars_as_strings=True,
-                  mat_dtype=False, struct_as_record=True)
-    if 'EEG' not in mat:
-        raise ValueError(f'Could not find "EEG" field in {src}')
-    eeg = mat['EEG']
+    # XXX We're essentially reading the file twice, but this way we can take
+    # XXX advantage of MNE's checks in _check_load_mat()
+    uint16_codec = None
+    eeg = _check_load_mat(fname=src, uint16_codec=uint16_codec)
+    mat = read_mat(filename=src, uint16_codec=uint16_codec)
 
-    # If the data field is a string, it points to a .fdt file in src dir
-    data = eeg[0][0]['data']
-    if data[0].endswith('.fdt'):
+    data = eeg['data']
+    if isinstance(data, str) and data.endswith('.fdt'):
+        # If the data field is a string, it points to a .fdt file in src dir
         head, tail = op.split(src)
-        fdt_pointer = ''.join(data.tolist()[0])
+        fdt_pointer = data
         fdt_path = op.join(head, fdt_pointer)
-        fdt_name, fdt_ext = _parse_ext(fdt_path)
-        if fdt_ext != '.fdt':
-            raise IOError('Expected extension .fdt for linked data but found'
-                          f' {fdt_ext}')
 
         # Copy the fdt file and give it a new name
         sh.copyfile(fdt_path, fname_dest + '.fdt')
 
         # Now adjust the pointer in the set file
         head, tail = op.split(fname_dest + '.fdt')
-        mat['EEG'][0][0]['data'] = tail
+        mat['EEG']['data'] = tail
         savemat(dest, mat, appendmat=False)
-
-    # If no .fdt file, simply copy the .set file, no modifications necessary
     else:
+        # If no .fdt file, simply copy the .set file, no modifications
+        # necessary
         sh.copyfile(src, dest)
 
 
