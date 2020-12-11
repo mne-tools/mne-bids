@@ -17,14 +17,14 @@ due to internal pointers that are not being updated.
 import os
 import os.path as op
 import re
-
 import shutil as sh
 from datetime import datetime
+
 from scipy.io import loadmat, savemat
 
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
-from mne.io.eeglab.eeglab import _check_load_mat
+from mne.utils import check_version
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -521,28 +521,28 @@ def copyfile_eeglab(src, dest):
     copyfile_kit
 
     """
+    if not check_version('scipy', '1.5.0'):  # pragma: no cover
+        raise ImportError('scipy >=1.5.0 is required for converting '
+                          'file to Brainvision format')
+
     # Get extenstion of the EEGLAB file
     _, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same extension'
+        raise ValueError(f'Need to move data with same extension'
                          f' but got {ext_src}, {ext_dest}')
 
-    # Load the data and use MNE's _check_load_mat() to ensure the
-    # "EEG" struct is present.
-    # XXX We're reading the file twice.
+    # Load the EEG struct.
     uint16_codec = None
-    eeg = _check_load_mat(fname=src, uint16_codec=uint16_codec)
-    del eeg
-
-    mat = loadmat(src, appendmat=False, squeeze_me=False,
-                  struct_as_record=True, chars_as_strings=True)
+    mat = loadmat(file_name=src, simplify_cells=True,
+                  appendmat=False, uint16_codec=uint16_codec)
+    if 'EEG' not in mat:
+        raise ValueError(f'Could not find "EEG" field in {src}')
     eeg = mat['EEG']
-    data = eeg['data']
 
-    if data.size == 1 and data.dtype == 'O':
+    if isinstance(eeg['data'], str):
         # If the data field is a string, it points to a .fdt file in src dir
-        fdt_fname = str(data)
+        fdt_fname = eeg['data']
         assert fdt_fname.endswith('.fdt')
         head, tail = op.split(src)
         fdt_path = op.join(head, fdt_fname)
@@ -554,22 +554,9 @@ def copyfile_eeglab(src, dest):
         head, tail = op.split(fname_dest + '.fdt')
         eeg['data'] = tail
 
-        # Reading EEGLAB files that don't have channel types set will produce a
-        # list of empty NumPy arrays (dimensionality (0,)). During an I/O
-        # roundtrip via savemat / loadmat, this will result in an empty list,
-        # causing the MNE EEGLAB reader to fail (and probably rightfully so,
-        # as the number of channel types would then not match the number of
-        # channels anymore). To work around this, we
-        #   - check if we have a situation where no channel types were present
-        #     in the EEGLAB file,
-        #   - and if so, we set the channel types to "EEG" explicitly before
-        #     writing.
-        if (isinstance(eeg['chanlocs'], dict) and
-                'type' in eeg['chanlocs'] and
-                all(ch_type.shape == (0,)
-                    for ch_type in eeg['chanlocs']['type'])):
-            eeg['chanlocs']['type'] = ['EEG'] * len(eeg['chanlocs']['type'])
-        savemat(dest, mat, appendmat=False)
+        # Save the EEG dictionary as a Matlab struct again
+        mdict = dict(EEG=eeg)
+        savemat(file_name=dest, mdict=mdict, appendmat=False)
     else:
         # If no .fdt file, simply copy the .set file, no modifications
         # necessary
