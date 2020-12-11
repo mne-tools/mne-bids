@@ -133,13 +133,14 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">re</span>
-
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
+
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="p">(</span><span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">read_raw_edf</span><span class="p">,</span> <span class="n">read_raw_bdf</span><span class="p">,</span>
                     <span class="n">anonymize_info</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_check_anonymize</span>
@@ -636,41 +637,44 @@
 <span class="sd">    copyfile_kit</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;scipy&#39;</span><span class="p">,</span> <span class="s1">&#39;1.5.0&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;SciPy &gt;=1.5.0 is required handling EEGLAB data.&#39;</span><span class="p">)</span>
+
     <span class="c1"># Get extenstion of the EEGLAB file</span>
-    <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
     <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
                          <span class="sa">f</span><span class="s1">&#39; but got </span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="c1"># Extract matlab struct &quot;EEG&quot; from EEGLAB file</span>
-    <span class="n">mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">squeeze_me</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chars_as_strings</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                  <span class="n">mat_dtype</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_as_record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Load the EEG struct.</span>
+    <span class="n">uint16_codec</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">simplify_cells</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">uint16_codec</span><span class="o">=</span><span class="n">uint16_codec</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;EEG&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mat</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not find &quot;EEG&quot; field in </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">eeg</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
 
-    <span class="c1"># If the data field is a string, it points to a .fdt file in src dir</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># If the data field is a string, it points to a .fdt file in src dir</span>
+        <span class="n">fdt_fname</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">fdt_fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
         <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-        <span class="n">fdt_pointer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">fdt_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">fdt_pointer</span><span class="p">)</span>
-        <span class="n">fdt_name</span><span class="p">,</span> <span class="n">fdt_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">fdt_ext</span> <span class="o">!=</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Expected extension .fdt for linked data but found&#39;</span>
-                          <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">fdt_ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">fdt_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">fdt_fname</span><span class="p">)</span>
 
-        <span class="c1"># Copy the fdt file and give it a new name</span>
+        <span class="c1"># Copy the .fdt file and give it a new name</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
 
-        <span class="c1"># Now adjust the pointer in the set file</span>
+        <span class="c1"># Now adjust the pointer in the .set file</span>
         <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
-        <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tail</span>
-        <span class="n">savemat</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tail</span>
 
-    <span class="c1"># If no .fdt file, simply copy the .set file, no modifications necessary</span>
+        <span class="c1"># Save the EEG dictionary as a Matlab struct again</span>
+        <span class="n">mdict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">EEG</span><span class="o">=</span><span class="n">eeg</span><span class="p">)</span>
+        <span class="n">savemat</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">mdict</span><span class="o">=</span><span class="n">mdict</span><span class="p">,</span> <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># If no .fdt file, simply copy the .set file, no modifications</span>
+        <span class="c1"># necessary</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></div>
 
 
@@ -716,7 +720,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-03.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-11.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

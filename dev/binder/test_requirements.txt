@@ -1,5 +1,5 @@
 numpy>=1.14
-scipy>=0.18.1
+scipy>=1.5.0
 mne>=0.21
 nibabel>=2.2
 pybv>=0.4
