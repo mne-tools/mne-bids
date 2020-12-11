@@ -522,8 +522,7 @@ def copyfile_eeglab(src, dest):
 
     """
     if not check_version('scipy', '1.5.0'):  # pragma: no cover
-        raise ImportError('scipy >=1.5.0 is required for converting '
-                          'file to Brainvision format')
+        raise ImportError('SciPy >=1.5.0 is required handling EEGLAB data.')
 
     # Get extenstion of the EEGLAB file
     _, ext_src = _parse_ext(src)

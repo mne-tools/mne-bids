@@ -690,7 +690,7 @@ def _write_raw_brainvision(raw, bids_fname, events):
     """
     if not check_version('pybv', '0.4'):  # pragma: no cover
         raise ImportError('pybv >=0.4 is required for converting '
-                          'file to Brainvision format')
+                          'file to BrainVision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
     # the first available data point and ignores the raw.first_samp
