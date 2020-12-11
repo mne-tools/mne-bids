@@ -6,8 +6,9 @@
 # License: BSD (3-clause)
 import os.path as op
 import datetime
-import pytest
+from distutils.version import LooseVersion
 
+import pytest
 from scipy.io import savemat
 
 # This is here to handle mne-python <0.20
@@ -181,11 +182,17 @@ def test_copyfile_edf():
     assert rec_info == rec
 
 
-def test_copyfile_eeglab():
+@pytest.mark.parametrize('fname',
+                         ('test_raw.set', 'test_raw_chanloc.set'))
+def test_copyfile_eeglab(fname):
     """Test the copying of EEGlab set and fdt files."""
+    if (fname == 'test_raw_chanloc.set' and
+            LooseVersion(testing.get_version()) < LooseVersion('0.112')):
+        return
+
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
-    raw_fname = op.join(data_path, 'test_raw.set')
+    raw_fname = op.join(data_path, fname)
     new_name = op.join(bids_root, 'tested_conversion.set')
 
     # IO error testing
@@ -201,7 +208,14 @@ def test_copyfile_eeglab():
 
     # Test copying and reading a combined set+fdt
     copyfile_eeglab(raw_fname, new_name)
-    raw = mne.io.read_raw_eeglab(new_name)
+    if fname == 'test_raw_chanloc.set':
+        with pytest.warns(RuntimeWarning,
+                          match="The data contains 'boundary' events"):
+            raw = mne.io.read_raw_eeglab(new_name)
+            assert 'Fp1' in raw.ch_names
+    else:
+        raw = mne.io.read_raw_eeglab(new_name)
+        assert 'EEG 001' in raw.ch_names
     assert isinstance(raw, mne.io.BaseRaw)
 
 

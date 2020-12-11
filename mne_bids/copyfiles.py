@@ -17,13 +17,14 @@ due to internal pointers that are not being updated.
 import os
 import os.path as op
 import re
-
 import shutil as sh
 from datetime import datetime
 
+from scipy.io import loadmat, savemat
+
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
-from scipy.io import loadmat, savemat
+from mne.utils import check_version
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -520,41 +521,44 @@ def copyfile_eeglab(src, dest):
     copyfile_kit
 
     """
+    if not check_version('scipy', '1.5.0'):  # pragma: no cover
+        raise ImportError('SciPy >=1.5.0 is required handling EEGLAB data.')
+
     # Get extenstion of the EEGLAB file
-    fname_src, ext_src = _parse_ext(src)
+    _, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same extension'
+        raise ValueError(f'Need to move data with same extension'
                          f' but got {ext_src}, {ext_dest}')
 
-    # Extract matlab struct "EEG" from EEGLAB file
-    mat = loadmat(src, squeeze_me=False, chars_as_strings=False,
-                  mat_dtype=False, struct_as_record=True)
+    # Load the EEG struct.
+    uint16_codec = None
+    mat = loadmat(file_name=src, simplify_cells=True,
+                  appendmat=False, uint16_codec=uint16_codec)
     if 'EEG' not in mat:
         raise ValueError(f'Could not find "EEG" field in {src}')
     eeg = mat['EEG']
 
-    # If the data field is a string, it points to a .fdt file in src dir
-    data = eeg[0][0]['data']
-    if all([item in data[0, -4:] for item in '.fdt']):
+    if isinstance(eeg['data'], str):
+        # If the data field is a string, it points to a .fdt file in src dir
+        fdt_fname = eeg['data']
+        assert fdt_fname.endswith('.fdt')
         head, tail = op.split(src)
-        fdt_pointer = ''.join(data.tolist()[0])
-        fdt_path = op.join(head, fdt_pointer)
-        fdt_name, fdt_ext = _parse_ext(fdt_path)
-        if fdt_ext != '.fdt':
-            raise IOError('Expected extension .fdt for linked data but found'
-                          f' {fdt_ext}')
+        fdt_path = op.join(head, fdt_fname)
 
-        # Copy the fdt file and give it a new name
+        # Copy the .fdt file and give it a new name
         sh.copyfile(fdt_path, fname_dest + '.fdt')
 
-        # Now adjust the pointer in the set file
+        # Now adjust the pointer in the .set file
         head, tail = op.split(fname_dest + '.fdt')
-        mat['EEG'][0][0]['data'] = tail
-        savemat(dest, mat, appendmat=False)
+        eeg['data'] = tail
 
-    # If no .fdt file, simply copy the .set file, no modifications necessary
+        # Save the EEG dictionary as a Matlab struct again
+        mdict = dict(EEG=eeg)
+        savemat(file_name=dest, mdict=mdict, appendmat=False)
     else:
+        # If no .fdt file, simply copy the .set file, no modifications
+        # necessary
         sh.copyfile(src, dest)
 
 
