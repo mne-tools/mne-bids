@@ -29,6 +29,8 @@ See the documentation pages in the MNE docs for more information on
 
 """
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Alex Rockhill <aprockhill206@gmail.com>
+#          Alex Gramfort <alexandre.gramfort@inria.fr>
 # License: BSD (3-clause)
 
 ###############################################################################
@@ -92,6 +94,9 @@ write_raw_bids(raw, bids_path, events_data=events_data,
 print_dir_tree(output_path)
 
 ###############################################################################
+# Writing T1 image
+# ----------------
+#
 # Now let's assume that we have also collected some T1 weighted MRI data for
 # our subject. And furthermore, that we have already aligned our coordinate
 # frames (using e.g., the `coregistration GUI`_) and obtained a transformation
@@ -109,7 +114,10 @@ print(trans)
 ###############################################################################
 # We can save the MRI to our existing BIDS directory and at the same time
 # create a JSON sidecar file that contains metadata, we will later use to
-# retrieve our transformation matrix :code:`trans`.
+# retrieve our transformation matrix :code:`trans`. The metadata will here
+# consist of the coordinates of three anatomical landmarks (LPA, Nasion and
+# RPA (=left and right preauricular points) expressed in voxel coordinates
+# w.r.t. the T1 image.
 
 # First create the BIDSPath object.
 t1w_bids_path = \
@@ -136,40 +144,42 @@ estim_trans = get_head_mri_trans(bids_path=bids_path)
 
 ###############################################################################
 # Finally, let's use the T1 weighted MRI image and plot the anatomical
-# landmarks Nasion, LPA, and RPA (=left and right preauricular points) onto
-# the brain image. For that, we can extract the location of Nasion, LPA, and
-# RPA from the MEG file, apply our transformation matrix :code:`trans`, and
-# plot the results.
+# landmarks Nasion, LPA, and RPA onto the brain image. For that, we can
+# extract the location of Nasion, LPA, and RPA from the MEG file, apply our
+# transformation matrix :code:`trans`, and plot the results.
 
 # Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
-# and the 'r' key will provide us with the xyz coordinates
+# and the 'r' key will provide us with the xyz coordinates. The coordinates
+# are expressed here in MEG Head coordinate system.
 pos = np.asarray((raw.info['dig'][0]['r'],
                   raw.info['dig'][1]['r'],
                   raw.info['dig'][2]['r']))
 
-
-# We use a function from MNE-Python to convert MEG coordinates to MRI space
-# for the conversion we use our estimated transformation matrix and the
-# MEG coordinates extracted from the raw file. `subjects` and `subjects_dir`
-# are used internally, to point to the T1-weighted MRI file: `t1_mgh_fname`
+# We now use the ``head_to_mri`` function from MNE-Python to convert MEG
+# coordinates to MRI scanner RAS space. For the conversion we use our
+# estimated transformation matrix and the MEG coordinates extracted from the
+# raw file. `subjects` and `subjects_dir` are used internally, to point to
+# the T1-weighted MRI file: `t1_mgh_fname`. Coordinates are is mm.
 mri_pos = head_to_mri(pos=pos,
                       subject='sample',
                       mri_head_t=estim_trans,
-                      subjects_dir=op.join(data_path, 'subjects')
-                      )
+                      subjects_dir=op.join(data_path, 'subjects'))
 
 # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
-fig, axs = plt.subplots(3, 1)
+fig, axs = plt.subplots(3, 1, figsize=(7, 7), facecolor='k')
 for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
     plot_anat(t1_nii_fname, axes=axs[point_idx],
               cut_coords=mri_pos[point_idx, :],
-              title=label)
+              title=label, vmax=160)
 plt.show()
 
 ###############################################################################
+# Writing FLASH MRI image
+# -----------------------
+#
 # We can write another types of MRI data such as FLASH images for BEM models
 
 flash_mgh_fname = \
@@ -185,6 +195,9 @@ write_anat(
 )
 
 ###############################################################################
+# Writing defaced and anonymized T1 image
+# ---------------------------------------
+#
 # We can deface the MRI for anonymization by passing ``deface=True``.
 t1w_bids_path = write_anat(
     image=t1_mgh_fname,  # path to the MRI scan
@@ -202,21 +215,26 @@ t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
 fig, ax = plt.subplots()
-plot_anat(t1_nii_fname, axes=ax, title='Defaced')
+plot_anat(t1_nii_fname, axes=ax, title='Defaced', vmax=160)
 plt.show()
 
 ###############################################################################
+# Writing defaced and anonymized FLASH MRI image
+# ----------------------------------------------
+#
 # Defacing the FLASH is a bit more complicated because it uses different
 # coordinates than the T1. Since, in the example dataset, we used the head
 # surface (which was reconstructed by freesurfer from the T1) to align the
 # digitization points, the points are relative to the T1-defined coordinate
 # system (called surface or TkReg RAS). Thus, you can you can provide the T1
 # or you can find the fiducials in FLASH voxel space or scanner RAS coordinates
-# using your favorite 3D image view (e.g. freeview), or you can also read the
+# using your favorite 3D image view (e.g. freeview). You can also read the
 # fiducial coordinates from the `raw` and apply the `trans` yourself.
+# Let's explore the different options to do this.
 
 ###############################################################################
-# Pass `t1w` with `raw` and `trans`
+# Option 1 : Pass `t1w` with `raw` and `trans`
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 flash_bids_path = write_anat(
     image=flash_mgh_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
@@ -233,14 +251,15 @@ flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
 
 # Plot it
 fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
 ###############################################################################
-# Pass FLASH scanner RAS coordinates
-
+# Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#
 # find with 3D image viewer (e.g. freeview)
-# Note that, in freeview, this is "RAS" and not "TkReg RAS"
+# Note that, in freeview, this is called "RAS" and not "TkReg RAS"
 flash_ras_landmarks = \
     np.array([[-74.53102838, 19.62854953, -52.2888194],
               [-1.89454315, 103.69850925, 4.97120376],
@@ -264,39 +283,34 @@ flash_bids_path = write_anat(
 
 # Plot it
 fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
 ###############################################################################
-# Extract the landmarks in scanner RAS or mri voxel space yourself
-
+# Option 3 : Compute the landmarks in scanner RAS or mri voxel space from trans
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#
 # Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
-# and the 'r' key will provide us with the xyz coordinates
+# and the 'r' key will provide us with the xyz coordinates.
+#
+# .. note::
+#
+#   We can use in the head_to_mri function based on T1 as the T1 and FLASH
+#   images are already registered.
 head_pos = np.asarray((raw.info['dig'][0]['r'],
                        raw.info['dig'][1]['r'],
                        raw.info['dig'][2]['r']))
 
-fid_pos = head_to_mri(pos=head_pos,
+ras_pos = head_to_mri(pos=head_pos,
                       subject='sample',
                       mri_head_t=trans,
                       subjects_dir=op.join(data_path, 'subjects'))
 
 montage_ras = mne.channels.make_dig_montage(
-    lpa=fid_pos[0],
-    nasion=fid_pos[1],
-    rpa=fid_pos[2],
+    lpa=ras_pos[0],
+    nasion=ras_pos[1],
+    rpa=ras_pos[2],
     coord_frame='ras'
-)
-
-flash_mri_hdr = nib.load(flash_mgh_fname).header
-flash_vox_pos = mne.transforms.apply_trans(
-    flash_mri_hdr.get_ras2vox(), fid_pos)
-
-montage_flash_vox = mne.channels.make_dig_montage(
-    lpa=flash_vox_pos[0],
-    nasion=flash_vox_pos[1],
-    rpa=flash_vox_pos[2],
-    coord_frame='mri_voxel'
 )
 
 # pass FLASH scanner RAS coordinates
@@ -311,8 +325,21 @@ flash_bids_path = write_anat(
 
 # Plot it
 fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
+
+##############################################################################
+# Let's now pass it in voxel coordinates
+flash_mri_hdr = nib.load(flash_mgh_fname).header
+flash_vox_pos = mne.transforms.apply_trans(
+    flash_mri_hdr.get_ras2vox(), ras_pos)
+
+montage_flash_vox = mne.channels.make_dig_montage(
+    lpa=flash_vox_pos[0],
+    nasion=flash_vox_pos[1],
+    rpa=flash_vox_pos[2],
+    coord_frame='mri_voxel'
+)
 
 # pass FLASH voxel coordinates
 flash_bids_path = write_anat(
@@ -326,9 +353,8 @@ flash_bids_path = write_anat(
 
 # Plot it
 fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=800)
+plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
-
 
 ###############################################################################
 # .. LINKS

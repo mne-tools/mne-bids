@@ -667,7 +667,7 @@ def _deface(image, landmarks, deface):
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    inset, theta = (20, 35.)
+    inset, theta = (5, 15.)
     if isinstance(deface, dict):
         if 'inset' in deface:
             inset = deface['inset']
@@ -1354,10 +1354,10 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         If dict, accepts the following keys:
 
         - `inset`: how far back in voxels to start defacing
-          relative to the nasion (default 20)
+          relative to the nasion (default 5)
 
         - `theta`: is the angle of the defacing shear in degrees relative
-          to vertical (default 35).
+          to vertical (default 15).
 
     landmarks: instance of DigMontage | str
         The DigMontage or filepath to a DigMontage with landmarks that can be

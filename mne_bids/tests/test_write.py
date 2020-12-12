@@ -1337,6 +1337,28 @@ def test_set(_bids_validate):
         _bids_validate(output_path)
 
 
+def _check_anat_json(bids_path):
+    json_path = bids_path.copy().update(extension='.json')
+    # Validate that matching sidecar file is as expected
+    assert op.exists(json_path.fpath)
+    with open(json_path, 'r', encoding='utf-8') as f:
+        json_dict = json.load(f)
+
+    # We only should have AnatomicalLandmarkCoordinates as key
+    np.testing.assert_array_equal(list(json_dict.keys()),
+                                  ['AnatomicalLandmarkCoordinates'])
+    # And within AnatomicalLandmarkCoordinates only LPA, NAS, RPA in that order
+    anat_dict = json_dict['AnatomicalLandmarkCoordinates']
+    point_list = ['LPA', 'NAS', 'RPA']
+    np.testing.assert_array_equal(list(anat_dict.keys()),
+                                  point_list)
+    # test the actual values of the voxels (no floating points)
+    for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
+        coords = anat_dict[point_list[i]]
+        np.testing.assert_array_equal(np.asarray(coords, dtype=int),
+                                      point)
+
+
 @requires_nibabel()
 def test_write_anat(_bids_validate):
     """Test writing anatomical data."""
@@ -1376,35 +1398,10 @@ def test_write_anat(_bids_validate):
                            overwrite=True)
     anat_dir = bids_path.directory
     _bids_validate(bids_root)
+    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
 
     # Validate that files are as expected
-    t1w_json_path = op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.json')
-    assert op.exists(t1w_json_path)
-    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    with open(t1w_json_path, 'r', encoding='utf-8') as f:
-        t1w_json = json.load(f)
-
-    # We only should have AnatomicalLandmarkCoordinates as key
-    np.testing.assert_array_equal(list(t1w_json.keys()),
-                                  ['AnatomicalLandmarkCoordinates'])
-    # And within AnatomicalLandmarkCoordinates only LPA, NAS, RPA in that order
-    anat_dict = t1w_json['AnatomicalLandmarkCoordinates']
-    point_list = ['LPA', 'NAS', 'RPA']
-    np.testing.assert_array_equal(list(anat_dict.keys()),
-                                  point_list)
-    sidecar_basename = BIDSPath(subject='01', session='01',
-                                acquisition='01', root=bids_root,
-                                suffix='T1w', extension='.nii.gz')
-    # test the actual values of the voxels (no floating points)
-    for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
-        coords = anat_dict[point_list[i]]
-        np.testing.assert_array_equal(np.asarray(coords, dtype=int),
-                                      point)
-        # BONUS: test also that we can find the matching sidecar
-        side_fname = _find_matching_sidecar(sidecar_basename,
-                                            suffix='T1w',
-                                            extension='.json')
-        assert op.split(side_fname)[-1] == 'sub-01_ses-01_acq-01_T1w.json'
+    _check_anat_json(bids_path)
 
     # Now try some anat writing that will fail
     # We already have some MRI data there
@@ -1432,7 +1429,7 @@ def test_write_anat(_bids_validate):
     write_anat(t1w_mgh, bids_path=bids_path)
     # Assert that we truly cannot find a sidecar
     with pytest.raises(RuntimeError, match='Did not find any'):
-        _find_matching_sidecar(sidecar_basename,
+        _find_matching_sidecar(bids_path,
                                suffix='T1w', extension='.json')
 
     # trans has a wrong type
@@ -1478,6 +1475,9 @@ def test_write_anat(_bids_validate):
     t1w = nib.load(op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz'))
     vox_sum = t1w.get_fdata().sum()
 
+    _check_anat_json(bids_path)
+
+    # Check that increasing inset leads to more voxels at 0
     bids_path = write_anat(t1w_mgh, bids_path=bids_path,
                            raw=raw, trans=trans_fname,
                            verbose=True, deface=dict(inset=25.),
@@ -1486,8 +1486,11 @@ def test_write_anat(_bids_validate):
     t1w2 = nib.load(op.join(anat_dir2, 'sub-01_ses-01_T1w.nii.gz'))
     vox_sum2 = t1w2.get_fdata().sum()
 
+    _check_anat_json(bids_path)
+
     assert vox_sum > vox_sum2
 
+    # Check that increasing theta leads to more voxels at 0
     bids_path = write_anat(t1w_mgh, bids_path=bids_path,
                            raw=raw, trans=trans_fname,
                            verbose=True, deface=dict(theta=45),
@@ -1528,10 +1531,11 @@ def test_write_anat(_bids_validate):
         rpa=[17.23812, 53.08294, 47.01789],
         coord_frame='mri_voxel')
 
+    s = 1e3  # as it shoult be in meters
     mri_landmarks = mne.channels.make_dig_montage(
-        lpa=[-0.07629625, -0.00062556, -0.00776012],
-        nasion=[0.00267222, 0.09362256, 0.03224791],
-        rpa=[0.07635873, -0.00258065, -0.01212903],
+        lpa=np.array([-69.26, 10.59, -25.00]) / s,
+        nasion=np.array([-1.89452708, 103.69850393, 4.97122087]) / s,
+        rpa=np.array([77.29, 12.05, -30.25]) / s,
         coord_frame='mri')
 
     meg_landmarks = mne.channels.make_dig_montage(
@@ -1540,77 +1544,64 @@ def test_write_anat(_bids_validate):
         rpa=[7.52676800e-02, 0.00000000e+00, 5.58793545e-09],
         coord_frame='head')
 
+    s = 1  # XXX to me it should 1e3 as it shoult be in meters
     mri_scanner_ras_landmarks = mne.channels.make_dig_montage(
-        lpa=[-74.53101434, 19.62855196, -52.28881913],
-        nasion=[-1.89452708, 103.69850393, 4.97122087],
-        rpa=[72.01202598, 21.09274957, -57.53678129],
+        lpa=np.array([-74.53101434, 19.62855196, -52.28881913]) / s,
+        nasion=np.array([-1.89452708, 103.69850393, 4.97122087]) / s,
+        rpa=np.array([72.01202598, 21.09274957, -57.53678129]) / s,
         coord_frame='ras')
 
-    # test mri voxel landmarks
+    # test meg landmarks
+    tmp_dir = _TempDir()
+    meg_landmarks_fif = op.join(tmp_dir, 'meg_landmarks.fif')
+    meg_landmarks.save(meg_landmarks_fif)
+
+    # test using landmarks
     bids_path.update(acquisition=acq)
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                           deface=True, landmarks=mri_voxel_landmarks,
-                           verbose=True, overwrite=True)
-    anat_dir = bids_path.directory
-    _bids_validate(bids_root)
 
-    t1w1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    vox1 = t1w1.get_fdata()
+    all_img_data = []
+    for landmarks in [mri_voxel_landmarks,
+                      mri_landmarks,
+                      meg_landmarks,
+                      mri_scanner_ras_landmarks,
+                      meg_landmarks_fif]:
 
-    # test mri landmarks
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                           deface=True, landmarks=mri_landmarks,
-                           verbose=True, overwrite=True)
-    anat_dir = bids_path.directory
-    _bids_validate(bids_root)
+        this_trans = None
+        in_head = False
+        if (isinstance(landmarks, str) or
+                landmarks.dig[0]['coord_frame'] == 4):
+            # Trans is required if landmarks are in head
+            this_trans = trans
+            in_head = True
 
-    t1w2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    vox2 = t1w2.get_fdata()
+        bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+                               deface=True, landmarks=landmarks,
+                               trans=this_trans,
+                               verbose=True, overwrite=True)
+        anat_dir = bids_path.directory
+        _bids_validate(bids_root)
+        _check_anat_json(bids_path)
 
-    # because of significant rounding errors the voxels are fairly different
-    # but the deface works in all three cases and was checked
-    assert abs(vox1 - vox2).sum() / abs(vox1).sum() < 0.2
+        img = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+        img_data = img.get_fdata()
+        all_img_data.append(img_data)
 
-    # crash for raw also
-    with pytest.raises(ValueError, match='Please use either `landmarks`'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   trans=trans, deface=True, landmarks=mri_landmarks,
-                   verbose=True, overwrite=True)
+        assert np.mean(all_img_data[0] == img_data) > 0.98
 
-    # crash for trans also
-    for landmarks in (mri_landmarks, mri_voxel_landmarks,
-                      mri_scanner_ras_landmarks):
+        if in_head:
+            continue
+
+        # crash for raw also
+        with pytest.raises(ValueError, match='Please use either `landmarks`'):
+            write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+                       trans=trans, deface=True, landmarks=landmarks,
+                       verbose=True, overwrite=True)
+
+        # crash for trans also
         with pytest.raises(ValueError, match='`trans` was provided'):
             write_anat(t1w_mgh, bids_path=bids_path, trans=trans,
                        deface=True, landmarks=landmarks, verbose=True,
                        overwrite=True)
-
-    # test meg landmarks
-    tmp_dir = _TempDir()
-    meg_landmarks.save(op.join(tmp_dir, 'meg_landmarks.fif'))
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                           deface=True, trans=trans,
-                           landmarks=op.join(tmp_dir, 'meg_landmarks.fif'),
-                           verbose=True, overwrite=True)
-    anat_dir = bids_path.directory
-    _bids_validate(bids_root)
-
-    t1w3 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    vox3 = t1w3.get_fdata()
-
-    assert abs(vox1 - vox3).sum() / abs(vox1).sum() < 0.2
-
-    # test mri scanner ras landmarks
-    bids_path = write_anat(
-        t1w_mgh, bids_path=bids_path, deface=True,
-        landmarks=mri_scanner_ras_landmarks, verbose=True, overwrite=True)
-    anat_dir = bids_path.directory
-    _bids_validate(bids_root)
-
-    t1w4 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    vox4 = t1w4.get_fdata()
-
-    assert abs(vox1 - vox4).sum() / abs(vox1).sum() < 0.2
 
     # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='Head space landmarks provided'):
@@ -1627,6 +1618,7 @@ def test_write_anat(_bids_validate):
         write_anat(t1w_mgh, bids_path=bids_path, deface=True,
                    landmarks=fail_landmarks, verbose=True, overwrite=True)
 
+    # Test now using FLASH
     flash_mgh = \
         op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
     bids_path = BIDSPath(subject=subject_id, session=session_id,
@@ -1634,35 +1626,36 @@ def test_write_anat(_bids_validate):
     with pytest.raises(ValueError, match='The T1 must be passed as `t1w`'):
         write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
                    deface=True, verbose=True, overwrite=True)
+
     write_anat(flash_mgh, bids_path=bids_path, overwrite=True)
     write_anat(flash_mgh, bids_path=bids_path,
                landmarks=mri_scanner_ras_landmarks, overwrite=True)
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     _bids_validate(bids_root)
 
-    flash1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    flash1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox1 = flash1.get_fdata()
 
     # test raw + trans + t1w
     write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
                t1w=t1w_mgh, overwrite=True)
-    flash2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    flash2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox2 = flash2.get_fdata()
-    assert abs(fvox1 - fvox2).sum() / abs(fvox1).sum() < 0.2
+    assert_array_equal(fvox1, fvox2)
 
-    # test landmarks surface RAS coordinates
+    # test landmarks on T1 surface RAS coordinates
     write_anat(flash_mgh, bids_path=bids_path, landmarks=mri_landmarks,
                t1w=t1w_mgh, overwrite=True)
-    flash3 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    flash3 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox3 = flash3.get_fdata()
-    assert abs(fvox1 - fvox3).sum() / abs(fvox3).sum() < 0.2
+    assert_array_equal(fvox1, fvox3)
 
     # test landmarks in head coordinates
     write_anat(flash_mgh, bids_path=bids_path, landmarks=meg_landmarks,
                trans=trans, t1w=t1w_mgh, overwrite=True)
-    flash4 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    flash4 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox4 = flash4.get_fdata()
-    assert abs(fvox1 - fvox4).sum() / abs(fvox4).sum() < 0.2
+    assert_array_equal(fvox1, fvox4)
 
 
 def test_write_raw_pathlike():
