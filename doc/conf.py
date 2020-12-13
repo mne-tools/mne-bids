@@ -116,6 +116,7 @@ html_theme_options = {
         ("Contribute!", "contribute")
     ]}
 
+html_sidebars = {'**': ['localtoc.html']}
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
