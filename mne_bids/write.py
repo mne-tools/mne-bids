@@ -1433,32 +1433,30 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     # Check if we have necessary conditions for writing a sidecar JSON
     if write_sidecar:
         # Get landmarks and their coordinate frame
-        if landmarks is not None:
-            if raw is not None:
-                raise ValueError('Please use either `landmarks` or `raw`, '
-                                 'which digitization to use is ambiguous.')
-            if isinstance(landmarks, str):
-                landmarks, coord_frame = read_fiducials(landmarks)
-                landmarks = np.array([landmark['r'] for landmark in
-                                      landmarks], dtype=float)  # unpack
-            else:
-                coords_dict, coord_frame = _get_fid_coords(landmarks.dig)
-                landmarks = np.asarray((coords_dict['lpa'],
-                                        coords_dict['nasion'],
-                                        coords_dict['rpa']))
-        elif trans is not None:
+        if landmarks is not None and raw is not None:
+            raise ValueError('Please use either `landmarks` or `raw`, '
+                             'which digitization to use is ambiguous.')
+
+        if trans is not None:
             # get trans and ensure it is from head to MRI
             trans, _ = _get_trans(trans, fro='head', to='mri')
 
-            if not isinstance(raw, BaseRaw):
+            if landmarks is None and not isinstance(raw, BaseRaw):
                 raise ValueError('`raw` must be specified if `trans` '
                                  'is not None')
 
+        if isinstance(landmarks, str):
+            landmarks, coord_frame = read_fiducials(landmarks)
+            landmarks = np.array([landmark['r'] for landmark in
+                                  landmarks], dtype=float)  # unpack
+        else:
             # Prepare to write the sidecar JSON, extract MEG landmarks
-            coords_dict, coord_frame = _get_fid_coords(raw.info['dig'])
+            coords_dict, coord_frame = _get_fid_coords(
+                landmarks.dig if raw is None else raw.info['dig'])
             landmarks = np.asarray((coords_dict['lpa'],
                                     coords_dict['nasion'],
                                     coords_dict['rpa']))
+
         # check if coord frame is supported
         if coord_frame not in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI,
                                FIFF.FIFFV_MNE_COORD_MRI_VOXEL,

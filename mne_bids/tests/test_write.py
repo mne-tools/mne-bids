@@ -1531,11 +1531,10 @@ def test_write_anat(_bids_validate):
         rpa=[17.23812, 53.08294, 47.01789],
         coord_frame='mri_voxel')
 
-    s = 1e3  # as it shoult be in meters
     mri_landmarks = mne.channels.make_dig_montage(
-        lpa=np.array([-69.26, 10.59, -25.00]) / s,
-        nasion=np.array([-1.89452708, 103.69850393, 4.97122087]) / s,
-        rpa=np.array([77.29, 12.05, -30.25]) / s,
+        lpa=[-0.06925741, 0.01058946, -0.02500086],
+        nasion=[0.00337909, 0.09465943, 0.03225916],
+        rpa=[0.07728562, 0.01205367, -0.03024882],
         coord_frame='mri')
 
     meg_landmarks = mne.channels.make_dig_montage(
@@ -1544,11 +1543,10 @@ def test_write_anat(_bids_validate):
         rpa=[7.52676800e-02, 0.00000000e+00, 5.58793545e-09],
         coord_frame='head')
 
-    s = 1  # XXX to me it should 1e3 as it shoult be in meters
     mri_scanner_ras_landmarks = mne.channels.make_dig_montage(
-        lpa=np.array([-74.53101434, 19.62855196, -52.28881913]) / s,
-        nasion=np.array([-1.89452708, 103.69850393, 4.97122087]) / s,
-        rpa=np.array([72.01202598, 21.09274957, -57.53678129]) / s,
+        lpa=np.array([-74.53101434, 19.62855196, -52.28881913]),
+        nasion=np.array([-1.89452708, 103.69850393, 4.97122087]),
+        rpa=np.array([72.01202598, 21.09274957, -57.53678129]),
         coord_frame='ras')
 
     # test meg landmarks
@@ -1566,17 +1564,13 @@ def test_write_anat(_bids_validate):
                       mri_scanner_ras_landmarks,
                       meg_landmarks_fif]:
 
-        this_trans = None
-        in_head = False
-        if (isinstance(landmarks, str) or
-                landmarks.dig[0]['coord_frame'] == 4):
-            # Trans is required if landmarks are in head
-            this_trans = trans
-            in_head = True
+        in_head = True if isinstance(landmarks, str) else \
+            landmarks.dig[0]['coord_frame'] == FIFF.FIFFV_COORD_HEAD
 
+        # Trans is required if landmarks are in head
         bids_path = write_anat(t1w_mgh, bids_path=bids_path,
                                deface=True, landmarks=landmarks,
-                               trans=this_trans,
+                               trans=trans if in_head else None,
                                verbose=True, overwrite=True)
         anat_dir = bids_path.directory
         _bids_validate(bids_root)
