@@ -81,7 +81,7 @@ def test_get_brainvision_paths():
 
 
 @pytest.mark.filterwarnings('ignore:.*Exception ignored.*:'
-                            'PytestUnraisableExceptionWarning')
+                            'pytest.PytestUnraisableExceptionWarning')
 def test_copyfile_brainvision():
     """Test the copying of BrainVision vhdr, vmrk and eeg files."""
     bids_root = _TempDir()

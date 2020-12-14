@@ -70,7 +70,7 @@ warning_str = dict(
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
     unraisable_exception='ignore:.*Exception ignored.*:'
-                         'PytestUnraisableExceptionWarning'
+                         'pytest.PytestUnraisableExceptionWarning'
 )
 
 
