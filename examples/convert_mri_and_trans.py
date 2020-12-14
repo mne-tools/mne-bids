@@ -263,7 +263,7 @@ plt.show()
 flash_ras_landmarks = \
     np.array([[-74.53102838, 19.62854953, -52.2888194],
               [-1.89454315, 103.69850925, 4.97120376],
-              [72.01200673, 21.09274883, -57.53678375]])
+              [72.01200673, 21.09274883, -57.53678375]]) / 1e3  # mm -> m
 
 landmarks = mne.channels.make_dig_montage(
     lpa=flash_ras_landmarks[0],
@@ -304,7 +304,7 @@ head_pos = np.asarray((raw.info['dig'][0]['r'],
 ras_pos = head_to_mri(pos=head_pos,
                       subject='sample',
                       mri_head_t=trans,
-                      subjects_dir=op.join(data_path, 'subjects'))
+                      subjects_dir=op.join(data_path, 'subjects')) / 1e3
 
 montage_ras = mne.channels.make_dig_montage(
     lpa=ras_pos[0],

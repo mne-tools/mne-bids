@@ -1498,12 +1498,14 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                 landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
                 # go to T1 scanner space from T1 voxel space
                 landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
+                landmarks *= 1e-3  # mm -> m
                 coord_frame = FIFF.FIFFV_MNE_COORD_RAS
 
             # convert to voxels from surface or scanner RAS depending on above
             if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
                 # go from scanner RAS to image voxels
-                landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)
+                landmarks = _mri_scanner_ras_to_mri_voxels(
+                    landmarks * 1e3, img_mgh)
             else:  # must be T1, going from surface RAS->voxels
                 landmarks = _mri_landmarks_to_mri_voxels(landmarks, img_mgh)
 

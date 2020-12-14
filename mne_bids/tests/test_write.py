@@ -1544,9 +1544,9 @@ def test_write_anat(_bids_validate):
         coord_frame='head')
 
     mri_scanner_ras_landmarks = mne.channels.make_dig_montage(
-        lpa=np.array([-74.53101434, 19.62855196, -52.28881913]),
-        nasion=np.array([-1.89452708, 103.69850393, 4.97122087]),
-        rpa=np.array([72.01202598, 21.09274957, -57.53678129]),
+        lpa=np.array([-0.07453101, 0.01962855, -0.05228882]),
+        nasion=np.array([-0.00189453, 0.1036985, 0.00497122]),
+        rpa=np.array([0.07201203, 0.02109275, -0.05753678]),
         coord_frame='ras')
 
     # test meg landmarks
