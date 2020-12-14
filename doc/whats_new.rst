@@ -14,10 +14,6 @@ Version 0.6 (unreleased)
 ------------------------
 xxx
 
-.. contents:: Contents
-   :local:
-   :depth: 3
-
 Notable changes
 ~~~~~~~~~~~~~~~
 xxx

@@ -6,10 +6,6 @@
 API Documentation
 =================
 
-.. contents:: Contents
-   :local:
-   :depth: 2
-
 mne_bids
 --------
 :py:mod:`mne_bids`:

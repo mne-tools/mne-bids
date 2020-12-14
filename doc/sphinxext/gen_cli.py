@@ -39,10 +39,6 @@ MNE-BIDS Command Line Interface (CLI)
 
 Here we list the MNE-BIDS tools that you can use from the command line.
 
-.. contents:: Contents
-   :local:
-   :depth: 1
-
 """
 
 command_rst = """
