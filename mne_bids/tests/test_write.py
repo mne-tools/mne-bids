@@ -1502,8 +1502,12 @@ def test_write_anat(_bids_validate):
     assert vox_sum > vox_sum3
 
     with pytest.raises(ValueError, match='must be provided to deface'):
-        write_anat(t1w_mgh, bids_path=bids_path,
-                   verbose=True, deface=True, overwrite=True)
+        write_anat(t1w_mgh, bids_path=bids_path, deface=True,
+                   verbose=True, overwrite=True)
+
+    with pytest.raises(ValueError, match='`raw` must be specified'):
+        write_anat(t1w_mgh, bids_path=bids_path, deface=True, trans=trans,
+                   verbose=True, overwrite=True)
 
     with pytest.raises(ValueError, match='inset must be numeric'):
         write_anat(t1w_mgh, bids_path=bids_path, raw=raw, trans=trans,
