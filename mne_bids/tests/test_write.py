@@ -69,7 +69,7 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
-    unraisable_exception='ignore:pytest.PytestUnraisableExceptionWarning:*'
+    unraisable_exception='pytest.PytestUnraisableExceptionWarning:'
 )
 
 
