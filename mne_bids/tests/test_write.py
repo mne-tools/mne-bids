@@ -69,6 +69,7 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
+    unraisable_exception='ignore:pytest.PytestUnraisableExceptionWarning:*'
 )
 
 
@@ -824,7 +825,8 @@ def test_bti(_bids_validate):
     _bids_validate(output_path)
 
 
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'],
+                            warning_str['unraisable_exception'])
 def test_vhdr(_bids_validate):
     """Test write_raw_bids conversion for BrainVision data."""
     bids_root = _TempDir()
