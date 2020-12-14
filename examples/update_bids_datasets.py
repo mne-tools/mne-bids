@@ -16,10 +16,6 @@ modify BIDS-formatted data.
 # License: BSD (3-clause)
 
 ###############################################################################
-# .. contents:: Contents
-#    :local:
-#    :depth: 1
-#
 # Imports
 # -------
 # We are importing everything we need for this example:
