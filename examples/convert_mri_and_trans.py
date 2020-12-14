@@ -332,7 +332,7 @@ plt.show()
 # Let's now pass it in voxel coordinates
 flash_mri_hdr = nib.load(flash_mgh_fname).header
 flash_vox_pos = mne.transforms.apply_trans(
-    flash_mri_hdr.get_ras2vox(), ras_pos)
+    flash_mri_hdr.get_ras2vox(), ras_pos * 1e3)
 
 montage_flash_vox = mne.channels.make_dig_montage(
     lpa=flash_vox_pos[0],
