@@ -80,6 +80,8 @@ def test_get_brainvision_paths():
     assert tail == 'test.vmrk'
 
 
+@pytest.mark.filterwarnings('ignore:.*Exception ignored.*:'
+                            'pytest.PytestUnraisableExceptionWarning')
 def test_copyfile_brainvision():
     """Test the copying of BrainVision vhdr, vmrk and eeg files."""
     bids_root = _TempDir()

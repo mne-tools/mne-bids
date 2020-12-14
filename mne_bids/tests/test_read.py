@@ -245,8 +245,8 @@ def test_get_head_mri_trans():
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
         raw.info['dig'][0]['r'] = np.ones(3) * np.nan
         sh.rmtree(anat_dir)
-        bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath, raw=raw,
-                               trans=trans, verbose=True)
+        bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
+                               raw=raw, trans=trans, verbose=True)
         estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
 
