@@ -471,7 +471,7 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     Returns
     -------
     mri_landmarks : array, shape (3, 3)
-        The mri ras landmark data converted to from m to mm.
+        The mri RAS landmark data converted to from m to mm.
     """
     # Transform MEG landmarks into MRI space, adjust units by * 1e3
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
@@ -489,14 +489,14 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
 
     Returns
     -------
-    mri_landmarks : array, shape (3, 3)
+    vox_landmarks : array, shape (3, 3)
         The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
     ras2vox_tkr = linalg.inv(vox2ras_tkr)
-    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
-    return mri_landmarks
+    vox_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    return vox_landmarks
 
 
 def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
@@ -511,35 +511,35 @@ def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
 
     Returns
     -------
-    mri_landmarks : array, shape (3, 3)
+    ras_landmarks : array, shape (3, 3)
         The MRI scanner RAS landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
-    mri_landmarks = apply_trans(vox2ras, mri_landmarks)  # in scanner RAS
-    return mri_landmarks
+    ras_landmarks = apply_trans(vox2ras, mri_landmarks)  # in scanner RAS
+    return ras_landmarks
 
 
-def _mri_scanner_ras_to_mri_voxels(mri_landmarks, img_mgh):
+def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
     """Convert landmarks from MRI scanner RAS space to MRI to MRI voxel space.
 
     Parameters
     ----------
-    mri_landmarks : array, shape (3, 3)
+    ras_landmarks : array, shape (3, 3)
         The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
     img_mgh : nib.MGHImage
         The image data in MGH format.
 
     Returns
     -------
-    mri_landmarks : array, shape (3, 3)
+    vox_landmarks : array, shape (3, 3)
         The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
     vox2ras = img_mgh.header.get_vox2ras()
     ras2vox = linalg.inv(vox2ras)
-    mri_landmarks = apply_trans(ras2vox, mri_landmarks)  # in vox
-    return mri_landmarks
+    vox_landmarks = apply_trans(ras2vox, ras_landmarks)  # in vox
+    return vox_landmarks
 
 
 def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
@@ -1342,10 +1342,11 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         also be a string pointing to a ``.trans`` file containing the
         transformation matrix. If ``None``, no sidecar JSON file will be
         created.
-    t1w : str | pathlib.Path | nibabel image object
-        If an image that is not a T1 is to have a sidecar or be defaced,
+    t1w : str | pathlib.Path | nibabel image object | None
+        This parameter is useful if image written is not already a T1 image.
+        If the image written is to have a sidecar or be defaced,
         this can be done using `raw`, `trans` and `t1w`. The T1 must be
-        passed because the coregistration uses freesurfer surfaces which
+        passed here because the coregistration uses freesurfer surfaces which
         are in T1 space.
     deface : bool | dict
         If False, no defacing is performed.
@@ -1359,7 +1360,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         - `theta`: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
-    landmarks: instance of DigMontage | str
+    landmarks: instance of DigMontage | str | None
         The DigMontage or filepath to a DigMontage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
@@ -1381,7 +1382,6 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     -------
     bids_path : BIDSPath
         Path to the written MRI data.
-
     """
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')

@@ -258,7 +258,7 @@ plt.show()
 # Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
-# find with 3D image viewer (e.g. freeview)
+# You can find such landmarks with a 3D image viewer (e.g. freeview).
 # Note that, in freeview, this is called "RAS" and not "TkReg RAS"
 flash_ras_landmarks = \
     np.array([[-74.53102838, 19.62854953, -52.2888194],
