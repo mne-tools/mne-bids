@@ -526,7 +526,7 @@ transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
     Ready.
     Reading events from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-    /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+    /home/circleci/project/mne_bids/read.py:339: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
 
 
@@ -1008,7 +1008,7 @@ Let's now pass it in voxel coordinates
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  5.590 seconds)
+   **Total running time of the script:** ( 0 minutes  58.667 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
