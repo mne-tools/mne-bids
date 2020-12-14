@@ -7,10 +7,6 @@
 What was new in previous releases?
 ==================================
 
-.. contents:: Contents
-   :local:
-   :depth: 3
-
 .. currentmodule:: mne_bids
 .. _changes_0_5:
 
@@ -21,9 +17,6 @@ This is a **big** release with lots of changes, many of them breaking existing
 code. But do not fear: migration is easy, and you will **love** what we have
 been cooking for you!
 
-.. contents:: Contents
-   :local:
-   :depth: 3
 
 Notable changes
 ~~~~~~~~~~~~~~~

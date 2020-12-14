@@ -111,7 +111,21 @@
 
 <div class="container">
   <div class="row">
-    <div class="body col-md-12 content" role="main">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">01. Read BIDS datasets</a><ul>
+<li><a class="reference internal" href="#imports">Imports</a></li>
+<li><a class="reference internal" href="#download-the-somato-bids-dataset">Download the <code class="docutils literal notranslate"><span class="pre">somato</span></code> BIDS dataset</a></li>
+<li><a class="reference internal" href="#explore-the-dataset-contents">Explore the dataset contents</a></li>
+<li><a class="reference internal" href="#prepare-reading-the-data">Prepare reading the data</a></li>
+<li><a class="reference internal" href="#read-the-data">Read the data</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -135,18 +149,8 @@ inspect BIDS-formatted data.</p>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
-<div class="contents local topic" id="contents">
-<p class="topic-title">Contents</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="#imports" id="id1">Imports</a></p></li>
-<li><p><a class="reference internal" href="#download-the-somato-bids-dataset" id="id2">Download the <code class="docutils literal notranslate"><span class="pre">somato</span></code> BIDS dataset</a></p></li>
-<li><p><a class="reference internal" href="#explore-the-dataset-contents" id="id3">Explore the dataset contents</a></p></li>
-<li><p><a class="reference internal" href="#prepare-reading-the-data" id="id4">Prepare reading the data</a></p></li>
-<li><p><a class="reference internal" href="#read-the-data" id="id5">Read the data</a></p></li>
-</ul>
-</div>
 <div class="section" id="imports">
-<h2><a class="toc-backref" href="#id1">Imports</a><a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
 <p>We are importing everything we need for this example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">somato</span>
 
@@ -159,7 +163,7 @@ For more information, you can check out the
 respective <a class="reference internal" href="convert_mne_sample.html#ex-convert-mne-sample"><span class="std std-ref">example</span></a>.</p>
 </div>
 <div class="section" id="download-the-somato-bids-dataset">
-<h2><a class="toc-backref" href="#id2">Download the <code class="docutils literal notranslate"><span class="pre">somato</span></code> BIDS dataset</a><a class="headerlink" href="#download-the-somato-bids-dataset" title="Permalink to this headline">¶</a></h2>
+<h2>Download the <code class="docutils literal notranslate"><span class="pre">somato</span></code> BIDS dataset<a class="headerlink" href="#download-the-somato-bids-dataset" title="Permalink to this headline">¶</a></h2>
 <p>Download the data if it hasn’t been downloaded already, and return the path
 to the download directory. This directory is the so-called <em class="xref py py-obj">root</em> of this
 BIDS dataset.</p>
@@ -174,7 +178,7 @@ Attempting to create new mne-python configuration file:
 </div>
 </div>
 <div class="section" id="explore-the-dataset-contents">
-<h2><a class="toc-backref" href="#id3">Explore the dataset contents</a><a class="headerlink" href="#explore-the-dataset-contents" title="Permalink to this headline">¶</a></h2>
+<h2>Explore the dataset contents<a class="headerlink" href="#explore-the-dataset-contents" title="Permalink to this headline">¶</a></h2>
 <p>We can use MNE-BIDS to print a tree of all
 included files and folders. We pass the <code class="docutils literal notranslate"><span class="pre">max_depth</span></code> parameter to
 <a class="reference internal" href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree</span></code></a> to the output to three levels of folders, for
@@ -266,7 +270,7 @@ recording channels and experimental events, and the third one is the actual
 MEG data file.</p>
 </div>
 <div class="section" id="prepare-reading-the-data">
-<h2><a class="toc-backref" href="#id4">Prepare reading the data</a><a class="headerlink" href="#prepare-reading-the-data" title="Permalink to this headline">¶</a></h2>
+<h2>Prepare reading the data<a class="headerlink" href="#prepare-reading-the-data" title="Permalink to this headline">¶</a></h2>
 <p>There is obviously only one subject (<code class="docutils literal notranslate"><span class="pre">01</span></code>) and one experimental task
 (<code class="docutils literal notranslate"><span class="pre">somato</span></code>). Let’s use this knowledge to create a new <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> with
 all the information required to actually read the MEG data. We also need to
@@ -331,7 +335,7 @@ more portable. Note that, however, you <strong>can</strong> explicitly specify a
 extension too, by passing e.g. <code class="docutils literal notranslate"><span class="pre">extension='.fif'</span></code> to <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>.</p>
 </div>
 <div class="section" id="read-the-data">
-<h2><a class="toc-backref" href="#id5">Read the data</a><a class="headerlink" href="#read-the-data" title="Permalink to this headline">¶</a></h2>
+<h2>Read the data<a class="headerlink" href="#read-the-data" title="Permalink to this headline">¶</a></h2>
 <p>Let’s read the data! It’s just a single line of code.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
@@ -389,7 +393,7 @@ metadata.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;MNEBrowseFigure size 640x480 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.257 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.924 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>

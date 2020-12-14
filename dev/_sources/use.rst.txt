@@ -3,10 +3,6 @@
 Using MNE-BIDS
 ==============
 
-.. contents:: Contents
-   :local:
-   :depth: 1
-
 Quickstart
 ----------
 
