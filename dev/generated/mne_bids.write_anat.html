@@ -117,12 +117,12 @@
 <h1>mne_bids.write_anat<a class="headerlink" href="#mne-bids-write-anat" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.write_anat">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_anat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">image</span></em>, <em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trans</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">landmarks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">deface</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_anat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_anat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_anat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">image</span></em>, <em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trans</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">landmarks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">t1w</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">deface</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_anat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_anat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Put anatomical MRI data into a BIDS format.</p>
 <p>Given an MRI scan, format and store the MR data according to BIDS in the
 correct location inside the specified <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>. If a
 transformation matrix is supplied, this information will be stored in a
-sidecar JSON file..</p>
+sidecar JSON file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -143,19 +143,24 @@ also be a string pointing to a <code class="docutils literal notranslate"><span 
 transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no sidecar JSON file will be
 created.</p>
 </dd>
+<dt><strong>t1w</strong><span class="classifier">str | pathlib.Path | nibabel image object | None</span></dt><dd><p>This parameter is useful if image written is not already a T1 image.
+If the image written is to have a sidecar or be defaced,
+this can be done using <em class="xref py py-obj">raw</em>, <em class="xref py py-obj">trans</em> and <em class="xref py py-obj">t1w</em>. The T1 must be
+passed here because the coregistration uses freesurfer surfaces which
+are in T1 space.</p>
+</dd>
 <dt><strong>deface</strong><span class="classifier">bool | dict</span></dt><dd><p>If False, no defacing is performed.
 If True, deface with default parameters.
 <em class="xref py py-obj">trans</em> and <em class="xref py py-obj">raw</em> must not be <em class="xref py py-obj">None</em> if True.
 If dict, accepts the following keys:</p>
 <ul class="simple">
-<li><p><em class="xref py py-obj">inset</em>: how far back in millimeters to start defacing
-relative to the nasion (default 20)</p></li>
+<li><p><em class="xref py py-obj">inset</em>: how far back in voxels to start defacing
+relative to the nasion (default 5)</p></li>
 <li><p><em class="xref py py-obj">theta</em>: is the angle of the defacing shear in degrees relative
-to the normal to the plane passing through the anatomical
-landmarks (default 35).</p></li>
+to vertical (default 15).</p></li>
 </ul>
 </dd>
-<dt><strong>landmarks: instance of DigMontage | str</strong></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
+<dt><strong>landmarks: instance of DigMontage | str | None</strong></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
 passed to provide information for defacing. Landmarks can be determined
 from the head model using <em class="xref py py-obj">mne coreg</em> GUI, or they can be determined
 from the MRI using <em class="xref py py-obj">freeview</em>.</p>
@@ -205,7 +210,7 @@ replaced.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-14.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

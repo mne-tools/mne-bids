@@ -29,6 +29,7 @@ Authors
 * `Richard Höchenberger`_
 * `Alexandre Gramfort`_
 * `Austin Hurst`_
+* `Alex Rockhill`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,6 +61,7 @@ Bug fixes
 - Ensure sidecar files (`.tsv` and `.json`) are always read and written in UTF-8, by `Richard Höchenberger`_ (:gh:`625`)
 - Fix a bug where ``participants.tsv`` was not being appended to correctly when it contained a subset of ``hand``, ``age`` and ``sex``, by `Adam Li`_ (:gh:`648`)
 - :func:`mne_bids.copyfiles.copyfile_eeglab` didn't handle certain EEGLAB files correctly, by `Richard Höchenberger`_ (:gh:`653`)
+- Fix bug where images with different orientations than the T1 used to define the landmarks were defaced improperly, by `Alex Rockhill`_ (:gh:`651`)
 
 API changes
 ^^^^^^^^^^^
