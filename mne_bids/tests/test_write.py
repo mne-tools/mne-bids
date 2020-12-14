@@ -1582,20 +1582,18 @@ def test_write_anat(_bids_validate):
 
         assert np.mean(all_img_data[0] == img_data) > 0.98
 
-        if in_head:
-            continue
+        if not in_head:
+            # crash for raw also
+            with pytest.raises(ValueError, match='use either `landmarks`'):
+                write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
+                           trans=trans, deface=True, landmarks=landmarks,
+                           verbose=True, overwrite=True)
 
-        # crash for raw also
-        with pytest.raises(ValueError, match='Please use either `landmarks`'):
-            write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                       trans=trans, deface=True, landmarks=landmarks,
-                       verbose=True, overwrite=True)
-
-        # crash for trans also
-        with pytest.raises(ValueError, match='`trans` was provided'):
-            write_anat(t1w_mgh, bids_path=bids_path, trans=trans,
-                       deface=True, landmarks=landmarks, verbose=True,
-                       overwrite=True)
+            # crash for trans also
+            with pytest.raises(ValueError, match='`trans` was provided'):
+                write_anat(t1w_mgh, bids_path=bids_path, trans=trans,
+                           deface=True, landmarks=landmarks, verbose=True,
+                           overwrite=True)
 
     # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='Head space landmarks provided'):
