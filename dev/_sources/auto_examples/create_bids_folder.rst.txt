@@ -152,7 +152,7 @@ You can also use MNE-BIDS to create folder hierarchies.
   .. container:: binder-badge
 
     .. image:: images/binder_badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.6/notebooks/auto_examples/create_bids_folder.ipynb
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/create_bids_folder.ipynb
       :alt: Launch binder
       :width: 150 px
 

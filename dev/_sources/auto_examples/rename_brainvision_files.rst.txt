@@ -183,7 +183,7 @@ For that, see the `BrainVision Validator <bv-validator_>`_
   .. container:: binder-badge
 
     .. image:: images/binder_badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.6/notebooks/auto_examples/rename_brainvision_files.ipynb
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/rename_brainvision_files.ipynb
       :alt: Launch binder
       :width: 150 px
 
