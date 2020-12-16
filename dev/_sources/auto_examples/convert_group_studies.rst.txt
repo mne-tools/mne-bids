@@ -91,6 +91,25 @@ And fetch the data for several subjects and runs of a single task.
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:00,    3.70MB/s]     15%|#4        | Downloading : 376k/2.48M [00:00<00:00,    3.83MB/s]      60%|######    | Downloading : 1.49M/2.48M [00:00<00:00,    4.01MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    4.21MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    25.2MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R08.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:00,    3.80MB/s]     15%|#4        | Downloading : 376k/2.48M [00:00<00:00,    3.93MB/s]      60%|######    | Downloading : 1.49M/2.48M [00:00<00:00,    4.11MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    27.8MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:00,    3.89MB/s]     15%|#4        | Downloading : 376k/2.48M [00:00<00:00,    4.02MB/s]      60%|######    | Downloading : 1.49M/2.48M [00:00<00:00,    4.22MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    4.42MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    28.5MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.85MB/s]     15%|#5        | Downloading : 376k/2.44M [00:00<00:00,    3.98MB/s]      51%|#####     | Downloading : 1.24M/2.44M [00:00<00:00,    4.16MB/s]     92%|#########1| Downloading : 2.24M/2.44M [00:00<00:00,    4.36MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    24.7MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R08.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.82MB/s]     15%|#5        | Downloading : 376k/2.44M [00:00<00:00,    3.95MB/s]      41%|####      | Downloading : 0.99M/2.44M [00:00<00:00,    4.13MB/s]     82%|########1 | Downloading : 1.99M/2.44M [00:00<00:00,    4.33MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    4.51MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    22.3MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.85MB/s]     15%|#5        | Downloading : 376k/2.44M [00:00<00:00,    3.99MB/s]      41%|####      | Downloading : 0.99M/2.44M [00:00<00:00,    4.17MB/s]     82%|########1 | Downloading : 1.99M/2.44M [00:00<00:00,    4.37MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    25.1MB/s]
+
 
 
 
@@ -1004,7 +1023,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.435 seconds)
+   **Total running time of the script:** ( 0 minutes  1.593 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:
@@ -1019,7 +1038,7 @@ Now let's generate a report on the dataset.
   .. container:: binder-badge
 
     .. image:: images/binder_badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.6/notebooks/auto_examples/convert_group_studies.ipynb
       :alt: Launch binder
       :width: 150 px
 

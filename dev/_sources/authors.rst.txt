@@ -18,3 +18,4 @@
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
 .. _Austin Hurst: https://github.com/a-hurst
 .. _Robert Luke: https://github.com/rob-luke
+.. _Ethan Knights: https://github.com/ethanknights

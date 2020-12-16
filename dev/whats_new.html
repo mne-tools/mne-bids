@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>What’s new? &#8212; mne_bids 0.6.dev0 documentation</title>
+    <title>What’s new? &#8212; mne_bids 0.6 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -43,7 +43,7 @@
         </button>
         <a class="navbar-brand" href="index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.6.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.6</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -80,12 +80,13 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.6.dev0
+    v0.6
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.6</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
@@ -114,14 +115,14 @@
       <div class="col-md-3">
         <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
 <li><a class="reference internal" href="#">What’s new?</a><ul>
-<li><a class="reference internal" href="#version-0-6-unreleased">Version 0.6 (unreleased)</a><ul>
+<li><a class="reference internal" href="#version-0-6">Version 0.6 🎄</a><ul>
 <li><a class="reference internal" href="#notable-changes">Notable changes</a></li>
 <li><a class="reference internal" href="#authors">Authors</a></li>
 <li><a class="reference internal" href="#detailed-list-of-changes">Detailed list of changes</a><ul>
 <li><a class="reference internal" href="#enhancements">Enhancements</a></li>
-<li><a class="reference internal" href="#bug-fixes">Bug fixes</a></li>
 <li><a class="reference internal" href="#api-changes">API changes</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#bug-fixes">Bug fixes</a></li>
 </ul>
 </li>
 </ul>
@@ -136,22 +137,45 @@
       
   <div class="section" id="what-s-new">
 <span id="whats-new"></span><h1>What’s new?<a class="headerlink" href="#what-s-new" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-6-unreleased">
-<span id="changes-0-6"></span><h2>Version 0.6 (unreleased)<a class="headerlink" href="#version-0-6-unreleased" title="Permalink to this headline">¶</a></h2>
-<p>xxx</p>
+<div class="section" id="version-0-6">
+<span id="changes-0-6"></span><h2>Version 0.6 🎄<a class="headerlink" href="#version-0-6" title="Permalink to this headline">¶</a></h2>
+<p>These are challenging days for many of us, and to make your lives
+ever so slightly easier, we’ve been working hard to deliver this early
+Christmas present 🎁 And even if you do not celebrate Christmas, we are quite
+certain you will like what we got for you! So – what are you waiting for? It’s
+time to unwrap!</p>
 <div class="section" id="notable-changes">
 <h3>Notable changes<a class="headerlink" href="#notable-changes" title="Permalink to this headline">¶</a></h3>
-<p>xxx</p>
+<ul class="simple">
+<li><p>The new Inspector, which can be invoked via <a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset()</span></code></a>,
+allows you to interactively explore your raw data, change
+the bad channels selection, and edit <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>. It also
+performs automated detection of flat data segments or channels, to assist
+you during visual inspection. The capabilities of the inspector will be
+further expanded in upcoming releases of MNE-BIDS.</p></li>
+<li><p>To further assist you during data inspection, we have added a function to
+summarize all events present in a dataset,
+<a class="reference internal" href="generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.stats.count_events()</span></code></a>.</p></li>
+<li><p>Sidecar JSON files can now be updated using a template via
+<a class="reference internal" href="generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_sidecar_json()</span></code></a>.</p></li>
+<li><p>You can now read and write FLASH MRI images using
+<a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a>. We also fixed some issues with MRI defacing
+along the way.</p></li>
+<li><p>Event durations are now preserved upon reading and writing data (we used to
+set all event durations to zero before).</p></li>
+</ul>
 </div>
 <div class="section" id="authors">
 <h3>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
 <li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
-<li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
+<li><p><a class="reference external" href="http://github.com/alexrockhill">Alex Rockhill</a></p></li>
 <li><p><a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a></p></li>
 <li><p><a class="reference external" href="https://github.com/a-hurst">Austin Hurst</a></p></li>
-<li><p><a class="reference external" href="http://github.com/alexrockhill">Alex Rockhill</a></p></li>
+<li><p><a class="reference external" href="https://github.com/ethanknights">Ethan Knights</a>  (new contributor)</p></li>
+<li><p><a class="reference external" href="https://perso.telecom-paristech.fr/mjas/">Mainak Jas</a></p></li>
+<li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
 </ul>
 </div>
 <div class="section" id="detailed-list-of-changes">
@@ -159,9 +183,7 @@
 <div class="section" id="enhancements">
 <h4>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>The function <a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree()</span></code></a> has a new parameter <code class="docutils literal notranslate"><span class="pre">return_str</span></code> which allows it to return a str of the dir tree instead of printing it, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/600">#600</a>)</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> now preserves event durations when writing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> to <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code> files, and <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> restores these durations upon reading, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/603">#603</a>)</p></li>
-<li><p>Writing BrainVision data via <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> will now set the unit of EEG channels to µV for enhanced interoperability with other software, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a>, <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a>, and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/610">#610</a>)</p></li>
+<li><p>The function <a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree()</span></code></a> has a new parameter <code class="docutils literal notranslate"><span class="pre">return_str</span></code> which allows it to return a str of the dir tree instead of printing it, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/600">#600</a>)</p></li>
 <li><p>The function <a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree()</span></code></a> has a new parameter <code class="docutils literal notranslate"><span class="pre">return_str</span></code> which allows it to return a str of the dir tree instead of printing it, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/600">#600</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> now preserves event durations when writing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> to <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code> files, and <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> restores these durations upon reading, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/603">#603</a>)</p></li>
 <li><p>Writing BrainVision data via <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> will now set the unit of EEG channels to µV for enhanced interoperability with other software, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a>, <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a>, and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/610">#610</a>)</p></li>
@@ -170,6 +192,21 @@
 <li><p>Add support for anonymizing EDF and BDF files without converting to BrainVision format, by <a class="reference external" href="https://github.com/a-hurst">Austin Hurst</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/636">#636</a>)</p></li>
 <li><p>Add support for writing FLASH MRI data with <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/641">#641</a>)</p></li>
 <li><p>Add interactive data inspector <a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset()</span></code></a>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/561">#561</a>)</p></li>
+<li><p>Do not complain about missing events if it’s likely we’re dealing with resting-state data in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, <strong>by new contributor</strong> <a class="reference external" href="https://github.com/ethanknights">Ethan Knights</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/631">#631</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="api-changes">
+<h4>API changes<a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>When passing event IDs to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> via <code class="docutils literal notranslate"><span class="pre">events_data</span></code> without an accompanying event description in <code class="docutils literal notranslate"><span class="pre">event_id</span></code>, we will now raise a <em class="xref py py-obj">ValueError</em>. This ensures that accidentally un-described events won’t get written unnoticed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/603">#603</a>)</p></li>
+<li><p>The <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> now has a parameter <code class="docutils literal notranslate"><span class="pre">extra_params</span></code> to allow passing arguments specific to a file format, by <a class="reference external" href="https://perso.telecom-paristech.fr/mjas/">Mainak Jas</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/638">#638</a>)</p></li>
+<li><p>The first parameter of <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a> is now called <code class="docutils literal notranslate"><span class="pre">image</span></code> and not <code class="docutils literal notranslate"><span class="pre">t1w</span></code>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/641">#641</a>)</p></li>
+</ul>
+</div>
+<div class="section" id="requirements">
+<h4>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Writing BrainVision data now requires <code class="docutils literal notranslate"><span class="pre">pybv</span></code> 0.4 or later.</p></li>
 </ul>
 </div>
 <div class="section" id="bug-fixes">
@@ -186,20 +223,6 @@
 <li><p>Fix a bug where <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> was not being appended to correctly when it contained a subset of <code class="docutils literal notranslate"><span class="pre">hand</span></code>, <code class="docutils literal notranslate"><span class="pre">age</span></code> and <code class="docutils literal notranslate"><span class="pre">sex</span></code>, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/648">#648</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_eeglab()</span></code></a> didn’t handle certain EEGLAB files correctly, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/653">#653</a>)</p></li>
 <li><p>Fix bug where images with different orientations than the T1 used to define the landmarks were defaced improperly, by <a class="reference external" href="http://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/651">#651</a>)</p></li>
-</ul>
-</div>
-<div class="section" id="api-changes">
-<h4>API changes<a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li><p>When passing event IDs to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> via <code class="docutils literal notranslate"><span class="pre">events_data</span></code> without an accompanying event description in <code class="docutils literal notranslate"><span class="pre">event_id</span></code>, we will now raise a <em class="xref py py-obj">ValueError</em>. This ensures that accidentally un-described events won’t get written unnoticed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/603">#603</a>)</p></li>
-<li><p>The <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> now has a parameter <code class="docutils literal notranslate"><span class="pre">extra_params</span></code> to allow passing arguments specific to a file format, by <a class="reference external" href="https://perso.telecom-paristech.fr/mjas/">Mainak Jas</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/638">#638</a>)</p></li>
-<li><p>The first parameter of <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a> is now called <code class="docutils literal notranslate"><span class="pre">image</span></code> and not <code class="docutils literal notranslate"><span class="pre">t1w</span></code>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/641">#641</a>)</p></li>
-</ul>
-</div>
-<div class="section" id="requirements">
-<h4>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h4>
-<ul class="simple">
-<li><p>Writing BrainVision data now requires <code class="docutils literal notranslate"><span class="pre">pybv</span></code> 0.4 or later.</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </div>
@@ -220,7 +243,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-14.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-16.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
