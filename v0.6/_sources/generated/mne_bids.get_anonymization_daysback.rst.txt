@@ -1,0 +1,11 @@
+﻿mne\_bids.get\_anonymization\_daysback
+======================================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: get_anonymization_daysback
+
+.. _sphx_glr_backreferences_mne_bids.get_anonymization_daysback:
+
+.. minigallery:: mne_bids.get_anonymization_daysback
+    :add-heading:

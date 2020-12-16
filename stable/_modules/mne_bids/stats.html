@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.stats &#8212; mne_bids 0.6 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.6</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../whats_new.html">News</a></li>
+                <li><a href="../../install.html">Install</a></li>
+                <li><a href="../../use.html">Use</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../generated/cli.html">CLI</a></li>
+                <li><a href="../../contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.6
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.6</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <h1>Source code for mne_bids.stats</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Some functions to extract stats from a BIDS dataset.&quot;&quot;&quot;</span>
+
+<span class="c1"># Authors: Alex Gramfort &lt;alexandre.gramfort@inria.fr&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">get_datatypes</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">EPHY_ALLOWED_DATATYPES</span>
+
+
+<div class="viewcode-block" id="count_events"><a class="viewcode-back" href="../../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events">[docs]</a><span class="k">def</span> <span class="nf">count_events</span><span class="p">(</span><span class="n">root_or_path</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Count events present in dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root_or_path : str | pathlib.Path | BIDSPath</span>
+<span class="sd">        If str or Path it is the root folder of the BIDS dataset.</span>
+<span class="sd">        If a BIDSPath is passed it allows to limit the count</span>
+<span class="sd">        to a subject, a session or a run by only considering</span>
+<span class="sd">        the event files that match this BIDSPath.</span>
+<span class="sd">    datatype : str</span>
+<span class="sd">        Type of the data recording. Can be ``meg``, ``eeg``,</span>
+<span class="sd">        ``ieeg`` or ``auto``. If ``auto`` and a :class:`mne_bids.BIDSPath`</span>
+<span class="sd">        isinstance is passed as ``root_or_path`` which has a ``datatype``</span>
+<span class="sd">        attribute set, then this data type will be used. Otherwise, only</span>
+<span class="sd">        one data type should be present in the dataset to avoid any</span>
+<span class="sd">        ambiguity.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    counts : pd.DataFrame</span>
+<span class="sd">        The pandas dataframe containing all the counts of trial_type</span>
+<span class="sd">        in all matching events.tsv files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">root_or_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root_or_path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">root_or_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;tsv&#39;</span><span class="p">)</span>
+
+    <span class="n">datatypes</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">this_datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">datatypes</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_datatypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Multiple datatypes present (</span><span class="si">{</span><span class="n">this_datatypes</span><span class="si">}</span><span class="s1">).&#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39; You need to specity datatype got: </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">this_datatypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No valid datatype present.&#39;</span><span class="p">)</span>
+
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">this_datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;datatype (</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1">) is not supported. &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;It must be one of: </span><span class="si">{</span><span class="n">EPHY_ALLOWED_DATATYPES</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">bp</span><span class="o">.</span><span class="n">task</span> <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">()]))</span>
+
+    <span class="n">all_counts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+
+        <span class="n">all_df</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">():</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bp</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">subject</span>
+            <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">session</span>
+            <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">df</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span>
+            <span class="n">all_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">all_df</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_df</span><span class="p">)</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
+
+        <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;trial_type&#39;</span><span class="p">)</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;BAD_ACQ_SKIP&#39;</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;BAD_ACQ_SKIP&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">counts</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span>
+            <span class="p">[[</span><span class="n">task</span><span class="p">]</span> <span class="o">*</span> <span class="n">counts</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">counts</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">all_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">all_counts</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No events files found.&#39;</span><span class="p">)</span>
+
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_counts</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">counts</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-16.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>

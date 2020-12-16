@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.inspect_dataset &#8212; mne_bids 0.6 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.6</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../whats_new.html">News</a></li>
+                <li><a href="../install.html">Install</a></li>
+                <li><a href="../use.html">Use</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="cli.html">CLI</a></li>
+                <li><a href="../contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.6
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.6</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">mne_bids.inspect_dataset</a><ul>
+<li><a class="reference internal" href="#examples-using-mne-bids-inspect-dataset">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="mne-bids-inspect-dataset">
+<h1>mne_bids.inspect_dataset<a class="headerlink" href="#mne-bids-inspect-dataset" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="mne_bids.inspect_dataset">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">inspect_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">find_flat</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">l_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_annotations</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/inspect.html#inspect_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.inspect_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inspect and annotate BIDS raw data.</p>
+<p>This function allows you to browse MEG, EEG, and iEEG raw data stored in a
+BIDS dataset. You can toggle the status of a channel (bad or good) by
+clicking on the traces, and when closing the browse window, you will be
+asked whether you want to save the changes to the existing BIDS dataset or
+discard them.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This functionality is still experimental and will be extended
+in the future. Its API will likely change. Planned features
+include automated bad channel detection and visualization of
+MRI images.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, only MEG, EEG, and iEEG data can be inspected.</p>
+</div>
+<p>To add or modify annotations, press <code class="docutils literal notranslate"><span class="pre">A</span></code> to toggle annotation mode.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>A <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> containing at least a <code class="docutils literal notranslate"><span class="pre">root</span></code>. All
+matching files will be inspected. To select only a subset of the data,
+set more <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> attributes. If <code class="docutils literal notranslate"><span class="pre">datatype</span></code> is not
+set and multiple datatypes are found, they will be inspected in the
+following order: MEG, EEG, iEEG.
+To read a specific file, set all the <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>
+attributes required to uniquely identify the file: If this <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>
+is accepted by <a class="reference internal" href="mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a>, it will work here.</p>
+</dd>
+<dt><strong>find_flat</strong><span class="classifier">bool</span></dt><dd><p>Whether to auto-detect channels producing “flat” signals, i.e., with
+unusually low variability. Flat <strong>segments</strong> will be added to
+<code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>, while channels with more than 5% of flat data will be
+marked as <code class="docutils literal notranslate"><span class="pre">bad</span></code> in <code class="docutils literal notranslate"><span class="pre">*_channels.tsv</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function calls <a class="reference external" href="https://mne.tools/dev/generated/mne.preprocessing.annotate_flat.html#mne.preprocessing.annotate_flat" title="(in MNE v0.22.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.preprocessing.annotate_flat()</span></code></a> and
+will only consider segments of at least <strong>50 ms consecutive
+flatness</strong> as “flat” (deviating from MNE-Python’s default of 5 ms).
+If more than 5% of a channel’s data has been marked as flat, the
+entire channel will be added to the list of bad channels. Only flat
+time segments applying to channels <strong>not</strong> marked as bad will be
+added to <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>.</p>
+</div>
+</dd>
+<dt><strong>l_freq</strong><span class="classifier">float | None</span></dt><dd><p>The high-pass filter cutoff frequency to apply when displaying the
+data. This can be useful when inspecting data with slow drifts. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, no high-pass filter will be applied.</p>
+</dd>
+<dt><strong>h_freq</strong><span class="classifier">float | None</span></dt><dd><p>The low-pass filter cutoff frequency to apply when displaying the
+data. This can be useful when inspecting data with high-frequency
+artifacts. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no low-pass filter will be applied.</p>
+</dd>
+<dt><strong>show_annotations</strong><span class="classifier">bool</span></dt><dd><p>Whether to show annotations (events, bad segments, …) or not. If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, toggling annotations mode by pressing <code class="docutils literal notranslate"><span class="pre">A</span></code> will be disabled
+as well.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool | None</span></dt><dd><p>If a boolean, whether or not to produce verbose output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+use the default log level.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Disable flat channel &amp; segment detection, and apply a filter with a
+passband of 1–30 Hz.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">inspect_dataset</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">find_flat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="go">                    l_freq=1, h_freq=30)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="examples-using-mne-bids-inspect-dataset">
+<span id="sphx-glr-backreferences-mne-bids-inspect-dataset"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset</span></code><a class="headerlink" href="#examples-using-mne-bids-inspect-dataset" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><div class="figure align-default" id="id1">
+<img alt="03. Interactive data inspection and bad channel selection" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-16.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>

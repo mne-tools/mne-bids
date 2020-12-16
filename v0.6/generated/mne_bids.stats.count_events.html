@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.stats.count_events &#8212; mne_bids 0.6 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.6</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../whats_new.html">News</a></li>
+                <li><a href="../install.html">Install</a></li>
+                <li><a href="../use.html">Use</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="cli.html">CLI</a></li>
+                <li><a href="../contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.6
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.6</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">mne_bids.stats.count_events</a><ul>
+<li><a class="reference internal" href="#examples-using-mne-bids-stats-count-events">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.stats.count_events</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="section" id="mne-bids-stats-count-events">
+<h1>mne_bids.stats.count_events<a class="headerlink" href="#mne-bids-stats-count-events" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="mne_bids.stats.count_events">
+<code class="sig-prename descclassname">mne_bids.stats.</code><code class="sig-name descname">count_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root_or_path</span></em>, <em class="sig-param"><span class="n">datatype</span><span class="o">=</span><span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/stats.html#count_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.stats.count_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count events present in dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>root_or_path</strong><span class="classifier">str | pathlib.Path | BIDSPath</span></dt><dd><p>If str or Path it is the root folder of the BIDS dataset.
+If a BIDSPath is passed it allows to limit the count
+to a subject, a session or a run by only considering
+the event files that match this BIDSPath.</p>
+</dd>
+<dt><strong>datatype</strong><span class="classifier">str</span></dt><dd><p>Type of the data recording. Can be <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ieeg</span></code> or <code class="docutils literal notranslate"><span class="pre">auto</span></code>. If <code class="docutils literal notranslate"><span class="pre">auto</span></code> and a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>
+isinstance is passed as <code class="docutils literal notranslate"><span class="pre">root_or_path</span></code> which has a <code class="docutils literal notranslate"><span class="pre">datatype</span></code>
+attribute set, then this data type will be used. Otherwise, only
+one data type should be present in the dataset to avoid any
+ambiguity.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>counts</strong><span class="classifier">pd.DataFrame</span></dt><dd><p>The pandas dataframe containing all the counts of trial_type
+in all matching events.tsv files.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="section" id="examples-using-mne-bids-stats-count-events">
+<span id="sphx-glr-backreferences-mne-bids-stats-count-events"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.stats.count_events</span></code><a class="headerlink" href="#examples-using-mne-bids-stats-count-events" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id1">
+<img alt="02. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id2">
+<img alt="04. Convert EEG data to BIDS format" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><div class="figure align-default" id="id3">
+<img alt="05. BIDS conversion for group studies" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-16.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>
