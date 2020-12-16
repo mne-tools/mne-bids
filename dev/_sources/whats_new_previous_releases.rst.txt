@@ -8,6 +8,98 @@ What was new in previous releases?
 ==================================
 
 .. currentmodule:: mne_bids
+.. _changes_0_6:
+
+Version 0.6 🎄
+--------------
+
+These are challenging days for many of us, and to make your lives
+ever so slightly easier, we've been working hard to deliver this early
+Christmas present 🎁 And even if you do not celebrate Christmas, we are quite
+certain you will like what we got for you! So – what are you waiting for? It's
+time to unwrap!
+
+Notable changes
+~~~~~~~~~~~~~~~
+
+- The new Inspector, which can be invoked via :func:`mne_bids.inspect_dataset`,
+  allows you to interactively explore your raw data, change
+  the bad channels selection, and edit :class:`mne.Annotations`. It also
+  performs automated detection of flat data segments or channels, to assist
+  you during visual inspection. The capabilities of the inspector will be
+  further expanded in upcoming releases of MNE-BIDS.
+
+- To further assist you during data inspection, we have added a function to
+  summarize all events present in a dataset,
+  :func:`mne_bids.stats.count_events`.
+
+- Sidecar JSON files can now be updated using a template via
+  :func:`mne_bids.update_sidecar_json`.
+
+- You can now read and write FLASH MRI images using
+  :func:`mne_bids.write_anat`. We also fixed some issues with MRI defacing
+  along the way.
+
+- Event durations are now preserved upon reading and writing data (we used to
+  set all event durations to zero before).
+
+Authors
+~~~~~~~
+
+* `Stefan Appelhoff`_
+* `Adam Li`_
+* `Alex Rockhill`_
+* `Alexandre Gramfort`_
+* `Austin Hurst`_
+* `Ethan Knights`_  (new contributor)
+* `Mainak Jas`_ 
+* `Richard Höchenberger`_
+
+Detailed list of changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Enhancements
+^^^^^^^^^^^^
+
+- The function :func:`mne_bids.print_dir_tree` has a new parameter ``return_str`` which allows it to return a str of the dir tree instead of printing it, by `Stefan Appelhoff`_ (:gh:`600`)
+- The function :func:`mne_bids.print_dir_tree` has a new parameter ``return_str`` which allows it to return a str of the dir tree instead of printing it, by `Stefan Appelhoff`_ (:gh:`600`)
+- :func:`mne_bids.write_raw_bids` now preserves event durations when writing :class:`mne.Annotations` to ``*_events.tsv`` files, and :func:`mne_bids.read_raw_bids` restores these durations upon reading, by `Richard Höchenberger`_ (:gh:`603`)
+- Writing BrainVision data via :func:`mne_bids.write_raw_bids` will now set the unit of EEG channels to µV for enhanced interoperability with other software, by `Alexandre Gramfort`_, `Stefan Appelhoff`_, and `Richard Höchenberger`_ (:gh:`610`)
+- New function :func:`mne_bids.stats.count_events` to easily summarize all the events present in a dataset, by `Alexandre Gramfort`_ (:gh:`629`)
+- Add :func:`mne_bids.update_sidecar_json` to allow updating sidecar JSON files with a template, by `Adam Li`_ and `Austin Hurst`_ (:gh:`601`)
+- Add support for anonymizing EDF and BDF files without converting to BrainVision format, by `Austin Hurst`_ (:gh:`636`)
+- Add support for writing FLASH MRI data with :func:`mne_bids.write_anat`, by `Alexandre Gramfort`_ (:gh:`641`)
+- Add interactive data inspector :func:`mne_bids.inspect_dataset`, by `Richard Höchenberger`_ (:gh:`561`)
+- Do not complain about missing events if it's likely we're dealing with resting-state data in :func:`mne_bids.write_raw_bids`, **by new contributor** `Ethan Knights`_ (:gh:`631`)
+
+API changes
+^^^^^^^^^^^
+
+- When passing event IDs to :func:`mne_bids.write_raw_bids` via ``events_data`` without an accompanying event description in ``event_id``, we will now raise a `ValueError`. This ensures that accidentally un-described events won't get written unnoticed, by `Richard Höchenberger`_ (:gh:`603`)
+- The :func:`mne_bids.get_head_mri_trans` now has a parameter ``extra_params`` to allow passing arguments specific to a file format, by `Mainak Jas`_ (:gh:`638`)
+- The first parameter of :func:`mne_bids.write_anat` is now called ``image`` and not ``t1w``, by `Alexandre Gramfort`_ (:gh:`641`)
+
+Requirements
+^^^^^^^^^^^^
+
+- Writing BrainVision data now requires ``pybv`` 0.4 or later.
+
+Bug fixes
+^^^^^^^^^
+
+- Make sure large FIF files with splits are handled transparently on read and write, by `Alexandre Gramfort`_ (:gh:`612`)
+- The function :func:`mne_bids.write_raw_bids` now outputs ``*_electrodes.tsv`` and ``*_coordsystem.json`` files for EEG/iEEG data that are BIDS-compliant (only contain subject, session, acquisition, and space entities), by `Adam Li`_ (:gh:`601`)
+- Make sure writing empty-room data with anonymization shifts the session back in time, by `Alexandre Gramfort`_ (:gh:`611`)
+- Fix a bug in :func:`mne_bids.write_raw_bids`, where passing raw data with :class:`mne.Annotations` set and the ``event_id`` dictionary not containing the :class:`mne.Annotations` descriptions as keys would raise an error, by `Richard Höchenberger`_ (:gh:`603`)
+- Fix a bug in :func:`mne_bids.write_raw_bids` when passing raw MEG data with Internal Active Shielding (IAS) from Triux system, by `Alexandre Gramfort`_ (:gh:`616`)
+- Fix a bug in :func:`mne_bids.write_raw_bids`, where original format of data was not kept when writing to FIFF, by `Alexandre Gramfort`_, `Stefan Appelhoff`_, and `Richard Höchenberger`_ (:gh:`610`)
+- Fix a bug where conversion to BrainVision format was done even when non-Volt channel types were present in the data (BrainVision conversion is done by ``pybv``, which currently only supports Volt channel types), by `Stefan Appelhoff`_ (:gh:`619`)
+- Ensure sidecar files (`.tsv` and `.json`) are always read and written in UTF-8, by `Richard Höchenberger`_ (:gh:`625`)
+- Fix a bug where ``participants.tsv`` was not being appended to correctly when it contained a subset of ``hand``, ``age`` and ``sex``, by `Adam Li`_ (:gh:`648`)
+- :func:`mne_bids.copyfiles.copyfile_eeglab` didn't handle certain EEGLAB files correctly, by `Richard Höchenberger`_ (:gh:`653`)
+- Fix bug where images with different orientations than the T1 used to define the landmarks were defaced improperly, by `Alex Rockhill`_ (:gh:`651`)
+
+
 .. _changes_0_5:
 
 Version 0.5 (2020-10-22)
@@ -25,7 +117,7 @@ Notable changes
   and folder locations (e.g. ``bids_root``) have been updated to work with
   ``BIDSPath``. Others have been removed.
   Consequently, you will need to update your existing code, too.
-  See the `API changes`_ section for an overview of which functions have
+  See the ``API changes`` section for an overview of which functions have
   changed or have been removed, and follow
   :ref:`this introduction<bidspath-intro>` and our
   to learn about the basics of ``BIDSPath``. Don't worry – it's going to be a
