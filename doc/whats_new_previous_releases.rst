@@ -117,7 +117,7 @@ Notable changes
   and folder locations (e.g. ``bids_root``) have been updated to work with
   ``BIDSPath``. Others have been removed.
   Consequently, you will need to update your existing code, too.
-  See the `API changes`_ section for an overview of which functions have
+  See the ``API changes`` section for an overview of which functions have
   changed or have been removed, and follow
   :ref:`this introduction<bidspath-intro>` and our
   to learn about the basics of ``BIDSPath``. Don't worry – it's going to be a
