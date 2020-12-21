@@ -12,11 +12,11 @@
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -575,29 +575,7 @@
         <span class="n">pid</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">birthdate</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">id_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
         <span class="n">startdate</span><span class="p">,</span> <span class="n">admin_code</span><span class="p">,</span> <span class="n">tech</span><span class="p">,</span> <span class="n">equip</span> <span class="o">=</span> <span class="n">rec_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
 
-        <span class="c1"># Try to anonymize recording date using 4-digit year from</span>
-        <span class="c1"># &quot;Startdate&quot; field from &quot;local recording identification&quot;</span>
-        <span class="c1"># section, because the generic &quot;startdate&quot; field only</span>
-        <span class="c1"># supports 2-digit years.</span>
-        <span class="c1">#</span>
-        <span class="c1"># XXX: recording dates are specified twice in EDF/EDF+/BDF,</span>
-        <span class="c1"># MNE-Python currently parses the 2-digit year field. If that is</span>
-        <span class="c1"># changed to defaulting to the 4-digit field, this try-except</span>
-        <span class="c1"># clause can be removed. See:</span>
-        <span class="c1"># https://github.com/mne-tools/mne-python/issues/8544</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">true_year</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">startdate</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%b-%Y&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
-            <span class="n">newdate</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">true_year</span><span class="p">)</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newdate</span>
-        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="c1"># We could not parse the &quot;Startdate&quot; field from &quot;local recording</span>
-            <span class="c1"># identification&quot; section (e.g., because it was &quot;X&quot;).</span>
-            <span class="c1"># So fall back to using the standard &quot;startdate&quot; field that only</span>
-            <span class="c1"># supports 2-digit years.</span>
-            <span class="c1"># This is what MNE-Python currently parses and puts into</span>
-            <span class="c1"># raw.info[&quot;meas_date&quot;]</span>
-            <span class="k">if</span> <span class="s2">&quot;does not match format &#39;</span><span class="si">%d</span><span class="s2">-%b-%Y&#39;&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">e</span>
+        <span class="c1"># Try to anonymize the recording date</span>
         <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">)</span>
         <span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
         <span class="n">startdate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%b-%Y&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
@@ -725,8 +703,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-16.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-21.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.0.<br/>
     </p>
   </div>
 </footer>

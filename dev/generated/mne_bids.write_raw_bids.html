@@ -12,11 +12,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -148,7 +148,7 @@ in the sidecars manually.</p></li>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier">instance of mne.io.Raw</span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a>. The data
+<dt><strong>raw</strong><span class="classifier">instance of mne.io.Raw</span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a>. The data
 should not be loaded from disk, i.e., <code class="docutils literal notranslate"><span class="pre">raw.preload</span></code> must be
 <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
@@ -182,7 +182,7 @@ object, as well as the extension. Data with MEG and other
 electrophysiology data in the same file will be stored as <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>.</p>
 </dd>
 <dt><strong>events_data</strong><span class="classifier">path-like | array | None</span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
-sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
+sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
 are always written).
 If a path, specifies the location of an MNE events file.
 If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
@@ -192,7 +192,7 @@ Corresponding descriptions for all event IDs (listed in the third
 column of the MNE events array) must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
 parameter; otherwise, an exception is raised.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will only be inferred from the the raw object’s
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">None</span></code>, writes the union of <code class="docutils literal notranslate"><span class="pre">events_data</span></code> and
@@ -257,10 +257,10 @@ no content will be printed.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
@@ -268,14 +268,14 @@ no content will be printed.</p>
 <code class="docutils literal notranslate"><span class="pre">raw.info['meas_date']</span></code> are set to proper (not-<code class="docutils literal notranslate"><span class="pre">None</span></code>) values to allow
 for the correct computation of each participant’s age when creating
 <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>.</p>
-<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
+<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
 <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> to events. Additionally, any events supplied via
 <code class="docutils literal notranslate"><span class="pre">events_data</span></code> will be written too. To avoid writing of annotations,
 remove them from the raw file via <code class="docutils literal notranslate"><span class="pre">raw.set_annotations(None)</span></code> before
 invoking <code class="docutils literal notranslate"><span class="pre">write_raw_bids</span></code>.</p>
 <p>To write events encoded in a <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channel, you first need to create the
 events array manually and pass it to this function:</p>
-<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a> for more information on event
+<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a> for more information on event
 extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
 </dd></dl>
 
@@ -325,8 +325,8 @@ extraction from <code class="docutils literal notranslate"><span class="pre">STI
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-16.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-21.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.0.<br/>
     </p>
   </div>
 </footer>

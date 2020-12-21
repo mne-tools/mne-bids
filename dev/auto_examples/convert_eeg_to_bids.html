@@ -12,11 +12,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -128,7 +128,8 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">here</span></a>     to download the full example code or to run this example in your browser via Binder</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">here</span></a>
+to download the full example code or to run this example in your browser via Binder</p>
 </div>
 <div class="sphx-glr-example-title section" id="convert-eeg-data-to-bids-format">
 <span id="sphx-glr-auto-examples-convert-eeg-to-bids-py"></span><h1>04. Convert EEG data to BIDS format<a class="headerlink" href="#convert-eeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
@@ -221,7 +222,7 @@ and supply meta data files to properly <em>bidsify</em> this data.</p>
 <h2>Convert to BIDS<a class="headerlink" href="#convert-to-bids" title="Permalink to this headline">¶</a></h2>
 <p>Let’s start with loading the data and extracting the events.
 We are reading the data using MNE-Python’s <code class="docutils literal notranslate"><span class="pre">io</span></code> module and the
-<a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v0.22.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function.
+<a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v0.23.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function.
 Note that we must use the <code class="docutils literal notranslate"><span class="pre">preload=False</span></code> parameter, which is the default
 in MNE-Python.
 It prevents the data from being loaded and modified when converting to BIDS.</p>
@@ -249,7 +250,7 @@ intended to carry information about digitized (i.e., <em>measured</em>)
 electrode positions on the scalp of the research subject. Do <em>not</em>
 (!) use these files to store “template” or “idealized” electrode
 positions, like those that can be obtained from
-<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="(in MNE v0.22.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.channels.make_standard_montage()</span></code></a>!</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="(in MNE v0.23.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.channels.make_standard_montage()</span></code></a>!</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the electrode coordinates</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">testing_data</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">data_path</span><span class="p">()</span>
@@ -648,6 +649,7 @@ basename: sub-001_task-RestEyesClosed_eeg.edf)
 <span class="n">counts</span>
 </pre></div>
 </div>
+<div class="output_subarea output_html rendered_html output_result">
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -688,6 +690,7 @@ basename: sub-001_task-RestEyesClosed_eeg.edf)
     </tr>
   </tbody>
 </table>
+</div>
 </div>
 <br />
 <br /><p>We can see that MNE-BIDS wrote several important files related to subject 1
@@ -738,7 +741,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.272 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.149 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -767,8 +770,8 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-16.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-12-21.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.0.<br/>
     </p>
   </div>
 </footer>
