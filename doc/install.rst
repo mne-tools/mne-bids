@@ -6,7 +6,7 @@ Installation
 Dependencies
 ------------
 
-* ``mne`` (>=0.21)
+* ``mne`` (>=0.21.2)
 * ``numpy`` (>=1.14)
 * ``scipy`` (>=0.18.1, or >=1.5.0 for certain operations with EEGLAB data)
 * ``nibabel`` (>=2.2, optional, for processing MRI data)
