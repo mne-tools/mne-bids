@@ -39,7 +39,7 @@ if __name__ == "__main__":
           long_description_content_type='text/markdown',
           python_requires='~=3.6',
           install_requires=[
-              'mne >=0.21',
+              'mne >=0.21.2',
               'numpy >=1.14',
               'scipy >=0.18.1',
           ],

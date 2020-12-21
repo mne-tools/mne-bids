@@ -454,29 +454,7 @@ def copyfile_edf(src, dest, anonymize=None):
         pid, sex, birthdate, name = id_info.split(' ')
         startdate, admin_code, tech, equip = rec_info.split(' ')[1:5]
 
-        # Try to anonymize recording date using 4-digit year from
-        # "Startdate" field from "local recording identification"
-        # section, because the generic "startdate" field only
-        # supports 2-digit years.
-        #
-        # XXX: recording dates are specified twice in EDF/EDF+/BDF,
-        # MNE-Python currently parses the 2-digit year field. If that is
-        # changed to defaulting to the 4-digit field, this try-except
-        # clause can be removed. See:
-        # https://github.com/mne-tools/mne-python/issues/8544
-        try:
-            true_year = datetime.strptime(startdate, '%d-%b-%Y').year
-            newdate = raw.info['meas_date'].replace(year=true_year)
-            raw.info['meas_date'] = newdate
-        except ValueError as e:
-            # We could not parse the "Startdate" field from "local recording
-            # identification" section (e.g., because it was "X").
-            # So fall back to using the standard "startdate" field that only
-            # supports 2-digit years.
-            # This is what MNE-Python currently parses and puts into
-            # raw.info["meas_date"]
-            if "does not match format '%d-%b-%Y'" not in str(e):
-                raise e
+        # Try to anonymize the recording date
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
         info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         startdate = datetime.strftime(info['meas_date'], '%d-%b-%Y').upper()
