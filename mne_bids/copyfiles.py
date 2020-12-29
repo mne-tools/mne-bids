@@ -456,7 +456,7 @@ def copyfile_edf(src, dest, anonymize=None):
 
         # Try to anonymize the recording date
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
-        info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
+        # info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         # startdate = datetime.strftime(info['meas_date'], '%d-%b-%Y').upper()
         # meas_date = datetime.strftime(info['meas_date'], '%d.%m.85')
         startdate = datetime.strptime('01-01-1985', '%d-%b-%Y')

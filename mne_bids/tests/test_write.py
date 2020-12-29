@@ -945,35 +945,6 @@ def test_vhdr(_bids_validate):
                                'suffix']])
 
 
-@pytest.mark.parametrize(
-    'manufacturer, fname, reader',[
-        # ('EDF', 'test_reduced.edf', _read_raw_edf),
-        ('CTF', 'testdata_ctf.ds', _read_raw_ctf)
-    ])
-def test_write_convert_to_recommended_format(manufacturer, fname, reader):
-    bids_root = _TempDir()
-
-    # download data path
-    data_path = op.join(testing.data_path(download=False), manufacturer)
-    raw_fname = op.join(data_path, fname)
-
-    print(raw_fname)
-
-    # the BIDS path for test datasets to get written to
-    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
-
-    raw = reader(raw_fname)
-    # TODO: remove when BrainVision can handle data not in Volts
-    if manufacturer == 'EDF':
-        raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names}, verbose=False)
-    output_bids_path = write_raw_bids(raw, bids_path, convert=True)
-
-    if manufacturer == 'EDF':
-        assert output_bids_path.extension == '.vhdr'
-    elif manufacturer == 'CTF':
-        assert output_bids_path.extension == '.fif'
-
-
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_eegieeg(dir_name, fname, reader, _bids_validate):

@@ -498,9 +498,9 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
 
     # read in associated scans filename
-    scans_fname = BIDSPath(subject=bids_path.subject, session=bids_path.session,
-                           datatype=bids_path.datatype, suffix='scans',
-                           extension='.tsv')
+    scans_fname = BIDSPath(
+        subject=bids_path.subject, session=bids_path.session,
+        datatype=bids_path.datatype, suffix='scans', extension='.tsv')
     if scans_fname.fpath.exists():
         raw = _handle_scans_reading(scans_fname, raw, bids_path,
                                     verbose=verbose)
