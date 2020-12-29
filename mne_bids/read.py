@@ -197,13 +197,14 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     row_ind = fnames.index(data_fname)
 
     # extract the acquisition time from scans file
-    acq_time = datetime.strptime(acq_times[row_ind], '%Y-%m-%dT%H:%M:%S')
-    acq_time.astimezone(tz=timezone.utc)
+    acq_time = datetime.strptime(acq_times[row_ind], '%Y-%m-%dT%H:%M:%S.%fZ')
+    acq_time = acq_time.astimezone(tz=timezone.utc)
 
     if verbose:
-        print(f'Loaded {scans_fname} scans file to set '
-              f'acq_time as {acq_time}.')
-
+        logger.debug(f'Loaded {scans_fname} scans file to set '
+                     f'acq_time as {acq_time}.')
+    print(f'LOADED {scans_fname} and set acq_time to '
+          f'{acq_time}')
     raw.set_meas_date(acq_time)
     return raw
 
@@ -500,7 +501,11 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     # read in associated scans filename
     scans_fname = BIDSPath(
         subject=bids_path.subject, session=bids_path.session,
-        datatype=bids_path.datatype, suffix='scans', extension='.tsv')
+        suffix='scans', extension='.tsv',
+        root=bids_path.root
+    )
+    print(scans_fname.fpath)
+    print(scans_fname.fpath.exists())
     if scans_fname.fpath.exists():
         raw = _handle_scans_reading(scans_fname, raw, bids_path,
                                     verbose=verbose)

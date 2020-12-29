@@ -18,7 +18,6 @@ import os
 import os.path as op
 import re
 import shutil as sh
-from datetime import datetime
 
 from scipy.io import loadmat, savemat
 
@@ -452,24 +451,23 @@ def copyfile_edf(src, dest, anonymize=None):
         if len(rec_info) == 0 or len(rec_info.split(' ')) != 5:
             rec_info = "Startdate X X X X"
         pid, sex, birthdate, name = id_info.split(' ')
-        startdate, admin_code, tech, equip = rec_info.split(' ')[1:5]
+        start_date, admin_code, tech, equip = rec_info.split(' ')[1:5]
 
         # Try to anonymize the recording date
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
-        # info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
-        # startdate = datetime.strftime(info['meas_date'], '%d-%b-%Y').upper()
-        # meas_date = datetime.strftime(info['meas_date'], '%d.%m.85')
-        startdate = datetime.strptime('01-01-1985', '%d-%b-%Y')
-        meas_date = datetime.strptime('01.01.85', '%d.%m.85')
+        anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
+        start_date = '01-JAN-1985'
+        meas_date = '01.01.85'
 
         # Anonymize ID info and write to file
         if keep_his:
             # Always remove participant birthdate and name to be safe
             id_info = [pid, sex, "X", "X"]
-            rec_info = ["Startdate", startdate, admin_code, tech, equip]
+            rec_info = ["Startdate", start_date, admin_code, tech, equip]
         else:
             id_info = ["0", "X", "X", "X"]
-            rec_info = ["Startdate", startdate, "X", "mne-bids_anonymize", "X"]
+            rec_info = ["Startdate", start_date, "X",
+                        "mne-bids_anonymize", "X"]
         with open(dest, 'r+b') as f:
             f.seek(8)  # id_info field starts 8 bytes in
             f.write(bytes(" ".join(id_info).ljust(80), 'ascii'))

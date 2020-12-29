@@ -157,9 +157,11 @@ def test_copyfile_edf():
     outfile = op.join(bids_root2, 'test_copy_anon.edf')
     anonymize = {'daysback': 33459, 'keep_his': False}
     copyfile_edf(infile, outfile, anonymize)
-    prev_date = _edf_get_real_date(infile)
     new_date = _edf_get_real_date(outfile)
-    assert new_date == (prev_date - datetime.timedelta(days=33459))
+
+    # new anonymized date should be the minimum in EDF spec
+    # (i.e. 01-01-1985)
+    assert new_date == datetime.datetime(year=1985, month=1, day=1)
 
     # Test full ID info anonymization
     anon_startdate = datetime.datetime.strftime(new_date, "%d-%b-%Y").upper()

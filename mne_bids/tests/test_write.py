@@ -70,7 +70,8 @@ warning_str = dict(
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
     unraisable_exception='ignore:.*Exception ignored.*:'
-                         'pytest.PytestUnraisableExceptionWarning'
+                         'pytest.PytestUnraisableExceptionWarning',
+    encountered_data_in='ignore:Encountered data in*.:RuntimeWarning:mne',
 )
 
 
@@ -1124,9 +1125,9 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
         kwargs = dict(raw=raw, bids_path=bids_path,
                       anonymize=dict(daysback=daysback), overwrite=True)
         if dir_name == 'EDF':
-            match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
-            with pytest.warns(RuntimeWarning, match=match):
-                write_raw_bids(**kwargs)
+            # match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
+            # with pytest.warns(RuntimeWarning, match=match):
+            write_raw_bids(**kwargs)
         elif dir_name == 'Persyst':
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
@@ -1228,10 +1229,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(raw, bids_path)
         elif dir_name == 'EDF':
-            match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
-            with pytest.warns(RuntimeWarning, match=match):
-                write_raw_bids(**kwargs)  # Just copies.
-                output_path = _test_anonymize(raw, bids_path)
+            # match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
+            # with pytest.warns(RuntimeWarning, match=match):
+            write_raw_bids(**kwargs)  # Just copies.
+            output_path = _test_anonymize(raw, bids_path)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
@@ -1293,9 +1294,9 @@ def test_bdf(_bids_validate):
 
     # test anonymize and convert
     raw = _read_raw_bdf(raw_fname)
-    match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
-    with pytest.warns(RuntimeWarning, match=match):
-        output_path = _test_anonymize(raw, bids_path)
+    # match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
+    # with pytest.warns(RuntimeWarning, match=match):
+    output_path = _test_anonymize(raw, bids_path)
     _bids_validate(output_path)
 
 
@@ -2122,29 +2123,55 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events):
     _bids_validate(bids_root)
 
 
-def test_anonymize_empty_room():
-    """Test writing anonymized empty room data."""
+@pytest.mark.parametrize(
+    'subject, dir_name, fname, reader', [
+        ('01', 'EDF', 'test_reduced.edf', _read_raw_edf),
+        ('02', 'Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+        ('03', 'NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
+        ('emptyroom', 'MEG/sample',
+         'sample_audvis_trunc_raw.fif', _read_raw_fif),
+    ]
+)
+@pytest.mark.filterwarnings(warning_str['encountered_data_in'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_anonymize(subject, dir_name, fname, reader):
+    """Test writing anonymized EDF data."""
     data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
+
+    raw_fname = op.join(data_path, dir_name, fname)
 
     bids_root = _TempDir()
-    raw = _read_raw_fif(raw_fname)
-    er_date = raw.info['meas_date'].strftime('%Y%m%d')
-    er_bids_path = BIDSPath(subject='emptyroom', task='noise',
-                            session=er_date, suffix='meg',
-                            root=bids_root)
-    anonymize = dict(daysback=30000)
-    bids_path = \
-        write_raw_bids(raw, er_bids_path, overwrite=True,
-                       anonymize=anonymize)
-    assert (
-        bids_path.session ==
-        (raw.info['meas_date'] -
-         timedelta(days=anonymize['daysback'])).strftime('%Y%m%d')
-    )
+    raw = reader(raw_fname)
+    raw_date = raw.info['meas_date'].strftime('%Y%m%d')
 
-    raw2 = mne.io.read_raw_fif(bids_path)
+    bids_path = BIDSPath(subject=subject, root=bids_root)
+
+    # handle different edge cases
+    if subject == 'emptyroom':
+        bids_path.update(task='noise', session=raw_date,
+                         suffix='meg', datatype='meg')
+    else:
+        bids_path.update(suffix='ieeg', datatype='ieeg')
+    daysback_min, daysback_max = get_anonymization_daysback(raw)
+    anonymize = dict(daysback=daysback_min + 1)
+    bids_path = \
+        write_raw_bids(raw, bids_path, overwrite=True,
+                       anonymize=anonymize)
+
+    # emptyroom recordings' session should match the recording date
+    if subject == 'emptyroom':
+        assert (
+            bids_path.session ==
+            (raw.info['meas_date'] -
+             timedelta(days=anonymize['daysback'])).strftime('%Y%m%d')
+        )
+
+    raw2 = read_raw_bids(bids_path)
+    if bids_path.extension == '.edf':
+        _raw = reader(bids_path)
+        assert _raw.info['meas_date'].year == 1985
+        assert _raw.info['meas_date'].month == 1
+        assert _raw.info['meas_date'].day == 1
     assert raw2.info['meas_date'].year < 1925
 
 
