@@ -2196,3 +2196,48 @@ def test_sidecar_encoding(_bids_validate):
     raw_read = read_raw_bids(bids_path)
     assert_array_equal(raw.annotations.description,
                        raw_read.annotations.description)
+
+
+@pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
+    """Test conversion of manufacturer data format to BrainVision.
+
+    BrainVision should correctly store data from pybv>=0.5 that
+    has different non-voltage units.
+    """
+    bids_root = _TempDir()
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
+
+    # alter some channels manually
+    raw.set_channel_types({raw.info['ch_names'][0]: 'stim'})
+    raw.info['chs'][0]['unit'] = FIFF.FIFF_UNIT_NONE
+
+    if dir_name == 'EDF':
+        bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            bids_output_path = write_raw_bids(**kwargs)
+    else:
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "double" format'):
+            bids_output_path = write_raw_bids(**kwargs)
+
+    # channel units should stay the same
+    raw2 = read_raw_bids(bids_output_path)
+    assert all([ch1['unit'] == ch2['unit'] for ch1, ch2 in
+                zip(raw.info['chs'], raw2.info['chs'])])
+    assert raw2.info['chs'][0]['unit'] == FIFF.FIFF_UNIT_NONE
+
+    # load in the channels tsv and the channel unit should be not set
+    channels_fname = bids_output_path.update(suffix='channels', extension='.tsv')
+    channels_tsv = _from_tsv(channels_fname)
+    assert channels_tsv['units'][0] == 'n/a'
