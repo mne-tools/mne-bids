@@ -502,8 +502,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         suffix='scans', extension='.tsv',
         root=bids_path.root
     )
-    print(scans_fname.fpath)
-    print(scans_fname.fpath.exists())
     if scans_fname.fpath.exists():
         raw = _handle_scans_reading(scans_fname, raw, bids_path,
                                     verbose=verbose)
