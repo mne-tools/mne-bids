@@ -9,6 +9,7 @@
 import os.path as op
 import glob
 import json
+from datetime import datetime, timezone
 
 import numpy as np
 import mne
@@ -183,6 +184,40 @@ def _handle_participants_reading(participants_fname, raw,
         raw.info['subject_info'][infokey] = value
 
     return raw
+
+
+def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
+    scans_tsv = _from_tsv(scans_fname)
+
+    # get the row
+    data_fname = op.join(bids_path.datatype, bids_path.fpath.name)
+    fnames = scans_tsv['filename']
+    acq_times = scans_tsv['acq_time']
+    row_ind = fnames.index(data_fname)
+
+    # extract the acquisition time from scans file
+    acq_time = datetime.strptime(acq_times[row_ind], '%Y-%m-%dT%H:%M:%S')
+    acq_time.astimezone(tz=timezone.utc)
+
+    # EDF files do not need to match if the acq time is "anonymized" date
+    expected_edf_anon_date = datetime(
+        year=1985, month=1, day=1, hour=0,
+        minute=0, second=0, tzinfo=timezone.utc)
+    show_warning = True
+    if bids_path.extension == '.edf' and \
+            raw.info['meas_date'] == expected_edf_anon_date:
+        show_warning = False
+
+    # acquisition time in scans.tsv and recording should match in general
+    if acq_time != raw.info['meas_date'] and show_warning:
+        warn(f'Scans.tsv acq_time {acq_time} does not match '
+             f'the recording date in the raw file '
+             f'{raw.info["meas_date"]}. '
+             f'Using the date in scans.tsv file as ground truth.')
+
+    raw.set_meas_date(acq_time)
+    return raw
+
 
 
 def _handle_info_reading(sidecar_fname, raw, verbose=None):
@@ -473,6 +508,14 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                            on_error='warn')
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
+
+    # read in associated scans filename
+    scans_fname = BIDSPath(subject=bids_path.subject, session=bids_path.session,
+                           datatype=bids_path.datatype, suffix='scans',
+                           extension='.tsv')
+    if scans_fname.fpath.exists():
+        raw = _handle_scans_reading(scans_fname, raw, bids_path,
+                                    verbose=verbose)
 
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')

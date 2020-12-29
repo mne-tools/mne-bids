@@ -902,7 +902,7 @@ def make_dataset_description(path, name, data_license=None,
 
 
 def write_raw_bids(raw, bids_path, events_data=None,
-                   event_id=None, anonymize=None,
+                   event_id=None, anonymize=None, convert=False,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1002,6 +1002,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
             recording date will be overwritten as well. If True, keep subject
             information apart from the recording date.
 
+    convert : bool
+        Whether to convert files to RECOMMENDED BIDS format for that
+        datatype. For example, if iEEG, then the RECOMMENDED format is
+        BrainVision, so files would be converted to have extension ``.vhdr``.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1165,7 +1169,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
         suffix='channels', extension='.tsv')
 
     # Anonymize
-    convert = False
     if anonymize is not None:
         daysback, keep_his = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his, verbose=verbose)
@@ -1241,13 +1244,22 @@ def write_raw_bids(raw, bids_path, events_data=None,
             f'"{bids_path.fpath}" already exists. '  # noqa: F821
             'Please set overwrite to True.')
 
+    # if user wants to convert data to
+    if convert:
+        if bids_path.datatype == 'meg':
+            bids_path.update(extension='.fif')
+        elif bids_path.datatype == 'eeg':
+            bids_path.update(extension='.vhdr')
+        elif bids_path.datatype == 'ieeg':
+            bids_path.update(extension='.vhdr')
+
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
     if not convert:
         convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
-    if bids_path.datatype == 'meg' and convert and not anonymize:
-        raise ValueError(f"Got file extension {convert} for MEG data, "
+    if bids_path.datatype == 'meg' and not convert and not anonymize:
+        raise ValueError(f"Got file extension {ext} for MEG data, "
                          f"expected one of "
                          f"{ALLOWED_DATATYPE_EXTENSIONS['meg']}")
 
