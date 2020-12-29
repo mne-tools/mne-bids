@@ -203,8 +203,6 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     if verbose:
         logger.debug(f'Loaded {scans_fname} scans file to set '
                      f'acq_time as {acq_time}.')
-    print(f'LOADED {scans_fname} and set acq_time to '
-          f'{acq_time}')
     raw.set_meas_date(acq_time)
     return raw
 
