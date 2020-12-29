@@ -199,22 +199,6 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     acq_time = datetime.strptime(acq_times[row_ind], '%Y-%m-%dT%H:%M:%S')
     acq_time.astimezone(tz=timezone.utc)
 
-    # EDF files do not need to match if the acq time is "anonymized" date
-    expected_edf_anon_date = datetime(
-        year=1985, month=1, day=1, hour=0,
-        minute=0, second=0, tzinfo=timezone.utc)
-    show_warning = True
-    if bids_path.extension == '.edf' and \
-            raw.info['meas_date'] == expected_edf_anon_date:
-        show_warning = False
-
-    # acquisition time in scans.tsv and recording should match in general
-    if acq_time != raw.info['meas_date'] and show_warning:
-        warn(f'Scans.tsv acq_time {acq_time} does not match '
-             f'the recording date in the raw file '
-             f'{raw.info["meas_date"]}. '
-             f'Using the date in scans.tsv file as ground truth.')
-
     raw.set_meas_date(acq_time)
     return raw
 
