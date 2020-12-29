@@ -187,6 +187,7 @@ def _handle_participants_reading(participants_fname, raw,
 
 
 def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
+    """Read associated scans.tsv and set meas_date."""
     scans_tsv = _from_tsv(scans_fname)
 
     # get the row
@@ -199,9 +200,12 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     acq_time = datetime.strptime(acq_times[row_ind], '%Y-%m-%dT%H:%M:%S')
     acq_time.astimezone(tz=timezone.utc)
 
+    if verbose:
+        print(f'Loaded {scans_fname} scans file to set '
+              f'acq_time as {acq_time}.')
+
     raw.set_meas_date(acq_time)
     return raw
-
 
 
 def _handle_info_reading(sidecar_fname, raw, verbose=None):
