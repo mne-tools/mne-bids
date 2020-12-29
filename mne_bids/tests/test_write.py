@@ -2238,6 +2238,7 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
     assert raw2.info['chs'][0]['unit'] == FIFF.FIFF_UNIT_NONE
 
     # load in the channels tsv and the channel unit should be not set
-    channels_fname = bids_output_path.update(suffix='channels', extension='.tsv')
+    channels_fname = bids_output_path.update(
+        suffix='channels', extension='.tsv')
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv['units'][0] == 'n/a'
