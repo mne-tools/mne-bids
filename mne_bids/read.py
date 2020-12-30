@@ -461,17 +461,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, verbose=None, **extra_params)
 
-    # read in associated scans filename
-    #
-    scans_fname = BIDSPath(
-        subject=bids_path.subject, session=bids_path.session,
-        suffix='scans', extension='.tsv',
-        root=bids_path.root
-    )
-    if scans_fname.fpath.exists():
-        raw = _handle_scans_reading(scans_fname, raw, bids_path,
-                                    verbose=verbose)
-
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
     events_fname = _find_matching_sidecar(bids_path, suffix='events',
@@ -518,6 +507,16 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                            on_error='warn')
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
+
+    # read in associated scans filename
+    scans_fname = BIDSPath(
+        subject=bids_path.subject, session=bids_path.session,
+        suffix='scans', extension='.tsv',
+        root=bids_path.root
+    )
+    if scans_fname.fpath.exists():
+        raw = _handle_scans_reading(scans_fname, raw, bids_path,
+                                    verbose=verbose)
 
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
