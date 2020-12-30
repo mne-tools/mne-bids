@@ -189,21 +189,33 @@ def _handle_participants_reading(participants_fname, raw,
 def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     """Read associated scans.tsv and set meas_date."""
     scans_tsv = _from_tsv(scans_fname)
+    fname = bids_path.fpath.name
+
+    if '_split-' in fname:
+        # for split files, scans only stores the filename without ``split``
+        extension = bids_path.fpath.suffix
+        bids_path.update(split=None, extension=extension)
+        fname = bids_path.basename
+    elif fname.endswith('.pdf'):
+        # for BTI files, the scan is an entire directory
+        fname = fname.split('.')[0]
 
     # get the row
-    data_fname = op.join(bids_path.datatype, bids_path.fpath.name)
+    data_fname = op.join(bids_path.datatype, fname)
     fnames = scans_tsv['filename']
     acq_times = scans_tsv['acq_time']
     row_ind = fnames.index(data_fname)
 
     # extract the acquisition time from scans file
-    acq_time = datetime.strptime(acq_times[row_ind], '%Y-%m-%dT%H:%M:%S.%fZ')
-    acq_time = acq_time.astimezone(tz=timezone.utc)
+    acq_time = acq_times[row_ind]
+    if acq_time != 'n/a':
+        acq_time = datetime.strptime(acq_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        acq_time = acq_time.replace(tzinfo=timezone.utc)
 
-    if verbose:
-        logger.debug(f'Loaded {scans_fname} scans file to set '
-                     f'acq_time as {acq_time}.')
-    raw.set_meas_date(acq_time)
+        if verbose:
+            logger.debug(f'Loaded {scans_fname} scans file to set '
+                         f'acq_time as {acq_time}.')
+        raw.set_meas_date(acq_time)
     return raw
 
 
@@ -449,6 +461,17 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, verbose=None, **extra_params)
 
+    # read in associated scans filename
+    #
+    scans_fname = BIDSPath(
+        subject=bids_path.subject, session=bids_path.session,
+        suffix='scans', extension='.tsv',
+        root=bids_path.root
+    )
+    if scans_fname.fpath.exists():
+        raw = _handle_scans_reading(scans_fname, raw, bids_path,
+                                    verbose=verbose)
+
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
     events_fname = _find_matching_sidecar(bids_path, suffix='events',
@@ -495,16 +518,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                            on_error='warn')
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
-
-    # read in associated scans filename
-    scans_fname = BIDSPath(
-        subject=bids_path.subject, session=bids_path.session,
-        suffix='scans', extension='.tsv',
-        root=bids_path.root
-    )
-    if scans_fname.fpath.exists():
-        raw = _handle_scans_reading(scans_fname, raw, bids_path,
-                                    verbose=verbose)
 
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')

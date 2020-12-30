@@ -1234,7 +1234,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
             match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
             with pytest.warns(RuntimeWarning, match=match):
                 write_raw_bids(**kwargs)  # Just copies.
-            output_path = _test_anonymize(raw, bids_path)
+                output_path = _test_anonymize(raw, bids_path)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
