@@ -41,7 +41,7 @@ API changes
 Requirements
 ^^^^^^^^^^^^
 
-- Updated requirements for ``pybv`` to 0.5, by `Adam Li`_ (:gh:`600`)
+- Updated requirements for ``pybv`` to 0.5 allowing BrainVision written files to contain all types of non-voltage channels, by `Adam Li`_ (:gh:`600`)
 
 Bug fixes
 ^^^^^^^^^
