@@ -211,6 +211,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     # extract the acquisition time from scans file
     acq_time = acq_times[row_ind]
     if acq_time != 'n/a':
+        # microseconds in the acquisition time is optional
         if '.' not in acq_time:
             # acquisition time ends with '.%fZ' microseconds string
             acq_time += '.0Z'
