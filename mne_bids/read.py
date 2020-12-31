@@ -200,8 +200,10 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         # for BTI files, the scan is an entire directory
         fname = fname.split('.')[0]
 
-    # get the row
-    data_fname = op.join(bids_path.datatype, fname)
+    # get the row corresponding to the file
+    # use string concatenation instead of os.path
+    # to work nicely with windows
+    data_fname = bids_path.datatype + '/' + fname
     fnames = scans_tsv['filename']
     acq_times = scans_tsv['acq_time']
     row_ind = fnames.index(data_fname)
