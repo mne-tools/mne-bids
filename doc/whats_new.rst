@@ -41,7 +41,7 @@ API changes
 Requirements
 ^^^^^^^^^^^^
 
-- xxx
+- Updated requirements for ``pybv`` to 0.5, by `Adam Li`_ (:gh:`600`)
 
 Bug fixes
 ^^^^^^^^^
