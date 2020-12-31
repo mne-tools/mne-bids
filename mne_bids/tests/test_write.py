@@ -2216,12 +2216,13 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
     raw = reader(raw_fname)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
 
-    # alter some channels manually
+    # alter some channels manually; in NK and Persyst, this will cause
+    # channel to not have units
     raw.set_channel_types({raw.info['ch_names'][0]: 'stim'})
-    raw.info['chs'][0]['unit'] = FIFF.FIFF_UNIT_NONE
 
     if dir_name == 'EDF':
-        bids_output_path = write_raw_bids(**kwargs)
+        # converting this channel to stim won't change the units
+        return
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
