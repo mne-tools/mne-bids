@@ -1047,6 +1047,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
     See the documentation of `mne.find_events` for more information on event
     extraction from ``STIM`` channels.
 
+    When anonymizing ``.edf`` files, then the file format for EDF limits
+    how far back we can set the recording date. Therefore, all anonymized
+    EDF datasets will have an internal recording date of ``01-01-1985``,
+    and the actual recording date will be stored in the ``scans.tsv``
+    file's ``acq_time`` column.
+
     See Also
     --------
     mne.io.Raw.anonymize
