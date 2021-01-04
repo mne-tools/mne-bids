@@ -2267,7 +2267,11 @@ def test_convert_dataset_format(dir_name, fname, reader):
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         kwargs['format'] = 'BrainVision'
-        bids_output_path = write_raw_bids(**kwargs)
+        # XXX: remove when pybv0.5 merged in
+        raw.drop_channels('Status')
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "int" format'):
+            bids_output_path = write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         kwargs['format'] = 'BrainVision'
         with pytest.warns(RuntimeWarning,
@@ -2286,6 +2290,8 @@ def test_convert_dataset_format(dir_name, fname, reader):
     # write_raw_bids should have converted the dataset to desired format
     raw = read_raw_bids(bids_output_path)
     if kwargs['format'] == 'BrainVision':
-        assert raw.filenames[0].endswith('.vhdr')
+        assert raw.filenames[0].endswith('.eeg')
+        assert bids_output_path.extension == '.vhdr'
     elif kwargs['format'] == 'FIF':
         assert raw.filenames[0].endswith('.fif')
+        assert bids_output_path.extension == '.fif'

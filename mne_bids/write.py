@@ -1007,8 +1007,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         If `'auto'` (default), there is no explicit change in how the file is
         converted to BIDS. The native format is used. If a str, then will
         accept RECOMMENDED BIDS file formats. For example, EEG and iEEG
-        RECOMMENDED formats are ``BrainVision`` and ``EDF``. If ``'BrainVision'``
-        is passed in, then file will be converted to the
+        RECOMMENDED formats are ``BrainVision`` and ``EDF``. If
+        ``'BrainVision'`` is passed in, then file will be converted to the
         ``BrainVision`` file format even if the file is originally in ``EDF``
         file format. For MEG, ``'FIF'`` will convert file to ``FIF`` format.
     overwrite : bool
