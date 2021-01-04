@@ -46,7 +46,7 @@ if __name__ == "__main__":
           extras_require={
               'full': [
                   'nibabel >=2.2',
-                  'pybv >=0.4',
+                  'pybv >=0.5',
                   'matplotlib',
                   'pandas >=0.23.4'
               ]
