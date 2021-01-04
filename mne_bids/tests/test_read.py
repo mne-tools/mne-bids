@@ -6,6 +6,7 @@ import json
 import os
 import os.path as op
 import pathlib
+from datetime import datetime, timezone
 
 import pytest
 import shutil as sh
@@ -267,6 +268,48 @@ def test_handle_events_reading():
 
     raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_handle_scans_reading():
+    """Test reading data from a BIDS scans.tsv file."""
+    bids_root = _TempDir()
+    raw = _read_raw_fif(raw_fname)
+    suffix = "meg"
+
+    # write copy of raw with line freq of 60
+    # bids basename and fname
+    bids_path = BIDSPath(subject='01', session='01',
+                         task='audiovisual', run='01',
+                         datatype=suffix,
+                         root=bids_root)
+    bids_path = write_raw_bids(raw, bids_path, overwrite=True)
+    raw_01 = read_raw_bids(bids_path)
+
+    # find sidecar scans.tsv file and alter the
+    # acquisition time to not have the optional microseconds
+    scans_path = BIDSPath(subject=bids_path.subject,
+                          session=bids_path.session,
+                          root=bids_root,
+                          suffix='scans', extension='.tsv')
+    scans_tsv = _from_tsv(scans_path)
+    acq_time_str = scans_tsv['acq_time'][0]
+    acq_time = datetime.strptime(acq_time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    acq_time = acq_time.replace(tzinfo=timezone.utc)
+    new_acq_time = acq_time_str.split('.')[0]
+    assert acq_time == raw_01.info['meas_date']
+    scans_tsv['acq_time'][0] = new_acq_time
+    _to_tsv(scans_tsv, scans_path)
+
+    # now re-load the data and it should be different
+    # from the original date and the same as the newly altered date
+    raw_02 = read_raw_bids(bids_path)
+    new_acq_time += '.0Z'
+    new_acq_time = datetime.strptime(new_acq_time,
+                                     '%Y-%m-%dT%H:%M:%S.%fZ')
+    new_acq_time = new_acq_time.replace(tzinfo=timezone.utc)
+    assert raw_02.info['meas_date'] == new_acq_time
+    assert new_acq_time != raw_01.info['meas_date']
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
