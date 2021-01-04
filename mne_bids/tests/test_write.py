@@ -100,6 +100,11 @@ test_eegieeg_data = [
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon)
 ]
 
+test_convertbrainvision_data = [
+    ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+    ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon)
+]
+
 
 def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     bids_root = _TempDir()
@@ -2198,7 +2203,8 @@ def test_sidecar_encoding(_bids_validate):
                        raw_read.annotations.description)
 
 
-@pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
+@pytest.mark.parametrize(
+    'dir_name, fname, reader', test_convertbrainvision_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
     """Test conversion of manufacturer data format to BrainVision.
@@ -2220,10 +2226,7 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
     # channel to not have units
     raw.set_channel_types({raw.info['ch_names'][0]: 'stim'})
 
-    if dir_name == 'EDF':
-        # converting this channel to stim won't change the units
-        return
-    elif dir_name == 'NihonKohden':
+    if dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
             bids_output_path = write_raw_bids(**kwargs)
