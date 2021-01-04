@@ -36,7 +36,7 @@ Enhancements
 API changes
 ^^^^^^^^^^^
 
-- xxx
+- Add ``format`` kwarg to :func:`write_raw_bids` that allows users to specify if they want to force conversion to ``BrainVision`` or ``FIF`` file format, by `Adam Li`_ (:gh:`672`)
 
 Requirements
 ^^^^^^^^^^^^
