@@ -2253,7 +2253,7 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
 @pytest.mark.parametrize('dir_name, fname, reader', test_convert_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_convert_dataset_format(dir_name, fname, reader):
-    """Test explicit conversion of data format for MEG/EEG/iEEG."""
+    """Test force-converting files to RECOMMENDED formats."""
     bids_root = _TempDir()
 
     data_path = op.join(testing.data_path(), dir_name)
@@ -2295,3 +2295,7 @@ def test_convert_dataset_format(dir_name, fname, reader):
     elif kwargs['format'] == 'FIF':
         assert raw.filenames[0].endswith('.fif')
         assert bids_output_path.extension == '.fif'
+
+    with pytest.raises(ValueError, match='The "format"*'):
+        kwargs['format'] = 'blah'
+        write_raw_bids(**kwargs)
