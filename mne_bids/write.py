@@ -764,8 +764,8 @@ def _write_raw_brainvision(raw, bids_fname, events):
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
 
-    # pybv currently only supports channels in Volts, except fNIRS
-    # get voltage units as micro-volts and everything else as is
+    # pybv needs to know the units of the data for appropriate scaling
+    # get voltage units as micro-volts and all other units "as is"
     unit = []
     for chs in raw.info['chs']:
         if chs['unit'] == FIFF.FIFF_UNIT_V:
