@@ -99,6 +99,8 @@ test_eegieeg_data = [
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon)
 ]
+test_convert_data = test_eegieeg_data.copy()
+test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
 
 test_convertbrainvision_data = [
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
@@ -2207,7 +2209,7 @@ def test_sidecar_encoding(_bids_validate):
     'dir_name, fname, reader', test_convertbrainvision_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
-    """Test conversion of manufacturer data format to BrainVision.
+    """Test conversion of EEG/iEEG manufacturer format to BrainVision.
 
     BrainVision should correctly store data from pybv>=0.5 that
     has different non-voltage units.
@@ -2246,3 +2248,44 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
         suffix='channels', extension='.tsv')
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv['units'][0] == 'n/a'
+
+
+@pytest.mark.parametrize('dir_name, fname, reader', test_convert_data)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_convert_dataset_format(dir_name, fname, reader):
+    """Test explicit conversion of data format for MEG/EEG/iEEG."""
+    bids_root = _TempDir()
+
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    # test conversion to BrainVision/FIF
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
+    if dir_name == 'EDF':
+        kwargs['format'] = 'BrainVision'
+        bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        kwargs['format'] = 'BrainVision'
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'Persyst':
+        kwargs['format'] = 'BrainVision'
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "double" format'):
+            bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'CTF':
+        kwargs['format'] = 'FIF'
+        bids_path.update(datatype='meg')
+        bids_output_path = write_raw_bids(**kwargs)
+
+    # write_raw_bids should have converted the dataset to desired format
+    raw = read_raw_bids(bids_output_path)
+    if kwargs['format'] == 'BrainVision':
+        assert raw.filenames[0].endswith('.vhdr')
+    elif kwargs['format'] == 'FIF':
+        assert raw.filenames[0].endswith('.fif')

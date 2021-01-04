@@ -49,7 +49,7 @@ from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
-                             ALLOWED_INPUT_EXTENSIONS)
+                             ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS)
 
 
 def _is_numeric(n):
@@ -903,6 +903,7 @@ def make_dataset_description(path, name, data_license=None,
 
 def write_raw_bids(raw, bids_path, events_data=None,
                    event_id=None, anonymize=None,
+                   format='auto',
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1002,6 +1003,14 @@ def write_raw_bids(raw, bids_path, events_data=None,
             recording date will be overwritten as well. If True, keep subject
             information apart from the recording date.
 
+    format : 'auto' | 'BrainVision' | 'FIF'
+        If `'auto'` (default), there is no explicit change in how the file is
+        converted to BIDS. The native format is used. If a str, then will
+        accept RECOMMENDED BIDS file formats. For example, EEG and iEEG
+        RECOMMENDED formats are ``BrainVision`` and ``EDF``. If ``'BrainVision'``
+        is passed in, then file will be converted to the
+        ``BrainVision`` file format even if the file is originally in ``EDF``
+        file format. For MEG, ``'FIF'`` will convert file to ``FIF`` format.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1087,6 +1096,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
     if event_id is not None and events_data is None:
         raise RuntimeError('You passed event_id, but no events_data NumPy '
                            'array. You need to pass both, or neither.')
+
+    if format not in CONVERT_FORMATS:
+        raise ValueError(f'The "format" {format} is not an '
+                         f'accepted format. Please use one of '
+                         f'{CONVERT_FORMATS}')
 
     raw = raw.copy()
 
@@ -1253,6 +1267,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     if not convert and verbose:
         print('Copying data files to %s' % bids_path.fpath.name)
+
+    # If users desire a certain format, will handle auto-conversion
+    if format != 'auto':
+        if format == 'BrainVision' and bids_path.datatype in ['ieeg', 'eeg']:
+            convert = True
+            bids_path.update(extension='.vhdr')
+        elif format == 'FIF' and bids_path.datatype == 'meg':
+            convert = True
+            bids_path.update(extension='.fif')
 
     # File saving branching logic
     if convert:

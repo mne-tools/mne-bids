@@ -11,6 +11,8 @@ EPHY_ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg']
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ['anat', 'beh']
 
+CONVERT_FORMATS = ['auto', 'BrainVision', 'FIF']
+
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {
     '.con': 'KitYokogawa',
