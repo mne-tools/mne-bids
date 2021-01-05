@@ -4,10 +4,8 @@ about: Suggest an idea for this project.
 
 ---
 
-If your issue is a usage question, please consider asking on our
-[Gitter channel](https://gitter.im/mne-tools/mne-bids) or on the
-[MNE-Python mailing list](https://mail.nmr.mgh.harvard.edu/mailman/listinfo/mne_analysis)
-instead of opening an issue.
+If your issue is a usage question, please consider asking on the
+[MNE Forum](https://mne.discourse.group) instead of opening an issue.
 
 #### Describe the problem
 Please provide a clear and concise description of the problem.
