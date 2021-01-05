@@ -2294,6 +2294,7 @@ def test_convert_dataset_format(dir_name, fname, reader):
         assert raw.filenames[0].endswith('.fif')
         assert bids_output_path.extension == '.fif'
 
-    with pytest.raises(ValueError, match='The "format"*'):
+    with pytest.raises(ValueError, match='The input "format" .* is '
+                                         'not an accepted input format'):
         kwargs['format'] = 'blah'
         write_raw_bids(**kwargs)
