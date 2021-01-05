@@ -2278,7 +2278,7 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
     assert channels_tsv['units'][0] == 'n/a'
 
     # if we accidentally add MEG channels, then an error will occur
-    raw.set_channel_types({raw.info['ch_names'][0]: 'grad'})
+    raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
     with pytest.raises(ValueError, match='Got file extension .*'
                                          'for MEG data'):
         write_raw_bids(**kwargs)
