@@ -28,8 +28,9 @@ The documentation can be found under the following links:
 - for the [stable release](https://mne.tools/mne-bids/)
 - for the [latest (development) version](https://mne.tools/mne-bids/dev/index.html)
 
-Getting Support
----------------
+Getting Help
+------------
+[<img alt="MNE Forum" src="https://user-images.githubusercontent.com/1681963/52239617-e2683480-289c-11e9-922b-5da55472e5b4.png" height=60/>](https://mne.discourse.group)
 
 For any usage questions, please post to the
 [MNE Forum](https://mne.discourse.group). Be sure to add the `mne-bids` tag to
