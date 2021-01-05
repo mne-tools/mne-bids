@@ -2267,8 +2267,6 @@ def test_convert_dataset_format(dir_name, fname, reader):
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         kwargs['format'] = 'BrainVision'
-        # XXX: remove when pybv0.5 merged in
-        raw.drop_channels('Status')
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "int" format'):
             bids_output_path = write_raw_bids(**kwargs)

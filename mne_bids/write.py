@@ -1097,11 +1097,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise RuntimeError('You passed event_id, but no events_data NumPy '
                            'array. You need to pass both, or neither.')
 
-    if format not in CONVERT_FORMATS:
-        raise ValueError(f'The "format" {format} is not an '
-                         f'accepted format. Please use one of '
-                         f'{CONVERT_FORMATS}')
-
     raw = raw.copy()
 
     raw_fname = raw.filenames[0]
@@ -1276,6 +1271,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
         elif format == 'FIF' and bids_path.datatype == 'meg':
             convert = True
             bids_path.update(extension='.fif')
+        elif format not in CONVERT_FORMATS:
+            raise ValueError(f'The input "format" {format} is not an '
+                             f'accepted input format for `write_raw_bids`. '
+                             f'For example, if you passed in "EDF", mne-bids '
+                             f'does not currently have conversion to EDF. '
+                             f'Please use one of {CONVERT_FORMATS}.')
 
     # File saving branching logic
     if convert:
