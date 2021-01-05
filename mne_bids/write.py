@@ -1252,7 +1252,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     if not convert:
         convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
-    # check if there
+    # check if there is an BIDS-unsupported MEG format
     if bids_path.datatype == 'meg' and convert and not anonymize:
         raise ValueError(
             f"Got file extension {convert} for MEG data, "
