@@ -1004,13 +1004,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
             information apart from the recording date.
 
     format : 'auto' | 'BrainVision' | 'FIF'
-        If `'auto'` (default), there is no explicit change in how the file is
-        converted to BIDS. The native format is used. If a str, then will
-        accept RECOMMENDED BIDS file formats. For example, EEG and iEEG
-        RECOMMENDED formats are ``BrainVision`` and ``EDF``. If
-        ``'BrainVision'`` is passed in, then file will be converted to the
-        ``BrainVision`` file format even if the file is originally in ``EDF``
-        file format. For MEG, ``'FIF'`` will convert file to ``FIF`` format.
+        Controls the file format of the data after BIDS conversion. If
+        ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
+        without a change of the original file format. A conversion to a
+        different file format (BrainVision, or FIF) will only take place when
+        the original file format lacks some necessary features. When a str is
+        passed, a conversion can be forced to the BrainVision format for EEG,
+        or the FIF format for MEG data.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
