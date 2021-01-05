@@ -41,7 +41,7 @@ API changes
 Requirements
 ^^^^^^^^^^^^
 
-- xxx
+- For writing BrainVision files, ``pybv`` version 0.5 is now required to allow writing of non-voltage channels, by `Adam Li`_ (:gh:`670`)
 
 Bug fixes
 ^^^^^^^^^
