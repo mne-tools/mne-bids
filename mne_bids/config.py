@@ -11,7 +11,14 @@ EPHY_ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg']
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ['anat', 'beh']
 
-CONVERT_FORMATS = ['auto', 'BrainVision', 'FIF']
+MEG_CONVERT_FORMATS = ['FIF', 'auto']
+EEG_CONVERT_FORMATS = ['BrainVision', 'auto']
+IEEG_CONVERT_FORMATS = ['BrainVision', 'auto']
+CONVERT_FORMATS = {
+    'meg': MEG_CONVERT_FORMATS,
+    'eeg': EEG_CONVERT_FORMATS,
+    'ieeg': IEEG_CONVERT_FORMATS
+}
 
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {

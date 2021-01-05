@@ -1271,12 +1271,18 @@ def write_raw_bids(raw, bids_path, events_data=None,
         elif format == 'FIF' and bids_path.datatype == 'meg':
             convert = True
             bids_path.update(extension='.fif')
-        elif format not in CONVERT_FORMATS:
+        elif all(format not in values for values in CONVERT_FORMATS.values()):
             raise ValueError(f'The input "format" {format} is not an '
                              f'accepted input format for `write_raw_bids`. '
                              f'For example, if you passed in "EDF", mne-bids '
                              f'does not currently have conversion to EDF. '
-                             f'Please use one of {CONVERT_FORMATS}.')
+                             f'Please use one of {CONVERT_FORMATS[datatype]} '
+                             f'for {datatype} datatype.')
+        elif format not in CONVERT_FORMATS[datatype]:
+            raise ValueError(f'The input "format" {format} is not an '
+                             f'accepted input format for {datatype} datatype. '
+                             f'Please use one of {CONVERT_FORMATS[datatype]} '
+                             f'for {datatype} datatype.')
 
     # File saving branching logic
     if convert:

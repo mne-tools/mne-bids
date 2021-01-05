@@ -2294,7 +2294,21 @@ def test_convert_dataset_format(dir_name, fname, reader):
         assert raw.filenames[0].endswith('.fif')
         assert bids_output_path.extension == '.fif'
 
+    # only accepted keywords will work for the 'format' parameter
     with pytest.raises(ValueError, match='The input "format" .* is '
-                                         'not an accepted input format'):
+                                         'not an accepted input format for '
+                                         '`write_raw_bids`'):
         kwargs['format'] = 'blah'
+        write_raw_bids(**kwargs)
+
+    # write should fail when trying to convert to wrong data format for
+    # the datatype inside the file (e.g. EEG -> 'FIF' or MEG -> 'BrainVision')
+    with pytest.raises(ValueError, match='The input "format" .* is not an '
+                                         'accepted input format for '
+                                         '.* datatype.'):
+        if dir_name == 'CTF':
+            new_format = 'BrainVision'
+        else:
+            new_format = 'FIF'
+        kwargs['format'] = new_format
         write_raw_bids(**kwargs)
