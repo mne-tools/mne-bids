@@ -28,7 +28,6 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.defaults import _handle_default
 from mne.utils import check_version, has_nibabel, logger, warn, _validate_type
 import mne.preprocessing
 
@@ -765,20 +764,15 @@ def _write_raw_brainvision(raw, bids_fname, events):
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
 
-    # pybv currently only supports channels in Volts, except fNIRS
-    chtype_units = _handle_default('units', None)
-    chtypes_volt = {chtype: True for chtype, unit in chtype_units.items()
-                    if unit[-1] == 'V' and not chtype.startswith('fnirs')}
-    ch_idxs = mne.pick_types(raw.info, meg=False, **chtypes_volt, exclude=[])
-    if len(ch_idxs) != len(raw.ch_names):
-        non_volt_chs = set(raw.ch_names) - set(np.array(raw.ch_names)[ch_idxs])
-        msg = ('Conversion to BrainVision format needed to be stopped, '
-               'because your raw data contains channel types that are '
-               f'not represented in Volts: "{non_volt_chs}"'
-               '\n\nUntil BrainVision format conversion is improved, you '
-               'must drop these channels from your raw data before using '
-               'mne-bids. Please contact the mne-bids team about this.')
-        raise RuntimeError(msg)
+    # pybv needs to know the units of the data for appropriate scaling
+    # get voltage units as micro-volts and all other units "as is"
+    unit = []
+    for chs in raw.info['chs']:
+        if chs['unit'] == FIFF.FIFF_UNIT_V:
+            unit.append('µV')
+        else:
+            unit.append(_unit2human.get(chs['unit'], 'n/a'))
+            unit = [u if u not in ['NA'] else 'n/a' for u in unit]
 
     # We enforce conversion to float32 format
     # XXX: pybv can also write to int16, to do that, we need to get
@@ -793,7 +787,6 @@ def _write_raw_brainvision(raw, bids_fname, events):
     # which guarantees accurate roundtrip for values >= 1e-7 µV
     fmt = 'binary_float32'
     resolution = 1e-1
-    unit = 'µV'
     write_brainvision(data=raw.get_data(),
                       sfreq=raw.info['sfreq'],
                       ch_names=raw.ch_names,
