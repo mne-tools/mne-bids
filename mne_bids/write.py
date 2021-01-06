@@ -1056,6 +1056,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
     See the documentation of `mne.find_events` for more information on event
     extraction from ``STIM`` channels.
 
+    When anonymizing ``.edf`` files, then the file format for EDF limits
+    how far back we can set the recording date. Therefore, all anonymized
+    EDF datasets will have an internal recording date of ``01-01-1985``,
+    and the actual recording date will be stored in the ``scans.tsv``
+    file's ``acq_time`` column.
+
     See Also
     --------
     mne.io.Raw.anonymize
@@ -1255,10 +1261,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
     if not convert:
         convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
+    # check if there is an BIDS-unsupported MEG format
     if bids_path.datatype == 'meg' and convert and not anonymize:
-        raise ValueError(f"Got file extension {convert} for MEG data, "
-                         f"expected one of "
-                         f"{ALLOWED_DATATYPE_EXTENSIONS['meg']}")
+        raise ValueError(
+            f"Got file extension {convert} for MEG data, "
+            f"expected one of "
+            f"{', '.join(sorted(ALLOWED_DATATYPE_EXTENSIONS['meg']))}")
 
     if not convert and verbose:
         print('Copying data files to %s' % bids_path.fpath.name)
@@ -1308,9 +1316,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                  "Due to file format limitations, one of these fields only "
                  "supports 2-digit years. The date for that field will be "
                  "set to 85 (i.e., 1985), the earliest possible date. "
-                 "EDF/EDF+/BDF reading software should parse the second "
-                 "field for recording dates, which contains the accurately "
-                 "anonymized date as calculated with `daysback`.")
+                 "The true anonymized date is stored in the scans.tsv file.")
         copyfile_edf(raw_fname, bids_path, anonymize=anonymize)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':

@@ -9,6 +9,7 @@
 import os.path as op
 import glob
 import json
+from datetime import datetime, timezone
 
 import numpy as np
 import mne
@@ -182,6 +183,45 @@ def _handle_participants_reading(participants_fname, raw,
             raw.info['subject_info'] = dict()
         raw.info['subject_info'][infokey] = value
 
+    return raw
+
+
+def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
+    """Read associated scans.tsv and set meas_date."""
+    scans_tsv = _from_tsv(scans_fname)
+    fname = bids_path.fpath.name
+
+    if '_split-' in fname:
+        # for split files, scans only stores the filename without ``split``
+        extension = bids_path.fpath.suffix
+        bids_path.update(split=None, extension=extension)
+        fname = bids_path.basename
+    elif fname.endswith('.pdf'):
+        # for BTI files, the scan is an entire directory
+        fname = fname.split('.')[0]
+
+    # get the row corresponding to the file
+    # use string concatenation instead of os.path
+    # to work nicely with windows
+    data_fname = bids_path.datatype + '/' + fname
+    fnames = scans_tsv['filename']
+    acq_times = scans_tsv['acq_time']
+    row_ind = fnames.index(data_fname)
+
+    # extract the acquisition time from scans file
+    acq_time = acq_times[row_ind]
+    if acq_time != 'n/a':
+        # microseconds in the acquisition time is optional
+        if '.' not in acq_time:
+            # acquisition time ends with '.%fZ' microseconds string
+            acq_time += '.0Z'
+        acq_time = datetime.strptime(acq_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        acq_time = acq_time.replace(tzinfo=timezone.utc)
+
+        if verbose:
+            logger.debug(f'Loaded {scans_fname} scans file to set '
+                         f'acq_time as {acq_time}.')
+        raw.set_meas_date(acq_time)
     return raw
 
 
@@ -473,6 +513,16 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                            on_error='warn')
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
+
+    # read in associated scans filename
+    scans_fname = BIDSPath(
+        subject=bids_path.subject, session=bids_path.session,
+        suffix='scans', extension='.tsv',
+        root=bids_path.root
+    )
+    if scans_fname.fpath.exists():
+        raw = _handle_scans_reading(scans_fname, raw, bids_path,
+                                    verbose=verbose)
 
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')

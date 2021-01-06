@@ -70,7 +70,10 @@ warning_str = dict(
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
     unraisable_exception='ignore:.*Exception ignored.*:'
-                         'pytest.PytestUnraisableExceptionWarning'
+                         'pytest.PytestUnraisableExceptionWarning',
+    encountered_data_in='ignore:Encountered data in*.:RuntimeWarning:mne',
+    edf_warning=r'ignore:^EDF\/EDF\+\/BDF files contain two fields .*'
+                r':RuntimeWarning:mne'
 )
 
 
@@ -2124,29 +2127,56 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events):
     _bids_validate(bids_root)
 
 
-def test_anonymize_empty_room():
-    """Test writing anonymized empty room data."""
+@pytest.mark.parametrize(
+    'subject, dir_name, fname, reader', [
+        ('01', 'EDF', 'test_reduced.edf', _read_raw_edf),
+        ('02', 'Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+        ('03', 'NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
+        ('emptyroom', 'MEG/sample',
+         'sample_audvis_trunc_raw.fif', _read_raw_fif),
+    ]
+)
+@pytest.mark.filterwarnings(warning_str['encountered_data_in'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['edf_warning'])
+def test_anonymize(subject, dir_name, fname, reader):
+    """Test writing anonymized EDF data."""
     data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
+
+    raw_fname = op.join(data_path, dir_name, fname)
 
     bids_root = _TempDir()
-    raw = _read_raw_fif(raw_fname)
-    er_date = raw.info['meas_date'].strftime('%Y%m%d')
-    er_bids_path = BIDSPath(subject='emptyroom', task='noise',
-                            session=er_date, suffix='meg',
-                            root=bids_root)
-    anonymize = dict(daysback=30000)
-    bids_path = \
-        write_raw_bids(raw, er_bids_path, overwrite=True,
-                       anonymize=anonymize)
-    assert (
-        bids_path.session ==
-        (raw.info['meas_date'] -
-         timedelta(days=anonymize['daysback'])).strftime('%Y%m%d')
-    )
+    raw = reader(raw_fname)
+    raw_date = raw.info['meas_date'].strftime('%Y%m%d')
 
-    raw2 = mne.io.read_raw_fif(bids_path)
+    bids_path = BIDSPath(subject=subject, root=bids_root)
+
+    # handle different edge cases
+    if subject == 'emptyroom':
+        bids_path.update(task='noise', session=raw_date,
+                         suffix='meg', datatype='meg')
+    else:
+        bids_path.update(suffix='ieeg', datatype='ieeg')
+    daysback_min, daysback_max = get_anonymization_daysback(raw)
+    anonymize = dict(daysback=daysback_min + 1)
+    bids_path = \
+        write_raw_bids(raw, bids_path, overwrite=True,
+                       anonymize=anonymize)
+
+    # emptyroom recordings' session should match the recording date
+    if subject == 'emptyroom':
+        assert (
+            bids_path.session ==
+            (raw.info['meas_date'] -
+             timedelta(days=anonymize['daysback'])).strftime('%Y%m%d')
+        )
+
+    raw2 = read_raw_bids(bids_path)
+    if bids_path.extension == '.edf':
+        _raw = reader(bids_path)
+        assert _raw.info['meas_date'].year == 1985
+        assert _raw.info['meas_date'].month == 1
+        assert _raw.info['meas_date'].day == 1
     assert raw2.info['meas_date'].year < 1925
 
 
@@ -2248,6 +2278,28 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
         suffix='channels', extension='.tsv')
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv['units'][0] == 'n/a'
+
+
+@requires_version('mne', '0.22')
+@pytest.mark.parametrize(
+    'dir_name, fname, reader', test_convertbrainvision_data)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_error_write_meg_as_eeg(dir_name, fname, reader):
+    """Test error writing as BrainVision EEG data for MEG."""
+    bids_root = _TempDir()
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
+                                         extension='.vhdr')
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, bids_path=bids_path)
+
+    # if we accidentally add MEG channels, then an error will occur
+    raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
+    with pytest.raises(ValueError, match='Got file extension .*'
+                                         'for MEG data'):
+        write_raw_bids(**kwargs)
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_convert_data)
