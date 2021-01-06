@@ -2246,3 +2246,16 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
         suffix='channels', extension='.tsv')
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv['units'][0] == 'n/a'
+
+
+def test_write_fif_triux():
+    """Test writing Triux files."""
+    data_path = testing.data_path()
+    triux_path = op.join(data_path, 'SSS', 'TRIUX')
+    tri_fname = op.join(triux_path, 'triux_bmlhus_erm_raw.fif')
+    raw = mne.io.read_raw_fif(tri_fname)
+    bids_root = _TempDir()
+    bids_path = BIDSPath(
+        subject="01", session="01", run="01", datatype="meg", root=bids_root
+    )
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True)
