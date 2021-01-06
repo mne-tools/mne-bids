@@ -933,14 +933,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
         Example::
 
             bids_path = BIDSPath(subject='01', session='01', task='testing',
-                                 acquisition='01', run='01', root='/data/BIDS')
+                                 acquisition='01', run='01', datatype='meg',
+                                 root='/data/BIDS')
 
         This will write the following files in the correct subfolder ``root``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
-            sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
+            sub-01_ses-01_acq-01_coordsystem.json
 
         and the following one if ``events_data`` is not ``None``::
 
@@ -1215,11 +1216,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not emptyroom:
+        # note that any coordsystem.json file shared within sessions
+        # will be the same across all runs (currently). So
+        # overwrite is set to True always
+        # XXX: improve later when BIDS is updated
         _coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
                           sensor_coord_system=orient,
                           fname=coordsystem_path.fpath,
                           datatype=bids_path.datatype,
-                          overwrite=overwrite, verbose=verbose)
+                          overwrite=True, verbose=verbose)
     elif bids_path.datatype in ['eeg', 'ieeg']:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
