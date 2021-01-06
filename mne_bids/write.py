@@ -49,7 +49,7 @@ from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
-                             ALLOWED_INPUT_EXTENSIONS)
+                             ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS)
 
 
 def _is_numeric(n):
@@ -903,6 +903,7 @@ def make_dataset_description(path, name, data_license=None,
 
 def write_raw_bids(raw, bids_path, events_data=None,
                    event_id=None, anonymize=None,
+                   format='auto',
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1002,6 +1003,14 @@ def write_raw_bids(raw, bids_path, events_data=None,
             recording date will be overwritten as well. If True, keep subject
             information apart from the recording date.
 
+    format : 'auto' | 'BrainVision' | 'FIF'
+        Controls the file format of the data after BIDS conversion. If
+        ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
+        without a change of the original file format. A conversion to a
+        different file format (BrainVision, or FIF) will only take place when
+        the original file format lacks some necessary features. When a str is
+        passed, a conversion can be forced to the BrainVision format for EEG,
+        or the FIF format for MEG data.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1253,6 +1262,25 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     if not convert and verbose:
         print('Copying data files to %s' % bids_path.fpath.name)
+
+    # If users desire a certain format, will handle auto-conversion
+    if format != 'auto':
+        if format == 'BrainVision' and bids_path.datatype in ['ieeg', 'eeg']:
+            convert = True
+            bids_path.update(extension='.vhdr')
+        elif format == 'FIF' and bids_path.datatype == 'meg':
+            convert = True
+            bids_path.update(extension='.fif')
+        elif all(format not in values for values in CONVERT_FORMATS.values()):
+            raise ValueError(f'The input "format" {format} is not an '
+                             f'accepted input format for `write_raw_bids`. '
+                             f'Please use one of {CONVERT_FORMATS[datatype]} '
+                             f'for {datatype} datatype.')
+        elif format not in CONVERT_FORMATS[datatype]:
+            raise ValueError(f'The input "format" {format} is not an '
+                             f'accepted input format for {datatype} datatype. '
+                             f'Please use one of {CONVERT_FORMATS[datatype]} '
+                             f'for {datatype} datatype.')
 
     # File saving branching logic
     if convert:
