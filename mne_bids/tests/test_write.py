@@ -2277,6 +2277,23 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv['units'][0] == 'n/a'
 
+
+@requires_version('mne', '0.22')
+@pytest.mark.parametrize(
+    'dir_name, fname, reader', test_convertbrainvision_data)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_error_write_meg_as_eeg(dir_name, fname, reader):
+    """Test error writing as BrainVision EEG data for MEG."""
+    bids_root = _TempDir()
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
+                                         extension='.vhdr')
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, bids_path=bids_path)
+
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
     with pytest.raises(ValueError, match='Got file extension .*'
