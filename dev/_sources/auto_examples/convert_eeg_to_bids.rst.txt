@@ -410,6 +410,14 @@ which are however optional. The required inputs are:
                 recording date will be overwritten as well. If True, keep subject
                 information apart from the recording date.
 
+        format : 'auto' | 'BrainVision' | 'FIF'
+            Controls the file format of the data after BIDS conversion. If
+            ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
+            without a change of the original file format. A conversion to a
+            different file format (BrainVision, or FIF) will only take place when
+            the original file format lacks some necessary features. When a str is
+            passed, a conversion can be forced to the BrainVision format for EEG,
+            or the FIF format for MEG data.
         overwrite : bool
             Whether to overwrite existing files or data in files.
             Defaults to ``False``.
@@ -890,7 +898,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.129 seconds)
+   **Total running time of the script:** ( 0 minutes  0.126 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

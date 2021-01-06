@@ -324,7 +324,7 @@ BIDS-compatible names that will be used to save the files in BIDS.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Copying data files to sub-001_ses-01_task-MotorImagery_run-01_eeg.edf
-    /home/circleci/project/mne_bids/write.py:1279: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
+    /home/circleci/project/mne_bids/write.py:1307: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
       warn("EDF/EDF+/BDF files contain two fields for recording dates."
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -420,7 +420,7 @@ BIDS-compatible names that will be used to save the files in BIDS.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Copying data files to sub-001_ses-01_task-MotorImagery_run-02_eeg.edf
-    /home/circleci/project/mne_bids/write.py:1279: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
+    /home/circleci/project/mne_bids/write.py:1307: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
       warn("EDF/EDF+/BDF files contain two fields for recording dates."
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -517,7 +517,7 @@ BIDS-compatible names that will be used to save the files in BIDS.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Copying data files to sub-001_ses-01_task-MotorImagery_run-03_eeg.edf
-    /home/circleci/project/mne_bids/write.py:1279: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
+    /home/circleci/project/mne_bids/write.py:1307: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
       warn("EDF/EDF+/BDF files contain two fields for recording dates."
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -616,7 +616,7 @@ BIDS-compatible names that will be used to save the files in BIDS.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Copying data files to sub-002_ses-01_task-MotorImagery_run-01_eeg.edf
-    /home/circleci/project/mne_bids/write.py:1279: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
+    /home/circleci/project/mne_bids/write.py:1307: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
       warn("EDF/EDF+/BDF files contain two fields for recording dates."
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -713,7 +713,7 @@ BIDS-compatible names that will be used to save the files in BIDS.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Copying data files to sub-002_ses-01_task-MotorImagery_run-02_eeg.edf
-    /home/circleci/project/mne_bids/write.py:1279: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
+    /home/circleci/project/mne_bids/write.py:1307: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
       warn("EDF/EDF+/BDF files contain two fields for recording dates."
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -811,7 +811,7 @@ BIDS-compatible names that will be used to save the files in BIDS.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Copying data files to sub-002_ses-01_task-MotorImagery_run-03_eeg.edf
-    /home/circleci/project/mne_bids/write.py:1279: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
+    /home/circleci/project/mne_bids/write.py:1307: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. EDF/EDF+/BDF reading software should parse the second field for recording dates, which contains the accurately anonymized date as calculated with `daysback`.
       warn("EDF/EDF+/BDF files contain two fields for recording dates."
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -1040,7 +1040,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.410 seconds)
+   **Total running time of the script:** ( 0 minutes  0.433 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

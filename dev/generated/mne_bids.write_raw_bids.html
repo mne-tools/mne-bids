@@ -128,7 +128,7 @@
 <h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.write_raw_bids">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em>, <em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">events_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">event_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">anonymize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em>, <em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">events_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">event_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">anonymize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save raw data to a BIDS-compliant folder structure.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -229,6 +229,14 @@ recording date will be overwritten as well. If True, keep subject
 information apart from the recording date.</p>
 </dd>
 </dl>
+</dd>
+<dt><strong>format</strong><span class="classifier">‘auto’ | ‘BrainVision’ | ‘FIF’</span></dt><dd><p>Controls the file format of the data after BIDS conversion. If
+<code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, MNE-BIDS will attempt to convert the input data to BIDS
+without a change of the original file format. A conversion to a
+different file format (BrainVision, or FIF) will only take place when
+the original file format lacks some necessary features. When a str is
+passed, a conversion can be forced to the BrainVision format for EEG,
+or the FIF format for MEG data.</p>
 </dd>
 <dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>

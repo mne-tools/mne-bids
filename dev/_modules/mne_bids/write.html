@@ -170,7 +170,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
                              <span class="n">BIDS_VERSION</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">,</span> <span class="n">_map_options</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span>
-                             <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">)</span>
+                             <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">,</span> <span class="n">CONVERT_FORMATS</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -1024,6 +1024,7 @@
 
 <div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
 
@@ -1123,6 +1124,14 @@
 <span class="sd">            recording date will be overwritten as well. If True, keep subject</span>
 <span class="sd">            information apart from the recording date.</span>
 
+<span class="sd">    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;FIF&#39;</span>
+<span class="sd">        Controls the file format of the data after BIDS conversion. If</span>
+<span class="sd">        ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS</span>
+<span class="sd">        without a change of the original file format. A conversion to a</span>
+<span class="sd">        different file format (BrainVision, or FIF) will only take place when</span>
+<span class="sd">        the original file format lacks some necessary features. When a str is</span>
+<span class="sd">        passed, a conversion can be forced to the BrainVision format for EEG,</span>
+<span class="sd">        or the FIF format for MEG data.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to ``False``.</span>
@@ -1374,6 +1383,25 @@
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Copying data files to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># If users desire a certain format, will handle auto-conversion</span>
+    <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;BrainVision&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">]:</span>
+            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;FIF&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
+            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">all</span><span class="p">(</span><span class="nb">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">CONVERT_FORMATS</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The input &quot;format&quot; </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s1"> is not an &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;accepted input format for `write_raw_bids`. &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;Please use one of </span><span class="si">{</span><span class="n">CONVERT_FORMATS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="si">}</span><span class="s1"> &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;for </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1"> datatype.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CONVERT_FORMATS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The input &quot;format&quot; </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s1"> is not an &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;accepted input format for </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1"> datatype. &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;Please use one of </span><span class="si">{</span><span class="n">CONVERT_FORMATS</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span><span class="si">}</span><span class="s1"> &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;for </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1"> datatype.&#39;</span><span class="p">)</span>
 
     <span class="c1"># File saving branching logic</span>
     <span class="k">if</span> <span class="n">convert</span><span class="p">:</span>
