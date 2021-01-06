@@ -285,6 +285,11 @@ invoking <code class="docutils literal notranslate"><span class="pre">write_raw_
 events array manually and pass it to this function:</p>
 <p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a> for more information on event
 extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
+<p>When anonymizing <code class="docutils literal notranslate"><span class="pre">.edf</span></code> files, then the file format for EDF limits
+how far back we can set the recording date. Therefore, all anonymized
+EDF datasets will have an internal recording date of <code class="docutils literal notranslate"><span class="pre">01-01-1985</span></code>,
+and the actual recording date will be stored in the <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code>
+file’s <code class="docutils literal notranslate"><span class="pre">acq_time</span></code> column.</p>
 </dd></dl>
 
 <div class="section" id="examples-using-mne-bids-write-raw-bids">

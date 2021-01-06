@@ -149,7 +149,7 @@
 <div class="section" id="authors">
 <h3>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>xxx</p></li>
+<li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
 </ul>
 </div>
 <div class="section" id="detailed-list-of-changes">
@@ -176,6 +176,7 @@
 <h4>Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Fix writing MEGIN Triux files, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/674">#674</a>)</p></li>
+<li><p>Anonymization of EDF files in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> will now convert recording date to <code class="docutils literal notranslate"><span class="pre">01-01-1985</span> <span class="pre">00:00:00</span></code> if anonymization takes place, while setting the recording date in the <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> file to the anonymized date, thus making the file EDF/EDFBrowser compliant, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/669">#669</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </div>
