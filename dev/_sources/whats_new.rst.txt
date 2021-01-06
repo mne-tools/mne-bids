@@ -46,7 +46,7 @@ Requirements
 Bug fixes
 ^^^^^^^^^
 
-- xxx
+- Fix writing MEGIN Triux files, by `Alexandre Gramfort`_ (:gh:`674`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

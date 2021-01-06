@@ -447,7 +447,7 @@ Now let us inspect the dataset again by generating the report again. Now that
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.186 seconds)
+   **Total running time of the script:** ( 0 minutes  0.170 seconds)
 
 
 .. _sphx_glr_download_auto_examples_update_bids_datasets.py:
