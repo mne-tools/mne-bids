@@ -102,6 +102,8 @@ test_eegieeg_data = [
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon)
 ]
+test_convert_data = test_eegieeg_data.copy()
+test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
 
 test_convertbrainvision_data = [
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
@@ -2237,7 +2239,7 @@ def test_sidecar_encoding(_bids_validate):
     'dir_name, fname, reader', test_convertbrainvision_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_convert_brainvision(dir_name, fname, reader, _bids_validate):
-    """Test conversion of manufacturer data format to BrainVision.
+    """Test conversion of EEG/iEEG manufacturer format to BrainVision.
 
     BrainVision should correctly store data from pybv>=0.5 that
     has different non-voltage units.
@@ -2288,7 +2290,6 @@ def test_error_write_meg_as_eeg(dir_name, fname, reader):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
                                          extension='.vhdr')
     raw = reader(raw_fname)
@@ -2299,3 +2300,80 @@ def test_error_write_meg_as_eeg(dir_name, fname, reader):
     with pytest.raises(ValueError, match='Got file extension .*'
                                          'for MEG data'):
         write_raw_bids(**kwargs)
+
+
+@pytest.mark.parametrize('dir_name, fname, reader', test_convert_data)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_convert_dataset_format(dir_name, fname, reader):
+    """Test force-converting files to RECOMMENDED formats."""
+    bids_root = _TempDir()
+
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    # test conversion to BrainVision/FIF
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
+    if dir_name == 'EDF':
+        kwargs['format'] = 'BrainVision'
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "int" format'):
+            bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        kwargs['format'] = 'BrainVision'
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'Persyst':
+        kwargs['format'] = 'BrainVision'
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "double" format'):
+            bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'CTF':
+        kwargs['format'] = 'FIF'
+        bids_path.update(datatype='meg')
+        bids_output_path = write_raw_bids(**kwargs)
+
+    # write_raw_bids should have converted the dataset to desired format
+    raw = read_raw_bids(bids_output_path)
+    if kwargs['format'] == 'BrainVision':
+        assert raw.filenames[0].endswith('.eeg')
+        assert bids_output_path.extension == '.vhdr'
+    elif kwargs['format'] == 'FIF':
+        assert raw.filenames[0].endswith('.fif')
+        assert bids_output_path.extension == '.fif'
+
+    # only accepted keywords will work for the 'format' parameter
+    with pytest.raises(ValueError, match='The input "format" .* is '
+                                         'not an accepted input format for '
+                                         '`write_raw_bids`'):
+        kwargs['format'] = 'blah'
+        write_raw_bids(**kwargs)
+
+    # write should fail when trying to convert to wrong data format for
+    # the datatype inside the file (e.g. EEG -> 'FIF' or MEG -> 'BrainVision')
+    with pytest.raises(ValueError, match='The input "format" .* is not an '
+                                         'accepted input format for '
+                                         '.* datatype.'):
+        if dir_name == 'CTF':
+            new_format = 'BrainVision'
+        else:
+            new_format = 'FIF'
+        kwargs['format'] = new_format
+        write_raw_bids(**kwargs)
+
+
+def test_write_fif_triux():
+    """Test writing Triux files."""
+    data_path = testing.data_path()
+    triux_path = op.join(data_path, 'SSS', 'TRIUX')
+    tri_fname = op.join(triux_path, 'triux_bmlhus_erm_raw.fif')
+    raw = mne.io.read_raw_fif(tri_fname)
+    bids_root = _TempDir()
+    bids_path = BIDSPath(
+        subject="01", session="01", run="01", datatype="meg", root=bids_root
+    )
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True)

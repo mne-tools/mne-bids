@@ -36,7 +36,7 @@ Enhancements
 API changes
 ^^^^^^^^^^^
 
-- xxx
+- Add ``format`` kwarg to :func:`write_raw_bids` that allows users to specify if they want to force conversion to ``BrainVision`` or ``FIF`` file format, by `Adam Li`_ (:gh:`672`)
 
 Requirements
 ^^^^^^^^^^^^
@@ -46,6 +46,7 @@ Requirements
 Bug fixes
 ^^^^^^^^^
 
+- Fix writing MEGIN Triux files, by `Alexandre Gramfort`_ (:gh:`674`)
 - Anonymization of EDF files in :func:`write_raw_bids` will now convert recording date to ``01-01-1985 00:00:00`` if anonymization takes place, while setting the recording date in the ``scans.tsv`` file to the anonymized date, thus making the file EDF/EDFBrowser compliant, by `Adam Li`_ (:gh:`669`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
