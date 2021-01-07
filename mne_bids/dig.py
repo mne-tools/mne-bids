@@ -5,6 +5,7 @@
 # License: BSD (3-clause)
 import json
 from collections import OrderedDict
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -290,6 +291,23 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
+    # note that any coordsystem.json file shared within sessions
+    # will be the same across all runs (currently). So
+    # overwrite is set to True always
+    # XXX: improve later when BIDS is updated
+    # check that there already exists a coordsystem.json
+    if datatype == 'meg' and Path(fname).exists():
+        with open(fname, 'r') as fin:
+            coordsystem_dict = json.load(fin)
+        if fid_json != coordsystem_dict:
+            raise RuntimeError(f'Trying to write coordsystem.json, but '
+                               f'it already exists at {fname} and the '
+                               f'contents do not match. You must '
+                               f'differentiate this coordsystem.json '
+                               f'file from the existing one, or set '
+                               f'"overwrite" to True.')
+        # set overwrite to True
+        overwrite = True
     _write_json(fname, fid_json, overwrite, verbose)
 
 

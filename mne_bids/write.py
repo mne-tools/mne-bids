@@ -1216,15 +1216,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not emptyroom:
-        # note that any coordsystem.json file shared within sessions
-        # will be the same across all runs (currently). So
-        # overwrite is set to True always
-        # XXX: improve later when BIDS is updated
         _coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
                           sensor_coord_system=orient,
                           fname=coordsystem_path.fpath,
                           datatype=bids_path.datatype,
-                          overwrite=True, verbose=verbose)
+                          overwrite=overwrite, verbose=verbose)
     elif bids_path.datatype in ['eeg', 'ieeg']:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage

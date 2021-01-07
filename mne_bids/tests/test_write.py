@@ -43,7 +43,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       mark_bad_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
-                            get_anonymization_daysback)
+                            get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
@@ -2125,6 +2125,115 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events):
     assert_array_equal(events, events_read)
     assert event_id == event_id_read
     _bids_validate(bids_root)
+
+
+@pytest.mark.parametrize(
+    'dir_name, fname, reader, datatype, coord_frame', [
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mni_tal'),
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'fs_tal'),
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'unknown'),
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'head'),
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'mri'),
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'unknown'),
+        ('CTF', 'testdata_ctf.ds', _read_raw_ctf, 'meg', ''),
+        ('MEG', 'sample/sample_audvis_trunc_raw.fif', _read_raw_fif, 'meg', ''),  # noqa
+    ]
+)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['encountered_data_in'])
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
+    """Tests that coordsystem.json contents are written correctly.
+
+    Tests multiple manufacturer data formats and MEG, EEG, and iEEG.
+
+    TODO: Fix coordinatesystemdescription for iEEG.
+    Currently, iEEG coordinate system descriptions are not written
+    correctly.
+    """
+    bids_root = _TempDir()
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root,
+                                         datatype=datatype)
+
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True,
+                  verbose=False)
+
+    if datatype == 'eeg':
+        raw.set_channel_types({ch: 'eeg' for ch in raw.ch_names})
+        landmarks = dict(nasion=[1, 0, 0],
+                         lpa=[0, 1, 0],
+                         rpa=[0, 0, 1])
+    elif datatype == 'ieeg':
+        raw.set_channel_types({ch: 'seeg' for ch in raw.ch_names})
+
+        # XXX: setting landmarks for ieeg montage for some reason
+        # transforms coord_frame -> 'CapTrak'. Possible issue in mne
+        landmarks = dict()
+
+    if datatype != 'meg':
+        # alter some channels manually with electrodes to write
+        ch_names = raw.ch_names
+        elec_locs = np.random.random((len(ch_names), 3)).tolist()
+        ch_pos = dict(zip(ch_names, elec_locs))
+        montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                coord_frame=coord_frame,
+                                                **landmarks)
+        raw.set_montage(montage)
+
+    # write to BIDS and then check the coordsystem files
+    bids_output_path = write_raw_bids(**kwargs)
+    coordsystem_fname = _find_matching_sidecar(bids_output_path,
+                                               suffix='coordsystem',
+                                               extension='.json')
+    with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
+        coordsystem_json = json.load(fin)
+
+    # if datatype is MEG and there is a change in the underlying
+    # coordsystem.json file, then an error will occur
+    if datatype == 'meg':
+        new_coordsystem_json = coordsystem_json.copy()
+        new_coordsystem_json['MEGCoordinateSystem'] = 'Other'
+        _write_json(coordsystem_fname, new_coordsystem_json, overwrite=True)
+        with pytest.raises(RuntimeError,
+                           match='Trying to write coordsystem.json, '
+                                 'but it already exists'):
+            write_raw_bids(**kwargs)
+
+    # perform checks on the coordsystem.json file itself
+    if datatype == 'eeg' and coord_frame == 'head':
+        assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
+        assert coordsystem_json['EEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['captrak']
+    elif datatype == 'eeg' and coord_frame == 'unknown':
+        assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
+        assert coordsystem_json['EEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['captrak']
+    elif datatype == 'ieeg' and coord_frame == 'mni_tal':
+        assert 'space-mni' in coordsystem_fname
+        assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
+        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+        #     COORD_FRAME_DESCRIPTIONS['mni_tal']
+    elif datatype == 'ieeg' and coord_frame == 'fs_tal':
+        assert 'space-fs' in coordsystem_fname
+        assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
+        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+        #     COORD_FRAME_DESCRIPTIONS['fs_tal']
+    elif datatype == 'ieeg' and coord_frame == 'unknown':
+        assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
+        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
+    elif datatype == 'meg' and dir_name == 'CTF':
+        assert coordsystem_json['MEGCoordinateSystem'] == 'CTF'
+        assert coordsystem_json['MEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['ctf']
+    elif datatype == 'meg' and dir_name == 'MEG':
+        assert coordsystem_json['MEGCoordinateSystem'] == 'ElektaNeuromag'
+        assert coordsystem_json['MEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['elektaneuromag']
 
 
 @pytest.mark.parametrize(
