@@ -296,7 +296,7 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
     # overwrite is set to True always
     # XXX: improve later when BIDS is updated
     # check that there already exists a coordsystem.json
-    if datatype == 'meg' and Path(fname).exists() and not overwrite:
+    if Path(fname).exists() and not overwrite:
         with open(fname, 'r', encoding='utf-8-sig') as fin:
             coordsystem_dict = json.load(fin)
         if fid_json != coordsystem_dict:
