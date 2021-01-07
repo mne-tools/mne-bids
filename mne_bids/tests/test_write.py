@@ -2196,13 +2196,21 @@ def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
     # if datatype is MEG and there is a change in the underlying
     # coordsystem.json file, then an error will occur
     if datatype == 'meg':
+        # writing twice should work as long as the coordsystem
+        # contents have not changed
+        write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='02'),
+                       overwrite=False, verbose=False)
+
+        # upon changing coordsystem contents, and overwrite not True
+        # this will fail
         new_coordsystem_json = coordsystem_json.copy()
         new_coordsystem_json['MEGCoordinateSystem'] = 'Other'
         _write_json(coordsystem_fname, new_coordsystem_json, overwrite=True)
         with pytest.raises(RuntimeError,
                            match='Trying to write coordsystem.json, '
                                  'but it already exists'):
-            write_raw_bids(**kwargs)
+            write_raw_bids(raw=raw, bids_path=bids_path, overwrite=False,
+                           verbose=False)
 
     # perform checks on the coordsystem.json file itself
     if datatype == 'eeg' and coord_frame == 'head':
