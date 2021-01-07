@@ -300,12 +300,11 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
         with open(fname, 'r', encoding='utf-8-sig') as fin:
             coordsystem_dict = json.load(fin)
         if fid_json != coordsystem_dict:
-            raise RuntimeError(f'Trying to write coordsystem.json, but '
-                               f'it already exists at {fname} and the '
-                               f'contents do not match. You must '
-                               f'differentiate this coordsystem.json '
-                               f'file from the existing one, or set '
-                               f'"overwrite" to True.')
+            raise RuntimeError(
+                f'Trying to write coordsystem.json, but it already '
+                f'exists at {fname} and the contents do not match. '
+                f'You must differentiate this coordsystem.json file '
+                f'from the existing one, or set "overwrite" to True.')
     _write_json(fname, fid_json, overwrite=True, verbose=verbose)
 
 
