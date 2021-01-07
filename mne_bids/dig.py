@@ -306,9 +306,7 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
                                f'differentiate this coordsystem.json '
                                f'file from the existing one, or set '
                                f'"overwrite" to True.')
-        # set overwrite to True
-        overwrite = True
-    _write_json(fname, fid_json, overwrite, verbose)
+    _write_json(fname, fid_json, overwrite=True, verbose=verbose)
 
 
 def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
