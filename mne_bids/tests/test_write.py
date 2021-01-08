@@ -2162,7 +2162,6 @@ def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
     raw = reader(raw_fname)
 
     # clean all events for this test
-    raw.set_annotations(None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True,
                   verbose=False)
 
