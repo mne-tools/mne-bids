@@ -2160,6 +2160,9 @@ def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
                                          datatype=datatype)
 
     raw = reader(raw_fname)
+
+    # clean all events for this test
+    raw.set_annotations(None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True,
                   verbose=False)
 
@@ -2204,13 +2207,13 @@ def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
     # upon changing coordsystem contents, and overwrite not True
     # this will fail
     new_coordsystem_json = coordsystem_json.copy()
-    new_coordsystem_json[f'{datatype_}CoordinateSystem'] = 'Other'
+    new_coordsystem_json[f'{datatype_}CoordinateSystem'] = 'blah'
     _write_json(coordsystem_fname, new_coordsystem_json, overwrite=True)
     with pytest.raises(RuntimeError,
                        match='Trying to write coordsystem.json, '
                              'but it already exists'):
-        write_raw_bids(raw=raw, bids_path=bids_path, overwrite=False,
-                       verbose=False)
+        write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='03'),
+                       overwrite=False, verbose=False)
 
     # perform checks on the coordsystem.json file itself
     if datatype == 'eeg' and coord_frame == 'head':

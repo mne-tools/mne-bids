@@ -207,7 +207,7 @@ def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     if hasattr(raw, 'impedances'):
         data['impedance'] = _get_impedances(raw, names)
 
-    _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
+    _write_tsv(fname, data, overwrite=True, verbose=verbose)
 
 
 def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
