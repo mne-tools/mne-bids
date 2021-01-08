@@ -2142,7 +2142,8 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events):
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['encountered_data_in'])
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
-def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
+def test_coordsystem_json_compliance(
+        dir_name, fname, reader, datatype, coord_frame):
     """Tests that coordsystem.json contents are written correctly.
 
     Tests multiple manufacturer data formats and MEG, EEG, and iEEG.
@@ -2195,14 +2196,14 @@ def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
     with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
         coordsystem_json = json.load(fin)
 
-    # if there is a change in the underlying
-    # coordsystem.json file, then an error will occur
     # writing twice should work as long as the coordsystem
     # contents have not changed
     write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='02'),
                    overwrite=False, verbose=False)
 
     datatype_ = {'meg': 'MEG', 'eeg': 'EEG', 'ieeg': 'iEEG'}[datatype]
+    # if there is a change in the underlying
+    # coordsystem.json file, then an error will occur.
     # upon changing coordsystem contents, and overwrite not True
     # this will fail
     new_coordsystem_json = coordsystem_json.copy()
@@ -2213,6 +2214,26 @@ def test_coordsystem_json(dir_name, fname, reader, datatype, coord_frame):
                              'but it already exists'):
         write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='03'),
                        overwrite=False, verbose=False)
+    _write_json(coordsystem_fname, coordsystem_json, overwrite=True)
+
+    if datatype != 'meg':
+        electrodes_fname = _find_matching_sidecar(bids_output_path,
+                                                  suffix='electrodes',
+                                                  extension='.tsv')
+        elecs_tsv = _from_tsv(electrodes_fname)
+
+        # electrodes.tsv file, then an error will occur.
+        # upon changing electrodes contents, and overwrite not True
+        # this will fail
+        new_elecs_tsv = elecs_tsv.copy()
+        new_elecs_tsv['name'][0] = 'blah'
+        _to_tsv(new_elecs_tsv, electrodes_fname)
+        with pytest.raises(
+                RuntimeError, match='Trying to write electrodes.tsv, '
+                                    'but it already exists'):
+            write_raw_bids(
+                raw=raw, bids_path=bids_path.copy().update(run='04'),
+                overwrite=False, verbose=False)
 
     # perform checks on the coordsystem.json file itself
     if datatype == 'eeg' and coord_frame == 'head':
