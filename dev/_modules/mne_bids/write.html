@@ -1054,14 +1054,15 @@
 <span class="sd">        Example::</span>
 
 <span class="sd">            bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;01&#39;, task=&#39;testing&#39;,</span>
-<span class="sd">                                 acquisition=&#39;01&#39;, run=&#39;01&#39;, root=&#39;/data/BIDS&#39;)</span>
+<span class="sd">                                 acquisition=&#39;01&#39;, run=&#39;01&#39;, datatype=&#39;meg&#39;,</span>
+<span class="sd">                                 root=&#39;/data/BIDS&#39;)</span>
 
 <span class="sd">        This will write the following files in the correct subfolder ``root``::</span>
 
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_meg.fif</span>
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_meg.json</span>
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv</span>
-<span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json</span>
+<span class="sd">            sub-01_ses-01_acq-01_coordsystem.json</span>
 
 <span class="sd">        and the following one if ``events_data`` is not ``None``::</span>
 
@@ -1920,8 +1921,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-06.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.2.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-13.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>

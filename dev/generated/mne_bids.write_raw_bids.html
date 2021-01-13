@@ -158,14 +158,15 @@ attribute is not set, it will be inferred from the recording data type
 found in <code class="docutils literal notranslate"><span class="pre">raw</span></code>.
 Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;testing&#39;</span><span class="p">,</span>
-                     <span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;/data/BIDS&#39;</span><span class="p">)</span>
+                     <span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
+                     <span class="n">root</span><span class="o">=</span><span class="s1">&#39;/data/BIDS&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This will write the following files in the correct subfolder <code class="docutils literal notranslate"><span class="pre">root</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span>
 <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">json</span>
 <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_channels</span><span class="o">.</span><span class="n">tsv</span>
-<span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_coordsystem</span><span class="o">.</span><span class="n">json</span>
+<span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_coordsystem</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
 <p>and the following one if <code class="docutils literal notranslate"><span class="pre">events_data</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
@@ -338,8 +339,8 @@ file’s <code class="docutils literal notranslate"><span class="pre">acq_time</
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-06.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.2.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-13.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
 </footer>
