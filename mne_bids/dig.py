@@ -5,6 +5,7 @@
 # License: BSD (3-clause)
 import json
 from collections import OrderedDict
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -206,7 +207,23 @@ def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     if hasattr(raw, 'impedances'):
         data['impedance'] = _get_impedances(raw, names)
 
-    _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
+    # note that any coordsystem.json file shared within sessions
+    # will be the same across all runs (currently). So
+    # overwrite is set to True always
+    # XXX: improve later when BIDS is updated
+    # check that there already exists a coordsystem.json
+    if Path(fname).exists() and not overwrite:
+        electrodes_tsv = _from_tsv(fname)
+
+        # cast values to str to make equality check work
+        if any([list(map(str, vals1)) != list(vals2) for vals1, vals2 in
+                zip(data.values(), electrodes_tsv.values())]):
+            raise RuntimeError(
+                f'Trying to write electrodes.tsv, but it already '
+                f'exists at {fname} and the contents do not match. '
+                f'You must differentiate this electrodes.tsv file '
+                f'from the existing one, or set "overwrite" to True.')
+    _write_tsv(fname, data, overwrite=True, verbose=verbose)
 
 
 def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
@@ -290,7 +307,21 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
-    _write_json(fname, fid_json, overwrite, verbose)
+    # note that any coordsystem.json file shared within sessions
+    # will be the same across all runs (currently). So
+    # overwrite is set to True always
+    # XXX: improve later when BIDS is updated
+    # check that there already exists a coordsystem.json
+    if Path(fname).exists() and not overwrite:
+        with open(fname, 'r', encoding='utf-8-sig') as fin:
+            coordsystem_dict = json.load(fin)
+        if fid_json != coordsystem_dict:
+            raise RuntimeError(
+                f'Trying to write coordsystem.json, but it already '
+                f'exists at {fname} and the contents do not match. '
+                f'You must differentiate this coordsystem.json file '
+                f'from the existing one, or set "overwrite" to True.')
+    _write_json(fname, fid_json, overwrite=True, verbose=verbose)
 
 
 def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):

@@ -933,14 +933,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
         Example::
 
             bids_path = BIDSPath(subject='01', session='01', task='testing',
-                                 acquisition='01', run='01', root='/data/BIDS')
+                                 acquisition='01', run='01', datatype='meg',
+                                 root='/data/BIDS')
 
         This will write the following files in the correct subfolder ``root``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
-            sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
+            sub-01_ses-01_acq-01_coordsystem.json
 
         and the following one if ``events_data`` is not ``None``::
 

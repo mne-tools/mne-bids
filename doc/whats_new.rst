@@ -48,6 +48,7 @@ Bug fixes
 
 - Fix writing MEGIN Triux files, by `Alexandre Gramfort`_ (:gh:`674`)
 - Anonymization of EDF files in :func:`write_raw_bids` will now convert recording date to ``01-01-1985 00:00:00`` if anonymization takes place, while setting the recording date in the ``scans.tsv`` file to the anonymized date, thus making the file EDF/EDFBrowser compliant, by `Adam Li`_ (:gh:`669`)
+- :func:`mne_bids.write_raw_bids` will not overwrite an existing ``coordsystem.json`` anymore, unless explicitly requested, by `Adam Li`_ (:gh:`675`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
