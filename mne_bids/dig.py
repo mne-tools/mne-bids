@@ -215,7 +215,7 @@ def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     if Path(fname).exists() and not overwrite:
         electrodes_tsv = _from_tsv(fname)
 
-        # data values are passed to str to make equality check work
+        # cast values to str to make equality check work
         if any([list(map(str, vals1)) != list(vals2) for vals1, vals2 in
                 zip(data.values(), electrodes_tsv.values())]):
             raise RuntimeError(
