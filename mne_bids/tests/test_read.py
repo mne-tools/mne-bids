@@ -260,14 +260,38 @@ def test_handle_events_reading():
     # make sure we can deal w/ "#" characters
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a'],
-              'trial_type': ["rec start", "trial #1", "trial #2!"]
-              }
+              'trial_type': ["rec start", "trial #1", "trial #2!"]}
     tmp_dir = _TempDir()
     events_fname = op.join(tmp_dir, 'sub-01_task-test_events.json')
     _to_tsv(events, events_fname)
 
     raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
+
+    # Test with a `stim_type` column instead of `trial_type`.
+    events = {'onset': [11, 12, 'n/a'],
+              'duration': ['n/a', 'n/a', 'n/a'],
+              'stim_type': ["rec start", "trial #1", "trial #2!"]}
+    tmp_dir = _TempDir()
+    events_fname = op.join(tmp_dir, 'sub-01_task-test_events.json')
+    _to_tsv(events, events_fname)
+
+    with pytest.warns(RuntimeWarning, match='This column should be renamed'):
+        raw = _handle_events_reading(events_fname, raw)
+    events, event_id = mne.events_from_annotations(raw)
+
+    # Test without any kind of event description.
+    events = {'onset': [11, 12, 'n/a'],
+              'duration': ['n/a', 'n/a', 'n/a']}
+    tmp_dir = _TempDir()
+    events_fname = op.join(tmp_dir, 'sub-01_task-test_events.json')
+    _to_tsv(events, events_fname)
+
+    raw = _handle_events_reading(events_fname, raw)
+    events, event_id = mne.events_from_annotations(raw)
+    ids = list(event_id.keys())
+    assert len(ids) == 1
+    assert ids == ['n/a']
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

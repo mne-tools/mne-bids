@@ -266,9 +266,19 @@ def _handle_events_reading(events_fname, raw):
 
     # Get the descriptions of the events
     if 'trial_type' in events_dict:
+        trial_type_col_name = 'trial_type'
+    elif 'stim_type' in events_dict:  # Backward-compat with old datasets.
+        trial_type_col_name = 'stim_type'
+        warn(f'The events file, {events_fname}, contains a "stim_type" '
+             f'column. This column should be renamed to "trial_type" for '
+             f'BIDS compatibility.')
+    else:
+        trial_type_col_name = None
+
+    if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
-        events_dict = _drop(events_dict, 'n/a', 'trial_type')
-        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
+        events_dict = _drop(events_dict, 'n/a', trial_type_col_name)
+        descriptions = np.asarray(events_dict[trial_type_col_name], dtype=str)
 
     # If we don't have a proper description of the events, perhaps we have
     # at least an event value?
@@ -279,7 +289,7 @@ def _handle_events_reading(events_fname, raw):
 
     # Worst case, we go with 'n/a' for all events
     else:
-        descriptions = 'n/a'
+        descriptions = np.array(['n/a'] * len(events_dict['onset']), dtype=str)
 
     # Deal with "n/a" strings before converting to float
     ons = [np.nan if on == 'n/a' else on for on in events_dict['onset']]
