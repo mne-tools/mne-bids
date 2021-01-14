@@ -150,6 +150,7 @@
 <h3>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
+<li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
 </ul>
 </div>
 <div class="section" id="detailed-list-of-changes">
@@ -157,7 +158,7 @@
 <div class="section" id="enhancements">
 <h4>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>xxx</p></li>
+<li><p>Some datasets out in the real world have a non-standard <code class="docutils literal notranslate"><span class="pre">stim_type</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> column in <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now makes use of this column, and emits a warning, encouraging users to rename it, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/680">#680</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="api-changes">
@@ -178,6 +179,7 @@
 <li><p>Fix writing MEGIN Triux files, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/674">#674</a>)</p></li>
 <li><p>Anonymization of EDF files in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> will now convert recording date to <code class="docutils literal notranslate"><span class="pre">01-01-1985</span> <span class="pre">00:00:00</span></code> if anonymization takes place, while setting the recording date in the <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> file to the anonymized date, thus making the file EDF/EDFBrowser compliant, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/669">#669</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> will not overwrite an existing <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> anymore, unless explicitly requested, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/675">#675</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now properly handles datasets without event descriptions, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/680">#680</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </div>
@@ -198,7 +200,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-13.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-14.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
