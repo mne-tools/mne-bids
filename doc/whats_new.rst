@@ -24,6 +24,7 @@ Authors
 ~~~~~~~
 
 * `Adam Li`_
+* `Richard Höchenberger`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
