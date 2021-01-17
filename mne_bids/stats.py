@@ -90,6 +90,10 @@ def count_events(root_or_path, datatype='auto'):
         if bp.run is not None:
             groups.append('run')
 
+        if 'stim_type' in df.columns:
+            # Deal with some old files that use stim_type rather than
+            # trial_type
+            df = df.rename(columns={"stim_type": "trial_type"})
         groups.append('trial_type')
         counts = df.groupby(groups).size()
         counts = counts.unstack()
