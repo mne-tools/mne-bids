@@ -16,6 +16,8 @@ from mne.utils import _TempDir
 
 from mne_bids import BIDSPath, write_raw_bids
 from mne_bids.stats import count_events
+from mne_bids.read import _from_tsv
+from mne_bids.write import _write_tsv
 
 
 def _make_dataset(subjects, tasks=(None,), runs=(None,), sessions=(None,)):
@@ -111,7 +113,7 @@ def test_count_events_bids_path():
 
 
 @requires_pandas
-def test_count_no_events():
+def test_count_no_events_file():
     """Test count_events with no event present."""
     data_path = testing.data_path()
     raw_fname = \
@@ -127,3 +129,23 @@ def test_count_no_events():
 
     with pytest.raises(ValueError, match='No events files found.'):
         count_events(root)
+
+
+@requires_pandas
+def test_count_no_events_column():
+    """Test case where events.tsv doesn't contain [stim,trial]_type column."""
+    subject, task, run, session, datatype = '01', 'task1', '01', '01', 'meg'
+    root, events, event_id = _make_dataset([subject], [task], [run], [session])
+
+    # Delete the `stim_type` column.
+    events_tsv_fpath = BIDSPath(root=root, subject=subject, task=task, run=run,
+                          session=session, datatype=datatype, suffix='events',
+                          extension='.tsv').fpath
+    events_tsv = _from_tsv(events_tsv_fpath)
+    events_tsv['stim_type'] = events_tsv['trial_type']
+    del events_tsv['trial_type']
+    _write_tsv(fname=events_tsv_fpath, dictionary=events_tsv, overwrite=True)
+
+    counts = count_events(root)
+    _check_counts(counts, events, event_id, [subject], [task], [run],
+                  [session])
