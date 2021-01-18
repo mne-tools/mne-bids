@@ -139,8 +139,8 @@ def test_count_no_events_column():
 
     # Delete the `stim_type` column.
     events_tsv_fpath = BIDSPath(root=root, subject=subject, task=task, run=run,
-                          session=session, datatype=datatype, suffix='events',
-                          extension='.tsv').fpath
+                                session=session, datatype=datatype,
+                                suffix='events', extension='.tsv').fpath
     events_tsv = _from_tsv(events_tsv_fpath)
     events_tsv['stim_type'] = events_tsv['trial_type']
     del events_tsv['trial_type']
