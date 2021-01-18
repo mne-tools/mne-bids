@@ -95,7 +95,7 @@ def count_events(root_or_path, datatype='auto'):
             # trial_type
             df = df.rename(columns={"stim_type": "trial_type"})
 
-        # There are datasets out there without a `trial_type` and `stim_type`
+        # There are datasets out there without a `trial_type` or `stim_type`
         # column.
         if 'trial_type' in df.columns:
             groups.append('trial_type')
