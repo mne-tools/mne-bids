@@ -72,7 +72,8 @@ def count_events(root_or_path, datatype='auto'):
 
         all_df = []
         for bp in bids_path.match():
-            df = pd.read_csv(str(bp), delimiter='\t')
+            df = pd.read_csv(bp, delimiter='\t')
+            df['task'] = task
             df['subject'] = bp.subject
             if bp.session is not None:
                 df['session'] = bp.session
@@ -83,8 +84,8 @@ def count_events(root_or_path, datatype='auto'):
         if not all_df:
             continue
 
-        df = pd.concat(all_df)
-        groups = ['subject']
+        df = pd.concat(all_df, ignore_index=True)
+        groups = ['task', 'subject']
         if bp.session is not None:
             groups.append('session')
         if bp.run is not None:
@@ -94,16 +95,13 @@ def count_events(root_or_path, datatype='auto'):
             # Deal with some old files that use stim_type rather than
             # trial_type
             df = df.rename(columns={"stim_type": "trial_type"})
-        groups.append('trial_type')
+        if 'trial_type' in df.columns:
+            groups.append('trial_type')
         counts = df.groupby(groups).size()
         counts = counts.unstack()
 
         if 'BAD_ACQ_SKIP' in counts.columns:
             counts = counts.drop('BAD_ACQ_SKIP', axis=1)
-
-        counts.columns = pd.MultiIndex.from_arrays(
-            [[task] * counts.shape[1], counts.columns]
-        )
 
         all_counts.append(counts)
 
