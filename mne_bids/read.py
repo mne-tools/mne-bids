@@ -529,8 +529,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         subject=bids_path.subject, session=bids_path.session,
         suffix='scans', extension='.tsv',
         root=bids_path.root
-    )
-    if scans_fname.fpath.exists():
+    ).fpath
+    if scans_fname.exists():
         raw = _handle_scans_reading(scans_fname, raw, bids_path,
                                     verbose=verbose)
 
