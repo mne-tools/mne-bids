@@ -650,8 +650,8 @@
         <span class="n">subject</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
         <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;scans&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
         <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="n">scans_fname</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
+    <span class="k">if</span> <span class="n">scans_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_scans_reading</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span>
                                     <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
