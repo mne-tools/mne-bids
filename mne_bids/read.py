@@ -278,7 +278,7 @@ def _handle_events_reading(events_fname, raw):
     if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, 'n/a', trial_type_col_name)
-        
+
         if 'value' in events_dict:
             # Check whether the `trial_type` <> `value` mapping is unique.
             trial_types = events_dict[trial_type_col_name]
