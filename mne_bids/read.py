@@ -290,8 +290,14 @@ def _handle_events_reading(events_fname, raw):
                 if len(np.unique(matching_values)) > 1:
                     # Event type descriptors are ambiguous; create hierarchical
                     # event descriptors.
+                    logger.info(
+                        f'The event "{trial_type}" refers to multiple event '
+                        f'values. Creating hierarchical event names.')
                     for ii in idx:
-                        trial_types[ii] = f'{trial_type}/{values[ii]}'
+                        new_name = f'{trial_type}/{values[ii]}'
+                        logger.info(f'    Renaming event: {trial_type} -> '
+                                    f'{new_name}')
+                        trial_types[ii] = new_name
             descriptions = np.asarray(trial_types, dtype=str)
         else:
             descriptions = np.asarray(events_dict[trial_type_col_name],
