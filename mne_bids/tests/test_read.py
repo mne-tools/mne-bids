@@ -280,6 +280,24 @@ def test_handle_events_reading():
         raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
+    # Test with same `trial_type` referring to different `value`
+    events = {'onset': [11, 12, 13],
+              'duration': ['n/a', 'n/a', 'n/a'],
+              'trial_type': ["event1", "event1", "event2"],
+              'value': [1, 2, 3]}
+    tmp_dir = _TempDir()
+    events_fname = op.join(tmp_dir, 'sub-01_task-test_events.json')
+    _to_tsv(events, events_fname)
+
+    raw = _handle_events_reading(events_fname, raw)
+    events, event_id = mne.events_from_annotations(raw)
+
+    assert len(events) == 3
+    assert 'event1/1' in event_id
+    assert 'event1/2' in event_id
+    # The event with unique value mapping should not be renamed
+    assert 'event2' in event_id
+
     # Test without any kind of event description.
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a']}
