@@ -33,6 +33,7 @@ Enhancements
 ^^^^^^^^^^^^
 
 - Some datasets out in the real world have a non-standard ``stim_type`` instead of a ``trial_type`` column in ``*_events.tsv``. :func:`mne_bids.read_raw_bids` now makes use of this column, and emits a warning, encouraging users to rename it, by `Richard Höchenberger`_ (:gh:`680`)
+- When reading data where the same event name or trial type refers to different event or trigger values, we will now create a hierarchical event name in the form of ``trial_type/value``, e.g. ``stimulus/110``  by `Richard Höchenberger`_ (:gh:`688`)
 
 API changes
 ^^^^^^^^^^^

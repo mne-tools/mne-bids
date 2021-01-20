@@ -278,11 +278,27 @@ def _handle_events_reading(events_fname, raw):
     if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, 'n/a', trial_type_col_name)
-        descriptions = np.asarray(events_dict[trial_type_col_name], dtype=str)
+        
+        if 'value' in events_dict:
+            # Check whether the `trial_type` <> `value` mapping is unique.
+            trial_types = events_dict[trial_type_col_name]
+            values = np.asarray(events_dict['value'], dtype=str)
+            for trial_type in np.unique(trial_types):
+                idx = np.where(trial_type == np.atleast_1d(trial_types))[0]
+                matching_values = values[idx]
 
-    # If we don't have a proper description of the events, perhaps we have
-    # at least an event value?
+                if len(np.unique(matching_values)) > 1:
+                    # Event type descriptors are ambiguous; create hierarchical
+                    # event descriptors.
+                    for ii in idx:
+                        trial_types[ii] = f'{trial_type}/{values[ii]}'
+            descriptions = np.asarray(trial_types, dtype=str)
+        else:
+            descriptions = np.asarray(events_dict[trial_type_col_name],
+                                      dtype=str)
     elif 'value' in events_dict:
+        # If we don't have a proper description of the events, perhaps we have
+        # at least an event value?
         # Drop events unrelated to value
         events_dict = _drop(events_dict, 'n/a', 'value')
         descriptions = np.asarray(events_dict['value'], dtype=str)
