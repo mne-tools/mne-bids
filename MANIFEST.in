@@ -13,7 +13,6 @@ global-exclude *.py[co]
 global-exclude __pycache__
 
 recursive-exclude .github *
-recursive-exclude
 recursive-exclude doc/_build *
 recursive-exclude doc/generated *
 recursive-exclude doc/auto_examples *
