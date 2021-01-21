@@ -1,27 +1,30 @@
-include *.rst
+include MANIFEST.in
 include LICENSE
-include mne_bids/__init__.py
+include README.md
 
-recursive-include examples *.py
-recursive-include examples README.rst
+graft examples
+graft mne_bids
+graft doc
 
-recursive-include mne_bids *.py
-
-include mne_bids/assets/*
 
 ### Exclude
 
-exclude .zenodo*
-exclude .github
-exclude .github/PULL_REQUEST_TEMPLATE.md
+global-exclude *.py[co]
+global-exclude __pycache__
+
+recursive-exclude .github *
+recursive-exclude
+recursive-exclude doc/_build *
+recursive-exclude doc/generated *
+recursive-exclude doc/auto_examples *
+
+prune .circleci
+prune paper
+
+exclude .zenodo.json
 exclude Makefile
 exclude CONTRIBUTING.md
 exclude *.yml
 exclude .mailmap
-exclude paper
-recursive-exclude mne_bids *.pyc
-
-recursive-exclude doc *
-recursive-exclude paper *
-
 exclude test_requirements.txt
+exclude .gitignore
