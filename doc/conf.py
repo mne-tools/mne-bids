@@ -50,10 +50,14 @@ copybutton_prompt_is_regexp = True
 numpydoc_xref_param_type = True
 numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
-numpydoc_xref_aliases = {}
+numpydoc_xref_aliases = {
+    'NibabelImageObject': 'nibabel.spatialimages.SpatialImage',
+}
 numpydoc_xref_ignore = {
+    # words
+    'of',
     # unlinkable
-    'nibabel image object',
+    'nibabel-image-object',
 }
 
 

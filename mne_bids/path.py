@@ -592,7 +592,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        bids_paths : list of BIDSPath
+        bids_paths : list of mne_bids.BIDSPath
             The matching paths.
         """
         if self.root is None:

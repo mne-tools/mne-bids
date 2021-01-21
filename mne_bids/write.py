@@ -1353,7 +1353,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
 
     Parameters
     ----------
-    image : str | pathlib.Path | nibabel image object
+    image : str | pathlib.Path | NibabelImageObject
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
@@ -1370,7 +1370,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         also be a string pointing to a ``.trans`` file containing the
         transformation matrix. If ``None``, no sidecar JSON file will be
         created.
-    t1w : str | pathlib.Path | nibabel image object | None
+    t1w : str | pathlib.Path | NibabelImageObject | None
         This parameter is useful if image written is not already a T1 image.
         If the image written is to have a sidecar or be defaced,
         this can be done using `raw`, `trans` and `t1w`. The T1 must be

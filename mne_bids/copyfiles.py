@@ -21,9 +21,9 @@ import shutil as sh
 
 from scipy.io import loadmat, savemat
 
+import mne
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
-from mne.utils import check_version
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -499,7 +499,7 @@ def copyfile_eeglab(src, dest):
     copyfile_kit
 
     """
-    if not check_version('scipy', '1.5.0'):  # pragma: no cover
+    if not mne.utils.check_version('scipy', '1.5.0'):  # pragma: no cover
         raise ImportError('SciPy >=1.5.0 is required handling EEGLAB data.')
 
     # Get extenstion of the EEGLAB file
