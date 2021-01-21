@@ -18,12 +18,12 @@ from mne_bids.path import (get_datatypes, get_entity_vals, BIDSPath,
                            get_entities_from_fname)
 
 # functions to be used inside Template strings
-FUNCTION_TEMPLATE = """{{py:  
+FUNCTION_TEMPLATE = """{{py:
 def _pretty_str(listed):
     # make strings a sequence of ',' and 'and'
     if not isinstance(listed, list):
         listed = list(listed)
-    
+
     if len(listed) <= 1:
         return ','.join(listed)
     return '{}, and {}'.format(', '.join(listed[:-1]), listed[-1])
@@ -31,14 +31,14 @@ def _pretty_str(listed):
 def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
     if minval == 'n/a':
         return 'ages all unknown'
-        
+
     if n_unknown > 0:
         unknown_str = f'; {n_unknown} with unknown {type}'
     else:
         unknown_str = ''
     return f'ages ranged from {round(minval, 2)} to {round(maxval, 2)} '\
            f'(mean = {round(meanval, 2)}, std = {round(stdval, 2)}{unknown_str})'
-           
+
 def _summarize_participant_hand(hands):
     n_unknown = len([hand for hand in hands if hand == 'n/a'])
 
@@ -59,19 +59,19 @@ def _summarize_participant_sex(sexs):
     n_males = len([sex for sex in sexs if sex == 'M'])
     n_females = len([sex for sex in sexs if sex == 'F'])
 
-    return f'comprised of {n_males} men and {n_females} women'        
+    return f'comprised of {n_males} men and {n_females} women'
 
 def _length_recording_str(length_recordings):
     import numpy as np
     if length_recordings is None:
         return ''
-    
+
     min_record_length = round(np.min(length_recordings), 2)
     max_record_length = round(np.max(length_recordings), 2)
     mean_record_length = round(np.mean(length_recordings), 2)
     std_record_length = round(np.std(length_recordings), 2)
     total_record_length = round(sum(length_recordings), 2)
-    
+
     return f' Recording durations ranged from {min_record_length} to {max_record_length} seconds '\
            f'(mean = {mean_record_length}, std = {std_record_length}), '\
            f'for a total of {total_record_length} seconds of data recorded '\
@@ -80,11 +80,11 @@ def _length_recording_str(length_recordings):
 def _summarize_software_filters(software_filters):
     if software_filters in [{}, 'n/a']:
         return ''
-    
+
     msg = ''
     for key, value in software_filters.items():
         msg += f'{key}'
-        
+
         if isinstance(value, dict) and value:
             parameters = []
             for param_name, param_value in value.items():
@@ -94,7 +94,7 @@ def _summarize_software_filters(software_filters):
                 msg += ' with parameters '
                 msg += ', '.join(parameters)
     return msg
-    
+
 }}"""  # noqa
 
 BIDS_DATASET_TEMPLATE = \
@@ -466,9 +466,9 @@ def make_report(root, session=None, verbose=True):
     ----------
     root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
-    session : str , optional
-            The session for a item. Corresponds to "ses".
-    verbose : bool
+    session : str | None
+            The (optional) session for a item. Corresponds to "ses".
+    verbose : bool | None
         Set verbose output to true or false.
 
     Returns

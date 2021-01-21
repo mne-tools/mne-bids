@@ -340,7 +340,7 @@ def get_anonymization_daysback(raws):
 
     Parameters
     ----------
-    raw : mne.io.Raw | list of Raw
+    raw : mne.io.Raw | list of mne.io.Raw
         Subject raw data or list of raw data from several subjects.
 
     Returns

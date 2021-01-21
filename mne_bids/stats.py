@@ -29,7 +29,7 @@ def count_events(root_or_path, datatype='auto'):
 
     Returns
     -------
-    counts : pd.DataFrame
+    counts : pandas.DataFrame
         The pandas dataframe containing all the counts of trial_type
         in all matching events.tsv files.
     """

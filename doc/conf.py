@@ -50,6 +50,12 @@ copybutton_prompt_is_regexp = True
 numpydoc_xref_param_type = True
 numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
+numpydoc_xref_aliases = {}
+numpydoc_xref_ignore = {
+    # unlinkable
+    'nibabel image object',
+}
+
 
 # generate autosummary even if no references
 autosummary_generate = True
