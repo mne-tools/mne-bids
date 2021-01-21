@@ -31,7 +31,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
 
     Parameters
     ----------
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         The set of paths to update. The :class:`mne_bids.BIDSPath` instance
         passed here **must** have the ``.root`` attribute set. The
         ``.datatype`` attribute **may** be set. If ``.datatype`` is

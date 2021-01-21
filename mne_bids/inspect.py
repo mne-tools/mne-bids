@@ -33,7 +33,7 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
 
     Parameters
     ----------
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         A :class:`mne_bids.BIDSPath` containing at least a ``root``. All
         matching files will be inspected. To select only a subset of the data,
         set more :class:`mne_bids.BIDSPath` attributes. If ``datatype`` is not

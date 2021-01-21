@@ -113,9 +113,9 @@ def _age_on_date(bday, exp_date):
 
     Parameters
     ----------
-    bday : instance of datetime.datetime
+    bday : datetime.datetime
         The birthday of the participant.
-    exp_date : instance of datetime.datetime
+    exp_date : datetime.datetime
         The date the experiment was performed on.
 
     """
@@ -209,7 +209,7 @@ def _infer_eeg_placement_scheme(raw):
 
     Parameters
     ----------
-    raw : instance of Raw
+    raw : mne.io.raw
         The data as MNE-Python Raw object.
 
     Returns
