@@ -655,7 +655,7 @@ cite MNE-BIDS there.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.099 seconds)
+   **Total running time of the script:** ( 0 minutes  7.521 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:
