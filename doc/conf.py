@@ -138,7 +138,7 @@ intersphinx_mapping = {
     'matplotlib': ('https://matplotlib.org', None),
     'nilearn': ('https://nilearn.github.io', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
-    'nibabel': ('https://nipy.org/nibabel/', None),
+    'nibabel': ('https://nipy.org/nibabel', None),
 }
 intersphinx_timeout = 5
 
