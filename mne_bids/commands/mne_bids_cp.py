@@ -59,5 +59,5 @@ def run():
         parser.error('{} You supplied: "{}"'.format(accepted_formats_msg, opt))
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == '__main__':
     run()
