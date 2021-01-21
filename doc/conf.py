@@ -56,8 +56,6 @@ numpydoc_xref_aliases = {
 numpydoc_xref_ignore = {
     # words
     'of',
-    # unlinkable
-    'nibabel-image-object',
 }
 
 
