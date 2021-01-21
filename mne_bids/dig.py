@@ -155,7 +155,7 @@ def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     fname : str
         Filename to save the electrodes.tsv to.
@@ -232,7 +232,7 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     unit : str
         Units to be used in the coordsystem specification,
@@ -337,7 +337,7 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
         and ``coordsystem.json`` file for. ``datatype``
         attribute must be ``eeg``, or ``ieeg``. For ``meg``
         data, ``electrodes.tsv`` are not saved.
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -438,7 +438,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         Filepath of the electrodes.tsv to read.
     coordsystem_fpath : str
         Filepath of the coordsystem.json to read.
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
@@ -448,7 +448,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
 
     Returns
     -------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     """
     # get the space entity

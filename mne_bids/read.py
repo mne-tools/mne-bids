@@ -76,7 +76,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv,
         mapping a description key to an integer-valued event code.
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     verbose : bool | str | int | None
         If not None, override default verbose level (see :func:`mne.verbose`).
@@ -440,7 +440,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     Returns
     -------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
 
     Raises

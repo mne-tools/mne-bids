@@ -209,7 +209,7 @@ def _infer_eeg_placement_scheme(raw):
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
 
     Returns

@@ -545,7 +545,7 @@ def copyfile_bti(raw, dest):
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         An MNE-Python raw object of BTi data.
     dest : str | pathlib.Path
         Destination to copy the BTi data to.

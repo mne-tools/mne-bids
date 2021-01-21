@@ -61,7 +61,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     fname : str | mne_bids.BIDSPath
         Filename to save the channels.tsv to.
@@ -156,7 +156,7 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
         before the event or immediately after.
     durations : np.ndarray, shape (n_events,)
         The event durations in seconds.
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     fname : str | mne_bids.BIDSPath
         Filename to save the events.tsv to.
@@ -242,7 +242,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     subject_id : str
         The subject name in BIDS compatible format ('01', '02', etc.)
@@ -386,7 +386,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     raw_fname : str | mne_bids.BIDSPath
         Relative path to the raw data file.
@@ -550,7 +550,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
 
     Parameters
     ----------
-    raw : mne.io.raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     task : str
         Name of the task the data is based on.
