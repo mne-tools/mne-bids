@@ -39,5 +39,5 @@ def run():
     assert '  ' not in report
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == '__main__':
     run()
