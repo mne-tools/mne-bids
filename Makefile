@@ -1,9 +1,7 @@
-# simple makefile to simplify repetetive build env management tasks under posix
-
-# caution: testing won't work on windows, see README
-
 PYTHON ?= python
 PYTESTS ?= pytest
+
+.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e inplace test test-doc test-coverage trailing-spaces upload-pypi check-manifest flake pydocstyle pep build-doc
 
 all: clean inplace test
 
@@ -49,7 +47,7 @@ upload-pipy:
 	python setup.py sdist bdist_egg register upload
 
 check-manifest:
-	check-manifest --ignore .circleci/*,doc,.DS_Store
+	check-manifest .
 
 flake:
 	@if command -v flake8 > /dev/null; then \
@@ -71,3 +69,4 @@ pep:
 build-doc:
 	cd doc; make clean
 	cd doc; make html
+	cd doc; make view
