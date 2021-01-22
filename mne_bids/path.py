@@ -371,7 +371,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        bidspath : instance of BIDSPath
+        bidspath : mne_bids.BIDSPath
             The copied bidspath.
         """
         return deepcopy(self)
@@ -387,7 +387,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        self : instance of BIDSPath
+        self : mne_bids.BIDSPath
             The BIDSPath object.
         """
         self.directory.mkdir(parents=True, exist_ok=exist_ok)
@@ -508,7 +508,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        bidspath : instance of BIDSPath
+        bidspath : mne_bids.BIDSPath
             The updated instance of BIDSPath.
 
         Examples
@@ -592,7 +592,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        bids_paths : list of BIDSPath
+        bids_paths : list of mne_bids.BIDSPath
             The matching paths.
         """
         if self.root is None:
@@ -903,7 +903,7 @@ def get_entities_from_fname(fname, on_error='raise'):
 
     Parameters
     ----------
-    fname : BIDSPath | str
+    fname : mne_bids.BIDSPath | str
         The path to parse.
     on_error : 'raise' | 'warn' | 'ignore'
         If any unsupported labels in the filename are found and this is set
@@ -986,7 +986,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
 
     Parameters
     ----------
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         Full name of the data file
     suffix : str | None
         The filename suffix. This is the entity after the last ``_``

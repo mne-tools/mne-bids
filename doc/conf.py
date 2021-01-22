@@ -46,11 +46,22 @@ extensions = [
 copybutton_prompt_text = r">>> |\.\.\. |\$ "
 copybutton_prompt_is_regexp = True
 
+# configure numpydoc
+numpydoc_xref_param_type = True
+numpydoc_class_members_toctree = False
+numpydoc_attributes_as_param_list = True
+numpydoc_xref_aliases = {
+    'NibabelImageObject': 'nibabel.spatialimages.SpatialImage',
+}
+numpydoc_xref_ignore = {
+    # words
+    'of',
+}
+
+
 # generate autosummary even if no references
 autosummary_generate = True
 autodoc_default_options = {'inherited-members': None}
-numpydoc_class_members_toctree = False
-numpydoc_attributes_as_param_list = True
 default_role = 'autolink'  # XXX silently allows bad syntax, someone should fix
 
 # The suffix(es) of source filenames.
@@ -126,6 +137,8 @@ intersphinx_mapping = {
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
     'nilearn': ('https://nilearn.github.io', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
+    'nibabel': ('https://nipy.org/nibabel', None),
 }
 intersphinx_timeout = 5
 

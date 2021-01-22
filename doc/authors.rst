@@ -1,4 +1,4 @@
-.. _Mainak Jas: https://perso.telecom-paristech.fr/mjas/
+.. _Mainak Jas: https://jasmainak.github.io/
 .. _Teon Brooks: https://teonbrooks.github.io/
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
 .. _Matt Sanderson: https://github.com/monkeyman192
@@ -8,8 +8,8 @@
 .. _Maximilien Chaumon: https://github.com/dnacombo
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
 .. _Marijn van Vliet: https://github.com/wmvanvliet
-.. _Alex Rockhill: http://github.com/alexrockhill
-.. _Sophie Herbst: http://github.com/SophieHerbst
+.. _Alex Rockhill: https://github.com/alexrockhill
+.. _Sophie Herbst: https://github.com/SophieHerbst
 .. _Adam Li: https://github.com/adam2392
 .. _Fu-Te Wong: https://github.com/zuxfoucault
 .. _Richard Höchenberger: https://github.com/hoechenberger

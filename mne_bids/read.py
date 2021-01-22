@@ -69,26 +69,26 @@ def _read_events(events_data, event_id, raw, verbose=None):
 
     Parameters
     ----------
-    events_data : str | array | None
+    events_data : str | np.ndarray | None
         If a string, a path to an events file. If an array, an MNE events array
         (shape n_events, 3). If None, events will be generated from
         ``raw.annotations``.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv,
         mapping a description key to an integer-valued event code.
-    raw : instance of Raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     verbose : bool | str | int | None
         If not None, override default verbose level (see :func:`mne.verbose`).
 
     Returns
     -------
-    all_events : array, shape = (n_events, 3)
+    all_events : np.ndarray, shape = (n_events, 3)
         The first column contains the event time in samples and the third
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
-    all_dur : array, shape (n_events,)
+    all_dur : np.ndarray, shape (n_events,)
         The event durations in seconds.
     all_desc : dict
         A dictionary with the keys corresponding to the event descriptions and
@@ -426,7 +426,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     Parameters
     ----------
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         The file to read. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. The ``.datatype`` attribute
         **may** be set. If ``.datatype`` is not set and only one data type
@@ -440,7 +440,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     Returns
     -------
-    raw : instance of Raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
 
     Raises
@@ -579,7 +579,7 @@ def get_head_mri_trans(bids_path, extra_params=None):
 
     Parameters
     ----------
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         The path of the recording for which to retrieve the transformation. The
         :class:`mne_bids.BIDSPath` instance passed here **must** have the
         ``.root`` attribute set.
@@ -590,7 +590,7 @@ def get_head_mri_trans(bids_path, extra_params=None):
 
     Returns
     -------
-    trans : instance of mne.transforms.Transform
+    trans : mne.transforms.Transform
         The data transformation matrix from head to MRI coordinates
 
     """

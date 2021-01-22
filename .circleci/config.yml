@@ -45,7 +45,6 @@ jobs:
             command: |
               make -C doc clean
               make -C doc linkcheck
-              make -C doc linkcheck-grep
 
         # Store the data cache
         - save_cache:

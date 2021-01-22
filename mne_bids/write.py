@@ -61,9 +61,9 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    raw : instance of Raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
-    fname : str | BIDSPath
+    fname : str | mne_bids.BIDSPath
         Filename to save the channels.tsv to.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -149,16 +149,16 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
 
     Parameters
     ----------
-    events : array, shape = (n_events, 3)
+    events : np.ndarray, shape = (n_events, 3)
         The first column contains the event time in samples and the third
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
-    durations : array, shape (n_events,)
+    durations : np.ndarray, shape (n_events,)
         The event durations in seconds.
-    raw : instance of Raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
-    fname : str | BIDSPath
+    fname : str | mne_bids.BIDSPath
         Filename to save the events.tsv to.
     trial_type : dict | None
         Dictionary mapping a brief description key to an event id (value). For
@@ -204,7 +204,7 @@ def _readme(datatype, fname, overwrite=False, verbose=True):
     ----------
     datatype : string
         The type of data contained in the raw file ('meg', 'eeg', 'ieeg')
-    fname : str | BIDSPath
+    fname : str | mne_bids.BIDSPath
         Filename to save the README to.
     overwrite : bool
         Whether to overwrite the existing file (defaults to False).
@@ -242,11 +242,11 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
     Parameters
     ----------
-    raw : instance of Raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     subject_id : str
         The subject name in BIDS compatible format ('01', '02', etc.)
-    fname : str | BIDSPath
+    fname : str | mne_bids.BIDSPath
         Filename to save the participants.tsv to.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -348,7 +348,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    fname : str | BIDSPath
+    fname : str | mne_bids.BIDSPath
         Filename to save the scans.tsv to.
     overwrite : bool
         Defaults to False.
@@ -386,9 +386,9 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    raw : instance of Raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
-    raw_fname : str | BIDSPath
+    raw_fname : str | mne_bids.BIDSPath
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
@@ -462,14 +462,14 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
 
     Parameters
     ----------
-    meg_landmarks : array, shape (3, 3)
+    meg_landmarks : np.ndarray, shape (3, 3)
         The meg landmark data: rows LPA, NAS, RPA, columns x, y, z.
-    trans : instance of mne.transforms.Transform
+    trans : mne.transforms.Transform
         The transformation matrix from head coordinates to MRI coordinates.
 
     Returns
     -------
-    mri_landmarks : array, shape (3, 3)
+    mri_landmarks : np.ndarray, shape (3, 3)
         The mri RAS landmark data converted to from m to mm.
     """
     # Transform MEG landmarks into MRI space, adjust units by * 1e3
@@ -481,14 +481,14 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
 
     Parameters
     ----------
-    mri_landmarks : array, shape (3, 3)
+    mri_landmarks : np.ndarray, shape (3, 3)
         The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
     t1_mgh : nib.MGHImage
         The image data in MGH format.
 
     Returns
     -------
-    vox_landmarks : array, shape (3, 3)
+    vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
@@ -503,14 +503,14 @@ def _mri_voxels_to_mri_scanner_ras(mri_landmarks, img_mgh):
 
     Parameters
     ----------
-    mri_landmarks : array, shape (3, 3)
+    mri_landmarks : np.ndarray, shape (3, 3)
         The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
     img_mgh : nib.MGHImage
         The image data in MGH format.
 
     Returns
     -------
-    ras_landmarks : array, shape (3, 3)
+    ras_landmarks : np.ndarray, shape (3, 3)
         The MRI scanner RAS landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
@@ -524,14 +524,14 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
 
     Parameters
     ----------
-    ras_landmarks : array, shape (3, 3)
+    ras_landmarks : np.ndarray, shape (3, 3)
         The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
     img_mgh : nib.MGHImage
         The image data in MGH format.
 
     Returns
     -------
-    vox_landmarks : array, shape (3, 3)
+    vox_landmarks : np.ndarray, shape (3, 3)
         The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
@@ -550,14 +550,14 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
 
     Parameters
     ----------
-    raw : instance of Raw
+    raw : mne.io.Raw
         The data as MNE-Python Raw object.
     task : str
         Name of the task the data is based on.
     manufacturer : str
         Manufacturer of the acquisition system. For MEG also used to define the
         coordinate system for the MEG sensors.
-    fname : str | BIDSPath
+    fname : str | mne_bids.BIDSPath
         Filename to save the sidecar json to.
     datatype : str
         Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
@@ -728,7 +728,7 @@ def _write_raw_fif(raw, bids_fname):
     ----------
     raw : mne.io.Raw
         Raw file to save out.
-    bids_fname : str | BIDSPath
+    bids_fname : str | mne_bids.BIDSPath
         The name of the BIDS-specified file where the raw object
         should be saved.
 
@@ -921,11 +921,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     Parameters
     ----------
-    raw : instance of mne.io.Raw
+    raw : mne.io.Raw
         The raw data. It must be an instance of `mne.io.Raw`. The data
         should not be loaded from disk, i.e., ``raw.preload`` must be
         ``False``.
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. If the ``.datatype``
         attribute is not set, it will be inferred from the recording data type
@@ -955,7 +955,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         Note that the data type is automatically inferred from the raw
         object, as well as the extension. Data with MEG and other
         electrophysiology data in the same file will be stored as ``'meg'``.
-    events_data : path-like | array | None
+    events_data : path-like | np.ndarray | None
         Use this parameter to specify events to write to the ``*_events.tsv``
         sidecar file, additionally to the object's `mne.Annotations` (which
         are always written).
@@ -1031,7 +1031,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     Returns
     -------
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         The path of the created data file.
 
     Notes
@@ -1353,24 +1353,24 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
 
     Parameters
     ----------
-    image : str | pathlib.Path | nibabel image object
+    image : str | pathlib.Path | NibabelImageObject
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
-    raw : instance of mne.io.Raw | None
+    raw : mne.io.Raw | None
         The raw data of ``subject`` corresponding to the MR scan in ``image``.
         If ``None``, ``trans`` has to be ``None`` as well
-    trans : instance of mne.transforms.Transform | str | None
+    trans : mne.transforms.Transform | str | None
         The transformation matrix from head to MRI coordinates. Can
         also be a string pointing to a ``.trans`` file containing the
         transformation matrix. If ``None``, no sidecar JSON file will be
         created.
-    t1w : str | pathlib.Path | nibabel image object | None
+    t1w : str | pathlib.Path | NibabelImageObject | None
         This parameter is useful if image written is not already a T1 image.
         If the image written is to have a sidecar or be defaced,
         this can be done using `raw`, `trans` and `t1w`. The T1 must be
@@ -1388,7 +1388,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         - `theta`: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
-    landmarks: instance of DigMontage | str | None
+    landmarks: mne.channels.DigMontage | str | None
         The DigMontage or filepath to a DigMontage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
@@ -1408,7 +1408,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
 
     Returns
     -------
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         Path to the written MRI data.
     """
     if not has_nibabel():  # pragma: no cover
@@ -1579,7 +1579,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         Descriptions of the reasons that lead to the exclusion of the
         channel(s). If a list, it must match the length of ``ch_names``.
         If ``None``, no descriptions are added.
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         The recording to update. The :class:`mne_bids.BIDSPath` instance passed
         here **must** have the ``.root`` attribute set. The ``.datatype``
         attribute **may** be set. If ``.datatype`` is not set and only one data
@@ -1700,7 +1700,7 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
         Either the path of the ``.dat`` file containing the file-calibration
         matrix, or the dictionary returned by
         :func:`mne.preprocessing.read_fine_calibration`.
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
         ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
         ``None``.
@@ -1754,7 +1754,7 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
     ----------
     fname : path-like
         The path of the ``FIFF`` file containing the crosstalk information.
-    bids_path : BIDSPath
+    bids_path : mne_bids.BIDSPath
         A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
         ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
         ``None``.

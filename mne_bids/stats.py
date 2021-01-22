@@ -14,7 +14,7 @@ def count_events(root_or_path, datatype='auto'):
 
     Parameters
     ----------
-    root_or_path : str | pathlib.Path | BIDSPath
+    root_or_path : str | pathlib.Path | mne_bids.BIDSPath
         If str or Path it is the root folder of the BIDS dataset.
         If a BIDSPath is passed it allows to limit the count
         to a subject, a session or a run by only considering
@@ -29,7 +29,7 @@ def count_events(root_or_path, datatype='auto'):
 
     Returns
     -------
-    counts : pd.DataFrame
+    counts : pandas.DataFrame
         The pandas dataframe containing all the counts of trial_type
         in all matching events.tsv files.
     """
