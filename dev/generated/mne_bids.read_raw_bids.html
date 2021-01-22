@@ -132,38 +132,38 @@
 <dd><p>Read BIDS compatible data.</p>
 <p>Will attempt to read associated events.tsv and channels.tsv files to
 populate the returned raw object with raw.annotations and raw.info[‘bads’].</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The file to read. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
+<dd class="field-odd"><dl>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The file to read. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
 <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. The <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> attribute
 <strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is not set and only one data type
 (e.g., only EEG or MEG data) is present in the dataset, it will be
 selected automatically.</p>
 </dd>
-<dt><strong>extra_params</strong><span class="classifier">None | dict</span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions.
+<dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions.
 If a dict, for example: <code class="docutils literal notranslate"><span class="pre">extra_params=dict(allow_maxshield=True)</span></code>.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>The verbosity level.</p>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>The verbosity level.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>raw</strong><span class="classifier">instance of Raw</span></dt><dd><p>The data as MNE-Python Raw object.</p>
+<dd class="field-even"><dl>
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The data as MNE-Python Raw object.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt>RuntimeError</dt><dd><p>If multiple recording data types are present in the dataset, but
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></dt><dd><p>If multiple recording data types are present in the dataset, but
 <code class="docutils literal notranslate"><span class="pre">datatype=None</span></code>.</p>
 </dd>
-<dt>RuntimeError</dt><dd><p>If more than one data files exist for the specified recording.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></dt><dd><p>If more than one data files exist for the specified recording.</p>
 </dd>
-<dt>RuntimeError</dt><dd><p>If no data file in a supported format can be located.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></dt><dd><p>If no data file in a supported format can be located.</p>
 </dd>
-<dt>ValueError</dt><dd><p>If the specified <code class="docutils literal notranslate"><span class="pre">datatype</span></code> cannot be found in the dataset.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If the specified <code class="docutils literal notranslate"><span class="pre">datatype</span></code> cannot be found in the dataset.</p>
 </dd>
 </dl>
 </dd>
@@ -212,7 +212,7 @@ If a dict, for example: <code class="docutils literal notranslate"><span class="
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

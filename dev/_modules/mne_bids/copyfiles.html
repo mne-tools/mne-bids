@@ -142,9 +142,9 @@
 
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
+<span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="p">(</span><span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">read_raw_edf</span><span class="p">,</span> <span class="n">read_raw_bdf</span><span class="p">,</span>
                     <span class="n">anonymize_info</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_check_anonymize</span>
@@ -620,7 +620,7 @@
 <span class="sd">    copyfile_kit</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;scipy&#39;</span><span class="p">,</span> <span class="s1">&#39;1.5.0&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mne</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;scipy&#39;</span><span class="p">,</span> <span class="s1">&#39;1.5.0&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;SciPy &gt;=1.5.0 is required handling EEGLAB data.&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get extenstion of the EEGLAB file</span>
@@ -666,7 +666,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        An MNE-Python raw object of BTi data.</span>
 <span class="sd">    dest : str | pathlib.Path</span>
 <span class="sd">        Destination to copy the BTi data to.</span>
@@ -703,7 +703,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

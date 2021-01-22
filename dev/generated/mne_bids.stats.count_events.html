@@ -130,15 +130,15 @@
 <dt id="mne_bids.stats.count_events">
 <code class="sig-prename descclassname">mne_bids.stats.</code><code class="sig-name descname">count_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root_or_path</span></em>, <em class="sig-param"><span class="n">datatype</span><span class="o">=</span><span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/stats.html#count_events"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.stats.count_events" title="Permalink to this definition">¶</a></dt>
 <dd><p>Count events present in dataset.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>root_or_path</strong><span class="classifier">str | pathlib.Path | BIDSPath</span></dt><dd><p>If str or Path it is the root folder of the BIDS dataset.
+<dd class="field-odd"><dl>
+<dt><strong>root_or_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>If str or Path it is the root folder of the BIDS dataset.
 If a BIDSPath is passed it allows to limit the count
 to a subject, a session or a run by only considering
 the event files that match this BIDSPath.</p>
 </dd>
-<dt><strong>datatype</strong><span class="classifier">str</span></dt><dd><p>Type of the data recording. Can be <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>,
+<dt><strong>datatype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Type of the data recording. Can be <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>,
 <code class="docutils literal notranslate"><span class="pre">ieeg</span></code> or <code class="docutils literal notranslate"><span class="pre">auto</span></code>. If <code class="docutils literal notranslate"><span class="pre">auto</span></code> and a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>
 isinstance is passed as <code class="docutils literal notranslate"><span class="pre">root_or_path</span></code> which has a <code class="docutils literal notranslate"><span class="pre">datatype</span></code>
 attribute set, then this data type will be used. Otherwise, only
@@ -148,8 +148,8 @@ ambiguity.</p>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>counts</strong><span class="classifier">pd.DataFrame</span></dt><dd><p>The pandas dataframe containing all the counts of trial_type
+<dd class="field-even"><dl>
+<dt><strong>counts</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/dev/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.3.0.dev0+512.g612cd0542)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></span></dt><dd><p>The pandas dataframe containing all the counts of trial_type
 in all matching events.tsv files.</p>
 </dd>
 </dl>
@@ -187,7 +187,7 @@ in all matching events.tsv files.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

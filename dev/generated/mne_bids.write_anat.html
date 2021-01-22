@@ -134,33 +134,33 @@
 correct location inside the specified <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>. If a
 transformation matrix is supplied, this information will be stored in a
 sidecar JSON file.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>image</strong><span class="classifier">str | pathlib.Path | nibabel image object</span></dt><dd><p>Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
+<dd class="field-odd"><dl>
+<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a></span></dt><dd><p>Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
 readable by nibabel. Can also be a nibabel image object of an
 MRI scan. Will be written as a .nii.gz file.</p>
 </dd>
-<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
 <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">root</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code> attributes set.
 The suffix is assumed to be <code class="docutils literal notranslate"><span class="pre">'T1w'</span></code> if not present. It can
 also be <code class="docutils literal notranslate"><span class="pre">'FLASH'</span></code>, for example, to indicate FLASH MRI.</p>
 </dd>
-<dt><strong>raw</strong><span class="classifier">instance of mne.io.Raw | None</span></dt><dd><p>The raw data of <code class="docutils literal notranslate"><span class="pre">subject</span></code> corresponding to the MR scan in <code class="docutils literal notranslate"><span class="pre">image</span></code>.
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The raw data of <code class="docutils literal notranslate"><span class="pre">subject</span></code> corresponding to the MR scan in <code class="docutils literal notranslate"><span class="pre">image</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">trans</span></code> has to be <code class="docutils literal notranslate"><span class="pre">None</span></code> as well</p>
 </dd>
-<dt><strong>trans</strong><span class="classifier">instance of mne.transforms.Transform | str | None</span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
+<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
 also be a string pointing to a <code class="docutils literal notranslate"><span class="pre">.trans</span></code> file containing the
 transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no sidecar JSON file will be
 created.</p>
 </dd>
-<dt><strong>t1w</strong><span class="classifier">str | pathlib.Path | nibabel image object | None</span></dt><dd><p>This parameter is useful if image written is not already a T1 image.
+<dt><strong>t1w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>This parameter is useful if image written is not already a T1 image.
 If the image written is to have a sidecar or be defaced,
 this can be done using <em class="xref py py-obj">raw</em>, <em class="xref py py-obj">trans</em> and <em class="xref py py-obj">t1w</em>. The T1 must be
 passed here because the coregistration uses freesurfer surfaces which
 are in T1 space.</p>
 </dd>
-<dt><strong>deface</strong><span class="classifier">bool | dict</span></dt><dd><p>If False, no defacing is performed.
+<dt><strong>deface</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>If False, no defacing is performed.
 If True, deface with default parameters.
 <em class="xref py py-obj">trans</em> and <em class="xref py py-obj">raw</em> must not be <em class="xref py py-obj">None</em> if True.
 If dict, accepts the following keys:</p>
@@ -171,12 +171,12 @@ relative to the nasion (default 5)</p></li>
 to vertical (default 15).</p></li>
 </ul>
 </dd>
-<dt><strong>landmarks: instance of DigMontage | str | None</strong></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
+<dt><strong>landmarks: mne.channels.DigMontage | str | None</strong></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
 passed to provide information for defacing. Landmarks can be determined
 from the head model using <em class="xref py py-obj">mne coreg</em> GUI, or they can be determined
 from the MRI using <em class="xref py py-obj">freeview</em>.</p>
 </dd>
-<dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to overwrite existing files or data in files.
+<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to False.
 If overwrite is True, any existing files with the same BIDS parameters
 will be overwritten with the exception of the <em class="xref py py-obj">participants.tsv</em> and
@@ -185,14 +185,14 @@ match the current data will be replaced.
 If overwrite is False, no existing data will be overwritten or
 replaced.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, this will print a snippet of the sidecar files. If
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, this will print a snippet of the sidecar files. If
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, no content will be printed.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>Path to the written MRI data.</p>
+<dd class="field-even"><dl>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>Path to the written MRI data.</p>
 </dd>
 </dl>
 </dd>
@@ -221,7 +221,7 @@ replaced.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

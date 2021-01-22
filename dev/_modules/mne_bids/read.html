@@ -190,26 +190,26 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    events_data : str | array | None</span>
+<span class="sd">    events_data : str | np.ndarray | None</span>
 <span class="sd">        If a string, a path to an events file. If an array, an MNE events array</span>
 <span class="sd">        (shape n_events, 3). If None, events will be generated from</span>
 <span class="sd">        ``raw.annotations``.</span>
 <span class="sd">    event_id : dict | None</span>
 <span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv,</span>
 <span class="sd">        mapping a description key to an integer-valued event code.</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    verbose : bool | str | int | None</span>
 <span class="sd">        If not None, override default verbose level (see :func:`mne.verbose`).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    all_events : array, shape = (n_events, 3)</span>
+<span class="sd">    all_events : np.ndarray, shape = (n_events, 3)</span>
 <span class="sd">        The first column contains the event time in samples and the third</span>
 <span class="sd">        column contains the event id. The second column is ignored for now but</span>
 <span class="sd">        typically contains the value of the trigger channel either immediately</span>
 <span class="sd">        before the event or immediately after.</span>
-<span class="sd">    all_dur : array, shape (n_events,)</span>
+<span class="sd">    all_dur : np.ndarray, shape (n_events,)</span>
 <span class="sd">        The event durations in seconds.</span>
 <span class="sd">    all_desc : dict</span>
 <span class="sd">        A dictionary with the keys corresponding to the event descriptions and</span>
@@ -547,7 +547,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The file to read. The :class:`mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``.root`` attribute set. The ``.datatype`` attribute</span>
 <span class="sd">        **may** be set. If ``.datatype`` is not set and only one data type</span>
@@ -561,7 +561,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 
 <span class="sd">    Raises</span>
@@ -700,7 +700,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The path of the recording for which to retrieve the transformation. The</span>
 <span class="sd">        :class:`mne_bids.BIDSPath` instance passed here **must** have the</span>
 <span class="sd">        ``.root`` attribute set.</span>
@@ -711,7 +711,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    trans : instance of mne.transforms.Transform</span>
+<span class="sd">    trans : mne.transforms.Transform</span>
 <span class="sd">        The data transformation matrix from head to MRI coordinates</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -804,7 +804,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

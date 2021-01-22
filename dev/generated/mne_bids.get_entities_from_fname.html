@@ -131,10 +131,10 @@
 <code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_entities_from_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">on_error</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entities_from_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_entities_from_fname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a dictionary of BIDS entities from a filename.</p>
 <p>Entities not present in <code class="docutils literal notranslate"><span class="pre">fname</span></code> will be assigned the value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>fname</strong><span class="classifier">BIDSPath | str</span></dt><dd><p>The path to parse.</p>
+<dd class="field-odd"><dl>
+<dt><strong>fname</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The path to parse.</p>
 </dd>
 <dt><strong>on_error</strong><span class="classifier">‘raise’ | ‘warn’ | ‘ignore’</span></dt><dd><p>If any unsupported labels in the filename are found and this is set
 to <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. If <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>,
@@ -148,8 +148,8 @@ if <code class="docutils literal notranslate"><span class="pre">on_error='ignore
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>A dictionary with the keys corresponding to the BIDS entity names, and
+<dd class="field-even"><dl>
+<dt><strong>params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>A dictionary with the keys corresponding to the BIDS entity names, and
 the values to the entity values encoded in the filename.</p>
 </dd>
 </dl>
@@ -190,7 +190,7 @@ the values to the entity values encoded in the filename.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

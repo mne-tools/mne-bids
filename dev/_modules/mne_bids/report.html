@@ -139,12 +139,12 @@
                            <span class="n">get_entities_from_fname</span><span class="p">)</span>
 
 <span class="c1"># functions to be used inside Template strings</span>
-<span class="n">FUNCTION_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{{py:  </span>
+<span class="n">FUNCTION_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{{py:</span>
 <span class="s2">def _pretty_str(listed):</span>
 <span class="s2">    # make strings a sequence of &#39;,&#39; and &#39;and&#39;</span>
 <span class="s2">    if not isinstance(listed, list):</span>
 <span class="s2">        listed = list(listed)</span>
-<span class="s2">    </span>
+
 <span class="s2">    if len(listed) &lt;= 1:</span>
 <span class="s2">        return &#39;,&#39;.join(listed)</span>
 <span class="s2">    return &#39;</span><span class="si">{}</span><span class="s2">, and </span><span class="si">{}</span><span class="s2">&#39;.format(&#39;, &#39;.join(listed[:-1]), listed[-1])</span>
@@ -152,14 +152,14 @@
 <span class="s2">def _range_str(minval, maxval, meanval, stdval, n_unknown, type):</span>
 <span class="s2">    if minval == &#39;n/a&#39;:</span>
 <span class="s2">        return &#39;ages all unknown&#39;</span>
-<span class="s2">        </span>
+
 <span class="s2">    if n_unknown &gt; 0:</span>
 <span class="s2">        unknown_str = f&#39;; </span><span class="si">{n_unknown}</span><span class="s2"> with unknown </span><span class="si">{type}</span><span class="s2">&#39;</span>
 <span class="s2">    else:</span>
 <span class="s2">        unknown_str = &#39;&#39;</span>
 <span class="s2">    return f&#39;ages ranged from {round(minval, 2)} to {round(maxval, 2)} &#39;</span><span class="se">\</span>
 <span class="s2">           f&#39;(mean = {round(meanval, 2)}, std = {round(stdval, 2)}</span><span class="si">{unknown_str}</span><span class="s2">)&#39;</span>
-<span class="s2">           </span>
+
 <span class="s2">def _summarize_participant_hand(hands):</span>
 <span class="s2">    n_unknown = len([hand for hand in hands if hand == &#39;n/a&#39;])</span>
 
@@ -180,19 +180,19 @@
 <span class="s2">    n_males = len([sex for sex in sexs if sex == &#39;M&#39;])</span>
 <span class="s2">    n_females = len([sex for sex in sexs if sex == &#39;F&#39;])</span>
 
-<span class="s2">    return f&#39;comprised of </span><span class="si">{n_males}</span><span class="s2"> men and </span><span class="si">{n_females}</span><span class="s2"> women&#39;        </span>
+<span class="s2">    return f&#39;comprised of </span><span class="si">{n_males}</span><span class="s2"> men and </span><span class="si">{n_females}</span><span class="s2"> women&#39;</span>
 
 <span class="s2">def _length_recording_str(length_recordings):</span>
 <span class="s2">    import numpy as np</span>
 <span class="s2">    if length_recordings is None:</span>
 <span class="s2">        return &#39;&#39;</span>
-<span class="s2">    </span>
+
 <span class="s2">    min_record_length = round(np.min(length_recordings), 2)</span>
 <span class="s2">    max_record_length = round(np.max(length_recordings), 2)</span>
 <span class="s2">    mean_record_length = round(np.mean(length_recordings), 2)</span>
 <span class="s2">    std_record_length = round(np.std(length_recordings), 2)</span>
 <span class="s2">    total_record_length = round(sum(length_recordings), 2)</span>
-<span class="s2">    </span>
+
 <span class="s2">    return f&#39; Recording durations ranged from </span><span class="si">{min_record_length}</span><span class="s2"> to </span><span class="si">{max_record_length}</span><span class="s2"> seconds &#39;</span><span class="se">\</span>
 <span class="s2">           f&#39;(mean = </span><span class="si">{mean_record_length}</span><span class="s2">, std = </span><span class="si">{std_record_length}</span><span class="s2">), &#39;</span><span class="se">\</span>
 <span class="s2">           f&#39;for a total of </span><span class="si">{total_record_length}</span><span class="s2"> seconds of data recorded &#39;</span><span class="se">\</span>
@@ -201,11 +201,11 @@
 <span class="s2">def _summarize_software_filters(software_filters):</span>
 <span class="s2">    if software_filters in [</span><span class="si">{}</span><span class="s2">, &#39;n/a&#39;]:</span>
 <span class="s2">        return &#39;&#39;</span>
-<span class="s2">    </span>
+
 <span class="s2">    msg = &#39;&#39;</span>
 <span class="s2">    for key, value in software_filters.items():</span>
 <span class="s2">        msg += f&#39;</span><span class="si">{key}</span><span class="s2">&#39;</span>
-<span class="s2">        </span>
+
 <span class="s2">        if isinstance(value, dict) and value:</span>
 <span class="s2">            parameters = []</span>
 <span class="s2">            for param_name, param_value in value.items():</span>
@@ -215,7 +215,7 @@
 <span class="s2">                msg += &#39; with parameters &#39;</span>
 <span class="s2">                msg += &#39;, &#39;.join(parameters)</span>
 <span class="s2">    return msg</span>
-<span class="s2">    </span>
+
 <span class="s2">}}&quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
 
 <span class="n">BIDS_DATASET_TEMPLATE</span> <span class="o">=</span> \
@@ -587,9 +587,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    root : str | pathlib.Path</span>
 <span class="sd">        The path of the root of the BIDS compatible folder.</span>
-<span class="sd">    session : str , optional</span>
-<span class="sd">            The session for a item. Corresponds to &quot;ses&quot;.</span>
-<span class="sd">    verbose : bool</span>
+<span class="sd">    session : str | None</span>
+<span class="sd">            The (optional) session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">    verbose : bool | None</span>
 <span class="sd">        Set verbose output to true or false.</span>
 
 <span class="sd">    Returns</span>
@@ -679,7 +679,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

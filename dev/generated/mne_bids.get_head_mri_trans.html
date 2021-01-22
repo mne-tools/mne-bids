@@ -134,22 +134,22 @@
 files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of
 points will then be used to calculate a transformation matrix from head
 coordinates to MRI coordinates.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The path of the recording for which to retrieve the transformation. The
+<dd class="field-odd"><dl>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The path of the recording for which to retrieve the transformation. The
 <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here <strong>must</strong> have the
 <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set.</p>
 </dd>
-<dt><strong>extra_params</strong><span class="classifier">None | dict</span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions when reading
+<dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions when reading
 the lankmarks from the MEG file.
 If a dict, for example: <code class="docutils literal notranslate"><span class="pre">extra_params=dict(allow_maxshield=True)</span></code>.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>trans</strong><span class="classifier">instance of mne.transforms.Transform</span></dt><dd><p>The data transformation matrix from head to MRI coordinates</p>
+<dd class="field-even"><dl>
+<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a></span></dt><dd><p>The data transformation matrix from head to MRI coordinates</p>
 </dd>
 </dl>
 </dd>
@@ -178,7 +178,7 @@ If a dict, for example: <code class="docutils literal notranslate"><span class="
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

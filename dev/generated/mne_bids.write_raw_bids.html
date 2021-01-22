@@ -148,11 +148,11 @@ in the sidecars manually.</p></li>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier">instance of mne.io.Raw</span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a>. The data
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a>. The data
 should not be loaded from disk, i.e., <code class="docutils literal notranslate"><span class="pre">raw.preload</span></code> must be
 <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
-<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
 <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. If the <code class="docutils literal notranslate"><span class="pre">.datatype</span></code>
 attribute is not set, it will be inferred from the recording data type
 found in <code class="docutils literal notranslate"><span class="pre">raw</span></code>.
@@ -182,7 +182,7 @@ Example:</p>
 object, as well as the extension. Data with MEG and other
 electrophysiology data in the same file will be stored as <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>.</p>
 </dd>
-<dt><strong>events_data</strong><span class="classifier">path-like | array | None</span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
+<dt><strong>events_data</strong><span class="classifier">path-like | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
 sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
 are always written).
 If a path, specifies the location of an MNE events file.
@@ -208,13 +208,13 @@ call <code class="docutils literal notranslate"><span class="pre">raw.set_annota
 parameter.</p>
 </div>
 </dd>
-<dt><strong>event_id</strong><span class="classifier">dict | None</span></dt><dd><p>Descriptions of all event IDs, if you passed <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.
+<dt><strong>event_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Descriptions of all event IDs, if you passed <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.
 The descriptions will be written to the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> column in
 <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. The dictionary keys correspond to the event
 descriptions and the values to the event IDs. You must specify a
 description for all event IDs in <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier">dict | None</span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
+<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
 If a dictionary, data will be anonymized depending on the dictionary
 keys: <code class="docutils literal notranslate"><span class="pre">daysback</span></code> is a required key, <code class="docutils literal notranslate"><span class="pre">keep_his</span></code> is optional.</p>
 <dl class="simple">
@@ -239,7 +239,7 @@ the original file format lacks some necessary features. When a str is
 passed, a conversion can be forced to the BrainVision format for EEG,
 or the FIF format for MEG data.</p>
 </dd>
-<dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to overwrite existing files or data in files.
+<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any existing files with the same BIDS parameters
 will be overwritten with the exception of the <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>
@@ -251,14 +251,14 @@ and <code class="docutils literal notranslate"><span class="pre">participants.ts
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no existing data will be overwritten or
 replaced.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, this will print a snippet of the sidecar files. Otherwise,
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, this will print a snippet of the sidecar files. Otherwise,
 no content will be printed.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The path of the created data file.</p>
+<dd class="field-even"><dl>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The path of the created data file.</p>
 </dd>
 </dl>
 </dd>
@@ -339,7 +339,7 @@ file’s <code class="docutils literal notranslate"><span class="pre">acq_time</
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

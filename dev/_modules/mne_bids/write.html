@@ -182,9 +182,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
-<span class="sd">    fname : str | BIDSPath</span>
+<span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the channels.tsv to.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
@@ -270,16 +270,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    events : array, shape = (n_events, 3)</span>
+<span class="sd">    events : np.ndarray, shape = (n_events, 3)</span>
 <span class="sd">        The first column contains the event time in samples and the third</span>
 <span class="sd">        column contains the event id. The second column is ignored for now but</span>
 <span class="sd">        typically contains the value of the trigger channel either immediately</span>
 <span class="sd">        before the event or immediately after.</span>
-<span class="sd">    durations : array, shape (n_events,)</span>
+<span class="sd">    durations : np.ndarray, shape (n_events,)</span>
 <span class="sd">        The event durations in seconds.</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
-<span class="sd">    fname : str | BIDSPath</span>
+<span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the events.tsv to.</span>
 <span class="sd">    trial_type : dict | None</span>
 <span class="sd">        Dictionary mapping a brief description key to an event id (value). For</span>
@@ -325,7 +325,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    datatype : string</span>
 <span class="sd">        The type of data contained in the raw file (&#39;meg&#39;, &#39;eeg&#39;, &#39;ieeg&#39;)</span>
-<span class="sd">    fname : str | BIDSPath</span>
+<span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the README to.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file (defaults to False).</span>
@@ -363,11 +363,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    subject_id : str</span>
 <span class="sd">        The subject name in BIDS compatible format (&#39;01&#39;, &#39;02&#39;, etc.)</span>
-<span class="sd">    fname : str | BIDSPath</span>
+<span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the participants.tsv to.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
@@ -469,7 +469,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fname : str | BIDSPath</span>
+<span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the scans.tsv to.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Defaults to False.</span>
@@ -507,9 +507,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
-<span class="sd">    raw_fname : str | BIDSPath</span>
+<span class="sd">    raw_fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Relative path to the raw data file.</span>
 <span class="sd">    fname : str</span>
 <span class="sd">        Filename to save the scans.tsv to.</span>
@@ -583,14 +583,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    meg_landmarks : array, shape (3, 3)</span>
+<span class="sd">    meg_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The meg landmark data: rows LPA, NAS, RPA, columns x, y, z.</span>
-<span class="sd">    trans : instance of mne.transforms.Transform</span>
+<span class="sd">    trans : mne.transforms.Transform</span>
 <span class="sd">        The transformation matrix from head coordinates to MRI coordinates.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    mri_landmarks : array, shape (3, 3)</span>
+<span class="sd">    mri_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The mri RAS landmark data converted to from m to mm.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Transform MEG landmarks into MRI space, adjust units by * 1e3</span>
@@ -602,14 +602,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mri_landmarks : array, shape (3, 3)</span>
+<span class="sd">    mri_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.</span>
 <span class="sd">    t1_mgh : nib.MGHImage</span>
 <span class="sd">        The image data in MGH format.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    vox_landmarks : array, shape (3, 3)</span>
+<span class="sd">    vox_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI voxel-space landmark data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get landmarks in voxel space, using the T1 data</span>
@@ -624,14 +624,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mri_landmarks : array, shape (3, 3)</span>
+<span class="sd">    mri_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.</span>
 <span class="sd">    img_mgh : nib.MGHImage</span>
 <span class="sd">        The image data in MGH format.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ras_landmarks : array, shape (3, 3)</span>
+<span class="sd">    ras_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI scanner RAS landmark data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get landmarks in voxel space, using the T1 data</span>
@@ -645,14 +645,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ras_landmarks : array, shape (3, 3)</span>
+<span class="sd">    ras_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.</span>
 <span class="sd">    img_mgh : nib.MGHImage</span>
 <span class="sd">        The image data in MGH format.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    vox_landmarks : array, shape (3, 3)</span>
+<span class="sd">    vox_landmarks : np.ndarray, shape (3, 3)</span>
 <span class="sd">        The MRI voxel-space landmark data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get landmarks in voxel space, using the T1 data</span>
@@ -671,14 +671,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    raw : instance of Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    task : str</span>
 <span class="sd">        Name of the task the data is based on.</span>
 <span class="sd">    manufacturer : str</span>
 <span class="sd">        Manufacturer of the acquisition system. For MEG also used to define the</span>
 <span class="sd">        coordinate system for the MEG sensors.</span>
-<span class="sd">    fname : str | BIDSPath</span>
+<span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Filename to save the sidecar json to.</span>
 <span class="sd">    datatype : str</span>
 <span class="sd">        Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.</span>
@@ -849,7 +849,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        Raw file to save out.</span>
-<span class="sd">    bids_fname : str | BIDSPath</span>
+<span class="sd">    bids_fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        The name of the BIDS-specified file where the raw object</span>
 <span class="sd">        should be saved.</span>
 
@@ -1042,11 +1042,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    raw : instance of mne.io.Raw</span>
+<span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The raw data. It must be an instance of `mne.io.Raw`. The data</span>
 <span class="sd">        should not be loaded from disk, i.e., ``raw.preload`` must be</span>
 <span class="sd">        ``False``.</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``.root`` attribute set. If the ``.datatype``</span>
 <span class="sd">        attribute is not set, it will be inferred from the recording data type</span>
@@ -1076,7 +1076,7 @@
 <span class="sd">        Note that the data type is automatically inferred from the raw</span>
 <span class="sd">        object, as well as the extension. Data with MEG and other</span>
 <span class="sd">        electrophysiology data in the same file will be stored as ``&#39;meg&#39;``.</span>
-<span class="sd">    events_data : path-like | array | None</span>
+<span class="sd">    events_data : path-like | np.ndarray | None</span>
 <span class="sd">        Use this parameter to specify events to write to the ``*_events.tsv``</span>
 <span class="sd">        sidecar file, additionally to the object&#39;s `mne.Annotations` (which</span>
 <span class="sd">        are always written).</span>
@@ -1152,7 +1152,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The path of the created data file.</span>
 
 <span class="sd">    Notes</span>
@@ -1474,24 +1474,24 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    image : str | pathlib.Path | nibabel image object</span>
+<span class="sd">    image : str | pathlib.Path | NibabelImageObject</span>
 <span class="sd">        Path to an MRI scan (e.g. T1w) of the subject. Can be in any format</span>
 <span class="sd">        readable by nibabel. Can also be a nibabel image object of an</span>
 <span class="sd">        MRI scan. Will be written as a .nii.gz file.</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``root`` and ``subject`` attributes set.</span>
 <span class="sd">        The suffix is assumed to be ``&#39;T1w&#39;`` if not present. It can</span>
 <span class="sd">        also be ``&#39;FLASH&#39;``, for example, to indicate FLASH MRI.</span>
-<span class="sd">    raw : instance of mne.io.Raw | None</span>
+<span class="sd">    raw : mne.io.Raw | None</span>
 <span class="sd">        The raw data of ``subject`` corresponding to the MR scan in ``image``.</span>
 <span class="sd">        If ``None``, ``trans`` has to be ``None`` as well</span>
-<span class="sd">    trans : instance of mne.transforms.Transform | str | None</span>
+<span class="sd">    trans : mne.transforms.Transform | str | None</span>
 <span class="sd">        The transformation matrix from head to MRI coordinates. Can</span>
 <span class="sd">        also be a string pointing to a ``.trans`` file containing the</span>
 <span class="sd">        transformation matrix. If ``None``, no sidecar JSON file will be</span>
 <span class="sd">        created.</span>
-<span class="sd">    t1w : str | pathlib.Path | nibabel image object | None</span>
+<span class="sd">    t1w : str | pathlib.Path | NibabelImageObject | None</span>
 <span class="sd">        This parameter is useful if image written is not already a T1 image.</span>
 <span class="sd">        If the image written is to have a sidecar or be defaced,</span>
 <span class="sd">        this can be done using `raw`, `trans` and `t1w`. The T1 must be</span>
@@ -1509,7 +1509,7 @@
 <span class="sd">        - `theta`: is the angle of the defacing shear in degrees relative</span>
 <span class="sd">          to vertical (default 15).</span>
 
-<span class="sd">    landmarks: instance of DigMontage | str | None</span>
+<span class="sd">    landmarks: mne.channels.DigMontage | str | None</span>
 <span class="sd">        The DigMontage or filepath to a DigMontage with landmarks that can be</span>
 <span class="sd">        passed to provide information for defacing. Landmarks can be determined</span>
 <span class="sd">        from the head model using `mne coreg` GUI, or they can be determined</span>
@@ -1529,7 +1529,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        Path to the written MRI data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
@@ -1700,7 +1700,7 @@
 <span class="sd">        Descriptions of the reasons that lead to the exclusion of the</span>
 <span class="sd">        channel(s). If a list, it must match the length of ``ch_names``.</span>
 <span class="sd">        If ``None``, no descriptions are added.</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The recording to update. The :class:`mne_bids.BIDSPath` instance passed</span>
 <span class="sd">        here **must** have the ``.root`` attribute set. The ``.datatype``</span>
 <span class="sd">        attribute **may** be set. If ``.datatype`` is not set and only one data</span>
@@ -1821,7 +1821,7 @@
 <span class="sd">        Either the path of the ``.dat`` file containing the file-calibration</span>
 <span class="sd">        matrix, or the dictionary returned by</span>
 <span class="sd">        :func:`mne.preprocessing.read_fine_calibration`.</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and</span>
 <span class="sd">        ``subject`` set,  and that ``datatype`` is either ``&#39;meg&#39;`` or</span>
 <span class="sd">        ``None``.</span>
@@ -1875,7 +1875,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    fname : path-like</span>
 <span class="sd">        The path of the ``FIFF`` file containing the crosstalk information.</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and</span>
 <span class="sd">        ``subject`` set,  and that ``datatype`` is either ``&#39;meg&#39;`` or</span>
 <span class="sd">        ``None``.</span>
@@ -1921,7 +1921,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

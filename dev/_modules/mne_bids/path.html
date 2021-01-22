@@ -492,7 +492,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        bidspath : instance of BIDSPath</span>
+<span class="sd">        bidspath : mne_bids.BIDSPath</span>
 <span class="sd">            The copied bidspath.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -508,7 +508,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self : instance of BIDSPath</span>
+<span class="sd">        self : mne_bids.BIDSPath</span>
 <span class="sd">            The BIDSPath object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="n">exist_ok</span><span class="p">)</span>
@@ -629,7 +629,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        bidspath : instance of BIDSPath</span>
+<span class="sd">        bidspath : mne_bids.BIDSPath</span>
 <span class="sd">            The updated instance of BIDSPath.</span>
 
 <span class="sd">        Examples</span>
@@ -713,7 +713,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        bids_paths : list of BIDSPath</span>
+<span class="sd">        bids_paths : list of mne_bids.BIDSPath</span>
 <span class="sd">            The matching paths.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1024,7 +1024,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fname : BIDSPath | str</span>
+<span class="sd">    fname : mne_bids.BIDSPath | str</span>
 <span class="sd">        The path to parse.</span>
 <span class="sd">    on_error : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
 <span class="sd">        If any unsupported labels in the filename are found and this is set</span>
@@ -1107,7 +1107,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        Full name of the data file</span>
 <span class="sd">    suffix : str | None</span>
 <span class="sd">        The filename suffix. This is the entity after the last ``_``</span>
@@ -1533,7 +1533,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

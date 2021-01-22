@@ -818,9 +818,9 @@ images are already registered.</p>
 </pre></div>
 </div>
 <p>Let’s now pass it in voxel coordinates</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">flash_mri_hdr</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_mgh_fname</span></a><span class="p">)</span><span class="o">.</span><span class="n">header</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://nipy.org/nibabel/reference/nibabel.freesurfer.html#nibabel.freesurfer.mghformat.MGHHeader" title="nibabel.freesurfer.mghformat.MGHHeader" class="sphx-glr-backref-module-nibabel-freesurfer-mghformat sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_mri_hdr</span></a> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_mgh_fname</span></a><span class="p">)</span><span class="o">.</span><span class="n">header</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_vox_pos</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">apply_trans</span><span class="p">(</span>
-    <span class="n">flash_mri_hdr</span><span class="o">.</span><span class="n">get_ras2vox</span><span class="p">(),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ras_pos</span></a> <span class="o">*</span> <span class="mf">1e3</span><span class="p">)</span>
+    <a href="https://nipy.org/nibabel/reference/nibabel.freesurfer.html#nibabel.freesurfer.mghformat.MGHHeader.get_ras2vox" title="nibabel.freesurfer.mghformat.MGHHeader.get_ras2vox" class="sphx-glr-backref-module-nibabel-freesurfer-mghformat sphx-glr-backref-type-py-method"><span class="n">flash_mri_hdr</span><span class="o">.</span><span class="n">get_ras2vox</span></a><span class="p">(),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ras_pos</span></a> <span class="o">*</span> <span class="mf">1e3</span><span class="p">)</span>
 
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage_flash_vox</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.make_dig_montage.html#mne.channels.make_dig_montage" title="mne.channels.make_dig_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span></a><span class="p">(</span>
     <span class="n">lpa</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_vox_pos</span></a><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -870,7 +870,7 @@ images are already registered.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  49.100 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  56.970 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -900,7 +900,7 @@ images are already registered.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
