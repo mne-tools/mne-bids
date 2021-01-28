@@ -182,6 +182,7 @@
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> will not overwrite an existing <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> anymore, unless explicitly requested, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/675">#675</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now properly handles datasets without event descriptions, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/680">#680</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.stats.count_events()</span></code></a> now handles files without a <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> or <code class="docutils literal notranslate"><span class="pre">stim_type</span></code> column gracefully, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/682">#682</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now correctly treats <code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> as optional for EEG and MEG data, by <a class="reference external" href="https://github.com/dieloz">Diego Lozano-Soldevilla</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/691">#691</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </div>
@@ -202,7 +203,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

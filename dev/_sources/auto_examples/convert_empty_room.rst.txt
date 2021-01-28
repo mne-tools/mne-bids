@@ -967,10 +967,6 @@ Finally, we can read the empty room file using
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_channels.tsv.
     /home/circleci/project/mne_bids/read.py:411: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
-    /home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any coordsystem.json associated with sub-emptyroom_ses-20021204_task-noise.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*coordsystem.json"
-      warn(msg)
     <Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~366 kB, data not loaded>
 
 
@@ -979,7 +975,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.968 seconds)
+   **Total running time of the script:** ( 0 minutes  4.845 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:

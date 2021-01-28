@@ -19,3 +19,4 @@
 .. _Austin Hurst: https://github.com/a-hurst
 .. _Robert Luke: https://github.com/rob-luke
 .. _Ethan Knights: https://github.com/ethanknights
+.. _Diego Lozano-Soldevilla: https://github.com/dieloz

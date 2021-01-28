@@ -647,7 +647,7 @@
     <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span>
                                                <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem&#39;</span><span class="p">,</span>
                                                <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
-                                               <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">)</span>
+                                               <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
@@ -804,7 +804,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-22.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
