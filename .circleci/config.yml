@@ -24,7 +24,7 @@ jobs:
               python -m pip install --user --upgrade --progress-bar off pip
               python -m pip install --user --upgrade --progress-bar off -r test_requirements.txt
               python -m pip install --user --upgrade --progress-bar off -r doc/requirements.txt
-              pip install --upgrade --no-deps https://api.github.com/repos/mne-tools/mne-python/zipball/master
+              pip install --upgrade --no-deps https://api.github.com/repos/mne-tools/mne-python/zipball/main
               python -m pip install --user -e .
 
         - run:

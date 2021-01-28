@@ -117,10 +117,10 @@ jobs:
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.21
         pip install --no-deps -e ./mne-python
-    - name: Install MNE (master)
+    - name: Install MNE (main)
       if: "matrix.os == 'ubuntu-latest'"
       run: |
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b master
+        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
         pip install --no-deps -e ./mne-python
 
     - name: Install BIDS validator (stable)

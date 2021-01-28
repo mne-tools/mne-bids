@@ -526,7 +526,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
                                                extension='.json',
-                                               on_error='warn')
+                                               on_error=on_error)
     if electrodes_fname is not None:
         if coordsystem_fname is None:
             raise RuntimeError(f"BIDS mandates that the coordsystem.json "
