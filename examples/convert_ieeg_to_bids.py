@@ -204,8 +204,8 @@ print(text)
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
 # all the information that MNE-BIDS could not infer. For instance, you must
-# describe iEEGReference and iEEGGround yourself. It's easy to find these by
-# searching for "n/a" in the sidecar files.
+# describe iEEGGround yourself. It's easy to find these by searching for "n/a"
+# in the sidecar files.
 #
 # `$ grep -i 'n/a' <bids_root>`
 #

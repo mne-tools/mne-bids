@@ -541,8 +541,8 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
     return vox_landmarks
 
 
-def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
-                  verbose=True):
+def _sidecar_json(raw, task, manufacturer, fname, datatype, eeg_reference,
+                  overwrite=False, verbose=True):
     """Create a sidecar json file depending on the suffix and save it.
 
     The sidecar json file provides meta data about the data
@@ -561,6 +561,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         Filename to save the sidecar json to.
     datatype : str
         Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
+    eeg_reference : str
+        The (i)EEG referencing scheme.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -627,12 +629,12 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_eeg = [
-        ('EEGReference', 'n/a'),
+        ('EEGReference', eeg_reference),
         ('EEGGround', 'n/a'),
         ('EEGPlacementScheme', _infer_eeg_placement_scheme(raw)),
         ('Manufacturer', manufacturer)]
     ch_info_json_ieeg = [
-        ('iEEGReference', 'n/a'),
+        ('iEEGReference', eeg_reference),
         ('ECOGChannelCount', n_ecogchan),
         ('SEEGChannelCount', n_seegchan)]
     ch_info_ch_counts = [
@@ -903,7 +905,7 @@ def make_dataset_description(path, name, data_license=None,
 
 def write_raw_bids(raw, bids_path, events_data=None,
                    event_id=None, anonymize=None,
-                   format='auto',
+                   format='auto', eeg_reference='n/a',
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1003,7 +1005,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
             If ``False`` (default), all subject information next to the
             recording date will be overwritten as well. If True, keep subject
             information apart from the recording date.
-
     format : 'auto' | 'BrainVision' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
         ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
@@ -1012,6 +1013,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
         the original file format lacks some necessary features. When a str is
         passed, a conversion can be forced to the BrainVision format for EEG,
         or the FIF format for MEG data.
+    eeg_reference : str
+        The electrode(s) or referencing scheme used for (i)EEG recordings, for
+        example: ``'Cz'``, ``'single electrode placed on FCz'``, or
+        ``'left mastoid'``. Will only be considered if the data actually
+        contains (i)EEG recordings.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1089,6 +1095,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
     _validate_type(events_data, types=('path-like', np.ndarray, None),
                    item_name='events_data',
                    type_name='path-like, NumPy array, or None')
+
+    _validate_type(eeg_reference, types='str', item_name='eeg_reference',
+                   type_name='string')
 
     # Check if the root is available
     if bids_path.root is None:
@@ -1246,7 +1255,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                              verbose=verbose)
 
     _sidecar_json(raw, bids_path.task, manufacturer, sidecar_path.fpath,
-                  bids_path.datatype, overwrite, verbose)
+                  bids_path.datatype, eeg_reference, overwrite, verbose)
     _channels_tsv(raw, channels_path.fpath, overwrite, verbose)
 
     # create parent directories if needed

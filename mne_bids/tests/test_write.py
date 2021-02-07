@@ -1245,6 +1245,53 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
         _bids_validate(output_path)
 
 
+@pytest.mark.parametrize(
+    ('eeg_reference', 'test_ieeg'),
+    [('FCz', True),
+     ('Linked Ears', False),
+     (None, False),
+     (10, False)])
+def test_eeg_reference(eeg_reference, test_ieeg, _bids_validate):
+    """Ensure (i)EEGReference is written properly."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    dir_name, fname, reader = test_eegieeg_data[0]  # EDF data
+    raw_fname = op.join(testing.data_path(), dir_name, fname)
+    raw = reader(raw_fname)
+
+    kwargs = dict(raw=raw, bids_path=bids_path, eeg_reference=eeg_reference,
+                  overwrite=True)
+    if eeg_reference is None or eeg_reference == 10:
+        with pytest.raises(TypeError, match='must be an instance of string'):
+            write_raw_bids(**kwargs)
+        return
+
+    write_raw_bids(**kwargs)
+    _bids_validate(bids_root)
+
+    json_path = bids_path.copy().update(extension='.json', suffix='eeg')
+    with open(json_path, 'r', encoding='utf-8') as f:
+        json_dict = json.load(f)
+
+    assert 'EEGReference' in json_dict
+    assert json_dict['EEGReference'] == eeg_reference
+
+    if test_ieeg:
+        bids_path.update(datatype='ieeg')
+        raw.pick_types(meg=False, eeg=True)
+        raw.set_channel_types({name: 'ecog' for name in raw.ch_names})
+        write_raw_bids(**kwargs)
+        _bids_validate(bids_root)
+
+        json_path = bids_path.copy().update(extension='.json', suffix='ieeg')
+        with open(json_path, 'r', encoding='utf-8') as f:
+            json_dict = json.load(f)
+
+        assert 'iEEGReference' in json_dict
+        assert json_dict['iEEGReference'] == eeg_reference
+
+
 def test_bdf(_bids_validate):
     """Test write_raw_bids conversion for Biosemi data."""
     bids_root = _TempDir()
