@@ -467,37 +467,14 @@
     <span class="k">return</span> <span class="n">bads</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read associated channels.tsv and populate raw.</span>
 
 <span class="sd">    Updates status (bad) and types of channels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading channel info from </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">))</span>
     <span class="n">channels_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
-
-    <span class="c1"># First, make sure that ordering of names in channels.tsv matches the</span>
-    <span class="c1"># ordering of names in the raw data. The &quot;name&quot; column is mandatory in BIDS</span>
-    <span class="n">ch_names_raw</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span>
     <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">ch_names_raw</span> <span class="o">!=</span> <span class="n">ch_names_tsv</span><span class="p">:</span>
-
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Channels do not correspond between raw data and the &#39;</span>
-               <span class="s1">&#39;channels.tsv file. For MNE-BIDS, the channel names in the &#39;</span>
-               <span class="s1">&#39;tsv MUST be equal and in the same order as the channels in &#39;</span>
-               <span class="s1">&#39;the raw data.</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-               <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> channels in tsv file: &quot;</span><span class="si">{}</span><span class="s1">&quot;</span><span class="se">\n\n</span><span class="s1"> --&gt; </span><span class="si">{}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-               <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> channels in raw file: &quot;</span><span class="si">{}</span><span class="s1">&quot;</span><span class="se">\n\n</span><span class="s1"> --&gt; </span><span class="si">{}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">),</span> <span class="n">channels_fname</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">,</span>
-                       <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_raw</span><span class="p">),</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">ch_names_raw</span><span class="p">)</span>
-               <span class="p">)</span>
-
-        <span class="c1"># XXX: this could be due to MNE inserting a &#39;STI 014&#39; channel as the</span>
-        <span class="c1"># last channel: In that case, we can work. --&gt; Can be removed soon,</span>
-        <span class="c1"># because MNE will stop the synthesis of stim channels in the near</span>
-        <span class="c1"># future</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ch_names_raw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;STI 014&#39;</span> <span class="ow">and</span>
-                <span class="n">ch_names_raw</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">ch_names_tsv</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1"># Now we can do some work.</span>
     <span class="c1"># The &quot;type&quot; column is mandatory in BIDS. We can use it to set channel</span>
@@ -527,6 +504,11 @@
 
         <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">channel_type_dict</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
+
+    <span class="c1"># Rename channels in loaded Raw to match those read from the BIDS sidecar</span>
+    <span class="k">for</span> <span class="n">bids_ch_name</span><span class="p">,</span> <span class="n">raw_ch_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">copy</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">bids_ch_name</span> <span class="o">!=</span> <span class="n">raw_ch_name</span><span class="p">:</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">({</span><span class="n">raw_ch_name</span><span class="p">:</span> <span class="n">bids_ch_name</span><span class="p">})</span>
 
     <span class="c1"># Set the channel types in the raw data according to channels.tsv</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">channel_type_dict</span><span class="p">)</span>
@@ -635,7 +617,7 @@
                                             <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                                             <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">channels_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated electrodes.tsv and coordsystem.json</span>
     <span class="c1"># to get information about the status and type of present channels</span>
@@ -804,7 +786,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-28.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-09.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

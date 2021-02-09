@@ -160,6 +160,7 @@
 <ul class="simple">
 <li><p>Some datasets out in the real world have a non-standard <code class="docutils literal notranslate"><span class="pre">stim_type</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> column in <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now makes use of this column, and emits a warning, encouraging users to rename it, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/680">#680</a>)</p></li>
 <li><p>When reading data where the same event name or trial type refers to different event or trigger values, we will now create a hierarchical event name in the form of <code class="docutils literal notranslate"><span class="pre">trial_type/value</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">stimulus/110</span></code>  by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/688">#688</a>)</p></li>
+<li><p>When reading data via <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a>, the channel names specified in the BIDS <code class="docutils literal notranslate"><span class="pre">*_channels.tsv</span></code> files now always take precedence (and do not need to match) the channel names stored in the raw files anymore, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/691">#691</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="api-changes">
@@ -203,7 +204,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-01-28.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-09.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
