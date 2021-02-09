@@ -354,7 +354,7 @@ def _handle_channels_reading(channels_fname, raw):
     logger.info('Reading channel info from {}.'.format(channels_fname))
     channels_dict = _from_tsv(channels_fname)
     ch_names_tsv = channels_dict['name']
- 
+
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
     # types in the raw data using a mapping between channel types
@@ -383,7 +383,6 @@ def _handle_channels_reading(channels_fname, raw):
 
         if updated_ch_type is not None:
             channel_type_dict[ch_name] = updated_ch_type
-
 
     # Rename channels in loaded Raw to match those read from the BIDS sidecar
     for bids_ch_name, raw_ch_name in zip(ch_names_tsv, raw.ch_names.copy()):
