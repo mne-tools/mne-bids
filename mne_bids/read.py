@@ -346,38 +346,15 @@ def _get_bads_from_tsv_data(tsv_data):
     return bads
 
 
-def _handle_channels_reading(channels_fname, bids_fname, raw):
+def _handle_channels_reading(channels_fname, raw):
     """Read associated channels.tsv and populate raw.
 
     Updates status (bad) and types of channels.
     """
     logger.info('Reading channel info from {}.'.format(channels_fname))
     channels_dict = _from_tsv(channels_fname)
-
-    # First, make sure that ordering of names in channels.tsv matches the
-    # ordering of names in the raw data. The "name" column is mandatory in BIDS
-    ch_names_raw = list(raw.ch_names)
     ch_names_tsv = channels_dict['name']
-    if ch_names_raw != ch_names_tsv:
-
-        msg = ('Channels do not correspond between raw data and the '
-               'channels.tsv file. For MNE-BIDS, the channel names in the '
-               'tsv MUST be equal and in the same order as the channels in '
-               'the raw data.\n\n'
-               '{} channels in tsv file: "{}"\n\n --> {}\n\n'
-               '{} channels in raw file: "{}"\n\n --> {}\n\n'
-               .format(len(ch_names_tsv), channels_fname, ch_names_tsv,
-                       len(ch_names_raw), bids_fname, ch_names_raw)
-               )
-
-        # XXX: this could be due to MNE inserting a 'STI 014' channel as the
-        # last channel: In that case, we can work. --> Can be removed soon,
-        # because MNE will stop the synthesis of stim channels in the near
-        # future
-        if not (ch_names_raw[-1] == 'STI 014' and
-                ch_names_raw[:-1] == ch_names_tsv):
-            raise RuntimeError(msg)
-
+ 
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
     # types in the raw data using a mapping between channel types
@@ -406,6 +383,12 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
 
         if updated_ch_type is not None:
             channel_type_dict[ch_name] = updated_ch_type
+
+
+    # Rename channels in loaded Raw to match those read from the BIDS sidecar
+    for bids_ch_name, raw_ch_name in zip(ch_names_tsv, raw.ch_names.copy()):
+        if bids_ch_name != raw_ch_name:
+            raw.rename_channels({raw_ch_name: bids_ch_name})
 
     # Set the channel types in the raw data according to channels.tsv
     raw.set_channel_types(channel_type_dict)
@@ -514,7 +497,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                             extension='.tsv',
                                             on_error='warn')
     if channels_fname is not None:
-        raw = _handle_channels_reading(channels_fname, bids_fname, raw)
+        raw = _handle_channels_reading(channels_fname, raw)
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
