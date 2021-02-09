@@ -1000,9 +1000,9 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     del raw2, events2
 
     # alter some channels manually
-    raw.rename_channels({raw.info['ch_names'][0]: 'EOGtest'})
+    raw.rename_channels({raw.ch_names[0]: 'EOGtest'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
-    raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
+    raw.rename_channels({raw.ch_names[1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
     # Test we can overwrite dataset_description.json
@@ -1045,15 +1045,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
             ["Please cite MNE-BIDS in your publication before removing this "
              "(citations in README)"]
 
-    # Reading the file back should raise an error, because we renamed channels
-    # in `raw` and used that information to write a channels.tsv. Yet, we
-    # saved the unchanged `raw` in the BIDS folder, so channels in the TSV and
-    # in raw clash
-    # Note: only needed for data files that store channel names
-    # alongside the data
-    if dir_name == 'EDF':
-        with pytest.raises(RuntimeError, match='Channels do not correspond'):
-            read_raw_bids(bids_path=bids_path)
+    # Reading the file back should still work, even though we've renamed
+    # some channels (there's now a mismatch between BIDS and Raw channel
+    # names, and BIDS should take precedence)
+    raw_read = read_raw_bids(bids_path=bids_path)
+    assert raw_read.ch_names[0] == 'EOGtest'
+    assert raw_read.ch_names[1] == 'EMG'
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
