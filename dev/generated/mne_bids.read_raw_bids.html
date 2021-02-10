@@ -142,7 +142,10 @@ populate the returned raw object with raw.annotations and raw.info[‘bads’].<
 selected automatically.</p>
 </dd>
 <dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions.
-If a dict, for example: <code class="docutils literal notranslate"><span class="pre">extra_params=dict(allow_maxshield=True)</span></code>.</p>
+If a dict, for example: <code class="docutils literal notranslate"><span class="pre">extra_params=dict(allow_maxshield=True)</span></code>.
+Note that the <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter, which is supported by some
+MNE-Python readers, is not supported; instead, you need to subset
+your channels <strong>after</strong> reading.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>The verbosity level.</p>
 </dd>

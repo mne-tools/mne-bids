@@ -538,6 +538,9 @@
 <span class="sd">    extra_params : None | dict</span>
 <span class="sd">        Extra parameters to be passed to MNE read_raw_* functions.</span>
 <span class="sd">        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.</span>
+<span class="sd">        Note that the ``exclude`` parameter, which is supported by some</span>
+<span class="sd">        MNE-Python readers, is not supported; instead, you need to subset</span>
+<span class="sd">        your channels **after** reading.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        The verbosity level.</span>
 
@@ -599,6 +602,10 @@
 
     <span class="k">if</span> <span class="n">extra_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="s1">&#39;exclude&#39;</span> <span class="ow">in</span> <span class="n">extra_params</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;exclude&#39;</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;exclude&quot; parameter is not supported by read_raw_bids&#39;</span><span class="p">)</span>
+
     <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_raw</span><span class="p">(</span><span class="n">bids_fpath</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_params</span><span class="p">)</span>
 
