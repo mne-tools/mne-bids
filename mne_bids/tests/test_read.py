@@ -381,8 +381,18 @@ def test_handle_info_reading():
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['line_freq'] == 60
 
-    # 2. if line frequency is not set in raw file, then ValueError
+    # setting line_freq to None should produce 'n/a' in the JSON sidecar
     raw.info['line_freq'] = None
+    write_raw_bids(raw, bids_path, overwrite=True)
+    raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info['line_freq'] is None
+
+    with open(sidecar_fname, 'r', encoding='utf-8') as fin:
+        sidecar_json = json.load(fin)
+    assert sidecar_json["PowerLineFrequency"] == 'n/a'
+
+    # 2. if line frequency is not set in raw file, then ValueError
+    del raw.info['line_freq']
     with pytest.raises(ValueError, match="PowerLineFrequency .* required"):
         write_raw_bids(raw, bids_path, overwrite=True)
 
@@ -390,6 +400,8 @@ def test_handle_info_reading():
     # to check that we make sure we always get the right sidecar
     # in addition, it should not break the sidecar reading
     # in `read_raw_bids`
+    raw.info['line_freq'] = 60
+    write_raw_bids(raw, bids_path, overwrite=True)
     deriv_dir = op.join(bids_root, "derivatives")
     sidecar_copy = op.join(deriv_dir, op.basename(sidecar_fname))
     os.mkdir(deriv_dir)
