@@ -617,7 +617,7 @@ def test_handle_ieeg_coords_reading(bids_path):
                                            'the coordsystem.json'):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
 
-    # test error message if electrodes don't match
+    # test error message if electrodes is not a subset of Raw
     bids_path.update(root=bids_root)
     write_raw_bids(raw, bids_path, overwrite=True)
     electrodes_dict = _from_tsv(electrodes_fname)
@@ -626,8 +626,17 @@ def test_handle_ieeg_coords_reading(bids_path):
         for i in range(5):
             electrodes_dict[key].pop()
     _to_tsv(electrodes_dict, electrodes_fname)
+    # popping off channels should not result in an error
+    # however, a warning will be raised through mne-python
+    with pytest.warns(RuntimeWarning, match='DigMontage is '
+                                            'only a subset of info'):
+        read_raw_bids(bids_path=bids_fname, verbose=False)
+
+    # adding channels though that are not in Raw should result in an error
+    electrodes_dict['name'][0] = 'test'
+    _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.raises(RuntimeError, match='Channels do not correspond'):
-        raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
+        read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
     raw.info['bads'] = []

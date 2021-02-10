@@ -25,7 +25,7 @@ from mne_bids.path import get_entities_from_fname, BIDSPath
 
 
 def _handle_electrodes_reading(electrodes_fname, coord_frame,
-                               coord_unit, raw, verbose):
+                               coord_unit, verbose):
     """Read associated electrodes.tsv and populate raw.
 
     Handle xyz coordinates and coordinate frame of each channel.
@@ -34,29 +34,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     logger.info('Reading electrode '
                 'coords from {}.'.format(electrodes_fname))
     electrodes_dict = _from_tsv(electrodes_fname)
-    # First, make sure that ordering of names in channels.tsv matches the
-    # ordering of names in the raw data. The "name" column is mandatory in BIDS
-    ch_names_raw = list(raw.ch_names)
     ch_names_tsv = electrodes_dict['name']
-
-    if ch_names_raw != ch_names_tsv:
-        msg = ('Channels do not correspond between raw data and the '
-               'channels.tsv file. For MNE-BIDS, the channel names in the '
-               'tsv MUST be equal and in the same order as the channels in '
-               'the raw data.\n\n'
-               '{} channels in tsv file: "{}"\n\n --> {}\n\n'
-               '{} channels in raw file: "{}"\n\n --> {}\n\n'
-               .format(len(ch_names_tsv), electrodes_fname, ch_names_tsv,
-                       len(ch_names_raw), raw.filenames, ch_names_raw)
-               )
-
-        # XXX: this could be due to MNE inserting a 'STI 014' channel as the
-        # last channel: In that case, we can work. --> Can be removed soon,
-        # because MNE will stop the synthesis of stim channels in the near
-        # future
-        if not (ch_names_raw[-1] == 'STI 014' and
-                ch_names_raw[:-1] == ch_names_tsv):
-            raise RuntimeError(msg)
 
     if verbose:
         summary_str = [(ch, coord) for idx, (ch, coord)
@@ -74,20 +52,11 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     electrodes_dict['x'] = [_float_or_nan(x) for x in electrodes_dict['x']]
     electrodes_dict['y'] = [_float_or_nan(x) for x in electrodes_dict['y']]
     electrodes_dict['z'] = [_float_or_nan(x) for x in electrodes_dict['z']]
-    ch_names_raw = [x for i, x in enumerate(ch_names_raw)
+    ch_names_raw = [x for i, x in enumerate(ch_names_tsv)
                     if electrodes_dict['x'][i] != "n/a"]
     ch_locs = np.c_[electrodes_dict['x'],
                     electrodes_dict['y'],
                     electrodes_dict['z']]
-
-    # determine if there are problematic channels
-    nan_chs = []
-    for ch_name, ch_coord in zip(ch_names_raw, ch_locs):
-        if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
-            nan_chs.append(ch_name)
-    if len(nan_chs) > 0:
-        warn("There are channels without locations "
-             "(n/a) that are not marked as bad: {}".format(nan_chs))
 
     # convert coordinates to meters
     ch_locs = _scale_coord_to_meters(ch_locs, coord_unit)
@@ -96,8 +65,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     ch_pos = dict(zip(ch_names_raw, ch_locs))
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame=coord_frame)
-    raw.set_montage(montage)
-    return raw
+    return montage
 
 
 def _handle_coordsystem_reading(coordsystem_fpath, datatype, verbose=True):
@@ -426,7 +394,7 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
 
 
 def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
-                   raw, datatype, verbose):
+                   datatype, verbose):
     """Read MNE-Python formatted DigMontage from BIDS files.
 
     Handles coordinatesystem.json and electrodes.tsv reading
@@ -438,8 +406,6 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         Filepath of the electrodes.tsv to read.
     coordsystem_fpath : str
         Filepath of the coordsystem.json to read.
-    raw : mne.io.Raw
-        The data as MNE-Python Raw object.
     datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
@@ -448,8 +414,8 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
 
     Returns
     -------
-    raw : mne.io.Raw
-        The data as MNE-Python Raw object.
+    montage : mne.channels.DigMontage
+        The coordinate data as MNE-Python DigMontage object.
     """
     # get the space entity
     params = get_entities_from_fname(electrodes_fpath)
@@ -514,10 +480,81 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
              .format(electrodes_fpath, BIDS_COORDINATE_UNITS))
         coord_frame = None
 
-    # only set montage if coordinate frame was properly parsed
+    # montage is interpretable only if coordinate frame was properly parsed
     if coord_frame is not None:
-        # read in electrode coordinates and attach to raw
-        raw = _handle_electrodes_reading(electrodes_fpath, coord_frame,
-                                         coord_unit, raw, verbose)
+        # read in electrode coordinates as a DigMontage object
+        montage = _handle_electrodes_reading(electrodes_fpath, coord_frame,
+                                             coord_unit, verbose)
+    else:
+        montage = None
 
-    return raw
+    return montage
+
+
+def read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype,
+                  raw=None, verbose=True):
+    """Read MNE-DigMontage from BIDS.
+
+    Parameters
+    ----------
+    electrodes_fpath : str
+        Filepath of the ``*electrodes.tsv`` to read.
+    coordsystem_fpath : str
+        Filepath of the ``*coordsystem.json`` to read.
+    datatype : str
+        Type of the data recording. Can be ``meg``, ``eeg``,
+        or ``ieeg``.
+    raw : mne.io.Raw | None
+        Optional. If passed in, should be the raw data as MNE-Python
+        Raw object. Will set montage read in via ``raw.set_montage(montage)``.
+    verbose : bool
+        Set verbose output to true or false.
+
+    Returns
+    -------
+    montage : mne.channels.DigMontage
+        The coordinate data as MNE-Python DigMontage object.
+    """
+    # read DigMontage from electrodes/coordsystem files
+    montage = _read_dig_bids(electrodes_fpath, coordsystem_fpath,
+                             datatype, verbose)
+
+    if montage is not None:
+        # First, make sure that ordering of names in channels.tsv matches the
+        # ordering of names in the raw data.
+        ch_names_raw = list(raw.ch_names)
+        ch_names_tsv = montage.ch_names
+
+        # check that all channel names in the electrodes.tsv file are a subset
+        # of the channels defined in Raw
+        if not all([ch_name in ch_names_raw for ch_name in ch_names_tsv]):
+            set_diff = set(ch_names_tsv).difference(set(ch_names_raw))
+            msg = (f'Channels do not correspond between raw data and the '
+                   f'channels.tsv file. The channel names in the '
+                   f'tsv MUST be a subset the channels in '
+                   f'the raw data.\n\n'
+                   f'{set_diff} channels in tsv file, but not in Raw file.')
+
+            # XXX: this could be due to MNE inserting a 'STI 014' channel as
+            # last channel: In that case, we can work. --> Can be removed soon,
+            # because MNE will stop the synthesis of stim channels in the near
+            # future
+            if not (ch_names_raw[-1] == 'STI 014' and
+                    ch_names_raw[:-1] == ch_names_tsv):
+                raise RuntimeError(msg)
+
+        # determine if there are problematic channels
+        ch_pos = montage.get_positions()['ch_pos']
+        nan_chs = []
+        for ch_name, ch_coord in ch_pos.items():
+            if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
+                nan_chs.append(ch_name)
+        if len(nan_chs) > 0:
+            warn("There are channels without locations "
+                 "(n/a) that are not marked as bad: {}".format(nan_chs))
+
+    # add montage to Raw object if passed in
+    if raw is not None:
+        raw.set_montage(montage, on_missing='warn', verbose=verbose)
+
+    return montage
