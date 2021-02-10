@@ -347,6 +347,36 @@ def test_create_fif(_bids_validate):
     _bids_validate(bids_root)
 
 
+@pytest.mark.parametrize('line_freq', [60, None])
+def test_line_freq(line_freq, _bids_validate):
+    """Test the power line frequency is written correctly."""
+    out_dir = _TempDir()
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root)
+    sfreq, n_points = 1024., int(1e6)
+    info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
+                           ['eeg'] * 5)
+    rng = np.random.RandomState(99)
+    raw = mne.io.RawArray(rng.random((5, n_points)) * 1e-6, info)
+
+    raw.save(op.join(out_dir, 'test-raw.fif'))
+    raw = _read_raw_fif(op.join(out_dir, 'test-raw.fif'))
+    raw.info['line_freq'] = line_freq
+    write_raw_bids(raw, bids_path, verbose=False, overwrite=True)
+    _bids_validate(bids_root)
+
+    eeg_json_fpath = (bids_path.copy()
+                      .update(suffix='eeg', extension='.json')
+                      .fpath)
+    with open(eeg_json_fpath, 'r', encoding='utf-8') as fin:
+        eeg_json = json.load(fin)
+
+    if line_freq == 60:
+        assert eeg_json['PowerLineFrequency'] == line_freq
+    elif line_freq is None:
+        assert eeg_json['PowerLineFrequency'] == 'n/a'
+
+
 @requires_version('pybv', '0.4')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_fif(_bids_validate):
