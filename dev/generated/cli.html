@@ -511,7 +511,8 @@ $ mne_bids mark_bad_channels –ch_name=”MEG 0112” –description=”noisy�
 <dd><p>whether to allow non maxfiltered data (BOOLEAN)</p>
 </dd>
 <dt><kbd><span class="option">--line_freq=<var>LINE_FREQ</var></span></kbd></dt>
-<dd><p>The frequency of the line noise (e.g. 50 or 60).</p>
+<dd><p>The frequency of the line noise in Hz (e.g. 50 or 60).
+If unknown, pass None</p>
 </dd>
 </dl>
 <p>example usage:  $ mne_bids raw_to_bids –subject_id sub01 –task rest
@@ -556,7 +557,7 @@ $ mne_bids mark_bad_channels –ch_name=”MEG 0112” –description=”noisy�
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-09.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-10.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>

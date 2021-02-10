@@ -690,13 +690,20 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
-    <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;line_freq&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">powerlinefrequency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;PowerLineFrequency parameter is required &quot;</span>
-                         <span class="s2">&quot;in the sidecar files. Please specify it &quot;</span>
-                         <span class="s2">&quot;in info[&#39;line_freq&#39;] before saving to BIDS &quot;</span>
-                         <span class="s2">&quot;(e.g. raw.info[&#39;line_freq&#39;] = 60 or with &quot;</span>
-                         <span class="s2">&quot;--line_freq option in the command line.).&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">]</span>
+        <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;n/a&#39;</span> <span class="k">if</span> <span class="n">powerlinefrequency</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span>
+                              <span class="n">powerlinefrequency</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;PowerLineFrequency parameter is required in the sidecar files. &quot;</span>
+            <span class="s2">&quot;Please specify it in info[&#39;line_freq&#39;] before saving to BIDS, &quot;</span>
+            <span class="s2">&quot;e.g. by running: &quot;</span>
+            <span class="s2">&quot;    raw.info[&#39;line_freq&#39;] = 60&quot;</span>
+            <span class="s2">&quot;in your script, or by passing: &quot;</span>
+            <span class="s2">&quot;    --line_freq 60 &quot;</span>
+            <span class="s2">&quot;in the command line for a 60 Hz line frequency. If the frequency &quot;</span>
+            <span class="s2">&quot;is unknown, set it to None&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
         <span class="n">rec_type</span> <span class="o">=</span> <span class="s1">&#39;continuous&#39;</span>
@@ -1921,7 +1928,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-09.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-10.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
     </p>
   </div>
