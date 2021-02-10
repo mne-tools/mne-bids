@@ -35,7 +35,8 @@ Enhancements
 - Some datasets out in the real world have a non-standard ``stim_type`` instead of a ``trial_type`` column in ``*_events.tsv``. :func:`mne_bids.read_raw_bids` now makes use of this column, and emits a warning, encouraging users to rename it, by `Richard Höchenberger`_ (:gh:`680`)
 - When reading data where the same event name or trial type refers to different event or trigger values, we will now create a hierarchical event name in the form of ``trial_type/value``, e.g. ``stimulus/110``  by `Richard Höchenberger`_ (:gh:`688`)
 - When reading data via :func:`mne_bids.read_raw_bids`, the channel names specified in the BIDS ``*_channels.tsv`` files now always take precedence (and do not need to match) the channel names stored in the raw files anymore, by `Richard Höchenberger`_ (:gh:`691`)
-- Add :func:`mne_bids.read_dig_bids` to allow reading of a ``DigMontage`` object directly from MEG/EEG/iEEG BIDS ``*electrodes.tsv`` and ``*coordsystem.json`` files, by `Adam Li`_ (:gh:`700`)
+- When reading data via :func:`mne_bids.read_raw_bids`, the channel names specified in the BIDS ``*_electrodes.tsv`` files now always take precedence (and do not need to match) the channel names stored in the raw files anymore, by `Adam Li`_ (:gh:`704`)
+- Add :func:`mne_bids.read_dig_bids` to allow reading of a ``DigMontage`` object directly from MEG/EEG/iEEG BIDS ``*electrodes.tsv`` and ``*coordsystem.json`` files, by `Adam Li`_ (:gh:`704`)
 
 API changes
 ^^^^^^^^^^^
@@ -57,6 +58,7 @@ Bug fixes
 - :func:`mne_bids.stats.count_events` now handles files without a ``trial_type`` or ``stim_type`` column gracefully, by `Richard Höchenberger`_ (:gh:`682`)
 - :func:`mne_bids.read_raw_bids` now correctly treats ``coordsystem.json`` as optional for EEG and MEG data, by `Diego Lozano-Soldevilla`_ (:gh:`691`)
 - :func:`mne_bids.read_raw_bids` now ignores ``exclude`` parameters passed via ``extra_params``, by `Richard Höchenberger`_ (:gh:`703`)
+
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

@@ -497,9 +497,9 @@ def read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype,
 
     Parameters
     ----------
-    electrodes_fpath : str
+    electrodes_fpath : str | pathlib.Path
         Filepath of the ``*electrodes.tsv`` to read.
-    coordsystem_fpath : str
+    coordsystem_fpath : str | pathlib.Path
         Filepath of the ``*coordsystem.json`` to read.
     datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
