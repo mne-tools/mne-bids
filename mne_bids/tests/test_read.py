@@ -792,3 +792,17 @@ def test_write_read_fif_split_file():
     assert len(raw) == len(raw1)
     assert len(raw) == len(raw2)
     assert len(raw) > len(raw3)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_ignore_exclude_param():
+    """Test that extra_params=dict(exclude=...) is being ignored."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root)
+    ch_name = 'EEG 001'
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False,
+                        extra_params=dict(exclude=[ch_name]))
+    assert ch_name in raw.ch_names
