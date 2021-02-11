@@ -520,31 +520,8 @@ def read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype,
                              datatype, verbose)
 
     if montage is not None:
-        # First, make sure that ordering of names in channels.tsv matches the
-        # ordering of names in the raw data.
-        ch_names_raw = list(raw.ch_names)
-        ch_names_tsv = montage.ch_names
-
-        # check that all channel names in the electrodes.tsv file are a subset
-        # of the channels defined in Raw
-        if not all([ch_name in ch_names_raw for ch_name in ch_names_tsv]):
-            set_diff = set(ch_names_tsv).difference(set(ch_names_raw))
-            msg = (f'Channels do not correspond between raw data and the '
-                   f'channels.tsv file. The channel names in the '
-                   f'tsv MUST be a subset the channels in '
-                   f'the raw data.\n\n'
-                   f'{set_diff} channels in tsv file, but not in Raw file.')
-
-            # XXX: this could be due to MNE inserting a 'STI 014' channel as
-            # last channel: In that case, we can work. --> Can be removed soon,
-            # because MNE will stop the synthesis of stim channels in the near
-            # future
-            if not (ch_names_raw[-1] == 'STI 014' and
-                    ch_names_raw[:-1] == ch_names_tsv):
-                raise RuntimeError(msg)
-
         # determine if there are problematic channels
-        ch_pos = montage.get_positions()['ch_pos']
+        ch_pos = montage._get_ch_pos()
         nan_chs = []
         for ch_name, ch_coord in ch_pos.items():
             if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:

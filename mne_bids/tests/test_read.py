@@ -632,12 +632,6 @@ def test_handle_ieeg_coords_reading(bids_path):
                                             'only a subset of info'):
         read_raw_bids(bids_path=bids_fname, verbose=False)
 
-    # adding channels though that are not in Raw should result in an error
-    electrodes_dict['name'][0] = 'test'
-    _to_tsv(electrodes_dict, electrodes_fname)
-    with pytest.raises(RuntimeError, match='Channels do not correspond'):
-        read_raw_bids(bids_path=bids_fname, verbose=False)
-
     # make sure montage is set if there are coordinates w/ 'n/a'
     raw.info['bads'] = []
     write_raw_bids(raw, bids_path,
