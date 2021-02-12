@@ -273,7 +273,7 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
     # get the coordinate frame description
     try:
         sensor_coord_system, sensor_coord_system_mne = sensor_coord_system
-    except ValueError:
+    except ValueError:  # pragma: no cover
         pass
     sensor_coord_system_descr = (COORD_FRAME_DESCRIPTIONS
                                  .get(sensor_coord_system.lower(), "n/a"))
@@ -404,7 +404,8 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
             _electrodes_tsv(raw, electrodes_path,
                             datatype, overwrite, verbose)
             _coordsystem_json(raw=raw, unit=unit, hpi_coord_system='n/a',
-                              sensor_coord_system=(coord_frame, mne_coord_frame),
+                              sensor_coord_system=(coord_frame,
+                                                   mne_coord_frame),
                               fname=coordsystem_path, datatype=datatype,
                               overwrite=overwrite, verbose=verbose)
         else:
