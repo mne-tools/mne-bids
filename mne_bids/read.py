@@ -144,6 +144,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
     # Now convert the Annotations to events.
     all_events, all_desc = events_from_annotations(
         raw,
+        event_id=event_id,
         regexp=None,  # Include `BAD_` and `EDGE_` Annotations, too.
         verbose=verbose
     )
