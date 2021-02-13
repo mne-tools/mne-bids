@@ -2174,10 +2174,6 @@ def test_coordsystem_json_compliance(
     """Tests that coordsystem.json contents are written correctly.
 
     Tests multiple manufacturer data formats and MEG, EEG, and iEEG.
-
-    TODO: Fix coordinatesystemdescription for iEEG.
-    Currently, iEEG coordinate system descriptions are not written
-    correctly.
     """
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(), dir_name)
