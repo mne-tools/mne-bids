@@ -2204,10 +2204,6 @@ def test_coordsystem_json_compliance(
     """Tests that coordsystem.json contents are written correctly.
 
     Tests multiple manufacturer data formats and MEG, EEG, and iEEG.
-
-    TODO: Fix coordinatesystemdescription for iEEG.
-    Currently, iEEG coordinate system descriptions are not written
-    correctly.
     """
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(), dir_name)
@@ -2304,16 +2300,16 @@ def test_coordsystem_json_compliance(
     elif datatype == 'ieeg' and coord_frame == 'mni_tal':
         assert 'space-mni' in coordsystem_fname
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
-        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-        #     COORD_FRAME_DESCRIPTIONS['mni_tal']
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['mni_tal']
     elif datatype == 'ieeg' and coord_frame == 'fs_tal':
         assert 'space-fs' in coordsystem_fname
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
-        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-        #     COORD_FRAME_DESCRIPTIONS['fs_tal']
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['fs_tal']
     elif datatype == 'ieeg' and coord_frame == 'unknown':
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
-        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
     elif datatype == 'meg' and dir_name == 'CTF':
         assert coordsystem_json['MEGCoordinateSystem'] == 'CTF'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \

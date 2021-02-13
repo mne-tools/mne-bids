@@ -239,8 +239,10 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
         as in BIDS_COORDINATE_UNITS.
     hpi_coord_system : str
         Name of the coordinate system for the head coils.
-    sensor_coord_system : str
+    sensor_coord_system : str | tuple of str
         Name of the coordinate system for the sensor positions.
+        If a tuple of strings, should be in the form:
+        ``(BIDS coordinate frame, MNE coordinate frame)``.
     fname : str
         Filename to save the coordsystem.json to.
     datatype : str
@@ -269,11 +271,21 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
                          .format(coord_frame))
 
     # get the coordinate frame description
+    try:
+        sensor_coord_system, sensor_coord_system_mne = sensor_coord_system
+    except ValueError:
+        sensor_coord_system_mne = "n/a"
     sensor_coord_system_descr = (COORD_FRAME_DESCRIPTIONS
                                  .get(sensor_coord_system.lower(), "n/a"))
-    if sensor_coord_system == 'Other' and verbose:
-        print('Using the `Other` keyword for the CoordinateSystem field. '
-              'Please specify the CoordinateSystemDescription field manually.')
+    if sensor_coord_system == 'Other':
+        if verbose:
+            msg = ('Using the `Other` keyword for the CoordinateSystem field. '
+                   'Please specify the CoordinateSystemDescription field '
+                   'manually.')
+            logger.info(msg)
+        sensor_coord_system_descr = (COORD_FRAME_DESCRIPTIONS
+                                     .get(sensor_coord_system_mne.lower(),
+                                          "n/a"))
 
     # create the coordinate json data structure based on 'datatype'
     if datatype == 'meg':
@@ -393,7 +405,8 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
             _electrodes_tsv(raw, electrodes_path,
                             datatype, overwrite, verbose)
             _coordsystem_json(raw=raw, unit=unit, hpi_coord_system='n/a',
-                              sensor_coord_system=coord_frame,
+                              sensor_coord_system=(coord_frame,
+                                                   mne_coord_frame),
                               fname=coordsystem_path, datatype=datatype,
                               overwrite=overwrite, verbose=verbose)
         else:
