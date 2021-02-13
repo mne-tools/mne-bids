@@ -273,15 +273,16 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
     # get the coordinate frame description
     try:
         sensor_coord_system, sensor_coord_system_mne = sensor_coord_system
-    except ValueError:  # pragma: no cover
+    except ValueError:
         sensor_coord_system_mne = "n/a"
     sensor_coord_system_descr = (COORD_FRAME_DESCRIPTIONS
                                  .get(sensor_coord_system.lower(), "n/a"))
     if sensor_coord_system == 'Other':
         if verbose:
-            print('Using the `Other` keyword for the CoordinateSystem field. '
-                  'Please specify the CoordinateSystemDescription field '
-                  'manually.')
+            msg = ('Using the `Other` keyword for the CoordinateSystem field. '
+                   'Please specify the CoordinateSystemDescription field '
+                   'manually.')
+            logger.info(msg)
         sensor_coord_system_descr = (COORD_FRAME_DESCRIPTIONS
                                      .get(sensor_coord_system_mne.lower(),
                                           "n/a"))
