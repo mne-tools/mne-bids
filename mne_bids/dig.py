@@ -241,8 +241,8 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
         Name of the coordinate system for the head coils.
     sensor_coord_system : str | tuple of str
         Name of the coordinate system for the sensor positions.
-        If tuple of str, should be the BIDS coordinate frame, and
-        the MNE coordinate frame in that order.
+        If a tuple of strings, should be in the form:
+        ``(BIDS coordinate frame, MNE coordinate frame)``.
     fname : str
         Filename to save the coordsystem.json to.
     datatype : str
