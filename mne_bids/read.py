@@ -192,12 +192,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
 
-    if '_split-' in fname:
-        # for split files, scans only stores the filename without ``split``
-        extension = bids_path.fpath.suffix
-        bids_path.update(split=None, extension=extension)
-        fname = bids_path.basename
-    elif fname.endswith('.pdf'):
+    if fname.endswith('.pdf'):
         # for BTI files, the scan is an entire directory
         fname = fname.split('.')[0]
 
