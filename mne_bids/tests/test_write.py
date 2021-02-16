@@ -2570,3 +2570,33 @@ def test_write_fif_triux():
         subject="01", session="01", run="01", datatype="meg", root=bids_root
     )
     write_raw_bids(raw, bids_path=bids_path, overwrite=True)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_write_fif_split_scan_file():
+    """Test scans.tsv is written correctly for split fif files."""
+    data_path = testing.data_path()
+    bids_root = _TempDir()
+    tmp_dir = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    n_channels = len(raw.ch_names)
+    n_times = int(2.2e9 / (n_channels * 4))  # enough to produce a split
+    data = np.empty((n_channels, n_times), dtype=np.float32)
+    raw = mne.io.RawArray(data, raw.info)
+    big_fif_fname = op.join(tmp_dir, 'test_raw.fif')
+    raw.save(big_fif_fname)
+    raw = _read_raw_fif(big_fif_fname, verbose=False)
+    write_raw_bids(raw, bids_path, verbose=False)
+
+    # check that the scans list contains two scans
+    scans_tsv = BIDSPath(
+        subject=subject_id, session=session_id,
+        suffix='scans', extension='.tsv',
+        root=bids_root)
+    data = _from_tsv(scans_tsv)
+    assert len(list(data.values())[0]) == 2
+    # check that the acq_times of the split recording is identical
+    assert list(data.values())[1][0] == list(data.values())[1][1]
