@@ -787,11 +787,54 @@ def test_write_read_fif_split_file():
 
     bids_path.update(split='01')
     raw2 = read_raw_bids(bids_path=bids_path)
+
     bids_path.update(split='02')
     raw3 = read_raw_bids(bids_path=bids_path)
     assert len(raw) == len(raw1)
     assert len(raw) == len(raw2)
     assert len(raw) > len(raw3)
+
+    # check that the scans list contains two scans
+    scans_tsv = BIDSPath(
+        subject=subject_id, session=session_id,
+        suffix='scans', extension='.tsv',
+        root=bids_root)
+    scan_data = _from_tsv(scans_tsv)
+
+    scan_fnames = scan_data['filename']
+    scan_acqtime = scan_data['acq_time']
+    assert len(scan_fnames) == 2
+    assert 'split-01' in scan_fnames[0] and 'split-02' in scan_fnames[1]
+    # check that the acq_times in scans.tsv are the same
+    assert scan_acqtime[0] == scan_acqtime[1]
+    # check the recordings are in the correct order
+    assert raw2.first_time < raw3.first_time
+
+    # find sidecar scans.tsv file and alter the
+    # acquisition time to not have the optional microseconds
+    acq_time_str = scan_acqtime[0]
+    acq_time = datetime.strptime(acq_time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    acq_time = acq_time.replace(tzinfo=timezone.utc)
+    new_acq_time = acq_time_str.split('.')[0]
+    assert acq_time == raw1.info['meas_date']
+    scan_data['acq_time'][0] = new_acq_time
+    _to_tsv(scan_data, scans_tsv)
+
+    """
+    # now re-load the data and it should be different
+    # from the original date and the same as the newly altered date
+    # but as read.py throws a ValueError when acq_time won't match,
+    # the ValueError need to be dealt with here.
+    bids_path.update(split='01')
+    raw4 = read_raw_bids(bids_path)
+    new_acq_time += '.0Z'
+    new_acq_time = datetime.strptime(new_acq_time,
+                                     '%Y-%m-%dT%H:%M:%S.%fZ')
+    new_acq_time = new_acq_time.replace(tzinfo=timezone.utc)
+    assert scan_acqtime[0] != scan_acqtime[1]
+    assert raw4.info['meas_date'] == new_acq_time
+    assert new_acq_time != raw1.info['meas_date']
+    """
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
