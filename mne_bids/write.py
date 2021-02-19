@@ -419,7 +419,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         # check whether fif files were split when saved
         # use the files in the target directory what should be written
         # to scans.tsv
-        datatype, basename = raw_fname.split('/')
+        datatype, basename = raw_fname.split(os.sep)
         raw_dir = op.join(op.dirname(fname), datatype)
         raw_files = [f for f in os.listdir(raw_dir) if f.endswith('.fif')]
         if basename not in raw_files:
