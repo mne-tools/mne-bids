@@ -211,7 +211,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         split_idx = fname.find('split-')
         pattern = re.compile(bids_path.datatype + '/' +
                              bids_path.basename[:split_idx] +
-                             r'split-\d+_' + bids_path.basename[split_idx:] +
+                             r'split-\d+_' + bids_path.datatype +
                              bids_path.fpath.suffix)
         split_fnames = list(filter(pattern.match, fnames))
         split_acq_times = []
