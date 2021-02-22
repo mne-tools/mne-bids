@@ -424,9 +424,11 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         raw_files = [f for f in os.listdir(raw_dir) if f.endswith('.fif')]
         if basename not in raw_files:
             raw_fnames = []
+            split_basename = basename.replace('_meg.fif', '_split{}')
             for raw_f in raw_files:
-                if basename.split('_meg.fif')[0] in raw_f:
-                    raw_fnames.append(op.join(datatype, raw_f))
+                if len(raw_f.split('split')) == 2:
+                    if split_basename.format(raw_f.split('split')[1]) == raw_f:
+                        raw_fnames.append(op.join(datatype, raw_f))
             raw_fnames.sort()
 
     data = OrderedDict(
