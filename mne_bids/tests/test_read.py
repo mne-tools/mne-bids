@@ -774,6 +774,9 @@ def test_write_read_fif_split_file():
     tmp_dir = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
+    bids_path.update(acquisition=None)
+    write_raw_bids(raw, bids_path, verbose=False)
+    bids_path.update(acquisition='01')
     n_channels = len(raw.ch_names)
     n_times = int(2.2e9 / (n_channels * 4))  # enough to produce a split
     data = np.empty((n_channels, n_times), dtype=np.float32)
@@ -803,7 +806,7 @@ def test_write_read_fif_split_file():
     scan_fnames = scan_data['filename']
     scan_acqtime = scan_data['acq_time']
 
-    assert len(scan_fnames) == 2
+    assert len(scan_fnames) == 3
     assert 'split-01' in scan_fnames[0] and 'split-02' in scan_fnames[1]
     # check that the acq_times in scans.tsv are the same
     assert scan_acqtime[0] == scan_acqtime[1]
