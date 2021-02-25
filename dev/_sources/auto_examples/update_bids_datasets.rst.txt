@@ -284,7 +284,7 @@ Read the updated dataset
     Ready.
     Reading events from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_channels.tsv.
-    /home/circleci/project/mne_bids/read.py:394: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+    /home/circleci/project/mne_bids/read.py:405: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
     60
 
@@ -415,7 +415,7 @@ Now let us inspect the dataset again by generating the report again. Now that
     Ready.
     Reading events from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_channels.tsv.
-    /home/circleci/project/mne_bids/read.py:394: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+    /home/circleci/project/mne_bids/read.py:405: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
     50
     Summarizing participants.tsv /home/circleci/mne_data/MNE-somato-data/participants.tsv...
@@ -447,7 +447,7 @@ Now let us inspect the dataset again by generating the report again. Now that
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.175 seconds)
+   **Total running time of the script:** ( 0 minutes  0.152 seconds)
 
 
 .. _sphx_glr_download_auto_examples_update_bids_datasets.py:

@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -534,8 +534,28 @@
         <span class="c1"># for MNE &gt;= v0.20</span>
         <span class="n">acq_time</span> <span class="o">=</span> <span class="n">meas_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
 
-    <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)]),</span>
-                        <span class="p">(</span><span class="s1">&#39;acq_time&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">acq_time</span><span class="p">])])</span>
+    <span class="c1"># for fif files check whether raw file is likely to be split</span>
+    <span class="n">raw_fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw_fname</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fif&#39;</span><span class="p">):</span>
+        <span class="c1"># check whether fif files were split when saved</span>
+        <span class="c1"># use the files in the target directory what should be written</span>
+        <span class="c1"># to scans.tsv</span>
+        <span class="n">datatype</span><span class="p">,</span> <span class="n">basename</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+        <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fname</span><span class="p">),</span> <span class="n">datatype</span><span class="p">)</span>
+        <span class="n">raw_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">raw_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fif&#39;</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">basename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw_files</span><span class="p">:</span>
+            <span class="n">raw_fnames</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">split_base</span> <span class="o">=</span> <span class="n">basename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_meg.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;_split-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">raw_f</span> <span class="ow">in</span> <span class="n">raw_files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_split-&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">split_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_split-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="n">raw_f</span><span class="p">:</span>
+                        <span class="n">raw_fnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">raw_f</span><span class="p">))</span>
+            <span class="n">raw_fnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw_f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">))</span>
+          <span class="k">for</span> <span class="n">raw_f</span> <span class="ow">in</span> <span class="n">raw_fnames</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s1">&#39;acq_time&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">acq_time</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_fnames</span><span class="p">))])</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
         <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
@@ -1928,8 +1948,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-13.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-25.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.1.<br/>
     </p>
   </div>
 </footer>
