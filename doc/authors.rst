@@ -20,3 +20,4 @@
 .. _Robert Luke: https://github.com/rob-luke
 .. _Ethan Knights: https://github.com/ethanknights
 .. _Diego Lozano-Soldevilla: https://github.com/dieloz
+.. _Eduard Ort: https://github.com/eort
