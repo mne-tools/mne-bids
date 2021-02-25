@@ -9,6 +9,7 @@
 import os.path as op
 import glob
 import json
+import re
 from datetime import datetime, timezone
 
 import numpy as np
@@ -192,12 +193,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
 
-    if '_split-' in fname:
-        # for split files, scans only stores the filename without ``split``
-        extension = bids_path.fpath.suffix
-        bids_path.update(split=None, extension=extension)
-        fname = bids_path.basename
-    elif fname.endswith('.pdf'):
+    if fname.endswith('.pdf'):
         # for BTI files, the scan is an entire directory
         fname = fname.split('.')[0]
 
@@ -208,6 +204,21 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     fnames = scans_tsv['filename']
     acq_times = scans_tsv['acq_time']
     row_ind = fnames.index(data_fname)
+
+    # check whether all split files have the same acq_time
+    # and throw an error if they don't
+    if '_split-' in fname:
+        split_idx = fname.find('split-')
+        pattern = re.compile(bids_path.datatype + '/' +
+                             bids_path.basename[:split_idx] +
+                             r'split-\d+_' + bids_path.datatype +
+                             bids_path.fpath.suffix)
+        split_fnames = list(filter(pattern.match, fnames))
+        split_acq_times = []
+        for split_f in split_fnames:
+            split_acq_times.append(acq_times[fnames.index(split_f)])
+        if len(set(split_acq_times)) != 1:
+            raise ValueError("Split files must have the same acq_time.")
 
     # extract the acquisition time from scans file
     acq_time = acq_times[row_ind]
@@ -542,6 +553,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         suffix='scans', extension='.tsv',
         root=bids_path.root
     ).fpath
+
     if scans_fname.exists():
         raw = _handle_scans_reading(scans_fname, raw, bids_path,
                                     verbose=verbose)
