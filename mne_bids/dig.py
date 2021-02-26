@@ -423,9 +423,9 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
-    raw : mne.io.Raw | None
-        Optional. If passed in, should be the raw data as MNE-Python
-        Raw object. Will set montage read in via ``raw.set_montage(montage)``.
+    raw : mne.io.Raw
+        The raw data as MNE-Python ``Raw`` object. Will set montage
+        read in via ``raw.set_montage(montage)``.
     verbose : bool
         Set verbose output to true or false.
 
