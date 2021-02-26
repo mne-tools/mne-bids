@@ -118,7 +118,7 @@ def _get_impedances(raw, names):
     return impedances
 
 
-def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
+def _write_electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     """Create an electrodes.tsv file and save it.
 
     Parameters
@@ -194,8 +194,8 @@ def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     _write_tsv(fname, data, overwrite=True, verbose=verbose)
 
 
-def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
-                      fname, datatype, overwrite=False, verbose=True):
+def _write_coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
+                            fname, datatype, overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
 
     Parameters
@@ -358,12 +358,12 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
                 coord_frame = 'Other'
 
             # Now write the data to the elec coords and the coordsystem
-            _electrodes_tsv(raw, electrodes_path,
-                            datatype, overwrite, verbose)
-            _coordsystem_json(raw=raw, unit=unit, hpi_coord_system='n/a',
-                              sensor_coord_system=coord_frame,
-                              fname=coordsystem_path, datatype=datatype,
-                              overwrite=overwrite, verbose=verbose)
+            _write_electrodes_tsv(raw, electrodes_path,
+                                  datatype, overwrite, verbose)
+            _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system='n/a',
+                                    sensor_coord_system=coord_frame,
+                                    fname=coordsystem_path, datatype=datatype,
+                                    overwrite=overwrite, verbose=verbose)
         else:
             # default coordinate frame to mri if not available
             warn("Coordinate frame of iEEG coords missing/unknown "
@@ -380,12 +380,12 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
         # mne-python automatically converts unknown coord frame to head
         if coord_frame_int == FIFF.FIFFV_COORD_HEAD and landmarks:
             # Now write the data
-            _electrodes_tsv(raw, electrodes_path, datatype,
-                            overwrite, verbose)
-            _coordsystem_json(raw=raw, unit='m', hpi_coord_system='n/a',
-                              sensor_coord_system='CapTrak',
-                              fname=coordsystem_path, datatype=datatype,
-                              overwrite=overwrite, verbose=verbose)
+            _write_electrodes_tsv(raw, electrodes_path, datatype,
+                                  overwrite, verbose)
+            _write_coordsystem_json(raw=raw, unit='m', hpi_coord_system='n/a',
+                                    sensor_coord_system='CapTrak',
+                                    fname=coordsystem_path, datatype=datatype,
+                                    overwrite=overwrite, verbose=verbose)
         else:
             warn("Skipping EEG electrodes.tsv... "
                  "Setting montage not possible if anatomical "
