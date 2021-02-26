@@ -194,8 +194,9 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     _write_tsv(fname, data, overwrite=True, verbose=verbose)
 
 
-def _write_coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
-                            fname, datatype, overwrite=False, verbose=True):
+def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
+                            sensor_coord_system, fname, datatype,
+                            overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
 
     Parameters
