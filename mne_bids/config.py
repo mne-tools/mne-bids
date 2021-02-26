@@ -172,21 +172,26 @@ BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
 
 # mapping from BIDs coordinate frames -> MNE
 BIDS_TO_MNE_FRAMES = {
-    'ctf': 'ctf_head',
-    '4dbti': 'ctf_head',
-    'kityokogawa': 'ctf_head',
-    'elektaneuromag': 'head',
-    'chietiitab': 'head',
-    'captrak': 'head',
-    'acpc': 'ras',
-    'mni': 'mni_tal',
-    'fs': 'fs_tal',
-    'ras': 'ras',
-    'voxel': 'mri_voxels',
-    'mri': 'mri',
-    'unknown': 'unknown'
+    'CTF': 'ctf_head',
+    '4DBti': 'ctf_head',
+    'KitYokogawa': 'ctf_head',
+    'ElektaNeuromag': 'head',
+    'ChietiItab': 'head',
+    'CapTrak': 'head',
+    'ACPC': 'ras',  # XXX: there is no ACPC in mne-python
+    'fsaverage': 'mni_tal',
+    'MNI305': 'mni_tal',
+    'Other': 'unknown'
 }
-MNE_TO_BIDS_FRAMES = {val: key for key, val in BIDS_TO_MNE_FRAMES.items()}
+MNE_TO_BIDS_FRAMES = {
+    'ctf_head': 'CTF',
+    'head': 'CapTrak',
+    'mni_tal': 'fsaverage',
+    'fs_tal': 'fsaverage',  # XXX: not used
+    'unknown': 'Other',
+    'ras': 'Other',
+    'mri': 'Other'
+}
 
 # these coordinate frames in mne-python are related to scalp/meg
 # 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'

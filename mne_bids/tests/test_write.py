@@ -1216,7 +1216,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     elec_locs = np.random.random((len(ch_names), 3)).tolist()
     ch_pos = dict(zip(ch_names, elec_locs))
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                                 coord_frame='mri')
+                                                 coord_frame='mni_tal')
     ieeg_raw.set_montage(ecog_montage)
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
@@ -1243,8 +1243,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                suffix='coordsystem',
                                                extension='.json')
-    assert 'space-mri' in electrodes_fname
-    assert 'space-mri' in coordsystem_fname
+    assert 'space-fsaverage' in electrodes_fname
+    assert 'space-fsaverage' in coordsystem_fname
     with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
         coordsystem_json = json.load(fin)
     assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
