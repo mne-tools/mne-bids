@@ -2154,6 +2154,36 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events):
     _bids_validate(bids_root)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_event_storage():
+    """Test we're retaining the original event IDs when storing events."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+    events_tsv_fname = (bids_path.copy()
+                        .update(suffix='events', extension='.tsv'))
+
+    events = mne.read_events(events_fname)
+    events = events[events[:, -1] != 0]  # Drop unused events
+    # Change an event ID
+    idx = np.where(events[:, -1] == 1)[0]
+    events[idx, -1] = 123
+
+    event_id = {'Auditory/Left': 123, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+
+    raw = _read_raw_fif(raw_fname)
+    write_raw_bids(raw=raw, bids_path=bids_path, events_data=events,
+                   event_id=event_id, overwrite=False)
+
+    events_tsv = _from_tsv(events_tsv_fname)
+    assert set(int(e) for e in events_tsv['value']) == set(event_id.values())
+
+
 @pytest.mark.parametrize(
     'dir_name, fname, reader, datatype, coord_frame', [
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mni_tal'),
@@ -2174,10 +2204,6 @@ def test_coordsystem_json_compliance(
     """Tests that coordsystem.json contents are written correctly.
 
     Tests multiple manufacturer data formats and MEG, EEG, and iEEG.
-
-    TODO: Fix coordinatesystemdescription for iEEG.
-    Currently, iEEG coordinate system descriptions are not written
-    correctly.
     """
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(), dir_name)
@@ -2274,16 +2300,16 @@ def test_coordsystem_json_compliance(
     elif datatype == 'ieeg' and coord_frame == 'mni_tal':
         assert 'space-mni' in coordsystem_fname
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
-        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-        #     COORD_FRAME_DESCRIPTIONS['mni_tal']
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['mni_tal']
     elif datatype == 'ieeg' and coord_frame == 'fs_tal':
         assert 'space-fs' in coordsystem_fname
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
-        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-        #     COORD_FRAME_DESCRIPTIONS['fs_tal']
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+            COORD_FRAME_DESCRIPTIONS['fs_tal']
     elif datatype == 'ieeg' and coord_frame == 'unknown':
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
-        # assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
     elif datatype == 'meg' and dir_name == 'CTF':
         assert coordsystem_json['MEGCoordinateSystem'] == 'CTF'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \

@@ -53,10 +53,13 @@ Bug fixes
 - Fix writing MEGIN Triux files, by `Alexandre Gramfort`_ (:gh:`674`)
 - Anonymization of EDF files in :func:`write_raw_bids` will now convert recording date to ``01-01-1985 00:00:00`` if anonymization takes place, while setting the recording date in the ``scans.tsv`` file to the anonymized date, thus making the file EDF/EDFBrowser compliant, by `Adam Li`_ (:gh:`669`)
 - :func:`mne_bids.write_raw_bids` will not overwrite an existing ``coordsystem.json`` anymore, unless explicitly requested, by `Adam Li`_ (:gh:`675`)
-- :func:`mne_bids.read_raw_bids` now properly handles datasets without event descriptions, by `Richard Höchenberger`_ (:gh:`680`) 
+- :func:`mne_bids.read_raw_bids` now properly handles datasets without event descriptions, by `Richard Höchenberger`_ (:gh:`680`)
 - :func:`mne_bids.stats.count_events` now handles files without a ``trial_type`` or ``stim_type`` column gracefully, by `Richard Höchenberger`_ (:gh:`682`)
 - :func:`mne_bids.read_raw_bids` now correctly treats ``coordsystem.json`` as optional for EEG and MEG data, by `Diego Lozano-Soldevilla`_ (:gh:`691`)
 - :func:`mne_bids.read_raw_bids` now ignores ``exclude`` parameters passed via ``extra_params``, by `Richard Höchenberger`_ (:gh:`703`)
+- :func:`mne_bids.write_raw_bids` now retains original event IDs in the ``value`` column of ``*_events.tsv``, by `Richard Höchenberger`_ (:gh:`708`)
+- Fix writing correct ``iEEGCoordinateSystemDescription``, by `Stefan Appelhoff`_ (:gh:`706`)
+- FIF files that were split due to filesize limitations (using the ``_split-<label>`` entity, are now all listed in ``scans.tsv``, as recommended by BIDS, by `Eduard Ort`_ (:gh:`710`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
