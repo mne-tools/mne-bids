@@ -394,7 +394,7 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
 
 
 def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
-                   datatype, verbose):
+                   datatype, raw, verbose):
     """Read MNE-Python formatted DigMontage from BIDS files.
 
     Handles coordinatesystem.json and electrodes.tsv reading
@@ -409,6 +409,9 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
+    raw : mne.io.Raw | None
+        Optional. If passed in, should be the raw data as MNE-Python
+        Raw object. Will set montage read in via ``raw.set_montage(montage)``.
     verbose : bool
         Set verbose output to true or false.
 
@@ -488,37 +491,6 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     else:
         montage = None
 
-    return montage
-
-
-def read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype,
-                  raw=None, verbose=True):
-    """Read MNE-DigMontage from BIDS.
-
-    Parameters
-    ----------
-    electrodes_fpath : str | pathlib.Path
-        Filepath of the ``*electrodes.tsv`` to read.
-    coordsystem_fpath : str | pathlib.Path
-        Filepath of the ``*coordsystem.json`` to read.
-    datatype : str
-        Type of the data recording. Can be ``meg``, ``eeg``,
-        or ``ieeg``.
-    raw : mne.io.Raw | None
-        Optional. If passed in, should be the raw data as MNE-Python
-        Raw object. Will set montage read in via ``raw.set_montage(montage)``.
-    verbose : bool
-        Set verbose output to true or false.
-
-    Returns
-    -------
-    montage : mne.channels.DigMontage
-        The coordinate data as MNE-Python DigMontage object.
-    """
-    # read DigMontage from electrodes/coordsystem files
-    montage = _read_dig_bids(electrodes_fpath, coordsystem_fpath,
-                             datatype, verbose)
-
     if montage is not None:
         # determine if there are problematic channels
         ch_pos = montage._get_ch_pos()
@@ -530,8 +502,7 @@ def read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype,
             warn("There are channels without locations "
                  "(n/a) that are not marked as bad: {}".format(nan_chs))
 
-    # add montage to Raw object if passed in
-    if raw is not None:
-        raw.set_montage(montage, on_missing='warn', verbose=verbose)
+    # add montage to Raw object
+    raw.set_montage(montage, on_missing='warn', verbose=verbose)
 
     return montage

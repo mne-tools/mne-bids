@@ -18,7 +18,7 @@ from mne.utils import has_nibabel, logger, warn
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
-from mne_bids.dig import read_dig_bids
+from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS, reader, _map_options
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
@@ -523,7 +523,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                f"Please create coordsystem.json for"
                                f"{bids_path.basename}")
         if datatype in ['meg', 'eeg', 'ieeg']:
-            read_dig_bids(electrodes_fname, coordsystem_fname,
+            _read_dig_bids(electrodes_fname, coordsystem_fname,
                           raw=raw, datatype=datatype, verbose=verbose)
 
     # Try to find an associated sidecar .json to get information about the
