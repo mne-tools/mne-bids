@@ -772,10 +772,14 @@ def test_bads_reading():
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_write_read_fif_split_file():
     """Test split files are read correctly."""
+    # load raw test file, extend it to be larger than 2gb, and save it
     bids_root = _TempDir()
     tmp_dir = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
+    bids_path.update(acquisition=None)
+    write_raw_bids(raw, bids_path, verbose=False)
+    bids_path.update(acquisition='01')
     n_channels = len(raw.ch_names)
     n_times = int(2.2e9 / (n_channels * 4))  # enough to produce a split
     data = np.empty((n_channels, n_times), dtype=np.float32)
@@ -785,9 +789,9 @@ def test_write_read_fif_split_file():
     raw = _read_raw_fif(big_fif_fname, verbose=False)
     write_raw_bids(raw, bids_path, verbose=False)
 
+    # test whether split raw files were read correctly
     raw1 = read_raw_bids(bids_path=bids_path)
     assert 'split-01' in str(bids_path.fpath)
-
     bids_path.update(split='01')
     raw2 = read_raw_bids(bids_path=bids_path)
     bids_path.update(split='02')
@@ -795,6 +799,33 @@ def test_write_read_fif_split_file():
     assert len(raw) == len(raw1)
     assert len(raw) == len(raw2)
     assert len(raw) > len(raw3)
+
+    # check that split files both appear in scans.tsv
+    scans_tsv = BIDSPath(
+        subject=subject_id, session=session_id,
+        suffix='scans', extension='.tsv',
+        root=bids_root)
+    scan_data = _from_tsv(scans_tsv)
+    scan_fnames = scan_data['filename']
+    scan_acqtime = scan_data['acq_time']
+
+    assert len(scan_fnames) == 3
+    assert 'split-01' in scan_fnames[0] and 'split-02' in scan_fnames[1]
+    # check that the acq_times in scans.tsv are the same
+    assert scan_acqtime[0] == scan_acqtime[1]
+    # check the recordings are in the correct order
+    assert raw2.first_time < raw3.first_time
+
+    # check whether non-matching acq_times are caught
+    scan_data['acq_time'][0] = scan_acqtime[0].split('.')[0]
+    _to_tsv(scan_data, scans_tsv)
+    with pytest.raises(ValueError,
+                       match='Split files must have the same acq_time.'):
+        read_raw_bids(bids_path)
+
+    # reset scans.tsv file for downstream tests
+    scan_data['acq_time'][0] = scan_data['acq_time'][1]
+    _to_tsv(scan_data, scans_tsv)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

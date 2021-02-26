@@ -413,8 +413,28 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         # for MNE >= v0.20
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-    data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
-                        ('acq_time', [acq_time])])
+    # for fif files check whether raw file is likely to be split
+    raw_fnames = [raw_fname]
+    if raw_fname.endswith('.fif'):
+        # check whether fif files were split when saved
+        # use the files in the target directory what should be written
+        # to scans.tsv
+        datatype, basename = raw_fname.split(os.sep)
+        raw_dir = op.join(op.dirname(fname), datatype)
+        raw_files = [f for f in os.listdir(raw_dir) if f.endswith('.fif')]
+        if basename not in raw_files:
+            raw_fnames = []
+            split_base = basename.replace('_meg.fif', '_split-{}')
+            for raw_f in raw_files:
+                if len(raw_f.split('_split-')) == 2:
+                    if split_base.format(raw_f.split('_split-')[1]) == raw_f:
+                        raw_fnames.append(op.join(datatype, raw_f))
+            raw_fnames.sort()
+
+    data = OrderedDict(
+        [('filename', ['{:s}'.format(raw_f.replace(os.sep, '/'))
+          for raw_f in raw_fnames]),
+            ('acq_time', [acq_time] * len(raw_fnames))])
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
