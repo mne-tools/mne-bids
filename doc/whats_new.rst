@@ -58,7 +58,7 @@ Bug fixes
 - :func:`mne_bids.read_raw_bids` now ignores ``exclude`` parameters passed via ``extra_params``, by `Richard Höchenberger`_ (:gh:`703`)
 - :func:`mne_bids.write_raw_bids` now retains original event IDs in the ``value`` column of ``*_events.tsv``, by `Richard Höchenberger`_ (:gh:`708`)
 - Fix writing correct ``iEEGCoordinateSystemDescription``, by `Stefan Appelhoff`_ (:gh:`706`)
-- FIF files that were split due to filesize limitations (using the ``_split-<label>`` entity, are now all listed in ``scans.tsv``, as recommended by BIDS), by `Eduard Ort`_ (:gh:`710`)
+- FIF files that were split due to filesize limitations (using the ``_split-<label>`` entity), are now all listed in ``scans.tsv``, as recommended by BIDS, by `Eduard Ort`_ (:gh:`710`)
 
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
