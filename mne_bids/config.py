@@ -170,21 +170,6 @@ BIDS_EEG_COORDINATE_FRAMES = ['CapTrak']
 # accepted coordinate SI units
 BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
 
-# BIDS coordinate frames are case-sensitive, so
-# this dictionary provides a mapping from lower-cased
-# BIDS coordinate systems to their case-sensitive counterparts
-# which will pass the bids-validator
-BIDS_LOWER_TO_NAME = {
-    'ctf': 'CTF',
-    '4dbti': '4DBti',
-    'kityokogawa': 'KitYokogawa',
-    'elektaneuromag': 'ElektaNeuromag',
-    'chietiitab': 'ChietiItab',
-    'captrak': 'CapTrak',
-    'acpc': 'ACPC',
-    'other': 'Other'
-}
-
 # mapping from supported BIDs coordinate frames -> MNE
 BIDS_TO_MNE_FRAMES = {
     'CTF': 'ctf_head',
