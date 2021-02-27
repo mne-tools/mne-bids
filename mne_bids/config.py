@@ -185,6 +185,9 @@ BIDS_TO_MNE_FRAMES = {
 }
 
 # mapping from supported MNE coordinate frames -> BIDS
+# XXX: note that there are a lot fewer MNE available coordinate
+# systems so the range of BIDS supported coordinate systems we
+# can write is limited.
 MNE_TO_BIDS_FRAMES = {
     'ctf_head': 'CTF',
     'head': 'CapTrak',
