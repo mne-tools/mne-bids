@@ -187,7 +187,7 @@ MNE_TO_BIDS_FRAMES = {
     'ctf_head': 'CTF',
     'head': 'CapTrak',
     'mni_tal': 'fsaverage',
-    'fs_tal': 'fsaverage',  # XXX: not used
+    # 'fs_tal': 'fsaverage',  # XXX: not used
     'unknown': 'Other',
     'ras': 'Other',
     'mri': 'Other'
