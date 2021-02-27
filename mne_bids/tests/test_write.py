@@ -48,7 +48,7 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES, COORD_FRAME_DESCRIPTIONS
+from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -969,7 +969,7 @@ def test_vhdr(_bids_validate):
     with open(coordsystem_fpath, 'r') as fin:
         coordsys_data = json.load(fin)
         descr = coordsys_data.get("EEGCoordinateSystemDescription", "")
-        assert descr == COORD_FRAME_DESCRIPTIONS["captrak"]
+        assert descr == BIDS_COORD_FRAME_DESCRIPTIONS["captrak"]
 
     # electrodes file path should only contain
     # sub/ses/acq/space at most
@@ -1247,7 +1247,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     assert 'space-fsaverage' in coordsystem_fname
     with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
         coordsystem_json = json.load(fin)
-    assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
+    assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
 
     # test anonymize and convert
     if check_version('pybv', '0.4') or dir_name == 'EDF':
@@ -2187,8 +2187,8 @@ def test_event_storage():
 @pytest.mark.parametrize(
     'dir_name, fname, reader, datatype, coord_frame', [
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mni_tal'),
-        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'fs_tal'),
-        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'unknown'),
+        # ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'fs_tal'),  # XXX: shouldn't be used  # noqa
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mri'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'head'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'mri'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'unknown'),
@@ -2292,32 +2292,27 @@ def test_coordsystem_json_compliance(
     if datatype == 'eeg' and coord_frame == 'head':
         assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
         assert coordsystem_json['EEGCoordinateSystemDescription'] == \
-            COORD_FRAME_DESCRIPTIONS['captrak']
+               BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
     elif datatype == 'eeg' and coord_frame == 'unknown':
         assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
         assert coordsystem_json['EEGCoordinateSystemDescription'] == \
-            COORD_FRAME_DESCRIPTIONS['captrak']
+               BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
     elif datatype == 'ieeg' and coord_frame == 'mni_tal':
-        assert 'space-mni' in coordsystem_fname
-        assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
+        assert 'space-fsaverage' in coordsystem_fname
+        assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-            COORD_FRAME_DESCRIPTIONS['mni_tal']
-    elif datatype == 'ieeg' and coord_frame == 'fs_tal':
-        assert 'space-fs' in coordsystem_fname
-        assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
-        assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-            COORD_FRAME_DESCRIPTIONS['fs_tal']
+               BIDS_COORD_FRAME_DESCRIPTIONS['fsaverage']
     elif datatype == 'ieeg' and coord_frame == 'unknown':
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
     elif datatype == 'meg' and dir_name == 'CTF':
         assert coordsystem_json['MEGCoordinateSystem'] == 'CTF'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \
-            COORD_FRAME_DESCRIPTIONS['ctf']
+               BIDS_COORD_FRAME_DESCRIPTIONS['ctf']
     elif datatype == 'meg' and dir_name == 'MEG':
         assert coordsystem_json['MEGCoordinateSystem'] == 'ElektaNeuromag'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \
-            COORD_FRAME_DESCRIPTIONS['elektaneuromag']
+               BIDS_COORD_FRAME_DESCRIPTIONS['elektaneuromag']
 
 
 @pytest.mark.parametrize(

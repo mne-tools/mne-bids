@@ -161,16 +161,31 @@ ENTITY_VALUE_TYPE = {
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification
-BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
-BIDS_MEG_COORDINATE_FRAMES = ['ctf', 'elektaneuromag',
-                              '4dbti', 'kityokogawa',
-                              'chietiitab', 'other']
-BIDS_EEG_COORDINATE_FRAMES = ['captrak']
+BIDS_IEEG_COORDINATE_FRAMES = ['ACPC', 'Pixels', 'Other']
+BIDS_MEG_COORDINATE_FRAMES = ['CTF', 'ElektaNeuromag',
+                              '4DBti', 'KitYokogawa',
+                              'ChietiItab', 'Other']
+BIDS_EEG_COORDINATE_FRAMES = ['CapTrak']
 
 # accepted coordinate SI units
 BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
 
-# mapping from BIDs coordinate frames -> MNE
+# BIDS coordinate frames are case-sensitive, so
+# this dictionary provides a mapping from lower-cased
+# BIDS coordinate systems to their case-sensitive counterparts
+# which will pass the bids-validator
+BIDS_LOWER_TO_NAME = {
+    'ctf': 'CTF',
+    '4dbti': '4DBti',
+    'kityokogawa': 'KitYokogawa',
+    'elektaneuromag': 'ElektaNeuromag',
+    'chietiitab': 'ChietiItab',
+    'captrak': 'CapTrak',
+    'acpc': 'ACPC',
+    'other': 'Other'
+}
+
+# mapping from supported BIDs coordinate frames -> MNE
 BIDS_TO_MNE_FRAMES = {
     'CTF': 'ctf_head',
     '4DBti': 'ctf_head',
@@ -178,11 +193,13 @@ BIDS_TO_MNE_FRAMES = {
     'ElektaNeuromag': 'head',
     'ChietiItab': 'head',
     'CapTrak': 'head',
-    'ACPC': 'ras',  # XXX: there is no ACPC in mne-python
-    'fsaverage': 'mni_tal',
+    'ACPC': 'ras',  # XXX: there is no ACPC in mne-python and so this is a one-way mapping from BIDS -> MNE  # noqa
+    'fsaverage': 'mni_tal',  # XXX: note fsaverage and MNI305 are the same  # noqa
     'MNI305': 'mni_tal',
     'Other': 'unknown'
 }
+
+# mapping from supported MNE coordinate frames -> BIDS
 MNE_TO_BIDS_FRAMES = {
     'ctf_head': 'CTF',
     'head': 'CapTrak',
@@ -211,7 +228,7 @@ MNE_STR_TO_FRAME = dict(
 MNE_FRAME_TO_STR = {val: key for key, val in MNE_STR_TO_FRAME.items()}
 
 # see BIDS specification for description we copied over from each
-COORD_FRAME_DESCRIPTIONS = {
+BIDS_COORD_FRAME_DESCRIPTIONS = {
     'ctf': 'ALS orientation and the origin between the ears',
     'elektaneuromag': 'RAS orientation and the origin between the ears',
     '4dbti': 'ALS orientation and the origin between the ears',
@@ -226,18 +243,9 @@ COORD_FRAME_DESCRIPTIONS = {
         'This corresponds to a "RAS" orientation with the origin of the '
         'coordinate system approximately between the ears. '
         'See Appendix VIII in the BIDS specification.'),
-    'mri': 'Defined by Freesurfer, the MRI (surface RAS) origin is at the '
-           'center of a 256×256×256 1mm anisotropic volume '
-           '(may not be in the center of the head).',
-    'mri_voxel': 'Defined by Freesurfer, the MRI (surface RAS) origin '
-                 'is at the center of a 256×256×256 voxel anisotropic '
-                 'volume (may not be in the center of the head).',
-    'mni_tal': 'MNI template in Talairach coordinates',
-    'fs_tal': 'Freesurfer template in Talairach coordinates',
-    'ras': 'RAS means that the first dimension (X) points towards '
-           'the right hand side of the head, the second dimension (Y) '
-           'points towards the Anterior aspect of the head, and the '
-           'third dimension (Z) points towards the top of the head.',
+    'fsaverage': 'Defined by Freesurfer, the MRI (surface RAS) origin is '
+                 'at the center of a 256×256×256 1mm anisotropic volume '
+                 '(may not be in the center of the head).',
 }
 
 REFERENCES = {'mne-bids':

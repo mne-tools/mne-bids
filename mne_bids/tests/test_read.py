@@ -519,7 +519,7 @@ def test_handle_ieeg_coords_reading(bids_path):
     ch_names = raw.ch_names
     elec_locs = np.random.random((len(ch_names), 3)).astype(float)
     ch_pos = dict(zip(ch_names, elec_locs))
-    coordinate_frames = ['mri', 'ras']
+    coordinate_frames = ['mni_tal']
     for coord_frame in coordinate_frames:
         # XXX: mne-bids doesn't support multiple electrodes.tsv files
         sh.rmtree(bids_root)
@@ -593,19 +593,34 @@ def test_handle_ieeg_coords_reading(bids_path):
     # XXX: Improve by changing names to 'unknown' coordframe (needs mne PR)
     # check that coordinate systems other coordinate systems should be named
     # in the file and not the CoordinateSystem, which is reserved for keywords
-    coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']
+    coordinate_frames = ['Other']
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(RuntimeWarning, match="iEEG Coordinate frame is "
-                                                "not accepted BIDS keyword"):
+        with pytest.warns(RuntimeWarning, match="Defaulting coordinate "
+                                                "frame to unknown"):
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
-            assert raw_test.info['dig'] is None
+            assert raw_test.info['dig'] is not None
+
+    # check that standard template identifiers that are unsupported in
+    # mne-python coordinate frames, still get read in, but produce a warning
+    coordinate_frames = ['individual', 'fsnative', 'scanner',
+                         'ICBM452AirSpace', 'NIHPD']
+    for coord_frame in coordinate_frames:
+        # update coordinate units
+        _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
+        # read in raw file w/ updated coordinate frame
+        # and make sure all digpoints are MRI coordinate frame
+        with pytest.warns(
+                RuntimeWarning, match=f"iEEG Coordinate frame {coord_frame} "
+                                      f"is not a readable BIDS keyword "):
+            raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
+            assert raw_test.info['dig'] is not None
 
     # ACPC should be read in as RAS for iEEG
-    _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'acpc')
+    _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'ACPC')
     raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
     coord_frame_int = MNE_STR_TO_FRAME['ras']
     for digpoint in raw_test.info['dig']:
