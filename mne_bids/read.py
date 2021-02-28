@@ -535,8 +535,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                f"Please create coordsystem.json for"
                                f"{bids_path.basename}")
         if datatype in ['meg', 'eeg', 'ieeg']:
-            raw = _read_dig_bids(electrodes_fname, coordsystem_fname,
-                                 raw, datatype, verbose)
+            _read_dig_bids(electrodes_fname, coordsystem_fname,
+                           raw=raw, datatype=datatype, verbose=verbose)
 
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot

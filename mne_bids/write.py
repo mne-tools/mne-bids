@@ -32,7 +32,7 @@ from mne.utils import check_version, has_nibabel, logger, warn, _validate_type
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
-from mne_bids.dig import _write_dig_bids, _coordsystem_json
+from mne_bids.dig import _write_dig_bids, _write_coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _handle_datatype, _get_ch_type_mapping,
@@ -1243,11 +1243,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not emptyroom:
-        _coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
-                          sensor_coord_system=orient,
-                          fname=coordsystem_path.fpath,
-                          datatype=bids_path.datatype,
-                          overwrite=overwrite, verbose=verbose)
+        _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
+                                sensor_coord_system=orient,
+                                fname=coordsystem_path.fpath,
+                                datatype=bids_path.datatype,
+                                overwrite=overwrite, verbose=verbose)
     elif bids_path.datatype in ['eeg', 'ieeg']:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
