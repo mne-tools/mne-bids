@@ -512,8 +512,8 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
             if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
                 nan_chs.append(ch_name)
         if len(nan_chs) > 0:
-            warn("There are channels without locations "
-                 "(n/a) that are not marked as bad: {}".format(nan_chs))
+            warn(f"There are channels without locations "
+                 f"(n/a) that are not marked as bad: {nan_chs}")
 
     # add montage to Raw object
     raw.set_montage(montage, on_missing='warn', verbose=verbose)
