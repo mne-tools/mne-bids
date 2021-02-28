@@ -153,7 +153,7 @@
 <span class="kn">import</span> <span class="nn">mne.preprocessing</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
-<span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_dig_bids</span><span class="p">,</span> <span class="n">_coordsystem_json</span>
+<span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_dig_bids</span><span class="p">,</span> <span class="n">_write_coordsystem_json</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_write_text</span><span class="p">,</span>
                             <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
@@ -1364,11 +1364,11 @@
 
     <span class="c1"># for MEG, we only write coordinate system</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
-        <span class="n">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">hpi_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
-                          <span class="n">sensor_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
-                          <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
-                          <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
-                          <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">_write_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">hpi_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
+                                <span class="n">sensor_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
+                                <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+                                <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+                                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
         <span class="c1"># We only write electrodes.tsv and accompanying coordsystem.json</span>
         <span class="c1"># if we have an available DigMontage</span>
@@ -1948,7 +1948,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-25.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.1.<br/>
     </p>
   </div>

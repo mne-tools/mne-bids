@@ -656,8 +656,8 @@
                                <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for&quot;</span>
                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span>
-                                 <span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+            <span class="n">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span>
+                           <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated sidecar .json to get information about the</span>
     <span class="c1"># recording snapshot</span>
@@ -806,7 +806,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-25.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-02-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.1.<br/>
     </p>
   </div>

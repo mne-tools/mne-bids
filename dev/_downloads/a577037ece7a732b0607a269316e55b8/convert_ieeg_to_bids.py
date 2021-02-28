@@ -83,10 +83,13 @@ for ind, axis in enumerate(['x', 'y', 'z']):
     elec[:, ind] = list(map(float, electrode_tsv[axis]))
 
 ###############################################################################
-# Now we make a montage stating that the iEEG contacts are in MRI
-# coordinate system.
+# Now we make a montage stating that the iEEG contacts are in the MNI
+# coordinate system, which corresponds to the `fsaverage` subject in
+# FreeSurfer. For example, one can look at how mne-python deals with iEEG data
+# at `Working with SEEG
+# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_
 montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
-                                        coord_frame='mri')
+                                        coord_frame='mni_tal')
 print('Created %s channel positions' % len(ch_names))
 print(dict(zip(ch_names, elec)))
 
