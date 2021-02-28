@@ -2187,7 +2187,6 @@ def test_event_storage():
 @pytest.mark.parametrize(
     'dir_name, fname, reader, datatype, coord_frame', [
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mni_tal'),
-        # ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'fs_tal'),  # XXX: shouldn't be used  # noqa
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mri'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'head'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'mri'),
