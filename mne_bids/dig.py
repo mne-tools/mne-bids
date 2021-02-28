@@ -362,7 +362,7 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
         print("Writing electrodes file to... ", electrodes_path)
         print("Writing coordsytem file to... ", coordsystem_path)
 
-    if datatype == "ieeg":
+    if datatype == 'ieeg':
         if coord_frame is not None:
             # XXX: To improve when mne-python allows coord_frame='unknown'
             # coordinate frame is either
@@ -451,10 +451,10 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         else:
             coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
     elif datatype == 'ieeg':
-        # ieeg datatype for BIDS only supports
+        # iEEG datatype for BIDS only supports
         # acpc, pixels and then standard templates
         # iEEG datatype for mne-python only supports
-        # mni_tal == fsaverage / MNI305
+        # mni_tal == fsaverage == MNI305
         if bids_coord_frame == 'Pixels':
             warn("Coordinate frame of iEEG data in pixels does not "
                  "get read in by mne-python. Skipping reading of "

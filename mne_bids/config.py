@@ -231,8 +231,8 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
         'This corresponds to a "RAS" orientation with the origin of the '
         'coordinate system approximately between the ears. '
         'See Appendix VIII in the BIDS specification.'),
-    'fsaverage': 'Defined by Freesurfer, the MRI (surface RAS) origin is '
-                 'at the center of a 256×256×256 1mm anisotropic volume '
+    'fsaverage': 'Defined by FreeSurfer, the MRI (surface RAS) origin is '
+                 'at the center of a 256×256×256 mm^3 anisotropic volume '
                  '(may not be in the center of the head).',
 }
 
