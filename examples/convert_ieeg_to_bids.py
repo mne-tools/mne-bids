@@ -250,7 +250,8 @@ raw.plot_sensors(ch_type='ecog')
 # BIDS vs MNE Coordinate Systems
 # ------------------------------
 # BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
-# the `specification. <https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html>`_  # noqa
+# the `specification.
+# <https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html>`_  # noqa
 # However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
 # these coordinate systems.
 #
