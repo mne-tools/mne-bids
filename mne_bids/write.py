@@ -1146,9 +1146,25 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise ValueError(f'Unrecognized file format {ext}')
 
     raw_orig = reader[ext](**raw._init_kwargs)
-    assert_array_equal(raw.times, raw_orig.times,
-                       "raw.times should not have changed since reading"
-                       " in from the file. It may have been cropped.")
+    if (len(raw.times) == len(raw_orig.times) and
+            not np.array_equal(raw.times, raw_orig.times)):
+        raise ValueError(
+            "raw.times should has changed since reading from the file, but "
+            "write_raw_bids() doesn't allow writing modified files.")
+    elif len(raw.times) < len(raw_orig.times):
+        raise ValueError(
+            "The raw data you want to write contains fewer time points than "
+            "the raw data on disk. It is possible that you cropped your data, "
+            "which write_raw_bids() won't accept.")
+    elif len(raw.times) > len(raw_orig.times):
+        if np.array_equal(raw.times[:len(raw_orig.times)], raw_orig.times):
+            logger.info('Raw object contains more time points than the '
+                        'original file on disk; assuming concatenated data.')
+        else:
+            raise ValueError(
+                "Raw object contains more time points than the original file "
+                "on disk; but the first time points don't match.")
+
 
     datatype = _handle_datatype(raw)
 
