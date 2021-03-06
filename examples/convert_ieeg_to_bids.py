@@ -49,6 +49,7 @@ import mne
 from mne_bids import (write_raw_bids, BIDSPath,
                       read_raw_bids, print_dir_tree)
 
+
 ###############################################################################
 # Step 1: Download the data
 # -------------------------
@@ -131,6 +132,26 @@ pprint([x for x in zip(ch_names, pos)])
 # Now, let us format the `Raw` object into BIDS.
 
 ###############################################################################
+# BIDS vs MNE-Python Coordinate Systems
+# -------------------------------------
+# BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
+# the `specification.
+# <https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html>`_  # noqa
+# However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
+# these coordinate systems.
+#
+# MNE-Python has a few tutorials on this topic:
+#   - `background on FreeSurfer <https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne>`_  # noqa
+#   - `MNE-Python coordinate frames <https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html>`_  # noqa
+#
+# Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which corresponds
+# to the ``fsaverage`` BIDS coordinate system. All other coordinate frames in
+# MNE-Python if written with :func:`mne_bids.write_raw_bids` are written with
+# coordinate system ``'Other'``. Note, then we suggest using
+# :func:`mne_bids.update_sidecar_json` to update the sidecar
+# `*_coordinatesystem.json` file to add additional information.
+
+###############################################################################
 # With this step, we have everything to start a new BIDS directory using
 # our data. To do that, we can use :func:`write_raw_bids`
 # Generally, :func:`write_raw_bids` tries to extract as much
@@ -151,7 +172,7 @@ print(write_raw_bids.__doc__)
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'testresteyes'
 
-# get MNE directory w/ example data
+# get MNE-Python directory w/ example data
 mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
 # There is the root directory for where we will write our data.
@@ -245,23 +266,3 @@ pprint([x for x in zip(ch_names, pos)])
 
 # make a plot of the sensors in 2D plane
 raw.plot_sensors(ch_type='ecog')
-
-###############################################################################
-# BIDS vs MNE Coordinate Systems
-# ------------------------------
-# BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
-# the `specification.
-# <https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html>`_  # noqa
-# However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
-# these coordinate systems.
-#
-# MNE has a few tutorials on this topic:
-#   - `background on FreeSurfer <https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne>`_  # noqa
-#   - `MNE coordinate frames <https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html>`_  # noqa
-#
-# Currently, MNE supports the ``mni_tal`` coordinate frame, which corresponds
-# to the ``fsaverage`` BIDS coordinate system. All other coordinate frames in
-# MNE if written with :func:`mne_bids.write_raw_bids` are written with
-# coordinate system ``'Other'``. Note, then we suggest using
-# :func:`mne_bids.update_sidecar_json` to update the sidecar
-# `*_coordinatesystem.json` file to add additional information.
