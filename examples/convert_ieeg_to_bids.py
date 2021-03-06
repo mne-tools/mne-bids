@@ -128,6 +128,7 @@ pprint([x for x in zip(ch_names, pos)])
 ###############################################################################
 # BIDS vs MNE-Python Coordinate Systems
 # -------------------------------------
+#
 # BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
 # the `specification. <https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html>`_  # noqa
 # However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
