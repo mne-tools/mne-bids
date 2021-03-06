@@ -126,18 +126,12 @@ print("The channel coordinates before writing into BIDS: ")
 pprint([x for x in zip(ch_names, pos)])
 
 ###############################################################################
-# Step 2: Formatting as BIDS
-# --------------------------
-#
-# Now, let us format the `Raw` object into BIDS.
-
-###############################################################################
 # BIDS vs MNE-Python Coordinate Systems
 # -------------------------------------
 # BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
 # the `specification. <https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html>`_  # noqa
 # However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
-# these coordinate systems.
+# these coordinate systems (yet).
 #
 # MNE-Python has a few tutorials on this topic:
 #   - `background on FreeSurfer <https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne>`_  # noqa
@@ -150,6 +144,11 @@ pprint([x for x in zip(ch_names, pos)])
 # :func:`mne_bids.update_sidecar_json` to update the sidecar
 # `*_coordinatesystem.json` file to add additional information.
 
+###############################################################################
+# Step 2: Formatting as BIDS
+# --------------------------
+#
+# Now, let us format the `Raw` object into BIDS.
 ###############################################################################
 # With this step, we have everything to start a new BIDS directory using
 # our data. To do that, we can use :func:`write_raw_bids`
