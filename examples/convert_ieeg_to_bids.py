@@ -137,10 +137,10 @@ pprint([x for x in zip(ch_names, pos)])
 #   - `background on FreeSurfer <https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne>`_  # noqa
 #   - `MNE-Python coordinate frames <https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html>`_  # noqa
 #
-# Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which corresponds
-# to the ``fsaverage`` BIDS coordinate system. All other coordinate frames in
-# MNE-Python if written with :func:`mne_bids.write_raw_bids` are written with
-# coordinate system ``'Other'``. Note, then we suggest using
+# Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which
+# corresponds to the ``fsaverage`` BIDS coordinate system. All other coordinate
+# frames in MNE-Python if written with :func:`mne_bids.write_raw_bids` are
+# written with coordinate system ``'Other'``. Note, then we suggest using
 # :func:`mne_bids.update_sidecar_json` to update the sidecar
 # `*_coordinatesystem.json` file to add additional information.
 
