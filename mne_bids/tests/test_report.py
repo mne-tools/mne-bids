@@ -7,7 +7,6 @@ import os.path as op
 import mne
 import pytest
 from mne.datasets import testing
-from mne.utils import _TempDir
 
 from mne_bids import (BIDSPath,
                       make_report)
@@ -34,9 +33,9 @@ warning_str = dict(
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_report():
+def test_report(tmpdir):
     """Test that report generated works as intended."""
-    bids_root = _TempDir()
+    bids_root = str(tmpdir)
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
     bids_path.update(root=bids_root)

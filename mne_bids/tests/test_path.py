@@ -601,7 +601,6 @@ def test_make_filenames():
     ])
 def test_filter_fnames(entities, expected_n_matches):
     """Test filtering filenames based on BIDS entities works."""
-
     fnames = ('sub-01_task-audio_meg.fif',
               'sub-01_ses-05_task-audio_meg.fif',
               'sub-02_task-visual_eeg.vhdr',
