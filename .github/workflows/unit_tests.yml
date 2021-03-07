@@ -115,7 +115,7 @@ jobs:
     - name: Install MNE (stable)
       if: "matrix.os != 'ubuntu-latest'"
       run: |
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.21
+        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.22
         pip install --no-deps -e ./mne-python
     - name: Install MNE (main)
       if: "matrix.os == 'ubuntu-latest'"
