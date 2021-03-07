@@ -73,5 +73,5 @@ with NamedTemporaryFile(suffix='_raw.fif') as f:
 ###############################################################################
 # That's it!
 #
-# .. warning:: **Remmeber, this should only ever be a last resort!**
+# .. warning:: **Remember, this should only ever be a last resort!**
 #
