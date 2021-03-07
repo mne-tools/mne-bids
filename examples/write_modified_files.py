@@ -32,7 +32,8 @@ to store such data, despite it being modified before writing.
 # License: BSD (3-clause)
 
 ###############################################################################
-# Load the ``sample`` dataset, and create a concatenated raw data object
+# Load the ``sample`` dataset, and create a concatenated raw data object.
+
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -52,7 +53,7 @@ raw.info['line_freq'] = 60
 raw_concat = mne.concatenate_raws([raw.copy(), raw])
 
 ###############################################################################
-# Trying to write these data will fail
+# Trying to write these data will fail.
 
 try:
     write_raw_bids(raw=raw_concat, bids_path=bids_path, overwrite=True)
@@ -61,7 +62,7 @@ except ValueError as e:
 
 ###############################################################################
 # We can work around this limitation by first writing the modified data to
-# a temporary file, and then writing this new file
+# a temporary file, and then writing this new file.
 
 with NamedTemporaryFile(suffix='_raw.fif') as f:
     fname = f.name
