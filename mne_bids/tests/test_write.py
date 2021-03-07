@@ -19,6 +19,7 @@ import shutil as sh
 import json
 from pathlib import Path
 import codecs
+from distutils.version import LooseVersion
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
@@ -1317,11 +1318,24 @@ def test_bdf(_bids_validate):
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
-    # Test cropped assertion error
+    # Test errors for modified raw.times
     raw = _read_raw_bdf(raw_fname)
-    raw.crop(0, raw.times[-2])
-    with pytest.raises(AssertionError, match='cropped'):
-        write_raw_bids(raw, bids_path)
+
+    with pytest.raises(ValueError, match='fewer time points'):
+        write_raw_bids(raw.copy().crop(0, raw.times[-2]), bids_path,
+                       overwrite=True)
+
+    with pytest.raises(ValueError, match='more time points'):
+        write_raw_bids(mne.concatenate_raws([raw.copy(), raw]), bids_path,
+                       overwrite=True)
+
+    if LooseVersion(mne.__version__) >= LooseVersion('0.23'):
+        raw.info['sfreq'] -= 10  # changes raw.times, but retains its dimension
+    else:
+        raw._times = raw._times / 5
+
+    with pytest.raises(ValueError, match='raw.times has changed'):
+        write_raw_bids(raw, bids_path, overwrite=True)
 
     # test anonymize and convert
     raw = _read_raw_bdf(raw_fname)
