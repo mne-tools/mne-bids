@@ -136,7 +136,6 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <span class="n">assert_array_equal</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span><span class="p">)</span>
@@ -1267,12 +1266,25 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized file format </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="o">**</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
-    <span class="n">assert_array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
-                       <span class="s2">&quot;raw.times should not have changed since reading&quot;</span>
-                       <span class="s2">&quot; in from the file. It may have been cropped.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;raw.times has changed since reading from disk, but &quot;</span>
+                   <span class="s2">&quot;write_raw_bids() doesn&#39;t allow writing modified data.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The raw data you want to write contains </span><span class="si">{comp}</span><span class="s2"> time &quot;</span>
+                   <span class="s2">&quot;points than the raw data on disk. It is possible that you &quot;</span>
+                   <span class="s2">&quot;</span><span class="si">{guess}</span><span class="s2"> your data, which write_raw_bids() won&#39;t accept.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="o">=</span><span class="s1">&#39;fewer&#39;</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="s1">&#39;cropped&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="o">=</span><span class="s1">&#39;more&#39;</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="s1">&#39;concatenated&#39;</span><span class="p">)</span>
+
+        <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39; If you believe you have a valid use case that should be &#39;</span>
+                <span class="s1">&#39;supported, please reach out to the developers at &#39;</span>
+                <span class="s1">&#39;https://github.com/mne-tools/mne-bids/issues&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="n">datatype</span> <span class="o">=</span> <span class="n">_handle_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span>
