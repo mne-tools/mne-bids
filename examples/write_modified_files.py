@@ -62,7 +62,7 @@ except ValueError as e:
 
 ###############################################################################
 # We can work around this limitation by first writing the modified data to
-# a temporary file, and then writing this new file.
+# a temporary file, reading it back in, and then writing it via MNE-BIDS.
 
 with NamedTemporaryFile(suffix='_raw.fif') as f:
     fname = f.name
