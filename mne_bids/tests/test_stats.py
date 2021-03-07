@@ -1,3 +1,4 @@
+"""Testing stats reporting."""
 # Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
 #
 # License: BSD (3-clause)
@@ -12,7 +13,6 @@ import numpy as np
 import mne
 from mne.utils import requires_pandas
 from mne.datasets import testing
-from mne.utils import _TempDir
 
 from mne_bids import BIDSPath, write_raw_bids
 from mne_bids.stats import count_events
@@ -20,13 +20,13 @@ from mne_bids.read import _from_tsv
 from mne_bids.write import _write_tsv
 
 
-def _make_dataset(subjects, tasks=(None,), runs=(None,), sessions=(None,)):
+def _make_dataset(root, subjects, tasks=(None,), runs=(None,),
+                  sessions=(None,)):
     data_path = testing.data_path()
     raw_fname = \
         Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     raw = mne.io.read_raw(raw_fname)
     raw.info['line_freq'] = 60.
-    root = _TempDir()
     events = mne.find_events(raw)
     event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
                 'visual/right': 4, 'face': 5, 'button': 32}
@@ -85,10 +85,10 @@ def _check_counts(counts, events, event_id, subjects,
     ]
 )
 @requires_pandas
-def test_count_events(subjects, tasks, runs, sessions):
+def test_count_events(tmpdir, subjects, tasks, runs, sessions):
     """Test the event counts."""
-
-    root, events, event_id = _make_dataset(subjects, tasks, runs, sessions)
+    root, events, event_id = _make_dataset(tmpdir, subjects, tasks, runs,
+                                           sessions)
 
     counts = count_events(root)
 
@@ -96,11 +96,10 @@ def test_count_events(subjects, tasks, runs, sessions):
 
 
 @requires_pandas
-def test_count_events_bids_path():
+def test_count_events_bids_path(tmpdir):
     """Test the event counts passing a BIDSPath."""
-
     root, events, event_id = \
-        _make_dataset(subjects=['01', '02'], tasks=['task1'])
+        _make_dataset(tmpdir, subjects=['01', '02'], tasks=['task1'])
 
     with pytest.raises(ValueError, match='datatype .*anat.* is not supported'):
         bids_path = BIDSPath(root=root, subject='01', datatype='anat')
@@ -113,14 +112,14 @@ def test_count_events_bids_path():
 
 
 @requires_pandas
-def test_count_no_events_file():
+def test_count_no_events_file(tmpdir):
     """Test count_events with no event present."""
     data_path = testing.data_path()
     raw_fname = \
         Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     raw = mne.io.read_raw(raw_fname)
     raw.info['line_freq'] = 60.
-    root = _TempDir()
+    root = str(tmpdir)
 
     bids_path = BIDSPath(
         subject='01', task='task1', root=root,
@@ -132,10 +131,11 @@ def test_count_no_events_file():
 
 
 @requires_pandas
-def test_count_no_events_column():
+def test_count_no_events_column(tmpdir):
     """Test case where events.tsv doesn't contain [stim,trial]_type column."""
     subject, task, run, session, datatype = '01', 'task1', '01', '01', 'meg'
-    root, events, event_id = _make_dataset([subject], [task], [run], [session])
+    root, events, event_id = _make_dataset(tmpdir, [subject], [task], [run],
+                                           [session])
 
     # Delete the `stim_type` column.
     events_tsv_fpath = BIDSPath(root=root, subject=subject, task=task, run=run,
