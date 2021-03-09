@@ -171,17 +171,17 @@ a temporary file, reading it back in, and then writing it via MNE-BIDS.
  .. code-block:: none
 
     Overwriting existing file.
-    Writing /tmp/tmphnjtr47j_raw.fif
-    Closing /tmp/tmphnjtr47j_raw.fif
+    Writing /tmp/tmpx5a1js90_raw.fif
+    Closing /tmp/tmpx5a1js90_raw.fif
     [done]
-    Opening raw data file /tmp/tmphnjtr47j_raw.fif...
+    Opening raw data file /tmp/tmpx5a1js90_raw.fif...
         Read a total of 3 projection items:
             PCA-v1 (1 x 102)  idle
             PCA-v2 (1 x 102)  idle
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 359399 =     42.956 ...   598.385 secs
     Ready.
-    Opening raw data file /tmp/tmphnjtr47j_raw.fif...
+    Opening raw data file /tmp/tmpx5a1js90_raw.fif...
         Read a total of 3 projection items:
             PCA-v1 (1 x 102)  idle
             PCA-v2 (1 x 102)  idle
@@ -343,7 +343,7 @@ That's it!
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.523 seconds)
+   **Total running time of the script:** ( 0 minutes  7.687 seconds)
 
 
 .. _sphx_glr_download_auto_examples_write_modified_files.py:
