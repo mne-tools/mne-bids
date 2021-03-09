@@ -116,7 +116,7 @@ ALLOWED_FILENAME_SUFFIX = [
     'participants', 'scans',
     'electrodes', 'channels', 'coordsystem', 'events',  # sidecars
     'headshape', 'digitizer',  # meg-specific sidecars
-    'behav', 'phsyio', 'stim'  # behavioral
+    'behav', 'physio', 'stim'  # behavioral
 ]
 
 # converts suffix to known path modalities

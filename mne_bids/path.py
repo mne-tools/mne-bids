@@ -187,7 +187,7 @@ class BIDSPath(object):
         'meg', 'markers', 'eeg', 'ieeg', 'T1w',
         'participants', 'scans', 'electrodes', 'coordsystem',
         'channels', 'events', 'headshape', 'digitizer',
-        'behav', 'phsyio', 'stim'
+        'behav', 'physio', 'stim'
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     datatype : str
@@ -490,7 +490,7 @@ class BIDSPath(object):
         ``markers``, ``eeg``, ``ieeg``, ``T1w``,
         ``participants``, ``scans``, ``electrodes``, ``channels``,
         ``coordsystem``, ``events``, ``headshape``, ``digitizer``,
-        ``behav``, ``phsyio``, ``stim``
+        ``behav``, ``physio``, ``stim``
 
         Parameters
         ----------
