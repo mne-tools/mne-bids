@@ -197,7 +197,9 @@ coordsys_shared = (coordsys_standard_template +
 ALLOWED_SPACES = dict()
 ALLOWED_SPACES['meg'] = coordsys_shared + coordsys_meg + coordsys_eeg
 ALLOWED_SPACES['eeg'] = coordsys_shared + coordsys_meg + coordsys_eeg
-ALLOWED_SPACES['ieg'] = coordsys_shared + coordsys_ieeg
+ALLOWED_SPACES['ieeg'] = coordsys_shared + coordsys_ieeg
+ALLOWED_SPACES['anat'] = None
+ALLOWED_SPACES['beh'] = None
 
 # See: https://bids-specification.readthedocs.io/en/latest/99-appendices/04-entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
 ENTITY_VALUE_TYPE = {
