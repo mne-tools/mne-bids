@@ -20,6 +20,7 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             param_regex, _ensure_tuple)
@@ -485,16 +486,19 @@ class BIDSPath(object):
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
-        - ``suffix`` should be one of: ``anat``, ``eeg``, ``ieeg``, ``meg``
+        - ``datatype`` should be one of: ``anat``, ``eeg``, ``ieeg``, ``meg``
         - ``extension`` should be one of the accepted file
         extensions in the file path: ``.con``, ``.sqd``, ``.fif``,
         ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
         ``.edf``, ``.set``, ``.mef``, ``.nwb``
-        - ``suffix`` should be one acceptable file suffixes in: ``meg``,
+        - ``suffix`` should be one of the acceptable file suffixes in: ``meg``,
         ``markers``, ``eeg``, ``ieeg``, ``T1w``,
         ``participants``, ``scans``, ``electrodes``, ``channels``,
         ``coordsystem``, ``events``, ``headshape``, ``digitizer``,
         ``beh``, ``physio``, ``stim``
+        - Depending on the modality of the data (EEG, MEG, iEEG),
+        ``space`` should be a valid string according to Appendix VIII
+        in the BIDS specification.
 
         Parameters
         ----------
@@ -541,6 +545,19 @@ class BIDSPath(object):
                     raise ValueError(f'datatype ({val}) is not valid. '
                                      f'Should be one of '
                                      f'{ALLOWED_DATATYPES}')
+                else:
+                    continue
+
+            if key == 'space':
+                allowed_spaces_for_dtype = ALLOWED_SPACES[self.datatype]
+                if val is not None and allowed_spaces_for_dtype is None:
+                    raise ValueError(f'space entity is not valid for datatype '
+                                     f'{self.datatype}')
+                elif val is not None and val not in allowed_spaces_for_dtype:
+                    raise ValueError(f'space ({val}) is not valid for datatype'
+                                     f' {self.datatype}.\n'
+                                     f'Should be one of '
+                                     f'{allowed_spaces_for_dtype}')
                 else:
                     continue
 
