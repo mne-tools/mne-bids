@@ -507,6 +507,24 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='datatype .* is not valid'):
         bids_path.copy().update(datatype=error_kind)
 
+    # always error check space
+    match = 'must define datatype if you want to use space'
+    bids_path_tmpcopy = bids_path.copy()
+    with pytest.raises(ValueError, match=match):
+        bids_path_tmpcopy.update(space=error_kind)
+
+    match = 'space entity is not valid for datatype anat'
+    bids_path_tmpcopy.update(datatype='anat')
+    with pytest.raises(ValueError, match=match):
+        bids_path_tmpcopy.update(space=error_kind)
+
+    match = r'space \(foobar\) is not valid for datatype eeg.*'
+    bids_path_tmpcopy.update(datatype='eeg')
+    with pytest.raises(ValueError, match=match):
+        bids_path_tmpcopy.update(space=error_kind)
+
+    bids_path_tmpcopy.update(space="CapTrak")
+
     # suffix won't be error checks if initial check was false
     bids_path.update(suffix=suffix)
 
