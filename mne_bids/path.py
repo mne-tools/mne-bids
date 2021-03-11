@@ -179,6 +179,8 @@ class BIDSPath(object):
         The coordinate space for an anatomical or sensor position
         files (e.g., *_electrodes.tsv, *_markers.mrk).
         Corresponds to "space".
+        Note that valid values for ``space`` must come from a list
+        of BIDS keywords as described in the BIDS specification.
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
