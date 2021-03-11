@@ -178,7 +178,7 @@ class BIDSPath(object):
         The recording name for this item. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical or sensor position
-        files (e.g., *_electrodes.tsv, *_markers.mrk).
+        files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
         Corresponds to "space".
         Note that valid values for ``space`` must come from a list
         of BIDS keywords as described in the BIDS specification.
