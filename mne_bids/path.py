@@ -176,7 +176,9 @@ class BIDSPath(object):
     recording : str | None
         The recording name for this item. Corresponds to "rec".
     space : str | None
-        The coordinate space for an anatomical file. Corresponds to "space".
+        The coordinate space for an anatomical or sensor position
+        files (e.g., *_electrodes.tsv, *_markers.mrk).
+        Corresponds to "space".
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
