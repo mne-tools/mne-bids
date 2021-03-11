@@ -549,11 +549,19 @@ class BIDSPath(object):
                     continue
 
             if key == 'space':
-                allowed_spaces_for_dtype = ALLOWED_SPACES[self.datatype]
-                if val is not None and allowed_spaces_for_dtype is None:
+                if val is None:
+                    continue
+
+                datatype = getattr(self, 'datatype', None)
+                if datatype is None:
+                    raise ValueError('You must define datatype if you want to '
+                                     'use space in your BIDSPath.')
+
+                allowed_spaces_for_dtype = ALLOWED_SPACES.get(datatype, None)
+                if allowed_spaces_for_dtype is None:
                     raise ValueError(f'space entity is not valid for datatype '
                                      f'{self.datatype}')
-                elif val is not None and val not in allowed_spaces_for_dtype:
+                elif val not in allowed_spaces_for_dtype:
                     raise ValueError(f'space ({val}) is not valid for datatype'
                                      f' {self.datatype}.\n'
                                      f'Should be one of '
