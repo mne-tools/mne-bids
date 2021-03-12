@@ -548,27 +548,6 @@ class BIDSPath(object):
                 else:
                     continue
 
-            if key == 'space':
-                if val is None:
-                    continue
-
-                datatype = getattr(self, 'datatype', None)
-                if datatype is None:
-                    raise ValueError('You must define datatype if you want to '
-                                     'use space in your BIDSPath.')
-
-                allowed_spaces_for_dtype = ALLOWED_SPACES.get(datatype, None)
-                if allowed_spaces_for_dtype is None:
-                    raise ValueError(f'space entity is not valid for datatype '
-                                     f'{self.datatype}')
-                elif val not in allowed_spaces_for_dtype:
-                    raise ValueError(f'space ({val}) is not valid for datatype'
-                                     f' {self.datatype}.\n'
-                                     f'Should be one of '
-                                     f'{allowed_spaces_for_dtype}')
-                else:
-                    continue
-
             if key not in ENTITY_VALUE_TYPE:
                 raise ValueError(f'Key must be one of '
                                  f'{ALLOWED_PATH_ENTITIES}, got {key}')
@@ -588,8 +567,7 @@ class BIDSPath(object):
         extension = kwargs.get('extension')
         if extension is not None:
             if not extension.startswith('.'):
-                extension = f'.{extension}'
-                kwargs['extension'] = extension
+                kwargs['extension'] = f'.{extension}'
 
         # error check entities
         for key, val in kwargs.items():
@@ -598,7 +576,7 @@ class BIDSPath(object):
                 _check_key_val(key, val)
 
             # set entity value, ensuring `root` is a Path
-            if key == 'root' and val is not None:
+            if val is not None and key == 'root':
                 val = Path(val)
             setattr(self, key, val)
 
@@ -687,6 +665,26 @@ class BIDSPath(object):
                     raise ValueError(f'Extension {extension} is not '
                                      f'allowed. Use one of these extensions '
                                      f'{ALLOWED_FILENAME_EXTENSIONS}.')
+
+            # labels from space entity must come from list (appendix VIII)
+            space = self.space
+            if space is not None:
+                datatype = getattr(self, 'datatype', None)
+                if datatype is None:
+                    raise ValueError('You must define datatype if you want to '
+                                     'use space in your BIDSPath.')
+
+                allowed_spaces_for_dtype = ALLOWED_SPACES.get(datatype, None)
+                if allowed_spaces_for_dtype is None:
+                    raise ValueError(f'space entity is not valid for datatype '
+                                     f'{self.datatype}')
+                elif space not in allowed_spaces_for_dtype:
+                    raise ValueError(f'space ({space}) is not valid for '
+                                     f'datatype ({self.datatype}).\n'
+                                     f'Should be one of '
+                                     f'{allowed_spaces_for_dtype}')
+                else:
+                    pass
 
             # error check suffix
             suffix = self.suffix

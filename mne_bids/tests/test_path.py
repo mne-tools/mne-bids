@@ -502,28 +502,33 @@ def test_bids_path(return_bids_test_dir):
     suffix = 'meeg'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix=suffix, check=False)
+
     # also inherits error check from instantiation
     # always error check datatype
     with pytest.raises(ValueError, match='datatype .* is not valid'):
         bids_path.copy().update(datatype=error_kind)
 
-    # always error check space
-    match = 'must define datatype if you want to use space'
-    bids_path_tmpcopy = bids_path.copy()
-    with pytest.raises(ValueError, match=match):
-        bids_path_tmpcopy.update(space=error_kind)
+    # does not error check on space if check=False ...
+    BIDSPath(subject=subject_id, space='foo', suffix='eeg', check=False)
 
+    # ... but raises an error with check=True
+    match = r'space \(foo\) is not valid for datatype \(eeg\)'
+    with pytest.raises(ValueError, match=match):
+        BIDSPath(subject=subject_id, space='foo', suffix='eeg')
+
+    # error check on space for datatypes that do not support space
     match = 'space entity is not valid for datatype anat'
-    bids_path_tmpcopy.update(datatype='anat')
     with pytest.raises(ValueError, match=match):
-        bids_path_tmpcopy.update(space=error_kind)
+        BIDSPath(subject=subject_id, space='foo', datatype='anat')
 
-    match = r'space \(foobar\) is not valid for datatype eeg.*'
-    bids_path_tmpcopy.update(datatype='eeg')
+    # error check on space if datatype is None
+    bids_path_tmpcopy = bids_path.copy().update(suffix='meeg')
+    match = 'You must define datatype if you want to use space'
     with pytest.raises(ValueError, match=match):
-        bids_path_tmpcopy.update(space=error_kind)
+        bids_path_tmpcopy.update(space='CapTrak', check=True)
 
-    bids_path_tmpcopy.update(space="CapTrak")
+    # making a valid space update works
+    bids_path_tmpcopy.update(suffix='eeg', space="CapTrak", check=True)
 
     # suffix won't be error checks if initial check was false
     bids_path.update(suffix=suffix)
