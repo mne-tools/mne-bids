@@ -28,7 +28,7 @@ In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
 
 1. Download some iEEG data from the
-   `MNE-ECoG ex <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
+   `MNE-ECoG example <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
 
 2. Load the data, extract information, and save in a new BIDS directory.
 
@@ -42,29 +42,35 @@ data. Specifically, we will follow these steps:
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
 
-    * sidecar.json
-    * electrodes.tsv
-    * coord_system.json
-    * events.tsv
-    * channels.tsv
+    * the sidecar file ``ieeg.json``
+    * ``electrodes.tsv``
+    * ``coordsystem.json``
+    * ``events.tsv``
+    * ``channels.tsv``
 
 Compared to EEG data, the main differences are within the
-coord_system and electrodes files.
+``coordsystem.json`` and ``electrodes.tsv`` files.
 For more information on these files,
-refer to the iEEG-BIDS specification.
+refer to the `iEEG part of the BIDS specification`_.
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-52
+.. _iEEG part of the BIDS specification: https://bids-specification.readthedocs.io/en/latest/04-modality-specific-files/04-intracranial-electroencephalography.html
+.. _appendix VIII: https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
+.. _background on FreeSurfer: https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne
+.. _MNE-Python coordinate frames: https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html
+
+.. GENERATED FROM PYTHON SOURCE LINES 43-60
 
 .. code-block:: default
 
 
     # Authors: Adam Li <adam2392@gmail.com>
+    #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+    #
     # License: BSD (3-clause)
 
     import os.path as op
     import shutil
     from pprint import pprint
-    from collections import OrderedDict
 
     import numpy as np
 
@@ -79,26 +85,21 @@ refer to the iEEG-BIDS specification.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-63
+
+.. GENERATED FROM PYTHON SOURCE LINES 61-67
 
 Step 1: Download the data
 -------------------------
 
 First, we need some data to work with. We will use the
-data downloaded via MNE-Python's API.
+data downloaded via MNE-Python's ``datasets`` API:
+:func:`mne.datasets.misc.data_path`
 
-`<https://mne.tools/stable/generated/mne.datasets.misc.data_path>`_.
-
-Conveniently, there is already a data loading function available with
-MNE-Python:
-
-.. GENERATED FROM PYTHON SOURCE LINES 63-85
+.. GENERATED FROM PYTHON SOURCE LINES 67-88
 
 .. code-block:: default
 
-
     misc_path = mne.datasets.misc.data_path(force_update=True)
-
 
     # The electrode coords data are in the tsv file format
     # which is easily read in using numpy
@@ -107,12 +108,13 @@ MNE-Python:
                       comments=None, encoding='utf-8')
     column_names = data[0, :]
     info = data[1:, :]
-    electrode_tsv = OrderedDict()
+    electrode_tsv = dict()
     for i, name in enumerate(column_names):
         electrode_tsv[name] = info[:, i].tolist()
 
     # load in channel names
     ch_names = electrode_tsv['name']
+
     # load in the xyz coordinates as a float
     elec = np.empty(shape=(len(ch_names), 3))
     for ind, axis in enumerate(['x', 'y', 'z']):
@@ -131,7 +133,7 @@ MNE-Python:
     Using default location ~/mne_data for misc...
     Downloading archive mne-misc-data-0.8.tar.gz to /home/circleci/mne_data
     Downloading https://codeload.github.com/mne-tools/mne-misc-data/tar.gz/0.8 (0 bytes)
-      0%|          | Downloading : 0.00/0.00 [00:00<?,        ?B/s]      0%|          | Downloading : 56.0k/0.00 [00:00<00:00,    2.98MB/s]      0%|          | Downloading : 152k/0.00 [00:00<00:00,    3.03MB/s]       0%|          | Downloading : 216k/0.00 [00:00<00:00,    3.04MB/s]      0%|          | Downloading : 280k/0.00 [00:00<00:00,    2.86MB/s]      0%|          | Downloading : 728k/0.00 [00:00<00:00,    2.99MB/s]      0%|          | Downloading : 1.21M/0.00 [00:00<00:00,    3.12MB/s]      0%|          | Downloading : 1.46M/0.00 [00:00<00:00,    3.24MB/s]      0%|          | Downloading : 1.71M/0.00 [00:00<00:00,    3.37MB/s]      0%|          | Downloading : 1.96M/0.00 [00:00<00:00,    3.50MB/s]      0%|          | Downloading : 2.21M/0.00 [00:00<00:00,    3.64MB/s]      0%|          | Downloading : 2.46M/0.00 [00:00<00:00,    3.78MB/s]      0%|          | Downloading : 2.71M/0.00 [00:00<00:00,    3.92MB/s]      0%|          | Downloading : 2.96M/0.00 [00:00<00:00,    4.06MB/s]      0%|          | Downloading : 3.21M/0.00 [00:00<00:00,    3.84MB/s]      0%|          | Downloading : 3.34M/0.00 [00:00<00:00,    3.79MB/s]      0%|          | Downloading : 3.46M/0.00 [00:00<00:00,    3.64MB/s]      0%|          | Downloading : 3.59M/0.00 [00:00<00:00,    3.61MB/s]      0%|          | Downloading : 3.71M/0.00 [00:00<00:00,    3.58MB/s]      0%|          | Downloading : 3.84M/0.00 [00:00<00:00,    3.46MB/s]      0%|          | Downloading : 3.96M/0.00 [00:00<00:00,    3.44MB/s]      0%|          | Downloading : 4.09M/0.00 [00:00<00:00,    3.42MB/s]      0%|          | Downloading : 4.21M/0.00 [00:00<00:00,    3.30MB/s]      0%|          | Downloading : 4.59M/0.00 [00:00<00:00,    3.44MB/s]      0%|          | Downloading : 5.09M/0.00 [00:00<00:00,    3.58MB/s]      0%|          | Downloading : 5.59M/0.00 [00:00<00:00,    3.74MB/s]      0%|          | Downloading : 6.09M/0.00 [00:00<00:00,    3.89MB/s]      0%|          | Downloading : 6.59M/0.00 [00:00<00:00,    4.05MB/s]      0%|          | Downloading : 7.09M/0.00 [00:01<00:00,    4.22MB/s]      0%|          | Downloading : 7.59M/0.00 [00:01<00:00,    4.39MB/s]      0%|          | Downloading : 8.09M/0.00 [00:01<00:00,    4.57MB/s]      0%|          | Downloading : 8.59M/0.00 [00:01<00:00,    4.75MB/s]      0%|          | Downloading : 9.09M/0.00 [00:01<00:00,    4.93MB/s]      0%|          | Downloading : 9.59M/0.00 [00:01<00:00,    5.12MB/s]      0%|          | Downloading : 10.1M/0.00 [00:01<00:00,    5.31MB/s]      0%|          | Downloading : 10.6M/0.00 [00:01<00:00,    5.50MB/s]      0%|          | Downloading : 11.1M/0.00 [00:01<00:00,    5.71MB/s]      0%|          | Downloading : 11.6M/0.00 [00:01<00:00,    5.91MB/s]      0%|          | Downloading : 12.1M/0.00 [00:01<00:00,    6.12MB/s]      0%|          | Downloading : 12.6M/0.00 [00:01<00:00,    6.33MB/s]      0%|          | Downloading : 13.1M/0.00 [00:01<00:00,    6.55MB/s]      0%|          | Downloading : 13.6M/0.00 [00:01<00:00,    6.20MB/s]      0%|          | Downloading : 13.7M/0.00 [00:01<00:00,    5.84MB/s]      0%|          | Downloading : 13.8M/0.00 [00:01<00:00,    5.29MB/s]      0%|          | Downloading : 14.0M/0.00 [00:01<00:00,    5.11MB/s]      0%|          | Downloading : 14.1M/0.00 [00:01<00:00,    4.74MB/s]      0%|          | Downloading : 14.2M/0.00 [00:01<00:00,    4.62MB/s]      0%|          | Downloading : 14.3M/0.00 [00:01<00:00,    4.50MB/s]      0%|          | Downloading : 14.5M/0.00 [00:01<00:00,    4.24MB/s]      0%|          | Downloading : 14.6M/0.00 [00:01<00:00,    4.27MB/s]      0%|          | Downloading : 15.0M/0.00 [00:01<00:00,    4.44MB/s]      0%|          | Downloading : 15.5M/0.00 [00:01<00:00,    4.62MB/s]      0%|          | Downloading : 16.0M/0.00 [00:01<00:00,    4.80MB/s]      0%|          | Downloading : 16.5M/0.00 [00:02<00:00,    4.99MB/s]      0%|          | Downloading : 17.0M/0.00 [00:02<00:00,    5.17MB/s]      0%|          | Downloading : 17.5M/0.00 [00:02<00:00,    5.37MB/s]      0%|          | Downloading : 18.0M/0.00 [00:02<00:00,    5.57MB/s]      0%|          | Downloading : 18.5M/0.00 [00:02<00:00,    5.77MB/s]      0%|          | Downloading : 19.0M/0.00 [00:02<00:00,    5.98MB/s]      0%|          | Downloading : 19.5M/0.00 [00:02<00:00,    6.18MB/s]      0%|          | Downloading : 20.0M/0.00 [00:02<00:00,    6.39MB/s]      0%|          | Downloading : 20.5M/0.00 [00:02<00:00,    6.61MB/s]      0%|          | Downloading : 21.0M/0.00 [00:02<00:00,    6.83MB/s]      0%|          | Downloading : 21.5M/0.00 [00:02<00:00,    7.06MB/s]      0%|          | Downloading : 22.0M/0.00 [00:02<00:00,    7.27MB/s]      0%|          | Downloading : 22.5M/0.00 [00:02<00:00,    7.50MB/s]      0%|          | Downloading : 23.0M/0.00 [00:02<00:00,    7.74MB/s]      0%|          | Downloading : 23.5M/0.00 [00:02<00:00,    7.97MB/s]      0%|          | Downloading : 23.7M/0.00 [00:02<00:00,    8.00MB/s]      0%|          | Downloading : 24.5M/0.00 [00:02<00:00,    8.29MB/s]      0%|          | Downloading : 25.0M/0.00 [00:02<00:00,    8.59MB/s]      0%|          | Downloading : 25.5M/0.00 [00:02<00:00,    8.88MB/s]      0%|          | Downloading : 26.0M/0.00 [00:02<00:00,    9.19MB/s]      0%|          | Downloading : 26.5M/0.00 [00:02<00:00,    9.51MB/s]      0%|          | Downloading : 27.0M/0.00 [00:02<00:00,    9.85MB/s]      0%|          | Downloading : 27.5M/0.00 [00:02<00:00,    10.2MB/s]      0%|          | Downloading : 28.0M/0.00 [00:02<00:00,    10.5MB/s]      0%|          | Downloading : 28.5M/0.00 [00:02<00:00,    10.8MB/s]      0%|          | Downloading : 29.0M/0.00 [00:02<00:00,    10.6MB/s]      0%|          | Downloading : 29.5M/0.00 [00:02<00:00,    10.7MB/s]      0%|          | Downloading : 30.0M/0.00 [00:02<00:00,    10.7MB/s]      0%|          | Downloading : 30.5M/0.00 [00:02<00:00,    10.8MB/s]      0%|          | Downloading : 30.9M/0.00 [00:02<00:00,    10.8MB/s]      0%|          | Downloading : 30.9M/0.00 [00:02<00:00,    11.3MB/s]
+      0%|          | Downloading : 0.00/0.00 [00:00<?,        ?B/s]      0%|          | Downloading : 56.0k/0.00 [00:00<00:00,    2.75MB/s]      0%|          | Downloading : 152k/0.00 [00:00<00:00,    2.80MB/s]       0%|          | Downloading : 216k/0.00 [00:00<00:00,    2.82MB/s]      0%|          | Downloading : 280k/0.00 [00:00<00:00,    2.67MB/s]      0%|          | Downloading : 728k/0.00 [00:00<00:00,    2.79MB/s]      0%|          | Downloading : 1.21M/0.00 [00:00<00:00,    2.92MB/s]      0%|          | Downloading : 1.71M/0.00 [00:00<00:00,    3.05MB/s]      0%|          | Downloading : 2.21M/0.00 [00:00<00:00,    3.18MB/s]      0%|          | Downloading : 2.71M/0.00 [00:00<00:00,    3.31MB/s]      0%|          | Downloading : 3.21M/0.00 [00:00<00:00,    3.32MB/s]      0%|          | Downloading : 3.34M/0.00 [00:00<00:00,    3.30MB/s]      0%|          | Downloading : 3.46M/0.00 [00:00<00:00,    3.20MB/s]      0%|          | Downloading : 3.59M/0.00 [00:00<00:00,    3.20MB/s]      0%|          | Downloading : 3.71M/0.00 [00:00<00:00,    3.20MB/s]      0%|          | Downloading : 3.84M/0.00 [00:00<00:00,    3.11MB/s]      0%|          | Downloading : 3.96M/0.00 [00:00<00:00,    3.10MB/s]      0%|          | Downloading : 4.09M/0.00 [00:00<00:00,    3.09MB/s]      0%|          | Downloading : 4.21M/0.00 [00:00<00:00,    3.02MB/s]      0%|          | Downloading : 4.46M/0.00 [00:00<00:00,    3.14MB/s]      0%|          | Downloading : 4.96M/0.00 [00:00<00:00,    3.28MB/s]      0%|          | Downloading : 5.46M/0.00 [00:00<00:00,    3.42MB/s]      0%|          | Downloading : 5.96M/0.00 [00:00<00:00,    3.56MB/s]      0%|          | Downloading : 6.71M/0.00 [00:00<00:00,    3.72MB/s]      0%|          | Downloading : 7.21M/0.00 [00:00<00:00,    3.87MB/s]      0%|          | Downloading : 7.71M/0.00 [00:01<00:00,    4.03MB/s]      0%|          | Downloading : 8.21M/0.00 [00:01<00:00,    4.19MB/s]      0%|          | Downloading : 8.71M/0.00 [00:01<00:00,    4.37MB/s]      0%|          | Downloading : 9.21M/0.00 [00:01<00:00,    4.55MB/s]      0%|          | Downloading : 9.71M/0.00 [00:01<00:00,    4.73MB/s]      0%|          | Downloading : 10.2M/0.00 [00:01<00:00,    4.91MB/s]      0%|          | Downloading : 10.7M/0.00 [00:01<00:00,    5.10MB/s]      0%|          | Downloading : 11.2M/0.00 [00:01<00:00,    5.30MB/s]      0%|          | Downloading : 11.7M/0.00 [00:01<00:00,    5.50MB/s]      0%|          | Downloading : 12.2M/0.00 [00:01<00:00,    5.70MB/s]      0%|          | Downloading : 12.7M/0.00 [00:01<00:00,    5.91MB/s]      0%|          | Downloading : 13.2M/0.00 [00:01<00:00,    6.12MB/s]      0%|          | Downloading : 13.7M/0.00 [00:01<00:00,    5.73MB/s]      0%|          | Downloading : 14.0M/0.00 [00:01<00:00,    5.40MB/s]      0%|          | Downloading : 14.1M/0.00 [00:01<00:00,    5.03MB/s]      0%|          | Downloading : 14.2M/0.00 [00:01<00:00,    4.85MB/s]      0%|          | Downloading : 14.3M/0.00 [00:01<00:00,    4.75MB/s]      0%|          | Downloading : 14.5M/0.00 [00:01<00:00,    4.46MB/s]      0%|          | Downloading : 14.6M/0.00 [00:01<00:00,    4.49MB/s]      0%|          | Downloading : 15.0M/0.00 [00:01<00:00,    4.67MB/s]      0%|          | Downloading : 15.5M/0.00 [00:01<00:00,    4.86MB/s]      0%|          | Downloading : 16.0M/0.00 [00:01<00:00,    5.04MB/s]      0%|          | Downloading : 16.5M/0.00 [00:01<00:00,    5.24MB/s]      0%|          | Downloading : 17.0M/0.00 [00:01<00:00,    5.44MB/s]      0%|          | Downloading : 17.5M/0.00 [00:01<00:00,    5.65MB/s]      0%|          | Downloading : 18.0M/0.00 [00:02<00:00,    5.86MB/s]      0%|          | Downloading : 18.5M/0.00 [00:02<00:00,    6.08MB/s]      0%|          | Downloading : 19.0M/0.00 [00:02<00:00,    6.30MB/s]      0%|          | Downloading : 19.5M/0.00 [00:02<00:00,    6.52MB/s]      0%|          | Downloading : 20.0M/0.00 [00:02<00:00,    6.74MB/s]      0%|          | Downloading : 20.5M/0.00 [00:02<00:00,    6.97MB/s]      0%|          | Downloading : 21.0M/0.00 [00:02<00:00,    7.20MB/s]      0%|          | Downloading : 21.5M/0.00 [00:02<00:00,    7.44MB/s]      0%|          | Downloading : 22.0M/0.00 [00:02<00:00,    7.67MB/s]      0%|          | Downloading : 22.5M/0.00 [00:02<00:00,    7.90MB/s]      0%|          | Downloading : 23.0M/0.00 [00:02<00:00,    8.14MB/s]      0%|          | Downloading : 23.5M/0.00 [00:02<00:00,    8.39MB/s]      0%|          | Downloading : 23.7M/0.00 [00:02<00:00,    8.46MB/s]      0%|          | Downloading : 24.2M/0.00 [00:02<00:00,    8.75MB/s]      0%|          | Downloading : 25.0M/0.00 [00:02<00:00,    9.05MB/s]      0%|          | Downloading : 25.5M/0.00 [00:02<00:00,    9.33MB/s]      0%|          | Downloading : 26.5M/0.00 [00:02<00:00,    9.69MB/s]      0%|          | Downloading : 27.0M/0.00 [00:02<00:00,    10.0MB/s]      0%|          | Downloading : 27.5M/0.00 [00:02<00:00,    10.3MB/s]      0%|          | Downloading : 28.0M/0.00 [00:02<00:00,    10.7MB/s]      0%|          | Downloading : 28.5M/0.00 [00:02<00:00,    11.0MB/s]      0%|          | Downloading : 29.0M/0.00 [00:02<00:00,    10.8MB/s]      0%|          | Downloading : 29.5M/0.00 [00:02<00:00,    10.9MB/s]      0%|          | Downloading : 30.0M/0.00 [00:02<00:00,    11.0MB/s]      0%|          | Downloading : 30.5M/0.00 [00:02<00:00,    11.1MB/s]      0%|          | Downloading : 30.9M/0.00 [00:02<00:00,    11.1MB/s]      0%|          | Downloading : 30.9M/0.00 [00:02<00:00,    11.8MB/s]
     Verifying hash 0f88194266121dd9409be94184231f25.
     Removing old directory: /home/circleci/mne_data/MNE-misc-data
     Decompressing the archive: /home/circleci/mne_data/mne-misc-data-0.8.tar.gz
@@ -141,21 +143,21 @@ MNE-Python:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-91
+.. GENERATED FROM PYTHON SOURCE LINES 89-94
 
 Now we make a montage stating that the iEEG contacts are in the MNI
 coordinate system, which corresponds to the `fsaverage` subject in
-FreeSurfer. For example, one can look at how mne-python deals with iEEG data
+FreeSurfer. For example, one can look at how MNE-Python deals with iEEG data
 at `Working with SEEG
-<https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_
+<https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-96
+.. GENERATED FROM PYTHON SOURCE LINES 94-99
 
 .. code-block:: default
 
     montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
                                             coord_frame='mni_tal')
-    print('Created %s channel positions' % len(ch_names))
+    print(f'Created {len(ch_names)} channel positions')
     print(dict(zip(ch_names, elec)))
 
 
@@ -174,12 +176,12 @@ at `Working with SEEG
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-99
+.. GENERATED FROM PYTHON SOURCE LINES 100-102
 
 We will load a :class:`mne.io.Raw` object and
 use the montage we created.
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-112
+.. GENERATED FROM PYTHON SOURCE LINES 102-115
 
 .. code-block:: default
 
@@ -210,9 +212,9 @@ use the montage we created.
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/examples/convert_ieeg_to_bids.py:110: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+    /home/circleci/project/examples/convert_ieeg_to_bids.py:113: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
       raw.set_montage(montage, on_missing='warn')
-    /home/circleci/project/examples/convert_ieeg_to_bids.py:110: RuntimeWarning: DigMontage is only a subset of info. There are 14 channel positions not present in the DigMontage. The required channels are:
+    /home/circleci/project/examples/convert_ieeg_to_bids.py:113: RuntimeWarning: DigMontage is only a subset of info. There are 14 channel positions not present in the DigMontage. The required channels are:
 
     ['BTM1', 'BTM2', 'BTM3', 'BTM4', 'BTM5', 'BTM6', 'BTP1', 'BTP2', 'BTP3', 'BTP4', 'BTP5', 'BTP6', 'EKGL', 'EKGR'].
 
@@ -223,11 +225,11 @@ use the montage we created.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-114
+.. GENERATED FROM PYTHON SOURCE LINES 116-117
 
 Let us confirm what our channel coordinates look like.
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-127
+.. GENERATED FROM PYTHON SOURCE LINES 117-130
 
 .. code-block:: default
 
@@ -268,14 +270,34 @@ Let us confirm what our channel coordinates look like.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-132
+.. GENERATED FROM PYTHON SOURCE LINES 131-150
+
+BIDS vs MNE-Python Coordinate Systems
+-------------------------------------
+
+BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
+`appendix VIII`_ of the BIDS specification.
+However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
+these coordinate systems (yet).
+
+MNE-Python has a few tutorials on this topic:
+
+  - `background on FreeSurfer`_
+  - `MNE-Python coordinate frames`_
+
+Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which
+corresponds to the ``fsaverage`` BIDS coordinate system. All other coordinate
+frames in MNE-Python if written with :func:`mne_bids.write_raw_bids` are
+written with coordinate system ``'Other'``. Note, then we suggest using
+:func:`mne_bids.update_sidecar_json` to update the sidecar
+``*_coordsystem.json`` file to add additional information.
+
+.. GENERATED FROM PYTHON SOURCE LINES 152-169
 
 Step 2: Formatting as BIDS
 --------------------------
 
 Now, let us format the `Raw` object into BIDS.
-
-.. GENERATED FROM PYTHON SOURCE LINES 134-146
 
 With this step, we have everything to start a new BIDS directory using
 our data. To do that, we can use :func:`write_raw_bids`
@@ -290,7 +312,7 @@ which are however optional. The required inputs are:
 
 ... as you can see in the docstring:
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-148
+.. GENERATED FROM PYTHON SOURCE LINES 169-171
 
 .. code-block:: default
 
@@ -476,19 +498,20 @@ which are however optional. The required inputs are:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-151
+.. GENERATED FROM PYTHON SOURCE LINES 172-173
 
-Let us initialize some of the necessary data for the subject
-There is a subject, and specific task for the dataset.
+Let us initialize some of the necessary data for the subject.
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-160
+.. GENERATED FROM PYTHON SOURCE LINES 173-184
 
 .. code-block:: default
 
+
+    # There is a subject, and specific task for the dataset.
     subject_id = '001'  # zero padding to account for >100 subjects in this dataset
     task = 'testresteyes'
 
-    # get MNE directory w/ example data
+    # get MNE-Python directory w/ example data
     mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
     # There is the root directory for where we will write our data.
@@ -501,7 +524,7 @@ There is a subject, and specific task for the dataset.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-166
+.. GENERATED FROM PYTHON SOURCE LINES 185-190
 
 To ensure the output path doesn't contain any leftover files from previous
 tests and example runs, we simply delete it.
@@ -509,7 +532,7 @@ tests and example runs, we simply delete it.
 .. warning:: Do not delete directories that may contain important data!
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-170
+.. GENERATED FROM PYTHON SOURCE LINES 190-194
 
 .. code-block:: default
 
@@ -524,15 +547,16 @@ tests and example runs, we simply delete it.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-176
+.. GENERATED FROM PYTHON SOURCE LINES 195-201
 
 Now we just need to specify a few iEEG details to make things work:
-We need the basename of the dataset. In addition, write_raw_bids
-requires a `filenames` of the Raw object to be non-empty, so since we
+We need the basename of the dataset. In addition, :func:`write_raw_bids`
+requires the ``.filenames`` attribute of the Raw object to be non-empty,
+so since we
 initialized the dataset from an array, we need to do a hack where we
 temporarily save the data to disc before reading it back in.
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-185
+.. GENERATED FROM PYTHON SOURCE LINES 201-210
 
 .. code-block:: default
 
@@ -682,12 +706,12 @@ temporarily save the data to disc before reading it back in.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-188
+.. GENERATED FROM PYTHON SOURCE LINES 211-213
 
 Step 3: Check and compare with standard
 ---------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-192
+.. GENERATED FROM PYTHON SOURCE LINES 213-217
 
 .. code-block:: default
 
@@ -723,7 +747,7 @@ Step 3: Check and compare with standard
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 193-198
+.. GENERATED FROM PYTHON SOURCE LINES 218-223
 
 Step 4: Cite mne-bids
 ---------------------
@@ -731,7 +755,7 @@ We can see that the appropriate citations are already written in the README.
 If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 there.
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-203
+.. GENERATED FROM PYTHON SOURCE LINES 223-228
 
 .. code-block:: default
 
@@ -761,20 +785,20 @@ there.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-222
+.. GENERATED FROM PYTHON SOURCE LINES 229-247
 
 MNE-BIDS has created a suitable directory structure for us, and among other
-meta data files, it started an `events.tsv` and `channels.tsv` and made an
-initial `dataset_description.json` on top!
+meta data files, it started an ``events.tsv``` and ``channels.tsv`` file,
+and created an initial ``dataset_description.json`` file on top!
 
 Now it's time to manually check the BIDS directory and the meta files to add
 all the information that MNE-BIDS could not infer. For instance, you must
-describe iEEGReference and iEEGGround yourself. It's easy to find these by
-searching for "n/a" in the sidecar files.
+describe ``iEEGReference`` and ``iEEGGround`` yourself.
+It's easy to find these by searching for ``"n/a"`` in the sidecar files.
 
-`$ grep -i 'n/a' <bids_root>`
+``$ grep -i 'n/a' <bids_root>```
 
-Remember that there is a convenient javascript tool to validate all your BIDS
+Remember that there is a convenient JavaScript tool to validate all your BIDS
 directories called the "BIDS-validator", available as a web version and a
 command line tool:
 
@@ -782,7 +806,7 @@ Web version: https://bids-standard.github.io/bids-validator/
 
 Command line tool: https://www.npmjs.com/package/bids-validator
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-229
+.. GENERATED FROM PYTHON SOURCE LINES 249-254
 
 Step 5: Plot output channels and check that they match!
 -------------------------------------------------------
@@ -790,7 +814,7 @@ Step 5: Plot output channels and check that they match!
 Now we have written our BIDS directory. We can use
 :func:`read_raw_bids` to read in the data.
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-248
+.. GENERATED FROM PYTHON SOURCE LINES 254-273
 
 .. code-block:: default
 
@@ -859,7 +883,7 @@ Now we have written our BIDS directory. We can use
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.625 seconds)
+   **Total running time of the script:** ( 0 minutes  3.629 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_ieeg_to_bids.py:
