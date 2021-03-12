@@ -4,7 +4,6 @@
 # License: BSD (3-clause)
 
 
-import os.path as op
 from collections import OrderedDict as odict
 
 # This is here to handle mne-python <0.20
@@ -19,10 +18,8 @@ from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine_rows, _drop,
                                   _contains_row, _tsv_to_str)
 import pytest
 
-from mne.utils import _TempDir
 
-
-def test_tsv_handler():
+def test_tsv_handler(tmpdir):
     """Test the TSV handling."""
     # create some dummy data
     d = odict(a=[1, 2, 3, 4], b=['five', 'six', 'seven', 'eight'])
@@ -39,8 +36,7 @@ def test_tsv_handler():
     assert 'nine' not in d['b']
     print(_tsv_to_str(d))
 
-    tempdir = _TempDir()
-    d_path = op.join(tempdir, 'output.tsv')
+    d_path = tmpdir / 'output.tsv'
 
     # write the data to an output tsv file
     _to_tsv(d, d_path)

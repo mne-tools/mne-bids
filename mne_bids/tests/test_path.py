@@ -21,7 +21,6 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import _TempDir
 from mne.io import anonymize_info
 
 from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
@@ -173,37 +172,34 @@ def test_print_dir_tree(capsys):
         print_dir_tree(test_dir, return_str='yes')
 
 
-def test_make_folders():
+def test_make_folders(tmpdir):
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
-    bids_root = _TempDir()
-    bids_path = BIDSPath(subject='hi', session='foo',
-                         datatype='eeg', root=bids_root)
+    bids_path = BIDSPath(subject='01', session='foo',
+                         datatype='eeg', root=str(tmpdir))
     bids_path.mkdir().directory
-    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'eeg'))
+    assert op.isdir(tmpdir / 'sub-01' / 'ses-foo' / 'eeg')
 
     # If we remove a kwarg the folder shouldn't be created
-    bids_root = _TempDir()
-    bids_path = BIDSPath(subject='hi', datatype='eeg',
-                         root=bids_root)
+    bids_path = BIDSPath(subject='02', datatype='eeg',
+                         root=tmpdir)
     bids_path.mkdir().directory
-    assert op.isdir(op.join(bids_root, 'sub-hi', 'eeg'))
+    assert op.isdir(tmpdir / 'sub-02' / 'eeg')
 
     # Check if a pathlib.Path bids_root works.
-    bids_root = Path(_TempDir())
-    bids_path = BIDSPath(subject='hi', session='foo',
-                         datatype='eeg', root=bids_root)
+    bids_path = BIDSPath(subject='03', session='foo',
+                         datatype='eeg', root=Path(tmpdir))
     bids_path.mkdir().directory
-    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'eeg'))
+    assert op.isdir(tmpdir / 'sub-03' / 'ses-foo' / 'eeg')
 
     # Check if bids_root=None creates folders in the current working directory
-    bids_root = _TempDir()
+    bids_root = tmpdir.mkdir("tmp")
     curr_dir = os.getcwd()
     os.chdir(bids_root)
-    bids_path = BIDSPath(subject='hi', session='foo',
+    bids_path = BIDSPath(subject='04', session='foo',
                          datatype='eeg')
     bids_path.mkdir().directory
-    assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'eeg'))
+    assert op.isdir(op.join(os.getcwd(), 'sub-04', 'ses-foo', 'eeg'))
     os.chdir(curr_dir)
 
 
@@ -506,10 +502,33 @@ def test_bids_path(return_bids_test_dir):
     suffix = 'meeg'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix=suffix, check=False)
+
     # also inherits error check from instantiation
     # always error check datatype
     with pytest.raises(ValueError, match='datatype .* is not valid'):
         bids_path.copy().update(datatype=error_kind)
+
+    # does not error check on space if check=False ...
+    BIDSPath(subject=subject_id, space='foo', suffix='eeg', check=False)
+
+    # ... but raises an error with check=True
+    match = r'space \(foo\) is not valid for datatype \(eeg\)'
+    with pytest.raises(ValueError, match=match):
+        BIDSPath(subject=subject_id, space='foo', suffix='eeg')
+
+    # error check on space for datatypes that do not support space
+    match = 'space entity is not valid for datatype anat'
+    with pytest.raises(ValueError, match=match):
+        BIDSPath(subject=subject_id, space='foo', datatype='anat')
+
+    # error check on space if datatype is None
+    bids_path_tmpcopy = bids_path.copy().update(suffix='meeg')
+    match = 'You must define datatype if you want to use space'
+    with pytest.raises(ValueError, match=match):
+        bids_path_tmpcopy.update(space='CapTrak', check=True)
+
+    # making a valid space update works
+    bids_path_tmpcopy.update(suffix='eeg', space="CapTrak", check=True)
 
     # suffix won't be error checks if initial check was false
     bids_path.update(suffix=suffix)
@@ -605,7 +624,6 @@ def test_make_filenames():
     ])
 def test_filter_fnames(entities, expected_n_matches):
     """Test filtering filenames based on BIDS entities works."""
-
     fnames = ('sub-01_task-audio_meg.fif',
               'sub-01_ses-05_task-audio_meg.fif',
               'sub-02_task-visual_eeg.vhdr',
@@ -702,13 +720,13 @@ def test_match(return_bids_test_dir):
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_find_empty_room(return_bids_test_dir):
+def test_find_empty_room(return_bids_test_dir, tmpdir):
     """Test reading of empty room data."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
-    bids_root = _TempDir()
-    tmp_dir = _TempDir()
+    bids_root = tmpdir.mkdir("bids")
+    tmp_dir = tmpdir.mkdir("tmp")
 
     raw = _read_raw_fif(raw_fname)
     bids_path = BIDSPath(subject='01', session='01',
@@ -771,13 +789,13 @@ def test_find_empty_room(return_bids_test_dir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_find_emptyroom_ties():
+def test_find_emptyroom_ties(tmpdir):
     """Test that we receive a warning on a date tie."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
-    bids_root = _TempDir()
+    bids_root = str(tmpdir)
     bids_path.update(root=bids_root)
     session = '20010101'
     er_dir_path = BIDSPath(subject='emptyroom', session=session,
@@ -809,13 +827,13 @@ def test_find_emptyroom_ties():
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_find_emptyroom_no_meas_date():
+def test_find_emptyroom_no_meas_date(tmpdir):
     """Test that we warn if measurement date can be read or inferred."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
-    bids_root = _TempDir()
+    bids_root = str(tmpdir)
     bids_path.update(root=bids_root)
     er_session = 'mysession'
     er_meas_date = None

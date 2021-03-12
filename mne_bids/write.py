@@ -15,7 +15,6 @@ import shutil
 from collections import defaultdict, OrderedDict
 
 import numpy as np
-from numpy.testing import assert_array_equal
 from scipy import linalg
 import mne
 from mne.transforms import (_get_trans, apply_trans, rotation, translation)
@@ -1146,12 +1145,25 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise ValueError(f'Unrecognized file format {ext}')
 
     raw_orig = reader[ext](**raw._init_kwargs)
-    assert_array_equal(raw.times, raw_orig.times,
-                       "raw.times should not have changed since reading"
-                       " in from the file. It may have been cropped.")
+    if not np.array_equal(raw.times, raw_orig.times):
+        if len(raw.times) == len(raw_orig.times):
+            msg = ("raw.times has changed since reading from disk, but "
+                   "write_raw_bids() doesn't allow writing modified data.")
+        else:
+            msg = ("The raw data you want to write contains {comp} time "
+                   "points than the raw data on disk. It is possible that you "
+                   "{guess} your data, which write_raw_bids() won't accept.")
+            if len(raw.times) < len(raw_orig.times):
+                msg = msg.format(comp='fewer', guess='cropped')
+            elif len(raw.times) > len(raw_orig.times):
+                msg = msg.format(comp='more', guess='concatenated')
+
+        msg += (' If you believe you have a valid use case that should be '
+                'supported, please reach out to the developers at '
+                'https://github.com/mne-tools/mne-bids/issues')
+        raise ValueError(msg)
 
     datatype = _handle_datatype(raw)
-
     bids_path = bids_path.copy()
     bids_path = bids_path.update(
         datatype=datatype, suffix=datatype, extension=ext)
