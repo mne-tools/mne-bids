@@ -33,7 +33,12 @@ Compared to EEG data, the main differences are within the
 coord_system and electrodes files.
 For more information on these files,
 refer to the iEEG-BIDS specification.
-"""
+
+.. _appendix VIII: https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
+.. _background on FreeSurfer: https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne
+.. _MNE-Python coordinate frames: https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html
+
+"""  # noqa: E501
 
 # Authors: Adam Li <adam2392@gmail.com>
 # License: BSD (3-clause)
