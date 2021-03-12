@@ -144,6 +144,63 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'space': 'space', 'rec': 'recording',
                                'split': 'split', 'suffix': 'suffix'}
 
+coordsys_standard_template = [
+    'ICBM452AirSpace',
+    'ICBM452Warp5Space',
+    'IXI549Space',
+    'fsaverage',
+    'fsaverageSym',
+    'fsLR',
+    'MNIColin27',
+    'MNI152Lin',
+    'MNI152NLin2009aSym',
+    'MNI152NLin2009bSym',
+    'MNI152NLin2009cSym',
+    'MNI152NLin2009aAsym',
+    'MNI152NLin2009bAsym',
+    'MNI152NLin2009cAsym',
+    'MNI152NLin6Sym',
+    'MNI152NLin6ASym',
+    'MNI305',
+    'NIHPD',
+    'OASIS30AntsOASISAnts',
+    'OASIS30Atropos',
+    'Talairach',
+    'UNCInfant',
+]
+
+coordsys_standard_template_deprecated = [
+    'fsaverage3',
+    'fsaverage4',
+    'fsaverage5',
+    'fsaverage6',
+    'fsaveragesym',
+    'UNCInfant0V21',
+    'UNCInfant1V21',
+    'UNCInfant2V21',
+    'UNCInfant0V22',
+    'UNCInfant1V22',
+    'UNCInfant2V22',
+    'UNCInfant0V23',
+    'UNCInfant1V23',
+    'UNCInfant2V23',
+]
+
+coordsys_meg = ['CTF', 'ElektaNeuromag', '4DBti', 'KitYokogawa', 'ChietiItab']
+coordsys_eeg = ['CapTrak']
+coordsys_ieeg = ['Pixels', 'ACPC']
+coordsys_wildcard = ['Other']
+coordsys_shared = (coordsys_standard_template +
+                   coordsys_standard_template_deprecated +
+                   coordsys_wildcard)
+
+ALLOWED_SPACES = dict()
+ALLOWED_SPACES['meg'] = coordsys_shared + coordsys_meg + coordsys_eeg
+ALLOWED_SPACES['eeg'] = coordsys_shared + coordsys_meg + coordsys_eeg
+ALLOWED_SPACES['ieeg'] = coordsys_shared + coordsys_ieeg
+ALLOWED_SPACES['anat'] = None
+ALLOWED_SPACES['beh'] = None
+
 # See: https://bids-specification.readthedocs.io/en/latest/99-appendices/04-entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
 ENTITY_VALUE_TYPE = {
     'subject': 'label',
