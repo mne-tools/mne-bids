@@ -157,7 +157,11 @@ example, electrode location TSV files do not need a “task” field.</p>
 </dd>
 <dt><strong>recording</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The recording name for this item. Corresponds to “rec”.</p>
 </dd>
-<dt><strong>space</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The coordinate space for an anatomical file. Corresponds to “space”.</p>
+<dt><strong>space</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The coordinate space for an anatomical or sensor position
+files (e.g., <code class="docutils literal notranslate"><span class="pre">*_electrodes.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">*_markers.mrk</span></code>).
+Corresponds to “space”.
+Note that valid values for <code class="docutils literal notranslate"><span class="pre">space</span></code> must come from a list
+of BIDS keywords as described in the BIDS specification.</p>
 </dd>
 <dt><strong>split</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.
 Corresponds to “split”.</p>
@@ -428,16 +432,19 @@ numbers when passed in. For example, if <code class="docutils literal notranslat
 become <code class="docutils literal notranslate"><span class="pre">run='01'</span></code>.</p>
 <p>Also performs error checks on various entities to
 adhere to the BIDS specification. Specifically:
-- <code class="docutils literal notranslate"><span class="pre">suffix</span></code> should be one of: <code class="docutils literal notranslate"><span class="pre">anat</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">meg</span></code>
+- <code class="docutils literal notranslate"><span class="pre">datatype</span></code> should be one of: <code class="docutils literal notranslate"><span class="pre">anat</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">meg</span></code>
 - <code class="docutils literal notranslate"><span class="pre">extension</span></code> should be one of the accepted file
 extensions in the file path: <code class="docutils literal notranslate"><span class="pre">.con</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqd</span></code>, <code class="docutils literal notranslate"><span class="pre">.fif</span></code>,
 <code class="docutils literal notranslate"><span class="pre">.pdf</span></code>, <code class="docutils literal notranslate"><span class="pre">.ds</span></code>, <code class="docutils literal notranslate"><span class="pre">.vhdr</span></code>, <code class="docutils literal notranslate"><span class="pre">.edf</span></code>, <code class="docutils literal notranslate"><span class="pre">.bdf</span></code>, <code class="docutils literal notranslate"><span class="pre">.set</span></code>,
 <code class="docutils literal notranslate"><span class="pre">.edf</span></code>, <code class="docutils literal notranslate"><span class="pre">.set</span></code>, <code class="docutils literal notranslate"><span class="pre">.mef</span></code>, <code class="docutils literal notranslate"><span class="pre">.nwb</span></code>
-- <code class="docutils literal notranslate"><span class="pre">suffix</span></code> should be one acceptable file suffixes in: <code class="docutils literal notranslate"><span class="pre">meg</span></code>,
+- <code class="docutils literal notranslate"><span class="pre">suffix</span></code> should be one of the acceptable file suffixes in: <code class="docutils literal notranslate"><span class="pre">meg</span></code>,
 <code class="docutils literal notranslate"><span class="pre">markers</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">T1w</span></code>,
 <code class="docutils literal notranslate"><span class="pre">participants</span></code>, <code class="docutils literal notranslate"><span class="pre">scans</span></code>, <code class="docutils literal notranslate"><span class="pre">electrodes</span></code>, <code class="docutils literal notranslate"><span class="pre">channels</span></code>,
 <code class="docutils literal notranslate"><span class="pre">coordsystem</span></code>, <code class="docutils literal notranslate"><span class="pre">events</span></code>, <code class="docutils literal notranslate"><span class="pre">headshape</span></code>, <code class="docutils literal notranslate"><span class="pre">digitizer</span></code>,
-<code class="docutils literal notranslate"><span class="pre">beh</span></code>, <code class="docutils literal notranslate"><span class="pre">physio</span></code>, <code class="docutils literal notranslate"><span class="pre">stim</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">beh</span></code>, <code class="docutils literal notranslate"><span class="pre">physio</span></code>, <code class="docutils literal notranslate"><span class="pre">stim</span></code>
+- Depending on the modality of the data (EEG, MEG, iEEG),
+<code class="docutils literal notranslate"><span class="pre">space</span></code> should be a valid string according to Appendix VIII
+in the BIDS specification.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -546,7 +553,7 @@ or updates for ‘root’ or ‘datatype’.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-09.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
     </p>
   </div>

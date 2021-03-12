@@ -151,6 +151,10 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
 <li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
+<li><p><a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dieloz">Diego Lozano-Soldevilla</a></p></li>
+<li><p><a class="reference external" href="https://github.com/eort">Eduard Ort</a></p></li>
+<li><p><a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a></p></li>
 </ul>
 </div>
 <div class="section" id="detailed-list-of-changes">
@@ -162,6 +166,7 @@
 <li><p>When reading data where the same event name or trial type refers to different event or trigger values, we will now create a hierarchical event name in the form of <code class="docutils literal notranslate"><span class="pre">trial_type/value</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">stimulus/110</span></code>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/688">#688</a>)</p></li>
 <li><p>When reading data via <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a>, the channel names specified in the BIDS <code class="docutils literal notranslate"><span class="pre">*_channels.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">*_electrodes.tsv</span></code> files now always take precedence (and do not need to match) the channel names stored in the raw files anymore, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/691">#691</a>, <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/704">#704</a>)</p></li>
 <li><p>More detailed error messages when trying to write modified data via <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/719">#719</a>)</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">check=True</span></code>, <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> now checks the <code class="docutils literal notranslate"><span class="pre">space</span></code> entity to be valid according to BIDS specification Appendix VIII, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/724">#724</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="api-changes">
@@ -209,7 +214,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-09.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
     </p>
   </div>

@@ -91,6 +91,15 @@ We are importing everything we need for this example:
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /home/circleci/.local/lib/python3.8/site-packages/nilearn/datasets/__init__.py:87: FutureWarning: Fetchers from the nilearn.datasets module will be updated in version 0.9 to return python strings instead of bytes and Pandas dataframes instead of Numpy arrays.
+      warn("Fetchers from the nilearn.datasets module will be "
+
 
 
 
@@ -1070,7 +1079,7 @@ Let's now pass it in voxel coordinates
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  1.096 seconds)
+   **Total running time of the script:** ( 1 minutes  52.303 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
