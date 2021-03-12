@@ -39,7 +39,7 @@ Enhancements
 - Some datasets out in the real world have a non-standard ``stim_type`` instead of a ``trial_type`` column in ``*_events.tsv``. :func:`mne_bids.read_raw_bids` now makes use of this column, and emits a warning, encouraging users to rename it, by `Richard Höchenberger`_ (:gh:`680`)
 - When reading data where the same event name or trial type refers to different event or trigger values, we will now create a hierarchical event name in the form of ``trial_type/value``, e.g. ``stimulus/110``, by `Richard Höchenberger`_ (:gh:`688`)
 - When reading data via :func:`mne_bids.read_raw_bids`, the channel names specified in the BIDS ``*_channels.tsv`` and ``*_electrodes.tsv`` files now always take precedence (and do not need to match) the channel names stored in the raw files anymore, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`691`, :gh:`704`)
-- Improve the ``convert ieeg to BIDS`` tutorial to include a note on how BIDS and MNE-Python coordinate frames are handled, by `Adam Li`_ (:gh:`717`)
+- Improve the ``Convert iEEG data to BIDS`` tutorial to include a note on how BIDS and MNE-Python coordinate frames are handled, by `Adam Li`_ (:gh:`717`)
 - More detailed error messages when trying to write modified data via :func:`mne_bids.write_raw_bids`, by `Richard Höchenberger`_ (:gh:`719`)
 - If ``check=True``, :class:`mne_bids.BIDSPath` now checks the ``space`` entity to be valid according to BIDS specification Appendix VIII, by `Stefan Appelhoff`_ (:gh:`724`)
 
