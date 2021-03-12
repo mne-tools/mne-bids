@@ -135,8 +135,8 @@ pprint([x for x in zip(ch_names, pos)])
 # these coordinate systems (yet).
 #
 # MNE-Python has a few tutorials on this topic:
-#   - `background on FreeSurfer <https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne>`_  # noqa
-#   - `MNE-Python coordinate frames <https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html>`_  # noqa
+#   - `background on FreeSurfer`_
+#   - `MNE-Python coordinate frames`_
 #
 # Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which
 # corresponds to the ``fsaverage`` BIDS coordinate system. All other coordinate
