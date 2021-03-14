@@ -127,8 +127,10 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations,
     else:
         flat_chans = []
 
+    show_options = bids_path.datatype == 'meg'
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-                   highpass=l_freq, lowpass=h_freq, show_options=True,
+                   highpass=l_freq, lowpass=h_freq,
+                   show_options=show_options,
                    block=False, show=False, verbose='warning')
 
     # Add our own event handlers so that when the MNE Raw Browser is being
