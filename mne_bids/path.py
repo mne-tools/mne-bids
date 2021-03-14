@@ -577,7 +577,7 @@ class BIDSPath(object):
 
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
-                val = Path(val)
+                val = Path(val).expanduser()
             setattr(self, key, val)
 
         # infer datatype if suffix is uniquely the datatype

@@ -559,6 +559,13 @@ def test_bids_path(return_bids_test_dir):
     bids_path.update(split=1)
     assert bids_path.basename == 'sub-01_ses-02_task-03_split-01_ieeg.mat'
 
+    # test home dir expansion
+    bids_path = BIDSPath(root='~/foo')
+    assert '~/foo' not in str(bids_path.root)
+    # explicitly test update() method too
+    bids_path.update(root='~/foo')
+    assert '~/foo' not in str(bids_path.root)
+
 
 def test_make_filenames():
     """Test that we create filenames according to the BIDS spec."""
