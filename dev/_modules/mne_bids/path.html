@@ -698,7 +698,7 @@
 
             <span class="c1"># set entity value, ensuring `root` is a Path</span>
             <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
-                <span class="n">val</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
         <span class="c1"># infer datatype if suffix is uniquely the datatype</span>
@@ -1560,7 +1560,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-12.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-15.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
     </p>
   </div>
