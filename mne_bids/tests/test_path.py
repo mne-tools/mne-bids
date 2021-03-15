@@ -362,18 +362,7 @@ def test_bids_path_inference(return_bids_test_dir):
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, acquisition=acq,
         task=task, root=bids_root)
-    with pytest.raises(RuntimeError, match='Found more than one'):
-        bids_path.fpath
-
-    # # can't locate a file, but the basename should work
-    # bids_path = BIDSPath(
-    #     subject=subject_id, session=session_id, acquisition=acq,
-    #     task=task, run='10', root=bids_root)
-    # with pytest.warns(RuntimeWarning, match='Could not locate'):
-    #     fpath = bids_path.fpath
-    #     assert str(fpath) == op.join(bids_root, f'sub-{subject_id}',
-    #                                  f'ses-{session_id}',
-    #                                  bids_path.basename)
+    assert bids_path.fpath == f'{bids_root}/sub-{subject_id}/ses-{session_id}/sub-{subject_id}_ses-{session_id}_task-{task}_acq-{acq}'
 
     # shouldn't error out when there is no uncertainty
     channels_fname = BIDSPath(subject=subject_id, session=session_id,

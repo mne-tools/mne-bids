@@ -420,44 +420,7 @@ class BIDSPath(object):
             bids_fpath = op.join(data_path,
                                  op.splitext(self.basename)[0])
         else:
-            # if suffix and/or extension is missing, and root is
-            # not None, then BIDSPath will infer the dataset
-            # else, return the relative path with the basename
-
-            # get matching BIDS paths inside the bids root
-            matching_paths = \
-                _get_matching_bidspaths_from_filesystem(self)
-
-            # FIXME This will break
-            # FIXME e.g. with FIFF data split across multiple files.
-            # if extension is not specified and no unique file path
-            # return filepath of the actual dataset for MEG/EEG/iEEG data
-            if self.suffix is None or self.suffix in ALLOWED_DATATYPES:
-                # now only use valid datatype extension
-                valid_exts = sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
-                matching_paths = [p for p in matching_paths
-                                  if _parse_ext(p)[1] in valid_exts]
-
-            if (self.split is None and self.suffix is None and
-                    self.extension is None and
-                    (not matching_paths or
-                     '_split-' in matching_paths[0])):
-                # try finding FIF split files (only first one)
-                this_self = self.copy().update(split='01')
-                matching_paths = \
-                    _get_matching_bidspaths_from_filesystem(this_self)
-
-            if not matching_paths:  # found no matching paths
-                bids_fpath = op.join(data_path, self.basename)
-            elif len(matching_paths) > 1:
-                msg = ('Found more than one matching data file for the '
-                       'requested recording. Cannot proceed due to the '
-                       'ambiguity. This is likely a problem with your '
-                       'BIDS dataset. Please run the BIDS validator on '
-                       'your data.')
-                raise RuntimeError(msg)
-            else:
-                bids_fpath = matching_paths[0]
+            bids_fpath = op.join(data_path, self.basename)
 
         bids_fpath = Path(bids_fpath)
         return bids_fpath
