@@ -268,12 +268,12 @@ class BIDSPath(object):
     BIDS entities are separated generally with a ``"_"`` character, while
     entity key/value pairs are separated with a ``"-"`` character (e.g.
     ``subject``, ``session``, ``task``, etc.). There are checks performed
-    to make sure that there are no ``'-', '_', '/'`` characters associated
-    with any of these entities.
+    to make sure that there are no ``'-'``, ``'_'``, or ``'/'`` characters
+    associated with any of these entities.
 
     To represent a file such as the ``dataset_description.json`` file,
-    one can set ``check=False``, and pass in ``suffix='dataset_description'`
-    and `extension='.json'` to the BIDSPath.
+    one can set ``check=False``, and pass in ``suffix='dataset_description'``
+    and ``extension='.json'`` to the BIDSPath.
     """
 
     def __init__(self, subject=None, session=None,
