@@ -698,6 +698,21 @@ def test_fif_ias(tmpdir):
     raw = read_raw_bids(data_path)
     assert raw.info['chs'][0]['kind'] == FIFF.FIFFV_IAS_CH
 
+def test_fif_exci(tmpdir):
+    """Test writing FIF files with excitation channel."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    raw.set_channel_types({raw.ch_names[0]: 'exci'})
+
+    data_path = BIDSPath(subject='sample', root=tmpdir)
+
+    write_raw_bids(raw, data_path)
+    raw = read_raw_bids(data_path)
+    assert raw.info['chs'][0]['kind'] == FIFF.FIFFV_EXCI_CH
+
 
 def test_kit(_bids_validate, tmpdir):
     """Test functionality of the write_raw_bids conversion for KIT data."""
