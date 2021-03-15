@@ -698,6 +698,7 @@ def test_fif_ias(tmpdir):
     raw = read_raw_bids(data_path)
     assert raw.info['chs'][0]['kind'] == FIFF.FIFFV_IAS_CH
 
+
 def test_fif_exci(tmpdir):
     """Test writing FIF files with excitation channel."""
     data_path = testing.data_path()
