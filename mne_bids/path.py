@@ -583,13 +583,15 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in kwargs.items():
-            # suffix may skip a check if check=False to allow things like
-            # dataset_description.json
-            if key == 'suffix' and not self.check:
-                continue
+
             # check if there are any characters not allowed
             if val is not None and key != 'root':
-                _check_key_val(key, val)
+                if key == 'suffix' and not self.check:
+                    # suffix may skip a check if check=False to allow
+                    # things like "dataset_description.json"
+                    pass
+                else:
+                    _check_key_val(key, val)
 
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
