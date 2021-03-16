@@ -262,6 +262,18 @@ class BIDSPath(object):
     /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
     >>> print(new_bids_path.directory)
     /bids_dataset/sub-test2/ses-one/ieeg/
+
+    Notes
+    -----
+    BIDS entities are separated generally with a ``"_"`` character, while
+    entity key/value pairs are separated with a ``"-"`` character (e.g.
+    ``subject``, ``session``, ``task``, etc.). There are checks performed
+    to make sure that there are no ``'-'``, ``'_'``, or ``'/'`` characters
+    associated with any of these entities.
+
+    To represent a filename such as ``dataset_description.json``,
+    one can set ``check=False``, and pass ``suffix='dataset_description'``
+    and ``extension='.json'``.
     """
 
     def __init__(self, subject=None, session=None,
@@ -571,9 +583,15 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in kwargs.items():
+
             # check if there are any characters not allowed
             if val is not None and key != 'root':
-                _check_key_val(key, val)
+                if key == 'suffix' and not self.check:
+                    # suffix may skip a check if check=False to allow
+                    # things like "dataset_description.json"
+                    pass
+                else:
+                    _check_key_val(key, val)
 
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
