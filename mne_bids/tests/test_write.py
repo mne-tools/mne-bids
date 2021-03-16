@@ -707,7 +707,7 @@ def test_fif_exci(tmpdir):
     raw = _read_raw_fif(raw_fname)
 
     match = r'The unit for channel\(s\) MEG 0113 has changed'
-    with pytest.warns(RuntimeError, match=match):
+    with pytest.warns(RuntimeWarning, match=match):
         raw.set_channel_types({raw.ch_names[0]: 'exci'})
     data_path = BIDSPath(subject='sample', root=tmpdir)
 
