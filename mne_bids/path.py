@@ -271,9 +271,9 @@ class BIDSPath(object):
     to make sure that there are no ``'-'``, ``'_'``, or ``'/'`` characters
     associated with any of these entities.
 
-    To represent a file such as the ``dataset_description.json`` file,
-    one can set ``check=False``, and pass in ``suffix='dataset_description'``
-    and ``extension='.json'`` to the BIDSPath.
+    To represent a filename such as ``dataset_description.json``,
+    one can set ``check=False``, and pass ``suffix='dataset_description'``
+    and ``extension='.json'``.
     """
 
     def __init__(self, subject=None, session=None,
@@ -583,16 +583,13 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in kwargs.items():
-            # XXX: suffix can be overridden with non-BIDS characters
-            # which allows `dataset_description.json` to be represented
-            if key != 'suffix':
-                # check if there are any characters not allowed
-                if val is not None and key != 'root':
-                    _check_key_val(key, val)
-            elif self.check:
-                # check if there are any characters not allowed
-                if val is not None and key != 'root':
-                    _check_key_val(key, val)
+            # suffix may skip a check if check=False to allow things like
+            # dataset_description.json
+            if key == 'suffix' and not self.check:
+                continue
+            # check if there are any characters not allowed
+            if val is not None and key != 'root':
+                _check_key_val(key, val)
 
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
