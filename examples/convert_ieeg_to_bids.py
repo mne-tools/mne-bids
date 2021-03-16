@@ -147,8 +147,7 @@ pprint([x for x in zip(ch_names, pos)])
 # written with coordinate system ``'Other'``. Note, then we suggest using
 # :func:`mne_bids.update_sidecar_json` to update the sidecar
 # ``*_coordsystem.json`` file to add additional information.
-
-###############################################################################
+#
 # Step 2: Formatting as BIDS
 # --------------------------
 #

@@ -942,3 +942,16 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
     Path(bids_path_.meg_crosstalk_fpath).unlink()
     assert bids_path_.meg_crosstalk_fpath is None
+
+
+def test_datasetdescription_with_bidspath(return_bids_test_dir):
+    with pytest.raises(ValueError, match='Unallowed'):
+        bids_path = BIDSPath(
+            root=return_bids_test_dir, suffix='dataset_description',
+            extension='.json')
+
+    bids_path = BIDSPath(
+        root=return_bids_test_dir, suffix='dataset_description',
+        extension='.json', check=False)
+    assert bids_path.fpath.as_posix() == \
+           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
