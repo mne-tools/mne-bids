@@ -707,7 +707,6 @@ def test_match(return_bids_test_dir):
                             suffix='channels', extension='.tsv',
                             datatype='meg')
     paths = bids_path_01.match()
-    print(paths)
     assert len(paths) == 1
     assert paths[0].extension == '.tsv'
     assert paths[0].suffix == 'channels'
@@ -723,6 +722,16 @@ def test_match(return_bids_test_dir):
     assert paths[0].extension == '.tsv'
     assert paths[0].suffix == 'channels'
     assert Path(paths[0]).parent.name == 'meg'
+
+    # Test `check` parameter
+    bids_path_01 = bids_path.copy()
+    bids_path_01.check = False  # Workaround until GH-734 has been resolved
+    bids_path_01.update(session=None, task=None, run=None,
+                        suffix='foo', extension='.eeg')
+    bids_path_01.fpath.touch()
+
+    assert bids_path_01.match(check=True) == []
+    assert bids_path_01.match(check=False)[0].fpath.name == 'sub-01_foo.eeg'
 
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
