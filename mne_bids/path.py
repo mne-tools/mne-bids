@@ -19,7 +19,7 @@ from mne.utils import warn, logger, _validate_type
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
-    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE,
     ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
@@ -427,7 +427,7 @@ class BIDSPath(object):
         # get the inner-most BIDS directory for this file path
         data_path = self.directory
 
-        assert self.root is not None
+        _validate_type(self.root, types=['str', 'path-like'])
 
         # account for MEG data that are directory-based
         # else, all other file paths attempt to match
