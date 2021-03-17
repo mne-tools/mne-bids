@@ -547,6 +547,10 @@ class BIDSPath(object):
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
+        # Update .check attribute
+        if check is not None:
+            self.check = check
+
         for key, val in kwargs.items():
             if key == 'root':
                 _validate_type(val, types=('path-like', None), item_name=key)
@@ -603,9 +607,7 @@ class BIDSPath(object):
                 self.suffix in SUFFIX_TO_DATATYPE:
             self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
-        # Update .check attribute and perform a check of the entities.
-        if check is not None:
-            self.check = check
+        # Perform a check of the entities.
         self._check()
         return self
 
