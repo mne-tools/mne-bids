@@ -950,8 +950,16 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
             root=return_bids_test_dir, suffix='dataset_description',
             extension='.json')
 
+    # initialization should work
     bids_path = BIDSPath(
         root=return_bids_test_dir, suffix='dataset_description',
         extension='.json', check=False)
+    assert bids_path.fpath.as_posix() == \
+           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+
+    # setting it via update should work
+    bids_path = BIDSPath(root=return_bids_test_dir,
+                         extension='.json', check=True)
+    bids_path.update(suffix='dataset_description', check=False)
     assert bids_path.fpath.as_posix() == \
            Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
