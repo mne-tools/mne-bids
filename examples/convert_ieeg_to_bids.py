@@ -23,11 +23,11 @@ data. Specifically, we will follow these steps:
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
 
-    * the sidecar file ``ieeg.json``
-    * ``electrodes.tsv``
-    * ``coordsystem.json``
-    * ``events.tsv``
-    * ``channels.tsv``
+- the sidecar file ``ieeg.json``
+- ``electrodes.tsv``
+- ``coordsystem.json``
+- ``events.tsv``
+- ``channels.tsv``
 
 Compared to EEG data, the main differences are within the
 ``coordsystem.json`` and ``electrodes.tsv`` files.
