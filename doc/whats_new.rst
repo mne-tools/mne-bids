@@ -51,6 +51,7 @@ API changes
 ^^^^^^^^^^^
 
 - Add ``format`` kwarg to :func:`write_raw_bids` that allows users to specify if they want to force conversion to ``BrainVision`` or ``FIF`` file format, by `Adam Li`_ (:gh:`672`)
+- :func:`mne_bids.BIDSPath.fpath` does not infer a full filepath anymore if the ``suffix``, or ``extension`` is missing. It returns the file path defined by the existing entities, by `Adam Li`_ and `Alexander Gramfort`_ (:gh:`721`)
 
 Requirements
 ^^^^^^^^^^^^
