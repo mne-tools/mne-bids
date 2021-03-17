@@ -1,6 +1,6 @@
 numpy>=1.14
 scipy>=1.5.0
-mne>=0.21
+mne>=0.21.2
 nibabel>=2.2
 pybv>=0.4
 pytest
