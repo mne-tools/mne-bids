@@ -60,6 +60,8 @@ jobs:
       run: rm -rf ./*
     - name: Try importing mne_bids
       run: python -c 'import mne_bids; print(mne_bids.__version__)'
+    - name: Try cli mne_bids
+      run: mne_bids --version
     - name: Remove sdist install
       run: pip uninstall -y mne-bids
 
@@ -72,9 +74,11 @@ jobs:
       run: rm -rf ./*
     - name: Try importing mne_bids
       run: python -c 'import mne_bids; print(mne_bids.__version__)'
+    - name: Try cli mne_bids
+      run: mne_bids --version
     - name: Remove wheel install
       run: pip uninstall -y mne-bids
-    
+
     - uses: actions/checkout@v2
     - name: Test extras install
       run: |

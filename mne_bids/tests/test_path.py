@@ -493,10 +493,33 @@ def test_bids_path(return_bids_test_dir):
     suffix = 'meeg'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix=suffix, check=False)
+
     # also inherits error check from instantiation
     # always error check datatype
     with pytest.raises(ValueError, match='datatype .* is not valid'):
         bids_path.copy().update(datatype=error_kind)
+
+    # does not error check on space if check=False ...
+    BIDSPath(subject=subject_id, space='foo', suffix='eeg', check=False)
+
+    # ... but raises an error with check=True
+    match = r'space \(foo\) is not valid for datatype \(eeg\)'
+    with pytest.raises(ValueError, match=match):
+        BIDSPath(subject=subject_id, space='foo', suffix='eeg')
+
+    # error check on space for datatypes that do not support space
+    match = 'space entity is not valid for datatype anat'
+    with pytest.raises(ValueError, match=match):
+        BIDSPath(subject=subject_id, space='foo', datatype='anat')
+
+    # error check on space if datatype is None
+    bids_path_tmpcopy = bids_path.copy().update(suffix='meeg')
+    match = 'You must define datatype if you want to use space'
+    with pytest.raises(ValueError, match=match):
+        bids_path_tmpcopy.update(space='CapTrak', check=True)
+
+    # making a valid space update works
+    bids_path_tmpcopy.update(suffix='eeg', space="CapTrak", check=True)
 
     # suffix won't be error checks if initial check was false
     bids_path.update(suffix=suffix)
@@ -526,6 +549,13 @@ def test_bids_path(return_bids_test_dir):
     # test that split gets properly set
     bids_path.update(split=1)
     assert bids_path.basename == 'sub-01_ses-02_task-03_split-01_ieeg.mat'
+
+    # test home dir expansion
+    bids_path = BIDSPath(root='~/foo')
+    assert '~/foo' not in str(bids_path.root)
+    # explicitly test update() method too
+    bids_path.update(root='~/foo')
+    assert '~/foo' not in str(bids_path.root)
 
 
 def test_make_filenames():
@@ -903,3 +933,24 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
     Path(bids_path_.meg_crosstalk_fpath).unlink()
     assert bids_path_.meg_crosstalk_fpath is None
+
+
+def test_datasetdescription_with_bidspath(return_bids_test_dir):
+    with pytest.raises(ValueError, match='Unallowed'):
+        bids_path = BIDSPath(
+            root=return_bids_test_dir, suffix='dataset_description',
+            extension='.json')
+
+    # initialization should work
+    bids_path = BIDSPath(
+        root=return_bids_test_dir, suffix='dataset_description',
+        extension='.json', check=False)
+    assert bids_path.fpath.as_posix() == \
+           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+
+    # setting it via update should work
+    bids_path = BIDSPath(root=return_bids_test_dir,
+                         extension='.json', check=True)
+    bids_path.update(suffix='dataset_description', check=False)
+    assert bids_path.fpath.as_posix() == \
+           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()

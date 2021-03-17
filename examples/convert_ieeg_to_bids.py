@@ -9,7 +9,7 @@ In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
 
 1. Download some iEEG data from the
-   `MNE-ECoG ex <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
+   `MNE-ECoG example <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
 
 2. Load the data, extract information, and save in a new BIDS directory.
 
@@ -23,25 +23,32 @@ data. Specifically, we will follow these steps:
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
 
-    * sidecar.json
-    * electrodes.tsv
-    * coord_system.json
-    * events.tsv
-    * channels.tsv
+    * the sidecar file ``ieeg.json``
+    * ``electrodes.tsv``
+    * ``coordsystem.json``
+    * ``events.tsv``
+    * ``channels.tsv``
 
 Compared to EEG data, the main differences are within the
-coord_system and electrodes files.
+``coordsystem.json`` and ``electrodes.tsv`` files.
 For more information on these files,
-refer to the iEEG-BIDS specification.
-"""
+refer to the `iEEG part of the BIDS specification`_.
+
+.. _iEEG part of the BIDS specification: https://bids-specification.readthedocs.io/en/latest/04-modality-specific-files/04-intracranial-electroencephalography.html
+.. _appendix VIII: https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
+.. _background on FreeSurfer: https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne
+.. _MNE-Python coordinate frames: https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html
+
+"""  # noqa: E501
 
 # Authors: Adam Li <adam2392@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
 # License: BSD (3-clause)
 
 import os.path as op
 import shutil
 from pprint import pprint
-from collections import OrderedDict
 
 import numpy as np
 
@@ -49,20 +56,15 @@ import mne
 from mne_bids import (write_raw_bids, BIDSPath,
                       read_raw_bids, print_dir_tree)
 
+
 ###############################################################################
 # Step 1: Download the data
 # -------------------------
 #
 # First, we need some data to work with. We will use the
-# data downloaded via MNE-Python's API.
-#
-# `<https://mne.tools/stable/generated/mne.datasets.misc.data_path>`_.
-#
-# Conveniently, there is already a data loading function available with
-# MNE-Python:
-
+# data downloaded via MNE-Python's ``datasets`` API:
+# :func:`mne.datasets.misc.data_path`
 misc_path = mne.datasets.misc.data_path(force_update=True)
-
 
 # The electrode coords data are in the tsv file format
 # which is easily read in using numpy
@@ -71,12 +73,13 @@ data = np.loadtxt(fname, dtype=str, delimiter='\t',
                   comments=None, encoding='utf-8')
 column_names = data[0, :]
 info = data[1:, :]
-electrode_tsv = OrderedDict()
+electrode_tsv = dict()
 for i, name in enumerate(column_names):
     electrode_tsv[name] = info[:, i].tolist()
 
 # load in channel names
 ch_names = electrode_tsv['name']
+
 # load in the xyz coordinates as a float
 elec = np.empty(shape=(len(ch_names), 3))
 for ind, axis in enumerate(['x', 'y', 'z']):
@@ -85,12 +88,12 @@ for ind, axis in enumerate(['x', 'y', 'z']):
 ###############################################################################
 # Now we make a montage stating that the iEEG contacts are in the MNI
 # coordinate system, which corresponds to the `fsaverage` subject in
-# FreeSurfer. For example, one can look at how mne-python deals with iEEG data
+# FreeSurfer. For example, one can look at how MNE-Python deals with iEEG data
 # at `Working with SEEG
-# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_
+# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
 montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
                                         coord_frame='mni_tal')
-print('Created %s channel positions' % len(ch_names))
+print(f'Created {len(ch_names)} channel positions')
 print(dict(zip(ch_names, elec)))
 
 ###############################################################################
@@ -125,12 +128,31 @@ print("The channel coordinates before writing into BIDS: ")
 pprint([x for x in zip(ch_names, pos)])
 
 ###############################################################################
+# BIDS vs MNE-Python Coordinate Systems
+# -------------------------------------
+#
+# BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
+# `appendix VIII`_ of the BIDS specification.
+# However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
+# these coordinate systems (yet).
+#
+# MNE-Python has a few tutorials on this topic:
+#
+#   - `background on FreeSurfer`_
+#   - `MNE-Python coordinate frames`_
+#
+# Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which
+# corresponds to the ``fsaverage`` BIDS coordinate system. All other coordinate
+# frames in MNE-Python if written with :func:`mne_bids.write_raw_bids` are
+# written with coordinate system ``'Other'``. Note, then we suggest using
+# :func:`mne_bids.update_sidecar_json` to update the sidecar
+# ``*_coordsystem.json`` file to add additional information.
+#
 # Step 2: Formatting as BIDS
 # --------------------------
 #
 # Now, let us format the `Raw` object into BIDS.
-
-###############################################################################
+#
 # With this step, we have everything to start a new BIDS directory using
 # our data. To do that, we can use :func:`write_raw_bids`
 # Generally, :func:`write_raw_bids` tries to extract as much
@@ -146,12 +168,13 @@ pprint([x for x in zip(ch_names, pos)])
 print(write_raw_bids.__doc__)
 
 ###############################################################################
-# Let us initialize some of the necessary data for the subject
+# Let us initialize some of the necessary data for the subject.
+
 # There is a subject, and specific task for the dataset.
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'testresteyes'
 
-# get MNE directory w/ example data
+# get MNE-Python directory w/ example data
 mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
 # There is the root directory for where we will write our data.
@@ -169,8 +192,9 @@ if op.exists(bids_root):
 
 ###############################################################################
 # Now we just need to specify a few iEEG details to make things work:
-# We need the basename of the dataset. In addition, write_raw_bids
-# requires a `filenames` of the Raw object to be non-empty, so since we
+# We need the basename of the dataset. In addition, :func:`write_raw_bids`
+# requires the ``.filenames`` attribute of the Raw object to be non-empty,
+# so since we
 # initialized the dataset from an array, we need to do a hack where we
 # temporarily save the data to disc before reading it back in.
 
@@ -202,17 +226,17 @@ print(text)
 
 ###############################################################################
 # MNE-BIDS has created a suitable directory structure for us, and among other
-# meta data files, it started an `events.tsv` and `channels.tsv` and made an
-# initial `dataset_description.json` on top!
+# meta data files, it started an ``events.tsv``` and ``channels.tsv`` file,
+# and created an initial ``dataset_description.json`` file on top!
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
 # all the information that MNE-BIDS could not infer. For instance, you must
-# describe iEEGReference and iEEGGround yourself. It's easy to find these by
-# searching for "n/a" in the sidecar files.
+# describe ``iEEGReference`` and ``iEEGGround`` yourself.
+# It's easy to find these by searching for ``"n/a"`` in the sidecar files.
 #
-# `$ grep -i 'n/a' <bids_root>`
+# ``$ grep -i 'n/a' <bids_root>```
 #
-# Remember that there is a convenient javascript tool to validate all your BIDS
+# Remember that there is a convenient JavaScript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
 # command line tool:
 #

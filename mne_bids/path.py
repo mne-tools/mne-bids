@@ -20,6 +20,7 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             param_regex, _ensure_tuple)
@@ -176,7 +177,11 @@ class BIDSPath(object):
     recording : str | None
         The recording name for this item. Corresponds to "rec".
     space : str | None
-        The coordinate space for an anatomical file. Corresponds to "space".
+        The coordinate space for an anatomical or sensor position
+        files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
+        Corresponds to "space".
+        Note that valid values for ``space`` must come from a list
+        of BIDS keywords as described in the BIDS specification.
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
@@ -187,7 +192,7 @@ class BIDSPath(object):
         'meg', 'markers', 'eeg', 'ieeg', 'T1w',
         'participants', 'scans', 'electrodes', 'coordsystem',
         'channels', 'events', 'headshape', 'digitizer',
-        'behav', 'phsyio', 'stim'
+        'beh', 'physio', 'stim'
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     datatype : str
@@ -258,6 +263,18 @@ class BIDSPath(object):
     /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
     >>> print(new_bids_path.directory)
     /bids_dataset/sub-test2/ses-one/ieeg/
+
+    Notes
+    -----
+    BIDS entities are separated generally with a ``"_"`` character, while
+    entity key/value pairs are separated with a ``"-"`` character (e.g.
+    ``subject``, ``session``, ``task``, etc.). There are checks performed
+    to make sure that there are no ``'-'``, ``'_'``, or ``'/'`` characters
+    associated with any of these entities.
+
+    To represent a filename such as ``dataset_description.json``,
+    one can set ``check=False``, and pass ``suffix='dataset_description'``
+    and ``extension='.json'``.
     """
 
     def __init__(self, subject=None, session=None,
@@ -434,16 +451,19 @@ class BIDSPath(object):
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
-        - ``suffix`` should be one of: ``anat``, ``eeg``, ``ieeg``, ``meg``
+        - ``datatype`` should be one of: ``anat``, ``eeg``, ``ieeg``, ``meg``
         - ``extension`` should be one of the accepted file
         extensions in the file path: ``.con``, ``.sqd``, ``.fif``,
         ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
         ``.edf``, ``.set``, ``.mef``, ``.nwb``
-        - ``suffix`` should be one acceptable file suffixes in: ``meg``,
+        - ``suffix`` should be one of the acceptable file suffixes in: ``meg``,
         ``markers``, ``eeg``, ``ieeg``, ``T1w``,
         ``participants``, ``scans``, ``electrodes``, ``channels``,
         ``coordsystem``, ``events``, ``headshape``, ``digitizer``,
-        ``behav``, ``phsyio``, ``stim``
+        ``beh``, ``physio``, ``stim``
+        - Depending on the modality of the data (EEG, MEG, iEEG),
+        ``space`` should be a valid string according to Appendix VIII
+        in the BIDS specification.
 
         Parameters
         ----------
@@ -480,6 +500,10 @@ class BIDSPath(object):
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
+        # Update .check attribute
+        if check is not None:
+            self.check = check
+
         for key, val in kwargs.items():
             if key == 'root':
                 _validate_type(val, types=('path-like', None), item_name=key)
@@ -512,18 +536,23 @@ class BIDSPath(object):
         extension = kwargs.get('extension')
         if extension is not None:
             if not extension.startswith('.'):
-                extension = f'.{extension}'
-                kwargs['extension'] = extension
+                kwargs['extension'] = f'.{extension}'
 
         # error check entities
         for key, val in kwargs.items():
+
             # check if there are any characters not allowed
             if val is not None and key != 'root':
-                _check_key_val(key, val)
+                if key == 'suffix' and not self.check:
+                    # suffix may skip a check if check=False to allow
+                    # things like "dataset_description.json"
+                    pass
+                else:
+                    _check_key_val(key, val)
 
             # set entity value, ensuring `root` is a Path
-            if key == 'root' and val is not None:
-                val = Path(val)
+            if val is not None and key == 'root':
+                val = Path(val).expanduser()
             setattr(self, key, val)
 
         # infer datatype if suffix is uniquely the datatype
@@ -531,9 +560,7 @@ class BIDSPath(object):
                 self.suffix in SUFFIX_TO_DATATYPE:
             self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
-        # Update .check attribute and perform a check of the entities.
-        if check is not None:
-            self.check = check
+        # perform a check of the entities
         self._check()
         return self
 
@@ -611,6 +638,26 @@ class BIDSPath(object):
                     raise ValueError(f'Extension {extension} is not '
                                      f'allowed. Use one of these extensions '
                                      f'{ALLOWED_FILENAME_EXTENSIONS}.')
+
+            # labels from space entity must come from list (appendix VIII)
+            space = self.space
+            if space is not None:
+                datatype = getattr(self, 'datatype', None)
+                if datatype is None:
+                    raise ValueError('You must define datatype if you want to '
+                                     'use space in your BIDSPath.')
+
+                allowed_spaces_for_dtype = ALLOWED_SPACES.get(datatype, None)
+                if allowed_spaces_for_dtype is None:
+                    raise ValueError(f'space entity is not valid for datatype '
+                                     f'{self.datatype}')
+                elif space not in allowed_spaces_for_dtype:
+                    raise ValueError(f'space ({space}) is not valid for '
+                                     f'datatype ({self.datatype}).\n'
+                                     f'Should be one of '
+                                     f'{allowed_spaces_for_dtype}')
+                else:
+                    pass
 
             # error check suffix
             suffix = self.suffix
