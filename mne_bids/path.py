@@ -560,7 +560,7 @@ class BIDSPath(object):
                 self.suffix in SUFFIX_TO_DATATYPE:
             self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
-        # perform a check of the entities
+        # Perform a check of the entities.
         self._check()
         return self
 
