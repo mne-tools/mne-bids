@@ -283,7 +283,7 @@ class BIDSPath(object):
                  suffix=None, extension=None, datatype=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, suffix,
+                                     recording, space, suffix, root,
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
