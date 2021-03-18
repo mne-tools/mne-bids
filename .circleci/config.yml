@@ -61,7 +61,7 @@ jobs:
   docs-deploy:
     # will only be run on master branch
     docker:
-      - image: node:8.10.0
+      - image: node:8
     steps:
       - checkout
 
@@ -71,7 +71,7 @@ jobs:
       - run:
           name: Install and configure dependencies
           command: |
-            npm install --global gh-pages@2.2
+            npm install --global gh-pages@3.0
             git config --global user.email "circle@mne.com"
             git config --global user.name "Circle Ci"
 
