@@ -61,7 +61,7 @@ jobs:
   docs-deploy:
     # will only be run on master branch
     docker:
-      - image: cimg/node:lts
+      - image: node:8.10.0
     steps:
       - checkout
 
@@ -71,18 +71,18 @@ jobs:
       - run:
           name: Install and configure dependencies
           command: |
-            sudo npm install --global gh-pages@3.0.0
+            npm install --global gh-pages@2.2
             git config --global user.email "circle@mne.com"
             git config --global user.name "Circle Ci"
 
       - add_ssh_keys:
           fingerprints:
-            - "14:5b:67:cd:68:f9:7d:df:90:97:48:c7:0e:e8:d0:0f"
+            - "7f:74:00:17:2b:1a:7d:68:56:68:6b:64:b5:e0:7f:91"
 
       - run:
           # push built docs into the `dev` directory on the `gh-pages` branch
           name: Deploy docs to gh-pages branch
-          command: sudo gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
+          command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
 workflows:
   commit:
