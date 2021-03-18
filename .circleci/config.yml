@@ -81,7 +81,9 @@ jobs:
 
       - run:
           name: Avoid hosts unknown for github
-          command: mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+          command: |
+            cat ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
       - run:
           # push built docs into the `dev` directory on the `gh-pages` branch
