@@ -83,6 +83,7 @@ jobs:
           name: Avoid hosts unknown for github
           command: |
             cat ~/.ssh/config
+            rm ~/.ssh/config
             echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             cat ~/.ssh/config
 
