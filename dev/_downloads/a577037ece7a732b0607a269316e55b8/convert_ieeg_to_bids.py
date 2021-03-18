@@ -23,11 +23,11 @@ data. Specifically, we will follow these steps:
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
 
-    * the sidecar file ``ieeg.json``
-    * ``electrodes.tsv``
-    * ``coordsystem.json``
-    * ``events.tsv``
-    * ``channels.tsv``
+- the sidecar file ``ieeg.json``
+- ``electrodes.tsv``
+- ``coordsystem.json``
+- ``events.tsv``
+- ``channels.tsv``
 
 Compared to EEG data, the main differences are within the
 ``coordsystem.json`` and ``electrodes.tsv`` files.
@@ -138,8 +138,8 @@ pprint([x for x in zip(ch_names, pos)])
 #
 # MNE-Python has a few tutorials on this topic:
 #
-#   - `background on FreeSurfer`_
-#   - `MNE-Python coordinate frames`_
+# - `background on FreeSurfer`_
+# - `MNE-Python coordinate frames`_
 #
 # Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which
 # corresponds to the ``fsaverage`` BIDS coordinate system. All other coordinate
@@ -160,9 +160,9 @@ pprint([x for x in zip(ch_names, pos)])
 # compatible way. :func:`write_raw_bids` takes a bunch of inputs, most of
 # which are however optional. The required inputs are:
 #
-# * :code:`raw`
-# * :code:`bids_basename`
-# * :code:`bids_root`
+# - :code:`raw`
+# - :code:`bids_basename`
+# - :code:`bids_root`
 #
 # ... as you can see in the docstring:
 print(write_raw_bids.__doc__)
