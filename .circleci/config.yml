@@ -77,15 +77,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "7f:74:00:17:2b:1a:7d:68:56:68:6b:64:b5:e0:7f:91"
-
-      - run:
-          name: Avoid hosts unknown for github
-          command: |
-            cat ~/.ssh/config
-            rm ~/.ssh/config
-            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            cat ~/.ssh/config
+            - "14:5b:67:cd:68:f9:7d:df:90:97:48:c7:0e:e8:d0:0f"
 
       - run:
           # push built docs into the `dev` directory on the `gh-pages` branch
