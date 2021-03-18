@@ -80,11 +80,13 @@ jobs:
             - "7f:74:00:17:2b:1a:7d:68:56:68:6b:64:b5:e0:7f:91"
 
       - run:
+          name: Avoid hosts unknown for github
+          command: mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+
+      - run:
           # push built docs into the `dev` directory on the `gh-pages` branch
           name: Deploy docs to gh-pages branch
-          command: |
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            sudo gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
+          command: sudo gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
 workflows:
   commit:
