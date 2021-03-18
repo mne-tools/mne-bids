@@ -82,7 +82,9 @@ jobs:
       - run:
           # push built docs into the `dev` directory on the `gh-pages` branch
           name: Deploy docs to gh-pages branch
-          command: sudo gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
+          command: |
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            sudo gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
 workflows:
   commit:
