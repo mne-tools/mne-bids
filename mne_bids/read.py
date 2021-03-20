@@ -101,10 +101,10 @@ def _read_events(events_data, event_id, raw, verbose=None):
         events = read_events(events_data, verbose=verbose).astype(int)
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
-            raise ValueError('Events must have two dimensions, '
+            raise ValueError(f'Events must have two dimensions, '
                              f'found {events_data.ndim}')
         if events_data.shape[1] != 3:
-            raise ValueError('Events must have second dimension of length 3, '
+            raise ValueError(f'Events must have second dimension of length 3, '
                              f'found {events_data.shape[1]}')
         events = events_data
     else:
@@ -143,6 +143,8 @@ def _read_events(events_data, event_id, raw, verbose=None):
         del id_to_desc_map, annotations, new_annotations
 
     # Now convert the Annotations to events.
+    if event_id is None:
+        event_id = 'auto'
     all_events, all_desc = events_from_annotations(
         raw,
         event_id=event_id,

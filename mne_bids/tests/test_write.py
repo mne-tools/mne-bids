@@ -2081,8 +2081,9 @@ def test_write_meg_crosstalk(_bids_validate, tmpdir):
     'bad_segments',
     [False, 'add', 'only']
 )
+@pytest.mark.parametrize('pass_event_id', [False, True])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_annotations(_bids_validate, bad_segments, tmpdir):
+def test_annotations(_bids_validate, bad_segments,pass_event_id,  tmpdir):
     """Test that Annotations are stored as events."""
     bids_root = tmpdir.mkdir('bids1')
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
@@ -2093,9 +2094,9 @@ def test_annotations(_bids_validate, bad_segments, tmpdir):
                            'sample_audvis_trunc_raw-eve.fif')
 
     events = mne.read_events(events_fname)
-    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
-    event_desc = dict(zip(event_id.values(), event_id.keys()))
+    event_id_orig = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                     'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    event_desc = dict(zip(event_id_orig.values(), event_id_orig.keys()))
 
     raw = _read_raw_fif(raw_fname)
     annotations = mne.annotations_from_events(
@@ -2121,14 +2122,31 @@ def test_annotations(_bids_validate, bad_segments, tmpdir):
         del bad_annots
 
     raw.set_annotations(annotations)
-    write_raw_bids(raw, bids_path, events_data=None, event_id=None,
+
+    if pass_event_id:
+        event_id = event_id_orig.copy()
+        event_id['Auditory/Left'] = 123456  # slightly modify it too
+    else:
+        event_id = None
+    write_raw_bids(raw, bids_path, events_data=None, event_id=event_id,
                    overwrite=False)
 
+    # check Annotations
     annotations_read = read_raw_bids(bids_path=bids_path).annotations
     assert_array_almost_equal(annotations.onset, annotations_read.onset)
     assert_array_almost_equal(annotations.duration, annotations_read.duration)
     assert_array_equal(annotations.description, annotations_read.description)
     assert annotations.orig_time == annotations_read.orig_time
+
+    # check events.tsv
+    events_tsv_fname = (bids_path.copy()
+                        .update(suffix='events', extension='.tsv'))
+
+    if bad_segments != 'only':
+        events_tsv = _from_tsv(events_tsv_fname)
+        if pass_event_id:
+            assert all(v in events_tsv['value'] for v in event_id.values())
+
     _bids_validate(bids_root)
 
 

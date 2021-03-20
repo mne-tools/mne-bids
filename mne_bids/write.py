@@ -1007,11 +1007,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
            parameter.
 
     event_id : dict | None
-        Descriptions of all event IDs, if you passed ``events_data``.
-        The descriptions will be written to the ``trial_type`` column in
-        ``*_events.tsv``. The dictionary keys correspond to the event
-        descriptions and the values to the event IDs. You must specify a
-        description for all event IDs in ``events_data``.
+        The mappings from event descriptions (keys) to IDs (values). This is
+        required if you passed ``events_data``, and optional if
+        ``raw.annotations`` are present. The descriptions will be written to
+        the ``trial_type`` column in ``*_events.tsv``.
+        This parameter must specify mappings between **all** descriptions and
+        event IDs in your data, without any omissions.
+
+        .. versionchanged:: 0.7
+           Allow mappings for :class:`mne.Annotations` too.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1126,9 +1130,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise RuntimeError('You passed events_data, but no event_id '
                            'dictionary. You need to pass both, or neither.')
 
-    if event_id is not None and events_data is None:
+    if (event_id is not None and events_data is None and
+            raw.annotations is None):
         raise RuntimeError('You passed event_id, but no events_data NumPy '
-                           'array. You need to pass both, or neither.')
+                           'array, and raw.annotations is empty too. '
+                           'If you pass event_id, either need to pass '
+                           'events_data, raw.annotations, or both in '
+                           'addition.')
 
     raw = raw.copy()
 
