@@ -43,11 +43,11 @@ Enhancements
 - Improve the ``Convert iEEG data to BIDS`` tutorial to include a note on how BIDS and MNE-Python coordinate frames are handled, by `Adam Li`_ (:gh:`717`)
 - More detailed error messages when trying to write modified data via :func:`mne_bids.write_raw_bids`, by `Richard Höchenberger`_ (:gh:`719`)
 - If ``check=True``, :class:`mne_bids.BIDSPath` now checks the ``space`` entity to be valid according to BIDS specification Appendix VIII, by `Stefan Appelhoff`_ (:gh:`724`)
-- ``BIDSPath.root`` now automatically expands ``~`` to the user's home directory, by `Richard Höchenberger`_ (:gh:`725`)
+- Data types that are currently unsupported by MNE-BIDS (e.g. ``dwi``, ``func``) can now be used in :class:`mne_bids.BIDSPath` by setting ``check=False``, by `Adam Li`_ (:gh:`744`)
 - Arbitrary file names can now be represented as a `BIDSPath`` by passing the entire name as ``suffix`` and setting ``check=False``, by `Adam Li`_ (:gh:`729`)
 - Add support for MNE's flux excitation channel (``exci``), by `Maximilien Chaumon`_ (:gh:`728`)
 - :meth:`mne_bids.BIDSPath.match` gained a new parameter ``check``; when setting ``check=True``, ``match()`` will only return paths that conform to BIDS, by `Richard Höchenberger`_ (:gh:`726`)
-- MNE datatypes that are currently unsupported in MNE-BIDS (e.g. ``dwi``, ``func``) can now be used in :class:`mne_bids.BIDSPath` by setting ``check=False``, by `Adam Li`_ (:gh:`744`)
+- ``BIDSPath.root`` now automatically expands ``~`` to the user's home directory, by `Richard Höchenberger`_ (:gh:`725`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
