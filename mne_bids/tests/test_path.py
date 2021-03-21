@@ -718,7 +718,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          root=bids_root, suffix='meg')
-    write_raw_bids(raw, bids_path, overwrite=True)
+    bids_path = write_raw_bids(raw, bids_path, overwrite=True)
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
@@ -742,7 +742,8 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     er_bids_path = BIDSPath(subject='emptyroom', task='noise',
                             session=er_date, suffix='meg',
                             root=bids_root)
-    write_raw_bids(er_raw, er_bids_path, overwrite=True)
+    er_bids_path = write_raw_bids(er_raw, er_bids_path,
+                                  overwrite=True)
 
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
@@ -808,6 +809,13 @@ def test_find_emptyroom_ties(tmpdir):
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
+    with pytest.raises(RuntimeError, match='BIDS path .* does not '
+                                           'exist'):
+        bids_path.find_empty_room()
+
+    # now add fully specified BIDS entities to find matching empty
+    # room recordings, but show a warning if there are multiple matches
+    bids_path.update(suffix='meg', extension='.fif')
     with pytest.warns(RuntimeWarning, match='Found more than one'):
         bids_path.find_empty_room()
 
@@ -846,6 +854,8 @@ def test_find_emptyroom_no_meas_date(tmpdir):
     write_raw_bids(raw, bids_path, overwrite=True)
     os.remove(op.join(bids_root, 'participants.tsv'))
 
+    # update extension to the actual dataset
+    bids_path.update(extension='.fif')
     with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         bids_path.find_empty_room()
 
