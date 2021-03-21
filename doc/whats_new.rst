@@ -47,10 +47,11 @@ Enhancements
 - Arbitrary file names can now be represented as a `BIDSPath`` by passing the entire name as ``suffix`` and setting ``check=False``, by `Adam Li`_ (:gh:`729`)
 - Add support for MNE's flux excitation channel (``exci``), by `Maximilien Chaumon`_ (:gh:`728`)
 
-API changes
-^^^^^^^^^^^
+API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Add ``format`` kwarg to :func:`write_raw_bids` that allows users to specify if they want to force conversion to ``BrainVision`` or ``FIF`` file format, by `Adam Li`_ (:gh:`672`)
+- :func:`mne_bids.read_raw_bids` now stores the ``participant_id`` value from ``participants.tsv`` in ``raw.info['subject_info']['his_id']``, not in ``raw.info['subject_info']['participant_id']`` anymore, by `Richard Höchenberger`_ (:gh:`745`)
 
 Requirements
 ^^^^^^^^^^^^
