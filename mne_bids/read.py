@@ -166,24 +166,25 @@ def _handle_participants_reading(participants_fname, raw,
     row_ind = subjects.index(subject)
 
     # set data from participants tsv into subject_info
-    for infokey, infovalue in participants_tsv.items():
-        if infokey == 'sex' or infokey == 'hand':
-            value = _map_options(what=infokey, key=infovalue[row_ind],
+    for col_name, value in participants_tsv.items():
+        if col_name == 'sex' or col_name == 'hand':
+            value = _map_options(what=col_name, key=value[row_ind],
                                  fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
             if value is None:
-                if infokey == 'sex':
+                if col_name == 'sex':
                     info_str = 'subject sex'
                 else:
                     info_str = 'subject handedness'
-                warn(f'Unable to map `{infokey}` value to MNE. '
+                warn(f'Unable to map `{col_name}` value to MNE. '
                      f'Not setting {info_str}.')
         else:
-            value = infovalue[row_ind]
+            value = value[row_ind]
         # add data into raw.Info
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
-        raw.info['subject_info'][infokey] = value
+        key = 'his_id' if col_name == 'participant_id' else col_name
+        raw.info['subject_info'][key] = value
 
     return raw
 

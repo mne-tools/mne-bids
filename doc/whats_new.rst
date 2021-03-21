@@ -48,10 +48,11 @@ Enhancements
 - Add support for MNE's flux excitation channel (``exci``), by `Maximilien Chaumon`_ (:gh:`728`)
 - :meth:`mne_bids.BIDSPath.match` gained a new parameter ``check``; when setting ``check=True``, ``match()`` will only return paths that conform to BIDS, by `Richard Höchenberger`_ (:gh:`726`)
 
-API changes
-^^^^^^^^^^^
+API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Add ``format`` kwarg to :func:`write_raw_bids` that allows users to specify if they want to force conversion to ``BrainVision`` or ``FIF`` file format, by `Adam Li`_ (:gh:`672`)
+- :func:`mne_bids.read_raw_bids` now stores the ``participant_id`` value from ``participants.tsv`` in ``raw.info['subject_info']['his_id']``, not in ``raw.info['subject_info']['participant_id']`` anymore, by `Richard Höchenberger`_ (:gh:`745`)
 
 Requirements
 ^^^^^^^^^^^^
