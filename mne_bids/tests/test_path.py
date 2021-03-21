@@ -531,10 +531,10 @@ def test_bids_path(return_bids_test_dir):
     assert bids_path.basename == 'sub-01_ses-02_task-03_split-01_ieeg.mat'
 
     # test home dir expansion
-    bids_path = BIDSPath(root='~/foo', subject='test')
+    bids_path = BIDSPath(root='~/foo')
     assert '~/foo' not in str(bids_path.root)
     # explicitly test update() method too
-    bids_path.update(root='~/foo', subject='test')
+    bids_path.update(root='~/foo')
     assert '~/foo' not in str(bids_path.root)
 
 
