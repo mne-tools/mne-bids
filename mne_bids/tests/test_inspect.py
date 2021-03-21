@@ -120,7 +120,7 @@ def test_inspect_multiple_files(tmp_path):
     # Inspection should end with the second subject.
     inspect_dataset(bids_path.copy().update(subject=None))
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
-    assert raw_fig.mne.info['subject_info']['participant_id'] == 'sub-02'
+    assert raw_fig.mne.info['subject_info']['his_id'] == 'sub-02'
     raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
 
 
