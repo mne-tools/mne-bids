@@ -261,15 +261,25 @@ class BIDSPath(object):
 
     Notes
     -----
-    BIDS entities are separated generally with a ``"_"`` character, while
-    entity key/value pairs are separated with a ``"-"`` character (e.g.
-    ``subject``, ``session``, ``task``, etc.). There are checks performed
-    to make sure that there are no ``'-'``, ``'_'``, or ``'/'`` characters
-    associated with any of these entities.
+    General checks:
 
-    To represent a filename such as ``dataset_description.json``,
-    one can set ``check=False``, and pass ``suffix='dataset_description'``
-    and ``extension='.json'``.
+        BIDS entities are separated generally with a ``"_"`` character, while
+        entity key/value pairs are separated with a ``"-"`` character (e.g.
+        ``subject``, ``session``, ``task``, etc.). There are checks performed
+        to make sure that there are no ``'-'``, ``'_'``, or ``'/'`` characters
+        associated with any of these entities.
+
+        To represent a filename such as ``dataset_description.json``,
+        one can set ``check=False``, and pass ``suffix='dataset_description'``
+        and ``extension='.json'``.
+
+    Non-electrophysiological data:
+
+        BIDS supports more then just MEG, EEG and iEEG. Although these data
+        types are not "officially" MNE-BIDS supported, one can use ``BIDSPath``
+        to interface with their raw BIDS folder structure. One can set
+        ``check=False`` and pass in non MNE-BIDS data type's, such as
+        ``dwi``, or ``func``.
     """
 
     def __init__(self, subject=None, session=None,

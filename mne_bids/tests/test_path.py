@@ -504,9 +504,13 @@ def test_bids_path(return_bids_test_dir):
                          suffix=suffix, check=False)
 
     # also inherits error check from instantiation
-    # always error check datatype
+    # always error check entities though
+    with pytest.raises(ValueError, match='Key must be one of'):
+        bids_path.copy().update(blah='blah-entity')
+
+    # error check datatype if check is turned back on
     with pytest.raises(ValueError, match='datatype .* is not valid'):
-        bids_path.copy().update(datatype=error_kind)
+        bids_path.copy().update(check=True, datatype=error_kind)
 
     # does not error check on space if check=False ...
     BIDSPath(subject=subject_id, space='foo', suffix='eeg', check=False)
