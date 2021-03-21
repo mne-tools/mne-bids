@@ -287,24 +287,25 @@
     <span class="n">row_ind</span> <span class="o">=</span> <span class="n">subjects</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
 
     <span class="c1"># set data from participants tsv into subject_info</span>
-    <span class="k">for</span> <span class="n">infokey</span><span class="p">,</span> <span class="n">infovalue</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span> <span class="ow">or</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;hand&#39;</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">infokey</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
+    <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span> <span class="ow">or</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s1">&#39;hand&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">col_name</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
                                  <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
             <span class="c1"># We don&#39;t know how to translate to MNE, so skip.</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span>
                     <span class="n">info_str</span> <span class="o">=</span> <span class="s1">&#39;subject sex&#39;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">info_str</span> <span class="o">=</span> <span class="s1">&#39;subject handedness&#39;</span>
-                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unable to map `</span><span class="si">{</span><span class="n">infokey</span><span class="si">}</span><span class="s1">` value to MNE. &#39;</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unable to map `</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s1">` value to MNE. &#39;</span>
                      <span class="sa">f</span><span class="s1">&#39;Not setting </span><span class="si">{</span><span class="n">info_str</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
         <span class="c1"># add data into raw.Info</span>
         <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">][</span><span class="n">infokey</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;his_id&#39;</span> <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s1">&#39;participant_id&#39;</span> <span class="k">else</span> <span class="n">col_name</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
@@ -806,8 +807,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-19.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-21.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
 </footer>

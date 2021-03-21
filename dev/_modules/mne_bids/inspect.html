@@ -202,13 +202,14 @@
 <span class="sd">    &gt;&gt;&gt; inspect_dataset(bids_path=bids_path, find_flat=False,</span>
 <span class="sd">                        l_freq=1, h_freq=30)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">):</span>
-        <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
-                   <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
-                   <span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="n">datatype</span><span class="p">])</span> <span class="ow">and</span>
-                   <span class="n">p</span><span class="o">.</span><span class="n">acquisition</span> <span class="o">!=</span> <span class="s1">&#39;crosstalk&#39;</span><span class="p">]</span>
-        <span class="n">bids_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+    <span class="n">allowed_extensions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">]</span> <span class="o">+</span>
+                             <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">]</span> <span class="o">+</span>
+                             <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;ieeg&#39;</span><span class="p">])</span>
+
+    <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                  <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+                      <span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="n">allowed_extensions</span><span class="p">)</span> <span class="ow">and</span>
+                  <span class="n">p</span><span class="o">.</span><span class="n">acquisition</span> <span class="o">!=</span> <span class="s1">&#39;crosstalk&#39;</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">bids_path_</span> <span class="ow">in</span> <span class="n">bids_paths</span><span class="p">:</span>
         <span class="n">_inspect_raw</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path_</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span>
@@ -247,8 +248,10 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">flat_chans</span> <span class="o">=</span> <span class="p">[]</span>
 
+    <span class="n">show_options</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                   <span class="n">highpass</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span> <span class="n">lowpass</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span> <span class="n">show_options</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">highpass</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span> <span class="n">lowpass</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span>
+                   <span class="n">show_options</span><span class="o">=</span><span class="n">show_options</span><span class="p">,</span>
                    <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
 
     <span class="c1"># Add our own event handlers so that when the MNE Raw Browser is being</span>
@@ -535,8 +538,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-19.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-21.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
 </footer>

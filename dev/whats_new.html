@@ -120,7 +120,7 @@
 <li><a class="reference internal" href="#authors">Authors</a></li>
 <li><a class="reference internal" href="#detailed-list-of-changes">Detailed list of changes</a><ul>
 <li><a class="reference internal" href="#enhancements">Enhancements</a></li>
-<li><a class="reference internal" href="#api-changes">API changes</a></li>
+<li><a class="reference internal" href="#api-and-behavior-changes">API and behavior changes</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#bug-fixes">Bug fixes</a></li>
 </ul>
@@ -172,12 +172,14 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">BIDSPath.root</span></code> now automatically expands <code class="docutils literal notranslate"><span class="pre">~</span></code> to the user’s home directory, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/725">#725</a>)</p></li>
 <li><p>Arbitrary file names can now be represented as a <em class="xref py py-obj">BIDSPath`</em> by passing the entire name as <code class="docutils literal notranslate"><span class="pre">suffix</span></code> and setting <code class="docutils literal notranslate"><span class="pre">check=False</span></code>, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/729">#729</a>)</p></li>
 <li><p>Add support for MNE’s flux excitation channel (<code class="docutils literal notranslate"><span class="pre">exci</span></code>), by <a class="reference external" href="https://github.com/dnacombo">Maximilien Chaumon</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/728">#728</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.match()</span></code></a> gained a new parameter <code class="docutils literal notranslate"><span class="pre">check</span></code>; when setting <code class="docutils literal notranslate"><span class="pre">check=True</span></code>, <code class="docutils literal notranslate"><span class="pre">match()</span></code> will only return paths that conform to BIDS, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/726">#726</a>)</p></li>
 </ul>
 </div>
-<div class="section" id="api-changes">
-<h4>API changes<a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="api-and-behavior-changes">
+<h4>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Add <code class="docutils literal notranslate"><span class="pre">format</span></code> kwarg to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> that allows users to specify if they want to force conversion to <code class="docutils literal notranslate"><span class="pre">BrainVision</span></code> or <code class="docutils literal notranslate"><span class="pre">FIF</span></code> file format, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/672">#672</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now stores the <code class="docutils literal notranslate"><span class="pre">participant_id</span></code> value from <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> in <code class="docutils literal notranslate"><span class="pre">raw.info['subject_info']['his_id']</span></code>, not in <code class="docutils literal notranslate"><span class="pre">raw.info['subject_info']['participant_id']</span></code> anymore, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/745">#745</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="requirements">
@@ -199,6 +201,9 @@
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> now retains original event IDs in the <code class="docutils literal notranslate"><span class="pre">value</span></code> column of <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/708">#708</a>)</p></li>
 <li><p>Fix writing correct <code class="docutils literal notranslate"><span class="pre">iEEGCoordinateSystemDescription</span></code>, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/706">#706</a>)</p></li>
 <li><p>FIF files that were split due to filesize limitations (using the <code class="docutils literal notranslate"><span class="pre">_split-&lt;label&gt;</span></code> entity), are now all listed in <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code>, as recommended by BIDS, by <a class="reference external" href="https://github.com/eort">Eduard Ort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/710">#710</a>)</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">inspect</span></code> command now automatically tries to discover flat channels by default; this should have been the case all along, but the default parameter was set incorrectly, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/726">#726</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset()</span></code></a> would sometimes open the same file multiple times, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/726">#726</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset()</span></code></a> would try to open the SSP projector selection window for non-MEG data, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/726">#726</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </div>
@@ -219,8 +224,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-19.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-21.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
 </footer>

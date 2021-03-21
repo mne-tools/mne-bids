@@ -243,7 +243,7 @@ Excellent! Let's have a look at the path we have constructed!
 
  .. code-block:: none
 
-    /home/circleci/project/mne_bids/path.py:472: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_ses-test). []
+    /home/circleci/project/mne_bids/path.py:468: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_ses-test). []
       warn(msg)
     my_bids_root/sub-123/ses-test/meg/sub-123_ses-test
 
@@ -274,7 +274,7 @@ retrieve a `pathlib.Path` object of this path:
 
  .. code-block:: none
 
-    /home/circleci/project/mne_bids/path.py:472: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_ses-test). []
+    /home/circleci/project/mne_bids/path.py:468: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_ses-test). []
       warn(msg)
 
     PosixPath('my_bids_root/sub-123/ses-test/meg/sub-123_ses-test')
@@ -427,7 +427,7 @@ the path:
 
  .. code-block:: none
 
-    /home/circleci/project/mne_bids/path.py:472: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_run-01). []
+    /home/circleci/project/mne_bids/path.py:468: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_run-01). []
       warn(msg)
     my_bids_root/sub-123/meg/sub-123_run-01
 
@@ -489,7 +489,7 @@ manually.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.007 seconds)
+   **Total running time of the script:** ( 0 minutes  0.008 seconds)
 
 
 .. _sphx_glr_download_auto_examples_bidspath.py:

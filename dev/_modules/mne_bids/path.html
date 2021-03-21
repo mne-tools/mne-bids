@@ -324,8 +324,7 @@
 <span class="sd">        The root for the filename to be created. E.g., a path to the folder</span>
 <span class="sd">        in which you wish to create a file with this name.</span>
 <span class="sd">    check : bool</span>
-<span class="sd">        If True enforces the entities to be valid according to the</span>
-<span class="sd">        current BIDS standard. Defaults to True.</span>
+<span class="sd">        If ``True``, enforces BIDS conformity. Defaults to ``True``.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -345,10 +344,7 @@
 <span class="sd">    fpath : pathlib.Path</span>
 <span class="sd">        The full file path.</span>
 <span class="sd">    check : bool</span>
-<span class="sd">        If ``True``, enforces the entities to be valid according to the</span>
-<span class="sd">        BIDS specification. The check is performed on instantiation</span>
-<span class="sd">        and any ``update`` function calls (and may be overridden in the</span>
-<span class="sd">        latter).</span>
+<span class="sd">        Whether to enforce BIDS conformity.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -636,11 +632,10 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        check : None | bool</span>
-<span class="sd">            If a boolean, controls whether to enforce the entities to be valid</span>
-<span class="sd">            according to the BIDS specification. This will set the</span>
-<span class="sd">            ``.check`` attribute accordingly. If ``None``, rely on the existing</span>
-<span class="sd">            ``.check`` attribute instead, which is set upon ``BIDSPath``</span>
-<span class="sd">            instantiation. Defaults to ``None``.</span>
+<span class="sd">            If a boolean, controls whether to enforce BIDS conformity. This</span>
+<span class="sd">            will set the ``.check`` attribute accordingly. If ``None``, rely on</span>
+<span class="sd">            the existing ``.check`` attribute instead, which is set upon</span>
+<span class="sd">            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.</span>
 <span class="sd">        **kwargs : dict</span>
 <span class="sd">            It can contain updates for valid BIDS path entities:</span>
 <span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;, &#39;processing&#39;, &#39;run&#39;,</span>
@@ -732,11 +727,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="BIDSPath.match"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.match"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a list of all matching paths in the root directory.</span>
 
 <span class="sd">        Performs a recursive search, starting in ``.root`` (if set), based on</span>
 <span class="sd">        `BIDSPath.entities` object. Ignores ``.json`` files.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        check : bool</span>
+<span class="sd">            If ``True``, only returns paths that conform to BIDS. If ``False``</span>
+<span class="sd">            (default), the ``.check`` attribute of the returned</span>
+<span class="sd">            `mne_bids.BIDSPath` object will be set to ``True`` for paths that</span>
+<span class="sd">            do conform to BIDS, and to ``False`` for those that don&#39;t.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -776,8 +779,25 @@
             <span class="n">fpath</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
 
+            <span class="c1"># to check whether the BIDSPath is conforming to BIDS if</span>
+            <span class="c1"># check=True, we first instantiate without checking and then run</span>
+            <span class="c1"># the check manually, allowing us to be more specific about the</span>
+            <span class="c1"># exception to catch</span>
             <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
-                                 <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">)</span>
+                                 <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                 <span class="o">**</span><span class="n">entities</span><span class="p">)</span>
+
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bids_path</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c1"># path is not BIDS-compatible</span>
+                <span class="k">if</span> <span class="n">check</span><span class="p">:</span>  <span class="c1"># skip!</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">bids_path</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">False</span>
+
             <span class="n">bids_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">bids_paths</span></div>
@@ -1580,8 +1600,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-19.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.2.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-21.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
 </footer>
