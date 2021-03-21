@@ -75,7 +75,7 @@ def run():
                          suffix=opt.suffix, extension=opt.extension,
                          root=opt.bids_root)
 
-    find_flat = None if opt.find_flat is None else bool(opt.find_flat)
+    find_flat = True if opt.find_flat is None else bool(opt.find_flat)
     l_freq = None if opt.l_freq is None else float(opt.l_freq)
     h_freq = None if opt.h_freq is None else float(opt.h_freq)
 

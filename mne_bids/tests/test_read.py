@@ -130,6 +130,8 @@ def test_read_participants_data(tmpdir):
     assert raw.info['subject_info']['hand'] == 1
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
+    assert raw.info['subject_info']['his_id'] == f'sub-{bids_path.subject}'
+    assert 'participant_id' not in raw.info['subject_info']
 
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = tmpdir / 'participants.tsv'

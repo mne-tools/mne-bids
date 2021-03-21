@@ -204,8 +204,7 @@ class BIDSPath(object):
         in which you wish to create a file with this name.
         Defaults to ``'.'``, i.e. the current working directory.
     check : bool
-        If True enforces the entities to be valid according to the
-        current BIDS standard. Defaults to True.
+        If ``True``, enforces BIDS conformity. Defaults to ``True``.
 
     Attributes
     ----------
@@ -225,10 +224,7 @@ class BIDSPath(object):
     fpath : pathlib.Path
         The full file path.
     check : bool
-        If ``True``, enforces the entities to be valid according to the
-        BIDS specification. The check is performed on instantiation
-        and any ``update`` function calls (and may be overridden in the
-        latter).
+        Whether to enforce BIDS conformity.
 
     Examples
     --------
@@ -468,11 +464,10 @@ class BIDSPath(object):
         Parameters
         ----------
         check : None | bool
-            If a boolean, controls whether to enforce the entities to be valid
-            according to the BIDS specification. This will set the
-            ``.check`` attribute accordingly. If ``None``, rely on the existing
-            ``.check`` attribute instead, which is set upon ``BIDSPath``
-            instantiation. Defaults to ``None``.
+            If a boolean, controls whether to enforce BIDS conformity. This
+            will set the ``.check`` attribute accordingly. If ``None``, rely on
+            the existing ``.check`` attribute instead, which is set upon
+            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
             It can contain updates for valid BIDS path entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
@@ -564,11 +559,19 @@ class BIDSPath(object):
         self._check()
         return self
 
-    def match(self):
+    def match(self, check=False):
         """Get a list of all matching paths in the root directory.
 
         Performs a recursive search, starting in ``.root`` (if set), based on
         `BIDSPath.entities` object. Ignores ``.json`` files.
+
+        Parameters
+        ----------
+        check : bool
+            If ``True``, only returns paths that conform to BIDS. If ``False``
+            (default), the ``.check`` attribute of the returned
+            `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+            do conform to BIDS, and to ``False`` for those that don't.
 
         Returns
         -------
@@ -608,8 +611,25 @@ class BIDSPath(object):
             fpath = list(self.root.rglob(f'*{fname}*'))[0]
             datatype = _infer_datatype_from_path(fpath)
 
+            # to check whether the BIDSPath is conforming to BIDS if
+            # check=True, we first instantiate without checking and then run
+            # the check manually, allowing us to be more specific about the
+            # exception to catch
             bids_path = BIDSPath(root=self.root, datatype=datatype,
-                                 extension=extension, **entities)
+                                 extension=extension, check=False,
+                                 **entities)
+
+            bids_path.check = True
+
+            try:
+                bids_path._check()
+            except ValueError:
+                # path is not BIDS-compatible
+                if check:  # skip!
+                    continue
+                else:
+                    bids_path.check = False
+
             bids_paths.append(bids_path)
 
         return bids_paths
