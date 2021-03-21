@@ -81,13 +81,14 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
     >>> inspect_dataset(bids_path=bids_path, find_flat=False,
                         l_freq=1, h_freq=30)
     """
-    bids_paths = []
-    for datatype in ('meg', 'eeg', 'ieeg'):
-        matches = [p for p in bids_path.match()
-                   if (p.extension is None or
-                   p.extension in ALLOWED_DATATYPE_EXTENSIONS[datatype]) and
-                   p.acquisition != 'crosstalk']
-        bids_paths.extend(matches)
+    allowed_extensions = set(ALLOWED_DATATYPE_EXTENSIONS['meg'] +
+                             ALLOWED_DATATYPE_EXTENSIONS['eeg'] +
+                             ALLOWED_DATATYPE_EXTENSIONS['ieeg'])
+
+    bids_paths = [p for p in bids_path.match(check=True)
+                  if (p.extension is None or
+                      p.extension in allowed_extensions) and
+                  p.acquisition != 'crosstalk']
 
     for bids_path_ in bids_paths:
         _inspect_raw(bids_path=bids_path_, l_freq=l_freq, h_freq=h_freq,
@@ -126,8 +127,10 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations,
     else:
         flat_chans = []
 
+    show_options = bids_path.datatype == 'meg'
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-                   highpass=l_freq, lowpass=h_freq, show_options=True,
+                   highpass=l_freq, lowpass=h_freq,
+                   show_options=show_options,
                    block=False, show=False, verbose='warning')
 
     # Add our own event handlers so that when the MNE Raw Browser is being
