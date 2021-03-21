@@ -557,7 +557,8 @@ class BIDSPath(object):
                 continue
 
             if key == 'datatype':
-                if val is not None and val not in ALLOWED_DATATYPES:
+                if val is not None and val not in ALLOWED_DATATYPES \
+                        and self.check:
                     raise ValueError(f'datatype ({val}) is not valid. '
                                      f'Should be one of '
                                      f'{ALLOWED_DATATYPES}')
