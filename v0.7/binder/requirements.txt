@@ -1,0 +1,8 @@
+nilearn
+sphinx_gallery
+sphinx_bootstrap_theme
+sphinx-copybutton
+numpydoc
+matplotlib
+pillow
+pandas

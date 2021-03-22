@@ -1,0 +1,58 @@
+a[class^="sphx-glr-backref-module-mne_bids"] {
+  /* make all MNE-BIDS backrefs bold */
+  font-weight: 800;
+}
+
+/* Disable hyphenation in API reference table for Webkit-based browsers
+   to work around alignment bug */
+#api-documentation table p {
+  -webkit-hyphens: none;
+}
+
+/* Hide version number from top-left location in the navbar */
+.navbar-version {
+  display: none;
+}
+
+html {
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 1.6rem;
+}
+
+h2 {
+  font-size: 1.3rem;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+.footer {
+  margin-top: 3em;
+  padding-top: 1em;
+}
+
+/* Links in the Note boxes */
+.note a {
+  color: white;
+  text-decoration: underline;
+}
+
+.note a:hover {
+  color: white;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Links in "Note" boxes */
+.alert-info a code span {
+  color: white;
+}

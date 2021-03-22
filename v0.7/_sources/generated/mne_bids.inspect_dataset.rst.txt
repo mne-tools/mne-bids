@@ -1,0 +1,11 @@
+﻿mne\_bids.inspect\_dataset
+==========================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: inspect_dataset
+
+.. _sphx_glr_backreferences_mne_bids.inspect_dataset:
+
+.. minigallery:: mne_bids.inspect_dataset
+    :add-heading:

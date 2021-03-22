@@ -1,0 +1,500 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_mark_bad_channels.py>`     to download the full example code or to run this example in your browser via Binder
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_mark_bad_channels.py:
+
+
+=========================================================
+03. Interactive data inspection and bad channel selection
+=========================================================
+
+You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
+Problematic channels can be marked as "bad", for example if the connected
+sensor produced mostly noise – or no signal at all. Similarly, you can declare
+channels as "good", should you discover they were incorrectly marked as bad.
+Bad channel selection can also be performed non-interactively.
+
+Furthermore, you can view and edit the experimental events and mark time
+segments as "bad".
+
+.. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html#annotating-raw-objects-interactively
+
+
+.. code-block:: default
+
+
+    # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
+    # License: BSD (3-clause)
+
+
+
+
+
+
+
+
+We will demonstrate how to mark individual channels as bad on the MNE
+"sample" dataset. After that, we will mark channels as good again.
+
+Let's start by importing the required modules and functions, reading the
+"sample" data, and writing it in the BIDS format.
+
+
+.. code-block:: default
+
+
+    import os.path as op
+    import shutil
+
+    import mne
+    from mne_bids import (BIDSPath, write_raw_bids, read_raw_bids,
+                          inspect_dataset, mark_bad_channels)
+
+    data_path = mne.datasets.sample.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
+    bids_path = BIDSPath(subject='01', session='01', task='audiovisual', run='01',
+                         root=bids_root)
+
+
+
+
+
+
+
+
+To ensure the output path doesn't contain any leftover files from previous
+tests and example runs, we simply delete it.
+
+.. warning:: Do not delete directories that may contain important data!
+
+
+
+.. code-block:: default
+
+
+    if op.exists(bids_root):
+        shutil.rmtree(bids_root)
+
+
+
+
+
+
+
+
+Now write the raw data to BIDS.
+
+
+.. code-block:: default
+
+
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
+    write_raw_bids(raw, bids_path=bids_path, events_data=events_fname,
+                   event_id=event_id, overwrite=True, verbose=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    BIDSPath(
+    root: /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids
+    datatype: meg
+    basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
+
+
+
+Interactive use
+---------------
+
+Using :func:`mne_bids.inspect_dataset`, we can interactively explore the raw
+data and toggle the channel status – ``bad`` or ``good`` – by clicking on the
+respective traces or channel names. If there are any SSP projectors stored
+with the data, a small popup window will allow you to toggle the projectors
+on and off. If you changed the selection of bad channels, you will be
+prompted whether you would like to save the changes when closing the main
+window. Your raw data and the `*_channels.tsv` sidecar file will be updated
+upon saving.
+
+
+.. code-block:: default
+
+
+    inspect_dataset(bids_path)
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_001.png
+          :alt: mark bad channels
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_002.png
+          :alt: Projectors marked with "X" are active on the plot.
+          :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:339: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Finding flat segments
+      0%|          | Channels : 0/364 [00:00<?,       ?it/s]      1%|          | Channels : 2/364 [00:00<00:05,   67.49it/s]      1%|1         | Channels : 4/364 [00:00<00:05,   68.60it/s]      2%|1         | Channels : 6/364 [00:00<00:05,   69.79it/s]      2%|2         | Channels : 8/364 [00:00<00:05,   70.19it/s]      3%|2         | Channels : 10/364 [00:00<00:04,   71.49it/s]      3%|3         | Channels : 12/364 [00:00<00:04,   72.64it/s]      4%|3         | Channels : 14/364 [00:00<00:04,   73.16it/s]      4%|4         | Channels : 16/364 [00:00<00:04,   74.11it/s]      5%|4         | Channels : 18/364 [00:00<00:04,   75.35it/s]      5%|5         | Channels : 20/364 [00:00<00:04,   75.24it/s]      6%|6         | Channels : 22/364 [00:00<00:04,   76.44it/s]      7%|6         | Channels : 24/364 [00:00<00:04,   77.96it/s]      7%|7         | Channels : 26/364 [00:00<00:04,   78.32it/s]      8%|7         | Channels : 28/364 [00:00<00:04,   79.13it/s]      8%|8         | Channels : 30/364 [00:00<00:04,   80.15it/s]      9%|8         | Channels : 32/364 [00:00<00:04,   79.56it/s]      9%|9         | Channels : 34/364 [00:00<00:04,   80.79it/s]     10%|9         | Channels : 36/364 [00:00<00:04,   81.91it/s]     10%|#         | Channels : 38/364 [00:00<00:04,   81.45it/s]     11%|#         | Channels : 40/364 [00:00<00:03,   82.25it/s]     12%|#1        | Channels : 42/364 [00:00<00:03,   83.27it/s]     12%|#2        | Channels : 44/364 [00:00<00:03,   83.79it/s]     13%|#2        | Channels : 46/364 [00:00<00:03,   84.91it/s]     13%|#3        | Channels : 48/364 [00:00<00:03,   85.71it/s]     14%|#3        | Channels : 50/364 [00:00<00:03,   85.73it/s]     14%|#4        | Channels : 52/364 [00:00<00:03,   86.58it/s]     15%|#4        | Channels : 54/364 [00:00<00:03,   86.85it/s]     15%|#5        | Channels : 56/364 [00:00<00:03,   86.32it/s]     16%|#5        | Channels : 58/364 [00:00<00:03,   86.56it/s]     16%|#6        | Channels : 60/364 [00:00<00:03,   87.36it/s]     17%|#7        | Channels : 62/364 [00:00<00:03,   86.26it/s]     18%|#7        | Channels : 64/364 [00:00<00:03,   86.80it/s]     18%|#8        | Channels : 66/364 [00:00<00:03,   87.60it/s]     19%|#8        | Channels : 68/364 [00:00<00:03,   87.37it/s]     19%|#9        | Channels : 70/364 [00:00<00:03,   88.00it/s]     20%|#9        | Channels : 72/364 [00:00<00:03,   88.83it/s]     20%|##        | Channels : 74/364 [00:00<00:03,   88.29it/s]     21%|##        | Channels : 76/364 [00:00<00:03,   89.23it/s]     21%|##1       | Channels : 78/364 [00:00<00:03,   90.26it/s]     22%|##1       | Channels : 80/364 [00:00<00:03,   88.94it/s]     23%|##2       | Channels : 82/364 [00:00<00:03,   89.65it/s]     23%|##3       | Channels : 84/364 [00:00<00:03,   90.26it/s]     24%|##3       | Channels : 86/364 [00:00<00:03,   90.16it/s]     24%|##4       | Channels : 88/364 [00:00<00:03,   90.17it/s]     25%|##4       | Channels : 90/364 [00:00<00:03,   90.61it/s]     25%|##5       | Channels : 92/364 [00:00<00:03,   89.27it/s]     26%|##5       | Channels : 94/364 [00:01<00:03,   89.35it/s]     26%|##6       | Channels : 96/364 [00:01<00:03,   88.95it/s]     27%|##6       | Channels : 97/364 [00:01<00:03,   87.02it/s]     27%|##7       | Channels : 99/364 [00:01<00:03,   86.97it/s]     28%|##7       | Channels : 101/364 [00:01<00:03,   85.92it/s]     28%|##8       | Channels : 103/364 [00:01<00:03,   85.92it/s]     29%|##8       | Channels : 104/364 [00:01<00:03,   84.30it/s]     29%|##9       | Channels : 106/364 [00:01<00:03,   84.80it/s]     30%|##9       | Channels : 108/364 [00:01<00:03,   85.13it/s]     30%|###       | Channels : 110/364 [00:01<00:02,   85.15it/s]     31%|###       | Channels : 112/364 [00:01<00:02,   85.92it/s]     31%|###1      | Channels : 114/364 [00:01<00:02,   86.72it/s]     32%|###1      | Channels : 116/364 [00:01<00:02,   86.27it/s]     32%|###2      | Channels : 118/364 [00:01<00:02,   87.02it/s]     33%|###2      | Channels : 120/364 [00:01<00:02,   87.46it/s]     34%|###3      | Channels : 122/364 [00:01<00:02,   87.28it/s]     34%|###4      | Channels : 124/364 [00:01<00:02,   88.05it/s]     35%|###4      | Channels : 126/364 [00:01<00:02,   89.09it/s]     35%|###5      | Channels : 128/364 [00:01<00:02,   88.40it/s]     36%|###5      | Channels : 130/364 [00:01<00:02,   88.96it/s]     36%|###6      | Channels : 132/364 [00:01<00:02,   89.77it/s]     37%|###6      | Channels : 134/364 [00:01<00:02,   89.48it/s]     37%|###7      | Channels : 136/364 [00:01<00:02,   89.40it/s]     38%|###7      | Channels : 137/364 [00:01<00:02,   87.21it/s]     38%|###8      | Channels : 139/364 [00:01<00:02,   87.48it/s]     39%|###8      | Channels : 141/364 [00:01<00:02,   88.02it/s]     39%|###9      | Channels : 143/364 [00:01<00:02,   88.21it/s]     40%|###9      | Channels : 145/364 [00:01<00:02,   89.31it/s]     41%|####      | Channels : 148/364 [00:01<00:02,   89.95it/s]     41%|####1     | Channels : 150/364 [00:01<00:02,   90.72it/s]     42%|####1     | Channels : 152/364 [00:01<00:02,   90.18it/s]     42%|####2     | Channels : 154/364 [00:01<00:02,   90.69it/s]     43%|####2     | Channels : 156/364 [00:01<00:02,   91.34it/s]     43%|####3     | Channels : 158/364 [00:01<00:02,   90.69it/s]     44%|####3     | Channels : 160/364 [00:01<00:02,   91.18it/s]     45%|####4     | Channels : 162/364 [00:01<00:02,   92.17it/s]     45%|####5     | Channels : 164/364 [00:01<00:02,   91.24it/s]     46%|####5     | Channels : 166/364 [00:01<00:02,   92.10it/s]     46%|####6     | Channels : 168/364 [00:01<00:02,   92.58it/s]     47%|####6     | Channels : 170/364 [00:01<00:02,   91.74it/s]     47%|####7     | Channels : 172/364 [00:01<00:02,   92.00it/s]     48%|####7     | Channels : 174/364 [00:01<00:02,   92.11it/s]     48%|####8     | Channels : 176/364 [00:01<00:02,   91.31it/s]     49%|####8     | Channels : 178/364 [00:01<00:02,   92.06it/s]     49%|####9     | Channels : 180/364 [00:01<00:01,   92.63it/s]     50%|#####     | Channels : 182/364 [00:01<00:01,   92.12it/s]     51%|#####     | Channels : 184/364 [00:01<00:01,   92.19it/s]     51%|#####1    | Channels : 186/364 [00:02<00:01,   92.95it/s]     52%|#####1    | Channels : 188/364 [00:02<00:01,   91.70it/s]     52%|#####2    | Channels : 190/364 [00:02<00:01,   92.06it/s]     53%|#####2    | Channels : 192/364 [00:02<00:01,   92.38it/s]     53%|#####3    | Channels : 194/364 [00:02<00:01,   92.37it/s]     54%|#####3    | Channels : 196/364 [00:02<00:01,   92.98it/s]     54%|#####4    | Channels : 198/364 [00:02<00:01,   92.95it/s]     55%|#####4    | Channels : 200/364 [00:02<00:01,   92.61it/s]     55%|#####5    | Channels : 202/364 [00:02<00:01,   93.01it/s]     56%|#####6    | Channels : 204/364 [00:02<00:01,   93.48it/s]     57%|#####6    | Channels : 206/364 [00:02<00:01,   92.47it/s]     57%|#####7    | Channels : 208/364 [00:02<00:01,   92.92it/s]     58%|#####7    | Channels : 210/364 [00:02<00:01,   93.47it/s]     58%|#####8    | Channels : 212/364 [00:02<00:01,   92.76it/s]     59%|#####8    | Channels : 214/364 [00:02<00:01,   92.77it/s]     59%|#####9    | Channels : 216/364 [00:02<00:01,   93.02it/s]     60%|#####9    | Channels : 218/364 [00:02<00:01,   91.87it/s]     60%|######    | Channels : 220/364 [00:02<00:01,   92.32it/s]     61%|######    | Channels : 222/364 [00:02<00:01,   92.84it/s]     62%|######1   | Channels : 224/364 [00:02<00:01,   91.95it/s]     62%|######2   | Channels : 226/364 [00:02<00:01,   91.95it/s]     63%|######2   | Channels : 228/364 [00:02<00:01,   91.87it/s]     63%|######3   | Channels : 230/364 [00:02<00:01,   91.62it/s]     64%|######3   | Channels : 232/364 [00:02<00:01,   91.81it/s]     64%|######4   | Channels : 234/364 [00:02<00:01,   91.73it/s]     65%|######4   | Channels : 236/364 [00:02<00:01,   91.08it/s]     65%|######5   | Channels : 238/364 [00:02<00:01,   91.62it/s]     66%|######5   | Channels : 240/364 [00:02<00:01,   91.88it/s]     66%|######6   | Channels : 242/364 [00:02<00:01,   91.09it/s]     67%|######7   | Channels : 244/364 [00:02<00:01,   91.90it/s]     68%|######7   | Channels : 246/364 [00:02<00:01,   92.21it/s]     68%|######8   | Channels : 248/364 [00:02<00:01,   91.66it/s]     69%|######8   | Channels : 250/364 [00:02<00:01,   92.42it/s]     69%|######9   | Channels : 252/364 [00:02<00:01,   93.01it/s]     70%|######9   | Channels : 254/364 [00:02<00:01,   92.06it/s]     70%|#######   | Channels : 256/364 [00:02<00:01,   92.19it/s]     71%|#######   | Channels : 258/364 [00:02<00:01,   92.82it/s]     71%|#######1  | Channels : 260/364 [00:02<00:01,   92.67it/s]     72%|#######1  | Channels : 262/364 [00:02<00:01,   93.25it/s]     73%|#######2  | Channels : 264/364 [00:02<00:01,   93.42it/s]     73%|#######3  | Channels : 266/364 [00:02<00:01,   92.01it/s]     74%|#######3  | Channels : 268/364 [00:02<00:01,   92.48it/s]     74%|#######4  | Channels : 270/364 [00:02<00:01,   92.95it/s]     75%|#######4  | Channels : 272/364 [00:02<00:00,   92.32it/s]     75%|#######5  | Channels : 274/364 [00:02<00:00,   93.21it/s]     76%|#######5  | Channels : 276/364 [00:02<00:00,   94.30it/s]     76%|#######6  | Channels : 278/364 [00:02<00:00,   94.48it/s]     77%|#######6  | Channels : 280/364 [00:03<00:00,   94.94it/s]     77%|#######7  | Channels : 282/364 [00:03<00:00,   94.87it/s]     78%|#######8  | Channels : 284/364 [00:03<00:00,   95.21it/s]     79%|#######8  | Channels : 286/364 [00:03<00:00,   94.28it/s]     79%|#######9  | Channels : 288/364 [00:03<00:00,   94.62it/s]     80%|#######9  | Channels : 290/364 [00:03<00:00,   95.12it/s]     80%|########  | Channels : 292/364 [00:03<00:00,   93.71it/s]     81%|########  | Channels : 294/364 [00:03<00:00,   94.26it/s]     81%|########1 | Channels : 296/364 [00:03<00:00,   95.12it/s]     82%|########1 | Channels : 298/364 [00:03<00:00,   93.99it/s]     82%|########2 | Channels : 300/364 [00:03<00:00,   94.44it/s]     83%|########2 | Channels : 302/364 [00:03<00:00,   95.00it/s]     84%|########3 | Channels : 304/364 [00:03<00:00,   94.56it/s]     85%|########5 | Channels : 310/364 [00:03<00:00,   98.17it/s]     88%|########7 | Channels : 319/364 [00:03<00:00,  102.35it/s]     90%|######### | Channels : 329/364 [00:03<00:00,  106.74it/s]     93%|#########2| Channels : 337/364 [00:03<00:00,  110.98it/s]     94%|#########4| Channels : 343/364 [00:03<00:00,  114.98it/s]     96%|#########6| Channels : 350/364 [00:03<00:00,  119.34it/s]     98%|#########8| Channels : 357/364 [00:03<00:00,  123.80it/s]    100%|##########| Channels : 364/364 [00:03<00:00,  106.95it/s]
+    Marking 0.00% of time points (0 segments) and 0/364 channels bad
+
+
+
+
+You can even apply frequency filters when viewing the data: A high-pass
+filter can remove slow drifts, while a low-pass filter will get rid of
+high-frequency artifacts. This can make visual inspection easier. Let's
+apply filters with a 1-Hz high-pass cutoff, and a 30-Hz low-pass cutoff:
+
+
+.. code-block:: default
+
+
+    inspect_dataset(bids_path, l_freq=1., h_freq=30.)
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_003.png
+          :alt: mark bad channels
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_004.png
+          :alt: Projectors marked with "X" are active on the plot.
+          :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:339: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Finding flat segments
+      0%|          | Channels : 0/364 [00:00<?,       ?it/s]      1%|          | Channels : 2/364 [00:00<00:05,   67.32it/s]      1%|1         | Channels : 4/364 [00:00<00:05,   68.27it/s]      2%|1         | Channels : 6/364 [00:00<00:05,   69.45it/s]      2%|2         | Channels : 8/364 [00:00<00:05,   69.84it/s]      3%|2         | Channels : 10/364 [00:00<00:04,   71.13it/s]      3%|3         | Channels : 12/364 [00:00<00:04,   72.30it/s]      4%|3         | Channels : 14/364 [00:00<00:04,   72.77it/s]      4%|4         | Channels : 16/364 [00:00<00:04,   73.64it/s]      5%|4         | Channels : 18/364 [00:00<00:04,   74.88it/s]      5%|5         | Channels : 20/364 [00:00<00:04,   74.76it/s]      6%|6         | Channels : 22/364 [00:00<00:04,   75.91it/s]      7%|6         | Channels : 25/364 [00:00<00:04,   77.19it/s]      7%|7         | Channels : 27/364 [00:00<00:04,   78.14it/s]      8%|7         | Channels : 29/364 [00:00<00:04,   77.79it/s]      9%|8         | Channels : 31/364 [00:00<00:04,   78.80it/s]      9%|9         | Channels : 33/364 [00:00<00:04,   79.62it/s]     10%|9         | Channels : 35/364 [00:00<00:04,   80.01it/s]     10%|#         | Channels : 37/364 [00:00<00:04,   80.81it/s]     11%|#         | Channels : 39/364 [00:00<00:03,   81.37it/s]     11%|#1        | Channels : 41/364 [00:00<00:03,   81.14it/s]     12%|#2        | Channels : 44/364 [00:00<00:03,   82.16it/s]     13%|#2        | Channels : 46/364 [00:00<00:03,   83.22it/s]     13%|#3        | Channels : 48/364 [00:00<00:03,   83.97it/s]     14%|#3        | Channels : 50/364 [00:00<00:03,   84.07it/s]     14%|#4        | Channels : 52/364 [00:00<00:03,   85.11it/s]     15%|#4        | Channels : 54/364 [00:00<00:03,   85.69it/s]     15%|#5        | Channels : 56/364 [00:00<00:03,   85.10it/s]     16%|#5        | Channels : 58/364 [00:00<00:03,   85.60it/s]     16%|#6        | Channels : 60/364 [00:00<00:03,   86.12it/s]     17%|#7        | Channels : 62/364 [00:00<00:03,   85.00it/s]     18%|#7        | Channels : 64/364 [00:00<00:03,   85.66it/s]     18%|#8        | Channels : 66/364 [00:00<00:03,   86.40it/s]     19%|#8        | Channels : 68/364 [00:00<00:03,   84.59it/s]     19%|#9        | Channels : 70/364 [00:00<00:03,   85.24it/s]     20%|#9        | Channels : 72/364 [00:00<00:03,   86.14it/s]     20%|##        | Channels : 74/364 [00:00<00:03,   85.77it/s]     21%|##        | Channels : 76/364 [00:00<00:03,   86.29it/s]     21%|##1       | Channels : 78/364 [00:00<00:03,   87.39it/s]     22%|##1       | Channels : 80/364 [00:00<00:03,   86.69it/s]     23%|##2       | Channels : 82/364 [00:00<00:03,   87.47it/s]     23%|##3       | Channels : 84/364 [00:00<00:03,   88.03it/s]     24%|##3       | Channels : 86/364 [00:00<00:03,   88.02it/s]     24%|##4       | Channels : 88/364 [00:00<00:03,   88.23it/s]     25%|##4       | Channels : 90/364 [00:00<00:03,   88.81it/s]     25%|##5       | Channels : 92/364 [00:01<00:03,   87.93it/s]     26%|##5       | Channels : 94/364 [00:01<00:03,   88.31it/s]     26%|##6       | Channels : 96/364 [00:01<00:03,   88.48it/s]     27%|##6       | Channels : 98/364 [00:01<00:03,   87.54it/s]     27%|##7       | Channels : 100/364 [00:01<00:03,   87.67it/s]     28%|##8       | Channels : 102/364 [00:01<00:02,   88.25it/s]     29%|##8       | Channels : 104/364 [00:01<00:02,   87.17it/s]     29%|##9       | Channels : 106/364 [00:01<00:02,   87.95it/s]     30%|##9       | Channels : 108/364 [00:01<00:02,   88.50it/s]     30%|###       | Channels : 110/364 [00:01<00:02,   88.32it/s]     31%|###       | Channels : 112/364 [00:01<00:02,   89.16it/s]     31%|###1      | Channels : 114/364 [00:01<00:02,   89.62it/s]     32%|###1      | Channels : 116/364 [00:01<00:02,   89.04it/s]     32%|###2      | Channels : 118/364 [00:01<00:02,   89.65it/s]     33%|###2      | Channels : 120/364 [00:01<00:02,   90.15it/s]     34%|###3      | Channels : 122/364 [00:01<00:02,   89.60it/s]     34%|###4      | Channels : 124/364 [00:01<00:02,   90.52it/s]     35%|###4      | Channels : 126/364 [00:01<00:02,   91.47it/s]     35%|###5      | Channels : 128/364 [00:01<00:02,   90.39it/s]     36%|###5      | Channels : 130/364 [00:01<00:02,   90.72it/s]     36%|###6      | Channels : 132/364 [00:01<00:02,   91.41it/s]     37%|###6      | Channels : 134/364 [00:01<00:02,   91.00it/s]     37%|###7      | Channels : 136/364 [00:01<00:02,   91.24it/s]     38%|###7      | Channels : 138/364 [00:01<00:02,   90.90it/s]     38%|###8      | Channels : 140/364 [00:01<00:02,   90.12it/s]     39%|###9      | Channels : 142/364 [00:01<00:02,   90.94it/s]     40%|###9      | Channels : 144/364 [00:01<00:02,   91.69it/s]     40%|####      | Channels : 146/364 [00:01<00:02,   91.99it/s]     41%|####      | Channels : 148/364 [00:01<00:02,   92.39it/s]     41%|####1     | Channels : 150/364 [00:01<00:02,   93.08it/s]     42%|####1     | Channels : 152/364 [00:01<00:02,   92.23it/s]     42%|####2     | Channels : 154/364 [00:01<00:02,   92.71it/s]     43%|####2     | Channels : 156/364 [00:01<00:02,   93.38it/s]     43%|####3     | Channels : 158/364 [00:01<00:02,   92.48it/s]     44%|####3     | Channels : 160/364 [00:01<00:02,   92.87it/s]     45%|####4     | Channels : 162/364 [00:01<00:02,   93.61it/s]     45%|####5     | Channels : 164/364 [00:01<00:02,   92.53it/s]     46%|####5     | Channels : 166/364 [00:01<00:02,   93.34it/s]     46%|####6     | Channels : 168/364 [00:01<00:02,   93.63it/s]     47%|####6     | Channels : 170/364 [00:01<00:02,   92.55it/s]     47%|####7     | Channels : 172/364 [00:01<00:02,   92.81it/s]     48%|####7     | Channels : 174/364 [00:01<00:02,   92.87it/s]     48%|####8     | Channels : 176/364 [00:01<00:02,   91.99it/s]     49%|####8     | Channels : 178/364 [00:01<00:02,   92.66it/s]     49%|####9     | Channels : 180/364 [00:01<00:01,   93.11it/s]     50%|#####     | Channels : 182/364 [00:01<00:01,   92.09it/s]     51%|#####     | Channels : 184/364 [00:01<00:01,   92.55it/s]     51%|#####1    | Channels : 186/364 [00:02<00:01,   93.15it/s]     52%|#####1    | Channels : 188/364 [00:02<00:01,   91.85it/s]     52%|#####2    | Channels : 190/364 [00:02<00:01,   92.19it/s]     53%|#####2    | Channels : 192/364 [00:02<00:01,   92.51it/s]     53%|#####3    | Channels : 194/364 [00:02<00:01,   92.44it/s]     54%|#####3    | Channels : 196/364 [00:02<00:01,   92.99it/s]     54%|#####4    | Channels : 198/364 [00:02<00:01,   92.86it/s]     55%|#####4    | Channels : 200/364 [00:02<00:01,   92.20it/s]     55%|#####5    | Channels : 202/364 [00:02<00:01,   92.66it/s]     56%|#####6    | Channels : 204/364 [00:02<00:01,   92.95it/s]     57%|#####6    | Channels : 206/364 [00:02<00:01,   91.30it/s]     57%|#####7    | Channels : 208/364 [00:02<00:01,   91.54it/s]     58%|#####7    | Channels : 210/364 [00:02<00:01,   92.06it/s]     58%|#####8    | Channels : 212/364 [00:02<00:01,   91.41it/s]     59%|#####8    | Channels : 214/364 [00:02<00:01,   90.98it/s]     59%|#####9    | Channels : 216/364 [00:02<00:01,   91.19it/s]     60%|#####9    | Channels : 218/364 [00:02<00:01,   90.59it/s]     60%|######    | Channels : 220/364 [00:02<00:01,   90.35it/s]     61%|######    | Channels : 222/364 [00:02<00:01,   90.98it/s]     62%|######1   | Channels : 224/364 [00:02<00:01,   89.90it/s]     62%|######2   | Channels : 226/364 [00:02<00:01,   89.92it/s]     63%|######2   | Channels : 228/364 [00:02<00:01,   89.78it/s]     63%|######3   | Channels : 230/364 [00:02<00:01,   90.02it/s]     64%|######3   | Channels : 232/364 [00:02<00:01,   90.42it/s]     64%|######4   | Channels : 234/364 [00:02<00:01,   90.57it/s]     65%|######4   | Channels : 236/364 [00:02<00:01,   89.96it/s]     65%|######5   | Channels : 238/364 [00:02<00:01,   90.09it/s]     66%|######5   | Channels : 240/364 [00:02<00:01,   90.09it/s]     66%|######6   | Channels : 242/364 [00:02<00:01,   89.21it/s]     67%|######7   | Channels : 244/364 [00:02<00:01,   90.01it/s]     68%|######7   | Channels : 246/364 [00:02<00:01,   90.23it/s]     68%|######8   | Channels : 248/364 [00:02<00:01,   89.70it/s]     69%|######8   | Channels : 250/364 [00:02<00:01,   90.44it/s]     69%|######9   | Channels : 252/364 [00:02<00:01,   91.09it/s]     70%|######9   | Channels : 254/364 [00:02<00:01,   90.13it/s]     70%|#######   | Channels : 256/364 [00:02<00:01,   90.55it/s]     71%|#######   | Channels : 258/364 [00:02<00:01,   90.99it/s]     71%|#######1  | Channels : 260/364 [00:02<00:01,   90.34it/s]     72%|#######1  | Channels : 262/364 [00:02<00:01,   90.96it/s]     73%|#######2  | Channels : 264/364 [00:02<00:01,   91.57it/s]     73%|#######3  | Channels : 266/364 [00:02<00:01,   90.28it/s]     74%|#######3  | Channels : 268/364 [00:02<00:01,   90.64it/s]     74%|#######4  | Channels : 270/364 [00:02<00:01,   90.92it/s]     75%|#######4  | Channels : 272/364 [00:02<00:01,   90.20it/s]     75%|#######5  | Channels : 274/364 [00:02<00:00,   91.13it/s]     76%|#######5  | Channels : 276/364 [00:03<00:00,   92.05it/s]     76%|#######6  | Channels : 278/364 [00:03<00:00,   92.20it/s]     77%|#######6  | Channels : 280/364 [00:03<00:00,   92.81it/s]     77%|#######7  | Channels : 282/364 [00:03<00:00,   92.88it/s]     78%|#######8  | Channels : 284/364 [00:03<00:00,   93.05it/s]     79%|#######8  | Channels : 286/364 [00:03<00:00,   92.07it/s]     79%|#######9  | Channels : 288/364 [00:03<00:00,   92.35it/s]     80%|#######9  | Channels : 290/364 [00:03<00:00,   92.89it/s]     80%|########  | Channels : 292/364 [00:03<00:00,   91.89it/s]     81%|########  | Channels : 294/364 [00:03<00:00,   92.41it/s]     81%|########1 | Channels : 296/364 [00:03<00:00,   92.60it/s]     82%|########1 | Channels : 298/364 [00:03<00:00,   91.64it/s]     82%|########2 | Channels : 300/364 [00:03<00:00,   91.94it/s]     83%|########2 | Channels : 302/364 [00:03<00:00,   92.35it/s]     84%|########3 | Channels : 304/364 [00:03<00:00,   92.04it/s]     85%|########5 | Channels : 310/364 [00:03<00:00,   95.60it/s]     87%|########7 | Channels : 318/364 [00:03<00:00,   99.54it/s]     90%|########9 | Channels : 327/364 [00:03<00:00,  103.77it/s]     92%|#########2| Channels : 335/364 [00:03<00:00,  108.04it/s]     94%|#########4| Channels : 343/364 [00:03<00:00,  112.33it/s]     96%|#########6| Channels : 351/364 [00:03<00:00,  116.68it/s]     98%|#########8| Channels : 357/364 [00:03<00:00,  120.76it/s]    100%|#########9| Channels : 363/364 [00:03<00:00,  124.77it/s]    100%|##########| Channels : 364/364 [00:03<00:00,  105.60it/s]
+    Marking 0.00% of time points (0 segments) and 0/364 channels bad
+
+
+
+
+By pressing the ``A`` key, you can toggle annotation mode to add, edit, or
+remove experimental events, or to mark entire time periods as bad. Please see
+the `MNE-Python Annotations tutorial`_ for an introduction to the interactive
+interface. If you're closing the main window after changing the annotations,
+you will be prompted whether you wish to save the changes. Your raw data and
+the `*_events.tsv` sidecar file will be updated upon saving.
+
+Non-interactive (programmatic) bad channel selection
+----------------------------------------------------
+
+Read the (now BIDS-formatted) data and print a list of channels currently
+marked as bad.
+
+
+.. code-block:: default
+
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'The following channels are currently marked as bad:\n'
+          f'    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:339: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    The following channels are currently marked as bad:
+        MEG 2443, EEG 053
+
+
+
+
+
+So currently, two channels are maked as bad: ``EEG 053`` and ``MEG 2443``.
+Let's assume that through visual data inspection, we found that two more
+MEG channels are problematic, and we would like to mark them as bad as well.
+To do that, we simply add them to a list, which we then pass to
+:func:`mne_bids.mark_bad_channels`:
+
+
+.. code-block:: default
+
+
+    bads = ['MEG 0112', 'MEG 0131']
+    mark_bad_channels(ch_names=bads, bids_path=bids_path, verbose=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Processing channel MEG 0112:
+        status: bad
+        description: n/a
+    Processing channel MEG 0131:
+        status: bad
+        description: n/a
+
+
+
+
+That's it! Let's verify the result.
+
+
+.. code-block:: default
+
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
+          f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:339: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    After marking MEG 0112 and MEG 0131 as bad, the following channels are now marked as bad:
+        MEG 0112, MEG 0131, MEG 2443, EEG 053
+
+
+
+
+
+As you can see, now a total of **four** channels is marked as bad: the ones
+that were already bad when we started – ``EEG 053`` and ``MEG 2443`` – and
+the two channels we passed to :func:`mne_bids.mark_bad_channels` –
+``MEG 0112`` and ``MEG 0131``. This shows that marking bad channels via
+:func:`mne_bids.mark_bad_channels`, by default, is an **additive** procedure,
+which allows you to mark additional channels as bad while retaining the
+information about all channels that had *previously* been marked as bad.
+
+If you instead would like to **replace** the collection of bad channels
+entirely, pass the argument ``overwrite=True``:
+
+
+.. code-block:: default
+
+
+    bads = ['MEG 0112', 'MEG 0131']
+    mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+                      verbose=False)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
+          f'`overwrite=True`, the following channels '
+          f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Resetting status and description for all channels.
+    Processing channel MEG 0112:
+        status: bad
+        description: n/a
+    Processing channel MEG 0131:
+        status: bad
+        description: n/a
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:339: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    After marking MEG 0112 and MEG 0131 as bad and passing `overwrite=True`, the following channels are now marked as bad:
+        MEG 0112, MEG 0131
+
+
+
+
+
+Lastly, if you're looking for a way to mark all channels as good, simply
+pass an empty list as ``ch_names``, combined with ``overwrite=True``:
+
+
+.. code-block:: default
+
+
+    bads = []
+    mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+                      verbose=False)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'After passing `ch_names=[]` and `overwrite=True`, the following '
+          f'channels are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Resetting status and description for all channels.
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:339: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    After passing `ch_names=[]` and `overwrite=True`, the following channels are now marked as bad:
+    
+
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  11.791 seconds)
+
+
+.. _sphx_glr_download_auto_examples_mark_bad_channels.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+  .. container:: binder-badge
+
+    .. image:: images/binder_badge_logo.svg
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.6/notebooks/auto_examples/mark_bad_channels.ipynb
+      :alt: Launch binder
+      :width: 150 px
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: mark_bad_channels.py <mark_bad_channels.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: mark_bad_channels.ipynb <mark_bad_channels.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_
