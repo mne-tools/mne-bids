@@ -10,26 +10,40 @@ What's new?
 .. currentmodule:: mne_bids
 .. _changes_0_7:
 
-Version 0.7 (unreleased)
-------------------------
+Version 0.7
+-----------
 
-xxx
+This release brings numerous enhancements and bug fixes that enhance reading
+and writing BIDS data, and improve compatibility with the latest BIDS
+specifications.
 
 Notable changes
 ~~~~~~~~~~~~~~~
 
-- xxx
+- Channel names in ``*_channels.tsv`` and ``*_electrodes.tsv`` files now always
+  take precedence over the names stored in the raw files.
+- When reading data where the same trial type refers to different trigger
+  values, we will now automatically create hierarchical event names in the
+  form of ``trial_type/value1``, `trial_type/value2`` etc.
+- :func:`mne_bids.write_raw_bids` now allows users to specify a format
+  conversion via the new ``format`` parameter.
+- Various improvements to data reading and :class:`mne_bids.BIDSPath` make
+  working with real-life data easier.
+- Many bug fixes in :func:`mne_bids.write_raw_bids` and in the MNE-BIDS
+  Inspector.
 
 Authors
 ~~~~~~~
 
 * `Adam Li`_
-* `Richard Höchenberger`_
-* `Stefan Appelhoff`_
+* `Alexandre Gramfort`_
+* `Austin Hurst`_
 * `Diego Lozano-Soldevilla`_
 * `Eduard Ort`_
-* `Alexandre Gramfort`_
 * `Maximilien Chaumon`_
+* `Richard Höchenberger`_
+* `Stefan Appelhoff`_
+* `Tom Donoghue`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,7 +53,7 @@ Enhancements
 
 - Some datasets out in the real world have a non-standard ``stim_type`` instead of a ``trial_type`` column in ``*_events.tsv``. :func:`mne_bids.read_raw_bids` now makes use of this column, and emits a warning, encouraging users to rename it, by `Richard Höchenberger`_ (:gh:`680`)
 - When reading data where the same event name or trial type refers to different event or trigger values, we will now create a hierarchical event name in the form of ``trial_type/value``, e.g. ``stimulus/110``, by `Richard Höchenberger`_ (:gh:`688`)
-- When reading data via :func:`mne_bids.read_raw_bids`, the channel names specified in the BIDS ``*_channels.tsv`` and ``*_electrodes.tsv`` files now always take precedence (and do not need to match) the channel names stored in the raw files anymore, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`691`, :gh:`704`)
+- When reading data via :func:`mne_bids.read_raw_bids`, the channel names specified in the BIDS ``*_channels.tsv`` and ``*_electrodes.tsv`` files now always take precedence over (and do not need to match) the channel names stored in the raw files anymore, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`691`, :gh:`704`)
 - Improve the ``Convert iEEG data to BIDS`` tutorial to include a note on how BIDS and MNE-Python coordinate frames are handled, by `Adam Li`_ (:gh:`717`)
 - More detailed error messages when trying to write modified data via :func:`mne_bids.write_raw_bids`, by `Richard Höchenberger`_ (:gh:`719`)
 - If ``check=True``, :class:`mne_bids.BIDSPath` now checks the ``space`` entity to be valid according to BIDS specification Appendix VIII, by `Stefan Appelhoff`_ (:gh:`724`)
@@ -52,7 +66,7 @@ Enhancements
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Add ``format`` kwarg to :func:`write_raw_bids` that allows users to specify if they want to force conversion to ``BrainVision`` or ``FIF`` file format, by `Adam Li`_ (:gh:`672`)
+- Add ``format`` kwarg to :func:`mne_bids.write_raw_bids` that allows users to specify if they want to force conversion to ``BrainVision`` or ``FIF`` file format, by `Adam Li`_ (:gh:`672`)
 - :func:`mne_bids.read_raw_bids` now stores the ``participant_id`` value from ``participants.tsv`` in ``raw.info['subject_info']['his_id']``, not in ``raw.info['subject_info']['participant_id']`` anymore, by `Richard Höchenberger`_ (:gh:`745`)
 
 Requirements
