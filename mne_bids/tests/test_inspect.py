@@ -57,8 +57,8 @@ def setup_bids_test_dir(bids_root):
 
 @requires_matplotlib
 @requires_version('mne', '0.22')
-@pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.parametrize('save_changes', (True, False))
 def test_inspect_single_file(tmp_path, save_changes):
     """Test inspecting a dataset consisting of only a single file."""
     from mne.utils._testing import _click_ch_name
