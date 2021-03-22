@@ -7,7 +7,6 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-import glob
 import json
 import re
 from datetime import datetime, timezone
@@ -563,9 +562,9 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                     verbose=verbose)
 
     # read in associated subject info from participants.tsv
-    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    participants_tsv_fpath = bids_root / 'participants.tsv'
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_fpath):
+    if participants_tsv_fpath.exists():
         raw = _handle_participants_reading(participants_tsv_fpath, raw,
                                            subject, verbose=verbose)
     else:
