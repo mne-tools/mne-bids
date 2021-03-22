@@ -107,6 +107,25 @@ And fetch the data for several subjects and runs of a single task.
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:00,    3.65MB/s]     15%|#4        | Downloading : 376k/2.48M [00:00<00:00,    3.77MB/s]      35%|###5      | Downloading : 888k/2.48M [00:00<00:00,    3.92MB/s]     45%|####5     | Downloading : 1.12M/2.48M [00:00<00:00,    4.05MB/s]     55%|#####5    | Downloading : 1.37M/2.48M [00:00<00:00,    4.16MB/s]     65%|######5   | Downloading : 1.62M/2.48M [00:00<00:00,    4.29MB/s]     75%|#######5  | Downloading : 1.87M/2.48M [00:00<00:00,    4.42MB/s]     85%|########5 | Downloading : 2.12M/2.48M [00:00<00:00,    4.51MB/s]     96%|#########5| Downloading : 2.37M/2.48M [00:00<00:00,    4.57MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    9.14MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R08.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:00,    3.82MB/s]     15%|#4        | Downloading : 376k/2.48M [00:00<00:00,    3.92MB/s]      25%|##4       | Downloading : 632k/2.48M [00:00<00:00,    4.04MB/s]     35%|###5      | Downloading : 888k/2.48M [00:00<00:00,    4.16MB/s]     45%|####5     | Downloading : 1.12M/2.48M [00:00<00:00,    4.29MB/s]     55%|#####5    | Downloading : 1.37M/2.48M [00:00<00:00,    4.43MB/s]     70%|#######   | Downloading : 1.74M/2.48M [00:00<00:00,    4.57MB/s]     80%|########  | Downloading : 1.99M/2.48M [00:00<00:00,    4.70MB/s]     91%|######### | Downloading : 2.24M/2.48M [00:00<00:00,    4.84MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    5.01MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    9.85MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:00,    3.86MB/s]     15%|#4        | Downloading : 376k/2.48M [00:00<00:00,    3.96MB/s]      25%|##4       | Downloading : 632k/2.48M [00:00<00:00,    4.09MB/s]     40%|####      | Downloading : 0.99M/2.48M [00:00<00:00,    4.23MB/s]     50%|#####     | Downloading : 1.24M/2.48M [00:00<00:00,    4.36MB/s]     60%|######    | Downloading : 1.49M/2.48M [00:00<00:00,    4.49MB/s]     70%|#######   | Downloading : 1.74M/2.48M [00:00<00:00,    4.63MB/s]     80%|########  | Downloading : 1.99M/2.48M [00:00<00:00,    4.76MB/s]     91%|######### | Downloading : 2.24M/2.48M [00:00<00:00,    4.84MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    5.00MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    9.62MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.61MB/s]     10%|9         | Downloading : 248k/2.44M [00:00<00:00,    3.68MB/s]      18%|#7        | Downloading : 440k/2.44M [00:00<00:00,    3.73MB/s]     28%|##7       | Downloading : 696k/2.44M [00:00<00:00,    3.85MB/s]     38%|###8      | Downloading : 952k/2.44M [00:00<00:00,    3.92MB/s]     43%|####3     | Downloading : 1.05M/2.44M [00:00<00:00,    3.96MB/s]     48%|####8     | Downloading : 1.18M/2.44M [00:00<00:00,    3.99MB/s]     54%|#####3    | Downloading : 1.30M/2.44M [00:00<00:00,    4.02MB/s]     59%|#####8    | Downloading : 1.43M/2.44M [00:00<00:00,    3.98MB/s]     64%|######3   | Downloading : 1.55M/2.44M [00:00<00:00,    3.94MB/s]     69%|######8   | Downloading : 1.68M/2.44M [00:00<00:00,    3.91MB/s]     74%|#######4  | Downloading : 1.80M/2.44M [00:00<00:00,    3.87MB/s]     79%|#######9  | Downloading : 1.93M/2.44M [00:00<00:00,    3.86MB/s]     84%|########4 | Downloading : 2.05M/2.44M [00:00<00:00,    3.84MB/s]     89%|########9 | Downloading : 2.18M/2.44M [00:00<00:00,    3.85MB/s]     95%|#########4| Downloading : 2.30M/2.44M [00:00<00:00,    3.90MB/s]    100%|#########9| Downloading : 2.43M/2.44M [00:00<00:00,    3.89MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    4.48MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R08.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.87MB/s]      9%|8         | Downloading : 216k/2.44M [00:00<00:00,    3.85MB/s]      14%|#3        | Downloading : 344k/2.44M [00:00<00:00,    3.89MB/s]     19%|#8        | Downloading : 472k/2.44M [00:00<00:00,    3.88MB/s]     24%|##4       | Downloading : 600k/2.44M [00:00<00:00,    3.93MB/s]     32%|###1      | Downloading : 792k/2.44M [00:00<00:00,    4.01MB/s]     37%|###6      | Downloading : 920k/2.44M [00:00<00:00,    4.08MB/s]     42%|####1     | Downloading : 1.02M/2.44M [00:00<00:00,    4.18MB/s]     47%|####7     | Downloading : 1.15M/2.44M [00:00<00:00,    4.25MB/s]     57%|#####7    | Downloading : 1.40M/2.44M [00:00<00:00,    4.36MB/s]     63%|######2   | Downloading : 1.52M/2.44M [00:00<00:00,    4.41MB/s]     73%|#######2  | Downloading : 1.77M/2.44M [00:00<00:00,    4.48MB/s]     78%|#######7  | Downloading : 1.90M/2.44M [00:00<00:00,    4.53MB/s]     83%|########3 | Downloading : 2.02M/2.44M [00:00<00:00,    4.55MB/s]     88%|########8 | Downloading : 2.15M/2.44M [00:00<00:00,    4.57MB/s]     93%|#########3| Downloading : 2.27M/2.44M [00:00<00:00,    4.52MB/s]     98%|#########8| Downloading : 2.40M/2.44M [00:00<00:00,    4.55MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    5.44MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.82MB/s]      7%|7         | Downloading : 184k/2.44M [00:00<00:00,    3.83MB/s]      13%|#2        | Downloading : 312k/2.44M [00:00<00:00,    3.88MB/s]     18%|#7        | Downloading : 440k/2.44M [00:00<00:00,    3.87MB/s]     20%|##        | Downloading : 504k/2.44M [00:00<00:00,    3.81MB/s]     23%|##2       | Downloading : 568k/2.44M [00:00<00:00,    3.73MB/s]     28%|##7       | Downloading : 696k/2.44M [00:00<00:00,    3.79MB/s]     30%|###       | Downloading : 760k/2.44M [00:00<00:00,    3.72MB/s]     36%|###5      | Downloading : 888k/2.44M [00:00<00:00,    3.77MB/s]     41%|####      | Downloading : 0.99M/2.44M [00:00<00:00,    3.76MB/s]     46%|####5     | Downloading : 1.12M/2.44M [00:00<00:00,    3.81MB/s]     51%|#####     | Downloading : 1.24M/2.44M [00:00<00:00,    3.87MB/s]     56%|#####6    | Downloading : 1.37M/2.44M [00:00<00:00,    3.85MB/s]     61%|######1   | Downloading : 1.49M/2.44M [00:00<00:00,    3.91MB/s]     66%|######6   | Downloading : 1.62M/2.44M [00:00<00:00,    3.96MB/s]     69%|######8   | Downloading : 1.68M/2.44M [00:00<00:00,    3.87MB/s]     74%|#######4  | Downloading : 1.80M/2.44M [00:00<00:00,    3.91MB/s]     77%|#######6  | Downloading : 1.87M/2.44M [00:00<00:00,    3.85MB/s]     82%|########1 | Downloading : 1.99M/2.44M [00:00<00:00,    3.83MB/s]     87%|########6 | Downloading : 2.12M/2.44M [00:00<00:00,    3.87MB/s]     89%|########9 | Downloading : 2.18M/2.44M [00:00<00:00,    3.80MB/s]     95%|#########4| Downloading : 2.30M/2.44M [00:00<00:00,    3.79MB/s]    100%|#########9| Downloading : 2.43M/2.44M [00:00<00:00,    3.84MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    4.08MB/s]
+
 
 
 
@@ -1040,7 +1059,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.471 seconds)
+   **Total running time of the script:** ( 0 minutes  3.644 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:
@@ -1055,7 +1074,7 @@ Now let's generate a report on the dataset.
   .. container:: binder-badge
 
     .. image:: images/binder_badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.7/notebooks/auto_examples/convert_group_studies.ipynb
       :alt: Launch binder
       :width: 150 px
 
