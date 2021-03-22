@@ -1079,7 +1079,7 @@ Let's now pass it in voxel coordinates
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  59.038 seconds)
+   **Total running time of the script:** ( 1 minutes  26.424 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
@@ -1094,7 +1094,7 @@ Let's now pass it in voxel coordinates
   .. container:: binder-badge
 
     .. image:: images/binder_badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.7/notebooks/auto_examples/convert_mri_and_trans.ipynb
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb
       :alt: Launch binder
       :width: 150 px
 
