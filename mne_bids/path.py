@@ -228,7 +228,7 @@ class BIDSPath(object):
     Examples
     --------
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
-                                 suffix='ieeg', extension='.edf')
+                             suffix='ieeg', extension='.edf')
     >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_path
@@ -236,7 +236,7 @@ class BIDSPath(object):
     basename: sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
     >>> new_bids_path = bids_path.copy().update(subject='test2',
-                                                   session='one')
+                                                session='one')
     >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> # printing the BIDSPath will show relative path when
