@@ -228,7 +228,7 @@ class BIDSPath(object):
     Examples
     --------
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
-                                 suffix='ieeg', extension='.edf')
+                             suffix='ieeg', extension='.edf')
     >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_path
@@ -236,7 +236,7 @@ class BIDSPath(object):
     basename: sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
     >>> new_bids_path = bids_path.copy().update(subject='test2',
-                                                   session='one')
+                                                session='one')
     >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> # printing the BIDSPath will show relative path when
@@ -261,15 +261,20 @@ class BIDSPath(object):
 
     Notes
     -----
-    BIDS entities are separated generally with a ``"_"`` character, while
-    entity key/value pairs are separated with a ``"-"`` character (e.g.
-    ``subject``, ``session``, ``task``, etc.). There are checks performed
-    to make sure that there are no ``'-'``, ``'_'``, or ``'/'`` characters
-    associated with any of these entities.
+    BIDS entities are generally separated with a ``"_"`` character, while
+    entity key/value pairs are separated with a ``"-"`` character.
+    There are checks performed to make sure that there are no ``'-'``, ``'_'``,
+    or ``'/'`` characters contained in any entity keys or values.
 
     To represent a filename such as ``dataset_description.json``,
     one can set ``check=False``, and pass ``suffix='dataset_description'``
     and ``extension='.json'``.
+
+    ``BIDSPath`` can also be used to represent file and folder names of data
+    types that are not yet supported through MNE-BIDS, but are recognized by
+    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and
+    pass ``check=False`` to represent diffusion-weighted imaging and
+    functional MRI paths.
     """
 
     def __init__(self, subject=None, session=None,
@@ -552,7 +557,8 @@ class BIDSPath(object):
                 continue
 
             if key == 'datatype':
-                if val is not None and val not in ALLOWED_DATATYPES:
+                if val is not None and val not in ALLOWED_DATATYPES \
+                        and self.check:
                     raise ValueError(f'datatype ({val}) is not valid. '
                                      f'Should be one of '
                                      f'{ALLOWED_DATATYPES}')
