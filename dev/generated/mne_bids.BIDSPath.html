@@ -189,17 +189,21 @@ in which you wish to create a file with this name.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>BIDS entities are separated generally with a <code class="docutils literal notranslate"><span class="pre">&quot;_&quot;</span></code> character, while
-entity key/value pairs are separated with a <code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code> character (e.g.
-<code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code>, <code class="docutils literal notranslate"><span class="pre">task</span></code>, etc.). There are checks performed
-to make sure that there are no <code class="docutils literal notranslate"><span class="pre">'-'</span></code>, <code class="docutils literal notranslate"><span class="pre">'_'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'/'</span></code> characters
-associated with any of these entities.</p>
+<p>BIDS entities are generally separated with a <code class="docutils literal notranslate"><span class="pre">&quot;_&quot;</span></code> character, while
+entity key/value pairs are separated with a <code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code> character.
+There are checks performed to make sure that there are no <code class="docutils literal notranslate"><span class="pre">'-'</span></code>, <code class="docutils literal notranslate"><span class="pre">'_'</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">'/'</span></code> characters contained in any entity keys or values.</p>
 <p>To represent a filename such as <code class="docutils literal notranslate"><span class="pre">dataset_description.json</span></code>,
 one can set <code class="docutils literal notranslate"><span class="pre">check=False</span></code>, and pass <code class="docutils literal notranslate"><span class="pre">suffix='dataset_description'</span></code>
 and <code class="docutils literal notranslate"><span class="pre">extension='.json'</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> can also be used to represent file and folder names of data
+types that are not yet supported through MNE-BIDS, but are recognized by
+BIDS. For example, one can set <code class="docutils literal notranslate"><span class="pre">datatype</span></code> to <code class="docutils literal notranslate"><span class="pre">dwi</span></code> or <code class="docutils literal notranslate"><span class="pre">func</span></code> and
+pass <code class="docutils literal notranslate"><span class="pre">check=False</span></code> to represent diffusion-weighted imaging and
+functional MRI paths.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span>
-<span class="go">                             suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
+<span class="go">                         suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span>
@@ -207,7 +211,7 @@ and <code class="docutils literal notranslate"><span class="pre">extension='.jso
 <span class="go">basename: sub-test_ses-two_task-mytask_ieeg.edf)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># copy and update multiple entities at once</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test2&#39;</span><span class="p">,</span>
-<span class="go">                                               session=&#39;one&#39;)</span>
+<span class="go">                                            session=&#39;one&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test2_ses-one_task-mytask_ieeg.edf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># printing the BIDSPath will show relative path when</span>
@@ -566,7 +570,7 @@ or updates for ‘root’ or ‘datatype’.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>

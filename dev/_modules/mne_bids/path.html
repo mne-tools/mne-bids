@@ -349,7 +349,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;,</span>
-<span class="sd">                                 suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
+<span class="sd">                             suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">    sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="sd">    &gt;&gt;&gt; bids_path</span>
@@ -357,7 +357,7 @@
 <span class="sd">    basename: sub-test_ses-two_task-mytask_ieeg.edf)</span>
 <span class="sd">    &gt;&gt;&gt; # copy and update multiple entities at once</span>
 <span class="sd">    &gt;&gt;&gt; new_bids_path = bids_path.copy().update(subject=&#39;test2&#39;,</span>
-<span class="sd">                                                   session=&#39;one&#39;)</span>
+<span class="sd">                                                session=&#39;one&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path.basename)</span>
 <span class="sd">    sub-test2_ses-one_task-mytask_ieeg.edf</span>
 <span class="sd">    &gt;&gt;&gt; # printing the BIDSPath will show relative path when</span>
@@ -382,15 +382,20 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    BIDS entities are separated generally with a ``&quot;_&quot;`` character, while</span>
-<span class="sd">    entity key/value pairs are separated with a ``&quot;-&quot;`` character (e.g.</span>
-<span class="sd">    ``subject``, ``session``, ``task``, etc.). There are checks performed</span>
-<span class="sd">    to make sure that there are no ``&#39;-&#39;``, ``&#39;_&#39;``, or ``&#39;/&#39;`` characters</span>
-<span class="sd">    associated with any of these entities.</span>
+<span class="sd">    BIDS entities are generally separated with a ``&quot;_&quot;`` character, while</span>
+<span class="sd">    entity key/value pairs are separated with a ``&quot;-&quot;`` character.</span>
+<span class="sd">    There are checks performed to make sure that there are no ``&#39;-&#39;``, ``&#39;_&#39;``,</span>
+<span class="sd">    or ``&#39;/&#39;`` characters contained in any entity keys or values.</span>
 
 <span class="sd">    To represent a filename such as ``dataset_description.json``,</span>
 <span class="sd">    one can set ``check=False``, and pass ``suffix=&#39;dataset_description&#39;``</span>
 <span class="sd">    and ``extension=&#39;.json&#39;``.</span>
+
+<span class="sd">    ``BIDSPath`` can also be used to represent file and folder names of data</span>
+<span class="sd">    types that are not yet supported through MNE-BIDS, but are recognized by</span>
+<span class="sd">    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and</span>
+<span class="sd">    pass ``check=False`` to represent diffusion-weighted imaging and</span>
+<span class="sd">    functional MRI paths.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -673,7 +678,8 @@
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;datatype&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span> \
+                        <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;datatype (</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">) is not valid. &#39;</span>
                                      <span class="sa">f</span><span class="s1">&#39;Should be one of &#39;</span>
                                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_DATATYPES</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -1600,7 +1606,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-21.<br/>
+        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>

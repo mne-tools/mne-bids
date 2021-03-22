@@ -920,7 +920,7 @@ recording that is closest in time to the experimental measurement.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1132: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+    /home/circleci/project/mne_bids/path.py:1138: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv"
       warn(msg)
@@ -960,7 +960,7 @@ Finally, we can read the empty room file using
             PCA-v3 (1 x 102)  idle
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
-    /home/circleci/project/mne_bids/path.py:1132: RuntimeWarning: Did not find any events.tsv associated with sub-emptyroom_ses-20021204_task-noise.
+    /home/circleci/project/mne_bids/path.py:1138: RuntimeWarning: Did not find any events.tsv associated with sub-emptyroom_ses-20021204_task-noise.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*events.tsv"
       warn(msg)
@@ -975,7 +975,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.743 seconds)
+   **Total running time of the script:** ( 0 minutes  3.160 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:
