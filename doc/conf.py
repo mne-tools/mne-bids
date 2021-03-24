@@ -73,7 +73,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'mne_bids'
+project = u'MNE-BIDS'
 td = date.today()
 copyright = u'2017-%s, MNE Developers. Last updated on %s' % (td.year,
                                                               td.isoformat())
