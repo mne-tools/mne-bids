@@ -83,7 +83,7 @@ on a per-user basis, set the environment variable `VALIDATOR_EXECUTABLE` to poin
 The documentation can be built using sphinx. For that, please additionally
 install the following:
 
-    $ pip install matplotlib nilearn sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
+    $ pip install matplotlib nilearn sphinx numpydoc sphinx-gallery pydata-sphinx-theme pillow
 
 To build the documentation locally, one can run:
 

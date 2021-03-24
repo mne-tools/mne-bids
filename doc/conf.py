@@ -5,7 +5,6 @@ from datetime import date
 
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
-import sphinx_bootstrap_theme
 
 import mne_bids
 
@@ -97,9 +96,8 @@ exclude_patterns = ['auto_examples/index.rst', '_build', 'Thumbs.db',
                     '.DS_Store']
 
 # HTML options (e.g., theme)
-# see: https://sphinx-bootstrap-theme.readthedocs.io/en/latest/README.html
-# Clean up sidebar: Do not show "Source" link
 html_show_sourcelink = False
+html_copy_source = False
 
 html_theme = 'pydata_sphinx_theme'
 
