@@ -8,6 +8,12 @@ span.option {
   white-space: nowrap;
 }
 
+/* gallery thumbnail size */
+.sphx-glr-thumbcontainer {
+  min-width: 160px;
+  height: 250px;
+}
+
 /* ************************************************* Previous / Next buttons */
 .prev-next-bottom a.left-prev:before {
   content:"❮\00A0"
