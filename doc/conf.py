@@ -101,8 +101,7 @@ exclude_patterns = ['auto_examples/index.rst', '_build', 'Thumbs.db',
 # Clean up sidebar: Do not show "Source" link
 html_show_sourcelink = False
 
-html_theme = 'bootstrap'
-html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
+html_theme = 'pydata_sphinx_theme'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -113,21 +112,31 @@ html_css_files = ['style.css']
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'navbar_title': 'MNE-BIDS',
-    'bootswatch_theme': "flatly",
-    'navbar_sidebarrel': False,  # no "previous / next" navigation
-    'navbar_pagenav': False,  # no "Page" navigation in sidebar
-    'bootstrap_version': "3",
-    'navbar_links': [
-        ("News", "whats_new"),
-        ("Install", "install"),
-        ("Use", "use"),
-        ("API", "api"),
-        ("CLI", "generated/cli"),
-        ("Contribute!", "contribute")
-    ]}
+    'icon_links': [
+        dict(name='GitHub',
+             url='https://github.com/mne-tools/mne-bids',
+             icon='fab fa-github-square'),
+    ],
+    'icon_links_label': 'Quick Links',  # for screen reader
+    'use_edit_page_button': False,
+    'navigation_with_keys': False,
+    'show_toc_level': 1,
+}
 
-html_sidebars = {'**': ['localtoc.html']}
+html_context = {
+    'versions_dropdown': {
+        'dev': 'v0.8 (devel)',
+        'stable': 'v0.7 (stable)',
+        'v0.6': 'v0.6',
+        'v0.5': 'v0.5',
+        'v0.4': 'v0.4',
+        'v0.3': 'v0.3',
+        'v0.2': 'v0.2',
+        'v0.1': 'v0.1',
+    },
+}
+
+html_sidebars = {}
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
