@@ -1,5 +1,10 @@
-What is MNE-BIDS?
-=================
+.. title:: MNE-BIDS
+
+.. The page title must be in rST for it to show in next/prev page buttons.
+   Therefore we add a special style rule to only this page that hides h1 tags
+
+MNE-BIDS
+========
 
 MNE-BIDS is a Python package that allows you to read and write
 `BIDS <https://bids.neuroimaging.io/>`_\ -compatible datasets with the help of
@@ -59,5 +64,12 @@ data type you used:
 - `BIDS-iEEG <https://doi.org/10.1038/s41597-019-0105-7>`_
 
 
-.. contents:: :local:
-    :depth: 3
+.. toctree::
+   :hidden:
+
+   News<whats_new>
+   Install<install>
+   Use<use>
+   API<api>
+   CLI<generated/cli>
+   Contribute<contribute>
