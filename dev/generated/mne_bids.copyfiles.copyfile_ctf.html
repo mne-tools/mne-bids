@@ -1,18 +1,44 @@
+
 <!DOCTYPE html>
 
 <html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles.copyfile_ctf &#8212; mne_bids 0.8.dev0 documentation</title>
+    <title>mne_bids.copyfiles.copyfile_ctf &#8212; MNE-BIDS 0.8.dev0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
+
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1e043a052b0af929e4d8.js">
+
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -21,110 +47,280 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-<meta charset='utf-8'>
-<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+    <link rel="next" title="mne_bids.copyfiles.copyfile_bti" href="mne_bids.copyfiles.copyfile_bti.html" />
+    <link rel="prev" title="mne_bids.copyfiles.copyfile_eeglab" href="mne_bids.copyfiles.copyfile_eeglab.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
-  </head><body>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
 
-  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="../index.html">
-          MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.8.dev0</b></span>
-      </div>
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
-        <div class="collapse navbar-collapse nav-collapse">
-          <ul class="nav navbar-nav">
-            
-                <li><a href="../whats_new.html">News</a></li>
-                <li><a href="../install.html">Install</a></li>
-                <li><a href="../use.html">Use</a></li>
-                <li><a href="../api.html">API</a></li>
-                <li><a href="cli.html">CLI</a></li>
-                <li><a href="../contribute.html">Contribute!</a></li>
-            
-            
-              <li class="dropdown globaltoc-container">
-  <a role="button"
-     id="dLabelGlobalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
-  <ul class="dropdown-menu globaltoc"
-      role="menu"
-      aria-labelledby="dLabelGlobalToc"></ul>
+
+    
+    <a class="navbar-brand" href="../index.html">
+      <p class="title">MNE-BIDS</p>
+    </a>
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  News
+ </a>
 </li>
-              
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Install
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../use.html">
+  Use
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="cli.html">
+  CLI
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../contribute.html">
+  Contribute
+ </a>
+</li>
+
+        
+      </ul>
+
+      <!-- begin version dropdown -->
+<ul class="navbar-nav">
+    <li class="mr-2 dropdown">
+        <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+            v0.8.dev0
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+            <li><a href="https://mne-tools.github.io/mne-bids/dev/index.html">v0.8 (devel)</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/stable/index.html">v0.7 (stable)</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.6/index.html">v0.6</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.5/index.html">v0.5</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.4/index.html">v0.4</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.3/index.html">v0.3</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.2/index.html">v0.2</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.1/index.html">v0.1</a></li>
+        </ul>
+    </li>
+</ul>
+<!-- end version dropdown --><ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
             
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.write_raw_bids.html">
+   mne_bids.write_raw_bids
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.read_raw_bids.html">
+   mne_bids.read_raw_bids
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.write_meg_calibration.html">
+   mne_bids.write_meg_calibration
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.write_meg_crosstalk.html">
+   mne_bids.write_meg_crosstalk
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.BIDSPath.html">
+   mne_bids.BIDSPath
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.make_dataset_description.html">
+   mne_bids.make_dataset_description
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.make_report.html">
+   mne_bids.make_report
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.write_anat.html">
+   mne_bids.write_anat
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.mark_bad_channels.html">
+   mne_bids.mark_bad_channels
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.get_head_mri_trans.html">
+   mne_bids.get_head_mri_trans
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.get_anonymization_daysback.html">
+   mne_bids.get_anonymization_daysback
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.print_dir_tree.html">
+   mne_bids.print_dir_tree
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.get_entities_from_fname.html">
+   mne_bids.get_entities_from_fname
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.get_entity_vals.html">
+   mne_bids.get_entity_vals
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.get_datatypes.html">
+   mne_bids.get_datatypes
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.update_sidecar_json.html">
+   mne_bids.update_sidecar_json
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.inspect_dataset.html">
+   mne_bids.inspect_dataset
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.stats.count_events.html">
+   mne_bids.stats.count_events
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html">
+   mne_bids.copyfiles.copyfile_brainvision
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html">
+   mne_bids.copyfiles.copyfile_edf
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html">
+   mne_bids.copyfiles.copyfile_eeglab
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="current reference internal" href="#">
+   mne_bids.copyfiles.copyfile_ctf
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">
+   mne_bids.copyfiles.copyfile_bti
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">
+   mne_bids.copyfiles.copyfile_kit
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
             
-            
-            
-            
-              <li class="hidden-sm"></li>
-            
-          </ul>
+          
 
           
-<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
-  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.8.dev0
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
-    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.7/index.html">v0.7</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.6/index.html">v0.6</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
-  </ul>
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
 </div>
 
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-bids-copyfiles-copyfile-ctf">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_bids.copyfiles.copyfile_ctf
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
 
-            
-<form class="navbar-form navbar-right" action="../search.html" method="get">
- <div class="form-group">
-  <input type="text" name="q" class="form-control" placeholder="Search" />
- </div>
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
+</nav>
+
+
+              
+          </div>
           
 
-        </div>
-    </div>
-  </div>
-
-<div class="container">
-  <div class="row">
-      <div class="col-md-3">
-        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
-<li><a class="reference internal" href="#">mne_bids.copyfiles.copyfile_ctf</a><ul>
-<li><a class="reference internal" href="#examples-using-mne-bids-copyfiles-copyfile-ctf">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_ctf</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-        </div>
-      </div>
-    <div class="body col-md-9 content" role="main">
-      
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <div class="section" id="mne-bids-copyfiles-copyfile-ctf">
 <h1>mne_bids.copyfiles.copyfile_ctf<a class="headerlink" href="#mne-bids-copyfiles-copyfile-ctf" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
@@ -159,32 +355,33 @@
 </div>
 
 
-    </div>
-      
-  </div>
-</div>
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="mne_bids.copyfiles.copyfile_eeglab.html" title="previous page">mne_bids.copyfiles.copyfile_eeglab</a>
+    <a class='right-next' id="next-link" href="mne_bids.copyfiles.copyfile_bti.html" title="next page">mne_bids.copyfiles.copyfile_bti</a>
 
-<footer class="footer">
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
   <div class="container">
-    <p class="pull-right">
-      <a href="#">Back to top</a>
-      
-    </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-24.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-25.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
 </footer>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-37225609-2');
-</script>
-
   </body>
 </html>

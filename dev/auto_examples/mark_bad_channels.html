@@ -1,18 +1,44 @@
+
 <!DOCTYPE html>
 
 <html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>03. Interactive data inspection and bad channel selection &#8212; mne_bids 0.8.dev0 documentation</title>
+    <title>03. Interactive data inspection and bad channel selection &#8212; MNE-BIDS 0.8.dev0 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
+
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1e043a052b0af929e4d8.js">
+
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -21,111 +47,225 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-<meta charset='utf-8'>
-<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
-<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+    <link rel="next" title="04. Convert EEG data to BIDS format" href="convert_eeg_to_bids.html" />
+    <link rel="prev" title="02. Convert MNE sample data to BIDS format" href="convert_mne_sample.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
-  </head><body>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
 
-  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="../index.html">
-          MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.8.dev0</b></span>
-      </div>
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
-        <div class="collapse navbar-collapse nav-collapse">
-          <ul class="nav navbar-nav">
-            
-                <li><a href="../whats_new.html">News</a></li>
-                <li><a href="../install.html">Install</a></li>
-                <li><a href="../use.html">Use</a></li>
-                <li><a href="../api.html">API</a></li>
-                <li><a href="../generated/cli.html">CLI</a></li>
-                <li><a href="../contribute.html">Contribute!</a></li>
-            
-            
-              <li class="dropdown globaltoc-container">
-  <a role="button"
-     id="dLabelGlobalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="../index.html">Site <b class="caret"></b></a>
-  <ul class="dropdown-menu globaltoc"
-      role="menu"
-      aria-labelledby="dLabelGlobalToc"></ul>
+
+    
+    <a class="navbar-brand" href="../index.html">
+      <p class="title">MNE-BIDS</p>
+    </a>
+    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  News
+ </a>
 </li>
-              
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Install
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../use.html">
+  Use
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../generated/cli.html">
+  CLI
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../contribute.html">
+  Contribute
+ </a>
+</li>
+
+        
+      </ul>
+
+      <!-- begin version dropdown -->
+<ul class="navbar-nav">
+    <li class="mr-2 dropdown">
+        <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+            v0.8.dev0
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+            <li><a href="https://mne-tools.github.io/mne-bids/dev/index.html">v0.8 (devel)</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/stable/index.html">v0.7 (stable)</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.6/index.html">v0.6</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.5/index.html">v0.5</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.4/index.html">v0.4</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.3/index.html">v0.3</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.2/index.html">v0.2</a></li>
+            <li><a href="https://mne-tools.github.io/mne-bids/v0.1/index.html">v0.1</a></li>
+        </ul>
+    </li>
+</ul>
+<!-- end version dropdown --><ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
             
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l2">
+  <a class="reference internal" href="read_bids_datasets.html">
+   01. Read BIDS datasets
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="convert_mne_sample.html">
+   02. Convert MNE sample data to BIDS format
+  </a>
+ </li>
+ <li class="toctree-l2 current active">
+  <a class="current reference internal" href="#">
+   03. Interactive data inspection and bad channel selection
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="convert_eeg_to_bids.html">
+   04. Convert EEG data to BIDS format
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="convert_group_studies.html">
+   05. BIDS conversion for group studies
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="rename_brainvision_files.html">
+   06. Rename BrainVision EEG data files
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="convert_mri_and_trans.html">
+   07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="convert_ieeg_to_bids.html">
+   08. Convert iEEG data to BIDS format
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="convert_empty_room.html">
+   09. Storing empty room data in BIDS format
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="bidspath.html">
+   10. An introduction to BIDSPath
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="create_bids_folder.html">
+   11. Creating BIDS-compatible folder names and filenames
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="update_bids_datasets.html">
+   12. Update BIDS datasets
+  </a>
+ </li>
+ <li class="toctree-l2">
+  <a class="reference internal" href="write_modified_files.html">
+   13. Writing modified files with MNE-BIDS
+  </a>
+ </li>
+</ul>
+  </div>
+</nav>
+            </div>
             
-            
-            
-            
-              <li class="hidden-sm"></li>
-            
-          </ul>
+          
 
           
-<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
-  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.8.dev0
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
-    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.7/index.html">v0.7</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.6/index.html">v0.6</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
-    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
-  </ul>
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
 </div>
 
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#interactive-use">
+   Interactive use
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#non-interactive-programmatic-bad-channel-selection">
+   Non-interactive (programmatic) bad channel selection
+  </a>
+ </li>
+</ul>
 
-            
-<form class="navbar-form navbar-right" action="../search.html" method="get">
- <div class="form-group">
-  <input type="text" name="q" class="form-control" placeholder="Search" />
- </div>
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
+</nav>
+
+
+              
+          </div>
           
 
-        </div>
-    </div>
-  </div>
-
-<div class="container">
-  <div class="row">
-      <div class="col-md-3">
-        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
-<li><a class="reference internal" href="#">03. Interactive data inspection and bad channel selection</a><ul>
-<li><a class="reference internal" href="#interactive-use">Interactive use</a></li>
-<li><a class="reference internal" href="#non-interactive-programmatic-bad-channel-selection">Non-interactive (programmatic) bad channel selection</a></li>
-</ul>
-</li>
-</ul>
-
-        </div>
-      </div>
-    <div class="body col-md-9 content" role="main">
-      
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-mark-bad-channels-py"><span class="std std-ref">here</span></a>
@@ -224,176 +364,185 @@ Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 Finding flat segments
 
   0%|          | Channels : 0/364 [00:00&lt;?,       ?it/s]
-  1%|          | Channels : 2/364 [00:00&lt;00:04,   85.82it/s]
-  1%|1         | Channels : 4/364 [00:00&lt;00:04,   84.15it/s]
-  1%|1         | Channels : 5/364 [00:00&lt;00:04,   82.68it/s]
-  2%|1         | Channels : 7/364 [00:00&lt;00:04,   83.70it/s]
-  2%|2         | Channels : 9/364 [00:00&lt;00:04,   85.09it/s]
-  3%|3         | Channels : 11/364 [00:00&lt;00:04,   85.01it/s]
-  4%|3         | Channels : 13/364 [00:00&lt;00:04,   83.38it/s]
-  4%|4         | Channels : 15/364 [00:00&lt;00:04,   84.11it/s]
-  5%|4         | Channels : 17/364 [00:00&lt;00:04,   84.24it/s]
-  5%|5         | Channels : 19/364 [00:00&lt;00:04,   85.16it/s]
-  5%|5         | Channels : 20/364 [00:00&lt;00:04,   81.52it/s]
-  6%|6         | Channels : 22/364 [00:00&lt;00:04,   81.72it/s]
-  7%|6         | Channels : 25/364 [00:00&lt;00:04,   83.11it/s]
-  7%|7         | Channels : 27/364 [00:00&lt;00:03,   84.35it/s]
-  8%|7         | Channels : 29/364 [00:00&lt;00:04,   83.06it/s]
-  9%|8         | Channels : 31/364 [00:00&lt;00:04,   82.53it/s]
-  9%|9         | Channels : 33/364 [00:00&lt;00:03,   83.59it/s]
- 10%|9         | Channels : 35/364 [00:00&lt;00:03,   84.30it/s]
- 10%|#         | Channels : 37/364 [00:00&lt;00:03,   85.41it/s]
- 10%|#         | Channels : 38/364 [00:00&lt;00:04,   81.13it/s]
- 11%|#         | Channels : 40/364 [00:00&lt;00:04,   80.81it/s]
- 12%|#1        | Channels : 42/364 [00:00&lt;00:03,   82.13it/s]
- 12%|#2        | Channels : 44/364 [00:00&lt;00:03,   82.98it/s]
- 13%|#2        | Channels : 46/364 [00:00&lt;00:03,   84.20it/s]
- 13%|#2        | Channels : 47/364 [00:00&lt;00:03,   80.91it/s]
- 13%|#3        | Channels : 49/364 [00:00&lt;00:03,   80.20it/s]
- 14%|#4        | Channels : 51/364 [00:00&lt;00:03,   81.42it/s]
- 15%|#4        | Channels : 53/364 [00:00&lt;00:03,   82.08it/s]
- 15%|#5        | Channels : 55/364 [00:00&lt;00:03,   81.22it/s]
- 15%|#5        | Channels : 56/364 [00:00&lt;00:03,   78.25it/s]
- 16%|#5        | Channels : 58/364 [00:00&lt;00:03,   79.30it/s]
- 16%|#6        | Channels : 60/364 [00:00&lt;00:03,   80.54it/s]
- 17%|#7        | Channels : 62/364 [00:00&lt;00:03,   79.72it/s]
- 18%|#7        | Channels : 64/364 [00:00&lt;00:03,   78.55it/s]
- 18%|#8        | Channels : 66/364 [00:00&lt;00:03,   79.92it/s]
- 19%|#8        | Channels : 68/364 [00:00&lt;00:03,   80.51it/s]
- 19%|#9        | Channels : 70/364 [00:00&lt;00:03,   81.72it/s]
- 20%|#9        | Channels : 71/364 [00:00&lt;00:03,   78.87it/s]
- 20%|##        | Channels : 73/364 [00:00&lt;00:03,   78.88it/s]
- 21%|##        | Channels : 75/364 [00:00&lt;00:03,   80.32it/s]
- 21%|##1       | Channels : 77/364 [00:00&lt;00:03,   81.01it/s]
- 22%|##1       | Channels : 79/364 [00:00&lt;00:03,   82.39it/s]
- 22%|##1       | Channels : 80/364 [00:00&lt;00:03,   79.15it/s]
- 23%|##2       | Channels : 82/364 [00:00&lt;00:03,   78.90it/s]
- 23%|##3       | Channels : 84/364 [00:00&lt;00:03,   80.13it/s]
- 24%|##3       | Channels : 86/364 [00:01&lt;00:03,   80.89it/s]
- 24%|##4       | Channels : 88/364 [00:01&lt;00:03,   81.16it/s]
- 24%|##4       | Channels : 89/364 [00:01&lt;00:03,   78.19it/s]
- 25%|##5       | Channels : 91/364 [00:01&lt;00:03,   78.32it/s]
- 26%|##5       | Channels : 93/364 [00:01&lt;00:03,   79.31it/s]
- 26%|##6       | Channels : 95/364 [00:01&lt;00:03,   79.68it/s]
- 27%|##6       | Channels : 97/364 [00:01&lt;00:03,   78.06it/s]
- 27%|##7       | Channels : 99/364 [00:01&lt;00:03,   78.49it/s]
- 28%|##7       | Channels : 101/364 [00:01&lt;00:03,   78.92it/s]
- 28%|##8       | Channels : 103/364 [00:01&lt;00:03,   80.12it/s]
- 29%|##8       | Channels : 104/364 [00:01&lt;00:03,   77.40it/s]
- 29%|##9       | Channels : 106/364 [00:01&lt;00:03,   76.44it/s]
- 29%|##9       | Channels : 107/364 [00:01&lt;00:03,   75.42it/s]
- 30%|##9       | Channels : 109/364 [00:01&lt;00:03,   76.90it/s]
- 30%|###       | Channels : 111/364 [00:01&lt;00:03,   78.26it/s]
- 31%|###       | Channels : 112/364 [00:01&lt;00:03,   75.80it/s]
- 31%|###1      | Channels : 113/364 [00:01&lt;00:03,   72.71it/s]
- 32%|###1      | Channels : 115/364 [00:01&lt;00:03,   73.13it/s]
- 32%|###2      | Channels : 117/364 [00:01&lt;00:03,   74.49it/s]
- 33%|###2      | Channels : 119/364 [00:01&lt;00:03,   74.09it/s]
- 33%|###3      | Channels : 121/364 [00:01&lt;00:03,   73.61it/s]
- 34%|###3      | Channels : 123/364 [00:01&lt;00:03,   75.02it/s]
- 34%|###4      | Channels : 125/364 [00:01&lt;00:03,   75.96it/s]
- 35%|###4      | Channels : 127/364 [00:01&lt;00:03,   77.38it/s]
- 35%|###5      | Channels : 128/364 [00:01&lt;00:03,   74.32it/s]
- 36%|###5      | Channels : 130/364 [00:01&lt;00:03,   74.47it/s]
- 36%|###6      | Channels : 132/364 [00:01&lt;00:03,   75.95it/s]
- 37%|###6      | Channels : 134/364 [00:01&lt;00:02,   76.80it/s]
- 37%|###7      | Channels : 136/364 [00:01&lt;00:02,   77.65it/s]
- 38%|###7      | Channels : 137/364 [00:01&lt;00:03,   74.18it/s]
- 38%|###8      | Channels : 139/364 [00:01&lt;00:02,   75.01it/s]
- 39%|###8      | Channels : 141/364 [00:01&lt;00:02,   76.39it/s]
- 39%|###9      | Channels : 143/364 [00:01&lt;00:02,   77.35it/s]
- 40%|###9      | Channels : 145/364 [00:01&lt;00:02,   78.45it/s]
- 40%|####      | Channels : 147/364 [00:01&lt;00:02,   78.08it/s]
- 41%|####      | Channels : 149/364 [00:01&lt;00:02,   78.63it/s]
- 41%|####1     | Channels : 151/364 [00:01&lt;00:02,   79.66it/s]
- 42%|####2     | Channels : 153/364 [00:01&lt;00:02,   81.03it/s]
- 43%|####2     | Channels : 155/364 [00:01&lt;00:02,   80.55it/s]
- 43%|####3     | Channels : 157/364 [00:01&lt;00:02,   81.54it/s]
- 44%|####3     | Channels : 159/364 [00:01&lt;00:02,   82.56it/s]
- 44%|####4     | Channels : 161/364 [00:01&lt;00:02,   83.34it/s]
- 45%|####4     | Channels : 163/364 [00:01&lt;00:02,   84.43it/s]
- 45%|####5     | Channels : 164/364 [00:01&lt;00:02,   82.65it/s]
- 46%|####5     | Channels : 166/364 [00:01&lt;00:02,   83.94it/s]
- 46%|####6     | Channels : 168/364 [00:01&lt;00:02,   84.96it/s]
- 47%|####6     | Channels : 170/364 [00:01&lt;00:02,   85.39it/s]
- 47%|####7     | Channels : 172/364 [00:02&lt;00:02,   86.42it/s]
- 48%|####7     | Channels : 174/364 [00:02&lt;00:02,   86.44it/s]
- 48%|####8     | Channels : 175/364 [00:02&lt;00:02,   83.02it/s]
- 49%|####8     | Channels : 177/364 [00:02&lt;00:02,   83.95it/s]
- 49%|####9     | Channels : 179/364 [00:02&lt;00:02,   84.09it/s]
- 50%|####9     | Channels : 181/364 [00:02&lt;00:02,   85.39it/s]
- 50%|#####     | Channels : 183/364 [00:02&lt;00:02,   85.48it/s]
- 51%|#####     | Channels : 185/364 [00:02&lt;00:02,   85.05it/s]
- 51%|#####1    | Channels : 187/364 [00:02&lt;00:02,   85.99it/s]
- 52%|#####1    | Channels : 189/364 [00:02&lt;00:02,   86.63it/s]
- 52%|#####2    | Channels : 191/364 [00:02&lt;00:01,   86.86it/s]
- 53%|#####3    | Channels : 193/364 [00:02&lt;00:01,   86.53it/s]
- 54%|#####3    | Channels : 195/364 [00:02&lt;00:01,   87.59it/s]
- 54%|#####4    | Channels : 197/364 [00:02&lt;00:01,   87.89it/s]
- 55%|#####4    | Channels : 199/364 [00:02&lt;00:01,   88.96it/s]
- 55%|#####5    | Channels : 201/364 [00:02&lt;00:01,   90.10it/s]
- 56%|#####5    | Channels : 203/364 [00:02&lt;00:01,   87.99it/s]
- 56%|#####6    | Channels : 205/364 [00:02&lt;00:01,   88.74it/s]
- 57%|#####6    | Channels : 207/364 [00:02&lt;00:01,   89.70it/s]
- 57%|#####7    | Channels : 209/364 [00:02&lt;00:01,   90.42it/s]
- 58%|#####7    | Channels : 211/364 [00:02&lt;00:01,   90.93it/s]
- 58%|#####8    | Channels : 212/364 [00:02&lt;00:01,   87.10it/s]
- 59%|#####8    | Channels : 214/364 [00:02&lt;00:01,   87.38it/s]
- 59%|#####9    | Channels : 216/364 [00:02&lt;00:01,   88.32it/s]
- 60%|#####9    | Channels : 218/364 [00:02&lt;00:01,   88.45it/s]
- 60%|######    | Channels : 220/364 [00:02&lt;00:01,   89.17it/s]
- 61%|######    | Channels : 221/364 [00:02&lt;00:01,   86.53it/s]
- 61%|######1   | Channels : 223/364 [00:02&lt;00:01,   86.63it/s]
- 62%|######1   | Channels : 225/364 [00:02&lt;00:01,   87.36it/s]
- 62%|######2   | Channels : 227/364 [00:02&lt;00:01,   87.17it/s]
- 63%|######2   | Channels : 229/364 [00:02&lt;00:01,   87.56it/s]
- 63%|######3   | Channels : 231/364 [00:02&lt;00:01,   88.44it/s]
- 64%|######4   | Channels : 233/364 [00:02&lt;00:01,   87.85it/s]
- 65%|######4   | Channels : 235/364 [00:02&lt;00:01,   88.61it/s]
- 65%|######5   | Channels : 237/364 [00:02&lt;00:01,   89.63it/s]
- 66%|######5   | Channels : 239/364 [00:02&lt;00:01,   88.23it/s]
- 66%|######6   | Channels : 241/364 [00:02&lt;00:01,   88.96it/s]
- 67%|######6   | Channels : 243/364 [00:02&lt;00:01,   89.67it/s]
- 67%|######7   | Channels : 245/364 [00:02&lt;00:01,   89.88it/s]
- 68%|######7   | Channels : 247/364 [00:02&lt;00:01,   90.79it/s]
- 68%|######8   | Channels : 249/364 [00:02&lt;00:01,   90.83it/s]
- 69%|######8   | Channels : 251/364 [00:02&lt;00:01,   90.99it/s]
- 70%|######9   | Channels : 253/364 [00:02&lt;00:01,   91.96it/s]
- 70%|#######   | Channels : 255/364 [00:02&lt;00:01,   92.60it/s]
- 71%|#######   | Channels : 257/364 [00:02&lt;00:01,   92.48it/s]
- 71%|#######1  | Channels : 259/364 [00:02&lt;00:01,   92.63it/s]
- 72%|#######1  | Channels : 261/364 [00:02&lt;00:01,   93.52it/s]
- 72%|#######2  | Channels : 263/364 [00:02&lt;00:01,   93.46it/s]
- 73%|#######2  | Channels : 265/364 [00:03&lt;00:01,   93.79it/s]
- 73%|#######3  | Channels : 267/364 [00:03&lt;00:01,   94.56it/s]
- 74%|#######3  | Channels : 269/364 [00:03&lt;00:01,   92.68it/s]
- 74%|#######4  | Channels : 271/364 [00:03&lt;00:00,   93.32it/s]
- 75%|#######5  | Channels : 273/364 [00:03&lt;00:00,   94.31it/s]
- 76%|#######5  | Channels : 275/364 [00:03&lt;00:00,   95.09it/s]
- 76%|#######6  | Channels : 278/364 [00:03&lt;00:00,   96.04it/s]
- 77%|#######6  | Channels : 280/364 [00:03&lt;00:00,   95.82it/s]
- 77%|#######7  | Channels : 282/364 [00:03&lt;00:00,   96.28it/s]
- 78%|#######8  | Channels : 284/364 [00:03&lt;00:00,   96.79it/s]
- 79%|#######8  | Channels : 286/364 [00:03&lt;00:00,   96.29it/s]
- 79%|#######9  | Channels : 288/364 [00:03&lt;00:00,   96.61it/s]
- 80%|#######9  | Channels : 290/364 [00:03&lt;00:00,   96.48it/s]
- 80%|########  | Channels : 292/364 [00:03&lt;00:00,   95.45it/s]
- 81%|########  | Channels : 294/364 [00:03&lt;00:00,   96.26it/s]
- 82%|########1 | Channels : 297/364 [00:03&lt;00:00,   97.03it/s]
- 82%|########1 | Channels : 298/364 [00:03&lt;00:00,   93.86it/s]
- 82%|########2 | Channels : 300/364 [00:03&lt;00:00,   93.70it/s]
- 83%|########2 | Channels : 302/364 [00:03&lt;00:00,   94.61it/s]
- 84%|########3 | Channels : 304/364 [00:03&lt;00:00,   94.81it/s]
- 85%|########5 | Channels : 310/364 [00:03&lt;00:00,   98.47it/s]
- 87%|########7 | Channels : 318/364 [00:03&lt;00:00,  102.45it/s]
- 89%|########8 | Channels : 323/364 [00:03&lt;00:00,  105.98it/s]
- 91%|######### | Channels : 331/364 [00:03&lt;00:00,  110.26it/s]
- 93%|#########2| Channels : 338/364 [00:03&lt;00:00,  114.48it/s]
- 95%|#########5| Channels : 346/364 [00:03&lt;00:00,  118.87it/s]
- 97%|#########6| Channels : 353/364 [00:03&lt;00:00,  123.29it/s]
- 99%|#########8| Channels : 359/364 [00:03&lt;00:00,  127.31it/s]
-100%|#########9| Channels : 363/364 [00:03&lt;00:00,  130.33it/s]
-100%|##########| Channels : 364/364 [00:03&lt;00:00,  102.44it/s]
+  0%|          | Channels : 1/364 [00:00&lt;00:09,   39.29it/s]
+  1%|          | Channels : 2/364 [00:00&lt;00:09,   39.67it/s]
+  1%|1         | Channels : 4/364 [00:00&lt;00:08,   40.90it/s]
+  2%|1         | Channels : 6/364 [00:00&lt;00:08,   42.11it/s]
+  2%|2         | Channels : 8/364 [00:00&lt;00:08,   42.71it/s]
+  3%|2         | Channels : 10/364 [00:00&lt;00:08,   43.95it/s]
+  3%|3         | Channels : 12/364 [00:00&lt;00:07,   45.20it/s]
+  4%|3         | Channels : 14/364 [00:00&lt;00:07,   46.26it/s]
+  4%|4         | Channels : 16/364 [00:00&lt;00:07,   47.29it/s]
+  5%|4         | Channels : 17/364 [00:00&lt;00:07,   47.50it/s]
+  5%|5         | Channels : 19/364 [00:00&lt;00:07,   48.62it/s]
+  6%|5         | Channels : 21/364 [00:00&lt;00:06,   49.93it/s]
+  6%|6         | Channels : 23/364 [00:00&lt;00:06,   51.19it/s]
+  7%|6         | Channels : 25/364 [00:00&lt;00:06,   52.05it/s]
+  7%|7         | Channels : 26/364 [00:00&lt;00:06,   51.97it/s]
+  8%|7         | Channels : 28/364 [00:00&lt;00:06,   52.94it/s]
+  8%|8         | Channels : 30/364 [00:00&lt;00:06,   54.20it/s]
+  9%|8         | Channels : 32/364 [00:00&lt;00:06,   54.92it/s]
+  9%|9         | Channels : 34/364 [00:00&lt;00:05,   55.52it/s]
+ 10%|9         | Channels : 36/364 [00:00&lt;00:05,   56.62it/s]
+ 10%|#         | Channels : 38/364 [00:00&lt;00:05,   57.16it/s]
+ 11%|#         | Channels : 40/364 [00:00&lt;00:05,   58.00it/s]
+ 11%|#1        | Channels : 41/364 [00:00&lt;00:05,   57.69it/s]
+ 12%|#1        | Channels : 43/364 [00:00&lt;00:05,   59.28it/s]
+ 12%|#2        | Channels : 45/364 [00:00&lt;00:05,   60.61it/s]
+ 13%|#2        | Channels : 47/364 [00:00&lt;00:05,   61.54it/s]
+ 13%|#3        | Channels : 49/364 [00:00&lt;00:05,   62.32it/s]
+ 14%|#4        | Channels : 51/364 [00:00&lt;00:04,   63.16it/s]
+ 15%|#4        | Channels : 53/364 [00:00&lt;00:04,   63.95it/s]
+ 15%|#5        | Channels : 55/364 [00:00&lt;00:04,   64.99it/s]
+ 16%|#5        | Channels : 57/364 [00:00&lt;00:04,   66.22it/s]
+ 16%|#5        | Channels : 58/364 [00:00&lt;00:04,   64.01it/s]
+ 16%|#6        | Channels : 60/364 [00:00&lt;00:04,   65.19it/s]
+ 17%|#7        | Channels : 62/364 [00:00&lt;00:04,   65.60it/s]
+ 18%|#7        | Channels : 64/364 [00:00&lt;00:04,   66.77it/s]
+ 18%|#7        | Channels : 65/364 [00:00&lt;00:04,   66.16it/s]
+ 18%|#8        | Channels : 67/364 [00:00&lt;00:04,   67.07it/s]
+ 19%|#8        | Channels : 69/364 [00:00&lt;00:04,   68.40it/s]
+ 20%|#9        | Channels : 71/364 [00:00&lt;00:04,   68.64it/s]
+ 20%|##        | Channels : 73/364 [00:00&lt;00:04,   69.90it/s]
+ 20%|##        | Channels : 74/364 [00:00&lt;00:04,   68.40it/s]
+ 21%|##        | Channels : 76/364 [00:00&lt;00:04,   69.33it/s]
+ 21%|##1       | Channels : 78/364 [00:00&lt;00:04,   70.70it/s]
+ 22%|##1       | Channels : 80/364 [00:00&lt;00:03,   71.03it/s]
+ 23%|##2       | Channels : 82/364 [00:01&lt;00:03,   72.10it/s]
+ 23%|##2       | Channels : 83/364 [00:01&lt;00:04,   69.74it/s]
+ 23%|##3       | Channels : 85/364 [00:01&lt;00:03,   70.84it/s]
+ 24%|##3       | Channels : 87/364 [00:01&lt;00:03,   71.98it/s]
+ 24%|##4       | Channels : 89/364 [00:01&lt;00:03,   72.18it/s]
+ 25%|##5       | Channels : 91/364 [00:01&lt;00:03,   72.08it/s]
+ 26%|##5       | Channels : 93/364 [00:01&lt;00:03,   72.74it/s]
+ 26%|##6       | Channels : 95/364 [00:01&lt;00:03,   72.87it/s]
+ 27%|##6       | Channels : 97/364 [00:01&lt;00:03,   73.31it/s]
+ 27%|##6       | Channels : 98/364 [00:01&lt;00:03,   70.67it/s]
+ 27%|##7       | Channels : 100/364 [00:01&lt;00:03,   69.63it/s]
+ 28%|##7       | Channels : 101/364 [00:01&lt;00:03,   68.08it/s]
+ 28%|##8       | Channels : 103/364 [00:01&lt;00:03,   68.57it/s]
+ 29%|##8       | Channels : 104/364 [00:01&lt;00:03,   67.15it/s]
+ 29%|##9       | Channels : 106/364 [00:01&lt;00:03,   67.38it/s]
+ 30%|##9       | Channels : 108/364 [00:01&lt;00:03,   68.57it/s]
+ 30%|###       | Channels : 110/364 [00:01&lt;00:03,   69.25it/s]
+ 31%|###       | Channels : 112/364 [00:01&lt;00:03,   69.51it/s]
+ 31%|###1      | Channels : 113/364 [00:01&lt;00:03,   68.66it/s]
+ 32%|###1      | Channels : 115/364 [00:01&lt;00:03,   69.82it/s]
+ 32%|###2      | Channels : 117/364 [00:01&lt;00:03,   70.98it/s]
+ 33%|###2      | Channels : 119/364 [00:01&lt;00:03,   71.35it/s]
+ 33%|###3      | Channels : 121/364 [00:01&lt;00:03,   71.04it/s]
+ 34%|###3      | Channels : 123/364 [00:01&lt;00:03,   71.42it/s]
+ 34%|###4      | Channels : 125/364 [00:01&lt;00:03,   71.20it/s]
+ 35%|###4      | Channels : 127/364 [00:01&lt;00:03,   70.62it/s]
+ 35%|###5      | Channels : 128/364 [00:01&lt;00:03,   69.75it/s]
+ 36%|###5      | Channels : 130/364 [00:01&lt;00:03,   70.80it/s]
+ 36%|###6      | Channels : 132/364 [00:01&lt;00:03,   72.01it/s]
+ 37%|###6      | Channels : 134/364 [00:01&lt;00:03,   72.62it/s]
+ 37%|###7      | Channels : 136/364 [00:01&lt;00:03,   72.52it/s]
+ 38%|###7      | Channels : 138/364 [00:01&lt;00:03,   73.10it/s]
+ 38%|###8      | Channels : 140/364 [00:01&lt;00:03,   73.37it/s]
+ 39%|###9      | Channels : 142/364 [00:01&lt;00:02,   74.62it/s]
+ 40%|###9      | Channels : 144/364 [00:01&lt;00:02,   74.75it/s]
+ 40%|####      | Channels : 146/364 [00:01&lt;00:02,   75.63it/s]
+ 41%|####      | Channels : 148/364 [00:01&lt;00:02,   76.55it/s]
+ 41%|####1     | Channels : 150/364 [00:01&lt;00:02,   77.73it/s]
+ 42%|####1     | Channels : 152/364 [00:01&lt;00:02,   77.94it/s]
+ 42%|####2     | Channels : 154/364 [00:01&lt;00:02,   76.49it/s]
+ 43%|####2     | Channels : 155/364 [00:01&lt;00:02,   75.50it/s]
+ 43%|####3     | Channels : 157/364 [00:01&lt;00:02,   76.45it/s]
+ 44%|####3     | Channels : 159/364 [00:01&lt;00:02,   77.27it/s]
+ 44%|####4     | Channels : 161/364 [00:02&lt;00:02,   76.80it/s]
+ 45%|####4     | Channels : 163/364 [00:02&lt;00:02,   75.72it/s]
+ 45%|####5     | Channels : 165/364 [00:02&lt;00:02,   76.76it/s]
+ 46%|####5     | Channels : 167/364 [00:02&lt;00:02,   77.19it/s]
+ 46%|####6     | Channels : 169/364 [00:02&lt;00:02,   76.24it/s]
+ 47%|####6     | Channels : 171/364 [00:02&lt;00:02,   76.89it/s]
+ 48%|####7     | Channels : 173/364 [00:02&lt;00:02,   76.83it/s]
+ 48%|####8     | Channels : 175/364 [00:02&lt;00:02,   77.71it/s]
+ 48%|####8     | Channels : 176/364 [00:02&lt;00:02,   74.60it/s]
+ 49%|####8     | Channels : 178/364 [00:02&lt;00:02,   75.32it/s]
+ 49%|####9     | Channels : 180/364 [00:02&lt;00:02,   76.40it/s]
+ 50%|#####     | Channels : 182/364 [00:02&lt;00:02,   76.84it/s]
+ 51%|#####     | Channels : 184/364 [00:02&lt;00:02,   77.20it/s]
+ 51%|#####     | Channels : 185/364 [00:02&lt;00:02,   75.91it/s]
+ 51%|#####1    | Channels : 187/364 [00:02&lt;00:02,   76.69it/s]
+ 52%|#####1    | Channels : 189/364 [00:02&lt;00:02,   77.28it/s]
+ 52%|#####2    | Channels : 191/364 [00:02&lt;00:02,   77.44it/s]
+ 53%|#####3    | Channels : 193/364 [00:02&lt;00:02,   76.80it/s]
+ 54%|#####3    | Channels : 195/364 [00:02&lt;00:02,   77.49it/s]
+ 54%|#####4    | Channels : 197/364 [00:02&lt;00:02,   77.88it/s]
+ 55%|#####4    | Channels : 199/364 [00:02&lt;00:02,   78.88it/s]
+ 55%|#####5    | Channels : 201/364 [00:02&lt;00:02,   78.78it/s]
+ 56%|#####5    | Channels : 203/364 [00:02&lt;00:02,   78.33it/s]
+ 56%|#####6    | Channels : 205/364 [00:02&lt;00:02,   79.00it/s]
+ 57%|#####6    | Channels : 207/364 [00:02&lt;00:01,   79.78it/s]
+ 57%|#####7    | Channels : 209/364 [00:02&lt;00:01,   79.36it/s]
+ 58%|#####7    | Channels : 211/364 [00:02&lt;00:01,   78.86it/s]
+ 59%|#####8    | Channels : 213/364 [00:02&lt;00:01,   79.49it/s]
+ 59%|#####9    | Channels : 215/364 [00:02&lt;00:01,   79.63it/s]
+ 60%|#####9    | Channels : 217/364 [00:02&lt;00:01,   79.22it/s]
+ 60%|#####9    | Channels : 218/364 [00:02&lt;00:01,   77.77it/s]
+ 60%|######    | Channels : 220/364 [00:02&lt;00:01,   78.54it/s]
+ 61%|######    | Channels : 222/364 [00:02&lt;00:01,   79.51it/s]
+ 62%|######1   | Channels : 224/364 [00:02&lt;00:01,   79.45it/s]
+ 62%|######2   | Channels : 226/364 [00:02&lt;00:01,   78.06it/s]
+ 62%|######2   | Channels : 227/364 [00:02&lt;00:01,   76.23it/s]
+ 63%|######2   | Channels : 229/364 [00:02&lt;00:01,   77.23it/s]
+ 63%|######3   | Channels : 231/364 [00:02&lt;00:01,   78.41it/s]
+ 64%|######4   | Channels : 233/364 [00:02&lt;00:01,   77.38it/s]
+ 65%|######4   | Channels : 235/364 [00:02&lt;00:01,   77.60it/s]
+ 65%|######5   | Channels : 237/364 [00:02&lt;00:01,   78.54it/s]
+ 66%|######5   | Channels : 239/364 [00:02&lt;00:01,   78.65it/s]
+ 66%|######6   | Channels : 241/364 [00:03&lt;00:01,   78.17it/s]
+ 67%|######6   | Channels : 243/364 [00:03&lt;00:01,   78.23it/s]
+ 67%|######7   | Channels : 245/364 [00:03&lt;00:01,   78.10it/s]
+ 68%|######7   | Channels : 247/364 [00:03&lt;00:01,   78.10it/s]
+ 68%|######8   | Channels : 248/364 [00:03&lt;00:01,   76.13it/s]
+ 69%|######8   | Channels : 250/364 [00:03&lt;00:01,   76.32it/s]
+ 69%|######8   | Channels : 251/364 [00:03&lt;00:01,   75.12it/s]
+ 70%|######9   | Channels : 253/364 [00:03&lt;00:01,   76.12it/s]
+ 70%|#######   | Channels : 255/364 [00:03&lt;00:01,   76.98it/s]
+ 70%|#######   | Channels : 256/364 [00:03&lt;00:01,   74.86it/s]
+ 71%|#######   | Channels : 257/364 [00:03&lt;00:01,   73.20it/s]
+ 71%|#######1  | Channels : 259/364 [00:03&lt;00:01,   74.35it/s]
+ 72%|#######1  | Channels : 261/364 [00:03&lt;00:01,   75.53it/s]
+ 72%|#######2  | Channels : 263/364 [00:03&lt;00:01,   76.03it/s]
+ 73%|#######2  | Channels : 265/364 [00:03&lt;00:01,   75.20it/s]
+ 73%|#######3  | Channels : 267/364 [00:03&lt;00:01,   76.07it/s]
+ 74%|#######3  | Channels : 269/364 [00:03&lt;00:01,   76.34it/s]
+ 74%|#######4  | Channels : 271/364 [00:03&lt;00:01,   77.29it/s]
+ 75%|#######5  | Channels : 273/364 [00:03&lt;00:01,   76.63it/s]
+ 75%|#######5  | Channels : 274/364 [00:03&lt;00:01,   75.30it/s]
+ 76%|#######5  | Channels : 275/364 [00:03&lt;00:01,   74.47it/s]
+ 76%|#######6  | Channels : 277/364 [00:03&lt;00:01,   75.76it/s]
+ 77%|#######6  | Channels : 279/364 [00:03&lt;00:01,   77.06it/s]
+ 77%|#######7  | Channels : 281/364 [00:03&lt;00:01,   77.01it/s]
+ 77%|#######7  | Channels : 282/364 [00:03&lt;00:01,   76.02it/s]
+ 78%|#######8  | Channels : 284/364 [00:03&lt;00:01,   76.78it/s]
+ 79%|#######8  | Channels : 286/364 [00:03&lt;00:01,   76.87it/s]
+ 79%|#######9  | Channels : 288/364 [00:03&lt;00:00,   77.49it/s]
+ 79%|#######9  | Channels : 289/364 [00:03&lt;00:00,   75.22it/s]
+ 80%|#######9  | Channels : 291/364 [00:03&lt;00:00,   75.87it/s]
+ 80%|########  | Channels : 293/364 [00:03&lt;00:00,   76.77it/s]
+ 81%|########1 | Channels : 295/364 [00:03&lt;00:00,   77.21it/s]
+ 82%|########1 | Channels : 297/364 [00:03&lt;00:00,   77.14it/s]
+ 82%|########1 | Channels : 298/364 [00:03&lt;00:00,   75.70it/s]
+ 82%|########2 | Channels : 300/364 [00:03&lt;00:00,   76.67it/s]
+ 83%|########2 | Channels : 302/364 [00:03&lt;00:00,   77.68it/s]
+ 84%|########3 | Channels : 304/364 [00:03&lt;00:00,   78.10it/s]
+ 84%|########4 | Channels : 306/364 [00:03&lt;00:00,   79.48it/s]
+ 85%|########5 | Channels : 310/364 [00:03&lt;00:00,   82.01it/s]
+ 87%|########6 | Channels : 316/364 [00:03&lt;00:00,   85.23it/s]
+ 88%|########8 | Channels : 322/364 [00:03&lt;00:00,   88.56it/s]
+ 90%|######### | Channels : 329/364 [00:03&lt;00:00,   92.10it/s]
+ 92%|#########2| Channels : 335/364 [00:03&lt;00:00,   95.34it/s]
+ 93%|#########2| Channels : 338/364 [00:03&lt;00:00,   97.22it/s]
+ 94%|#########3| Channels : 342/364 [00:03&lt;00:00,   99.98it/s]
+ 95%|#########5| Channels : 346/364 [00:03&lt;00:00,  102.86it/s]
+ 97%|#########6| Channels : 352/364 [00:03&lt;00:00,  106.47it/s]
+ 98%|#########8| Channels : 357/364 [00:03&lt;00:00,  110.07it/s]
+ 99%|#########8| Channels : 360/364 [00:04&lt;00:00,  112.27it/s]
+100%|##########| Channels : 364/364 [00:04&lt;00:00,   90.28it/s]
 Marking 0.00% of time points (0 segments) and 0/364 channels bad
 </pre></div>
 </div>
@@ -426,180 +575,184 @@ Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 Finding flat segments
 
   0%|          | Channels : 0/364 [00:00&lt;?,       ?it/s]
-  0%|          | Channels : 1/364 [00:00&lt;00:07,   46.11it/s]
-  1%|          | Channels : 3/364 [00:00&lt;00:07,   47.41it/s]
-  1%|1         | Channels : 4/364 [00:00&lt;00:07,   47.73it/s]
-  1%|1         | Channels : 5/364 [00:00&lt;00:07,   47.55it/s]
-  2%|1         | Channels : 7/364 [00:00&lt;00:07,   48.92it/s]
-  2%|2         | Channels : 9/364 [00:00&lt;00:07,   50.41it/s]
-  3%|3         | Channels : 11/364 [00:00&lt;00:06,   51.46it/s]
-  4%|3         | Channels : 13/364 [00:00&lt;00:06,   52.23it/s]
-  4%|3         | Channels : 14/364 [00:00&lt;00:06,   51.88it/s]
-  4%|4         | Channels : 16/364 [00:00&lt;00:06,   53.11it/s]
-  5%|4         | Channels : 18/364 [00:00&lt;00:06,   54.62it/s]
-  5%|5         | Channels : 20/364 [00:00&lt;00:06,   55.14it/s]
-  6%|6         | Channels : 22/364 [00:00&lt;00:06,   55.45it/s]
-  7%|6         | Channels : 25/364 [00:00&lt;00:05,   57.01it/s]
-  7%|7         | Channels : 27/364 [00:00&lt;00:05,   58.51it/s]
-  8%|7         | Channels : 29/364 [00:00&lt;00:05,   58.86it/s]
-  9%|8         | Channels : 31/364 [00:00&lt;00:05,   59.16it/s]
-  9%|9         | Channels : 33/364 [00:00&lt;00:05,   60.57it/s]
- 10%|9         | Channels : 35/364 [00:00&lt;00:05,   61.82it/s]
- 10%|#         | Channels : 37/364 [00:00&lt;00:05,   63.18it/s]
- 10%|#         | Channels : 38/364 [00:00&lt;00:05,   61.48it/s]
- 11%|#         | Channels : 40/364 [00:00&lt;00:05,   62.35it/s]
- 12%|#1        | Channels : 42/364 [00:00&lt;00:05,   63.86it/s]
- 12%|#2        | Channels : 44/364 [00:00&lt;00:04,   65.18it/s]
- 13%|#2        | Channels : 47/364 [00:00&lt;00:04,   65.86it/s]
- 13%|#3        | Channels : 49/364 [00:00&lt;00:04,   66.47it/s]
- 14%|#4        | Channels : 51/364 [00:00&lt;00:04,   67.93it/s]
- 15%|#4        | Channels : 53/364 [00:00&lt;00:04,   68.98it/s]
- 15%|#5        | Channels : 55/364 [00:00&lt;00:04,   69.99it/s]
- 15%|#5        | Channels : 56/364 [00:00&lt;00:04,   68.08it/s]
- 16%|#5        | Channels : 58/364 [00:00&lt;00:04,   68.44it/s]
- 16%|#6        | Channels : 60/364 [00:00&lt;00:04,   69.92it/s]
- 17%|#7        | Channels : 62/364 [00:00&lt;00:04,   70.36it/s]
- 18%|#7        | Channels : 64/364 [00:00&lt;00:04,   70.15it/s]
- 18%|#7        | Channels : 65/364 [00:00&lt;00:04,   68.55it/s]
- 19%|#8        | Channels : 68/364 [00:00&lt;00:04,   69.87it/s]
- 19%|#9        | Channels : 70/364 [00:00&lt;00:04,   71.25it/s]
- 20%|#9        | Channels : 72/364 [00:00&lt;00:04,   71.91it/s]
- 20%|##        | Channels : 73/364 [00:00&lt;00:04,   69.68it/s]
- 21%|##        | Channels : 75/364 [00:00&lt;00:04,   70.81it/s]
- 21%|##1       | Channels : 77/364 [00:00&lt;00:04,   71.74it/s]
- 22%|##1       | Channels : 79/364 [00:00&lt;00:03,   73.17it/s]
- 22%|##1       | Channels : 80/364 [00:00&lt;00:03,   71.85it/s]
- 23%|##2       | Channels : 82/364 [00:00&lt;00:03,   71.24it/s]
- 23%|##3       | Channels : 84/364 [00:01&lt;00:03,   72.59it/s]
- 24%|##3       | Channels : 86/364 [00:01&lt;00:03,   73.57it/s]
- 24%|##4       | Channels : 88/364 [00:01&lt;00:03,   74.26it/s]
- 24%|##4       | Channels : 89/364 [00:01&lt;00:03,   71.98it/s]
- 25%|##5       | Channels : 91/364 [00:01&lt;00:03,   72.26it/s]
- 26%|##5       | Channels : 93/364 [00:01&lt;00:03,   73.38it/s]
- 26%|##6       | Channels : 95/364 [00:01&lt;00:03,   74.01it/s]
- 27%|##6       | Channels : 97/364 [00:01&lt;00:03,   73.05it/s]
- 27%|##6       | Channels : 98/364 [00:01&lt;00:03,   71.69it/s]
- 27%|##7       | Channels : 100/364 [00:01&lt;00:03,   72.85it/s]
- 28%|##8       | Channels : 102/364 [00:01&lt;00:03,   74.14it/s]
- 29%|##8       | Channels : 104/364 [00:01&lt;00:03,   73.19it/s]
- 29%|##9       | Channels : 106/364 [00:01&lt;00:03,   72.96it/s]
- 30%|##9       | Channels : 108/364 [00:01&lt;00:03,   74.30it/s]
- 30%|###       | Channels : 110/364 [00:01&lt;00:03,   75.18it/s]
- 31%|###       | Channels : 112/364 [00:01&lt;00:03,   76.24it/s]
- 31%|###1      | Channels : 113/364 [00:01&lt;00:03,   73.27it/s]
- 32%|###1      | Channels : 115/364 [00:01&lt;00:03,   74.05it/s]
- 32%|###2      | Channels : 117/364 [00:01&lt;00:03,   75.27it/s]
- 33%|###2      | Channels : 119/364 [00:01&lt;00:03,   75.90it/s]
- 33%|###3      | Channels : 121/364 [00:01&lt;00:03,   76.26it/s]
- 34%|###3      | Channels : 122/364 [00:01&lt;00:03,   74.41it/s]
- 34%|###4      | Channels : 124/364 [00:01&lt;00:03,   75.87it/s]
- 35%|###4      | Channels : 127/364 [00:01&lt;00:03,   77.16it/s]
- 35%|###5      | Channels : 129/364 [00:01&lt;00:03,   78.18it/s]
- 36%|###5      | Channels : 130/364 [00:01&lt;00:03,   76.59it/s]
- 36%|###5      | Channels : 131/364 [00:01&lt;00:03,   74.60it/s]
- 37%|###6      | Channels : 133/364 [00:01&lt;00:03,   75.76it/s]
- 37%|###7      | Channels : 135/364 [00:01&lt;00:02,   77.21it/s]
- 38%|###7      | Channels : 137/364 [00:01&lt;00:02,   77.48it/s]
- 38%|###8      | Channels : 139/364 [00:01&lt;00:02,   76.86it/s]
- 38%|###8      | Channels : 140/364 [00:01&lt;00:02,   75.83it/s]
- 39%|###9      | Channels : 142/364 [00:01&lt;00:02,   77.29it/s]
- 40%|###9      | Channels : 144/364 [00:01&lt;00:02,   78.74it/s]
- 40%|####      | Channels : 146/364 [00:01&lt;00:02,   80.10it/s]
- 41%|####      | Channels : 148/364 [00:01&lt;00:02,   80.15it/s]
- 41%|####      | Channels : 149/364 [00:01&lt;00:02,   78.19it/s]
- 41%|####1     | Channels : 151/364 [00:01&lt;00:02,   79.11it/s]
- 42%|####2     | Channels : 153/364 [00:01&lt;00:02,   80.38it/s]
- 43%|####2     | Channels : 155/364 [00:01&lt;00:02,   81.23it/s]
- 43%|####3     | Channels : 157/364 [00:01&lt;00:02,   81.46it/s]
- 43%|####3     | Channels : 158/364 [00:01&lt;00:02,   80.12it/s]
- 44%|####3     | Channels : 160/364 [00:01&lt;00:02,   81.30it/s]
- 45%|####4     | Channels : 162/364 [00:01&lt;00:02,   82.73it/s]
- 45%|####5     | Channels : 164/364 [00:01&lt;00:02,   82.92it/s]
- 46%|####5     | Channels : 166/364 [00:01&lt;00:02,   84.16it/s]
- 46%|####5     | Channels : 167/364 [00:01&lt;00:02,   80.74it/s]
- 46%|####6     | Channels : 169/364 [00:01&lt;00:02,   81.88it/s]
- 47%|####6     | Channels : 171/364 [00:02&lt;00:02,   82.90it/s]
- 48%|####7     | Channels : 173/364 [00:02&lt;00:02,   82.81it/s]
- 48%|####8     | Channels : 175/364 [00:02&lt;00:02,   83.43it/s]
- 48%|####8     | Channels : 176/364 [00:02&lt;00:02,   80.36it/s]
- 49%|####8     | Channels : 178/364 [00:02&lt;00:02,   80.86it/s]
- 49%|####9     | Channels : 180/364 [00:02&lt;00:02,   82.09it/s]
- 50%|#####     | Channels : 182/364 [00:02&lt;00:02,   82.60it/s]
- 51%|#####     | Channels : 184/364 [00:02&lt;00:02,   82.84it/s]
- 51%|#####1    | Channels : 186/364 [00:02&lt;00:02,   83.25it/s]
- 52%|#####1    | Channels : 188/364 [00:02&lt;00:02,   83.11it/s]
- 52%|#####2    | Channels : 190/364 [00:02&lt;00:02,   84.16it/s]
- 53%|#####2    | Channels : 192/364 [00:02&lt;00:02,   85.14it/s]
- 53%|#####3    | Channels : 194/364 [00:02&lt;00:01,   85.22it/s]
- 54%|#####3    | Channels : 196/364 [00:02&lt;00:01,   85.84it/s]
- 54%|#####4    | Channels : 198/364 [00:02&lt;00:01,   86.36it/s]
- 55%|#####4    | Channels : 200/364 [00:02&lt;00:01,   86.70it/s]
- 55%|#####5    | Channels : 202/364 [00:02&lt;00:01,   87.85it/s]
- 56%|#####5    | Channels : 203/364 [00:02&lt;00:01,   85.62it/s]
- 56%|#####6    | Channels : 205/364 [00:02&lt;00:01,   85.52it/s]
- 57%|#####6    | Channels : 207/364 [00:02&lt;00:01,   86.46it/s]
- 57%|#####7    | Channels : 209/364 [00:02&lt;00:01,   87.09it/s]
- 58%|#####7    | Channels : 211/364 [00:02&lt;00:01,   87.91it/s]
- 59%|#####8    | Channels : 213/364 [00:02&lt;00:01,   87.55it/s]
- 59%|#####8    | Channels : 214/364 [00:02&lt;00:01,   85.50it/s]
- 59%|#####9    | Channels : 216/364 [00:02&lt;00:01,   86.48it/s]
- 60%|#####9    | Channels : 218/364 [00:02&lt;00:01,   86.69it/s]
- 60%|######    | Channels : 220/364 [00:02&lt;00:01,   87.84it/s]
- 61%|######    | Channels : 222/364 [00:02&lt;00:01,   87.49it/s]
- 61%|######1   | Channels : 223/364 [00:02&lt;00:01,   83.56it/s]
- 62%|######1   | Channels : 225/364 [00:02&lt;00:01,   84.35it/s]
- 62%|######2   | Channels : 227/364 [00:02&lt;00:01,   84.34it/s]
- 63%|######2   | Channels : 229/364 [00:02&lt;00:01,   85.57it/s]
- 63%|######3   | Channels : 231/364 [00:02&lt;00:01,   85.66it/s]
- 64%|######3   | Channels : 232/364 [00:02&lt;00:01,   83.73it/s]
- 64%|######4   | Channels : 234/364 [00:02&lt;00:01,   84.52it/s]
- 65%|######4   | Channels : 236/364 [00:02&lt;00:01,   84.90it/s]
- 65%|######5   | Channels : 238/364 [00:02&lt;00:01,   86.03it/s]
- 66%|######5   | Channels : 239/364 [00:02&lt;00:01,   82.92it/s]
- 66%|######6   | Channels : 241/364 [00:02&lt;00:01,   83.90it/s]
- 67%|######6   | Channels : 243/364 [00:02&lt;00:01,   84.49it/s]
- 67%|######7   | Channels : 245/364 [00:02&lt;00:01,   84.66it/s]
- 68%|######7   | Channels : 247/364 [00:02&lt;00:01,   85.59it/s]
- 68%|######8   | Channels : 248/364 [00:02&lt;00:01,   83.08it/s]
- 69%|######8   | Channels : 250/364 [00:02&lt;00:01,   83.11it/s]
- 69%|######9   | Channels : 252/364 [00:02&lt;00:01,   84.38it/s]
- 70%|######9   | Channels : 254/364 [00:02&lt;00:01,   84.45it/s]
- 70%|#######   | Channels : 256/364 [00:02&lt;00:01,   85.48it/s]
- 71%|#######   | Channels : 257/364 [00:02&lt;00:01,   83.59it/s]
- 71%|#######1  | Channels : 259/364 [00:02&lt;00:01,   83.66it/s]
- 72%|#######1  | Channels : 261/364 [00:03&lt;00:01,   84.76it/s]
- 72%|#######2  | Channels : 263/364 [00:03&lt;00:01,   85.17it/s]
- 73%|#######2  | Channels : 265/364 [00:03&lt;00:01,   85.98it/s]
- 73%|#######3  | Channels : 266/364 [00:03&lt;00:01,   82.81it/s]
- 74%|#######3  | Channels : 268/364 [00:03&lt;00:01,   82.87it/s]
- 74%|#######4  | Channels : 270/364 [00:03&lt;00:01,   84.04it/s]
- 75%|#######4  | Channels : 272/364 [00:03&lt;00:01,   84.42it/s]
- 76%|#######5  | Channels : 275/364 [00:03&lt;00:01,   85.19it/s]
- 76%|#######6  | Channels : 277/364 [00:03&lt;00:01,   84.56it/s]
- 77%|#######6  | Channels : 279/364 [00:03&lt;00:00,   85.89it/s]
- 77%|#######7  | Channels : 281/364 [00:03&lt;00:00,   87.08it/s]
- 78%|#######7  | Channels : 283/364 [00:03&lt;00:00,   86.91it/s]
- 78%|#######8  | Channels : 285/364 [00:03&lt;00:00,   85.71it/s]
- 79%|#######8  | Channels : 286/364 [00:03&lt;00:00,   83.56it/s]
- 79%|#######9  | Channels : 288/364 [00:03&lt;00:00,   84.61it/s]
- 80%|#######9  | Channels : 290/364 [00:03&lt;00:00,   85.79it/s]
- 80%|########  | Channels : 292/364 [00:03&lt;00:00,   85.89it/s]
- 81%|########  | Channels : 294/364 [00:03&lt;00:00,   84.01it/s]
- 81%|########1 | Channels : 295/364 [00:03&lt;00:00,   82.39it/s]
- 82%|########1 | Channels : 297/364 [00:03&lt;00:00,   83.56it/s]
- 82%|########2 | Channels : 299/364 [00:03&lt;00:00,   84.41it/s]
- 83%|########2 | Channels : 301/364 [00:03&lt;00:00,   83.41it/s]
- 83%|########3 | Channels : 303/364 [00:03&lt;00:00,   83.32it/s]
- 84%|########3 | Channels : 305/364 [00:03&lt;00:00,   84.53it/s]
- 86%|########6 | Channels : 314/364 [00:03&lt;00:00,   88.23it/s]
- 88%|########8 | Channels : 322/364 [00:03&lt;00:00,   91.96it/s]
- 90%|######### | Channels : 329/364 [00:03&lt;00:00,   95.65it/s]
- 92%|#########1| Channels : 334/364 [00:03&lt;00:00,   98.90it/s]
- 94%|#########3| Channels : 341/364 [00:03&lt;00:00,  102.83it/s]
- 96%|#########5| Channels : 348/364 [00:03&lt;00:00,  106.84it/s]
- 98%|#########7| Channels : 355/364 [00:03&lt;00:00,  110.96it/s]
- 99%|#########9| Channels : 362/364 [00:03&lt;00:00,  115.17it/s]
-100%|##########| Channels : 364/364 [00:03&lt;00:00,   99.83it/s]
+  0%|          | Channels : 1/364 [00:00&lt;00:08,   42.28it/s]
+  1%|          | Channels : 3/364 [00:00&lt;00:08,   43.50it/s]
+  1%|1         | Channels : 5/364 [00:00&lt;00:08,   44.31it/s]
+  2%|1         | Channels : 7/364 [00:00&lt;00:07,   45.40it/s]
+  2%|2         | Channels : 9/364 [00:00&lt;00:07,   46.77it/s]
+  3%|3         | Channels : 11/364 [00:00&lt;00:07,   47.81it/s]
+  4%|3         | Channels : 13/364 [00:00&lt;00:07,   49.20it/s]
+  4%|3         | Channels : 14/364 [00:00&lt;00:07,   49.36it/s]
+  4%|4         | Channels : 16/364 [00:00&lt;00:06,   50.12it/s]
+  5%|4         | Channels : 18/364 [00:00&lt;00:06,   51.49it/s]
+  5%|5         | Channels : 20/364 [00:00&lt;00:06,   52.33it/s]
+  6%|6         | Channels : 22/364 [00:00&lt;00:06,   53.38it/s]
+  7%|6         | Channels : 24/364 [00:00&lt;00:06,   54.57it/s]
+  7%|7         | Channels : 26/364 [00:00&lt;00:06,   55.58it/s]
+  8%|7         | Channels : 28/364 [00:00&lt;00:05,   56.84it/s]
+  8%|8         | Channels : 30/364 [00:00&lt;00:05,   58.15it/s]
+  9%|8         | Channels : 32/364 [00:00&lt;00:05,   58.20it/s]
+  9%|9         | Channels : 34/364 [00:00&lt;00:05,   59.63it/s]
+ 10%|9         | Channels : 36/364 [00:00&lt;00:05,   61.00it/s]
+ 10%|#         | Channels : 38/364 [00:00&lt;00:05,   61.61it/s]
+ 11%|#         | Channels : 40/364 [00:00&lt;00:05,   62.19it/s]
+ 12%|#1        | Channels : 42/364 [00:00&lt;00:05,   63.38it/s]
+ 12%|#2        | Channels : 44/364 [00:00&lt;00:04,   64.53it/s]
+ 13%|#2        | Channels : 46/364 [00:00&lt;00:04,   66.01it/s]
+ 13%|#3        | Channels : 48/364 [00:00&lt;00:04,   67.32it/s]
+ 14%|#3        | Channels : 50/364 [00:00&lt;00:04,   67.06it/s]
+ 14%|#4        | Channels : 52/364 [00:00&lt;00:04,   68.40it/s]
+ 15%|#4        | Channels : 54/364 [00:00&lt;00:04,   69.58it/s]
+ 15%|#5        | Channels : 56/364 [00:00&lt;00:04,   70.09it/s]
+ 16%|#5        | Channels : 58/364 [00:00&lt;00:04,   70.11it/s]
+ 16%|#6        | Channels : 60/364 [00:00&lt;00:04,   70.91it/s]
+ 17%|#7        | Channels : 62/364 [00:00&lt;00:04,   71.12it/s]
+ 18%|#7        | Channels : 64/364 [00:00&lt;00:04,   72.23it/s]
+ 18%|#8        | Channels : 66/364 [00:00&lt;00:04,   73.30it/s]
+ 18%|#8        | Channels : 67/364 [00:00&lt;00:04,   72.48it/s]
+ 19%|#8        | Channels : 69/364 [00:00&lt;00:04,   73.65it/s]
+ 20%|#9        | Channels : 71/364 [00:00&lt;00:03,   73.83it/s]
+ 20%|##        | Channels : 73/364 [00:00&lt;00:03,   75.04it/s]
+ 21%|##        | Channels : 75/364 [00:00&lt;00:03,   76.23it/s]
+ 21%|##        | Channels : 76/364 [00:00&lt;00:03,   74.75it/s]
+ 21%|##1       | Channels : 78/364 [00:00&lt;00:03,   75.75it/s]
+ 22%|##1       | Channels : 80/364 [00:00&lt;00:03,   75.99it/s]
+ 23%|##2       | Channels : 82/364 [00:00&lt;00:03,   77.09it/s]
+ 23%|##3       | Channels : 84/364 [00:00&lt;00:03,   77.95it/s]
+ 23%|##3       | Channels : 85/364 [00:00&lt;00:03,   75.46it/s]
+ 24%|##3       | Channels : 87/364 [00:01&lt;00:03,   76.56it/s]
+ 24%|##4       | Channels : 89/364 [00:01&lt;00:03,   76.69it/s]
+ 25%|##5       | Channels : 91/364 [00:01&lt;00:03,   77.71it/s]
+ 26%|##5       | Channels : 93/364 [00:01&lt;00:03,   77.18it/s]
+ 26%|##6       | Channels : 95/364 [00:01&lt;00:03,   76.88it/s]
+ 27%|##6       | Channels : 97/364 [00:01&lt;00:03,   77.51it/s]
+ 27%|##7       | Channels : 99/364 [00:01&lt;00:03,   78.39it/s]
+ 28%|##7       | Channels : 101/364 [00:01&lt;00:03,   77.16it/s]
+ 28%|##8       | Channels : 103/364 [00:01&lt;00:03,   78.04it/s]
+ 29%|##8       | Channels : 105/364 [00:01&lt;00:03,   78.83it/s]
+ 29%|##9       | Channels : 107/364 [00:01&lt;00:03,   79.19it/s]
+ 30%|##9       | Channels : 109/364 [00:01&lt;00:03,   79.92it/s]
+ 30%|###       | Channels : 110/364 [00:01&lt;00:03,   78.18it/s]
+ 31%|###       | Channels : 112/364 [00:01&lt;00:03,   78.99it/s]
+ 31%|###1      | Channels : 114/364 [00:01&lt;00:03,   79.96it/s]
+ 32%|###1      | Channels : 116/364 [00:01&lt;00:03,   80.11it/s]
+ 32%|###2      | Channels : 118/364 [00:01&lt;00:03,   80.50it/s]
+ 33%|###2      | Channels : 119/364 [00:01&lt;00:03,   78.03it/s]
+ 33%|###3      | Channels : 121/364 [00:01&lt;00:03,   77.80it/s]
+ 34%|###3      | Channels : 123/364 [00:01&lt;00:03,   78.99it/s]
+ 34%|###4      | Channels : 125/364 [00:01&lt;00:03,   79.44it/s]
+ 35%|###4      | Channels : 127/364 [00:01&lt;00:02,   79.18it/s]
+ 35%|###5      | Channels : 129/364 [00:01&lt;00:02,   79.63it/s]
+ 36%|###5      | Channels : 131/364 [00:01&lt;00:02,   80.04it/s]
+ 37%|###6      | Channels : 133/364 [00:01&lt;00:02,   80.98it/s]
+ 37%|###7      | Channels : 135/364 [00:01&lt;00:02,   81.07it/s]
+ 37%|###7      | Channels : 136/364 [00:01&lt;00:02,   79.79it/s]
+ 38%|###7      | Channels : 138/364 [00:01&lt;00:02,   80.37it/s]
+ 38%|###8      | Channels : 140/364 [00:01&lt;00:02,   80.46it/s]
+ 39%|###9      | Channels : 142/364 [00:01&lt;00:02,   81.61it/s]
+ 40%|###9      | Channels : 144/364 [00:01&lt;00:02,   81.44it/s]
+ 40%|###9      | Channels : 145/364 [00:01&lt;00:02,   80.15it/s]
+ 40%|####      | Channels : 147/364 [00:01&lt;00:02,   80.04it/s]
+ 41%|####      | Channels : 149/364 [00:01&lt;00:02,   79.82it/s]
+ 41%|####1     | Channels : 151/364 [00:01&lt;00:02,   79.17it/s]
+ 42%|####2     | Channels : 153/364 [00:01&lt;00:02,   79.48it/s]
+ 43%|####2     | Channels : 155/364 [00:01&lt;00:02,   80.04it/s]
+ 43%|####3     | Channels : 157/364 [00:01&lt;00:02,   80.97it/s]
+ 44%|####3     | Channels : 159/364 [00:01&lt;00:02,   81.74it/s]
+ 44%|####3     | Channels : 160/364 [00:01&lt;00:02,   78.67it/s]
+ 45%|####4     | Channels : 162/364 [00:01&lt;00:02,   79.14it/s]
+ 45%|####5     | Channels : 164/364 [00:01&lt;00:02,   79.24it/s]
+ 46%|####5     | Channels : 166/364 [00:01&lt;00:02,   80.56it/s]
+ 46%|####6     | Channels : 168/364 [00:01&lt;00:02,   80.91it/s]
+ 46%|####6     | Channels : 169/364 [00:01&lt;00:02,   77.75it/s]
+ 47%|####6     | Channels : 171/364 [00:02&lt;00:02,   78.24it/s]
+ 48%|####7     | Channels : 173/364 [00:02&lt;00:02,   78.27it/s]
+ 48%|####8     | Channels : 175/364 [00:02&lt;00:02,   79.35it/s]
+ 48%|####8     | Channels : 176/364 [00:02&lt;00:02,   76.75it/s]
+ 49%|####8     | Channels : 178/364 [00:02&lt;00:02,   77.49it/s]
+ 49%|####9     | Channels : 180/364 [00:02&lt;00:02,   78.59it/s]
+ 50%|#####     | Channels : 182/364 [00:02&lt;00:02,   79.00it/s]
+ 51%|#####     | Channels : 184/364 [00:02&lt;00:02,   80.00it/s]
+ 51%|#####     | Channels : 185/364 [00:02&lt;00:02,   77.54it/s]
+ 51%|#####1    | Channels : 187/364 [00:02&lt;00:02,   78.36it/s]
+ 52%|#####1    | Channels : 189/364 [00:02&lt;00:02,   78.95it/s]
+ 52%|#####2    | Channels : 191/364 [00:02&lt;00:02,   79.29it/s]
+ 53%|#####3    | Channels : 193/364 [00:02&lt;00:02,   80.44it/s]
+ 53%|#####3    | Channels : 194/364 [00:02&lt;00:02,   77.53it/s]
+ 54%|#####3    | Channels : 196/364 [00:02&lt;00:02,   78.48it/s]
+ 54%|#####4    | Channels : 198/364 [00:02&lt;00:02,   79.27it/s]
+ 55%|#####4    | Channels : 200/364 [00:02&lt;00:02,   79.28it/s]
+ 55%|#####5    | Channels : 202/364 [00:02&lt;00:02,   78.67it/s]
+ 56%|#####6    | Channels : 204/364 [00:02&lt;00:02,   79.37it/s]
+ 57%|#####6    | Channels : 206/364 [00:02&lt;00:01,   79.50it/s]
+ 57%|#####7    | Channels : 208/364 [00:02&lt;00:01,   80.49it/s]
+ 58%|#####7    | Channels : 210/364 [00:02&lt;00:01,   81.32it/s]
+ 58%|#####7    | Channels : 211/364 [00:02&lt;00:01,   79.08it/s]
+ 58%|#####8    | Channels : 212/364 [00:02&lt;00:01,   77.35it/s]
+ 59%|#####8    | Channels : 214/364 [00:02&lt;00:01,   76.33it/s]
+ 59%|#####9    | Channels : 215/364 [00:02&lt;00:02,   74.35it/s]
+ 60%|#####9    | Channels : 217/364 [00:02&lt;00:01,   73.57it/s]
+ 60%|######    | Channels : 219/364 [00:02&lt;00:01,   73.94it/s]
+ 61%|######    | Channels : 221/364 [00:02&lt;00:01,   73.85it/s]
+ 61%|######1   | Channels : 223/364 [00:02&lt;00:01,   74.13it/s]
+ 62%|######1   | Channels : 224/364 [00:02&lt;00:01,   73.06it/s]
+ 62%|######2   | Channels : 226/364 [00:02&lt;00:01,   72.34it/s]
+ 63%|######2   | Channels : 228/364 [00:02&lt;00:01,   73.23it/s]
+ 63%|######3   | Channels : 230/364 [00:02&lt;00:01,   74.26it/s]
+ 64%|######3   | Channels : 232/364 [00:02&lt;00:01,   74.24it/s]
+ 64%|######4   | Channels : 233/364 [00:02&lt;00:01,   73.50it/s]
+ 65%|######4   | Channels : 235/364 [00:02&lt;00:01,   72.28it/s]
+ 65%|######4   | Channels : 236/364 [00:02&lt;00:01,   70.55it/s]
+ 65%|######5   | Channels : 238/364 [00:02&lt;00:01,   70.13it/s]
+ 66%|######5   | Channels : 240/364 [00:02&lt;00:01,   71.25it/s]
+ 66%|######6   | Channels : 242/364 [00:02&lt;00:01,   71.76it/s]
+ 67%|######7   | Channels : 244/364 [00:02&lt;00:01,   73.09it/s]
+ 68%|######7   | Channels : 246/364 [00:02&lt;00:01,   73.00it/s]
+ 68%|######7   | Channels : 247/364 [00:02&lt;00:01,   72.30it/s]
+ 68%|######8   | Channels : 249/364 [00:03&lt;00:01,   73.63it/s]
+ 69%|######8   | Channels : 251/364 [00:03&lt;00:01,   74.27it/s]
+ 70%|######9   | Channels : 253/364 [00:03&lt;00:01,   75.42it/s]
+ 70%|#######   | Channels : 255/364 [00:03&lt;00:01,   74.99it/s]
+ 71%|#######   | Channels : 257/364 [00:03&lt;00:01,   74.93it/s]
+ 71%|#######1  | Channels : 259/364 [00:03&lt;00:01,   76.11it/s]
+ 72%|#######1  | Channels : 261/364 [00:03&lt;00:01,   77.33it/s]
+ 72%|#######2  | Channels : 263/364 [00:03&lt;00:01,   76.79it/s]
+ 73%|#######2  | Channels : 265/364 [00:03&lt;00:01,   76.73it/s]
+ 73%|#######3  | Channels : 267/364 [00:03&lt;00:01,   77.57it/s]
+ 74%|#######3  | Channels : 269/364 [00:03&lt;00:01,   77.95it/s]
+ 74%|#######4  | Channels : 271/364 [00:03&lt;00:01,   78.59it/s]
+ 75%|#######4  | Channels : 272/364 [00:03&lt;00:01,   77.26it/s]
+ 75%|#######5  | Channels : 274/364 [00:03&lt;00:01,   78.36it/s]
+ 76%|#######5  | Channels : 276/364 [00:03&lt;00:01,   79.79it/s]
+ 76%|#######6  | Channels : 278/364 [00:03&lt;00:01,   80.50it/s]
+ 77%|#######6  | Channels : 280/364 [00:03&lt;00:01,   81.46it/s]
+ 77%|#######7  | Channels : 282/364 [00:03&lt;00:01,   80.21it/s]
+ 78%|#######7  | Channels : 283/364 [00:03&lt;00:01,   78.89it/s]
+ 78%|#######8  | Channels : 285/364 [00:03&lt;00:01,   78.27it/s]
+ 79%|#######8  | Channels : 287/364 [00:03&lt;00:00,   78.22it/s]
+ 79%|#######9  | Channels : 288/364 [00:03&lt;00:01,   75.35it/s]
+ 80%|#######9  | Channels : 290/364 [00:03&lt;00:00,   76.22it/s]
+ 80%|########  | Channels : 292/364 [00:03&lt;00:00,   76.53it/s]
+ 81%|########  | Channels : 294/364 [00:03&lt;00:00,   77.61it/s]
+ 81%|########1 | Channels : 296/364 [00:03&lt;00:00,   78.32it/s]
+ 82%|########1 | Channels : 298/364 [00:03&lt;00:00,   77.82it/s]
+ 82%|########2 | Channels : 300/364 [00:03&lt;00:00,   78.71it/s]
+ 83%|########2 | Channels : 302/364 [00:03&lt;00:00,   79.78it/s]
+ 83%|########3 | Channels : 303/364 [00:03&lt;00:00,   78.45it/s]
+ 84%|########3 | Channels : 305/364 [00:03&lt;00:00,   78.57it/s]
+ 85%|########5 | Channels : 310/364 [00:03&lt;00:00,   81.53it/s]
+ 87%|########6 | Channels : 315/364 [00:03&lt;00:00,   84.48it/s]
+ 88%|########8 | Channels : 321/364 [00:03&lt;00:00,   87.85it/s]
+ 90%|########9 | Channels : 327/364 [00:03&lt;00:00,   91.22it/s]
+ 91%|#########1| Channels : 333/364 [00:03&lt;00:00,   94.69it/s]
+ 92%|#########2| Channels : 336/364 [00:03&lt;00:00,   96.90it/s]
+ 93%|#########3| Channels : 340/364 [00:03&lt;00:00,   99.75it/s]
+ 95%|#########4| Channels : 344/364 [00:03&lt;00:00,  102.65it/s]
+ 96%|#########6| Channels : 350/364 [00:03&lt;00:00,  106.29it/s]
+ 98%|#########7| Channels : 356/364 [00:03&lt;00:00,  110.01it/s]
+ 99%|#########8| Channels : 360/364 [00:03&lt;00:00,  112.87it/s]
+100%|#########9| Channels : 363/364 [00:03&lt;00:00,  115.08it/s]
+100%|##########| Channels : 364/364 [00:03&lt;00:00,   93.42it/s]
 Marking 0.00% of time points (0 segments) and 0/364 channels bad
 </pre></div>
 </div>
@@ -744,7 +897,7 @@ Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-
 After passing `ch_names=[]` and `overwrite=True`, the following channels are now marked as bad:
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.227 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  19.816 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mark-bad-channels-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/mark_bad_channels.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -761,32 +914,33 @@ After passing `ch_names=[]` and `overwrite=True`, the following channels are now
 </div>
 
 
-    </div>
-      
-  </div>
-</div>
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="convert_mne_sample.html" title="previous page">02. Convert MNE sample data to BIDS format</a>
+    <a class='right-next' id="next-link" href="convert_eeg_to_bids.html" title="next page">04. Convert EEG data to BIDS format</a>
 
-<footer class="footer">
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.1e043a052b0af929e4d8.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
   <div class="container">
-    <p class="pull-right">
-      <a href="#">Back to top</a>
-      
-    </p>
     <p>
-        &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-24.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-25.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
 </footer>
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-37225609-2');
-</script>
-
   </body>
 </html>
