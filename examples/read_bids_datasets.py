@@ -60,7 +60,7 @@ if not op.isdir(target_dir):
     os.makedirs(target_dir)
 
 openneuro.download(dataset=dataset, target_dir=target_dir,
-                   include=f'sub-{subject}/*')
+                   include=f'sub-{subject}/')
 
 bids_root = op.join('examples', dataset)
 
