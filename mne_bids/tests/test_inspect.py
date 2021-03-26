@@ -19,6 +19,7 @@ from mne_bids.read import _from_tsv
 
 from test_read import warning_str
 
+mpl_testing_backend = 'Qt5Agg'
 requires_matplotlib = partial(requires_module, name='matplotlib',
                               call='import matplotlib')
 
@@ -64,7 +65,7 @@ def test_inspect_single_file(tmp_path, save_changes):
     from mne.utils._testing import _click_ch_name
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -106,7 +107,7 @@ def test_inspect_multiple_files(tmp_path):
     """Test inspecting a dataset consisting of more than one file."""
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -132,7 +133,7 @@ def test_inspect_set_and_unset_bads(tmp_path):
     from mne.utils._testing import _click_ch_name
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -196,7 +197,7 @@ def test_inspect_annotations(tmp_path):
     """Test inspection of Annotations."""
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -245,7 +246,7 @@ def test_inspect_annotations_remove_all(tmp_path):
     """Test behavior if all Annotations are removed by the user."""
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -302,7 +303,7 @@ def test_inspect_dont_show_annotations(tmp_path):
     """Test if show_annotations=False works."""
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -320,7 +321,7 @@ def test_inspect_bads_and_annotations(tmp_path):
     from mne.utils._testing import _click_ch_name
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -358,7 +359,7 @@ def test_inspect_auto_flats(tmp_path, save_changes):
     """Test flat channel & segment detection."""
     import matplotlib
     import matplotlib.pyplot as plt
-    matplotlib.use('Agg')
+    matplotlib.use(mpl_testing_backend)
     plt.close('all')
 
     bids_root = setup_bids_test_dir(tmp_path)
