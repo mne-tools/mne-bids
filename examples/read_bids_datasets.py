@@ -8,8 +8,9 @@
 When working with electrophysiological data in the BIDS format, an important
 resource is the `OpenNeuro <https://openneuro.org/>`_ database. OpenNeuro
 works great with ``mne-bids`` because every dataset must pass a validator
-that its format meets BIDS specifications before it can be uploaded,
-so you know the data will work like in this example without modification.
+that tests to ensure its format meets BIDS specifications before the dataset
+can be uploaded, so you know the data will work with a script like in this
+example without modification.
 
 We have various data types that can be loaded via the ``read_raw_bids``
 function:
@@ -60,7 +61,7 @@ if not op.isdir(target_dir):
     os.makedirs(target_dir)
 
 openneuro.download(dataset=dataset, target_dir=target_dir,
-                   include=f'sub-{subject}/')
+                   include=[f'sub-{subject}'])
 
 bids_root = op.join('examples', dataset)
 
