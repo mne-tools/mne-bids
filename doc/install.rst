@@ -44,7 +44,7 @@ If you want to install a snapshot of the current development version, run:
 
 .. code-block:: bash
 
-   pip install --user -U https://api.github.com/repos/mne-tools/mne-bids/zipball/master
+   pip install --user -U https://api.github.com/repos/mne-tools/mne-bids/zipball/main
 
 To check if everything worked fine, the following command should not give any
 error messages:

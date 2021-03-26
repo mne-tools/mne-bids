@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: ['**']
   create:
-    branches: [master]
+    branches: [main]
     tags: ['**']
   schedule:
     - cron: "0 4 * * *"

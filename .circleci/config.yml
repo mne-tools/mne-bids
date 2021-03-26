@@ -59,7 +59,7 @@ jobs:
               - ~/.cache/pip
 
   docs-deploy:
-    # will only be run on master branch
+    # will only be run on main branch
     docker:
       - image: node:8
     steps:
@@ -93,7 +93,7 @@ workflows:
             - docs-build
           filters:
             branches:
-              only: master
+              only: main
 
   scheduled:
     jobs:
@@ -105,4 +105,4 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
