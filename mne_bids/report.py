@@ -104,7 +104,7 @@ by {{_pretty_str(authors)}}. This report was generated with
 MNE-BIDS ({{mne_bids_doi}}). """
 BIDS_DATASET_TEMPLATE += \
     """The dataset consists of
-{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}){{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """  # noqa
+{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}) {{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """  # noqa
 
 PARTICIPANTS_TEMPLATE = \
     """{{_summarize_participant_sex(sexs)}};
