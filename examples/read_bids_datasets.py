@@ -45,13 +45,15 @@ from mne_bids import BIDSPath, read_raw_bids, print_dir_tree, make_report
 # --------------------------------------------------------
 #
 # Download the data, storing each in a ``target_dir`` target directory, which,
-# in ``mne-bids`` terminology, is the `root` of each BIDS dataset.
+# in ``mne-bids`` terminology, is the `root` of each BIDS dataset. This example
+# uses this `EEG dataset <https://openneuro.org/datasets/ds002778`_ of resting-
+# state recordings of patients with Parkinson's disease.
 #
-# ..note If the keyword argument include is left out of ``openneuro.download``,
-# the whole dataset will be downloaded. We're just using data from one
-# subject to reduce the time it takes to run the example.
+# .. note: If the keyword argument include is left out of
+# ``openneuro.download``, the whole dataset will be downloaded.
+# We're just using data from one subject to reduce the time
+# it takes to run the example.
 
-# `Parkinson's EEG dataset <https://openneuro.org/datasets/ds002778`_
 dataset = 'ds002778'
 subject = 'pd6'
 
