@@ -322,7 +322,7 @@ def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path,
     icon = plt.imread(icon_fname)
 
     fig = figure_nobar(figsize=figsize)
-    fig.canvas.set_window_title('MNE-BIDS Inspector')
+    fig.canvas.manager.set_window_title('MNE-BIDS Inspector')
     fig.suptitle(title, y=0.95, fontsize='xx-large', fontweight='bold')
 
     gs = fig.add_gridspec(1, 2, width_ratios=(1.5, 5))
