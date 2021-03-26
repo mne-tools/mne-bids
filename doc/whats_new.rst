@@ -23,7 +23,7 @@ Notable changes
 Authors
 ~~~~~~~
 
-* `Alex Rockhill`_
+* ...
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,7 +46,7 @@ Requirements
 Bug fixes
 ^^^^^^^^^
 
-- Fix matplotlib 3.4 compatibility, by `Alex Rockhill`_ (:gh:`756`)
+- ...
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
