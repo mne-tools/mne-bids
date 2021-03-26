@@ -205,8 +205,7 @@ def _summarize_participants_tsv(root, verbose=True):
     p_gender = participants_tsv.get('gender')
     sexs = ['n/a']
     if p_sex or p_gender:
-        # only summarize sex if it conforms to
-        # mne-bids handedness
+        # only summarize sex if it conforms to `keys` referenced above
         p_sex = p_gender if p_sex is None else p_sex
         if all([sex.upper() in keys
                 for sex in p_sex if sex != 'n/a']):
