@@ -144,6 +144,9 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'space': 'space', 'rec': 'recording',
                                'split': 'split', 'suffix': 'suffix'}
 
+# Annotations to never remove during reading or writing
+ANNOTATIONS_TO_KEEP = ('BAD_ACQ_SKIP',)
+
 coordsys_standard_template = [
     'ICBM452AirSpace',
     'ICBM452Warp5Space',

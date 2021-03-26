@@ -21,7 +21,9 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS, reader, _map_options
+from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
+                             ANNOTATIONS_TO_KEEP,
+                             reader, _map_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype)
@@ -339,12 +341,19 @@ def _handle_events_reading(events_fname, raw):
     descriptions = descriptions[good_events_idx]
     del good_events_idx
 
-    # Add Events to raw as annotations
+    # Add events as Annotations, but keep essential Annotations present in
+    # raw file
+    # Ensusure Annotations share the same orig_time
+    annot_from_raw = raw.annotations.copy()
     annot_from_events = mne.Annotations(onset=onsets,
                                         duration=durations,
                                         description=descriptions,
-                                        orig_time=None)
-    raw.set_annotations(annot_from_events)
+                                        orig_time=annot_from_raw.orig_time)
+
+    annot_idx_to_keep = [idx for idx, annot in enumerate(annot_from_raw)
+                         if annot['description'] in ANNOTATIONS_TO_KEEP]
+    annotations = annot_from_events + annot_from_raw[annot_idx_to_keep]
+    raw.set_annotations(annotations)
     return raw
 
 
@@ -569,6 +578,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         warn("Participants file not found for {}... Not reading "
              "in any particpants.tsv data.".format(bids_fname))
 
+    assert raw.annotations.orig_time == raw.info['meas_date']
     return raw
 
 

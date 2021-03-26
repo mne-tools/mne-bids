@@ -308,6 +308,28 @@ def test_handle_events_reading(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_keep_essential_annotations(tmpdir):
+    """Test that essential Annotations are not omitted during I/O roundtrip."""
+    raw = _read_raw_fif(raw_fname)
+    annotations = mne.Annotations(onset=[raw.times[0]], duration=[1],
+                                  description=['BAD_ACQ_SKIP'])
+    raw.set_annotations(annotations)
+
+    # Write data, remove events.tsv, then try to read again
+    bids_path = BIDSPath(subject='01', task='task', datatype='meg',
+                         root=tmpdir)
+    with pytest.warns(RuntimeWarning, match='Acquisition skips detected'):
+        write_raw_bids(raw, bids_path, overwrite=True)
+
+    bids_path.copy().update(suffix='events', extension='.tsv').fpath.unlink()
+    raw_read = read_raw_bids(bids_path)
+
+    assert len(raw_read.annotations) == len(raw.annotations) == 1
+    assert (raw_read.annotations[0]['description'] ==
+            raw.annotations[0]['description'])
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_scans_reading(tmpdir):
     """Test reading data from a BIDS scans.tsv file."""
     raw = _read_raw_fif(raw_fname)

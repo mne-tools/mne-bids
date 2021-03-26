@@ -23,7 +23,7 @@ Notable changes
 Authors
 ~~~~~~~
 
-* ...
+* `Richard Höchenberger`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,7 +46,7 @@ Requirements
 Bug fixes
 ^^^^^^^^^
 
-- ...
+- The :class:`mne.Annotations` ``BAD_ACQ_SKIP`` – added by the acquisition system to ``FIFF`` files – will now be preserved when reading raw data, even if these time periods are **not** explicitly included in ``*_events.tsv``, by `Richard Höchenberger`_ (:gh:`xxx`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
