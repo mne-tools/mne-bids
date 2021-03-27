@@ -60,7 +60,7 @@ dataset = 'ds002778'
 subject = 'pd6'
 
 # Download one subject's data from each dataset
-bids_root = op.join(os.pardir(sample.data_path()), dataset)
+bids_root = op.join(op.dirname(sample.data_path()), dataset)
 if not op.isdir(bids_root):
     os.makedirs(bids_root)
 
