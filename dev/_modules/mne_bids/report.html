@@ -290,7 +290,7 @@
 <span class="sd">MNE-BIDS ({{mne_bids_doi}}). &quot;&quot;&quot;</span>
 <span class="n">BIDS_DATASET_TEMPLATE</span> <span class="o">+=</span> \
     <span class="sd">&quot;&quot;&quot;The dataset consists of</span>
-<span class="sd">{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}){{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+<span class="sd">{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}) {{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
 
 <span class="n">PARTICIPANTS_TEMPLATE</span> <span class="o">=</span> \
     <span class="sd">&quot;&quot;&quot;{{_summarize_participant_sex(sexs)}};</span>
