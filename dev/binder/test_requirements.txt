@@ -9,5 +9,5 @@ pytest-sugar
 check-manifest
 pydocstyle
 flake8
-matplotlib
+matplotlib<3.4
 pandas>=0.23.4
