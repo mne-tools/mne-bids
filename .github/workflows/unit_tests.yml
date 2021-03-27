@@ -96,7 +96,7 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.8, 3.9]
-        bids-validator: [master, stable]
+        bids-validator: [main, stable]
 
     env:
       TZ: Europe/Berlin
@@ -132,8 +132,8 @@ jobs:
       run: |
         npm install -g bids-validator
 
-    - name: Install BIDS validator (master)
-      if: "matrix.bids-validator == 'master'"
+    - name: Install BIDS validator (main)
+      if: "matrix.bids-validator == 'main'"
       run: |
         pushd ..
         git clone --depth 1 https://github.com/bids-standard/bids-validator
