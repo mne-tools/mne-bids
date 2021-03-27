@@ -7,7 +7,7 @@
 
 When working with electrophysiological data in the BIDS format, an important
 resource is the `OpenNeuro <https://openneuro.org/>`_ database. OpenNeuro
-works great with ``mne-bids`` because every dataset must pass a validator
+works great with MNE-BIDS because every dataset must pass a validator
 that tests to ensure its format meets BIDS specifications before the dataset
 can be uploaded, so you know the data will work with a script like in this
 example without modification.
@@ -60,7 +60,7 @@ dataset = 'ds002778'
 subject = 'pd6'
 
 # Download one subject's data from each dataset
-bids_root = op.join(op.dirname(sample.data_path()), dataset)
+bids_root = op.join(sample.data_path(), dataset)
 if not op.isdir(bids_root):
     os.makedirs(bids_root)
 
@@ -86,8 +86,8 @@ print(make_report(bids_root))
 
 ###############################################################################
 # Now it's time to get ready for reading some of the data! First, we need to
-# create a `mne_bids.BIDSPath`, which is the workhorse object of MNE-BIDS
-# when it comes to file and folder operations.
+# create an :class:`mne_bids.BIDSPath`, which is the workhorse object of
+# MNE-BIDS when it comes to file and folder operations.
 #
 # For now, we're interested only in the EEG data in the BIDS root directory
 # of the Parkinson's disease patient dataset. There were two sessions, one

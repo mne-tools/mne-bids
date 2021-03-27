@@ -31,7 +31,7 @@ Detailed list of changes
 Enhancements
 ^^^^^^^^^^^^
 
-- Updated the ``read_bid_datasets`` example to use data from OpenNeuro as an example for users on how to do that, by `Alex Rockhill`_ (:gh:`753`)
+- Updated the "Read BIDS datasets" example to use data from `OpenNeuro <https://openneuro.org>`_, by `Alex Rockhill`_ (:gh:`753`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -41,7 +41,7 @@ API and behavior changes
 Requirements
 ^^^^^^^^^^^^
 
-- For downloading OpenNeuro datasets, ``openneuro-py`` is now required to run the examples and build the documentation, by `Alex Rockhill`_ (:gh:`753`)
+- For downloading `OpenNeuro <https://openneuro.org>`_ datasets, ``openneuro-py`` is now required to run the examples and build the documentation, by `Alex Rockhill`_ (:gh:`753`)
 
 Bug fixes
 ^^^^^^^^^
