@@ -51,7 +51,6 @@ jobs:
             key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
             paths:
               - ~/mne_data
-              - $CIRCLE_WORKING_DIRECTORY/examples/ds002778
 
         # Store pip cache
         - save_cache:

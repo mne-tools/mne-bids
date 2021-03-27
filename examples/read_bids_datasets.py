@@ -38,6 +38,7 @@ import os
 import os.path as op
 import openneuro
 
+import mne
 from mne_bids import BIDSPath, read_raw_bids, print_dir_tree, make_report
 
 ###############################################################################
@@ -59,14 +60,12 @@ dataset = 'ds002778'
 subject = 'pd6'
 
 # Download one subject's data from each dataset
-target_dir = op.join('examples', dataset)
-if not op.isdir(target_dir):
-    os.makedirs(target_dir)
+bids_root = op.join(mne.get_config('MNE_DATA'), dataset)
+if not op.isdir(bids_root):
+    os.makedirs(bids_root)
 
-openneuro.download(dataset=dataset, target_dir=target_dir,
+openneuro.download(dataset=dataset, target_dir=bids_root,
                    include=[f'sub-{subject}'])
-
-bids_root = op.join('examples', dataset)
 
 ###############################################################################
 # Explore the dataset contents
