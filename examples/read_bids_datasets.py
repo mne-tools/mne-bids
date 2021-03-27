@@ -53,6 +53,7 @@ from mne_bids import BIDSPath, read_raw_bids, print_dir_tree, make_report
 # ``openneuro.download``, the whole dataset will be downloaded.
 # We're just using data from one subject to reduce the time
 # it takes to run the example.
+#
 
 dataset = 'ds002778'
 subject = 'pd6'
