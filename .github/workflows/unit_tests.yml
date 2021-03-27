@@ -88,6 +88,7 @@ jobs:
         python -c 'import nibabel; print(nibabel.__version__)'
         python -c 'import matplotlib; print(matplotlib.__version__)'
         python -c 'import pandas; print(pandas.__version__)'
+        python -c 'import openneuro; print(openneuro.__version__)'
 
   test:
     runs-on: ${{ matrix.os }}
