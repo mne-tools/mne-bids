@@ -230,9 +230,9 @@
 
 <span class="s2">    if n_unknown == len(hands):</span>
 <span class="s2">        return f&#39;handedness were all unknown&#39;</span>
-<span class="s2">    n_rhand = len([hand for hand in hands if hand == &#39;R&#39;])</span>
-<span class="s2">    n_lhand = len([hand for hand in hands if hand == &#39;L&#39;])</span>
-<span class="s2">    n_ambidex = len([hand for hand in hands if hand == &#39;A&#39;])</span>
+<span class="s2">    n_rhand = len([hand for hand in hands if hand.upper() == &#39;R&#39;])</span>
+<span class="s2">    n_lhand = len([hand for hand in hands if hand.upper() == &#39;L&#39;])</span>
+<span class="s2">    n_ambidex = len([hand for hand in hands if hand.upper() == &#39;A&#39;])</span>
 
 <span class="s2">    return f&#39;comprised of </span><span class="si">{n_rhand}</span><span class="s2"> right hand, </span><span class="si">{n_lhand}</span><span class="s2"> left hand &#39; </span><span class="se">\</span>
 <span class="s2">           f&#39;and </span><span class="si">{n_ambidex}</span><span class="s2"> ambidextrous&#39;</span>
@@ -242,10 +242,10 @@
 
 <span class="s2">    if n_unknown == len(sexs):</span>
 <span class="s2">        return f&#39;sex were all unknown&#39;</span>
-<span class="s2">    n_males = len([sex for sex in sexs if sex == &#39;M&#39;])</span>
-<span class="s2">    n_females = len([sex for sex in sexs if sex == &#39;F&#39;])</span>
+<span class="s2">    n_males = len([sex for sex in sexs if sex.upper() == &#39;M&#39;])</span>
+<span class="s2">    n_females = len([sex for sex in sexs if sex.upper() == &#39;F&#39;])</span>
 
-<span class="s2">    return f&#39;comprised of </span><span class="si">{n_males}</span><span class="s2"> men and </span><span class="si">{n_females}</span><span class="s2"> women&#39;</span>
+<span class="s2">    return f&#39;comprised of </span><span class="si">{n_males}</span><span class="s2"> male and </span><span class="si">{n_females}</span><span class="s2"> female participants&#39;</span>
 
 <span class="s2">def _length_recording_str(length_recordings):</span>
 <span class="s2">    import numpy as np</span>
@@ -387,10 +387,12 @@
     <span class="c1"># summarize sex count statistics</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]</span>
     <span class="n">p_sex</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">)</span>
+    <span class="c1"># phrasing works for both sex and gender</span>
+    <span class="n">p_gender</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gender&#39;</span><span class="p">)</span>
     <span class="n">sexs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">p_sex</span><span class="p">:</span>
-        <span class="c1"># only summarize sex if it conforms to</span>
-        <span class="c1"># mne-bids handedness</span>
+    <span class="k">if</span> <span class="n">p_sex</span> <span class="ow">or</span> <span class="n">p_gender</span><span class="p">:</span>
+        <span class="c1"># only summarize sex if it conforms to `keys` referenced above</span>
+        <span class="n">p_sex</span> <span class="o">=</span> <span class="n">p_gender</span> <span class="k">if</span> <span class="n">p_sex</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">p_sex</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keys</span>
                 <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">p_sex</span> <span class="k">if</span> <span class="n">sex</span> <span class="o">!=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]):</span>
             <span class="n">sexs</span> <span class="o">=</span> <span class="n">p_sex</span>
