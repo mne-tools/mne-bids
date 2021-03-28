@@ -81,7 +81,8 @@ def test_inspect_single_file(tmp_path, save_changes):
     _click_ch_name(raw_fig, ch_index=4, button=1)
 
     # Closing the window should open a dialog box.
-    raw_fig._close(event=None)  # manually for non-interactive backend
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
 
     if save_changes:
@@ -121,7 +122,8 @@ def test_inspect_multiple_files(tmp_path):
     inspect_dataset(bids_path.copy().update(subject=None))
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     assert raw_fig.mne.info['subject_info']['his_id'] == 'sub-02'
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
 
 
 @requires_matplotlib
@@ -148,7 +150,8 @@ def test_inspect_set_and_unset_bads(tmp_path):
     _click_ch_name(raw_fig, ch_index=4, button=1)
 
     # Close window and save changes.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
     fig_dialog.canvas.key_press_event('return')
 
@@ -160,7 +163,8 @@ def test_inspect_set_and_unset_bads(tmp_path):
     _click_ch_name(raw_fig, ch_index=4, button=1)
 
     # Close window and save changes.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
     fig_dialog.canvas.key_press_event('return')
 
@@ -209,7 +213,8 @@ def test_inspect_annotations(tmp_path):
     _add_annotation(raw_fig)
 
     # Close window and save changes.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
     fig_dialog.canvas.key_press_event('return')
 
@@ -228,7 +233,8 @@ def test_inspect_annotations(tmp_path):
                 kind='press')
 
     # Close window and save changes.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
     fig_dialog.canvas.key_press_event('return')
 
@@ -271,7 +277,8 @@ def test_inspect_annotations_remove_all(tmp_path):
     _add_annotation(raw_fig)
 
     # Close window and save changes.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
     fig_dialog.canvas.key_press_event('return')
 
@@ -287,7 +294,8 @@ def test_inspect_annotations_remove_all(tmp_path):
                 kind='press')
 
     # Close window and save changes.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
     fig_dialog.canvas.key_press_event('return')
 
@@ -338,7 +346,8 @@ def test_inspect_bads_and_annotations(tmp_path):
     _add_annotation(raw_fig)
 
     # Close window and save changes.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
     fig_dialog.canvas.key_press_event('return')
 
@@ -380,7 +389,8 @@ def test_inspect_auto_flats(tmp_path, save_changes):
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
 
     # Closing the window should open a dialog box.
-    raw_fig._close(event=None)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    raw_fig._close(event=None)  # needs close for non-interactive backend
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
 
     if save_changes:
