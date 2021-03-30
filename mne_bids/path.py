@@ -939,7 +939,7 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
         return outfile.getvalue()
 
 
-def _parse_ext(raw_fname, match_casing=True, verbose=False):
+def _parse_ext(raw_fname, verbose=False):
     """Split a filename into its name and extension."""
     raw_fname = str(raw_fname)
     fname, ext = os.path.splitext(raw_fname)
@@ -953,13 +953,6 @@ def _parse_ext(raw_fname, match_casing=True, verbose=False):
     elif ext == '.gz' and raw_fname.endswith('.nii.gz'):
         ext = '.nii.gz'
         fname = fname[:-4]  # cut off the .nii
-
-    if not match_casing:
-        # for Nihon Kohden systems with '.EEG' extension, this is
-        # case-sensitive. However, EDF can be `.edf` and `.EDF`.
-        # We default to a lower-case
-        if ext != '.EEG':
-            ext = ext.lower()
     return fname, ext
 
 

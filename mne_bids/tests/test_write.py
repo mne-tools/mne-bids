@@ -2600,10 +2600,10 @@ def test_write_extension_case_insensitive(dir_name, fname, reader, _bids_validat
 
     _fname, ext = _parse_ext(fname)
 
-    if ext != '.EEG':
-        new_fname = _fname + ext.upper()
+    if ext != '.edf':
+        return
     else:
-        new_fname = _fname + ext.lower()
+        new_fname = _fname + ext.upper()
 
     # rename the file's extension
     raw_fname = op.join(data_path, fname)
