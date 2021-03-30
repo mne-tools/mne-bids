@@ -343,18 +343,20 @@ def _handle_events_reading(events_fname, raw):
 
     # Add events as Annotations, but keep essential Annotations present in
     # raw file
-    # Ensure Annotations share the same orig_time
-    orig_time = raw.info['meas_date']
     annot_from_raw = raw.annotations.copy()
+
     annot_from_events = mne.Annotations(onset=onsets,
                                         duration=durations,
-                                        description=descriptions,
-                                        orig_time=orig_time)
+                                        description=descriptions)
+    raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [idx for idx, annot in enumerate(annot_from_raw)
                          if annot['description'] in ANNOTATIONS_TO_KEEP]
-    annotations = annot_from_events + annot_from_raw[annot_idx_to_keep]
-    raw.set_annotations(annotations)
+    annot_to_keep = annot_from_raw[annot_idx_to_keep]
+
+    if len(annot_to_keep):
+        raw.set_annotations(raw.annotations + annot_to_keep)
+
     return raw
 
 
