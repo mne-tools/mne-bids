@@ -47,14 +47,14 @@ meg_manufacturers = {
 }
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
-                     '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
-                     '.fdt': 'n/a',
+                     '.edf': 'n/a', '.EDF': 'n/a', '.bdf': 'Biosemi',
+                     '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
-                      '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
-                      '.mef': 'n/a', '.nwb': 'n/a',
+                      '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
+                      '.fdt': 'n/a', '.mef': 'n/a', '.nwb': 'n/a',
                       '.lay': 'Persyst', '.dat': 'Persyst',
                       '.EEG': 'Nihon Kohden'}
 
