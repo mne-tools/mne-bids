@@ -25,5 +25,5 @@ to report bugs.
 Contributing code or documentation
 ----------------------------------
 
-Please see our `contributing guide <https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md>`_
+Please see our `contributing guide <https://github.com/mne-tools/mne-bids/blob/main/CONTRIBUTING.md>`_
 to find out how to get started.

@@ -44,9 +44,9 @@ def _summarize_participant_hand(hands):
 
     if n_unknown == len(hands):
         return f'handedness were all unknown'
-    n_rhand = len([hand for hand in hands if hand == 'R'])
-    n_lhand = len([hand for hand in hands if hand == 'L'])
-    n_ambidex = len([hand for hand in hands if hand == 'A'])
+    n_rhand = len([hand for hand in hands if hand.upper() == 'R'])
+    n_lhand = len([hand for hand in hands if hand.upper() == 'L'])
+    n_ambidex = len([hand for hand in hands if hand.upper() == 'A'])
 
     return f'comprised of {n_rhand} right hand, {n_lhand} left hand ' \
            f'and {n_ambidex} ambidextrous'
@@ -56,10 +56,10 @@ def _summarize_participant_sex(sexs):
 
     if n_unknown == len(sexs):
         return f'sex were all unknown'
-    n_males = len([sex for sex in sexs if sex == 'M'])
-    n_females = len([sex for sex in sexs if sex == 'F'])
+    n_males = len([sex for sex in sexs if sex.upper() == 'M'])
+    n_females = len([sex for sex in sexs if sex.upper() == 'F'])
 
-    return f'comprised of {n_males} men and {n_females} women'
+    return f'comprised of {n_males} male and {n_females} female participants'
 
 def _length_recording_str(length_recordings):
     import numpy as np
@@ -104,7 +104,7 @@ by {{_pretty_str(authors)}}. This report was generated with
 MNE-BIDS ({{mne_bids_doi}}). """
 BIDS_DATASET_TEMPLATE += \
     """The dataset consists of
-{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}){{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """  # noqa
+{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}) {{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """  # noqa
 
 PARTICIPANTS_TEMPLATE = \
     """{{_summarize_participant_sex(sexs)}};
@@ -201,10 +201,12 @@ def _summarize_participants_tsv(root, verbose=True):
     # summarize sex count statistics
     keys = ['M', 'F', 'n/a']
     p_sex = participants_tsv.get('sex')
+    # phrasing works for both sex and gender
+    p_gender = participants_tsv.get('gender')
     sexs = ['n/a']
-    if p_sex:
-        # only summarize sex if it conforms to
-        # mne-bids handedness
+    if p_sex or p_gender:
+        # only summarize sex if it conforms to `keys` referenced above
+        p_sex = p_gender if p_sex is None else p_sex
         if all([sex.upper() in keys
                 for sex in p_sex if sex != 'n/a']):
             sexs = p_sex
