@@ -2593,7 +2593,8 @@ def test_write_fif_triux(tmpdir):
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'],
                             warning_str['encountered_data_in'])
-def test_write_extension_case_insensitive(dir_name, fname, reader, _bids_validate, tmpdir):
+def test_write_extension_case_insensitive(dir_name, fname, reader,
+                                          _bids_validate, tmpdir):
     """Test writing files is case insensitive."""
     bids_root = tmpdir.mkdir('bids1')
     data_path = op.join(testing.data_path(), dir_name)
