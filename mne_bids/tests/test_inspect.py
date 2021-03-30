@@ -31,10 +31,10 @@ def _close_non_interactive_fig(fig):
     # because the figure is not interactive, these close calls are not
     # fired by `plt.close`, so we have to call them explicitly, see
     # https://github.com/matplotlib/matplotlib/issues/18609
+    fig.canvas.key_press_event(fig.mne.close_key)
     for child_fig in fig.mne.child_figs.copy():
         child_fig._close(event=None)
     fig._close(event=None)
-    fig.canvas.key_press_event(fig.mne.close_key)
 
 
 def setup_bids_test_dir(bids_root):
