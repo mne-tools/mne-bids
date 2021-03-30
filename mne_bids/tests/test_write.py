@@ -46,7 +46,7 @@ from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar
-from mne_bids.path import _find_matching_sidecar
+from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
 from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
 
@@ -2588,3 +2588,30 @@ def test_write_fif_triux(tmpdir):
         subject="01", session="01", run="01", datatype="meg", root=tmpdir
     )
     write_raw_bids(raw, bids_path=bids_path, overwrite=True)
+
+
+@pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'],
+                            warning_str['encountered_data_in'])
+def test_write_extension_case_insensitive(dir_name, fname, reader, _bids_validate, tmpdir):
+    """Test writing files is case insensitive."""
+    bids_root = tmpdir.mkdir('bids1')
+    data_path = op.join(testing.data_path(), dir_name)
+
+    _fname, ext = _parse_ext(fname)
+
+    if ext != '.EEG':
+        new_fname = _fname + ext.upper()
+    else:
+        new_fname = _fname + ext.lower()
+
+    # rename the file's extension
+    raw_fname = op.join(data_path, fname)
+    new_raw_fname = op.join(data_path, new_fname)
+    os.rename(raw_fname, new_raw_fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    raw = reader(raw_fname)
+    write_raw_bids(raw, bids_path)

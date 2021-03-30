@@ -94,7 +94,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
-    _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+    _, ext = _parse_ext(raw.filenames[0], match_casing=False, verbose=verbose)
     manufacturer = MANUFACTURERS[ext]
 
     ignored_channels = IGNORED_CHANNELS.get(manufacturer, list())
@@ -1139,7 +1139,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
     raw_fname = raw_fname.replace('.dat', '.lay')
-    _, ext = _parse_ext(raw_fname, verbose=verbose)
+    _, ext = _parse_ext(raw_fname, match_casing=False, verbose=verbose)
 
     if ext not in ALLOWED_INPUT_EXTENSIONS:
         raise ValueError(f'Unrecognized file format {ext}')
@@ -1281,7 +1281,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
         # Kepp events_array around for BrainVision writing below.
         del event_desc_id_map, events_data, event_id, event_dur
 
-    make_dataset_description(bids_path.root, name=" ", overwrite=overwrite,
+    # make dataset description and add template data if it does not
+    # already exist. Always set overwrite to False here. If users
+    # want to edit their dataset_description, they can directly call
+    # this function.
+    make_dataset_description(bids_path.root, name=" ", overwrite=False,
                              verbose=verbose)
 
     _sidecar_json(raw, bids_path.task, manufacturer, sidecar_path.fpath,
