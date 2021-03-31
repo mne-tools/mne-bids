@@ -2597,7 +2597,10 @@ def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
     dir_name, fname, reader = 'EDF', 'test_reduced.edf', _read_raw_edf
 
     bids_root = tmpdir.mkdir('bids1')
+    source_path = Path(bids_root) / 'sourcedata'
     data_path = op.join(testing.data_path(), dir_name)
+    sh.copytree(data_path, source_path)
+    data_path = source_path
 
     # rename extension to upper-case
     _fname, ext = _parse_ext(fname)
