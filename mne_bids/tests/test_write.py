@@ -2590,21 +2590,18 @@ def test_write_fif_triux(tmpdir):
     write_raw_bids(raw, bids_path=bids_path, overwrite=True)
 
 
-@pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
-@pytest.mark.filterwarnings(warning_str['nasion_not_found'],
-                            warning_str['encountered_data_in'])
-def test_write_extension_case_insensitive(dir_name, fname, reader,
-                                          _bids_validate, tmpdir):
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+@pytest.mark.parametrize('datatype', ['eeg', 'ieeg'])
+def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
     """Test writing files is case insensitive."""
+    dir_name, fname, reader = 'EDF', 'test_reduced.edf', _read_raw_edf
+
     bids_root = tmpdir.mkdir('bids1')
     data_path = op.join(testing.data_path(), dir_name)
 
+    # rename extension to upper-case
     _fname, ext = _parse_ext(fname)
-
-    if ext != '.edf':
-        return
-    else:
-        new_fname = _fname + ext.upper()
+    new_fname = _fname + ext.upper()
 
     # rename the file's extension
     raw_fname = op.join(data_path, fname)
@@ -2612,7 +2609,7 @@ def test_write_extension_case_insensitive(dir_name, fname, reader,
     os.rename(raw_fname, new_raw_fname)
 
     # the BIDS path for test datasets to get written to
-    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype=datatype)
 
-    raw = reader(raw_fname)
+    raw = reader(new_raw_fname)
     write_raw_bids(raw, bids_path)
