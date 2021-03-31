@@ -1275,6 +1275,13 @@
 <span class="sd">    and the actual recording date will be stored in the ``scans.tsv``</span>
 <span class="sd">    file&#39;s ``acq_time`` column.</span>
 
+<span class="sd">    ``write_raw_bids`` will generate a ``dataset_description.json`` file</span>
+<span class="sd">    if it does not already exist. Minimal metadata will be written there.</span>
+<span class="sd">    If one sets ``overwrite`` to ``True`` here, it will not overwrite an</span>
+<span class="sd">    existing ``dataset_description.json`` file.</span>
+<span class="sd">    If you need to add more data there, or overwrite it, then you should</span>
+<span class="sd">    call :func:`mne_bids.make_dataset_description` directly.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    mne.io.Raw.anonymize</span>
@@ -1467,7 +1474,11 @@
         <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
         <span class="k">del</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_dur</span>
 
-    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+    <span class="c1"># make dataset description and add template data if it does not</span>
+    <span class="c1"># already exist. Always set overwrite to False here. If users</span>
+    <span class="c1"># want to edit their dataset_description, they can directly call</span>
+    <span class="c1"># this function.</span>
+    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="n">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">sidecar_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
@@ -2034,7 +2045,7 @@
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-30.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-31.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>

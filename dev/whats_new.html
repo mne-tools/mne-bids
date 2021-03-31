@@ -250,6 +250,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a></p></li>
 <li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
+<li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
 </ul>
 </div>
 <div class="section" id="detailed-list-of-changes">
@@ -263,7 +264,7 @@
 <div class="section" id="api-and-behavior-changes">
 <h4>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>Writing datasets via <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>, will now never overwrite <code class="docutils literal notranslate"><span class="pre">dataset_description.json</span></code> file, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/765">#765</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="requirements">
@@ -277,6 +278,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_report()</span></code></a> now (1) detects male/female sex and left/right handedness irrespective of letter case, (2) will parse a <code class="docutils literal notranslate"><span class="pre">gender</span></code> column if no <code class="docutils literal notranslate"><span class="pre">sex</span></code> column is found in <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code>, and (3) reports sex as male/female instead of man/woman, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/755">#755</a>)</p></li>
 <li><p>The <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> <code class="docutils literal notranslate"><span class="pre">BAD_ACQ_SKIP</span></code> – added by the acquisition system to <code class="docutils literal notranslate"><span class="pre">FIFF</span></code> files – will now be preserved when reading raw data, even if these time periods are <strong>not</strong> explicitly included in <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> and <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/754">#754</a> and <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/762">#762</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> will handle different cased extensions for EDF files, such as <em class="xref py py-obj">edf</em> and <em class="xref py py-obj">EDF</em> by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (:gh: <em class="xref py py-obj">765</em>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </div>
@@ -308,7 +310,7 @@
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-30.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-31.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
