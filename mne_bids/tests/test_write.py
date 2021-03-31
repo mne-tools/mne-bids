@@ -1080,11 +1080,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
                           match='Encountered data in "double" format'):
             write_raw_bids(**kwargs)
 
+    # dataset_description.json files should not be overwritten inside
+    # write_raw_bids calls
     with open(dataset_description_fpath, 'r', encoding='utf-8') as f:
         dataset_description_json = json.load(f)
-        assert dataset_description_json["Authors"] == \
-            ["Please cite MNE-BIDS in your publication before removing this "
-             "(citations in README)"]
+        assert dataset_description_json["Authors"] == ["test1", "test2"]
 
     # Reading the file back should still work, even though we've renamed
     # some channels (there's now a mismatch between BIDS and Raw channel

@@ -62,7 +62,7 @@ ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
-          '.edf': io.read_raw_edf,  '.EDF': io.read_raw_edf,
+          '.edf': io.read_raw_edf, '.EDF': io.read_raw_edf,
           '.bdf': io.read_raw_bdf,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
           '.EEG': io.read_raw_nihon}
