@@ -1089,6 +1089,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
     and the actual recording date will be stored in the ``scans.tsv``
     file's ``acq_time`` column.
 
+    ``write_raw_bids`` will generate a ``dataset_description.json`` file
+    if it does not already exist. Minimal metadata will be written there.
+    If one sets ``overwrite`` to ``True`` here, it will not overwrite an
+    existing ``dataset_description.json`` file.
+    If you need to add more data there, or overwrite it, then you should
+    call :func:`mne_bids.make_dataset_description` directly.
+
     See Also
     --------
     mne.io.Raw.anonymize
