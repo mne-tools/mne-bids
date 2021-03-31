@@ -47,14 +47,14 @@ meg_manufacturers = {
 }
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
-                     '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
-                     '.fdt': 'n/a',
+                     '.edf': 'n/a', '.EDF': 'n/a', '.bdf': 'Biosemi',
+                     '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
-                      '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
-                      '.mef': 'n/a', '.nwb': 'n/a',
+                      '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
+                      '.fdt': 'n/a', '.mef': 'n/a', '.nwb': 'n/a',
                       '.lay': 'Persyst', '.dat': 'Persyst',
                       '.EEG': 'Nihon Kohden'}
 
@@ -62,7 +62,8 @@ ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
-          '.edf': io.read_raw_edf, '.bdf': io.read_raw_bdf,
+          '.edf': io.read_raw_edf, '.EDF': io.read_raw_edf,
+          '.bdf': io.read_raw_bdf,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
           '.EEG': io.read_raw_nihon}
 
@@ -85,13 +86,13 @@ IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
 
 allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
 allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
-                          '.edf',  # European Data Format
+                          '.edf', '.EDF',  # European Data Format
                           '.bdf',  # Biosemi
                           '.set',  # EEGLAB, potentially accompanied by .fdt
                           ]
 
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
-                           '.edf',  # European Data Format
+                           '.edf', '.EDF',  # European Data Format
                            '.set',  # EEGLAB, potentially accompanied by .fdt
                            '.mef',  # MEF: Multiscale Electrophysiology File
                            '.nwb',  # Neurodata without borders
