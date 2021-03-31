@@ -19,7 +19,7 @@ from mne.utils import warn, logger, _validate_type
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
-    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE,
     ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
@@ -38,9 +38,18 @@ def _get_matched_empty_room(bids_path):
     from mne_bids import read_raw_bids  # avoid circular import.
     bids_path = bids_path.copy()
 
-    datatype = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_path.update(suffix=datatype,
-                                  root=bids_root).fpath
+    # emptyroom is only for MEG
+    datatype = 'meg'
+    bids_path.update(suffix=datatype, datatype=datatype)
+    bids_fname = bids_path.fpath
+
+    if not bids_fname.exists():
+        raise RuntimeError(
+            f'BIDS path {bids_fname} does not exist, or '
+            f'is not a fully specified file path. To find '
+            f'emptyroom recordings, please fully specify '
+            f'(e.g. suffix and extension).')
+
     _, ext = _parse_ext(bids_fname)
     extra_params = None
     if ext == '.fif':
@@ -95,9 +104,12 @@ def _get_matched_empty_room(bids_path):
         params = get_entities_from_fname(er_fname)
         er_meas_date = None
         params.pop('subject')  # er subject entity is different
-        er_bids_path = BIDSPath(subject='emptyroom', **params, datatype='meg',
-                                root=bids_root, check=False)
 
+        # er file is assumed to have the same extension as the
+        # original BIDS path passed in
+        er_bids_path = BIDSPath(subject='emptyroom', **params, datatype='meg',
+                                root=bids_root, extension=ext,
+                                check=False)
         # Try to extract date from filename.
         if params['session'] is not None:
             try:
@@ -199,9 +211,10 @@ class BIDSPath(object):
         The "data type" of folder being created at the end of the folder
         hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
         ``'ieeg'``, etc.
-    root : str | pathlib.Path | None
+    root : str | pathlib.Path
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
+        Defaults to ``'.'``, i.e. the current working directory.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
 
@@ -279,11 +292,11 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, split=None, root=None,
+                 recording=None, space=None, split=None, root='.',
                  suffix=None, extension=None, datatype=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, root, suffix,
+                                     recording, space, suffix, root,
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
@@ -427,6 +440,8 @@ class BIDSPath(object):
         # get the inner-most BIDS directory for this file path
         data_path = self.directory
 
+        _validate_type(self.root, types=['str', 'path-like'])
+
         # account for MEG data that are directory-based
         # else, all other file paths attempt to match
         if self.suffix == 'meg' and self.extension == '.ds':
@@ -435,57 +450,7 @@ class BIDSPath(object):
             bids_fpath = op.join(data_path,
                                  op.splitext(self.basename)[0])
         else:
-            # if suffix and/or extension is missing, and root is
-            # not None, then BIDSPath will infer the dataset
-            # else, return the relative path with the basename
-            if (self.suffix is None or self.extension is None) and \
-                    self.root is not None:
-                # get matching BIDS paths inside the bids root
-                matching_paths = \
-                    _get_matching_bidspaths_from_filesystem(self)
-
-                # FIXME This will break
-                # FIXME e.g. with FIFF data split across multiple files.
-                # if extension is not specified and no unique file path
-                # return filepath of the actual dataset for MEG/EEG/iEEG data
-                if self.suffix is None or self.suffix in ALLOWED_DATATYPES:
-                    # now only use valid datatype extension
-                    valid_exts = sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
-                    matching_paths = [p for p in matching_paths
-                                      if _parse_ext(p)[1] in valid_exts]
-
-                if (self.split is None and
-                        (not matching_paths or
-                         '_split-' in matching_paths[0])):
-                    # try finding FIF split files (only first one)
-                    this_self = self.copy().update(split='01')
-                    matching_paths = \
-                        _get_matching_bidspaths_from_filesystem(this_self)
-
-                # found no matching paths
-                if not matching_paths:
-                    msg = (f'Could not locate a data file of a supported '
-                           f'format. This is likely a problem with your '
-                           f'BIDS dataset. Please run the BIDS validator '
-                           f'on your data. (root={self.root}, '
-                           f'basename={self.basename}). '
-                           f'{matching_paths}')
-                    warn(msg)
-
-                    bids_fpath = op.join(data_path, self.basename)
-                # if paths still cannot be resolved, then there is an error
-                elif len(matching_paths) > 1:
-                    msg = ('Found more than one matching data file for the '
-                           'requested recording. Cannot proceed due to the '
-                           'ambiguity. This is likely a problem with your '
-                           'BIDS dataset. Please run the BIDS validator on '
-                           'your data.')
-                    raise RuntimeError(msg)
-                else:
-                    bids_fpath = matching_paths[0]
-
-            else:
-                bids_fpath = op.join(data_path, self.basename)
+            bids_fpath = op.join(data_path, self.basename)
 
         bids_fpath = Path(bids_fpath)
         return bids_fpath

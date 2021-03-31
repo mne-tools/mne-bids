@@ -7,7 +7,6 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-import glob
 import json
 import re
 from datetime import datetime, timezone
@@ -32,6 +31,9 @@ from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
               allow_maxshield=False, config=None, verbose=None, **kwargs):
     """Read a raw file into MNE, making inferences based on extension."""
+    if not raw_fpath.exists():
+        raise FileNotFoundError(f'File or folder not found: {raw_fpath}')
+
     _, ext = _parse_ext(raw_fpath)
 
     # KIT systems
@@ -497,11 +499,11 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     bids_fname = bids_path.fpath.name
 
     if op.splitext(bids_fname)[1] == '.pdf':
-        bids_raw_folder = op.join(data_dir, f'{bids_path.basename}')
-        bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
-        config = op.join(bids_raw_folder, 'config')
+        bids_raw_folder = data_dir / f'{bids_path.basename}'
+        bids_fpath = list(bids_raw_folder.glob('c,rf*'))[0]
+        config = bids_raw_folder / 'config'
     else:
-        bids_fpath = op.join(data_dir, bids_fname)
+        bids_fpath = data_dir / bids_fname
         config = None
 
     if extra_params is None:
@@ -572,9 +574,9 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                     verbose=verbose)
 
     # read in associated subject info from participants.tsv
-    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    participants_tsv_fpath = bids_root / 'participants.tsv'
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_fpath):
+    if participants_tsv_fpath.exists():
         raw = _handle_participants_reading(participants_tsv_fpath, raw,
                                            subject, verbose=verbose)
     else:

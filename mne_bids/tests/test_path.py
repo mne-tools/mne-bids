@@ -354,59 +354,30 @@ def test_find_matching_sidecar(return_bids_test_dir):
 
 
 def test_bids_path_inference(return_bids_test_dir):
-    """Test usage of BIDSPath object and fpath."""
+    """Test usage of BIDSPath object and fpath.
+
+    BIDSPath.fpath will not infer the file path in v0.7+
+    """
     bids_root = return_bids_test_dir
 
     # without providing all the entities, ambiguous when trying
     # to use fpath
     bids_path = BIDSPath(
-        subject=subject_id, session=session_id, acquisition=acq,
+        subject=subject_id, session=session_id,
         task=task, root=bids_root)
-    with pytest.raises(RuntimeError, match='Found more than one'):
-        bids_path.fpath
-
-    # can't locate a file, but the basename should work
-    bids_path = BIDSPath(
-        subject=subject_id, session=session_id, acquisition=acq,
-        task=task, run='10', root=bids_root)
-    with pytest.warns(RuntimeWarning, match='Could not locate'):
-        fpath = bids_path.fpath
-        assert str(fpath) == op.join(bids_root, f'sub-{subject_id}',
-                                     f'ses-{session_id}',
-                                     bids_path.basename)
-
-    # shouldn't error out when there is no uncertainty
-    channels_fname = BIDSPath(subject=subject_id, session=session_id,
-                              run=run, acquisition=acq, task=task,
-                              root=bids_root, suffix='channels')
-    channels_fname.fpath
-
-    # create an extra file under 'eeg'
-    extra_file = op.join(bids_root, f'sub-{subject_id}',
-                         f'ses-{session_id}', 'eeg',
-                         channels_fname.basename + '.tsv')
-    Path(extra_file).parent.mkdir(exist_ok=True, parents=True)
-    # Creates a new file and because of this new file, there is now
-    # ambiguity
-    with open(extra_file, 'w', encoding='utf-8'):
-        pass
-    with pytest.raises(RuntimeError, match='Found data of more than one'):
-        channels_fname.fpath
-
-    # if you set datatype, now there is no ambiguity
-    channels_fname.update(datatype='eeg')
-    assert str(channels_fname.fpath) == extra_file
-    # set state back to original
-    shutil.rmtree(Path(extra_file).parent)
+    expected_fpath = f'{bids_root}/sub-{subject_id}/ses-{session_id}/sub-{subject_id}_ses-{session_id}_task-{task}'  # noqa
+    assert bids_path.fpath.as_posix() == expected_fpath
 
 
 def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
 
-    bids_path = BIDSPath(
+    bids_path_kwargs = dict(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task, root=bids_root, suffix='meg')
+        task=task, suffix='meg', extension='.fif'
+    )
+    bids_path = BIDSPath(root=bids_root, **bids_path_kwargs)
 
     expected_parent_dir = op.join(bids_root, f'sub-{subject_id}',
                                   f'ses-{session_id}', 'meg')
@@ -420,10 +391,10 @@ def test_bids_path(return_bids_test_dir):
     assert op.dirname(bids_path.fpath).startswith(bids_root)
 
     # when bids root is not passed in, passes relative path
-    bids_path2 = bids_path.copy().update(datatype='meg', root=None)
+    bids_path2 = BIDSPath(datatype='meg', **bids_path_kwargs)
     expected_relpath = op.join(
         f'sub-{subject_id}', f'ses-{session_id}', 'meg',
-        expected_basename + '_meg')
+        expected_basename + '_meg.fif')
     assert str(bids_path2.fpath) == expected_relpath
 
     # without bids_root and with suffix/extension
@@ -551,7 +522,7 @@ def test_bids_path(return_bids_test_dir):
                          task='03', suffix='ieeg',
                          extension='.edf')
     assert repr(bids_path) == ('BIDSPath(\n'
-                               'root: None\n'
+                               'root: .\n'
                                'datatype: ieeg\n'
                                'basename: sub-01_ses-02_task-03_ieeg.edf)')
 
@@ -593,7 +564,7 @@ def test_make_filenames():
         BIDSPath(subject='one-two', suffix='ieeg', extension='.edf')
 
     with pytest.raises(ValueError, match='At least one'):
-        BIDSPath()
+        BIDSPath(root=None)
 
     # emptyroom check: invalid task
     with pytest.raises(ValueError, match='task must be'):
@@ -751,7 +722,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          root=bids_root, suffix='meg')
-    write_raw_bids(raw, bids_path, overwrite=True)
+    bids_path = write_raw_bids(raw, bids_path, overwrite=True)
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
@@ -775,7 +746,8 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     er_bids_path = BIDSPath(subject='emptyroom', task='noise',
                             session=er_date, suffix='meg',
                             root=bids_root)
-    write_raw_bids(er_raw, er_bids_path, overwrite=True)
+    er_bids_path = write_raw_bids(er_raw, er_bids_path,
+                                  overwrite=True)
 
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
@@ -841,6 +813,13 @@ def test_find_emptyroom_ties(tmpdir):
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
+    with pytest.raises(RuntimeError, match='BIDS path .* does not '
+                                           'exist'):
+        bids_path.find_empty_room()
+
+    # now add fully specified BIDS entities to find matching empty
+    # room recordings, but show a warning if there are multiple matches
+    bids_path.update(suffix='meg', extension='.fif')
     with pytest.warns(RuntimeWarning, match='Found more than one'):
         bids_path.find_empty_room()
 
@@ -879,6 +858,8 @@ def test_find_emptyroom_no_meas_date(tmpdir):
     write_raw_bids(raw, bids_path, overwrite=True)
     os.remove(op.join(bids_root, 'participants.tsv'))
 
+    # update extension to the actual dataset
+    bids_path.update(extension='.fif')
     with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         bids_path.find_empty_room()
 
