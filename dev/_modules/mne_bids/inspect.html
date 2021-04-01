@@ -443,8 +443,9 @@
         <span class="n">bad_descriptions</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># Generate entries for the `status_description` column.</span>
-        <span class="n">channels_tsv_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
-                                                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+        <span class="n">channels_tsv_fname</span> <span class="o">=</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                              <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+                              <span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
         <span class="n">channels_tsv_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_tsv_fname</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads</span><span class="p">:</span>
@@ -504,7 +505,7 @@
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">.</span><span class="se">\n\n</span><span class="s1">&#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;Would you like to save these changes to the</span><span class="se">\n</span><span class="s1">&#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;BIDS dataset?&#39;</span><span class="p">)</span>
-    <span class="n">icon_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;assets&#39;</span> <span class="o">/</span> <span class="s1">&#39;help-128px.png&#39;</span>
+    <span class="n">icon_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;assets&#39;</span> <span class="o">/</span> <span class="s1">&#39;help-128px.png&#39;</span><span class="p">)</span>
     <span class="n">icon</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">icon_fname</span><span class="p">)</span>
 
     <span class="n">fig</span> <span class="o">=</span> <span class="n">figure_nobar</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
@@ -612,7 +613,7 @@
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-03-31.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-01.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
