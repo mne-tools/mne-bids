@@ -257,8 +257,9 @@ def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
         bad_descriptions = []
 
         # Generate entries for the `status_description` column.
-        channels_tsv_fname = bids_path.copy().update(suffix='channels',
-                                                     extension='.tsv')
+        channels_tsv_fname = (bids_path.copy()
+                              .update(suffix='channels', extension='.tsv')
+                              .fpath)
         channels_tsv_data = _from_tsv(channels_tsv_fname)
 
         for ch_name in bads:
@@ -318,7 +319,7 @@ def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path,
                 f'{bids_path.basename}.\n\n'
                 f'Would you like to save these changes to the\n'
                 f'BIDS dataset?')
-    icon_fname = Path(__file__).parent / 'assets' / 'help-128px.png'
+    icon_fname = str(Path(__file__).parent / 'assets' / 'help-128px.png')
     icon = plt.imread(icon_fname)
 
     fig = figure_nobar(figsize=figsize)
