@@ -249,8 +249,6 @@ def test_get_head_mri_trans(tmpdir):
 
     # test we are permissive for different casings of landmark names in the
     # sidecar, and also accept "nasion" instead of just "NAS"
-    print('--------->>>>>>')
-    print(raw_fname)
     raw = _read_raw_fif(raw_fname)
     t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
                               raw=raw, trans=trans, overwrite=True)
