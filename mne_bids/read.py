@@ -651,7 +651,7 @@ def get_head_mri_trans(bids_path, extra_params=None):
             mri_landmarks[1, :] = coords
         else:
             continue
-        
+
     if np.isnan(mri_landmarks).any():
         raise RuntimeError(
             f'Could not extract fiducial points from T1w sidecar file: '
