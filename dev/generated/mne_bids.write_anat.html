@@ -331,6 +331,13 @@
 correct location inside the specified <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>. If a
 transformation matrix is supplied, this information will be stored in a
 sidecar JSON file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To generate the JSON sidecar with anatomical landmark
+coordinates (“fiducials”), you need to pass the landmarks via
+the <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> parameter, or supply a raw file via <code class="docutils literal notranslate"><span class="pre">raw</span></code>
+and transformation matrix via the <code class="docutils literal notranslate"><span class="pre">trans</span></code> parameter.</p>
+</div>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -348,8 +355,8 @@ If <code class="docutils literal notranslate"><span class="pre">None</span></cod
 </dd>
 <dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
 also be a string pointing to a <code class="docutils literal notranslate"><span class="pre">.trans</span></code> file containing the
-transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no sidecar JSON file will be
-created.</p>
+transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and no <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> parameter is
+passed, no sidecar JSON file will be created.</p>
 </dd>
 <dt><strong>t1w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>This parameter is useful if image written is not already a T1 image.
 If the image written is to have a sidecar or be defaced,
@@ -368,10 +375,11 @@ relative to the nasion (default 5)</p></li>
 to vertical (default 15).</p></li>
 </ul>
 </dd>
-<dt><strong>landmarks: mne.channels.DigMontage | str | None</strong></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
+<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
 passed to provide information for defacing. Landmarks can be determined
 from the head model using <em class="xref py py-obj">mne coreg</em> GUI, or they can be determined
-from the MRI using <em class="xref py py-obj">freeview</em>.</p>
+from the MRI using <em class="xref py py-obj">freeview</em>.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> and no <code class="docutils literal notranslate"><span class="pre">trans</span></code> parameter
+is passed, no sidecar JSON file will be created.</p>
 </dd>
 <dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to False.
@@ -429,7 +437,7 @@ replaced.</p>
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-01.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-02.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>

@@ -1587,6 +1587,11 @@
 <span class="sd">    transformation matrix is supplied, this information will be stored in a</span>
 <span class="sd">    sidecar JSON file.</span>
 
+<span class="sd">    .. note:: To generate the JSON sidecar with anatomical landmark</span>
+<span class="sd">              coordinates (&quot;fiducials&quot;), you need to pass the landmarks via</span>
+<span class="sd">              the ``landmarks`` parameter, or supply a raw file via ``raw``</span>
+<span class="sd">              and transformation matrix via the ``trans`` parameter.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    image : str | pathlib.Path | NibabelImageObject</span>
@@ -1604,8 +1609,8 @@
 <span class="sd">    trans : mne.transforms.Transform | str | None</span>
 <span class="sd">        The transformation matrix from head to MRI coordinates. Can</span>
 <span class="sd">        also be a string pointing to a ``.trans`` file containing the</span>
-<span class="sd">        transformation matrix. If ``None``, no sidecar JSON file will be</span>
-<span class="sd">        created.</span>
+<span class="sd">        transformation matrix. If ``None`` and no ``landmarks`` parameter is</span>
+<span class="sd">        passed, no sidecar JSON file will be created.</span>
 <span class="sd">    t1w : str | pathlib.Path | NibabelImageObject | None</span>
 <span class="sd">        This parameter is useful if image written is not already a T1 image.</span>
 <span class="sd">        If the image written is to have a sidecar or be defaced,</span>
@@ -1624,11 +1629,12 @@
 <span class="sd">        - `theta`: is the angle of the defacing shear in degrees relative</span>
 <span class="sd">          to vertical (default 15).</span>
 
-<span class="sd">    landmarks: mne.channels.DigMontage | str | None</span>
+<span class="sd">    landmarks : mne.channels.DigMontage | str | None</span>
 <span class="sd">        The DigMontage or filepath to a DigMontage with landmarks that can be</span>
 <span class="sd">        passed to provide information for defacing. Landmarks can be determined</span>
 <span class="sd">        from the head model using `mne coreg` GUI, or they can be determined</span>
-<span class="sd">        from the MRI using `freeview`.</span>
+<span class="sd">        from the MRI using `freeview`.  If ``None`` and no ``trans`` parameter</span>
+<span class="sd">        is passed, no sidecar JSON file will be created.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to False.</span>
@@ -1654,12 +1660,12 @@
     <span class="n">write_sidecar</span> <span class="o">=</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">write_sidecar</span> <span class="ow">and</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Ignoring `raw` keyword argument, `trans`, `landmarks` &#39;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Ignoring `raw` keyword argument: `trans`, `landmarks`, &#39;</span>
              <span class="s1">&#39;or both (if landmarks are in head space) are needed &#39;</span>
              <span class="s1">&#39;to write the sidecar file&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">deface</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">write_sidecar</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either `raw` and `trans` must be provided &#39;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either `raw` and `trans` must be provided, &#39;</span>
                          <span class="s1">&#39;or `landmarks` must be provided to deface &#39;</span>
                          <span class="s1">&#39;the image&#39;</span><span class="p">)</span>
 
@@ -1698,7 +1704,7 @@
     <span class="k">if</span> <span class="n">write_sidecar</span><span class="p">:</span>
         <span class="c1"># Get landmarks and their coordinate frame</span>
         <span class="k">if</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Please use either `landmarks` or `raw`, &#39;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Please use EITHER `landmarks` or `raw`, &#39;</span>
                              <span class="s1">&#39;which digitization to use is ambiguous.&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2045,7 +2051,7 @@
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-01.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-02.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
