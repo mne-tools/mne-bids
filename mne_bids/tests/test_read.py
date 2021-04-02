@@ -214,8 +214,8 @@ def test_get_head_mri_trans(tmpdir):
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=False)
 
-    # We cannot recover trans, if no MRI has yet been written
-    with pytest.raises(RuntimeError):
+    # We cannot recover trans if no MRI has yet been written
+    with pytest.raises(RuntimeError, match='Did not find any T1w.json'):
         estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
@@ -238,16 +238,37 @@ def test_get_head_mri_trans(tmpdir):
     assert trans['from'] == estimated_trans['from']
     assert trans['to'] == estimated_trans['to']
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
-    print(trans)
-    print(estimated_trans)
 
     # provoke an error by introducing NaNs into MEG coords
+    raw.info['dig'][0]['r'] = np.full(3, np.nan)
+    sh.rmtree(anat_dir)
+    bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
+                           raw=raw, trans=trans)
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
-        raw.info['dig'][0]['r'] = np.ones(3) * np.nan
-        sh.rmtree(anat_dir)
-        bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                               raw=raw, trans=trans, verbose=True)
         estimated_trans = get_head_mri_trans(bids_path=bids_path)
+
+    # test we are permissive for different casings of landmark names in the
+    # sidecar, and also accept "nasion" instead of just "NAS"
+    raw = _read_raw_fif(raw_fname)
+    t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
+                              raw=raw, trans=trans, overwrite=True)
+
+    t1w_json_fpath = t1w_bidspath.copy().update(extension='.json').fpath
+    with t1w_json_fpath.open('r', encoding='utf-8') as f:
+        t1w_json = json.load(f)
+
+    coords = t1w_json['AnatomicalLandmarkCoordinates']
+    coords['lpa'] = coords['LPA']
+    coords['Rpa'] = coords['RPA']
+    coords['Nasion'] = coords['NAS']
+    del coords['LPA'], coords['RPA'], coords['NAS']
+
+    with t1w_json_fpath.open('w', encoding='utf-8') as f:
+        json.dump(t1w_json, f)
+
+    estimated_trans = get_head_mri_trans(bids_path=(_bids_path.copy()
+                                                    .update(root=tmpdir)))
+    assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
 
 def test_handle_events_reading(tmpdir):

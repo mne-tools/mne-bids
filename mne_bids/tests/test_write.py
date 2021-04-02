@@ -1654,7 +1654,7 @@ def test_write_anat(_bids_validate, tmpdir):
 
         if not in_head:
             # crash for raw also
-            with pytest.raises(ValueError, match='use either `landmarks`'):
+            with pytest.raises(ValueError, match='use EITHER `landmarks`'):
                 write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
                            trans=trans, deface=True, landmarks=landmarks,
                            verbose=True, overwrite=True)
