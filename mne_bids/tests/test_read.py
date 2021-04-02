@@ -240,7 +240,7 @@ def test_get_head_mri_trans(tmpdir):
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
     # provoke an error by introducing NaNs into MEG coords
-    raw.info['dig'][0]['r'] = np.ones(3) * np.nan
+    raw.info['dig'][0]['r'] = np.full(3, np.nan)
     sh.rmtree(anat_dir)
     bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
                            raw=raw, trans=trans)

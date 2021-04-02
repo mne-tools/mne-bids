@@ -639,8 +639,7 @@ def get_head_mri_trans(bids_path, extra_params=None):
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
-    mri_landmarks = np.empty((3, 3))
-    mri_landmarks[:] = np.nan
+    mri_landmarks = np.full((3, 3), np.nan)
     for landmark_name, coords in mri_coords_dict.items():
         if landmark_name.upper() == 'LPA':
             mri_landmarks[0, :] = coords
