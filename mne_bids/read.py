@@ -637,16 +637,31 @@ def get_head_mri_trans(bids_path, extra_params=None):
     with open(t1w_json_path, 'r', encoding='utf-8-sig') as f:
         t1w_json = json.load(f)
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
-    mri_landmarks = np.asarray((mri_coords_dict.get('LPA', np.nan),
-                                mri_coords_dict.get('NAS', np.nan),
-                                mri_coords_dict.get('RPA', np.nan)))
+
+    # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
+    mri_landmarks = np.empty((3, 3))
+    mri_landmarks[:] = np.nan
+    for landmark_name, coords in mri_coords_dict.items():
+        if landmark_name.upper() == 'LPA':
+            mri_landmarks[0, :] = coords
+        elif landmark_name.upper() == 'RPA':
+            mri_landmarks[2, :] = coords
+        elif (landmark_name.upper() == 'NAS' or
+              landmark_name.lower() == 'nasion'):
+            mri_landmarks[1, :] = coords
+        else:
+            continue
+        
     if np.isnan(mri_landmarks).any():
-        raise RuntimeError('Could not parse T1w sidecar file: "{}"\n\n'
-                           'The sidecar file MUST contain a key '
-                           '"AnatomicalLandmarkCoordinates" pointing to a '
-                           'dict with keys "LPA", "NAS", "RPA". '
-                           'Yet, the following structure was found:\n\n"{}"'
-                           .format(t1w_json_path, t1w_json))
+        raise RuntimeError(
+            f'Could not extract fiducial points from T1w sidecar file: '
+            f'{t1w_json_path}\n\n'
+            f'The sidecar file SHOULD contain a key '
+            f'"AnatomicalLandmarkCoordinates" pointing to an '
+            f'object with the keys "LPA", "NAS", and "RPA". '
+            f'Yet, the following structure was found:\n\n'
+            f'{mri_coords_dict}'
+        )
 
     # The MRI landmarks are in "voxels". We need to convert the to the
     # neuromag RAS coordinate system in order to compare the with MEG landmarks

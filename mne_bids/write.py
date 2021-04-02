@@ -1401,6 +1401,11 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     transformation matrix is supplied, this information will be stored in a
     sidecar JSON file.
 
+    .. note:: To generate the JSON sidecar with anatomical landmark
+              coordinates ("fiducials"), you need to pass the landmarks via
+              the ``landmarks`` parameter, or supply a raw file via ``raw``
+              and transformation matrix via the ``trans`` parameter.
+
     Parameters
     ----------
     image : str | pathlib.Path | NibabelImageObject
@@ -1418,8 +1423,8 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     trans : mne.transforms.Transform | str | None
         The transformation matrix from head to MRI coordinates. Can
         also be a string pointing to a ``.trans`` file containing the
-        transformation matrix. If ``None``, no sidecar JSON file will be
-        created.
+        transformation matrix. If ``None`` and no ``landmarks`` parameter is
+        passed, no sidecar JSON file will be created.
     t1w : str | pathlib.Path | NibabelImageObject | None
         This parameter is useful if image written is not already a T1 image.
         If the image written is to have a sidecar or be defaced,
@@ -1438,11 +1443,12 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         - `theta`: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
-    landmarks: mne.channels.DigMontage | str | None
+    landmarks : mne.channels.DigMontage | str | None
         The DigMontage or filepath to a DigMontage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
-        from the MRI using `freeview`.
+        from the MRI using `freeview`.  If ``None`` and no ``trans`` parameter
+        is passed, no sidecar JSON file will be created.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1468,12 +1474,12 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     write_sidecar = trans is not None or landmarks is not None
 
     if not write_sidecar and raw is not None:
-        warn('Ignoring `raw` keyword argument, `trans`, `landmarks` '
+        warn('Ignoring `raw` keyword argument: `trans`, `landmarks`, '
              'or both (if landmarks are in head space) are needed '
              'to write the sidecar file')
 
     if deface and not write_sidecar:
-        raise ValueError('Either `raw` and `trans` must be provided '
+        raise ValueError('Either `raw` and `trans` must be provided, '
                          'or `landmarks` must be provided to deface '
                          'the image')
 
@@ -1512,7 +1518,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     if write_sidecar:
         # Get landmarks and their coordinate frame
         if landmarks is not None and raw is not None:
-            raise ValueError('Please use either `landmarks` or `raw`, '
+            raise ValueError('Please use EITHER `landmarks` or `raw`, '
                              'which digitization to use is ambiguous.')
 
         if trans is not None:
