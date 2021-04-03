@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
@@ -309,7 +310,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids">
+<section class="sphx-glr-example-title" id="save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids">
 <span id="sphx-glr-auto-examples-convert-mri-and-trans-py"></span><h1>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS<a class="headerlink" href="#save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids" title="Permalink to this headline">¶</a></h1>
 <p>When working with MEEG data in the domain of source localization, we usually
 have to deal with aligning several coordinate systems, such as the coordinate
@@ -592,7 +593,7 @@ basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 </pre></div>
 </div>
-<div class="section" id="writing-t1-image">
+<section id="writing-t1-image">
 <h2>Writing T1 image<a class="headerlink" href="#writing-t1-image" title="Permalink to this headline">¶</a></h2>
 <p>Now let’s assume that we have also collected some T1 weighted MRI data for
 our subject. And furthermore, that we have already aligned our coordinate
@@ -738,8 +739,8 @@ transformation matrix <code class="code docutils literal notranslate"><span clas
 </pre></div>
 </div>
 <img alt="convert mri and trans" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_mri_and_trans_001.png" />
-</div>
-<div class="section" id="writing-flash-mri-image">
+</section>
+<section id="writing-flash-mri-image">
 <h2>Writing FLASH MRI image<a class="headerlink" href="#writing-flash-mri-image" title="Permalink to this headline">¶</a></h2>
 <p>We can write another types of MRI data such as FLASH images for BEM models</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_mgh_fname</span></a> <span class="o">=</span> \
@@ -762,8 +763,8 @@ datatype: anat
 basename: sub-01_ses-01_FLASH.nii.gz)
 </pre></div>
 </div>
-</div>
-<div class="section" id="writing-defaced-and-anonymized-t1-image">
+</section>
+<section id="writing-defaced-and-anonymized-t1-image">
 <h2>Writing defaced and anonymized T1 image<a class="headerlink" href="#writing-defaced-and-anonymized-t1-image" title="Permalink to this headline">¶</a></h2>
 <p>We can deface the MRI for anonymization by passing <code class="docutils literal notranslate"><span class="pre">deface=True</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1w_bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">(</span>
@@ -811,8 +812,8 @@ basename: sub-01_ses-01_FLASH.nii.gz)
 }
 </pre></div>
 </div>
-</div>
-<div class="section" id="writing-defaced-and-anonymized-flash-mri-image">
+</section>
+<section id="writing-defaced-and-anonymized-flash-mri-image">
 <h2>Writing defaced and anonymized FLASH MRI image<a class="headerlink" href="#writing-defaced-and-anonymized-flash-mri-image" title="Permalink to this headline">¶</a></h2>
 <p>Defacing the FLASH is a bit more complicated because it uses different
 coordinates than the T1. Since, in the example dataset, we used the head
@@ -823,7 +824,7 @@ or you can find the fiducials in FLASH voxel space or scanner RAS coordinates
 using your favorite 3D image view (e.g. freeview). You can also read the
 fiducial coordinates from the <em class="xref py py-obj">raw</em> and apply the <em class="xref py py-obj">trans</em> yourself.
 Let’s explore the different options to do this.</p>
-<div class="section" id="option-1-pass-t1w-with-raw-and-trans">
+<section id="option-1-pass-t1w-with-raw-and-trans">
 <h3>Option 1 : Pass <em class="xref py py-obj">t1w</em> with <em class="xref py py-obj">raw</em> and <em class="xref py py-obj">trans</em><a class="headerlink" href="#option-1-pass-t1w-with-raw-and-trans" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">(</span>
     <span class="n">image</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_mgh_fname</span></a><span class="p">,</span>  <span class="c1"># path to the MRI scan</span>
@@ -870,8 +871,8 @@ Let’s explore the different options to do this.</p>
 }
 </pre></div>
 </div>
-</div>
-<div class="section" id="option-2-use-manual-landmarks-coordinates-in-scanner-ras-for-flash-image">
+</section>
+<section id="option-2-use-manual-landmarks-coordinates-in-scanner-ras-for-flash-image">
 <h3>Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image<a class="headerlink" href="#option-2-use-manual-landmarks-coordinates-in-scanner-ras-for-flash-image" title="Permalink to this headline">¶</a></h3>
 <p>You can find such landmarks with a 3D image viewer (e.g. freeview).
 Note that, in freeview, this is called “RAS” and not “TkReg RAS”</p>
@@ -927,8 +928,8 @@ Note that, in freeview, this is called “RAS” and not “TkReg RAS”</p>
 }
 </pre></div>
 </div>
-</div>
-<div class="section" id="option-3-compute-the-landmarks-in-scanner-ras-or-mri-voxel-space-from-trans">
+</section>
+<section id="option-3-compute-the-landmarks-in-scanner-ras-or-mri-voxel-space-from-trans">
 <h3>Option 3 : Compute the landmarks in scanner RAS or mri voxel space from trans<a class="headerlink" href="#option-3-compute-the-landmarks-in-scanner-ras-or-mri-voxel-space-from-trans" title="Permalink to this headline">¶</a></h3>
 <p>Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
 and the ‘r’ key will provide us with the xyz coordinates.</p>
@@ -1047,7 +1048,7 @@ images are already registered.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  44.028 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  11.082 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1060,9 +1061,9 @@ images are already registered.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
               </div>
@@ -1088,7 +1089,7 @@ images are already registered.</p>
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-02.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-03.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>

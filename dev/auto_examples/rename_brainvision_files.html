@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>06. Rename BrainVision EEG data files &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
@@ -281,7 +282,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-rename-brainvision-files-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="rename-brainvision-eeg-data-files">
+<section class="sphx-glr-example-title" id="rename-brainvision-eeg-data-files">
 <span id="sphx-glr-auto-examples-rename-brainvision-files-py"></span><h1>06. Rename BrainVision EEG data files<a class="headerlink" href="#rename-brainvision-eeg-data-files" title="Permalink to this headline">¶</a></h1>
 <p>According to the EEG extension to BIDS <a class="footnote-reference brackets" href="#id2" id="id1">1</a>, the <a class="reference external" href="https://www.brainproducts.com/productdetails.php?id=21&amp;tab=5">BrainVision data format</a> is
 one of the recommended formats to store EEG data within a BIDS dataset.</p>
@@ -305,7 +306,7 @@ care of this for you.</p>
 repair of the internal file links</p>
 <p>For the command line version of this tool, see the <code class="code docutils literal notranslate"><span class="pre">cp</span></code> tool in the docs
 for the <a class="reference internal" href="../generated/cli.html#python-cli"><span class="std std-ref">Python Command Line Interface</span></a>.</p>
-<div class="section" id="references">
+<section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <dl class="footnote brackets">
 <dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
@@ -328,8 +329,8 @@ electroencephalography. Sci Data 6, 103 (2019).
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <a href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision" class="sphx-glr-backref-module-mne_bids-copyfiles sphx-glr-backref-type-py-function"><span class="n">copyfile_brainvision</span></a>
 </pre></div>
 </div>
-</div>
-<div class="section" id="download-some-example-data">
+</section>
+<section id="download-some-example-data">
 <h2>Download some example data<a class="headerlink" href="#download-some-example-data" title="Permalink to this headline">¶</a></h2>
 <p>To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
 will use the MNE-Python testing data. Feel free to use your own BrainVision
@@ -342,8 +343,8 @@ data.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">examples_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;Brainvision&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="rename-the-recording">
+</section>
+<section id="rename-the-recording">
 <h2>Rename the recording<a class="headerlink" href="#rename-the-recording" title="Permalink to this headline">¶</a></h2>
 <p>Above, at the top of the example, we imported
 <a class="reference internal" href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_brainvision()</span></code></a> from
@@ -379,14 +380,14 @@ Extracting parameters from /home/circleci/mne_data/MNE-testing-data/Brainvision/
 Setting channel info structure...
 </pre></div>
 </div>
-</div>
-<div class="section" id="further-information">
+</section>
+<section id="further-information">
 <h2>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
 <p>For converting data files, or writing new data to the BrainVision format, you
 can use the <a class="reference external" href="https://github.com/bids-standard/pybv">pybv</a> Python package.</p>
 <p>There is node JS tool to check the integrity of your BrainVision files.
 For that, see the <a class="reference external" href="https://github.com/sappelhoff/brainvision-validator">BrainVision Validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.022 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.019 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-rename-brainvision-files-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/rename_brainvision_files.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -399,8 +400,8 @@ For that, see the <a class="reference external" href="https://github.com/sappelh
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
@@ -426,7 +427,7 @@ For that, see the <a class="reference external" href="https://github.com/sappelh
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-02.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-03.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>

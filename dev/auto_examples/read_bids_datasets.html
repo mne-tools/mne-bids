@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>01. Read BIDS datasets &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
@@ -286,7 +287,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-read-bids-datasets-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="read-bids-datasets">
+<section class="sphx-glr-example-title" id="read-bids-datasets">
 <span id="read-bids-datasets-example"></span><span id="sphx-glr-auto-examples-read-bids-datasets-py"></span><h1>01. Read BIDS datasets<a class="headerlink" href="#read-bids-datasets" title="Permalink to this headline">¶</a></h1>
 <p>When working with electrophysiological data in the BIDS format, an important
 resource is the <a class="reference external" href="https://openneuro.org/">OpenNeuro</a> database. OpenNeuro
@@ -311,7 +312,7 @@ inspect BIDS-formatted data.</p>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
-<div class="section" id="imports">
+<section id="imports">
 <h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
 <p>We are importing everything we need for this example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -322,8 +323,8 @@ inspect BIDS-formatted data.</p>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a>
 </pre></div>
 </div>
-</div>
-<div class="section" id="download-a-subject-s-data-from-an-openneuro-bids-dataset">
+</section>
+<section id="download-a-subject-s-data-from-an-openneuro-bids-dataset">
 <h2>Download a subject’s data from an OpenNeuro BIDS dataset<a class="headerlink" href="#download-a-subject-s-data-from-an-openneuro-bids-dataset" title="Permalink to this headline">¶</a></h2>
 <p>Download the data, storing each in a <code class="docutils literal notranslate"><span class="pre">target_dir</span></code> target directory, which,
 in <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> terminology, is the <em class="xref py py-obj">root</em> of each BIDS dataset. This example
@@ -361,50 +362,55 @@ Retrieving up to 19 files (5 concurrent downloads).
 
 CHANGES:   0%|          | 0.00/269 [00:00&lt;?, ?B/s]
 
-participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s][A
+participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s][A
 
 
-                                                             [A
+                                                              [A
+participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
+
+
 dataset_description.json:   0%|          | 0.00/350 [00:00&lt;?, ?B/s]
-
-
-participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
 
 
 README:   0%|          | 0.00/4.38k [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
+
+
+sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
+
+sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s][A
+
+
+                                                                            [A
+sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s][A
+sub-pd6_ses-off_task-rest_eeg.bdf:  49%|####8     | 5.60M/11.5M [00:00&lt;00:00, 57.4MB/s]
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  24%|##3       | 4.10M/17.4M [00:00&lt;00:00, 42.3MB/s][A
+sub-pd6_ses-off_task-rest_eeg.bdf:  97%|#########6| 11.1M/11.5M [00:00&lt;00:00, 47.3MB/s]
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  47%|####6     | 8.16M/17.4M [00:00&lt;00:00, 34.6MB/s][A
+sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B/s]
 
 
 sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
 
 
-sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  70%|#######   | 12.2M/17.4M [00:00&lt;00:00, 36.9MB/s][A
+sub-pd6_ses-off_task-rest_beh.json:   0%|          | 0.00/436 [00:00&lt;?, ?B/s]
 
 
+sub-pd6_ses-on_task-rest_eeg.bdf:  91%|#########1| 15.8M/17.4M [00:00&lt;00:00, 35.4MB/s][A
+
+                                                                                      [A
 sub-pd6_ses-on_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
 
 
 sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
-
-
-sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
-
-
-sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
-sub-pd6_ses-on_task-rest_eeg.bdf:  41%|####      | 7.10M/17.4M [00:00&lt;00:00, 73.6MB/s]
-sub-pd6_ses-on_task-rest_eeg.bdf:  86%|########6 | 15.0M/17.4M [00:00&lt;00:00, 77.1MB/s]
-
-
-sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B/s]
-
-
-sub-pd6_ses-off_task-rest_beh.json:   0%|          | 0.00/436 [00:00&lt;?, ?B/s]
-
-
-sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
-sub-pd6_ses-off_task-rest_eeg.bdf:  52%|#####1    | 5.93M/11.5M [00:00&lt;00:00, 61.8MB/s]
 
 
 sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
@@ -415,16 +421,16 @@ sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
-sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s][A
 
+sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
 
-                                                                             [AFinished downloading ds002778.
+Finished downloading ds002778.
 
 Please enjoy your brains.
 </pre></div>
 </div>
-</div>
-<div class="section" id="explore-the-dataset-contents">
+</section>
+<section id="explore-the-dataset-contents">
 <h2>Explore the dataset contents<a class="headerlink" href="#explore-the-dataset-contents" title="Permalink to this headline">¶</a></h2>
 <p>We can use MNE-BIDS to print a tree of all
 included files and folders. We pass the <code class="docutils literal notranslate"><span class="pre">max_depth</span></code> parameter to
@@ -525,8 +531,8 @@ basename: sub-pd6_ses-off_task-rest_events.tsv)]
 The first two are so-called sidecar files that contain information on the
 recording channels and experimental events, and the third one is the actual
 data file.</p>
-</div>
-<div class="section" id="prepare-reading-the-data">
+</section>
+<section id="prepare-reading-the-data">
 <h2>Prepare reading the data<a class="headerlink" href="#prepare-reading-the-data" title="Permalink to this headline">¶</a></h2>
 <p>There is only one subject and one experimental task (<code class="docutils literal notranslate"><span class="pre">rest</span></code>).
 Let’s use this knowledge to create a new <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> with
@@ -587,8 +593,8 @@ employs some heuristics to auto-detect some missing filename components.
 Omitting the filename extension in your script can make your code
 more portable. Note that, however, you <strong>can</strong> explicitly specify an
 extension too, by passing e.g. <code class="docutils literal notranslate"><span class="pre">extension='.bdf'</span></code> to <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>.</p>
-</div>
-<div class="section" id="read-the-data">
+</section>
+<section id="read-the-data">
 <h2>Read the data<a class="headerlink" href="#read-the-data" title="Permalink to this headline">¶</a></h2>
 <p>Let’s read the data! It’s just a single line of code.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -646,7 +652,7 @@ metadata.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;MNEBrowseFigure size 640x480 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.466 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.401 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -659,8 +665,8 @@ metadata.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
@@ -686,7 +692,7 @@ metadata.</p>
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-02.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-03.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>

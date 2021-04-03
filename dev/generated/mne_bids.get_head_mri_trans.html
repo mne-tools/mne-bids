@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>mne_bids.get_head_mri_trans &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
@@ -321,46 +322,63 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-get-head-mri-trans">
+  <section id="mne-bids-get-head-mri-trans">
 <h1>mne_bids.get_head_mri_trans<a class="headerlink" href="#mne-bids-get-head-mri-trans" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.get_head_mri_trans">
-<code class="sig-prename descclassname"><span class="pre">mne_bids.</span></code><code class="sig-name descname"><span class="pre">get_head_mri_trans</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#get_head_mri_trans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_head_mri_trans" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">mne_bids.</span></code><code class="sig-name descname"><span class="pre">get_head_mri_trans</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1_bids_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#get_head_mri_trans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_head_mri_trans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce transformation matrix from MEG and MRI landmark points.</p>
 <p>Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
-files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of
+files of (i) the MEG and (ii) the T1-weighted MRI data. The two sets of
 points will then be used to calculate a transformation matrix from head
 coordinates to MRI coordinates.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The MEG and MRI data need <strong>not</strong> necessarily be stored in the
+same session or even in the same BIDS dataset. See the
+<code class="docutils literal notranslate"><span class="pre">t1_bids_path</span></code> parameter for details.</p>
+</div>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The path of the recording for which to retrieve the transformation. The
-<a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here <strong>must</strong> have the
-<code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set.</p>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The path of the MEG recording.</p>
 </dd>
-<dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions when reading
-the lankmarks from the MEG file.
-If a dict, for example: <code class="docutils literal notranslate"><span class="pre">extra_params=dict(allow_maxshield=True)</span></code>.</p>
+<dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to <a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw.html#mne.io.read_raw" title="(in MNE v0.23.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw()</span></code></a> when reading
+the MEG file.</p>
+</dd>
+<dt><strong>t1_bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), will try to discover the T1-weighted MRI file
+based on the name and location of the MEG recording specified via the
+<code class="docutils literal notranslate"><span class="pre">bids_path</span></code> parameter. Alternatively, you explicitly specify which
+T1-weighted MRI scan to use for extraction of MRI landmarks. To do
+that, pass a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> pointing to the scan.
+Use this parameter e.g. if the T1 scan was recorded during a different
+session than the MEG. It is even possible to point to a T1 image stored
+in an entirely different BIDS dataset than the MEG data.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.8.</span></p>
+</div>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a></span></dt><dd><p>The data transformation matrix from head to MRI coordinates</p>
+<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a></span></dt><dd><p>The data transformation matrix from head to MRI coordinates.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-get-head-mri-trans">
+<section id="examples-using-mne-bids-get-head-mri-trans">
 <span id="sphx-glr-backreferences-mne-bids-get-head-mri-trans"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans</span></code><a class="headerlink" href="#examples-using-mne-bids-get-head-mri-trans" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><figure class="align-default" id="id1">
 <img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-clear"></div></div>
-</div>
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-clear"></div></section>
+</section>
 
 
               </div>
@@ -386,7 +404,7 @@ If a dict, for example: <code class="docutils literal notranslate"><span class="
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
     <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-02.<br/>
+          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-03.<br/>
         Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
     </p>
   </div>
