@@ -605,11 +605,14 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
         Extra parameters to be passed to :func:`mne.io.read_raw` when reading
         the MEG file.
     t1_bids_path : mne_bids.BIDSPath | None
-        You may optionally specify a :class:`mne_bids.BIDSPath` pointing to the
-        T1-weighted MRI scan that shall be used for extraction of MRI
-        landmarks. Use this parameter if the T1 scan was recorded during a
-        different session than the MEG. It is even possible to point to a
-        T1 image stored in a different **BIDS dataset** than the MEG data.
+        If ``None`` (default), will try to discover the T1-weighted MRI file
+        based on the name and location of the MEG recording specified via the
+        ``bids_path`` parameter. Alternatively, you explicitly specify which
+        T1-weighted MRI scan to use for extraction of MRI landmarks. To do
+        that, pass a :class:`mne_bids.BIDSPath` pointing to the scan.
+        Use this parameter e.g. if the T1 scan was recorded during a different
+        session than the MEG. It is even possible to point to a T1 image stored
+        in an entirely different BIDS dataset than the MEG data.
 
         .. versionadded:: 0.8
 
