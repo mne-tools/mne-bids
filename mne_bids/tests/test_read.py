@@ -270,6 +270,31 @@ def test_get_head_mri_trans(tmpdir):
                                                     .update(root=tmpdir)))
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
+    # Test t1_bids_path parameter
+    #
+    # Case 1: different BIDS roots
+    meg_bids_path = _bids_path.copy().update(root=tmpdir / 'meg_root')
+    t1_bids_path = _bids_path.copy().update(root=tmpdir / 'mri_root')
+    raw = _read_raw_fif(raw_fname)
+
+    write_raw_bids(raw, bids_path=meg_bids_path)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
+    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
+                                    t1_bids_path=t1_bids_path)
+    assert np.allclose(trans['trans'], read_trans['trans'])
+
+    # Case 2: different sessions
+    raw = _read_raw_fif(raw_fname)
+    meg_bids_path = _bids_path.copy().update(root=tmpdir / 'session_test',
+                                             session='01')
+    t1_bids_path = meg_bids_path.copy().update(session='02')
+
+    write_raw_bids(raw, bids_path=meg_bids_path)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
+    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
+                                    t1_bids_path=t1_bids_path)
+    assert np.allclose(trans['trans'], read_trans['trans'])
+
 
 def test_handle_events_reading(tmpdir):
     """Test reading events from a BIDS events.tsv file."""
