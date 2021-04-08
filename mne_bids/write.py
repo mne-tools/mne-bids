@@ -637,6 +637,15 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     n_stimchan = len([ch for ch in raw.info['chs']
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
+    # for Neuromag MEG files, check whether Extra points are present
+    # and set DigitizedHeadPoints accordingly
+    digitized_head_points = False
+    if datatype == 'meg' and raw.filenames[0].endswith('.fif'):
+        for dig_point in raw.info['dig']:
+            if dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA:
+                digitized_head_points = True
+                break
+
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
         ('TaskName', task),
@@ -649,7 +658,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     ch_info_json_meg = [
         ('DewarPosition', 'n/a'),
         ('DigitizedLandmarks', True),
-        ('DigitizedHeadPoints', False),
+        ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_eeg = [

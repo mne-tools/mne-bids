@@ -21,7 +21,7 @@ with warnings.catch_warnings():
                             message="can't resolve package",
                             category=ImportWarning)
     import mne
-
+from mne.io.constants import FIFF
 from mne.utils import requires_nibabel, object_diff
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
@@ -455,6 +455,14 @@ def test_handle_info_reading(tmpdir):
     del raw.info['line_freq']
     with pytest.raises(ValueError, match="PowerLineFrequency .* required"):
         write_raw_bids(raw, bids_path, overwrite=True)
+
+    # check whether there are "Extra points" in raw.info['dig'] if
+    # DigitizedHeadPoints is set to True and not otherwise
+    n_dig_points = 0
+    for dig_point in raw.info['dig']:
+        if dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA:
+            n_dig_points += 1
+    assert n_dig_points > 0
 
     # make a copy of the sidecar in "derivatives/"
     # to check that we make sure we always get the right sidecar

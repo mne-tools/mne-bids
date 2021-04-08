@@ -603,6 +603,40 @@ def test_fif(_bids_validate, tmpdir):
     with pytest.raises(ValueError, match='Unrecognized file format'):
         write_raw_bids(raw, bids_path)
 
+    raw = _read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                   overwrite=True)
+
+    # test whether extra points in raw.info['dig'] are correctly used
+    # to set DigitizedHeadShape in the json sidecar
+    meg_json = _find_matching_sidecar(
+        bids_path.copy().update(root=bids_root),
+        suffix='meg', extension='.json')
+    with open(meg_json, 'r') as fin:
+        meg_json_data = json.load(fin)
+        # unchanged sample data includes Extra points
+        assert meg_json_data['DigitizedHeadPoints'] is True
+
+    # drop extra points from raw.info['dig'] and write again
+    raw_no_extra_points = raw.copy()
+    new_dig = []
+    for dig_point in raw_no_extra_points.info['dig']:
+        if dig_point['kind'] != FIFF.FIFFV_POINT_EXTRA:
+            new_dig.append(dig_point)
+    raw_no_extra_points.info['dig'] = new_dig
+
+    write_raw_bids(raw_no_extra_points, bids_path, events_data=events,
+                   event_id=event_id, overwrite=True)
+
+    meg_json = _find_matching_sidecar(
+        bids_path.copy().update(root=bids_root),
+        suffix='meg', extension='.json')
+    with open(meg_json, 'r') as fin:
+        meg_json_data = json.load(fin)
+        # sample data does not have Extra points, so it should
+        # DigitizedHeadPoints should be false
+        assert meg_json_data['DigitizedHeadPoints'] is False
+
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_fif_dtype(_bids_validate, tmpdir):
