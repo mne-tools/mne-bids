@@ -648,7 +648,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
         ('DewarPosition', 'n/a'),
-        ('DigitizedLandmarks', False),
+        ('DigitizedLandmarks', True),
         ('DigitizedHeadPoints', False),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
