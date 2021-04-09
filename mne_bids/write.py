@@ -638,13 +638,21 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
     # for Neuromag MEG files, check whether Extra points are present
-    # and set DigitizedHeadPoints accordingly
+    # and set DigitizedHeadPoints accordingly, and whether RPA/LPA/
+    # NAS is present, and set DigitizedLandmarks accordingly
     digitized_head_points = False
-    if datatype == 'meg' and raw.filenames[0].endswith('.fif'):
+    digitized_landmark = False
+    if datatype == 'meg':
+        if raw.info['dig'] is None:
+            raw.info['dig'] = []
         for dig_point in raw.info['dig']:
-            if dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA:
+            if dig_point['kind'] in [FIFF.FIFFV_POINT_NASION,
+                                     FIFF.FIFFV_POINT_RPA,
+                                     FIFF.FIFFV_POINT_LPA]:
+                digitized_landmark = True
+            elif dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA and \
+                    raw.filenames[0].endswith('.fif'):
                 digitized_head_points = True
-                break
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
@@ -657,7 +665,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
         ('DewarPosition', 'n/a'),
-        ('DigitizedLandmarks', True),
+        ('DigitizedLandmarks', digitized_landmark),
         ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
