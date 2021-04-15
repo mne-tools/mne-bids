@@ -642,9 +642,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     # (DigitizedHeadPoints done for Neuromag MEG files only)
     digitized_head_points = False
     digitized_landmark = False
-    if datatype == 'meg':
-        if raw.info['dig'] is None:
-            raw.info['dig'] = []
+    if datatype == 'meg' and raw.info['dig'] is not None:
         for dig_point in raw.info['dig']:
             if dig_point['kind'] in [FIFF.FIFFV_POINT_NASION,
                                      FIFF.FIFFV_POINT_RPA,
