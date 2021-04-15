@@ -462,10 +462,23 @@ def test_handle_info_reading(tmpdir):
     for dig_point in raw.info['dig']:
         if dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA:
             n_dig_points += 1
-    if sidecar_json['DigitizedLandmarks']:
+    if sidecar_json['DigitizedHeadPoints']:
         assert n_dig_points > 0
     else:
         assert n_dig_points == 0
+
+    # check whether if there any of NAS/LPA/RPA are present in raw.info['dig']
+    # DigitizedLandmark is set to True, and False otherwise
+    landmark_present = False
+    for dig_point in raw.info['dig']:
+        if dig_point['kind'] in [FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_RPA,
+                                 FIFF.FIFFV_POINT_NASION]:
+            landmark_present = True
+            break
+    if landmark_present:
+        assert sidecar_json['DigitizedLandmarks'] is True
+    else:
+        assert sidecar_json['DigitizedLandmarks'] is False
 
     # make a copy of the sidecar in "derivatives/"
     # to check that we make sure we always get the right sidecar
