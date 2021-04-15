@@ -462,7 +462,10 @@ def test_handle_info_reading(tmpdir):
     for dig_point in raw.info['dig']:
         if dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA:
             n_dig_points += 1
-    assert n_dig_points > 0
+    if sidecar_json['DigitizedLandmarks']:
+        assert n_dig_points > 0
+    else:
+        assert n_dig_points == 0
 
     # make a copy of the sidecar in "derivatives/"
     # to check that we make sure we always get the right sidecar
