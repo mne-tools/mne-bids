@@ -637,9 +637,9 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     n_stimchan = len([ch for ch in raw.info['chs']
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
-    # for Neuromag MEG files, check whether Extra points are present
-    # and set DigitizedHeadPoints accordingly, and whether RPA/LPA/
-    # NAS is present, and set DigitizedLandmarks accordingly
+    # Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found
+    # Set DigitizedHeadPoints to True if any "Extra" points are found
+    # (DigitizedHeadPoints done for Neuromag MEG files only)
     digitized_head_points = False
     digitized_landmark = False
     if datatype == 'meg':
