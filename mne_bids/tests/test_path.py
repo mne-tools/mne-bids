@@ -504,9 +504,13 @@ def test_bids_path(return_bids_test_dir):
                          suffix=suffix, check=False)
 
     # also inherits error check from instantiation
-    # always error check datatype
+    # always error check entities though
+    with pytest.raises(ValueError, match='Key must be one of'):
+        bids_path.copy().update(blah='blah-entity')
+
+    # error check datatype if check is turned back on
     with pytest.raises(ValueError, match='datatype .* is not valid'):
-        bids_path.copy().update(datatype=error_kind)
+        bids_path.copy().update(check=True, datatype=error_kind)
 
     # does not error check on space if check=False ...
     BIDSPath(subject=subject_id, space='foo', suffix='eeg', check=False)
@@ -558,6 +562,13 @@ def test_bids_path(return_bids_test_dir):
     # test that split gets properly set
     bids_path.update(split=1)
     assert bids_path.basename == 'sub-01_ses-02_task-03_split-01_ieeg.mat'
+
+    # test home dir expansion
+    bids_path = BIDSPath(root='~/foo')
+    assert '~/foo' not in str(bids_path.root)
+    # explicitly test update() method too
+    bids_path.update(root='~/foo')
+    assert '~/foo' not in str(bids_path.root)
 
 
 def test_make_filenames():
@@ -700,7 +711,6 @@ def test_match(return_bids_test_dir):
                             suffix='channels', extension='.tsv',
                             datatype='meg')
     paths = bids_path_01.match()
-    print(paths)
     assert len(paths) == 1
     assert paths[0].extension == '.tsv'
     assert paths[0].suffix == 'channels'
@@ -716,6 +726,15 @@ def test_match(return_bids_test_dir):
     assert paths[0].extension == '.tsv'
     assert paths[0].suffix == 'channels'
     assert Path(paths[0]).parent.name == 'meg'
+
+    # Test `check` parameter
+    bids_path_01 = bids_path.copy()
+    bids_path_01.update(session=None, task=None, run=None,
+                        suffix='foo', extension='.eeg', check=False)
+    bids_path_01.fpath.touch()
+
+    assert bids_path_01.match(check=True) == []
+    assert bids_path_01.match(check=False)[0].fpath.name == 'sub-01_foo.eeg'
 
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
@@ -935,3 +954,24 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
     Path(bids_path_.meg_crosstalk_fpath).unlink()
     assert bids_path_.meg_crosstalk_fpath is None
+
+
+def test_datasetdescription_with_bidspath(return_bids_test_dir):
+    with pytest.raises(ValueError, match='Unallowed'):
+        bids_path = BIDSPath(
+            root=return_bids_test_dir, suffix='dataset_description',
+            extension='.json')
+
+    # initialization should work
+    bids_path = BIDSPath(
+        root=return_bids_test_dir, suffix='dataset_description',
+        extension='.json', check=False)
+    assert bids_path.fpath.as_posix() == \
+           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+
+    # setting it via update should work
+    bids_path = BIDSPath(root=return_bids_test_dir,
+                         extension='.json', check=True)
+    bids_path.update(suffix='dataset_description', check=False)
+    assert bids_path.fpath.as_posix() == \
+           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()

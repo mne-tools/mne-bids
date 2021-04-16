@@ -46,7 +46,7 @@ from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar
-from mne_bids.path import _find_matching_sidecar
+from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
 from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
 
@@ -603,6 +603,40 @@ def test_fif(_bids_validate, tmpdir):
     with pytest.raises(ValueError, match='Unrecognized file format'):
         write_raw_bids(raw, bids_path)
 
+    raw = _read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                   overwrite=True)
+
+    # test whether extra points in raw.info['dig'] are correctly used
+    # to set DigitizedHeadShape in the json sidecar
+    meg_json = _find_matching_sidecar(
+        bids_path.copy().update(root=bids_root),
+        suffix='meg', extension='.json')
+    with open(meg_json, 'r') as fin:
+        meg_json_data = json.load(fin)
+        # unchanged sample data includes Extra points
+        assert meg_json_data['DigitizedHeadPoints'] is True
+
+    # drop extra points from raw.info['dig'] and write again
+    raw_no_extra_points = raw.copy()
+    new_dig = []
+    for dig_point in raw_no_extra_points.info['dig']:
+        if dig_point['kind'] != FIFF.FIFFV_POINT_EXTRA:
+            new_dig.append(dig_point)
+    raw_no_extra_points.info['dig'] = new_dig
+
+    write_raw_bids(raw_no_extra_points, bids_path, events_data=events,
+                   event_id=event_id, overwrite=True)
+
+    meg_json = _find_matching_sidecar(
+        bids_path.copy().update(root=bids_root),
+        suffix='meg', extension='.json')
+    with open(meg_json, 'r') as fin:
+        meg_json_data = json.load(fin)
+        # sample data does not have Extra points, so it should
+        # DigitizedHeadPoints should be false
+        assert meg_json_data['DigitizedHeadPoints'] is False
+
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_fif_dtype(_bids_validate, tmpdir):
@@ -697,6 +731,22 @@ def test_fif_ias(tmpdir):
     write_raw_bids(raw, data_path)
     raw = read_raw_bids(data_path)
     assert raw.info['chs'][0]['kind'] == FIFF.FIFFV_IAS_CH
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_fif_exci(tmpdir):
+    """Test writing FIF files with excitation channel."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    raw.set_channel_types({raw.ch_names[0]: 'exci'})
+    data_path = BIDSPath(subject='sample', root=tmpdir)
+
+    write_raw_bids(raw, data_path)
+    raw = read_raw_bids(data_path)
+    assert raw.info['chs'][0]['kind'] == FIFF.FIFFV_EXCI_CH
 
 
 def test_kit(_bids_validate, tmpdir):
@@ -1064,11 +1114,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
                           match='Encountered data in "double" format'):
             write_raw_bids(**kwargs)
 
+    # dataset_description.json files should not be overwritten inside
+    # write_raw_bids calls
     with open(dataset_description_fpath, 'r', encoding='utf-8') as f:
         dataset_description_json = json.load(f)
-        assert dataset_description_json["Authors"] == \
-            ["Please cite MNE-BIDS in your publication before removing this "
-             "(citations in README)"]
+        assert dataset_description_json["Authors"] == ["test1", "test2"]
 
     # Reading the file back should still work, even though we've renamed
     # some channels (there's now a mismatch between BIDS and Raw channel
@@ -1638,7 +1688,7 @@ def test_write_anat(_bids_validate, tmpdir):
 
         if not in_head:
             # crash for raw also
-            with pytest.raises(ValueError, match='use either `landmarks`'):
+            with pytest.raises(ValueError, match='use EITHER `landmarks`'):
                 write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
                            trans=trans, deface=True, landmarks=landmarks,
                            verbose=True, overwrite=True)
@@ -2574,6 +2624,34 @@ def test_write_fif_triux(tmpdir):
     write_raw_bids(raw, bids_path=bids_path, overwrite=True)
 
 
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+@pytest.mark.parametrize('datatype', ['eeg', 'ieeg'])
+def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
+    """Test writing files is case insensitive."""
+    dir_name, fname, reader = 'EDF', 'test_reduced.edf', _read_raw_edf
+
+    bids_root = tmpdir.mkdir('bids1')
+    source_path = Path(bids_root) / 'sourcedata'
+    data_path = op.join(testing.data_path(), dir_name)
+    sh.copytree(data_path, source_path)
+    data_path = source_path
+
+    # rename extension to upper-case
+    _fname, ext = _parse_ext(fname)
+    new_fname = _fname + ext.upper()
+
+    # rename the file's extension
+    raw_fname = op.join(data_path, fname)
+    new_raw_fname = op.join(data_path, new_fname)
+    os.rename(raw_fname, new_raw_fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype=datatype)
+
+    raw = reader(new_raw_fname)
+    write_raw_bids(raw, bids_path)
+
+    
 def test_datatype_not_specified(tmpdir):
     """Test Error if datatype is not specified when calling write_raw_bids."""
     bids_root = tmpdir.mkdir('bids1')

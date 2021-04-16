@@ -21,7 +21,9 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS, reader, _map_options
+from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
+                             ANNOTATIONS_TO_KEEP,
+                             reader, _map_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype)
@@ -166,24 +168,25 @@ def _handle_participants_reading(participants_fname, raw,
     row_ind = subjects.index(subject)
 
     # set data from participants tsv into subject_info
-    for infokey, infovalue in participants_tsv.items():
-        if infokey == 'sex' or infokey == 'hand':
-            value = _map_options(what=infokey, key=infovalue[row_ind],
+    for col_name, value in participants_tsv.items():
+        if col_name == 'sex' or col_name == 'hand':
+            value = _map_options(what=col_name, key=value[row_ind],
                                  fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
             if value is None:
-                if infokey == 'sex':
+                if col_name == 'sex':
                     info_str = 'subject sex'
                 else:
                     info_str = 'subject handedness'
-                warn(f'Unable to map `{infokey}` value to MNE. '
+                warn(f'Unable to map `{col_name}` value to MNE. '
                      f'Not setting {info_str}.')
         else:
-            value = infovalue[row_ind]
+            value = value[row_ind]
         # add data into raw.Info
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
-        raw.info['subject_info'][infokey] = value
+        key = 'his_id' if col_name == 'participant_id' else col_name
+        raw.info['subject_info'][key] = value
 
     return raw
 
@@ -338,12 +341,22 @@ def _handle_events_reading(events_fname, raw):
     descriptions = descriptions[good_events_idx]
     del good_events_idx
 
-    # Add Events to raw as annotations
+    # Add events as Annotations, but keep essential Annotations present in
+    # raw file
+    annot_from_raw = raw.annotations.copy()
+
     annot_from_events = mne.Annotations(onset=onsets,
                                         duration=durations,
-                                        description=descriptions,
-                                        orig_time=None)
+                                        description=descriptions)
     raw.set_annotations(annot_from_events)
+
+    annot_idx_to_keep = [idx for idx, annot in enumerate(annot_from_raw)
+                         if annot['description'] in ANNOTATIONS_TO_KEEP]
+    annot_to_keep = annot_from_raw[annot_idx_to_keep]
+
+    if len(annot_to_keep):
+        raw.set_annotations(raw.annotations + annot_to_keep)
+
     return raw
 
 
@@ -568,33 +581,45 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         warn("Participants file not found for {}... Not reading "
              "in any particpants.tsv data.".format(bids_fname))
 
+    assert raw.annotations.orig_time == raw.info['meas_date']
     return raw
 
 
-def get_head_mri_trans(bids_path, extra_params=None):
+def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
-    files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of
+    files of (i) the MEG and (ii) the T1-weighted MRI data. The two sets of
     points will then be used to calculate a transformation matrix from head
     coordinates to MRI coordinates.
+
+    .. note:: The MEG and MRI data need **not** necessarily be stored in the
+              same session or even in the same BIDS dataset. See the
+              ``t1_bids_path`` parameter for details.
 
     Parameters
     ----------
     bids_path : mne_bids.BIDSPath
-        The path of the recording for which to retrieve the transformation. The
-        :class:`mne_bids.BIDSPath` instance passed here **must** have the
-        ``.root`` attribute set.
+        The path of the MEG recording.
     extra_params : None | dict
-        Extra parameters to be passed to MNE read_raw_* functions when reading
-        the lankmarks from the MEG file.
-        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
+        Extra parameters to be passed to :func:`mne.io.read_raw` when reading
+        the MEG file.
+    t1_bids_path : mne_bids.BIDSPath | None
+        If ``None`` (default), will try to discover the T1-weighted MRI file
+        based on the name and location of the MEG recording specified via the
+        ``bids_path`` parameter. Alternatively, you explicitly specify which
+        T1-weighted MRI scan to use for extraction of MRI landmarks. To do
+        that, pass a :class:`mne_bids.BIDSPath` pointing to the scan.
+        Use this parameter e.g. if the T1 scan was recorded during a different
+        session than the MEG. It is even possible to point to a T1 image stored
+        in an entirely different BIDS dataset than the MEG data.
+
+        .. versionadded:: 0.8
 
     Returns
     -------
     trans : mne.transforms.Transform
-        The data transformation matrix from head to MRI coordinates
-
+        The data transformation matrix from head to MRI coordinates.
     """
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
@@ -605,34 +630,54 @@ def get_head_mri_trans(bids_path, extra_params=None):
                            'instantiate using mne_bids.BIDSPath().')
 
     # check root available
-    bids_path = bids_path.copy()
-    bids_root = bids_path.root
-    if bids_root is None:
+    meg_bids_path = bids_path.copy()
+    del bids_path
+    if meg_bids_path.root is None:
         raise ValueError('The root of the "bids_path" must be set. '
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
+
     # only get this for MEG data
-    bids_path.update(datatype='meg')
+    meg_bids_path.update(datatype='meg', suffix='meg')
 
     # Get the sidecar file for MRI landmarks
-    bids_fname = bids_path.update(suffix='meg', root=bids_root)
-    t1w_json_path = _find_matching_sidecar(bids_fname, suffix='T1w',
-                                           extension='.json')
+    if t1_bids_path is None:
+        t1w_json_path = _find_matching_sidecar(meg_bids_path, suffix='T1w',
+                                               extension='.json')
+    else:
+        t1_bids_path = t1_bids_path.copy().update(suffix='T1w',
+                                                  datatype='anat')
+        t1w_json_path = _find_matching_sidecar(t1_bids_path, suffix='T1w',
+                                               extension='.json')
 
     # Get MRI landmarks from the JSON sidecar
-    with open(t1w_json_path, 'r', encoding='utf-8-sig') as f:
+    with open(t1w_json_path, 'r', encoding='utf-8') as f:
         t1w_json = json.load(f)
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
-    mri_landmarks = np.asarray((mri_coords_dict.get('LPA', np.nan),
-                                mri_coords_dict.get('NAS', np.nan),
-                                mri_coords_dict.get('RPA', np.nan)))
+
+    # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
+    mri_landmarks = np.full((3, 3), np.nan)
+    for landmark_name, coords in mri_coords_dict.items():
+        if landmark_name.upper() == 'LPA':
+            mri_landmarks[0, :] = coords
+        elif landmark_name.upper() == 'RPA':
+            mri_landmarks[2, :] = coords
+        elif (landmark_name.upper() == 'NAS' or
+              landmark_name.lower() == 'nasion'):
+            mri_landmarks[1, :] = coords
+        else:
+            continue
+
     if np.isnan(mri_landmarks).any():
-        raise RuntimeError('Could not parse T1w sidecar file: "{}"\n\n'
-                           'The sidecar file MUST contain a key '
-                           '"AnatomicalLandmarkCoordinates" pointing to a '
-                           'dict with keys "LPA", "NAS", "RPA". '
-                           'Yet, the following structure was found:\n\n"{}"'
-                           .format(t1w_json_path, t1w_json))
+        raise RuntimeError(
+            f'Could not extract fiducial points from T1w sidecar file: '
+            f'{t1w_json_path}\n\n'
+            f'The sidecar file SHOULD contain a key '
+            f'"AnatomicalLandmarkCoordinates" pointing to an '
+            f'object with the keys "LPA", "NAS", and "RPA". '
+            f'Yet, the following structure was found:\n\n'
+            f'{mri_coords_dict}'
+        )
 
     # The MRI landmarks are in "voxels". We need to convert the to the
     # neuromag RAS coordinate system in order to compare the with MEG landmarks
@@ -654,13 +699,13 @@ def get_head_mri_trans(bids_path, extra_params=None):
     mri_landmarks = mri_landmarks * 1e-3
 
     # Get MEG landmarks from the raw file
-    _, ext = _parse_ext(bids_fname)
+    _, ext = _parse_ext(meg_bids_path)
     if extra_params is None:
         extra_params = dict()
-        if ext == '.fif':
-            extra_params = dict(allow_maxshield=True)
+    if ext == '.fif':
+        extra_params['allow_maxshield'] = True
 
-    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
+    raw = read_raw_bids(bids_path=meg_bids_path, extra_params=extra_params)
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],
                                 meg_coords_dict['NAS'],

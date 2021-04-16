@@ -1,4 +1,4 @@
-[![Codecov](https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg)](https://codecov.io/gh/mne-tools/mne-bids)
+[![Codecov](https://codecov.io/gh/mne-tools/mne-bids/branch/main/graph/badge.svg)](https://codecov.io/gh/mne-tools/mne-bids)
 [![GitHub Actions](https://github.com/mne-tools/mne-bids/workflows/build/badge.svg)](https://github.com/mne-tools/mne-bids/actions)
 [![CircleCI](https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg)](https://circleci.com/gh/mne-tools/mne-bids)
 [![PyPI Download count](https://pepy.tech/badge/mne-bids)](https://pepy.tech/project/mne-bids)
@@ -42,7 +42,7 @@ Citing
 [![JOSS publication](https://joss.theoj.org/papers/5b9024503f7bea324d5e738a12b0a108/status.svg)](https://joss.theoj.org/papers/5b9024503f7bea324d5e738a12b0a108)
 
 If you use MNE-BIDS in your work, please cite our
-[publication in JOSS](https://doi.org/10.21105/joss.01896>):
+[publication in JOSS](https://doi.org/10.21105/joss.01896):
 
 
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C.,

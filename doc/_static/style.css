@@ -3,56 +3,24 @@ a[class^="sphx-glr-backref-module-mne_bids"] {
   font-weight: 800;
 }
 
-/* Disable hyphenation in API reference table for Webkit-based browsers
-   to work around alignment bug */
-#api-documentation table p {
-  -webkit-hyphens: none;
+span.option {
+  /* avoid breaking lines in our command-line parameters */
+  white-space: nowrap;
 }
 
-/* Hide version number from top-left location in the navbar */
-.navbar-version {
-  display: none;
+/* gallery thumbnail size */
+.sphx-glr-thumbcontainer {
+  min-width: 160px;
+  height: 250px;
 }
 
-html {
-  font-size: 16px;
+/* ************************************************* Previous / Next buttons */
+.prev-next-bottom a.left-prev:before {
+  content:"❮\00A0"
 }
-
-h1 {
-  font-size: 1.6rem;
+.prev-next-bottom a.right-next:after {
+  content:"\00A0❯"
 }
-
-h2 {
-  font-size: 1.3rem;
-}
-
-h3 {
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-h4 {
-  font-size: 1rem;
-}
-
-.footer {
-  margin-top: 3em;
-  padding-top: 1em;
-}
-
-/* Links in the Note boxes */
-.note a {
-  color: white;
-  text-decoration: underline;
-}
-
-.note a:hover {
-  color: white;
-  font-weight: bold;
-  text-decoration: underline;
-}
-
-/* Links in "Note" boxes */
-.alert-info a code span {
-  color: white;
+.prev-next-bottom a.right-next {
+  text-align: right;
 }

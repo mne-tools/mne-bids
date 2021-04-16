@@ -72,7 +72,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
                        meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
                        megrefgradaxial='MEGREFGRADAXIAL',
                        meggradplanar='MEGGRADPLANAR', megrefmag='MEGREFMAG',
-                       ias='MEGOTHER', syst='MEGOTHER')
+                       ias='MEGOTHER', syst='MEGOTHER', exci='MEGOTHER')
 
     elif fro == 'bids' and to == 'mne':
         mapping = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',

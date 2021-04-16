@@ -1,5 +1,5 @@
 Thanks for contributing. If this is your first time,
-make sure to read [contributing.md](https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md)
+make sure to read [contributing.md](https://github.com/mne-tools/mne-bids/blob/main/CONTRIBUTING.md)
 
 PR Description
 --------------
@@ -15,5 +15,5 @@ Maintainer, please confirm the following before merging:
 - [ ] This is not your own PR
 - [ ] All CIs are happy
 - [ ] PR title starts with [MRG]
-- [ ] [whats_new.rst](https://github.com/mne-tools/mne-bids/blob/master/doc/whats_new.rst) is updated
+- [ ] [whats_new.rst](https://github.com/mne-tools/mne-bids/blob/main/doc/whats_new.rst) is updated
 - [ ] PR description includes phrase "closes <#issue-number>"

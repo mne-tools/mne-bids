@@ -21,7 +21,7 @@ with warnings.catch_warnings():
                             message="can't resolve package",
                             category=ImportWarning)
     import mne
-
+from mne.io.constants import FIFF
 from mne.utils import requires_nibabel, object_diff
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
@@ -130,6 +130,8 @@ def test_read_participants_data(tmpdir):
     assert raw.info['subject_info']['hand'] == 1
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
+    assert raw.info['subject_info']['his_id'] == f'sub-{bids_path.subject}'
+    assert 'participant_id' not in raw.info['subject_info']
 
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = tmpdir / 'participants.tsv'
@@ -212,8 +214,8 @@ def test_get_head_mri_trans(tmpdir):
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=False)
 
-    # We cannot recover trans, if no MRI has yet been written
-    with pytest.raises(RuntimeError):
+    # We cannot recover trans if no MRI has yet been written
+    with pytest.raises(RuntimeError, match='Did not find any T1w.json'):
         estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
@@ -236,16 +238,62 @@ def test_get_head_mri_trans(tmpdir):
     assert trans['from'] == estimated_trans['from']
     assert trans['to'] == estimated_trans['to']
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
-    print(trans)
-    print(estimated_trans)
 
     # provoke an error by introducing NaNs into MEG coords
+    raw.info['dig'][0]['r'] = np.full(3, np.nan)
+    sh.rmtree(anat_dir)
+    bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
+                           raw=raw, trans=trans)
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
-        raw.info['dig'][0]['r'] = np.ones(3) * np.nan
-        sh.rmtree(anat_dir)
-        bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                               raw=raw, trans=trans, verbose=True)
         estimated_trans = get_head_mri_trans(bids_path=bids_path)
+
+    # test we are permissive for different casings of landmark names in the
+    # sidecar, and also accept "nasion" instead of just "NAS"
+    raw = _read_raw_fif(raw_fname)
+    t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
+                              raw=raw, trans=trans, overwrite=True)
+
+    t1w_json_fpath = t1w_bidspath.copy().update(extension='.json').fpath
+    with t1w_json_fpath.open('r', encoding='utf-8') as f:
+        t1w_json = json.load(f)
+
+    coords = t1w_json['AnatomicalLandmarkCoordinates']
+    coords['lpa'] = coords['LPA']
+    coords['Rpa'] = coords['RPA']
+    coords['Nasion'] = coords['NAS']
+    del coords['LPA'], coords['RPA'], coords['NAS']
+
+    with t1w_json_fpath.open('w', encoding='utf-8') as f:
+        json.dump(t1w_json, f)
+
+    estimated_trans = get_head_mri_trans(bids_path=(_bids_path.copy()
+                                                    .update(root=tmpdir)))
+    assert_almost_equal(trans['trans'], estimated_trans['trans'])
+
+    # Test t1_bids_path parameter
+    #
+    # Case 1: different BIDS roots
+    meg_bids_path = _bids_path.copy().update(root=tmpdir / 'meg_root')
+    t1_bids_path = _bids_path.copy().update(root=tmpdir / 'mri_root')
+    raw = _read_raw_fif(raw_fname)
+
+    write_raw_bids(raw, bids_path=meg_bids_path)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
+    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
+                                    t1_bids_path=t1_bids_path)
+    assert np.allclose(trans['trans'], read_trans['trans'])
+
+    # Case 2: different sessions
+    raw = _read_raw_fif(raw_fname)
+    meg_bids_path = _bids_path.copy().update(root=tmpdir / 'session_test',
+                                             session='01')
+    t1_bids_path = meg_bids_path.copy().update(session='02')
+
+    write_raw_bids(raw, bids_path=meg_bids_path)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
+    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
+                                    t1_bids_path=t1_bids_path)
+    assert np.allclose(trans['trans'], read_trans['trans'])
 
 
 def test_handle_events_reading(tmpdir):
@@ -303,6 +351,28 @@ def test_handle_events_reading(tmpdir):
     ids = list(event_id.keys())
     assert len(ids) == 1
     assert ids == ['n/a']
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_keep_essential_annotations(tmpdir):
+    """Test that essential Annotations are not omitted during I/O roundtrip."""
+    raw = _read_raw_fif(raw_fname)
+    annotations = mne.Annotations(onset=[raw.times[0]], duration=[1],
+                                  description=['BAD_ACQ_SKIP'])
+    raw.set_annotations(annotations)
+
+    # Write data, remove events.tsv, then try to read again
+    bids_path = BIDSPath(subject='01', task='task', datatype='meg',
+                         root=tmpdir)
+    with pytest.warns(RuntimeWarning, match='Acquisition skips detected'):
+        write_raw_bids(raw, bids_path, overwrite=True)
+
+    bids_path.copy().update(suffix='events', extension='.tsv').fpath.unlink()
+    raw_read = read_raw_bids(bids_path)
+
+    assert len(raw_read.annotations) == len(raw.annotations) == 1
+    assert (raw_read.annotations[0]['description'] ==
+            raw.annotations[0]['description'])
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -385,6 +455,30 @@ def test_handle_info_reading(tmpdir):
     del raw.info['line_freq']
     with pytest.raises(ValueError, match="PowerLineFrequency .* required"):
         write_raw_bids(raw, bids_path, overwrite=True)
+
+    # check whether there are "Extra points" in raw.info['dig'] if
+    # DigitizedHeadPoints is set to True and not otherwise
+    n_dig_points = 0
+    for dig_point in raw.info['dig']:
+        if dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA:
+            n_dig_points += 1
+    if sidecar_json['DigitizedHeadPoints']:
+        assert n_dig_points > 0
+    else:
+        assert n_dig_points == 0
+
+    # check whether any of NAS/LPA/RPA are present in raw.info['dig']
+    # DigitizedLandmark is set to True, and False otherwise
+    landmark_present = False
+    for dig_point in raw.info['dig']:
+        if dig_point['kind'] in [FIFF.FIFFV_POINT_LPA, FIFF.FIFFV_POINT_RPA,
+                                 FIFF.FIFFV_POINT_NASION]:
+            landmark_present = True
+            break
+    if landmark_present:
+        assert sidecar_json['DigitizedLandmarks'] is True
+    else:
+        assert sidecar_json['DigitizedLandmarks'] is False
 
     # make a copy of the sidecar in "derivatives/"
     # to check that we make sure we always get the right sidecar
