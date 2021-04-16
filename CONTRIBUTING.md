@@ -4,7 +4,7 @@ Contributions are welcome in the form of pull requests.
 
 Once the implementation of a piece of functionality is considered to be bug
 free and properly documented (both API docs and an example script),
-it can be incorporated into the master branch.
+it can be incorporated into the `main` branch.
 
 To help developing `mne-bids`, you will need a few adjustments to your
 installation as shown below.
@@ -15,9 +15,9 @@ installation as shown below.
 If you want to run the tests with a development version of MNE-Python,
 you can install it by running
 
-    $ pip install -U https://github.com/mne-tools/mne-python/archive/master.zip
+    $ pip install -U https://github.com/mne-tools/mne-python/archive/main.zip
 
-### Install development version of MNE-BIDS 
+### Install development version of MNE-BIDS
 First, you should [fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the `mne-bids` repository. Then, clone the fork and install it in
 "editable" mode.
 
@@ -83,7 +83,7 @@ on a per-user basis, set the environment variable `VALIDATOR_EXECUTABLE` to poin
 The documentation can be built using sphinx. For that, please additionally
 install the following:
 
-    $ pip install matplotlib nilearn sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
+    $ pip install matplotlib nilearn sphinx numpydoc sphinx-gallery pydata-sphinx-theme pillow
 
 To build the documentation locally, one can run:
 
@@ -93,5 +93,5 @@ To build the documentation locally, one can run:
 or
 
     $ make html-noplot
-    
+
 if you don't want to run the examples to build the documentation. This will result in a faster build but produce no plots in the examples.

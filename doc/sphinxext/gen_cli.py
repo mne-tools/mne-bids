@@ -1,7 +1,7 @@
 """Custom sphinx extension to generate docs for the command line interace.
 
 Inspired by MNE-Python's `gen_commands.py`
-see: github.com/mne-tools/mne-python/blob/master/doc/sphinxext/gen_commands.py
+see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 """
 # Authors: Eric Larson <larson.eric.d@gmail.com>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>

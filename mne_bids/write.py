@@ -637,6 +637,21 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     n_stimchan = len([ch for ch in raw.info['chs']
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
+    # Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found
+    # Set DigitizedHeadPoints to True if any "Extra" points are found
+    # (DigitizedHeadPoints done for Neuromag MEG files only)
+    digitized_head_points = False
+    digitized_landmark = False
+    if datatype == 'meg' and raw.info['dig'] is not None:
+        for dig_point in raw.info['dig']:
+            if dig_point['kind'] in [FIFF.FIFFV_POINT_NASION,
+                                     FIFF.FIFFV_POINT_RPA,
+                                     FIFF.FIFFV_POINT_LPA]:
+                digitized_landmark = True
+            elif dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA and \
+                    raw.filenames[0].endswith('.fif'):
+                digitized_head_points = True
+
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
         ('TaskName', task),
@@ -648,8 +663,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
         ('DewarPosition', 'n/a'),
-        ('DigitizedLandmarks', False),
-        ('DigitizedHeadPoints', False),
+        ('DigitizedLandmarks', digitized_landmark),
+        ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_eeg = [
@@ -1086,6 +1101,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
     and the actual recording date will be stored in the ``scans.tsv``
     file's ``acq_time`` column.
 
+    ``write_raw_bids`` will generate a ``dataset_description.json`` file
+    if it does not already exist. Minimal metadata will be written there.
+    If one sets ``overwrite`` to ``True`` here, it will not overwrite an
+    existing ``dataset_description.json`` file.
+    If you need to add more data there, or overwrite it, then you should
+    call :func:`mne_bids.make_dataset_description` directly.
+
     See Also
     --------
     mne.io.Raw.anonymize
@@ -1283,7 +1305,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
         # Kepp events_array around for BrainVision writing below.
         del event_desc_id_map, events_data, event_id, event_dur
 
-    make_dataset_description(bids_path.root, name=" ", overwrite=overwrite,
+    # make dataset description and add template data if it does not
+    # already exist. Always set overwrite to False here. If users
+    # want to edit their dataset_description, they can directly call
+    # this function.
+    make_dataset_description(bids_path.root, name=" ", overwrite=False,
                              verbose=verbose)
 
     _sidecar_json(raw, bids_path.task, manufacturer, sidecar_path.fpath,
@@ -1392,6 +1418,11 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     transformation matrix is supplied, this information will be stored in a
     sidecar JSON file.
 
+    .. note:: To generate the JSON sidecar with anatomical landmark
+              coordinates ("fiducials"), you need to pass the landmarks via
+              the ``landmarks`` parameter, or supply a raw file via ``raw``
+              and transformation matrix via the ``trans`` parameter.
+
     Parameters
     ----------
     image : str | pathlib.Path | NibabelImageObject
@@ -1409,8 +1440,8 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     trans : mne.transforms.Transform | str | None
         The transformation matrix from head to MRI coordinates. Can
         also be a string pointing to a ``.trans`` file containing the
-        transformation matrix. If ``None``, no sidecar JSON file will be
-        created.
+        transformation matrix. If ``None`` and no ``landmarks`` parameter is
+        passed, no sidecar JSON file will be created.
     t1w : str | pathlib.Path | NibabelImageObject | None
         This parameter is useful if image written is not already a T1 image.
         If the image written is to have a sidecar or be defaced,
@@ -1429,11 +1460,12 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         - `theta`: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
-    landmarks: mne.channels.DigMontage | str | None
+    landmarks : mne.channels.DigMontage | str | None
         The DigMontage or filepath to a DigMontage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
-        from the MRI using `freeview`.
+        from the MRI using `freeview`.  If ``None`` and no ``trans`` parameter
+        is passed, no sidecar JSON file will be created.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1459,12 +1491,12 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     write_sidecar = trans is not None or landmarks is not None
 
     if not write_sidecar and raw is not None:
-        warn('Ignoring `raw` keyword argument, `trans`, `landmarks` '
+        warn('Ignoring `raw` keyword argument: `trans`, `landmarks`, '
              'or both (if landmarks are in head space) are needed '
              'to write the sidecar file')
 
     if deface and not write_sidecar:
-        raise ValueError('Either `raw` and `trans` must be provided '
+        raise ValueError('Either `raw` and `trans` must be provided, '
                          'or `landmarks` must be provided to deface '
                          'the image')
 
@@ -1503,7 +1535,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     if write_sidecar:
         # Get landmarks and their coordinate frame
         if landmarks is not None and raw is not None:
-            raise ValueError('Please use either `landmarks` or `raw`, '
+            raise ValueError('Please use EITHER `landmarks` or `raw`, '
                              'which digitization to use is ambiguous.')
 
         if trans is not None:

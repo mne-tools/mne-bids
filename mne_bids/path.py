@@ -203,8 +203,7 @@ class BIDSPath(object):
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
     check : bool
-        If True enforces the entities to be valid according to the
-        current BIDS standard. Defaults to True.
+        If ``True``, enforces BIDS conformity. Defaults to ``True``.
 
     Attributes
     ----------
@@ -224,15 +223,12 @@ class BIDSPath(object):
     fpath : pathlib.Path
         The full file path.
     check : bool
-        If ``True``, enforces the entities to be valid according to the
-        BIDS specification. The check is performed on instantiation
-        and any ``update`` function calls (and may be overridden in the
-        latter).
+        Whether to enforce BIDS conformity.
 
     Examples
     --------
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
-                                 suffix='ieeg', extension='.edf')
+                             suffix='ieeg', extension='.edf')
     >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_path
@@ -240,7 +236,7 @@ class BIDSPath(object):
     basename: sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
     >>> new_bids_path = bids_path.copy().update(subject='test2',
-                                                   session='one')
+                                                session='one')
     >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> # printing the BIDSPath will show relative path when
@@ -262,6 +258,23 @@ class BIDSPath(object):
     /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
     >>> print(new_bids_path.directory)
     /bids_dataset/sub-test2/ses-one/ieeg/
+
+    Notes
+    -----
+    BIDS entities are generally separated with a ``"_"`` character, while
+    entity key/value pairs are separated with a ``"-"`` character.
+    There are checks performed to make sure that there are no ``'-'``, ``'_'``,
+    or ``'/'`` characters contained in any entity keys or values.
+
+    To represent a filename such as ``dataset_description.json``,
+    one can set ``check=False``, and pass ``suffix='dataset_description'``
+    and ``extension='.json'``.
+
+    ``BIDSPath`` can also be used to represent file and folder names of data
+    types that are not yet supported through MNE-BIDS, but are recognized by
+    BIDS. For example, one can set ``datatype`` to ``dwi`` or ``func`` and
+    pass ``check=False`` to represent diffusion-weighted imaging and
+    functional MRI paths.
     """
 
     def __init__(self, subject=None, session=None,
@@ -503,11 +516,10 @@ class BIDSPath(object):
         Parameters
         ----------
         check : None | bool
-            If a boolean, controls whether to enforce the entities to be valid
-            according to the BIDS specification. This will set the
-            ``.check`` attribute accordingly. If ``None``, rely on the existing
-            ``.check`` attribute instead, which is set upon ``BIDSPath``
-            instantiation. Defaults to ``None``.
+            If a boolean, controls whether to enforce BIDS conformity. This
+            will set the ``.check`` attribute accordingly. If ``None``, rely on
+            the existing ``.check`` attribute instead, which is set upon
+            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
             It can contain updates for valid BIDS path entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
@@ -535,13 +547,18 @@ class BIDSPath(object):
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
+        # Update .check attribute
+        if check is not None:
+            self.check = check
+
         for key, val in kwargs.items():
             if key == 'root':
                 _validate_type(val, types=('path-like', None), item_name=key)
                 continue
 
             if key == 'datatype':
-                if val is not None and val not in ALLOWED_DATATYPES:
+                if val is not None and val not in ALLOWED_DATATYPES \
+                        and self.check:
                     raise ValueError(f'datatype ({val}) is not valid. '
                                      f'Should be one of '
                                      f'{ALLOWED_DATATYPES}')
@@ -571,13 +588,19 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in kwargs.items():
+
             # check if there are any characters not allowed
             if val is not None and key != 'root':
-                _check_key_val(key, val)
+                if key == 'suffix' and not self.check:
+                    # suffix may skip a check if check=False to allow
+                    # things like "dataset_description.json"
+                    pass
+                else:
+                    _check_key_val(key, val)
 
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
-                val = Path(val)
+                val = Path(val).expanduser()
             setattr(self, key, val)
 
         # infer datatype if suffix is uniquely the datatype
@@ -585,17 +608,23 @@ class BIDSPath(object):
                 self.suffix in SUFFIX_TO_DATATYPE:
             self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
-        # Update .check attribute and perform a check of the entities.
-        if check is not None:
-            self.check = check
+        # Perform a check of the entities.
         self._check()
         return self
 
-    def match(self):
+    def match(self, check=False):
         """Get a list of all matching paths in the root directory.
 
         Performs a recursive search, starting in ``.root`` (if set), based on
         `BIDSPath.entities` object. Ignores ``.json`` files.
+
+        Parameters
+        ----------
+        check : bool
+            If ``True``, only returns paths that conform to BIDS. If ``False``
+            (default), the ``.check`` attribute of the returned
+            `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+            do conform to BIDS, and to ``False`` for those that don't.
 
         Returns
         -------
@@ -635,8 +664,25 @@ class BIDSPath(object):
             fpath = list(self.root.rglob(f'*{fname}*'))[0]
             datatype = _infer_datatype_from_path(fpath)
 
+            # to check whether the BIDSPath is conforming to BIDS if
+            # check=True, we first instantiate without checking and then run
+            # the check manually, allowing us to be more specific about the
+            # exception to catch
             bids_path = BIDSPath(root=self.root, datatype=datatype,
-                                 extension=extension, **entities)
+                                 extension=extension, check=False,
+                                 **entities)
+
+            bids_path.check = True
+
+            try:
+                bids_path._check()
+            except ValueError:
+                # path is not BIDS-compatible
+                if check:  # skip!
+                    continue
+                else:
+                    bids_path.check = False
+
             bids_paths.append(bids_path)
 
         return bids_paths

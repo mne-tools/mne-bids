@@ -227,11 +227,6 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
     dig = raw.info['dig']
     if dig is None:
         dig = []
-    coords = _extract_landmarks(dig)
-    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
-    if hpi:
-        for ident in hpi.keys():
-            coords['coil%d' % ident] = hpi[ident]['r'].tolist()
 
     coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
     if len(coord_frame) > 1:  # noqa E501
@@ -255,9 +250,10 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
         sensor_coord_system_descr = (BIDS_COORD_FRAME_DESCRIPTIONS
                                      .get(sensor_coord_system_mne.lower(),
                                           "n/a"))
-
+    coords = _extract_landmarks(dig)
     # create the coordinate json data structure based on 'datatype'
     if datatype == 'meg':
+        landmarks = dict(coords)
         hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
         if hpi:
             for ident in hpi.keys():
@@ -269,7 +265,10 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
             'MEGCoordinateSystemDescription': sensor_coord_system_descr,
             'HeadCoilCoordinates': coords,
             'HeadCoilCoordinateSystem': hpi_coord_system,
-            'HeadCoilCoordinateUnits': unit  # XXX validate this
+            'HeadCoilCoordinateUnits': unit,  # XXX validate this
+            'AnatomicalLandmarkCoordinates': landmarks,
+            'AnatomicalLandmarkCoordinateSystem': sensor_coord_system,
+            'AnatomicalLandmarkCoordinateUnits': unit
         }
     elif datatype == 'eeg':
         fid_json = {
