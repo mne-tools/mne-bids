@@ -4,12 +4,11 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+  <link href="../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -38,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1e043a052b0af929e4d8.js">
+  <link rel="preload" as="script" href="../_static/js/index.c86189f1ce1b71a67eb6.js">
 
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -56,27 +55,37 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
+    
 
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
+    <div class="container-fluid" id="banner"></div>
+
+    
     <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">MNE-BIDS</p>
+</a>
 
     
-    <a class="navbar-brand" href="../index.html">
-      <p class="title">MNE-BIDS</p>
-    </a>
-    
+  </div>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    
-    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
-      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
-        <li class="toctree-l1 nav-item">
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../whats_new.html">
   News
  </a>
@@ -112,29 +121,16 @@
  </a>
 </li>
 
-        
-      </ul>
-
-      <!-- begin version dropdown -->
-<ul class="navbar-nav">
-    <li class="mr-2 dropdown">
-        <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-            v0.8.dev0
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dLabelMore">
-            <li><a href="https://mne-tools.github.io/mne-bids/dev/index.html">v0.8 (devel)</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/stable/index.html">v0.7 (stable)</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.6/index.html">v0.6</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.5/index.html">v0.5</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.4/index.html">v0.4</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.3/index.html">v0.3</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.2/index.html">v0.2</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.1/index.html">v0.1</a></li>
-        </ul>
-    </li>
+    
 </ul>
-<!-- end version dropdown --><ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
             <span><i class="fab fa-github-square"></i></span>
@@ -142,7 +138,10 @@
           </a>
         </li>
       </ul>
+      </div>
+      
     </div>
+  </div>
 </div>
     </nav>
     
@@ -155,76 +154,100 @@
             <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    <ul class="current nav bd-sidenav">
- <li class="toctree-l2">
+    <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="read_bids_datasets.html">
    01. Read BIDS datasets
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="convert_mne_sample.html">
    02. Convert MNE sample data to BIDS format
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="mark_bad_channels.html">
    03. Interactive data inspection and bad channel selection
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="convert_eeg_to_bids.html">
    04. Convert EEG data to BIDS format
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="convert_group_studies.html">
    05. BIDS conversion for group studies
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="rename_brainvision_files.html">
    06. Rename BrainVision EEG data files
   </a>
  </li>
- <li class="toctree-l2 current active">
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="convert_ieeg_to_bids.html">
    08. Convert iEEG data to BIDS format
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="convert_empty_room.html">
    09. Storing empty room data in BIDS format
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="bidspath.html">
    10. An introduction to BIDSPath
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="create_bids_folder.html">
    11. Creating BIDS-compatible folder names and filenames
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="update_bids_datasets.html">
    12. Update BIDS datasets
   </a>
  </li>
- <li class="toctree-l2">
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
   <a class="reference internal" href="write_modified_files.html">
    13. Writing modified files with MNE-BIDS
   </a>
  </li>
 </ul>
+
   </div>
 </nav>
             </div>
@@ -233,7 +256,10 @@
 
           
           <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
               
+              <div class="toc-item">
+                
 <div class="tocsection onthispage pt-5 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -291,9 +317,13 @@
 </ul>
 
 </nav>
-
-
+              </div>
               
+              <div class="toc-item">
+                
+              </div>
+              
+            
           </div>
           
 
@@ -310,7 +340,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<section class="sphx-glr-example-title" id="save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids">
+<div class="sphx-glr-example-title section" id="save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids">
 <span id="sphx-glr-auto-examples-convert-mri-and-trans-py"></span><h1>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS<a class="headerlink" href="#save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids" title="Permalink to this headline">¶</a></h1>
 <p>When working with MEEG data in the domain of source localization, we usually
 have to deal with aligning several coordinate systems, such as the coordinate
@@ -499,7 +529,26 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-
         ]
     },
     &quot;HeadCoilCoordinateSystem&quot;: &quot;ElektaNeuromag&quot;,
-    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
+    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;,
+    &quot;AnatomicalLandmarkCoordinates&quot;: {
+        &quot;NAS&quot;: [
+            3.725290298461914e-09,
+            0.10260561108589172,
+            4.190951585769653e-09
+        ],
+        &quot;LPA&quot;: [
+            -0.07137660682201385,
+            0.0,
+            5.122274160385132e-09
+        ],
+        &quot;RPA&quot;: [
+            0.07526767998933792,
+            0.0,
+            5.587935447692871e-09
+        ]
+    },
+    &quot;AnatomicalLandmarkCoordinateSystem&quot;: &quot;ElektaNeuromag&quot;,
+    &quot;AnatomicalLandmarkCoordinateUnits&quot;: &quot;m&quot;
 }
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv&#39;...
@@ -534,8 +583,8 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-
     &quot;RecordingDuration&quot;: 277.7136813300495,
     &quot;RecordingType&quot;: &quot;continuous&quot;,
     &quot;DewarPosition&quot;: &quot;n/a&quot;,
-    &quot;DigitizedLandmarks&quot;: false,
-    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;DigitizedLandmarks&quot;: true,
+    &quot;DigitizedHeadPoints&quot;: true,
     &quot;MEGChannelCount&quot;: 306,
     &quot;MEGREFChannelCount&quot;: 0,
     &quot;EEGChannelCount&quot;: 60,
@@ -593,7 +642,7 @@ basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 </pre></div>
 </div>
-<section id="writing-t1-image">
+<div class="section" id="writing-t1-image">
 <h2>Writing T1 image<a class="headerlink" href="#writing-t1-image" title="Permalink to this headline">¶</a></h2>
 <p>Now let’s assume that we have also collected some T1 weighted MRI data for
 our subject. And furthermore, that we have already aligned our coordinate
@@ -739,8 +788,8 @@ transformation matrix <code class="code docutils literal notranslate"><span clas
 </pre></div>
 </div>
 <img alt="convert mri and trans" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_mri_and_trans_001.png" />
-</section>
-<section id="writing-flash-mri-image">
+</div>
+<div class="section" id="writing-flash-mri-image">
 <h2>Writing FLASH MRI image<a class="headerlink" href="#writing-flash-mri-image" title="Permalink to this headline">¶</a></h2>
 <p>We can write another types of MRI data such as FLASH images for BEM models</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_mgh_fname</span></a> <span class="o">=</span> \
@@ -763,8 +812,8 @@ datatype: anat
 basename: sub-01_ses-01_FLASH.nii.gz)
 </pre></div>
 </div>
-</section>
-<section id="writing-defaced-and-anonymized-t1-image">
+</div>
+<div class="section" id="writing-defaced-and-anonymized-t1-image">
 <h2>Writing defaced and anonymized T1 image<a class="headerlink" href="#writing-defaced-and-anonymized-t1-image" title="Permalink to this headline">¶</a></h2>
 <p>We can deface the MRI for anonymization by passing <code class="docutils literal notranslate"><span class="pre">deface=True</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1w_bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">(</span>
@@ -812,8 +861,8 @@ basename: sub-01_ses-01_FLASH.nii.gz)
 }
 </pre></div>
 </div>
-</section>
-<section id="writing-defaced-and-anonymized-flash-mri-image">
+</div>
+<div class="section" id="writing-defaced-and-anonymized-flash-mri-image">
 <h2>Writing defaced and anonymized FLASH MRI image<a class="headerlink" href="#writing-defaced-and-anonymized-flash-mri-image" title="Permalink to this headline">¶</a></h2>
 <p>Defacing the FLASH is a bit more complicated because it uses different
 coordinates than the T1. Since, in the example dataset, we used the head
@@ -824,7 +873,7 @@ or you can find the fiducials in FLASH voxel space or scanner RAS coordinates
 using your favorite 3D image view (e.g. freeview). You can also read the
 fiducial coordinates from the <em class="xref py py-obj">raw</em> and apply the <em class="xref py py-obj">trans</em> yourself.
 Let’s explore the different options to do this.</p>
-<section id="option-1-pass-t1w-with-raw-and-trans">
+<div class="section" id="option-1-pass-t1w-with-raw-and-trans">
 <h3>Option 1 : Pass <em class="xref py py-obj">t1w</em> with <em class="xref py py-obj">raw</em> and <em class="xref py py-obj">trans</em><a class="headerlink" href="#option-1-pass-t1w-with-raw-and-trans" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">(</span>
     <span class="n">image</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_mgh_fname</span></a><span class="p">,</span>  <span class="c1"># path to the MRI scan</span>
@@ -871,8 +920,8 @@ Let’s explore the different options to do this.</p>
 }
 </pre></div>
 </div>
-</section>
-<section id="option-2-use-manual-landmarks-coordinates-in-scanner-ras-for-flash-image">
+</div>
+<div class="section" id="option-2-use-manual-landmarks-coordinates-in-scanner-ras-for-flash-image">
 <h3>Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image<a class="headerlink" href="#option-2-use-manual-landmarks-coordinates-in-scanner-ras-for-flash-image" title="Permalink to this headline">¶</a></h3>
 <p>You can find such landmarks with a 3D image viewer (e.g. freeview).
 Note that, in freeview, this is called “RAS” and not “TkReg RAS”</p>
@@ -928,8 +977,8 @@ Note that, in freeview, this is called “RAS” and not “TkReg RAS”</p>
 }
 </pre></div>
 </div>
-</section>
-<section id="option-3-compute-the-landmarks-in-scanner-ras-or-mri-voxel-space-from-trans">
+</div>
+<div class="section" id="option-3-compute-the-landmarks-in-scanner-ras-or-mri-voxel-space-from-trans">
 <h3>Option 3 : Compute the landmarks in scanner RAS or mri voxel space from trans<a class="headerlink" href="#option-3-compute-the-landmarks-in-scanner-ras-or-mri-voxel-space-from-trans" title="Permalink to this headline">¶</a></h3>
 <p>Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
 and the ‘r’ key will provide us with the xyz coordinates.</p>
@@ -1048,7 +1097,7 @@ images are already registered.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  11.082 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  53.202 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1061,9 +1110,9 @@ images are already registered.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
               </div>
@@ -1081,17 +1130,25 @@ images are already registered.</p>
 
       </div>
     </div>
-
     
-  <script src="../_static/js/index.1e043a052b0af929e4d8.js"></script>
+  <script src="../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
-    <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-03.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
-    </p>
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-16.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+</p>
+    </div>
+    
   </div>
 </footer>
   </body>

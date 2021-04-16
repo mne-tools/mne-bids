@@ -8,7 +8,7 @@
     <title>mne_bids.write &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet" />
-  <link href="../../_static/css/index.f6b7ca918bee2f46fd9abac01cfb07d5.css" rel="stylesheet" />
+  <link href="../../_static/css/index.ee6fb81b276d6fba8a971ad8e9b95dd9.css" rel="stylesheet" />
 
     
   <link rel="stylesheet"
@@ -37,7 +37,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
     
-  <link rel="preload" as="script" href="../../_static/js/index.1e043a052b0af929e4d8.js">
+  <link rel="preload" as="script" href="../../_static/js/index.c86189f1ce1b71a67eb6.js">
 
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -53,27 +53,37 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
+    
 
   </head>
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
     
+    <div class="container-fluid" id="banner"></div>
+
+    
     <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../../index.html">
+<p class="title">MNE-BIDS</p>
+</a>
 
     
-    <a class="navbar-brand" href="../../index.html">
-      <p class="title">MNE-BIDS</p>
-    </a>
-    
+  </div>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    
-    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
-      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
-        <li class="toctree-l1 nav-item">
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
  <a class="reference internal nav-link" href="../../whats_new.html">
   News
  </a>
@@ -109,29 +119,16 @@
  </a>
 </li>
 
-        
-      </ul>
-
-      <!-- begin version dropdown -->
-<ul class="navbar-nav">
-    <li class="mr-2 dropdown">
-        <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-            v0.8.dev0
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dLabelMore">
-            <li><a href="https://mne-tools.github.io/mne-bids/dev/index.html">v0.8 (devel)</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/stable/index.html">v0.7 (stable)</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.6/index.html">v0.6</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.5/index.html">v0.5</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.4/index.html">v0.4</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.3/index.html">v0.3</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.2/index.html">v0.2</a></li>
-            <li><a href="https://mne-tools.github.io/mne-bids/v0.1/index.html">v0.1</a></li>
-        </ul>
-    </li>
+    
 </ul>
-<!-- end version dropdown --><ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
           <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
             <span><i class="fab fa-github-square"></i></span>
@@ -139,7 +136,10 @@
           </a>
         </li>
       </ul>
+      </div>
+      
     </div>
+  </div>
 </div>
     </nav>
     
@@ -152,8 +152,7 @@
             <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form>
-<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
     
   </div>
@@ -164,14 +163,21 @@
 
           
           <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
               
+              <div class="toc-item">
+                
 
 <nav id="bd-toc-nav">
     
 </nav>
-
-
+              </div>
               
+              <div class="toc-item">
+                
+              </div>
+              
+            
           </div>
           
 
@@ -823,6 +829,21 @@
     <span class="n">n_stimchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
                       <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_STIM_CH</span><span class="p">])</span> <span class="o">-</span> <span class="n">n_ignored</span>
 
+    <span class="c1"># Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found</span>
+    <span class="c1"># Set DigitizedHeadPoints to True if any &quot;Extra&quot; points are found</span>
+    <span class="c1"># (DigitizedHeadPoints done for Neuromag MEG files only)</span>
+    <span class="n">digitized_head_points</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">digitized_landmark</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">dig_point</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">dig_point</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">,</span>
+                                     <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">,</span>
+                                     <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">]:</span>
+                <span class="n">digitized_landmark</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">dig_point</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_EXTRA</span> <span class="ow">and</span> \
+                    <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fif&#39;</span><span class="p">):</span>
+                <span class="n">digitized_head_points</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="c1"># Define datatype-specific JSON dictionaries</span>
     <span class="n">ch_info_json_common</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;TaskName&#39;</span><span class="p">,</span> <span class="n">task</span><span class="p">),</span>
@@ -834,8 +855,8 @@
         <span class="p">(</span><span class="s1">&#39;RecordingType&#39;</span><span class="p">,</span> <span class="n">rec_type</span><span class="p">)]</span>
     <span class="n">ch_info_json_meg</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;DewarPosition&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;DigitizedLandmarks&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;DigitizedHeadPoints&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;DigitizedLandmarks&#39;</span><span class="p">,</span> <span class="n">digitized_landmark</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;DigitizedHeadPoints&#39;</span><span class="p">,</span> <span class="n">digitized_head_points</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;MEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_megchan</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;MEGREFChannelCount&#39;</span><span class="p">,</span> <span class="n">n_megrefchan</span><span class="p">)]</span>
     <span class="n">ch_info_json_eeg</span> <span class="o">=</span> <span class="p">[</span>
@@ -2043,17 +2064,25 @@
 
       </div>
     </div>
-
     
-  <script src="../../_static/js/index.1e043a052b0af929e4d8.js"></script>
+  <script src="../../_static/js/index.c86189f1ce1b71a67eb6.js"></script>
 
 
     <footer class="footer mt-5 mt-md-0">
   <div class="container">
-    <p>
-          &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-03.<br/>
-        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
-    </p>
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-16.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+</p>
+    </div>
+    
   </div>
 </footer>
   </body>
