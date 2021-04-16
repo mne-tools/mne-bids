@@ -11,7 +11,7 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from numpy.random import RandomState
+from numpy.random import random, RandomState
 
 with warnings.catch_warnings():
     warnings.filterwarnings(action='ignore',
@@ -20,7 +20,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne_bids import BIDSPath
-from mne_bids.utils import (_check_types, _age_on_date,
+from mne_bids.utils import (_check_types, _age_on_date, _handle_datatype,
                             _infer_eeg_placement_scheme, _get_ch_type_mapping,
                             _check_datatype)
 from mne_bids.path import _path_to_str
@@ -41,6 +41,37 @@ def test_get_ch_type_mapping():
     """Test getting a correct channel mapping."""
     with pytest.raises(ValueError, match='specified from "bogus" to "mne"'):
         _get_ch_type_mapping(fro='bogus', to='mne')
+
+
+def test_handle_datatype():
+    """Test the automatic extraction of datatype from the data."""
+    # Create a dummy raw
+    n_channels = 2
+    sampling_rate = 100
+    data = random((n_channels, sampling_rate))
+    channel_types = ['grad', 'eeg', 'ecog', 'seeg']
+    expected_modalities = ['meg', 'eeg', 'ieeg', 'ieeg']
+    # do it once for each data type
+    for chtype, datatype in zip(channel_types, expected_modalities):
+        info = mne.create_info(n_channels, sampling_rate,
+                               ch_types=[chtype] * 2)
+        raw = mne.io.RawArray(data, info)
+        assert _handle_datatype(raw) == datatype
+
+    # if the situation is ambiguous (multiple data types), raise ValueError
+    channel_types = [['grad', 'eeg'], ['grad', 'ecog'], ['eeg', 'seeg']]
+    for chtype in channel_types:
+        with pytest.raises(ValueError, match='Multiple data types (MEG, EEG '):
+            info = mne.create_info(n_channels, sampling_rate, ch_types=chtype)
+            raw = mne.io.RawArray(random((2, sampling_rate)), info)
+            _handle_datatype(raw)
+
+    # if we cannot find a proper channel type, raise ValueError
+    with pytest.raises(ValueError, match='No MEG, EEG or iEEG channels found'):
+        info = mne.create_info(n_channels, sampling_rate,
+                               ch_types=['misc'] * 2)
+        raw = mne.io.RawArray(data, info)
+        _handle_datatype(raw)
 
 
 def test_check_types():

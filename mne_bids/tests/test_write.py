@@ -2651,7 +2651,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
     raw = reader(new_raw_fname)
     write_raw_bids(raw, bids_path)
 
-    
+
 def test_datatype_not_specified(tmpdir):
     """Test Error if datatype is not specified when calling write_raw_bids."""
     bids_root = tmpdir.mkdir('bids1')

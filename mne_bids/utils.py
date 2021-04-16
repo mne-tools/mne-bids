@@ -89,6 +89,31 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return mapping
 
 
+def _handle_datatype(raw):
+    """Get datatype."""
+    datatypes = list()
+    ieeg_types = ['seeg', 'ecog']
+    if any(ieeg_type in raw for ieeg_type in ieeg_types):
+        datatypes.append('ieeg')
+    if 'meg' in raw:
+        datatypes.append('meg')
+    if 'eeg' in raw:
+        datatypes.append('eeg')
+    if len(datatypes) == 0:
+        raise ValueError('No MEG, EEG or iEEG channels found in data.'
+                         'Please use raw.set_channel_types to set the '
+                         'channel types in the data.')
+    elif len(datatypes) > 1:
+        raise ValueError('Multiple data types (MEG, EEG or iEEG) were found '
+                         'in data. Please specify the correct datatype using '
+                         '`bids_path.update(datatype="<datatype>")` or use '
+                         'raw.set_channel_types to set the correct channel '
+                         'types in the raw object.')
+    else:
+        datatype = datatypes[0]
+    return datatype
+
+
 def _age_on_date(bday, exp_date):
     """Calculate age from birthday and experiment date.
 
