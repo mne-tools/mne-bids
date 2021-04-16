@@ -34,8 +34,8 @@ from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _write_coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
-                            _handle_datatype, _get_ch_type_mapping,
-                            _check_anonymize, _stamp_to_dt)
+                            _get_ch_type_mapping, _check_anonymize,
+                            _stamp_to_dt, _check_datatype)
 from mne_bids import BIDSPath
 from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
@@ -953,9 +953,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         ``False``.
     bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
-        **must** have the ``.root`` attribute set. If the ``.datatype``
-        attribute is not set, it will be inferred from the recording data type
-        found in ``raw``.
+        **must** have the ``.root`` and the ``.datatype`` attribute set.
         Example::
 
             bids_path = BIDSPath(subject='01', session='01', task='testing',
@@ -978,9 +976,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
             participants.tsv
             scans.tsv
 
-        Note that the data type is automatically inferred from the raw
-        object, as well as the extension. Data with MEG and other
-        electrophysiology data in the same file will be stored as ``'meg'``.
+        Note that the extension is automatically inferred from the raw
+        object.
     events_data : path-like | np.ndarray | None
         Use this parameter to specify events to write to the ``*_events.tsv``
         sidecar file, additionally to the object's `mne.Annotations` (which
@@ -1122,6 +1119,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
+    if bids_path.datatype is None:
+        raise ValueError('The datatype of the "bids_path" must be set. '
+                         'Please use `bids_path.update(datatype="<datatype>")` '
+                         'to set the datatype.')
+
     if events_data is not None and event_id is None:
         raise RuntimeError('You passed events_data, but no event_id '
                            'dictionary. You need to pass both, or neither.')
@@ -1163,10 +1165,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 'https://github.com/mne-tools/mne-bids/issues')
         raise ValueError(msg)
 
-    datatype = _handle_datatype(raw)
+    datatype = bids_path.datatype
+    _check_datatype(raw, datatype)
     bids_path = bids_path.copy()
-    bids_path = bids_path.update(
-        datatype=datatype, suffix=datatype, extension=ext)
+    bids_path = bids_path.update(suffix=datatype, extension=ext)
 
     # check whether the info provided indicates that the data is emptyroom
     # data

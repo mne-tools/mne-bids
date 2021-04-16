@@ -89,25 +89,6 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return mapping
 
 
-def _handle_datatype(raw):
-    """Get datatype."""
-    if 'eeg' in raw and ('ecog' in raw or 'seeg' in raw):
-        raise ValueError('Both EEG and iEEG channels found in data.'
-                         'There is currently no specification on how'
-                         'to handle this data. Please proceed manually.')
-    elif 'meg' in raw:
-        datatype = 'meg'
-    elif 'ecog' in raw or 'seeg' in raw:
-        datatype = 'ieeg'
-    elif 'eeg' in raw:
-        datatype = 'eeg'
-    else:
-        raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
-                         'Please use raw.set_channel_types to set the '
-                         'channel types in the data.')
-    return datatype
-
-
 def _age_on_date(bday, exp_date):
     """Calculate age from birthday and experiment date.
 
@@ -385,3 +366,41 @@ def _stamp_to_dt(utc_stamp):
         stamp.append(0)
     return (datetime.fromtimestamp(0, tz=timezone.utc) +
             timedelta(0, stamp[0], stamp[1]))  # day, sec, μs
+
+
+def _check_datatype(raw, datatype):
+    """Check if datatype exists in given raw object."""
+    supported_types = ['meg', 'eeg', 'ieeg']
+    if datatype not in supported_types:
+        raise ValueError(
+            f'The specified datatype {datatype} is currently not supported. '
+             'It should be one of  either `meg`, `eeg` or `ieeg`. Please '
+             'specify a valid datatype using '
+             '`bids_path.update(datatype="<datatype>")`.')
+    datatype_matches = False
+    if datatype == 'eeg':
+        if datatype in raw:
+            datatype_matches = True
+    elif datatype == 'meg':
+        if datatype not in raw:
+            datatype_matches = True
+    elif datatype == 'ieeg':
+        ieeg_types = ['seeg', 'ecog']
+        if any(ieeg_type in raw for ieeg_type in ieeg_types):
+            datatype_matches = True
+    if not datatype_matches:
+        raise ValueError(
+            f'The specified datatype {datatype} was not found in the raw '
+            'object. Please specify the correct datatype using '
+            '`bids_path.update(datatype="<datatype>")` or use '
+            'raw.set_channel_types to set the correct channel types in '
+            'the raw object.')
+
+
+    if datatype not in raw.get_channel_types():
+        raise ValueError(f'The specified datatype {datatype} was not '
+                          'found in the raw object. Please specify the '
+                          'correct datatype using '
+                          '`bids_path.update(datatype="<datatype>")` or use '
+                          'raw.set_channel_types to set the correct channel '
+                          'types in the raw object.')

@@ -21,7 +21,6 @@ with warnings.catch_warnings():
 
 from mne.datasets import testing
 from mne_bids import BIDSPath
-from mne_bids.utils import _handle_datatype
 from mne_bids.path import _parse_ext
 
 from mne_bids.copyfiles import (_get_brainvision_encoding,
@@ -238,7 +237,8 @@ def test_copyfile_kit(tmpdir):
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
-    datatype = _handle_datatype(raw)
+
+    datatype = 'meg'  # copyfile_kit makes the same assumption
 
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
