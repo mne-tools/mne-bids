@@ -2584,6 +2584,6 @@ def test_datatype_not_specified(tmpdir):
 
     # set datatype to None
     bids_path = _bids_path.copy().update(root=bids_root, datatype=None)
-    with pytest.raises(ValueError, match='The datatype of the "bids_path" must '
-                                         'be set.'):
+    with pytest.raises(ValueError, match='The datatype of the "bids_path" '
+                                         'must be set.'):
         write_raw_bids(raw, bids_path, overwrite=True)

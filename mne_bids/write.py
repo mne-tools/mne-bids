@@ -1121,8 +1121,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     if bids_path.datatype is None:
         raise ValueError('The datatype of the "bids_path" must be set. '
-                         'Please use `bids_path.update(datatype="<datatype>")` '
-                         'to set the datatype.')
+                         'Please use '
+                         '`bids_path.update(datatype="<datatype>")` to set '
+                         'the datatype.')
 
     if events_data is not None and event_id is None:
         raise RuntimeError('You passed events_data, but no event_id '

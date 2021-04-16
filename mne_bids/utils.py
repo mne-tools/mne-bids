@@ -374,9 +374,9 @@ def _check_datatype(raw, datatype):
     if datatype not in supported_types:
         raise ValueError(
             f'The specified datatype {datatype} is currently not supported. '
-             'It should be one of  either `meg`, `eeg` or `ieeg`. Please '
-             'specify a valid datatype using '
-             '`bids_path.update(datatype="<datatype>")`.')
+            'It should be one of  either `meg`, `eeg` or `ieeg`. Please '
+            'specify a valid datatype using '
+            '`bids_path.update(datatype="<datatype>")`.')
     datatype_matches = False
     if datatype == 'eeg':
         if datatype in raw:
@@ -395,12 +395,3 @@ def _check_datatype(raw, datatype):
             '`bids_path.update(datatype="<datatype>")` or use '
             'raw.set_channel_types to set the correct channel types in '
             'the raw object.')
-
-
-    if datatype not in raw.get_channel_types():
-        raise ValueError(f'The specified datatype {datatype} was not '
-                          'found in the raw object. Please specify the '
-                          'correct datatype using '
-                          '`bids_path.update(datatype="<datatype>")` or use '
-                          'raw.set_channel_types to set the correct channel '
-                          'types in the raw object.')
