@@ -467,7 +467,7 @@ def test_handle_info_reading(tmpdir):
     else:
         assert n_dig_points == 0
 
-    # check whether if there any of NAS/LPA/RPA are present in raw.info['dig']
+    # check whether any of NAS/LPA/RPA are present in raw.info['dig']
     # DigitizedLandmark is set to True, and False otherwise
     landmark_present = False
     for dig_point in raw.info['dig']:
