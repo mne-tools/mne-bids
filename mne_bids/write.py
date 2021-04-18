@@ -35,7 +35,7 @@ from mne_bids.dig import _write_dig_bids, _write_coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _get_ch_type_mapping, _check_anonymize,
-                            _stamp_to_dt, _handle_datatype, _check_datatype)
+                            _stamp_to_dt, _handle_datatype)
 from mne_bids import BIDSPath
 from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
@@ -1185,11 +1185,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 'https://github.com/mne-tools/mne-bids/issues')
         raise ValueError(msg)
 
-    if bids_path.datatype is None:
-        datatype = _handle_datatype(raw)
-    else:
-        datatype = bids_path.datatype
-        _check_datatype(raw, datatype)
+    datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = bids_path.copy()
     bids_path = bids_path.update(
         datatype=datatype, suffix=datatype, extension=ext)
