@@ -56,22 +56,23 @@ def test_handle_datatype():
         info = mne.create_info(n_channels, sampling_rate,
                                ch_types=[chtype] * 2)
         raw = mne.io.RawArray(data, info)
-        assert _handle_datatype(raw) == datatype
+        assert _handle_datatype(raw, datatype) == datatype
 
     # if the situation is ambiguous (multiple data types), raise ValueError
     channel_types = [['grad', 'eeg'], ['grad', 'ecog'], ['eeg', 'seeg']]
+    datatype = None
     for chtype in channel_types:
-        with pytest.raises(ValueError, match='Multiple data types (MEG, EEG '):
+        with pytest.raises(ValueError, match='Multiple data types'):
             info = mne.create_info(n_channels, sampling_rate, ch_types=chtype)
             raw = mne.io.RawArray(random((2, sampling_rate)), info)
-            _handle_datatype(raw)
+            _handle_datatype(raw, datatype)
 
     # if we cannot find a proper channel type, raise ValueError
     with pytest.raises(ValueError, match='No MEG, EEG or iEEG channels found'):
         info = mne.create_info(n_channels, sampling_rate,
                                ch_types=['misc'] * 2)
         raw = mne.io.RawArray(data, info)
-        _handle_datatype(raw)
+        _handle_datatype(raw, datatype)
 
 
 def test_check_types():
