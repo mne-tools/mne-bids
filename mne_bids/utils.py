@@ -431,14 +431,14 @@ def _check_datatype(raw, datatype):
     if datatype not in supported_types:
         raise ValueError(
             f'The specified datatype {datatype} is currently not supported. '
-            f'It should be one of  either `meg`, `eeg` or `ieeg` (Got `{datatype}`}. Please '
-            'specify a valid datatype using '
-            '`bids_path.update(datatype="<datatype>")`.')
+            f'It should be one of  either `meg`, `eeg` or `ieeg` (Got '
+            f'`{datatype}`. Please specify a valid datatype using '
+            f'`bids_path.update(datatype="<datatype>")`.')
     datatype_matches = False
     if datatype == 'eeg' and datatype in raw:
         datatype_matches = True
     elif datatype == 'meg' and datatype in raw:
-            datatype_matches = True
+        datatype_matches = True
     elif datatype == 'ieeg':
         ieeg_types = ['seeg', 'ecog']
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
