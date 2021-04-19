@@ -156,35 +156,19 @@ def test_check_datatype():
     raw_meg = mne.io.RawArray(rng.random((3, n_points)) * 1e-6, info_meg)
     info_ieeg = mne.create_info(['ch1', 'ch2', 'ch3'], sfreq, ['seeg'] * 3)
     raw_ieeg = mne.io.RawArray(rng.random((3, n_points)) * 1e-6, info_ieeg)
-    datatype = None
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'is currently not supported.'):
-        _check_datatype(raw_eeg, datatype)
-    datatype = 'anat'
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'is currently not supported.'):
-        _check_datatype(raw_eeg, datatype)
-    datatype = 'eeg'
-    _check_datatype(raw_eeg, datatype)
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'was not found in the raw object.'):
-        _check_datatype(raw_meg, datatype)
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'was not found in the raw object.'):
-        _check_datatype(raw_ieeg, datatype)
-    datatype = 'ieeg'
-    _check_datatype(raw_ieeg, datatype)
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'was not found in the raw object.'):
-        _check_datatype(raw_meg, datatype)
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'was not found in the raw object.'):
-        _check_datatype(raw_eeg, datatype)
-    datatype = 'meg'
-    _check_datatype(raw_meg, datatype)
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'was not found in the raw object.'):
-        _check_datatype(raw_eeg, datatype)
-    with pytest.raises(ValueError, match=f'The specified datatype {datatype} '
-                                         'was not found in the raw object.'):
-        _check_datatype(raw_ieeg, datatype)
+    # check behavior for unsupported data types
+    for datatype in (None, 'anat'):
+        with pytest.raises(ValueError, match=f'The specified datatype '
+                                             f'{datatype} is currently not'):
+            _check_datatype(raw_eeg, datatype)
+    # check behavior for matching data type
+    for raw, datatype in [(raw_eeg, 'eeg'), (raw_meg, 'meg'),
+                          (raw_ieeg, 'ieeg')]:
+        _check_datatype(raw, datatype)
+    # check for missing data type
+    for raw, datatype in [(raw_ieeg, 'eeg'), (raw_meg, 'eeg'),
+                          (raw_ieeg, 'meg'), (raw_eeg, 'meg'),
+                          (raw_meg, 'ieeg'), (raw_eeg, 'ieeg')]:
+        with pytest.raises(ValueError, match=f'The specified datatype '
+                                             f'{datatype} was not found'):
+            _check_datatype(raw, datatype)
