@@ -89,7 +89,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return mapping
 
 
-def _handle_datatype(raw, datatype):
+def _handle_datatype(raw, datatype, verbose=True):
     """Check if datatype exists in raw object or infer datatype if possible.
 
     Parameters
@@ -101,6 +101,9 @@ def _handle_datatype(raw, datatype):
         `mne.utils._handle_datatype()` will attempt to infer the datatype from
         the ``raw`` object. In case of multiple data types in the ``raw``
         object, ``datatype`` must not be ``None``.
+    verbose : bool
+        If ``True``, this will print additional information in the case of
+        combined MEG and iEEG/EEG recordings.
 
     Returns
     -------
@@ -109,6 +112,17 @@ def _handle_datatype(raw, datatype):
     """
     if datatype is not None:
         _check_datatype(raw, datatype)
+        # MEG data is not supported by BrainVision or EDF files
+        if datatype in ['eeg', 'ieeg'] and 'meg' in raw:
+            if verbose:
+                print(os.linesep + f"Both {datatype} and 'meg' data found. "
+                                   f"BrainVision and EDF do not support 'meg' "
+                                   f"data. The data will therefore be stored "
+                                   f"as 'meg' data. If you wish to store your "
+                                   f"{datatype} data in BrainVision or EDF, "
+                                   f"please remove the 'meg' channels from "
+                                   f"your recording." + os.linesep)
+            datatype = 'meg'
     else:
         datatypes = list()
         ieeg_types = ['seeg', 'ecog']

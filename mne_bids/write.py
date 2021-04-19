@@ -1185,7 +1185,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 'https://github.com/mne-tools/mne-bids/issues')
         raise ValueError(msg)
 
-    datatype = _handle_datatype(raw, bids_path.datatype)
+    datatype = _handle_datatype(raw, bids_path.datatype, verbose)
     bids_path = bids_path.copy()
     bids_path = bids_path.update(
         datatype=datatype, suffix=datatype, extension=ext)
