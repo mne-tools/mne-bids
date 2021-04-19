@@ -123,12 +123,17 @@ def _handle_datatype(raw, datatype):
                              'Please use raw.set_channel_types to set the '
                              'channel types in the data.')
         elif len(datatypes) > 1:
-            raise ValueError('Multiple data types (EEG and iEEG) were '
-                             'found in data. Please specify the correct '
-                             'datatype using '
-                             '`bids_path.update(datatype="<datatype>")` '
-                             'or use raw.set_channel_types to set the '
-                             'correct channel types in the raw object.')
+            if 'meg' in datatypes and 'ieeg' not in datatypes:
+                datatype = 'meg'
+            elif 'ieeg' in datatypes and 'meg' not in datatypes:
+                datatype = 'ieeg'
+            else:
+                raise ValueError(f'Multiple data types (``{datatypes}``) were '
+                                 'found in the data. Please specify the '
+                                 'datatype using '
+                                 '`bids_path.update(datatype="<datatype>")` '
+                                 'or use raw.set_channel_types to set the '
+                                 'correct channel types in the raw object.')
         else:
             datatype = datatypes[0]
     return datatype
