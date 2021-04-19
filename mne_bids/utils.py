@@ -133,7 +133,7 @@ def _handle_datatype(raw, datatype, verbose=True):
         if 'eeg' in raw:
             datatypes.append('eeg')
         if len(datatypes) == 0:
-            raise ValueError('No MEG, EEG or iEEG channels found in data.'
+            raise ValueError('No MEG, EEG or iEEG channels found in data. '
                              'Please use raw.set_channel_types to set the '
                              'channel types in the data.')
         elif len(datatypes) > 1:
@@ -446,7 +446,7 @@ def _check_datatype(raw, datatype):
     -------
     None
     """
-    supported_types = ['meg', 'eeg', 'ieeg']
+    supported_types = ('meg', 'eeg', 'ieeg')
     if datatype not in supported_types:
         raise ValueError(
             f'The specified datatype {datatype} is currently not supported. '
@@ -459,7 +459,7 @@ def _check_datatype(raw, datatype):
     elif datatype == 'meg' and datatype in raw:
         datatype_matches = True
     elif datatype == 'ieeg':
-        ieeg_types = ['seeg', 'ecog']
+        ieeg_types = ('seeg', 'ecog')
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
             datatype_matches = True
     if not datatype_matches:
