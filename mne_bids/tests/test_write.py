@@ -2650,3 +2650,15 @@ def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
 
     raw = reader(new_raw_fname)
     write_raw_bids(raw, bids_path)
+
+
+def test_symlinks(tmpdir):
+    """Test creation of symbolic links."""
+    data_path = Path(testing.data_path())
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw = _read_raw_fif(raw_path)
+    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    
+    p = write_raw_bids(raw=raw, bids_path=bids_path, symlink=True)
+    assert p.fpath.is_symlink()
+    assert p.fpath.resolve() == raw_path
