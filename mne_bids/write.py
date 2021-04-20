@@ -1061,8 +1061,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         data (i.e., ``anonymize`` must be ``None``).
 
         .. note::
-           Symlinks currently only work with FIFF files. Split files are
-           **not** supported.
+           Symlinks currently only work with FIFF files.
 
         .. note::
            Symlinks are currently only supported on macOS and Linux. We will
@@ -1154,8 +1153,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
                    type_name='path-like, NumPy array, or None')
 
     if symlink and sys.platform in ('win32', 'cygwin'):
-        raise RuntimeError('Symbolic links are currently not supported by '
-                           'MNE-BIDS on Windows operating systems.')
+        raise NotImplementedError('Symbolic links are currently not supported '
+                                  'by MNE-BIDS on Windows operating systems.')
 
     if symlink and anonymize is not None:
         raise ValueError('Cannot create symlinks when anonymizing data.')
@@ -1404,9 +1403,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
             _write_raw_brainvision(raw, bids_path.fpath, events=events_array)
     elif ext == '.fif':
         if symlink:
-            if len(raw.filenames) > 1:
-                raise NotImplementedError('Sorry, symlinks are currently not '
-                                          'supported for split files.')
             link_target = Path(raw.filenames[0])
             link_path = bids_path.fpath
             link_path.symlink_to(link_target)

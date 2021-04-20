@@ -2652,13 +2652,35 @@ def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
     write_raw_bids(raw, bids_path)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_symlinks(tmpdir):
     """Test creation of symbolic links."""
-    data_path = Path(testing.data_path())
-    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
-    raw = _read_raw_fif(raw_path)
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    testing_data_path = Path(testing.data_path())
+    raw_trunc_path = (testing_data_path / 'MEG' / 'sample' /
+                      'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_trunc_path)
+    root = tmpdir.mkdir('symlink')
+    bids_path = _bids_path.copy().update(root=root, datatype='meg')
 
     p = write_raw_bids(raw=raw, bids_path=bids_path, symlink=True)
     assert p.fpath.is_symlink()
-    assert p.fpath.resolve() == raw_path
+    assert p.fpath.resolve() == raw_trunc_path
+    read_raw_bids(p)
+
+    # test with split files
+    # prepare the split files
+    sample_data_path = Path(mne.datasets.sample.data_path())
+    raw_path = sample_data_path / 'MEG' / 'sample' /'sample_audvis_raw.fif'
+    raw = _read_raw_fif(raw_path).crop(0, 10)
+
+    split_raw_path = tmpdir.mkdir('raw') / 'sample_audivis_raw.fif'
+    raw.save(split_raw_path, split_size='10MB', split_naming='neuromag')
+    raw = _read_raw_fif(split_raw_path)
+    assert len(raw.filenames) == 2
+
+    # now actually test the I/O roundtrip
+    root = tmpdir.mkdir('symlink-split')
+    bids_path = _bids_path.copy().update(root=root, datatype='meg')
+    p = write_raw_bids(raw=raw, bids_path=bids_path, symlink=True)
+    raw = read_raw_bids(p)
+    assert raw.filenames == 2

@@ -439,6 +439,11 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         **may** be set. If ``.datatype`` is not set and only one data type
         (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
+
+        .. note::
+           Symbolic links will be resolved to their link target before actually
+           reading the file.
+
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
         If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
@@ -502,6 +507,12 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         config = op.join(bids_raw_folder, 'config')
     else:
         bids_fpath = op.join(data_dir, bids_fname)
+        # Resolve symlinks if present
+        if op.islink(bids_fpath):
+            target_path = op.realpath(bids_fpath)
+            logger.info(f'Resolving symbolic link: '
+                        f'{bids_fpath} -> {target_path}')
+            bids_fpath = target_path
         config = None
 
     if extra_params is None:
