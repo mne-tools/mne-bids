@@ -10,6 +10,7 @@ For each supported file format, implement a test.
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
+import sys
 import os
 import os.path as op
 import pytest
@@ -2658,7 +2659,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_symlinks(tmpdir):
+def test_symlink(tmpdir):
     """Test creation of symbolic links."""
     testing_data_path = Path(testing.data_path())
     raw_trunc_path = (testing_data_path / 'MEG' / 'sample' /
@@ -2666,6 +2667,25 @@ def test_symlinks(tmpdir):
     raw = _read_raw_fif(raw_trunc_path)
     root = tmpdir.mkdir('symlink')
     bids_path = _bids_path.copy().update(root=root, datatype='meg')
+    kwargs = dict(raw=raw, bids_path=bids_path, symlink=True)
+
+    # We currently don't support windows
+    if sys.platform in ('win32', 'cygwin'):
+        with pytest.raises(NotImplementedError, match='not supported'):
+            write_raw_bids(**kwargs)
+        return
+
+    # Symlinks & anonymization don't go together
+    with pytest.raises(ValueError, match='Cannot create symlinks'):
+        write_raw_bids(anonymize=dict(daysback=123), **kwargs)
+
+    # We currently only support FIFF
+    raw_eeglab_path = testing_data_path / 'EEGLAB' / 'test_raw.set'
+    raw_eeglab = _read_raw_eeglab(raw_eeglab_path)
+    bids_path_eeglab = _bids_path.copy().update(root=root, datatype='eeg')
+    with pytest.raises(NotImplementedError, match='only.*for FIFF'):
+        write_raw_bids(raw=raw_eeglab, bids_path=bids_path_eeglab,
+                       symlink=True)
 
     p = write_raw_bids(raw=raw, bids_path=bids_path, symlink=True)
     assert p.fpath.is_symlink()
