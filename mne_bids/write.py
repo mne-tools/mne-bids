@@ -1357,7 +1357,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 'The input file format is not supported by the BIDS standard. '
                 'To store your data, MNE-BIDS would have to convert it. '
                 'However, this is not possible since you set symlink=True. '
-                'Deactiave symbolic links by passing symlink=False to allow '
+                'Deactivate symbolic links by passing symlink=False to allow '
                 'file format conversion.')
 
     # check if there is a BIDS-unsupported MEG format
