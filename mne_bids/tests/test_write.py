@@ -2683,4 +2683,4 @@ def test_symlinks(tmpdir):
     bids_path = _bids_path.copy().update(root=root, datatype='meg')
     p = write_raw_bids(raw=raw, bids_path=bids_path, symlink=True)
     raw = read_raw_bids(p)
-    assert raw.filenames == 2
+    assert len(raw.filenames) == 2

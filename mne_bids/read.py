@@ -441,8 +441,9 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         selected automatically.
 
         .. note::
-           Symbolic links will be resolved to their link target before actually
-           reading the file.
+           If ``bids_path`` points to a symbolic link of a ``.fif`` file
+           without a ``split`` entity, the link will be resolved before
+           reading.
 
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
@@ -507,8 +508,9 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         config = op.join(bids_raw_folder, 'config')
     else:
         bids_fpath = op.join(data_dir, bids_fname)
-        # Resolve symlinks if present
-        if op.islink(bids_fpath):
+        # Resolve for FIFF files
+        if (bids_fpath.endswith('.fif') and bids_path.split is None and
+                op.islink(bids_fpath)):
             target_path = op.realpath(bids_fpath)
             logger.info(f'Resolving symbolic link: '
                         f'{bids_fpath} -> {target_path}')

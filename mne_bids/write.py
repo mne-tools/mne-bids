@@ -1061,7 +1061,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
         data (i.e., ``anonymize`` must be ``None``).
 
         .. note::
-           Symlinks currently only work with FIFF files.
+           Symlinks currently only work with FIFF files. In case of split
+           files, only a link to the first file will be created, and
+           :func:`mne_bids.read_raw_bids` will correctly handle reading the
+           data again.
 
         .. note::
            Symlinks are currently only supported on macOS and Linux. We will
