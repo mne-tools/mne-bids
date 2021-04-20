@@ -2670,7 +2670,7 @@ def test_symlinks(tmpdir):
     # test with split files
     # prepare the split files
     sample_data_path = Path(mne.datasets.sample.data_path())
-    raw_path = sample_data_path / 'MEG' / 'sample' /'sample_audvis_raw.fif'
+    raw_path = sample_data_path / 'MEG' / 'sample' / 'sample_audvis_raw.fif'
     raw = _read_raw_fif(raw_path).crop(0, 10)
 
     split_raw_path = tmpdir.mkdir('raw') / 'sample_audivis_raw.fif'
