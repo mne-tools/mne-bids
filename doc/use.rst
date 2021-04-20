@@ -14,7 +14,7 @@ Python
     >>> import mne
     >>> from mne_bids import BIDSPath, write_raw_bids
     >>> raw = mne.io.read_raw_fif('my_old_file.fif')
-    >>> bids_path = BIDSPath(subject='01', session='01, run='05',
+    >>> bids_path = BIDSPath(subject='01', session='01', run='05',
                              datatype='meg', root='./bids_dataset')
     >>> write_raw_bids(raw, bids_path=bids_path)
 

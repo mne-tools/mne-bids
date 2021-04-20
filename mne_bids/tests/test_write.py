@@ -450,6 +450,7 @@ def test_fif(_bids_validate, tmpdir):
 
     epochs = mne.Epochs(raw2, events, event_id=event_id, tmin=-0.2, tmax=0.5,
                         preload=True)
+    bids_path = bids_path.update(datatype='eeg')
     with pytest.warns(RuntimeWarning,
                       match='Converting data files to BrainVision format'):
         write_raw_bids(raw2, bids_path,
@@ -505,13 +506,14 @@ def test_fif(_bids_validate, tmpdir):
 
     # give the raw object some fake participant data (potentially overwriting)
     raw = _read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_path, events_data=events,
+    bids_path_meg = bids_path.copy().update(datatype='meg')
+    write_raw_bids(raw, bids_path_meg, events_data=events,
                    event_id=event_id, overwrite=True)
 
     # try and write preloaded data
     raw = _read_raw_fif(raw_fname, preload=True)
     with pytest.raises(ValueError, match='preloaded'):
-        write_raw_bids(raw, bids_path, events_data=events,
+        write_raw_bids(raw, bids_path_meg, events_data=events,
                        event_id=event_id, overwrite=False)
 
     # test anonymize
@@ -527,7 +529,7 @@ def test_fif(_bids_validate, tmpdir):
     with open(readme, 'w', encoding='utf-8-sig') as fid:
         fid.write('Welcome to my dataset\n')
 
-    bids_path2 = bids_path.copy().update(subject=subject_id2)
+    bids_path2 = bids_path_meg.copy().update(subject=subject_id2)
     raw = _read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_path2,
                                       events_data=events,
@@ -604,6 +606,7 @@ def test_fif(_bids_validate, tmpdir):
         write_raw_bids(raw, bids_path)
 
     raw = _read_raw_fif(raw_fname)
+    bids_path = bids_path.copy().update(datatype='meg')
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=True)
 
@@ -979,7 +982,7 @@ def test_vhdr(_bids_validate, tmpdir):
     raw.set_channel_types({raw.ch_names[i]: 'ecog'
                            for i in mne.pick_types(raw.info, eeg=True)})
     bids_root = tmpdir.mkdir('bids2')
-    bids_path.update(root=bids_root)
+    bids_path.update(root=bids_root, datatype='ieeg')
     write_raw_bids(raw, bids_path, overwrite=False)
     _bids_validate(bids_root)
 
@@ -995,7 +998,7 @@ def test_vhdr(_bids_validate, tmpdir):
 
     # convert to BIDS
     bids_root = tmpdir.mkdir('bids3')
-    bids_path.update(root=bids_root)
+    bids_path.update(root=bids_root, datatype='eeg')
     write_raw_bids(raw, bids_path)
 
     # check impedances
@@ -1232,7 +1235,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     ieeg_raw.set_channel_types({raw.ch_names[i]: 'ecog'
                                 for i in eeg_picks})
     bids_root = tmpdir.mkdir('bids2')
-    bids_path.update(root=bids_root)
+    bids_path.update(root=bids_root, datatype='ieeg')
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
@@ -1264,7 +1267,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
                                                  coord_frame='mni_tal')
     ieeg_raw.set_montage(ecog_montage)
     bids_root = tmpdir.mkdir('bids3')
-    bids_path.update(root=bids_root)
+    bids_path.update(root=bids_root, datatype='ieeg')
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
@@ -1297,7 +1300,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     # test anonymize and convert
     if check_version('pybv', '0.4') or dir_name == 'EDF':
         raw = reader(raw_fname)
-
+        bids_path.update(root=bids_root, datatype='eeg')
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
         if dir_name == 'NihonKohden':
             with pytest.warns(RuntimeWarning,
@@ -1325,7 +1328,7 @@ def test_bdf(_bids_validate, tmpdir):
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    bids_path = _bids_path.copy().update(root=tmpdir)
+    bids_path = _bids_path.copy().update(root=tmpdir, datatype='eeg')
 
     raw = _read_raw_bdf(raw_fname)
     raw.info['line_freq'] = 60
@@ -1358,7 +1361,6 @@ def test_bdf(_bids_validate, tmpdir):
     # Now read the raw data back from BIDS, with the tampered TSV, to show
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
-    bids_path.update(datatype='eeg')
     raw = read_raw_bids(bids_path=bids_path)
     assert coil_type(raw.info, test_ch_idx) == 'misc'
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
@@ -1425,7 +1427,7 @@ def test_set(_bids_validate, tmpdir):
     raw.set_channel_types({raw.ch_names[i]: 'ecog'
                            for i in mne.pick_types(raw.info, eeg=True)})
     bids_root = tmpdir.mkdir('bids2')
-    bids_path.update(root=bids_root)
+    bids_path.update(root=bids_root, datatype='ieeg')
     write_raw_bids(raw, bids_path)
     _bids_validate(bids_root)
 
@@ -2402,7 +2404,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmpdir):
         bids_path.update(task='noise', session=raw_date,
                          suffix='meg', datatype='meg')
     else:
-        bids_path.update(suffix='ieeg', datatype='ieeg')
+        bids_path.update(suffix='eeg', datatype='eeg')
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
     bids_path = \
@@ -2539,7 +2541,7 @@ def test_error_write_meg_as_eeg(dir_name, fname, reader, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
                                          extension='.vhdr')
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, bids_path=bids_path)
+    kwargs = dict(raw=raw, bids_path=bids_path.update(datatype='meg'))
 
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
@@ -2646,9 +2648,12 @@ def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
     os.rename(raw_fname, new_raw_fname)
 
     # the BIDS path for test datasets to get written to
-    bids_path = _bids_path.copy().update(root=bids_root, datatype=datatype)
-
     raw = reader(new_raw_fname)
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+    write_raw_bids(raw, bids_path)
+    raw.set_channel_types({raw.ch_names[i]: 'ecog'
+                           for i in mne.pick_types(raw.info, eeg=True)})
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='ieeg')
     write_raw_bids(raw, bids_path)
 
 

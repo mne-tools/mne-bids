@@ -89,22 +89,67 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return mapping
 
 
-def _handle_datatype(raw):
-    """Get datatype."""
-    if 'eeg' in raw and ('ecog' in raw or 'seeg' in raw):
-        raise ValueError('Both EEG and iEEG channels found in data.'
-                         'There is currently no specification on how'
-                         'to handle this data. Please proceed manually.')
-    elif 'meg' in raw:
-        datatype = 'meg'
-    elif 'ecog' in raw or 'seeg' in raw:
-        datatype = 'ieeg'
-    elif 'eeg' in raw:
-        datatype = 'eeg'
+def _handle_datatype(raw, datatype, verbose=True):
+    """Check if datatype exists in raw object or infer datatype if possible.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Raw object.
+    datatype : str | None
+        Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``. If ``None``,
+        `mne.utils._handle_datatype()` will attempt to infer the datatype from
+        the ``raw`` object. In case of multiple data types in the ``raw``
+        object, ``datatype`` must not be ``None``.
+    verbose : bool
+        If ``True``, this will print additional information in the case of
+        combined MEG and iEEG/EEG recordings.
+
+    Returns
+    -------
+    datatype : str
+        One of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
+    """
+    if datatype is not None:
+        _check_datatype(raw, datatype)
+        # MEG data is not supported by BrainVision or EDF files
+        if datatype in ['eeg', 'ieeg'] and 'meg' in raw:
+            if verbose:
+                print(os.linesep + f"Both {datatype} and 'meg' data found. "
+                                   f"BrainVision and EDF do not support 'meg' "
+                                   f"data. The data will therefore be stored "
+                                   f"as 'meg' data. If you wish to store your "
+                                   f"{datatype} data in BrainVision or EDF, "
+                                   f"please remove the 'meg' channels from "
+                                   f"your recording." + os.linesep)
+            datatype = 'meg'
     else:
-        raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
-                         'Please use raw.set_channel_types to set the '
-                         'channel types in the data.')
+        datatypes = list()
+        ieeg_types = ['seeg', 'ecog']
+        if any(ieeg_type in raw for ieeg_type in ieeg_types):
+            datatypes.append('ieeg')
+        if 'meg' in raw:
+            datatypes.append('meg')
+        if 'eeg' in raw:
+            datatypes.append('eeg')
+        if len(datatypes) == 0:
+            raise ValueError('No MEG, EEG or iEEG channels found in data. '
+                             'Please use raw.set_channel_types to set the '
+                             'channel types in the data.')
+        elif len(datatypes) > 1:
+            if 'meg' in datatypes and 'ieeg' not in datatypes:
+                datatype = 'meg'
+            elif 'ieeg' in datatypes and 'meg' not in datatypes:
+                datatype = 'ieeg'
+            else:
+                raise ValueError(f'Multiple data types (``{datatypes}``) were '
+                                 'found in the data. Please specify the '
+                                 'datatype using '
+                                 '`bids_path.update(datatype="<datatype>")` '
+                                 'or use raw.set_channel_types to set the '
+                                 'correct channel types in the raw object.')
+        else:
+            datatype = datatypes[0]
     return datatype
 
 
@@ -385,3 +430,42 @@ def _stamp_to_dt(utc_stamp):
         stamp.append(0)
     return (datetime.fromtimestamp(0, tz=timezone.utc) +
             timedelta(0, stamp[0], stamp[1]))  # day, sec, μs
+
+
+def _check_datatype(raw, datatype):
+    """Check if datatype exists in given raw object.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Raw object.
+    datatype : str
+        Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
+
+    Returns
+    -------
+    None
+    """
+    supported_types = ('meg', 'eeg', 'ieeg')
+    if datatype not in supported_types:
+        raise ValueError(
+            f'The specified datatype {datatype} is currently not supported. '
+            f'It should be one of  either `meg`, `eeg` or `ieeg` (Got '
+            f'`{datatype}`. Please specify a valid datatype using '
+            f'`bids_path.update(datatype="<datatype>")`.')
+    datatype_matches = False
+    if datatype == 'eeg' and datatype in raw:
+        datatype_matches = True
+    elif datatype == 'meg' and datatype in raw:
+        datatype_matches = True
+    elif datatype == 'ieeg':
+        ieeg_types = ('seeg', 'ecog')
+        if any(ieeg_type in raw for ieeg_type in ieeg_types):
+            datatype_matches = True
+    if not datatype_matches:
+        raise ValueError(
+            f'The specified datatype {datatype} was not found in the raw '
+            'object. Please specify the correct datatype using '
+            '`bids_path.update(datatype="<datatype>")` or use '
+            'raw.set_channel_types to set the correct channel types in '
+            'the raw object.')
