@@ -26,6 +26,7 @@ Authors
 * `Alex Rockhill`_
 * `Richard Höchenberger`_
 * `Adam Li`_
+* `Richard Köhler`_ (new contributor)
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -36,6 +37,7 @@ Enhancements
 - Updated the "Read BIDS datasets" example to use data from `OpenNeuro <https://openneuro.org>`_, by `Alex Rockhill`_ (:gh:`753`)
 - :func:`mne_bids.get_head_mri_trans` is now more lenient when looking for the fiducial points (LPA, RPA, and nasion) in the MRI JSON sidecar file, and accepts a larger variety of landmark names (upper- and lowercase letters; ``'nasion'`` instead of only ``'NAS'``), by `Richard Höchenberger`_ (:gh:`769`)
 - :func:`mne_bids.get_head_mri_trans` gained a new keyword argument ``t1_bids_path``, allowing for the MR scan to be stored in a different session or even in a different BIDS dataset than the electrophysiological recording, by `Richard Höchenberger`_ (:gh:`771`)
+- Add writing simultaneous EEG-iEEG recordings via :func:`mne_bids.write_raw_bids`. The desired output datatype must be specified in the :class:`mne_bids.BIDSPath` object, by `Richard Köhler`_ (:gh:`774`)
 - :func:`mne_bids.write_raw_bids` gained a new keyword argument ``symlink``, which allows to create symbolic links to the original data files instead of copying them over. Currently works for ``FIFF`` files on macOS and Linux, by `Richard Höchenberger`_ (:gh:`778`)
 
 API and behavior changes
