@@ -1363,10 +1363,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 'Deactiave symbolic links by passing symlink=False to allow '
                 'file format conversion.')
 
-    # check if there is a BIDS-unsupported MEG format
-    if bids_path.datatype == 'meg' and convert:
+    # check if there is an BIDS-unsupported MEG format
+    if bids_path.datatype == 'meg' and convert and not anonymize:
         raise ValueError(
-            f"Got file extension {ext} for MEG data, "
+            f"Got file extension {convert} for MEG data, "
             f"expected one of "
             f"{', '.join(sorted(ALLOWED_DATATYPE_EXTENSIONS['meg']))}")
 
