@@ -576,6 +576,21 @@ which are however optional. The required inputs are:</p>
         the original file format lacks some necessary features. When a str is
         passed, a conversion can be forced to the BrainVision format for EEG,
         or the FIF format for MEG data.
+    symlink : bool
+        Instead of copying the source files, only create symbolic links to
+        preserve storage space. This is only allowed when not anonymizing the
+        data (i.e., ``anonymize`` must be ``None``).
+
+        .. note::
+           Symlinks currently only work with FIFF files. In case of split
+           files, only a link to the first file will be created, and
+           :func:`mne_bids.read_raw_bids` will correctly handle reading the
+           data again.
+
+        .. note::
+           Symlinks are currently only supported on macOS and Linux. We will
+           add support for Windows 10 at a later time.
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -939,7 +954,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.117 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.140 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>

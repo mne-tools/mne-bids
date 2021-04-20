@@ -200,8 +200,10 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
@@ -1136,7 +1138,7 @@
 
 <div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                   <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
 
@@ -1245,6 +1247,21 @@
 <span class="sd">        the original file format lacks some necessary features. When a str is</span>
 <span class="sd">        passed, a conversion can be forced to the BrainVision format for EEG,</span>
 <span class="sd">        or the FIF format for MEG data.</span>
+<span class="sd">    symlink : bool</span>
+<span class="sd">        Instead of copying the source files, only create symbolic links to</span>
+<span class="sd">        preserve storage space. This is only allowed when not anonymizing the</span>
+<span class="sd">        data (i.e., ``anonymize`` must be ``None``).</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           Symlinks currently only work with FIFF files. In case of split</span>
+<span class="sd">           files, only a link to the first file will be created, and</span>
+<span class="sd">           :func:`mne_bids.read_raw_bids` will correctly handle reading the</span>
+<span class="sd">           data again.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           Symlinks are currently only supported on macOS and Linux. We will</span>
+<span class="sd">           add support for Windows 10 at a later time.</span>
+
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to ``False``.</span>
@@ -1330,6 +1347,13 @@
                    <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;events_data&#39;</span><span class="p">,</span>
                    <span class="n">type_name</span><span class="o">=</span><span class="s1">&#39;path-like, NumPy array, or None&#39;</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">symlink</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;win32&#39;</span><span class="p">,</span> <span class="s1">&#39;cygwin&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Symbolic links are currently not supported &#39;</span>
+                                  <span class="s1">&#39;by MNE-BIDS on Windows operating systems.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">symlink</span> <span class="ow">and</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot create symlinks when anonymizing data.&#39;</span><span class="p">)</span>
+
     <span class="c1"># Check if the root is available</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
@@ -1357,6 +1381,10 @@
 
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized file format </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">symlink</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Symlinks are currently only supported for &#39;</span>
+                                  <span class="s1">&#39;FIFF files.&#39;</span><span class="p">)</span>
 
     <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="o">**</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
@@ -1519,6 +1547,14 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span><span class="p">:</span>
         <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">]</span>
 
+        <span class="k">if</span> <span class="n">convert</span> <span class="ow">and</span> <span class="n">symlink</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">&#39;The input file format is not supported by the BIDS standard. &#39;</span>
+                <span class="s1">&#39;To store your data, MNE-BIDS would have to convert it. &#39;</span>
+                <span class="s1">&#39;However, this is not possible since you set symlink=True. &#39;</span>
+                <span class="s1">&#39;Deactivate symbolic links by passing symlink=False to allow &#39;</span>
+                <span class="s1">&#39;file format conversion.&#39;</span><span class="p">)</span>
+
     <span class="c1"># check if there is an BIDS-unsupported MEG format</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">convert</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">anonymize</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -1527,7 +1563,7 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">]))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Copying data files to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Copying data files to </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="c1"># If users desire a certain format, will handle auto-conversion</span>
     <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
@@ -1561,7 +1597,12 @@
             <span class="c1"># XXX Should we write durations here too?</span>
             <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">symlink</span><span class="p">:</span>
+            <span class="n">link_target</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">link_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
+            <span class="n">link_path</span><span class="o">.</span><span class="n">symlink_to</span><span class="p">(</span><span class="n">link_target</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
     <span class="c1"># CTF data is saved and renamed in a directory</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.ds&#39;</span><span class="p">:</span>
         <span class="n">copyfile_ctf</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>

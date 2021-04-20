@@ -348,6 +348,12 @@ populate the returned raw object with raw.annotations and raw.info[‘bads’].<
 <strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is not set and only one data type
 (e.g., only EEG or MEG data) is present in the dataset, it will be
 selected automatically.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> points to a symbolic link of a <code class="docutils literal notranslate"><span class="pre">.fif</span></code> file
+without a <code class="docutils literal notranslate"><span class="pre">split</span></code> entity, the link will be resolved before
+reading.</p>
+</div>
 </dd>
 <dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions.
 If a dict, for example: <code class="docutils literal notranslate"><span class="pre">extra_params=dict(allow_maxshield=True)</span></code>.
