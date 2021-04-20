@@ -8,8 +8,10 @@
 #
 # License: BSD (3-clause)
 import json
+import sys
 import os
 import os.path as op
+from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import shutil
 from collections import defaultdict, OrderedDict
@@ -944,7 +946,7 @@ def make_dataset_description(path, name, data_license=None,
 
 def write_raw_bids(raw, bids_path, events_data=None,
                    event_id=None, anonymize=None,
-                   format='auto',
+                   format='auto', symlink=False,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1053,6 +1055,21 @@ def write_raw_bids(raw, bids_path, events_data=None,
         the original file format lacks some necessary features. When a str is
         passed, a conversion can be forced to the BrainVision format for EEG,
         or the FIF format for MEG data.
+    symlink : bool
+        Instead of copying the source files, only create symbolic links to
+        preserve storage space. This is only allowed when not anonymizing the
+        data (i.e., ``anonymize`` must be ``None``).
+
+        .. note::
+           Symlinks currently only work with FIFF files. In case of split
+           files, only a link to the first file will be created, and
+           :func:`mne_bids.read_raw_bids` will correctly handle reading the
+           data again.
+
+        .. note::
+           Symlinks are currently only supported on macOS and Linux. We will
+           add support for Windows 10 at a later time.
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1138,6 +1155,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
                    item_name='events_data',
                    type_name='path-like, NumPy array, or None')
 
+    if symlink and sys.platform in ('win32', 'cygwin'):
+        raise NotImplementedError('Symbolic links are currently not supported '
+                                  'by MNE-BIDS on Windows operating systems.')
+
+    if symlink and anonymize is not None:
+        raise ValueError('Cannot create symlinks when anonymizing data.')
+
     # Check if the root is available
     if bids_path.root is None:
         raise ValueError('The root of the "bids_path" must be set. '
@@ -1165,6 +1189,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     if ext not in ALLOWED_INPUT_EXTENSIONS:
         raise ValueError(f'Unrecognized file format {ext}')
+
+    if symlink and ext != '.fif':
+        raise NotImplementedError('Symlinks are currently only supported for '
+                                  'FIFF files.')
 
     raw_orig = reader[ext](**raw._init_kwargs)
     if not np.array_equal(raw.times, raw_orig.times):
@@ -1327,6 +1355,14 @@ def write_raw_bids(raw, bids_path, events_data=None,
     if not convert:
         convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
+        if convert and symlink:
+            raise RuntimeError(
+                'The input file format is not supported by the BIDS standard. '
+                'To store your data, MNE-BIDS would have to convert it. '
+                'However, this is not possible since you set symlink=True. '
+                'Deactivate symbolic links by passing symlink=False to allow '
+                'file format conversion.')
+
     # check if there is an BIDS-unsupported MEG format
     if bids_path.datatype == 'meg' and convert and not anonymize:
         raise ValueError(
@@ -1335,7 +1371,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
             f"{', '.join(sorted(ALLOWED_DATATYPE_EXTENSIONS['meg']))}")
 
     if not convert and verbose:
-        print('Copying data files to %s' % bids_path.fpath.name)
+        logger.info(f'Copying data files to {bids_path.fpath.name}')
 
     # If users desire a certain format, will handle auto-conversion
     if format != 'auto':
@@ -1369,7 +1405,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
             # XXX Should we write durations here too?
             _write_raw_brainvision(raw, bids_path.fpath, events=events_array)
     elif ext == '.fif':
-        _write_raw_fif(raw, bids_path)
+        if symlink:
+            link_target = Path(raw.filenames[0])
+            link_path = bids_path.fpath
+            link_path.symlink_to(link_target)
+        else:
+            _write_raw_fif(raw, bids_path)
     # CTF data is saved and renamed in a directory
     elif ext == '.ds':
         copyfile_ctf(raw_fname, bids_path)

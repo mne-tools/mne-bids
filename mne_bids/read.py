@@ -439,6 +439,12 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         **may** be set. If ``.datatype`` is not set and only one data type
         (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
+
+        .. note::
+           If ``bids_path`` points to a symbolic link of a ``.fif`` file
+           without a ``split`` entity, the link will be resolved before
+           reading.
+
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
         If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
@@ -502,6 +508,13 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         config = op.join(bids_raw_folder, 'config')
     else:
         bids_fpath = op.join(data_dir, bids_fname)
+        # Resolve for FIFF files
+        if (bids_fpath.endswith('.fif') and bids_path.split is None and
+                op.islink(bids_fpath)):
+            target_path = op.realpath(bids_fpath)
+            logger.info(f'Resolving symbolic link: '
+                        f'{bids_fpath} -> {target_path}')
+            bids_fpath = target_path
         config = None
 
     if extra_params is None:
