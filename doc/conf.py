@@ -114,6 +114,9 @@ html_theme_options = {
         dict(name='GitHub',
              url='https://github.com/mne-tools/mne-bids',
              icon='fab fa-github-square'),
+        dict(name='Discourse',
+             url='https://mne.discourse.group/tags/mne-bids',
+             icon='fab fa-discourse'),
     ],
     'icon_links_label': 'Quick Links',  # for screen reader
     'use_edit_page_button': False,
