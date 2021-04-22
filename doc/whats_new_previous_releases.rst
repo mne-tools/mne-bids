@@ -265,7 +265,7 @@ Enhancements
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Nihon Kohden using ``mne.io.read_raw_nihon`` function, by `Adam Li`_ (:gh:`567`)
 - Allow :func:`mne_bids.get_entity_vals` to ignore datatypes using ``ignore_datatypes`` kwarg, by `Adam Li`_ (:gh:`578`)
 - Add ``with_key`` keyword argument to :func:`mne_bids.get_entity_vals` to allow returning the full entity strings, by `Adam Li`_ (:gh:`578`)
-- :func:`mne_bids.write_raw_bids` now also writes :attr:`mne.io.Raw.annotations` to ``*_events.tsv``, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`582`)
+- :func:`mne_bids.write_raw_bids` now also writes ``mne.io.Raw.annotations`` to ``*_events.tsv``, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`582`)
 - BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (:gh:`417`)
 
 Bug fixes
