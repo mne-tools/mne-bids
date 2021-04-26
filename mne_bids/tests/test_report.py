@@ -45,7 +45,8 @@ def test_report(tmpdir):
     print(report)
 
     expected_report = \
-    """This dataset was created with BIDS version 1.6.0 by Please cite MNE-BIDS in your
+    """This dataset was created with BIDS version 1.6.0 by MNE-BIDS.
+Please cite MNE-BIDS in your
 publication before removing this (citations in README). This report was
 generated with MNE-BIDS (https://doi.org/10.21105/joss.01896). The dataset
 consists of 1 participants (sex were all unknown; handedness were all unknown;
