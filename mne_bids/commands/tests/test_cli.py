@@ -18,8 +18,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import (run_tests_if_main, ArgvSetter, requires_pandas,
-                       requires_version)
+from mne.utils import ArgvSetter, requires_pandas, requires_version
 from mne.utils._testing import requires_module
 
 from mne_bids.commands import (mne_bids_raw_to_bids,
@@ -306,6 +305,3 @@ def test_inspect(tmpdir):
         with ArgvSetter(args):
             with pytest.warns(RuntimeWarning, match='The unit for chann*'):
                 mne_bids_inspect.run()
-
-
-run_tests_if_main()
