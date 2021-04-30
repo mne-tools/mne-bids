@@ -452,7 +452,7 @@ class BIDSPath(object):
         self.update(root=value)
 
     @property
-    def datatype(self) -> str:
+    def datatype(self) -> Optional[str]:
         """The BIDS data type, e.g. ``'anat'``, ``'meg'``, ``'eeg'``."""
         return self._datatype
 
