@@ -99,8 +99,8 @@ def _summarize_software_filters(software_filters):
 
 BIDS_DATASET_TEMPLATE = \
     """{{if name == 'n/a'}}This{{else}}The {{name}}{{endif}}
-dataset was created with BIDS version {{bids_version}}
-by {{_pretty_str(authors)}}. This report was generated with
+dataset was created by {{_pretty_str(authors)}} and conforms to BIDS version
+{{bids_version}}. This report was generated with
 MNE-BIDS ({{mne_bids_doi}}). """
 BIDS_DATASET_TEMPLATE += \
     """The dataset consists of
