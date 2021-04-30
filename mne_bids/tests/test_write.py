@@ -252,9 +252,7 @@ def test_make_dataset_description(tmpdir):
     with open(op.join(tmpdir, 'dataset_description.json'), 'r',
               encoding='utf-8') as fid:
         dataset_description_json = json.load(fid)
-        assert dataset_description_json["Authors"] == \
-            ["Please cite MNE-BIDS in your publication before removing this "
-             "(citations in README)"]
+        assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
     make_dataset_description(
         path=tmpdir, name='tst', authors='MNE B., MNE P.',
@@ -266,9 +264,7 @@ def test_make_dataset_description(tmpdir):
     with open(op.join(tmpdir, 'dataset_description.json'), 'r',
               encoding='utf-8') as fid:
         dataset_description_json = json.load(fid)
-        assert dataset_description_json["Authors"] == \
-            ["Please cite MNE-BIDS in your publication before removing this "
-             "(citations in README)"]
+        assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
     make_dataset_description(
         path=tmpdir, name='tst2', authors='MNE B., MNE P.',

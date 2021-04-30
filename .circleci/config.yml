@@ -41,10 +41,17 @@ jobs:
             destination: dev
 
         - run:
-            name: Check links
+            name: Check links (if on main)
             command: |
-              make -C doc clean
-              make -C doc linkcheck
+              current_branch=$(git rev-parse --abbrev-ref HEAD)
+              if (echo $current_branch | grep main) ; then
+                echo $current_branch
+                make -C doc clean
+                make -C doc linkcheck
+              else
+                echo $current_branch
+                echo "Skip running linkcheck."
+              fi
 
         # Store the data cache
         - save_cache:

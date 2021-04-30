@@ -3,7 +3,7 @@ from mne import io
 from mne.io.constants import FIFF
 
 
-BIDS_VERSION = "1.4.0"
+BIDS_VERSION = "1.6.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
