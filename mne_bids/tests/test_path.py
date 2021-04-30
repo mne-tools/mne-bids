@@ -570,6 +570,30 @@ def test_bids_path(return_bids_test_dir):
     bids_path.update(root='~/foo')
     assert '~/foo' not in str(bids_path.root)
 
+    # Test property setters
+    bids_path = BIDSPath(subject='01', task='noise', datatype='eeg')
+
+    for entity in ('subject', 'session', 'task', 'run', 'acquisition',
+                   'processing', 'recording', 'space', 'suffix', 'extension',
+                   'datatype', 'root', 'split'):
+        if entity == 'run':
+            new_val = '01'
+        elif entity == 'space':
+            new_val = 'CapTrak'
+        elif entity in ['suffix', 'datatype']:
+            new_val = 'eeg'
+        elif entity == 'extension':
+            new_val = '.fif'
+        elif entity == 'root':
+            new_val = Path('foo')
+        elif entity == 'split':
+            new_val = '01'
+        else:
+            new_val = 'foo'
+
+        setattr(bids_path, entity, new_val)
+        assert getattr(bids_path, entity) == new_val
+
 
 def test_make_filenames():
     """Test that we create filenames according to the BIDS spec."""

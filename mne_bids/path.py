@@ -12,6 +12,7 @@ from copy import deepcopy
 from os import path as op
 from pathlib import Path
 from datetime import datetime
+from typing import Optional, Union
 
 import numpy as np
 from mne.utils import warn, logger, _validate_type
@@ -165,19 +166,19 @@ class BIDSPath(object):
     subject : str | None
         The subject ID. Corresponds to "sub".
     session : str | None
-        The session for a item. Corresponds to "ses".
+        The acquisition session. Corresponds to "ses".
     task : str | None
-        The task for a item. Corresponds to "task".
+        The experimental task. Corresponds to "task".
     acquisition: str | None
-        The acquisition parameters for the item. Corresponds to "acq".
+        The acquisition parameters. Corresponds to "acq".
     run : int | None
-        The run number for this item. Corresponds to "run".
+        The run number. Corresponds to "run".
     processing : str | None
-        The processing label for this item. Corresponds to "proc".
+        The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name for this item. Corresponds to "rec".
+        The recording name. Corresponds to "rec".
     space : str | None
-        The coordinate space for an anatomical or sensor position
+        The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
         Corresponds to "space".
         Note that valid values for ``space`` must come from a list
@@ -196,12 +197,10 @@ class BIDSPath(object):
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     datatype : str
-        The "data type" of folder being created at the end of the folder
-        hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
-        ``'ieeg'``, etc.
+        The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
+        ``'ieeg'``.
     root : str | pathlib.Path | None
-        The root for the filename to be created. E.g., a path to the folder
-        in which you wish to create a file with this name.
+        The root directory of the BIDS dataset.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
 
@@ -210,7 +209,8 @@ class BIDSPath(object):
     entities : dict
         The dictionary of the BIDS entities and their values:
         ``subject``, ``session``, ``task``, ``acquisition``,
-        ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.
+        ``run``, ``processing``, ``space``, ``recording``, ``split``,
+        ``suffix``, and ``extension``.
     datatype : str | None
         The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
         ``'anat'``.
@@ -360,6 +360,123 @@ class BIDSPath(object):
         if self.datatype is not None:
             data_path = op.join(data_path, self.datatype)
         return Path(data_path)
+
+    @property
+    def subject(self) -> Optional[str]:
+        """The subject ID."""
+        return self._subject
+
+    @subject.setter
+    def subject(self, value):
+        self.update(subject=value)
+
+    @property
+    def session(self) -> Optional[str]:
+        """The acquisition session."""
+        return self._session
+
+    @session.setter
+    def session(self, value):
+        self.update(session=value)
+
+    @property
+    def task(self) -> Optional[str]:
+        """The experimental task."""
+        return self._task
+
+    @task.setter
+    def task(self, value):
+        self.update(task=value)
+
+    @property
+    def run(self) -> Optional[str]:
+        """The run number."""
+        return self._run
+
+    @run.setter
+    def run(self, value):
+        self.update(run=value)
+
+    @property
+    def acquisition(self) -> Optional[str]:
+        """The acquisition parameters."""
+        return self._acquisition
+
+    @acquisition.setter
+    def acquisition(self, value):
+        self.update(acquisition=value)
+
+    @property
+    def processing(self) -> Optional[str]:
+        """The processing label."""
+        return self._processing
+
+    @processing.setter
+    def processing(self, value):
+        self.update(processing=value)
+
+    @property
+    def recording(self) -> Optional[str]:
+        """The recording name."""
+        return self._recording
+
+    @recording.setter
+    def recording(self, value):
+        self.update(recording=value)
+
+    @property
+    def space(self) -> Optional[str]:
+        """The coordinate space for an anatomical or sensor position file."""
+        return self._space
+
+    @space.setter
+    def space(self, value):
+        self.update(space=value)
+
+    @property
+    def suffix(self) -> Optional[str]:
+        """The filename suffix."""
+        return self._suffix
+
+    @suffix.setter
+    def suffix(self, value):
+        self.update(suffix=value)
+
+    @property
+    def root(self) -> Optional[Union[str, Path]]:
+        """The root directory of the BIDS dataset."""
+        return self._root
+
+    @root.setter
+    def root(self, value):
+        self.update(root=value)
+
+    @property
+    def datatype(self) -> Optional[str]:
+        """The BIDS data type, e.g. ``'anat'``, ``'meg'``, ``'eeg'``."""
+        return self._datatype
+
+    @datatype.setter
+    def datatype(self, value):
+        self.update(datatype=value)
+
+    @property
+    def split(self) -> Optional[str]:
+        """The split of the continuous recording file for ``.fif`` data."""
+        return self._split
+
+    @split.setter
+    def split(self, value):
+        self.update(split=value)
+
+    @property
+    def extension(self) -> Optional[str]:
+        """The extension of the filename, including a leading period."""
+        return self._extension
+
+    @extension.setter
+    def extension(self, value):
+        self.update(extension=value)
 
     def __str__(self):
         """Return the string representation of the path."""
@@ -523,7 +640,7 @@ class BIDSPath(object):
         **kwargs : dict
             It can contain updates for valid BIDS path entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
-            'recording', 'space', 'suffix'
+            'recording', 'space', 'suffix', 'split', 'extension',
             or updates for 'root' or 'datatype'.
 
         Returns
@@ -601,12 +718,12 @@ class BIDSPath(object):
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
                 val = Path(val).expanduser()
-            setattr(self, key, val)
+            setattr(self, f'_{key}', val)
 
         # infer datatype if suffix is uniquely the datatype
         if self.datatype is None and \
                 self.suffix in SUFFIX_TO_DATATYPE:
-            self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
+            self._datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # Perform a check of the entities.
         self._check()
