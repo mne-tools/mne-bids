@@ -935,8 +935,7 @@ def make_dataset_description(path, name, data_license=None,
     # if the user passed an author don't overwrite,
     # if there was an author there, only overwrite if `overwrite=True`
     if authors is None and (description['Authors'] is None or overwrite):
-        description['Authors'] = ["Please cite MNE-BIDS in your publication "
-                                  "before removing this (citations in README)"]
+        description['Authors'] = ["[Unspecified]"]
 
     pop_keys = [key for key, val in description.items() if val is None]
     for key in pop_keys:

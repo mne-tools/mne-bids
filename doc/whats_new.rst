@@ -44,6 +44,7 @@ API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Writing datasets via :func:`write_raw_bids`, will now never overwrite ``dataset_description.json`` file, by `Adam Li`_ (:gh:`765`)
+- When writing BIDS datasets, MNE-BIDS now tags them as BIDS 1.6.0 (we previously tagged them as BIDS 1.4.0), `Richard Höchenberger`_ (:gh:`782`)
 
 Requirements
 ^^^^^^^^^^^^
