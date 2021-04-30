@@ -165,19 +165,19 @@ class BIDSPath(object):
     subject : str | None
         The subject ID. Corresponds to "sub".
     session : str | None
-        The session for a item. Corresponds to "ses".
+        The acquisition session. Corresponds to "ses".
     task : str | None
-        The task for a item. Corresponds to "task".
+        The experimental task. Corresponds to "task".
     acquisition: str | None
-        The acquisition parameters for the item. Corresponds to "acq".
+        The acquisition parameters. Corresponds to "acq".
     run : int | None
-        The run number for this item. Corresponds to "run".
+        The run number. Corresponds to "run".
     processing : str | None
-        The processing label for this item. Corresponds to "proc".
+        The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name for this item. Corresponds to "rec".
+        The recording name. Corresponds to "rec".
     space : str | None
-        The coordinate space for an anatomical or sensor position
+        The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
         Corresponds to "space".
         Note that valid values for ``space`` must come from a list
@@ -196,12 +196,10 @@ class BIDSPath(object):
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     datatype : str
-        The "data type" of folder being created at the end of the folder
-        hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
-        ``'ieeg'``, etc.
+        The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
+        ``'ieeg'``.
     root : str | pathlib.Path | None
-        The root for the filename to be created. E.g., a path to the folder
-        in which you wish to create a file with this name.
+        The root directory of the BIDS dataset.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
 
@@ -364,6 +362,7 @@ class BIDSPath(object):
 
     @property
     def subject(self):
+        """The subject ID."""
         return self._subject
 
     @subject.setter
@@ -372,6 +371,7 @@ class BIDSPath(object):
 
     @property
     def session(self):
+        """The acquisition session."""
         return self._session
 
     @session.setter
@@ -380,6 +380,7 @@ class BIDSPath(object):
 
     @property
     def task(self):
+        """The experimental task."""
         return self._task
 
     @task.setter
@@ -387,7 +388,17 @@ class BIDSPath(object):
         self.update(task=value)
 
     @property
+    def run(self):
+        """The run number."""
+        return self._run
+
+    @run.setter
+    def run(self, value):
+        self.update(run=value)
+
+    @property
     def acquisition(self):
+        """The acquisition parameters."""
         return self._acquisition
 
     @acquisition.setter
@@ -396,6 +407,7 @@ class BIDSPath(object):
 
     @property
     def processing(self):
+        """The processing label."""
         return self._processing
 
     @processing.setter
@@ -403,15 +415,8 @@ class BIDSPath(object):
         self.update(processing=value)
 
     @property
-    def run(self):
-        return self._run
-
-    @run.setter
-    def run(self, value):
-        self.update(run=value)
-
-    @property
     def recording(self):
+        """The recording name."""
         return self._recording
 
     @recording.setter
@@ -420,6 +425,7 @@ class BIDSPath(object):
 
     @property
     def space(self):
+        """The coordinate space for an anatomical or sensor position file."""
         return self._space
 
     @space.setter
@@ -428,6 +434,7 @@ class BIDSPath(object):
 
     @property
     def suffix(self):
+        """The filename suffix."""
         return self._suffix
 
     @suffix.setter
@@ -436,6 +443,7 @@ class BIDSPath(object):
 
     @property
     def root(self):
+        """The root directory of the BIDS dataset."""
         return self._root
 
     @root.setter
@@ -444,6 +452,7 @@ class BIDSPath(object):
 
     @property
     def datatype(self):
+        """The BIDS data type, e.g. ``'anat'``, ``'meg'``, ``'eeg'``."""
         return self._datatype
 
     @datatype.setter
@@ -452,6 +461,7 @@ class BIDSPath(object):
 
     @property
     def split(self):
+        """The split of the continuous recording file for ``.fif`` data."""
         return self._split
 
     @split.setter
@@ -460,6 +470,7 @@ class BIDSPath(object):
 
     @property
     def extension(self):
+        """The extension of the filename, including a leading period."""
         return self._extension
 
     @extension.setter
