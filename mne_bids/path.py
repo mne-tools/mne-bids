@@ -210,7 +210,8 @@ class BIDSPath(object):
     entities : dict
         The dictionary of the BIDS entities and their values:
         ``subject``, ``session``, ``task``, ``acquisition``,
-        ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.
+        ``run``, ``processing``, ``space``, ``recording``, ``split``,
+        ``suffix``, and ``extension``.
     datatype : str | None
         The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
         ``'anat'``.
@@ -360,6 +361,110 @@ class BIDSPath(object):
         if self.datatype is not None:
             data_path = op.join(data_path, self.datatype)
         return Path(data_path)
+
+    @property
+    def subject(self):
+        return self._subject
+
+    @subject.setter
+    def subject(self, value):
+        self.update(subject=value)
+
+    @property
+    def session(self):
+        return self._session
+
+    @session.setter
+    def session(self, value):
+        self.update(session=value)
+
+    @property
+    def task(self):
+        return self._task
+
+    @task.setter
+    def task(self, value):
+        self.update(task=value)
+
+    @property
+    def acquisition(self):
+        return self._acquisition
+
+    @acquisition.setter
+    def acquisition(self, value):
+        self.update(acquisition=value)
+
+    @property
+    def processing(self):
+        return self._processing
+
+    @processing.setter
+    def processing(self, value):
+        self.update(processing=value)
+
+    @property
+    def run(self):
+        return self._run
+
+    @run.setter
+    def run(self, value):
+        self.update(run=value)
+
+    @property
+    def recording(self):
+        return self._recording
+
+    @recording.setter
+    def recording(self, value):
+        self.update(recording=value)
+
+    @property
+    def space(self):
+        return self._space
+
+    @space.setter
+    def space(self, value):
+        self.update(space=value)
+
+    @property
+    def suffix(self):
+        return self._suffix
+
+    @suffix.setter
+    def suffix(self, value):
+        self.update(suffix=value)
+
+    @property
+    def root(self):
+        return self._root
+
+    @root.setter
+    def root(self, value):
+        self.update(root=value)
+
+    @property
+    def datatype(self):
+        return self._datatype
+
+    @datatype.setter
+    def datatype(self, value):
+        self.update(datatype=value)
+
+    @property
+    def split(self):
+        return self._split
+
+    @split.setter
+    def split(self, value):
+        self.update(split=value)
+
+    @property
+    def extension(self):
+        return self._extension
+
+    @extension.setter
+    def extension(self, value):
+        self.update(extension=value)
 
     def __str__(self):
         """Return the string representation of the path."""
@@ -523,7 +628,7 @@ class BIDSPath(object):
         **kwargs : dict
             It can contain updates for valid BIDS path entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
-            'recording', 'space', 'suffix'
+            'recording', 'space', 'suffix', 'split', 'extension',
             or updates for 'root' or 'datatype'.
 
         Returns
@@ -601,12 +706,12 @@ class BIDSPath(object):
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
                 val = Path(val).expanduser()
-            setattr(self, key, val)
+            setattr(self, f'_{key}', val)
 
         # infer datatype if suffix is uniquely the datatype
         if self.datatype is None and \
                 self.suffix in SUFFIX_TO_DATATYPE:
-            self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
+            self._datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # Perform a check of the entities.
         self._check()
