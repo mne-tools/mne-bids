@@ -389,7 +389,7 @@ class BIDSPath(object):
         self.update(task=value)
 
     @property
-    def run(self) -> Optional[int]:
+    def run(self) -> Optional[str]:
         """The run number."""
         return self._run
 
@@ -461,7 +461,7 @@ class BIDSPath(object):
         self.update(datatype=value)
 
     @property
-    def split(self):
+    def split(self) -> Optional[str]:
         """The split of the continuous recording file for ``.fif`` data."""
         return self._split
 
@@ -470,7 +470,7 @@ class BIDSPath(object):
         self.update(split=value)
 
     @property
-    def extension(self):
+    def extension(self) -> Optional[str]:
         """The extension of the filename, including a leading period."""
         return self._extension
 
