@@ -12,6 +12,7 @@ from copy import deepcopy
 from os import path as op
 from pathlib import Path
 from datetime import datetime
+from typing import Optional, Union
 
 import numpy as np
 from mne.utils import warn, logger, _validate_type
@@ -361,7 +362,7 @@ class BIDSPath(object):
         return Path(data_path)
 
     @property
-    def subject(self):
+    def subject(self) -> Optional[str]:
         """The subject ID."""
         return self._subject
 
@@ -370,7 +371,7 @@ class BIDSPath(object):
         self.update(subject=value)
 
     @property
-    def session(self):
+    def session(self) -> Optional[str]:
         """The acquisition session."""
         return self._session
 
@@ -379,7 +380,7 @@ class BIDSPath(object):
         self.update(session=value)
 
     @property
-    def task(self):
+    def task(self) -> Optional[str]:
         """The experimental task."""
         return self._task
 
@@ -388,7 +389,7 @@ class BIDSPath(object):
         self.update(task=value)
 
     @property
-    def run(self):
+    def run(self) -> Optional[int]:
         """The run number."""
         return self._run
 
@@ -397,7 +398,7 @@ class BIDSPath(object):
         self.update(run=value)
 
     @property
-    def acquisition(self):
+    def acquisition(self) -> Optional[str]:
         """The acquisition parameters."""
         return self._acquisition
 
@@ -406,7 +407,7 @@ class BIDSPath(object):
         self.update(acquisition=value)
 
     @property
-    def processing(self):
+    def processing(self) -> Optional[str]:
         """The processing label."""
         return self._processing
 
@@ -415,7 +416,7 @@ class BIDSPath(object):
         self.update(processing=value)
 
     @property
-    def recording(self):
+    def recording(self) -> Optional[str]:
         """The recording name."""
         return self._recording
 
@@ -424,7 +425,7 @@ class BIDSPath(object):
         self.update(recording=value)
 
     @property
-    def space(self):
+    def space(self) -> Optional[str]:
         """The coordinate space for an anatomical or sensor position file."""
         return self._space
 
@@ -433,7 +434,7 @@ class BIDSPath(object):
         self.update(space=value)
 
     @property
-    def suffix(self):
+    def suffix(self) -> Optional[str]:
         """The filename suffix."""
         return self._suffix
 
@@ -442,7 +443,7 @@ class BIDSPath(object):
         self.update(suffix=value)
 
     @property
-    def root(self):
+    def root(self) -> Optional[Union[str, Path]]:
         """The root directory of the BIDS dataset."""
         return self._root
 
@@ -451,7 +452,7 @@ class BIDSPath(object):
         self.update(root=value)
 
     @property
-    def datatype(self):
+    def datatype(self) -> str:
         """The BIDS data type, e.g. ``'anat'``, ``'meg'``, ``'eeg'``."""
         return self._datatype
 
