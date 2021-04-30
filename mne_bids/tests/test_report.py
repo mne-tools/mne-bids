@@ -59,4 +59,3 @@ analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
 
     print(report)
     assert report == expected_report
-    
