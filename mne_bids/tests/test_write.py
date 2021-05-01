@@ -408,8 +408,7 @@ def test_fif(_bids_validate, tmpdir):
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
-    raw2 = read_raw_bids(bids_path=bids_path,
-                         extra_params=dict(allow_maxshield=True))
+    raw2 = read_raw_bids(bids_path=bids_path)
     assert set(raw.info['bads']) == set(raw2.info['bads'])
     events, _ = mne.events_from_annotations(raw2)
     events2 = mne.read_events(events_fname)

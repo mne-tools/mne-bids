@@ -447,7 +447,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
-        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
         Note that the ``exclude`` parameter, which is supported by some
         MNE-Python readers, is not supported; instead, you need to subset
         your channels **after** reading.
@@ -522,6 +521,9 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     elif 'exclude' in extra_params:
         del extra_params['exclude']
         logger.info('"exclude" parameter is not supported by read_raw_bids')
+
+    if bids_fname.endswith('.fif') and 'allow_maxshield' not in extra_params:
+        extra_params['allow_maxshield'] = True
 
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, verbose=None, **extra_params)

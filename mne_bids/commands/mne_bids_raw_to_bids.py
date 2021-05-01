@@ -50,9 +50,6 @@ def run():
                       help='path to the configuration file')
     parser.add_option('--overwrite', dest='overwrite',
                       help="whether to overwrite existing data (BOOLEAN)")
-    parser.add_option('--allow_maxshield', dest='allow_maxshield',
-                      help="whether to allow non maxfiltered data (BOOLEAN)",
-                      action='store_true')
     parser.add_option('--line_freq', dest='line_freq',
                       help="The frequency of the line noise in Hz "
                            "(e.g. 50 or 60). If unknown, pass None")
@@ -72,9 +69,14 @@ def run():
     bids_path = BIDSPath(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
         acquisition=opt.acq, task=opt.task, root=opt.bids_root)
+
+    allow_maxshield = False
+    if opt.raw_fname.endswith('.fif'):
+        allow_maxshield = True
+
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config,
-                    allow_maxshield=opt.allow_maxshield)
+                    allow_maxshield=allow_maxshield)
     if opt.line_freq is not None:
         line_freq = None if opt.line_freq == "None" else opt.line_freq
         raw.info['line_freq'] = line_freq
