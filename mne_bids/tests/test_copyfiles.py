@@ -200,12 +200,6 @@ def test_copyfile_eeglab(tmpdir, fname):
     with pytest.raises(ValueError, match="Need to move data with same ext"):
         copyfile_eeglab(raw_fname, new_name + '.wrong')
 
-    # Bad .set file testing
-    with pytest.raises(ValueError, match='Could not find "EEG" field'):
-        fake_set = op.join(bids_root, 'fake.set')
-        savemat(fake_set, {'arr': [1, 2, 3]}, appendmat=False)
-        copyfile_eeglab(fake_set, new_name)
-
     # Test copying and reading a combined set+fdt
     copyfile_eeglab(raw_fname, new_name)
     if fname == 'test_raw_chanloc.set':
