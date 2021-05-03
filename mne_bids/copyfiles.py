@@ -513,9 +513,8 @@ def copyfile_eeglab(src, dest):
     uint16_codec = None
     mat = loadmat(file_name=src, simplify_cells=True,
                   appendmat=False, uint16_codec=uint16_codec)
-    if 'EEG' not in mat:
-        raise ValueError(f'Could not find "EEG" field in {src}')
-    eeg = mat['EEG']
+    if 'EEG' in mat:
+        eeg = mat['EEG']
 
     if isinstance(eeg['data'], str):
         # If the data field is a string, it points to a .fdt file in src dir
