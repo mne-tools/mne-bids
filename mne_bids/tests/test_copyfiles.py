@@ -9,7 +9,6 @@ import datetime
 from distutils.version import LooseVersion
 
 import pytest
-from scipy.io import savemat
 
 # This is here to handle mne-python <0.20
 import warnings
