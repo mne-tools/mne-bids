@@ -513,8 +513,10 @@ def copyfile_eeglab(src, dest):
     uint16_codec = None
     mat = loadmat(file_name=src, simplify_cells=True,
                   appendmat=False, uint16_codec=uint16_codec)
+    oldstyle = False
     if 'EEG' in mat:
         eeg = mat['EEG']
+        oldstyle = True
 
     if isinstance(eeg['data'], str):
         # If the data field is a string, it points to a .fdt file in src dir
@@ -531,7 +533,7 @@ def copyfile_eeglab(src, dest):
         eeg['data'] = tail
 
         # Save the EEG dictionary as a Matlab struct again
-        mdict = dict(EEG=eeg)
+        mdict = dict(EEG=eeg) if oldstyle else eeg
         savemat(file_name=dest, mdict=mdict, appendmat=False)
     else:
         # If no .fdt file, simply copy the .set file, no modifications
