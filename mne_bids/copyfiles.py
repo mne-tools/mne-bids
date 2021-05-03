@@ -502,14 +502,14 @@ def copyfile_eeglab(src, dest):
     if not mne.utils.check_version('scipy', '1.5.0'):  # pragma: no cover
         raise ImportError('SciPy >=1.5.0 is required handling EEGLAB data.')
 
-    # Get extenstion of the EEGLAB file
+    # Get extension of the EEGLAB file
     _, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
         raise ValueError(f'Need to move data with same extension'
                          f' but got {ext_src}, {ext_dest}')
 
-    # Load the EEG struct.
+    # Load the EEG struct
     uint16_codec = None
     mat = loadmat(file_name=src, simplify_cells=True,
                   appendmat=False, uint16_codec=uint16_codec)
