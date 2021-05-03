@@ -511,11 +511,11 @@ def copyfile_eeglab(src, dest):
 
     # Load the EEG struct
     uint16_codec = None
-    mat = loadmat(file_name=src, simplify_cells=True,
+    eeg = loadmat(file_name=src, simplify_cells=True,
                   appendmat=False, uint16_codec=uint16_codec)
     oldstyle = False
-    if 'EEG' in mat:
-        eeg = mat['EEG']
+    if 'EEG' in eeg:
+        eeg = eeg['EEG']
         oldstyle = True
 
     if isinstance(eeg['data'], str):
