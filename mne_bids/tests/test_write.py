@@ -851,6 +851,7 @@ def test_ctf(_bids_validate, tmpdir):
     raw = _read_raw_ctf(raw_fname)
     raw.info['line_freq'] = 60
     write_raw_bids(raw, bids_path)
+    write_raw_bids(raw, bids_path, overwrite=True)  # test overwrite
 
     _bids_validate(tmpdir)
     with pytest.warns(RuntimeWarning, match='Did not find any events'):

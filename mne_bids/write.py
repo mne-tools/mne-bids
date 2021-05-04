@@ -1344,10 +1344,16 @@ def write_raw_bids(raw, bids_path, events_data=None,
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
 
-    if os.path.exists(bids_path.fpath) and not overwrite:
-        raise FileExistsError(
-            f'"{bids_path.fpath}" already exists. '  # noqa: F821
-            'Please set overwrite to True.')
+    if os.path.exists(bids_path.fpath):
+        if overwrite:
+            if bids_path.fpath.is_dir():
+                shutil.rmtree(bids_path.fpath)
+            else:
+                bids_path.fpath.unlink()
+        else:
+            raise FileExistsError(
+                f'"{bids_path.fpath}" already exists. '  # noqa: F821
+                'Please set overwrite to True.')
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
