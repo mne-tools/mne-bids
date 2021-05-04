@@ -200,14 +200,14 @@ def test_copyfile_eeglab(tmpdir, fname):
     with pytest.raises(ValueError, match="Need to move data with same ext"):
         copyfile_eeglab(raw_fname, new_name + '.wrong')
 
-    # Test copying and reading a
+    # Test copying and reading
     copyfile_eeglab(raw_fname, new_name)
     if fname == 'test_raw_chanloc.set':  # combined set+fdt
         with pytest.warns(RuntimeWarning,
                           match="The data contains 'boundary' events"):
             raw = mne.io.read_raw_eeglab(new_name)
             assert 'Fp1' in raw.ch_names
-    else:  # single set (new EEGLAB format)
+    else:  # combined set+fdt and single set (new EEGLAB format)
         raw = mne.io.read_raw_eeglab(new_name, preload=True)
         assert 'EEG 001' in raw.ch_names
     assert isinstance(raw, mne.io.BaseRaw)
