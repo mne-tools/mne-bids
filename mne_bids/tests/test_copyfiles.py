@@ -183,7 +183,8 @@ def test_copyfile_edf(tmpdir):
 
 
 @pytest.mark.parametrize('fname',
-                         ('test_raw.set', 'test_raw_chanloc.set'))
+                         ('test_raw.set', 'test_raw_chanloc.set',
+                          'test_raw_2021.set'))
 def test_copyfile_eeglab(tmpdir, fname):
     """Test the copying of EEGlab set and fdt files."""
     if (fname == 'test_raw_chanloc.set' and
