@@ -207,10 +207,7 @@ def test_copyfile_eeglab(tmpdir, fname):
                           match="The data contains 'boundary' events"):
             raw = mne.io.read_raw_eeglab(new_name)
             assert 'Fp1' in raw.ch_names
-    elif fname == 'test_raw.set':  # combined set+fdt
-        raw = mne.io.read_raw_eeglab(new_name)
-        assert 'EEG 001' in raw.ch_names
-    elif fname == 'test_raw_2021.set':  # single set (new EEGLAB format)
+    else:  # single set (new EEGLAB format)
         raw = mne.io.read_raw_eeglab(new_name, preload=True)
         assert 'EEG 001' in raw.ch_names
     assert isinstance(raw, mne.io.BaseRaw)
