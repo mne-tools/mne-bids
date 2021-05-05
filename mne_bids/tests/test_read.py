@@ -546,7 +546,6 @@ def test_handle_chpi_reading(tmpdir):
     assert raw_read.info['hpi_meas'] == []
 
 
-@requires_version('mne', '0.24')
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_eeg_coords_reading(tmpdir):
