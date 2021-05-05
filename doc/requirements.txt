@@ -6,3 +6,4 @@ numpydoc
 matplotlib
 pillow
 pandas
+setuptools

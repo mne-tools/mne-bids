@@ -606,15 +606,21 @@ def test_fif(_bids_validate, tmpdir):
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=True)
 
-    # test whether extra points in raw.info['dig'] are correctly used
-    # to set DigitizedHeadShape in the json sidecar
     meg_json = _find_matching_sidecar(
         bids_path.copy().update(root=bids_root),
         suffix='meg', extension='.json')
+
     with open(meg_json, 'r') as fin:
         meg_json_data = json.load(fin)
-        # unchanged sample data includes Extra points
-        assert meg_json_data['DigitizedHeadPoints'] is True
+
+    # no cHPI info is contained in the sample data
+    assert meg_json_data['ContinuousHeadLocalization'] is False
+    assert meg_json_data['HeadCoilFrequency'] == []
+
+    # test whether extra points in raw.info['dig'] are correctly used
+    # to set DigitizedHeadShape in the json sidecar
+    # unchanged sample data includes Extra points
+    assert meg_json_data['DigitizedHeadPoints'] is True
 
     # drop extra points from raw.info['dig'] and write again
     raw_no_extra_points = raw.copy()
@@ -635,6 +641,26 @@ def test_fif(_bids_validate, tmpdir):
         # sample data does not have Extra points, so it should
         # DigitizedHeadPoints should be false
         assert meg_json_data['DigitizedHeadPoints'] is False
+
+    # test data with cHPI info
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
+    with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
+        raw = _read_raw_fif(raw_fname, allow_maxshield=True)
+
+    root = tmpdir.mkdir('chpi')
+    bids_path = bids_path.copy().update(root=root, datatype='meg')
+    with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
+        bids_path = write_raw_bids(raw, bids_path)
+
+    meg_json = bids_path.copy().update(suffix='meg', extension='.json')
+
+    with open(meg_json, 'r') as fin:
+        meg_json_data = json.load(fin)
+
+    assert meg_json_data['ContinuousHeadLocalization'] is True
+    assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
+                              [83., 143., 203., 263., 323.])
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
