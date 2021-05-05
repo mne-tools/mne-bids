@@ -653,6 +653,7 @@ def test_fif(_bids_validate, tmpdir):
     root = tmpdir.mkdir('chpi')
     bids_path = bids_path.copy().update(root=root, datatype='meg')
     bids_path = write_raw_bids(raw, bids_path)
+    _bids_validate(bids_path.root)
 
     meg_json = bids_path.copy().update(suffix='meg', extension='.json')
     with open(meg_json, 'r') as fin:
