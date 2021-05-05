@@ -16,6 +16,8 @@ from datetime import datetime, timezone, timedelta
 import shutil
 from collections import defaultdict, OrderedDict
 
+from pkg_resources import parse_version
+
 import numpy as np
 from scipy import linalg
 import mne
@@ -654,6 +656,16 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
                     raw.filenames[0].endswith('.fif'):
                 digitized_head_points = True
 
+    # Compile cHPI information, if any.
+    chpi = False
+    hpi_freqs = np.array([])
+    if (datatype == 'meg' and
+            parse_version(mne.__version__) > parse_version('0.23')):
+        hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
+                                                 on_missing='ignore')
+        if hpi_freqs.size > 0:
+            chpi = True
+
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
         ('TaskName', task),
@@ -668,7 +680,9 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         ('DigitizedLandmarks', digitized_landmark),
         ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
-        ('MEGREFChannelCount', n_megrefchan)]
+        ('MEGREFChannelCount', n_megrefchan),
+        ('ContinuousHeadLocalization', chpi),
+        ('HeadCoilFrequency', list(hpi_freqs))]
     ch_info_json_eeg = [
         ('EEGReference', 'n/a'),
         ('EEGGround', 'n/a'),
@@ -1111,8 +1125,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         events = mne.find_events(raw, min_duration=0.002)
         write_raw_bids(..., events_data=events)
 
-    See the documentation of `mne.find_events` for more information on event
-    extraction from ``STIM`` channels.
+    See the documentation of :func:`mne.find_events` for more information on
+    event extraction from ``STIM`` channels.
 
     When anonymizing ``.edf`` files, then the file format for EDF limits
     how far back we can set the recording date. Therefore, all anonymized
@@ -1213,14 +1227,14 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise ValueError(msg)
 
     datatype = _handle_datatype(raw, bids_path.datatype, verbose)
-    bids_path = bids_path.copy()
-    bids_path = bids_path.update(
-        datatype=datatype, suffix=datatype, extension=ext)
+    bids_path = (bids_path.copy()
+                 .update(datatype=datatype, suffix=datatype, extension=ext))
 
     # check whether the info provided indicates that the data is emptyroom
     # data
     emptyroom = False
-    if bids_path.subject == 'emptyroom' and bids_path.task == 'noise':
+    if (bids_path.datatype == 'meg' and bids_path.subject == 'emptyroom' and
+            bids_path.task == 'noise'):
         emptyroom = True
         # check the session date provided is consistent with the value in raw
         meas_date = raw.info.get('meas_date', None)

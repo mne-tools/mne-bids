@@ -241,7 +241,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
 
 
 def _handle_info_reading(sidecar_fname, raw, verbose=None):
-    """Read associated sidecar.json and populate raw.
+    """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
     """
@@ -268,6 +268,29 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
                              "Sidecar JSON is -> {} ".format(line_freq))
 
     raw.info["line_freq"] = line_freq
+
+    # get cHPI info
+    chpi = sidecar_json.get('ContinuousHeadLocalization')
+    if chpi is None:
+        # no cHPI info in the sidecar – leave raw.info unchanged
+        pass
+    elif chpi is True:
+        hpi_freqs = sidecar_json['HeadCoilFrequency']
+        hpi_freqs_data, _, _ = mne.chpi.get_chpi_info(raw.info)
+        if not np.allclose(hpi_freqs, hpi_freqs_data):
+            raise ValueError(
+                f'The cHPI coil frequencies in the sidecar file '
+                f'{sidecar_fname}:\n    {hpi_freqs}\ndiffer from what is '
+                f'stored in the raw data:\n    {hpi_freqs_data}\n'
+                f'Cannot proceed.'
+            )
+    else:
+        if raw.info['hpi_subsystem']:
+            logger.info('Dropping cHPI information stored in raw data, '
+                        'following specification in sidecar file')
+        raw.info['hpi_subsystem'] = None
+        raw.info['hpi_meas'] = []
+
     return raw
 
 
