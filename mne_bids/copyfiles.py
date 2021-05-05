@@ -26,7 +26,7 @@ from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
-from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
+from mne_bids.utils import _get_mrk_meas_date, _check_anonymize, logger
 
 
 def _copytree(src, dst, **kwargs):
@@ -69,7 +69,7 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
             enc = 'UTF-8'
             src = '(default)'
         if verbose is True:
-            print(f'Detected file encoding: {enc} {src}.')
+            logger.info(f'Detected file encoding: {enc} {src}.')
     return enc
 
 
@@ -357,9 +357,9 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
         for ext in ['.eeg', '.vhdr', '.vmrk']:
             _, fname = os.path.split(fname_dest + ext)
             dirname = op.dirname(op.realpath(vhdr_dest))
-            print(f'Created "{fname}" in "{dirname}".')
+            logger.info(f'Created "{fname}" in "{dirname}".')
         if anonymize:
-            print('Anonymized all dates in VHDR and VMRK.')
+            logger.info('Anonymized all dates in VHDR and VMRK.')
 
 
 def copyfile_edf(src, dest, anonymize=None):

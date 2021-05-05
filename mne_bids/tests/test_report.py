@@ -57,5 +57,4 @@ over all scans. For each dataset, there were on average 376.0 (std = 0.0)
 recording channels per scan, out of which 374.0 (std = 0.0) were used in
 analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
 
-    print(report)
     assert report == expected_report

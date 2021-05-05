@@ -115,13 +115,15 @@ def _handle_datatype(raw, datatype, verbose=True):
         # MEG data is not supported by BrainVision or EDF files
         if datatype in ['eeg', 'ieeg'] and 'meg' in raw:
             if verbose:
-                print(os.linesep + f"Both {datatype} and 'meg' data found. "
-                                   f"BrainVision and EDF do not support 'meg' "
-                                   f"data. The data will therefore be stored "
-                                   f"as 'meg' data. If you wish to store your "
-                                   f"{datatype} data in BrainVision or EDF, "
-                                   f"please remove the 'meg' channels from "
-                                   f"your recording." + os.linesep)
+                logger.info(
+                    f"{os.linesep}Both {datatype} and 'meg' data found. "
+                    f"BrainVision and EDF do not support 'meg' "
+                    f"data. The data will therefore be stored "
+                    f"as 'meg' data. If you wish to store your "
+                    f"{datatype} data in BrainVision or EDF, "
+                    f"please remove the 'meg' channels from "
+                    f"your recording." + os.linesep
+                )
             datatype = 'meg'
     else:
         datatypes = list()
@@ -196,8 +198,8 @@ def _write_json(fname, dictionary, overwrite=False, verbose=False):
         fid.write('\n')
 
     if verbose is True:
-        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
-        print(json_output)
+        logger.info(os.linesep + f"Writing '{fname}'..." + os.linesep)
+        logger.info(json_output)
 
 
 def _write_tsv(fname, dictionary, overwrite=False, verbose=False):
@@ -208,8 +210,8 @@ def _write_tsv(fname, dictionary, overwrite=False, verbose=False):
     _to_tsv(dictionary, fname)
 
     if verbose:
-        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
-        print(_tsv_to_str(dictionary))
+        logger.info(os.linesep + f"Writing '{fname}'..." + os.linesep)
+        logger.info(_tsv_to_str(dictionary))
 
 
 def _write_text(fname, text, overwrite=False, verbose=True):
@@ -222,8 +224,8 @@ def _write_text(fname, text, overwrite=False, verbose=True):
         fid.write('\n')
 
     if verbose:
-        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
-        print(text)
+        logger.info(os.linesep + f"Writing '{fname}'..." + os.linesep)
+        logger.info(text)
 
 
 def _check_key_val(key, val):

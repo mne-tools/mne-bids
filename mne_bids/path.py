@@ -1040,17 +1040,18 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
         # Only print if this is up to the depth we asked
         if branchlen <= max_depth:
             if branchlen <= 1:
-                print('|{}'.format(op.basename(root) + os.sep), file=outfile)
+                logger.info('|{}'.format(op.basename(root) + os.sep),
+                            file=outfile)
             else:
-                print('|{} {}'.format((branchlen - 1) * '---',
-                                      op.basename(root) + os.sep),
-                      file=outfile)
+                logger.info('|{} {}'.format((branchlen - 1) * '---',
+                                            op.basename(root) + os.sep),
+                            file=outfile)
 
             # Only print files if we are NOT yet up to max_depth or beyond
             if branchlen < max_depth:
                 for file in files:
-                    print('|{} {}'.format(branchlen * '---', file),
-                          file=outfile)
+                    logger.info('|{} {}'.format(branchlen * '---', file),
+                                file=outfile)
 
     if outfile is not None:
         return outfile.getvalue()
@@ -1063,8 +1064,8 @@ def _parse_ext(raw_fname, verbose=False):
     # BTi data is the only file format that does not have a file extension
     if ext == '' or 'c,rf' in fname:
         if verbose is True:
-            print('Found no extension for raw file, assuming "BTi" format and '
-                  'appending extension .pdf')
+            logger.info('Found no extension for raw file, assuming "BTi" '
+                        'format and appending extension .pdf')
         ext = '.pdf'
     # If ending on .gz, check whether it is an .nii.gz file
     elif ext == '.gz' and raw_fname.endswith('.nii.gz'):
@@ -1449,11 +1450,11 @@ def _mkdir_p(path, overwrite=False, verbose=False):
     if overwrite and op.isdir(path):
         sh.rmtree(path)
         if verbose is True:
-            print(f'Clearing path: {path}')
+            logger.info(f'Clearing path: {path}')
 
     os.makedirs(path, exist_ok=True)
     if verbose is True:
-        print(f'Creating folder: {path}')
+        logger.info(f'Creating folder: {path}')
 
 
 def _find_best_candidates(params, candidate_list):

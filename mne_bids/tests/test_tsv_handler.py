@@ -34,7 +34,6 @@ def test_tsv_handler(tmpdir):
     d = _combine_rows(d, d2, drop_column='a')
     # make sure that the repeated data was dropped
     assert 'nine' not in d['b']
-    print(_tsv_to_str(d))
 
     d_path = tmpdir / 'output.tsv'
 

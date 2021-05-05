@@ -233,7 +233,6 @@ def test_parse_ext():
 def test_get_entities_from_fname(fname):
     """Test parsing entities from a bids filename."""
     params = get_entities_from_fname(fname)
-    print(params)
     assert params['subject'] == '01'
     assert params['session'] == '02'
     assert params['run'] == '3'
@@ -453,7 +452,6 @@ def test_bids_path(return_bids_test_dir):
     assert bids_path.session == session_id
     assert 'subject' in bids_path.entities
     assert 'session' in bids_path.entities
-    print(bids_path.entities)
     assert all(bids_path.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing', 'split',

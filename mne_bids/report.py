@@ -9,7 +9,7 @@ from pathlib import Path
 
 import numpy as np
 from mne.externals.tempita import Template
-from mne.utils import warn
+from mne.utils import warn, logger
 
 from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
@@ -196,7 +196,8 @@ def _summarize_participants_tsv(root, verbose=True):
     participants_tsv = _from_tsv(str(participants_tsv_fpath))
     p_ids = participants_tsv['participant_id']
     if verbose:
-        print(f'Summarizing participants.tsv {participants_tsv_fpath}...')
+        logger.info(f'Summarizing participants.tsv '
+                    f'{participants_tsv_fpath}...')
 
     # summarize sex count statistics
     keys = ['M', 'F', 'n/a']
@@ -280,7 +281,7 @@ def _summarize_scans(root, session=None, verbose=True):
         return dict()
 
     if verbose:
-        print(f'Summarizing scans.tsv files {scans_fpaths}...')
+        logger.info(f'Summarizing scans.tsv files {scans_fpaths}...')
 
     # summarize sidecar.json, channels.tsv template
     sidecar_dict = _summarize_sidecar_json(root, scans_fpaths,
@@ -514,7 +515,8 @@ def make_report(root, session=None, verbose=True):
         participant_template = participant_template.substitute(
             **participant_summary)
         if verbose:
-            print(f'The participant template found: {participant_template}')
+            logger.info(f'The participant template found: '
+                        f'{participant_template}')
 
     dataset_summary['PARTICIPANTS_TEMPLATE'] = str(participant_template)
 

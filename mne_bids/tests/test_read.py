@@ -126,7 +126,6 @@ def test_read_participants_data(tmpdir):
     raw.info['subject_info'] = subject_info
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
-    print(raw.info['subject_info'])
     assert raw.info['subject_info']['hand'] == 1
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None

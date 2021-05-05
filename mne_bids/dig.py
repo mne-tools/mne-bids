@@ -40,7 +40,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
         summary_str = [(ch, coord) for idx, (ch, coord)
                        in enumerate(electrodes_dict.items())
                        if idx < 5]
-        print("The read in electrodes file is: \n", summary_str)
+        logger.info("The read electrodes file is: \n", summary_str)
 
     def _float_or_nan(val):
         if val == "n/a":
@@ -95,8 +95,8 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype, verbose=True):
                                                 None)
 
     if verbose:
-        print(f"Reading in coordinate system frame {coord_frame}: "
-              f"{coord_frame_desc}.")
+        logger.info(f"Reading in coordinate system frame {coord_frame}: "
+                    f"{coord_frame_desc}.")
 
     return coord_frame, coord_unit
 
@@ -358,8 +358,8 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
                                 extension='.json')
 
     if verbose:
-        print("Writing electrodes file to... ", electrodes_path)
-        print("Writing coordsytem file to... ", coordsystem_path)
+        logger.info(f"Writing electrodes file to {electrodes_path}")
+        logger.info(f"Writing coordsytem file to {coordsystem_path}")
 
     if datatype == 'ieeg':
         if coord_frame is not None:
