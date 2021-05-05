@@ -22,7 +22,7 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 from mne.io.constants import FIFF
-from mne.utils import requires_nibabel, object_diff
+from mne.utils import requires_nibabel, object_diff, requires_version
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
@@ -421,7 +421,6 @@ def test_handle_scans_reading(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-@pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_handle_info_reading(tmpdir):
     """Test reading information from a BIDS sidecar JSON file."""
     # read in USA dataset, so it should find 50 Hz
@@ -506,11 +505,17 @@ def test_handle_info_reading(tmpdir):
         raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['line_freq'] == 55
 
-    # handle cHPI info
-    raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
 
+@requires_version('mne', '0.24.dev0')
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['maxshield'])
+def test_handle_chpi_reading(tmpdir):
+    """Test reading of cHPI information."""
+    raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
     root = tmpdir.mkdir('chpi')
-    bids_path = bids_path.copy().update(root=root, datatype='meg')
+    bids_path = BIDSPath(subject='01', session='01',
+                         task='audiovisual', run='01',
+                         root=root, datatype='meg')
     bids_path = write_raw_bids(raw, bids_path)
 
     raw_read = read_raw_bids(bids_path)
@@ -541,6 +546,7 @@ def test_handle_info_reading(tmpdir):
     assert raw_read.info['hpi_meas'] == []
 
 
+@requires_version('mne', '0.24')
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_eeg_coords_reading(tmpdir):

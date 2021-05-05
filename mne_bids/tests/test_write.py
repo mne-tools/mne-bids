@@ -20,7 +20,8 @@ import shutil as sh
 import json
 from pathlib import Path
 import codecs
-from distutils.version import LooseVersion
+
+from pkg_resources import parse_version
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
@@ -657,9 +658,13 @@ def test_fif(_bids_validate, tmpdir):
     with open(meg_json, 'r') as fin:
         meg_json_data = json.load(fin)
 
-    assert meg_json_data['ContinuousHeadLocalization'] is True
-    assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
-                              [83., 143., 203., 263., 323.])
+    if parse_version(mne.__version__) > parse_version('0.23'):
+        assert meg_json_data['ContinuousHeadLocalization'] is True
+        assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
+                                  [83., 143., 203., 263., 323.])
+    else:
+        assert meg_json_data['ContinuousHeadLocalization'] is False
+        assert meg_json_data['HeadCoilFrequency'] == []
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -1399,7 +1404,7 @@ def test_bdf(_bids_validate, tmpdir):
         write_raw_bids(mne.concatenate_raws([raw.copy(), raw]), bids_path,
                        overwrite=True)
 
-    if LooseVersion(mne.__version__) >= LooseVersion('0.23'):
+    if parse_version(mne.__version__) >= parse_version('0.23'):
         raw.info['sfreq'] -= 10  # changes raw.times, but retains its dimension
     else:
         raw._times = raw._times / 5

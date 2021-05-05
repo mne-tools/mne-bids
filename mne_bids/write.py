@@ -657,11 +657,14 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
                 digitized_head_points = True
 
     # Compile cHPI information, if any.
+    chpi = False
     hpi_freqs = np.array([])
     if (datatype == 'meg' and
             parse_version(mne.__version__) > parse_version('0.23')):
         hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
                                                  on_missing='ignore')
+        if hpi_freqs.size > 0:
+            chpi = True
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
@@ -678,7 +681,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan),
-        ('ContinuousHeadLocalization', hpi_freqs.size > 0),
+        ('ContinuousHeadLocalization', chpi),
         ('HeadCoilFrequency', list(hpi_freqs))]
     ch_info_json_eeg = [
         ('EEGReference', 'n/a'),
