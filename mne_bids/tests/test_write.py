@@ -74,7 +74,8 @@ warning_str = dict(
                          'pytest.PytestUnraisableExceptionWarning',
     encountered_data_in='ignore:Encountered data in*.:RuntimeWarning:mne',
     edf_warning=r'ignore:^EDF\/EDF\+\/BDF files contain two fields .*'
-                r':RuntimeWarning:mne'
+                r':RuntimeWarning:mne',
+    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne'
 )
 
 
@@ -374,6 +375,7 @@ def test_line_freq(line_freq, _bids_validate, tmpdir):
 
 @requires_version('pybv', '0.4')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_fif(_bids_validate, tmpdir):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_root = tmpdir.mkdir('bids1')
@@ -645,16 +647,13 @@ def test_fif(_bids_validate, tmpdir):
     # test data with cHPI info
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
-    with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
-        raw = _read_raw_fif(raw_fname, allow_maxshield=True)
+    raw = _read_raw_fif(raw_fname, allow_maxshield=True)
 
     root = tmpdir.mkdir('chpi')
     bids_path = bids_path.copy().update(root=root, datatype='meg')
-    with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
-        bids_path = write_raw_bids(raw, bids_path)
+    bids_path = write_raw_bids(raw, bids_path)
 
     meg_json = bids_path.copy().update(suffix='meg', extension='.json')
-
     with open(meg_json, 'r') as fin:
         meg_json_data = json.load(fin)
 

@@ -67,6 +67,7 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
+    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne'
 )
 
 
@@ -420,6 +421,7 @@ def test_handle_scans_reading(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_handle_info_reading(tmpdir):
     """Test reading information from a BIDS sidecar JSON file."""
     # read in USA dataset, so it should find 50 Hz
@@ -505,15 +507,13 @@ def test_handle_info_reading(tmpdir):
         assert raw.info['line_freq'] == 55
 
     # handle cHPI info
-    with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
-        raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
+    raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
 
     root = tmpdir.mkdir('chpi')
     bids_path = bids_path.copy().update(root=root, datatype='meg')
-    with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
-        bids_path = write_raw_bids(raw, bids_path)
-        raw_read = read_raw_bids(bids_path)
+    bids_path = write_raw_bids(raw, bids_path)
 
+    raw_read = read_raw_bids(bids_path)
     assert raw_read.info['hpi_subsystem'] is not None
 
     # cause conflicts between cHPI info in sidecar and raw data
@@ -528,8 +528,7 @@ def test_handle_info_reading(tmpdir):
         json.dump(meg_json_data_freq_mismatch, f)
 
     with pytest.raises(ValueError, match='cHPI coil frequencies'):
-        with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
-            raw_read = read_raw_bids(bids_path)
+        raw_read = read_raw_bids(bids_path)
 
     # cHPI "off" according to sidecar, but present in the data
     meg_json_data_chpi_mismatch = meg_json_data.copy()
@@ -537,9 +536,7 @@ def test_handle_info_reading(tmpdir):
     with open(meg_json_path, 'w', encoding='utf-8') as f:
         json.dump(meg_json_data_chpi_mismatch, f)
 
-    with pytest.warns(RuntimeWarning, match='Internal Active Shielding'):
-        raw_read = read_raw_bids(bids_path)
-
+    raw_read = read_raw_bids(bids_path)
     assert raw_read.info['hpi_subsystem'] is None
     assert raw_read.info['hpi_meas'] == []
 
