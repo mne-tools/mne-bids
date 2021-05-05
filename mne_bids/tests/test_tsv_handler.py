@@ -15,7 +15,7 @@ with warnings.catch_warnings():
     import mne  # noqa: F401
 
 from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine_rows, _drop,
-                                  _contains_row, _tsv_to_str)
+                                  _contains_row)
 import pytest
 
 

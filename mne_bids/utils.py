@@ -20,7 +20,7 @@ from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
 from mne.utils import warn, logger
 
-from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
+from mne_bids.tsv_handler import _to_tsv
 
 
 # This regex matches key-val pairs. Any characters are allowed in the key and
