@@ -22,7 +22,7 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 from mne.io.constants import FIFF
-from mne.utils import requires_nibabel, object_diff
+from mne.utils import requires_nibabel, object_diff, requires_version
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
@@ -59,11 +59,15 @@ somato_path = somato.data_path()
 somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
                            'sub-01_task-somato_meg.fif')
 
+# Data with cHPI info
+raw_fname_chpi = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
+
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
+    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne'
 )
 
 
@@ -418,7 +422,7 @@ def test_handle_scans_reading(tmpdir):
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_info_reading(tmpdir):
-    """Test reading information from a BIDS sidecar.json file."""
+    """Test reading information from a BIDS sidecar JSON file."""
     # read in USA dataset, so it should find 50 Hz
     raw = _read_raw_fif(raw_fname)
 
@@ -500,6 +504,46 @@ def test_handle_info_reading(tmpdir):
     with pytest.raises(ValueError, match="Line frequency in sidecar json"):
         raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['line_freq'] == 55
+
+
+@requires_version('mne', '0.24.dev0')
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['maxshield'])
+def test_handle_chpi_reading(tmpdir):
+    """Test reading of cHPI information."""
+    raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
+    root = tmpdir.mkdir('chpi')
+    bids_path = BIDSPath(subject='01', session='01',
+                         task='audiovisual', run='01',
+                         root=root, datatype='meg')
+    bids_path = write_raw_bids(raw, bids_path)
+
+    raw_read = read_raw_bids(bids_path)
+    assert raw_read.info['hpi_subsystem'] is not None
+
+    # cause conflicts between cHPI info in sidecar and raw data
+    meg_json_path = bids_path.copy().update(suffix='meg', extension='.json')
+    with open(meg_json_path, 'r', encoding='utf-8') as f:
+        meg_json_data = json.load(f)
+
+    # cHPI frequency mismatch
+    meg_json_data_freq_mismatch = meg_json_data.copy()
+    meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
+    with open(meg_json_path, 'w', encoding='utf-8') as f:
+        json.dump(meg_json_data_freq_mismatch, f)
+
+    with pytest.raises(ValueError, match='cHPI coil frequencies'):
+        raw_read = read_raw_bids(bids_path)
+
+    # cHPI "off" according to sidecar, but present in the data
+    meg_json_data_chpi_mismatch = meg_json_data.copy()
+    meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
+    with open(meg_json_path, 'w', encoding='utf-8') as f:
+        json.dump(meg_json_data_chpi_mismatch, f)
+
+    raw_read = read_raw_bids(bids_path)
+    assert raw_read.info['hpi_subsystem'] is None
+    assert raw_read.info['hpi_meas'] == []
 
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])

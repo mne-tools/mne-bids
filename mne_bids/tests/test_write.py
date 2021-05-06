@@ -20,7 +20,8 @@ import shutil as sh
 import json
 from pathlib import Path
 import codecs
-from distutils.version import LooseVersion
+
+from pkg_resources import parse_version
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
@@ -74,7 +75,8 @@ warning_str = dict(
                          'pytest.PytestUnraisableExceptionWarning',
     encountered_data_in='ignore:Encountered data in*.:RuntimeWarning:mne',
     edf_warning=r'ignore:^EDF\/EDF\+\/BDF files contain two fields .*'
-                r':RuntimeWarning:mne'
+                r':RuntimeWarning:mne',
+    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne'
 )
 
 
@@ -374,6 +376,7 @@ def test_line_freq(line_freq, _bids_validate, tmpdir):
 
 @requires_version('pybv', '0.4')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_fif(_bids_validate, tmpdir):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_root = tmpdir.mkdir('bids1')
@@ -606,15 +609,21 @@ def test_fif(_bids_validate, tmpdir):
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=True)
 
-    # test whether extra points in raw.info['dig'] are correctly used
-    # to set DigitizedHeadShape in the json sidecar
     meg_json = _find_matching_sidecar(
         bids_path.copy().update(root=bids_root),
         suffix='meg', extension='.json')
+
     with open(meg_json, 'r') as fin:
         meg_json_data = json.load(fin)
-        # unchanged sample data includes Extra points
-        assert meg_json_data['DigitizedHeadPoints'] is True
+
+    # no cHPI info is contained in the sample data
+    assert meg_json_data['ContinuousHeadLocalization'] is False
+    assert meg_json_data['HeadCoilFrequency'] == []
+
+    # test whether extra points in raw.info['dig'] are correctly used
+    # to set DigitizedHeadShape in the json sidecar
+    # unchanged sample data includes Extra points
+    assert meg_json_data['DigitizedHeadPoints'] is True
 
     # drop extra points from raw.info['dig'] and write again
     raw_no_extra_points = raw.copy()
@@ -635,6 +644,28 @@ def test_fif(_bids_validate, tmpdir):
         # sample data does not have Extra points, so it should
         # DigitizedHeadPoints should be false
         assert meg_json_data['DigitizedHeadPoints'] is False
+
+    # test data with cHPI info
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
+    raw = _read_raw_fif(raw_fname, allow_maxshield=True)
+
+    root = tmpdir.mkdir('chpi')
+    bids_path = bids_path.copy().update(root=root, datatype='meg')
+    bids_path = write_raw_bids(raw, bids_path)
+    _bids_validate(bids_path.root)
+
+    meg_json = bids_path.copy().update(suffix='meg', extension='.json')
+    with open(meg_json, 'r') as fin:
+        meg_json_data = json.load(fin)
+
+    if parse_version(mne.__version__) > parse_version('0.23'):
+        assert meg_json_data['ContinuousHeadLocalization'] is True
+        assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
+                                  [83., 143., 203., 263., 323.])
+    else:
+        assert meg_json_data['ContinuousHeadLocalization'] is False
+        assert meg_json_data['HeadCoilFrequency'] == []
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -1374,7 +1405,7 @@ def test_bdf(_bids_validate, tmpdir):
         write_raw_bids(mne.concatenate_raws([raw.copy(), raw]), bids_path,
                        overwrite=True)
 
-    if LooseVersion(mne.__version__) >= LooseVersion('0.23'):
+    if parse_version(mne.__version__) >= parse_version('0.23'):
         raw.info['sfreq'] -= 10  # changes raw.times, but retains its dimension
     else:
         raw._times = raw._times / 5
