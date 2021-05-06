@@ -1293,8 +1293,16 @@ def write_raw_bids(raw, bids_path, events_data=None,
                                     f'{associated_er_path}')
 
         # Turn it into a path relative to the BIDS root
+        # We want forward slashes as directory separators on Windows too
+        if sys.platform in ('win32', 'cygwin'):
+            from pathlib import PureWindowsPath
+            associated_er_path = PureWindowsPath(associated_er_path)
+            root = PureWindowsPath(empty_room.root)
+        else:
+            root = empty_room.root
+
         associated_er_path = Path(str(associated_er_path)
-                                  .replace(str(empty_room.root), ''))
+                                  .replace(str(root), ''))
 
     data_path = bids_path.mkdir().directory
 
