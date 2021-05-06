@@ -1097,7 +1097,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     empty_room : mne_bids.BIDSPath | None
         The empty-room recording to be associated with this file. This is
         only supported for MEG data, and only if the ``root`` attributes of
-        ``bids_path`` and ``associated_emptyroom`` are the same. Pass ``None``
+        ``bids_path`` and ``empty_room`` are the same. Pass ``None``
         (default) if you do not wish to specify an associated empty-room
         recording.
     overwrite : bool
@@ -1278,11 +1278,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
     associated_er_path = None
     if empty_room is not None:
         if bids_path.datatype != 'meg':
-            raise ValueError('"associated_emptyroom" is only supported for '
+            raise ValueError('"empty_room" is only supported for '
                              'MEG data.')
         if data_is_emptyroom:
             raise ValueError('You cannot write empty-room data and pass '
-                             '"associated_emptyroom" at the same time.')
+                             '"empty_room" at the same time.')
         if bids_path.root != empty_room.root:
             raise ValueError('The MEG data and its associated empty-room '
                              'recording must share the same BIDS root.')
