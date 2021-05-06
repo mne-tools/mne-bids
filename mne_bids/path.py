@@ -864,7 +864,7 @@ class BIDSPath(object):
                   entry, the empty-room recording specified there will be used.
                   Otherwise, this method will try to find the best-matching
                   empty-room recording based on measurement date.
-           
+
         Returns
         -------
         BIDSPath | None
@@ -873,7 +873,7 @@ class BIDSPath(object):
         """
         if self.datatype != 'meg':
             raise ValueError('Empty-room data is only supported for MEG '
-                             'datasets') 
+                             'datasets')
 
         if self.root is None:
             raise ValueError('The root of the "bids_path" must be set. '

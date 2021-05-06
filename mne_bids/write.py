@@ -1188,7 +1188,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                            'array. You need to pass both, or neither.')
 
     _validate_type(item=empty_room, item_name='empty_room',
-                   types=(BIDSPath, None))        
+                   types=(BIDSPath, None))
 
     raw = raw.copy()
 
