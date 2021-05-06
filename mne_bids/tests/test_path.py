@@ -907,6 +907,43 @@ def test_find_emptyroom_no_meas_date(tmpdir):
         bids_path.find_empty_room()
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_empty_room(return_bids_test_dir, tmpdir):
+    """Test the BIDSPath.empty_room attribute."""
+    bids_root = tmpdir.mkdir('bids1')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+    meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
+    raw.set_meas_date(meas_date)
+
+    # First write "empty-room" data
+    bids_path_er = BIDSPath(subject='emptyroom', session='20200110',
+                            task='noise', root=bids_root, datatype='meg',
+                            suffix='meg', extension='.fif')
+    write_raw_bids(raw, bids_path=bids_path_er)
+
+    # Now we write experimental data and associate it with the empty-room
+    # recording
+    bids_path = bids_path_er.copy().update(subject='01', session=None,
+                                           task='task')
+    write_raw_bids(raw, bids_path=bids_path, empty_room=bids_path_er)
+
+    # Retrieve empty-room BIDSPath
+    assert bids_path.empty_room == bids_path_er
+
+    # Should only work for MEG
+    with pytest.raises(ValueError, match='only supported for MEG'):
+        bids_path.copy().update(datatype='eeg').empty_room
+
+    # Don't create `AssociatedEmptyRoom` entry in sidecar
+    write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
+    with pytest.raises(ValueError,
+                       match=r'does not contain.*\"AssociatedEmptyRoom\"'):
+        bids_path.empty_room
+
+
 def test_bids_path_label_vs_index_entity():
     match = "subject must be an instance of None or str"
     with pytest.raises(TypeError, match=match):

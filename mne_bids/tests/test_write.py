@@ -2705,3 +2705,37 @@ def test_symlink(tmpdir):
     p = write_raw_bids(raw=raw, bids_path=bids_path, symlink=True)
     raw = read_raw_bids(p)
     assert len(raw.filenames) == 2
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_write_associated_emptyroom(_bids_validate, tmpdir):
+    """Test functionality of the write_raw_bids conversion for fif."""
+    bids_root = tmpdir.mkdir('bids1')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+    meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
+    raw.set_meas_date(meas_date)
+
+    # First write "empty-room" data
+    bids_path_er = BIDSPath(subject='emptyroom', session='20200110',
+                            task='noise', root=bids_root, datatype='meg',
+                            suffix='meg', extension='.fif')
+    write_raw_bids(raw, bids_path=bids_path_er)
+
+    # Now we write experimental data and associate it with the empty-room
+    # recording
+    bids_path = bids_path_er.copy().update(subject='01', session=None,
+                                           task='task')
+    write_raw_bids(raw, bids_path=bids_path, empty_room=bids_path_er)
+    _bids_validate(bids_path.root)
+
+    meg_json_path = bids_path.copy().update(extension='.json')
+    with open(meg_json_path, 'r') as fin:
+        meg_json_data = json.load(fin)
+
+    assert 'AssociatedEmptyRoom' in meg_json_data
+    assert (str(bids_path_er.fpath)
+            .endswith(meg_json_data['AssociatedEmptyRoom']))
+    assert meg_json_data['AssociatedEmptyRoom'].startswith('/')

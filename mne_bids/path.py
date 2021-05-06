@@ -12,6 +12,7 @@ from copy import deepcopy
 from os import path as op
 from pathlib import Path
 from datetime import datetime
+import json
 from typing import Optional, Union
 
 import numpy as np
@@ -27,7 +28,7 @@ from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             param_regex, _ensure_tuple)
 
 
-def _get_matched_empty_room(bids_path):
+def _find_matched_empty_room(bids_path):
     """Get matching empty-room file for an MEG recording."""
     # Check whether we have a BIDS root.
     bids_root = bids_path.root
@@ -43,11 +44,7 @@ def _get_matched_empty_room(bids_path):
     bids_fname = bids_path.update(suffix=datatype,
                                   root=bids_root).fpath
     _, ext = _parse_ext(bids_fname)
-    extra_params = None
-    if ext == '.fif':
-        extra_params = dict(allow_maxshield=True)
-
-    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
+    raw = read_raw_bids(bids_path=bids_path)
     if raw.info['meas_date'] is None:
         raise ValueError('The provided recording does not have a measurement '
                          'date set. Cannot get matching empty-room file.')
@@ -870,7 +867,35 @@ class BIDSPath(object):
             Returns None if none was found.
 
         """
-        return _get_matched_empty_room(self)
+        return _find_matched_empty_room(self)
+
+    @property
+    def empty_room(self):
+        """...
+        """
+        if self.datatype != 'meg':
+            raise ValueError('Empty-room data is only supported for MEG '
+                             'datasets') 
+
+        sidecar_fname = _find_matching_sidecar(self, extension='.json')
+        with open(sidecar_fname, 'r', encoding='utf-8') as f:
+            sidecar_json = json.load(f)
+
+        if 'AssociatedEmptyRoom' not in sidecar_json:
+            raise ValueError(
+                'The MEG sidecar file does not contain an '
+                '"AssociatedEmptyRoom" entry. Please use '
+                'BIDSPath.find_empty_room() to try and retrieve the '
+                'best-matching empty-room recording, or re-save the data and '
+                'pass the "empty_room" parameter to write_raw_bids().'
+            )
+
+        emptytoom_path = sidecar_json['AssociatedEmptyRoom']
+        emptyroom_entities = get_entities_from_fname(emptytoom_path)
+        er_bids_path = BIDSPath(root=self.root, datatype='meg',
+                                **emptyroom_entities)
+        assert er_bids_path.fpath.exists()
+        return er_bids_path
 
     @property
     def meg_calibration_fpath(self):
