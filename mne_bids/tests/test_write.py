@@ -493,7 +493,7 @@ def test_fif(_bids_validate, tmpdir):
     # test that an incorrect date raises an error.
     er_bids_basename_bad = BIDSPath(subject='emptyroom', session='19000101',
                                     task='noise', root=bids_root)
-    with pytest.raises(ValueError, match='Date provided'):
+    with pytest.raises(ValueError, match='The date provided'):
         write_raw_bids(raw, er_bids_basename_bad, overwrite=False)
 
     # test that the acquisition time was written properly
