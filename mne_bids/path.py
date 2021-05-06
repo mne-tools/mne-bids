@@ -860,41 +860,48 @@ class BIDSPath(object):
         This will only work if the ``.root`` attribute of the
         :class:`mne_bids.BIDSPath` instance has been set.
 
+        .. note:: If the sidecar JSON file contains an ``AssociatedEmptyRoom``
+                  entry, the empty-room recording specified there will be used.
+                  Otherwise, this method will try to find the best-matching
+                  empty-room recording based on measurement date.
+           
         Returns
         -------
         BIDSPath | None
             The path corresponding to the best-matching empty-room measurement.
-            Returns None if none was found.
-
-        """
-        return _find_matched_empty_room(self)
-
-    @property
-    def empty_room(self):
-        """...
+            Returns ``None`` if none was found.
         """
         if self.datatype != 'meg':
             raise ValueError('Empty-room data is only supported for MEG '
                              'datasets') 
 
+        if self.root is None:
+            raise ValueError('The root of the "bids_path" must be set. '
+                             'Please use `bids_path.update(root="<root>")` '
+                             'to set the root of the BIDS folder to read.')
+
         sidecar_fname = _find_matching_sidecar(self, extension='.json')
         with open(sidecar_fname, 'r', encoding='utf-8') as f:
             sidecar_json = json.load(f)
 
-        if 'AssociatedEmptyRoom' not in sidecar_json:
-            raise ValueError(
+        if 'AssociatedEmptyRoom' in sidecar_json:
+            logger.info('Using "AssociatedEmptyRoom" entry from MEG sidecar '
+                        'file to retrieve empty-room path.')
+            emptytoom_path = sidecar_json['AssociatedEmptyRoom']
+            emptyroom_entities = get_entities_from_fname(emptytoom_path)
+            er_bids_path = BIDSPath(root=self.root, datatype='meg',
+                                    **emptyroom_entities)
+        else:
+            logger.info(
                 'The MEG sidecar file does not contain an '
-                '"AssociatedEmptyRoom" entry. Please use '
-                'BIDSPath.find_empty_room() to try and retrieve the '
-                'best-matching empty-room recording, or re-save the data and '
-                'pass the "empty_room" parameter to write_raw_bids().'
+                '"AssociatedEmptyRoom" entry. Will try to find a matching '
+                'empty-room recording based on the measurement date …'
             )
+            er_bids_path = _find_matched_empty_room(self)
 
-        emptytoom_path = sidecar_json['AssociatedEmptyRoom']
-        emptyroom_entities = get_entities_from_fname(emptytoom_path)
-        er_bids_path = BIDSPath(root=self.root, datatype='meg',
-                                **emptyroom_entities)
-        assert er_bids_path.fpath.exists()
+        if er_bids_path is not None:
+            assert er_bids_path.fpath.exists()
+
         return er_bids_path
 
     @property
