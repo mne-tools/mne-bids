@@ -2767,6 +2767,7 @@ def test_write_associated_emptyroom(_bids_validate, tmpdir):
         meg_json_data = json.load(fin)
 
     assert 'AssociatedEmptyRoom' in meg_json_data
-    assert (bids_path_er.fpath.as_posix()  # make test work on Windows, too
+    assert (bids_path_er.fpath
+            .as_posix()  # make test work on Windows, too
             .endswith(meg_json_data['AssociatedEmptyRoom']))
     assert meg_json_data['AssociatedEmptyRoom'].startswith('/')
