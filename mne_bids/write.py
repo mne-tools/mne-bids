@@ -660,14 +660,30 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 digitized_head_points = True
 
     # Compile cHPI information, if any.
+    from mne.io.ctf import RawCTF
+    from mne.io.kit.kit import RawKIT
+
     chpi = False
     hpi_freqs = np.array([])
-    if (datatype == 'meg' and
-            parse_version(mne.__version__) > parse_version('0.23')):
-        hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
-                                                 on_missing='ignore')
-        if hpi_freqs.size > 0:
-            chpi = True
+    if datatype == 'meg':
+        # We need to handle different data formats differently
+        if isinstance(raw, RawCTF):
+            try:
+                mne.chpi.extract_chpi_locs_ctf(raw)
+                chpi = True
+            except RuntimeError:
+                pass
+        elif isinstance(raw, RawKIT):
+            try:
+                mne.chpi.extract_chpi_locs_kit(raw)
+                chpi = True
+            except RuntimeError:
+                pass
+        elif parse_version(mne.__version__) > parse_version('0.23'):
+            hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
+                                                    on_missing='ignore')
+            if hpi_freqs.size > 0:
+                chpi = True
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
@@ -985,6 +1001,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
                    from the file extension. If your file format is non-standard
                    for the manufacturer, please update the manufacturer field
                    in the sidecars manually.
+
+    .. note:: Information about continuous head localization (cHPI) will
+              currently only be included in the MEG sidecar files for
+              Elekta/Neuromag data (i.e., ``.fif`` files).
 
     Parameters
     ----------
