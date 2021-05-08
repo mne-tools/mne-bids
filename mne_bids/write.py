@@ -681,7 +681,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 pass
         elif parse_version(mne.__version__) > parse_version('0.23'):
             hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
-                                                    on_missing='ignore')
+                                                     on_missing='ignore')
             if hpi_freqs.size > 0:
                 chpi = True
 
