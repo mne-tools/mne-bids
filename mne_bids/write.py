@@ -665,7 +665,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
 
     chpi = False
     hpi_freqs = np.array([])
-    if datatype == 'meg':
+    if (datatype == 'meg' and
+            parse_version(mne.__version__) > parse_version('0.23')):
         # We need to handle different data formats differently
         if isinstance(raw, RawCTF):
             try:
@@ -679,11 +680,14 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 chpi = True
             except RuntimeError:
                 pass
-        elif parse_version(mne.__version__) > parse_version('0.23'):
+        else:
             hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
                                                      on_missing='ignore')
             if hpi_freqs.size > 0:
                 chpi = True
+    elif datatype == 'meg':
+        logger.info('Cannot check for & write continuous head localization '
+                    'information: requires MNE-Python >= 0.24')
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
