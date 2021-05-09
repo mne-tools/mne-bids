@@ -668,11 +668,10 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     if (datatype == 'meg' and
             parse_version(mne.__version__) > parse_version('0.23')):
         # We need to handle different data formats differently
-        if isinstance(raw, (RawCTF, RawKIT)) and 'hpi_results' in raw.info:
-            chpi = True
-        elif isinstance(raw, RawCTF):
+        if isinstance(raw, RawCTF):
             try:
                 mne.chpi.extract_chpi_locs_ctf(raw)
+                chpi = True
             except RuntimeError:
                 logger.info('Could not find cHPI information in raw data.')
         elif isinstance(raw, RawKIT):
