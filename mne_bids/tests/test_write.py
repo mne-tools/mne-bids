@@ -604,29 +604,20 @@ def test_fif(_bids_validate, tmpdir):
     with pytest.raises(ValueError, match='Unrecognized file format'):
         write_raw_bids(raw, bids_path)
 
-    raw = _read_raw_fif(raw_fname)
-    bids_path = bids_path.copy().update(datatype='meg')
-    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
-                   overwrite=True)
-
+    # test whether extra points in raw.info['dig'] are correctly used
+    # to set DigitizedHeadShape in the json sidecar
+    # unchanged sample data includes Extra points
     meg_json = _find_matching_sidecar(
         bids_path.copy().update(root=bids_root),
         suffix='meg', extension='.json')
 
-    with open(meg_json, 'r') as fin:
-        meg_json_data = json.load(fin)
+    with open(meg_json, 'r') as f:
+        meg_json_data = json.load(f)
 
-    # no cHPI info is contained in the sample data
-    assert meg_json_data['ContinuousHeadLocalization'] is False
-    assert meg_json_data['HeadCoilFrequency'] == []
-
-    # test whether extra points in raw.info['dig'] are correctly used
-    # to set DigitizedHeadShape in the json sidecar
-    # unchanged sample data includes Extra points
     assert meg_json_data['DigitizedHeadPoints'] is True
 
     # drop extra points from raw.info['dig'] and write again
-    raw_no_extra_points = raw.copy()
+    raw_no_extra_points = _read_raw_fif(raw_fname)
     new_dig = []
     for dig_point in raw_no_extra_points.info['dig']:
         if dig_point['kind'] != FIFF.FIFFV_POINT_EXTRA:
@@ -645,27 +636,57 @@ def test_fif(_bids_validate, tmpdir):
         # DigitizedHeadPoints should be false
         assert meg_json_data['DigitizedHeadPoints'] is False
 
-    # test data with cHPI info
-    data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
-    raw = _read_raw_fif(raw_fname, allow_maxshield=True)
 
-    root = tmpdir.mkdir('chpi')
-    bids_path = bids_path.copy().update(root=root, datatype='meg')
-    bids_path = write_raw_bids(raw, bids_path)
+@pytest.mark.parametrize('format', ('fif_no_chpi', 'fif', 'ctf', 'kit'))
+@pytest.mark.filterwarnings(warning_str['maxshield'])
+def test_chpi(_bids_validate, tmpdir, format):
+    """Test writing of cHPI information."""
+    data_path = testing.data_path()
+    kit_data_path = op.join(base_path, 'kit', 'tests', 'data')
+
+    if format == 'fif_no_chpi':
+        fif_raw_fname = op.join(data_path, 'MEG', 'sample',
+                                'sample_audvis_trunc_raw.fif')
+        raw = _read_raw_fif(fif_raw_fname)
+    elif format == 'fif':
+        fif_raw_fname = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
+        raw = _read_raw_fif(fif_raw_fname, allow_maxshield=True)
+    elif format == 'ctf':
+        ctf_raw_fname = op.join(data_path, 'CTF', 'testdata_ctf.ds')
+        raw = _read_raw_ctf(ctf_raw_fname)
+    elif format == 'kit':
+        kit_raw_fname = op.join(kit_data_path, 'test.sqd')
+        kit_hpi_fname = op.join(kit_data_path, 'test_mrk.sqd')
+        kit_electrode_fname = op.join(kit_data_path, 'test.elp')
+        kit_headshape_fname = op.join(kit_data_path, 'test.hsp')
+        raw = _read_raw_kit(kit_raw_fname, mrk=kit_hpi_fname,
+                            elp=kit_electrode_fname, hsp=kit_headshape_fname)
+
+    bids_root = tmpdir.mkdir('bids')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+
+    write_raw_bids(raw, bids_path)
     _bids_validate(bids_path.root)
 
     meg_json = bids_path.copy().update(suffix='meg', extension='.json')
-    with open(meg_json, 'r') as fin:
-        meg_json_data = json.load(fin)
+    with open(meg_json, 'r') as f:
+        meg_json_data = json.load(f)
 
-    if parse_version(mne.__version__) > parse_version('0.23'):
+    if parse_version(mne.__version__) <= parse_version('0.23'):
+        assert 'ContinuousHeadLocalization' not in meg_json_data
+        assert 'HeadCoilFrequency' not in meg_json_data
+    elif format in ['fif_no_chpi', 'kit']:
+        # no cHPI info is contained in the sample data
+        assert meg_json_data['ContinuousHeadLocalization'] is False
+        assert meg_json_data['HeadCoilFrequency'] == []
+    elif format == 'fif':
         assert meg_json_data['ContinuousHeadLocalization'] is True
         assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
                                   [83., 143., 203., 263., 323.])
-    else:
-        assert meg_json_data['ContinuousHeadLocalization'] is False
-        assert meg_json_data['HeadCoilFrequency'] == []
+    elif format == 'ctf':
+        assert meg_json_data['ContinuousHeadLocalization'] is True
+        assert_array_equal(meg_json_data['HeadCoilFrequency'],
+                           np.array([]))
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
