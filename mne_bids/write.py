@@ -1009,10 +1009,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
                    for the manufacturer, please update the manufacturer field
                    in the sidecars manually.
 
-    .. note:: Information about continuous head localization (cHPI) will
-              currently only be included in the MEG sidecar files for
-              Elekta/Neuromag data (i.e., ``.fif`` files).
-
     Parameters
     ----------
     raw : mne.io.Raw
