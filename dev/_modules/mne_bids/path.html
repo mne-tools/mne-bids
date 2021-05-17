@@ -28,8 +28,8 @@
         code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
     </style>
 
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
@@ -39,7 +39,7 @@
     
   <link rel="preload" as="script" href="../../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -170,20 +170,6 @@
           
           <div class="d-none d-xl-block col-xl-2 bd-toc">
             
-              
-              <div class="toc-item">
-                
-
-<nav id="bd-toc-nav">
-    
-</nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
           </div>
           
 
@@ -210,6 +196,8 @@
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span>
@@ -224,7 +212,7 @@
                             <span class="n">param_regex</span><span class="p">,</span> <span class="n">_ensure_tuple</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_find_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get matching empty-room file for an MEG recording.&quot;&quot;&quot;</span>
     <span class="c1"># Check whether we have a BIDS root.</span>
     <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
@@ -240,11 +228,7 @@
     <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
                                   <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
-    <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The provided recording does not have a measurement &#39;</span>
                          <span class="s1">&#39;date set. Cannot get matching empty-room file.&#39;</span><span class="p">)</span>
@@ -363,19 +347,19 @@
 <span class="sd">    subject : str | None</span>
 <span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
 <span class="sd">    session : str | None</span>
-<span class="sd">        The session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">        The acquisition session. Corresponds to &quot;ses&quot;.</span>
 <span class="sd">    task : str | None</span>
-<span class="sd">        The task for a item. Corresponds to &quot;task&quot;.</span>
+<span class="sd">        The experimental task. Corresponds to &quot;task&quot;.</span>
 <span class="sd">    acquisition: str | None</span>
-<span class="sd">        The acquisition parameters for the item. Corresponds to &quot;acq&quot;.</span>
+<span class="sd">        The acquisition parameters. Corresponds to &quot;acq&quot;.</span>
 <span class="sd">    run : int | None</span>
-<span class="sd">        The run number for this item. Corresponds to &quot;run&quot;.</span>
+<span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
 <span class="sd">    processing : str | None</span>
-<span class="sd">        The processing label for this item. Corresponds to &quot;proc&quot;.</span>
+<span class="sd">        The processing label. Corresponds to &quot;proc&quot;.</span>
 <span class="sd">    recording : str | None</span>
-<span class="sd">        The recording name for this item. Corresponds to &quot;rec&quot;.</span>
+<span class="sd">        The recording name. Corresponds to &quot;rec&quot;.</span>
 <span class="sd">    space : str | None</span>
-<span class="sd">        The coordinate space for an anatomical or sensor position</span>
+<span class="sd">        The coordinate space for anatomical and sensor location</span>
 <span class="sd">        files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).</span>
 <span class="sd">        Corresponds to &quot;space&quot;.</span>
 <span class="sd">        Note that valid values for ``space`` must come from a list</span>
@@ -394,12 +378,10 @@
 <span class="sd">    extension : str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
 <span class="sd">    datatype : str</span>
-<span class="sd">        The &quot;data type&quot; of folder being created at the end of the folder</span>
-<span class="sd">        hierarchy. E.g., ``&#39;anat&#39;``, ``&#39;func&#39;``, ``&#39;eeg&#39;``, ``&#39;meg&#39;``,</span>
-<span class="sd">        ``&#39;ieeg&#39;``, etc.</span>
+<span class="sd">        The BIDS data type, e.g., ``&#39;anat&#39;``, ``&#39;func&#39;``, ``&#39;eeg&#39;``, ``&#39;meg&#39;``,</span>
+<span class="sd">        ``&#39;ieeg&#39;``.</span>
 <span class="sd">    root : str | pathlib.Path | None</span>
-<span class="sd">        The root for the filename to be created. E.g., a path to the folder</span>
-<span class="sd">        in which you wish to create a file with this name.</span>
+<span class="sd">        The root directory of the BIDS dataset.</span>
 <span class="sd">    check : bool</span>
 <span class="sd">        If ``True``, enforces BIDS conformity. Defaults to ``True``.</span>
 
@@ -408,7 +390,8 @@
 <span class="sd">    entities : dict</span>
 <span class="sd">        The dictionary of the BIDS entities and their values:</span>
 <span class="sd">        ``subject``, ``session``, ``task``, ``acquisition``,</span>
-<span class="sd">        ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.</span>
+<span class="sd">        ``run``, ``processing``, ``space``, ``recording``, ``split``,</span>
+<span class="sd">        ``suffix``, and ``extension``.</span>
 <span class="sd">    datatype : str | None</span>
 <span class="sd">        The data type, i.e., one of ``&#39;meg&#39;``, ``&#39;eeg&#39;``, ``&#39;ieeg&#39;``,</span>
 <span class="sd">        ``&#39;anat&#39;``.</span>
@@ -558,6 +541,123 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The subject ID.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subject</span>
+
+    <span class="nd">@subject</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The acquisition session.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span>
+
+    <span class="nd">@session</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The experimental task.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span>
+
+    <span class="nd">@task</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The run number.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span>
+
+    <span class="nd">@run</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">run</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The acquisition parameters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acquisition</span>
+
+    <span class="nd">@acquisition</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">processing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The processing label.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processing</span>
+
+    <span class="nd">@processing</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">processing</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">recording</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The recording name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span>
+
+    <span class="nd">@recording</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">recording</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">recording</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The coordinate space for an anatomical or sensor position file.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_space</span>
+
+    <span class="nd">@space</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">space</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The filename suffix.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span>
+
+    <span class="nd">@suffix</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;The root directory of the BIDS dataset.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span>
+
+    <span class="nd">@root</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The BIDS data type, e.g. ``&#39;anat&#39;``, ``&#39;meg&#39;``, ``&#39;eeg&#39;``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span>
+
+    <span class="nd">@datatype</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The split of the continuous recording file for ``.fif`` data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split</span>
+
+    <span class="nd">@split</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">extension</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;The extension of the filename, including a leading period.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span>
+
+    <span class="nd">@extension</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">extension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the string representation of the path.&quot;&quot;&quot;</span>
@@ -721,7 +821,7 @@
 <span class="sd">        **kwargs : dict</span>
 <span class="sd">            It can contain updates for valid BIDS path entities:</span>
 <span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;, &#39;processing&#39;, &#39;run&#39;,</span>
-<span class="sd">            &#39;recording&#39;, &#39;space&#39;, &#39;suffix&#39;</span>
+<span class="sd">            &#39;recording&#39;, &#39;space&#39;, &#39;suffix&#39;, &#39;split&#39;, &#39;extension&#39;,</span>
 <span class="sd">            or updates for &#39;root&#39; or &#39;datatype&#39;.</span>
 
 <span class="sd">        Returns</span>
@@ -799,12 +899,12 @@
             <span class="c1"># set entity value, ensuring `root` is a Path</span>
             <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
         <span class="c1"># infer datatype if suffix is uniquely the datatype</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
 
         <span class="c1"># Perform a check of the entities.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
@@ -944,14 +1044,49 @@
 <span class="sd">        This will only work if the ``.root`` attribute of the</span>
 <span class="sd">        :class:`mne_bids.BIDSPath` instance has been set.</span>
 
+<span class="sd">        .. note:: If the sidecar JSON file contains an ``AssociatedEmptyRoom``</span>
+<span class="sd">                  entry, the empty-room recording specified there will be used.</span>
+<span class="sd">                  Otherwise, this method will try to find the best-matching</span>
+<span class="sd">                  empty-room recording based on measurement date.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        BIDSPath | None</span>
 <span class="sd">            The path corresponding to the best-matching empty-room measurement.</span>
-<span class="sd">            Returns None if none was found.</span>
-
+<span class="sd">            Returns ``None`` if none was found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">_get_matched_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Empty-room data is only supported for MEG &#39;</span>
+                             <span class="s1">&#39;datasets&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                             <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                             <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+
+        <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;AssociatedEmptyRoom&#39;</span> <span class="ow">in</span> <span class="n">sidecar_json</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using &quot;AssociatedEmptyRoom&quot; entry from MEG sidecar &#39;</span>
+                        <span class="s1">&#39;file to retrieve empty-room path.&#39;</span><span class="p">)</span>
+            <span class="n">emptytoom_path</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="p">[</span><span class="s1">&#39;AssociatedEmptyRoom&#39;</span><span class="p">]</span>
+            <span class="n">emptyroom_entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">emptytoom_path</span><span class="p">)</span>
+            <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
+                                    <span class="o">**</span><span class="n">emptyroom_entities</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;The MEG sidecar file does not contain an &#39;</span>
+                <span class="s1">&#39;&quot;AssociatedEmptyRoom&quot; entry. Will try to find a matching &#39;</span>
+                <span class="s1">&#39;empty-room recording based on the measurement date …&#39;</span>
+            <span class="p">)</span>
+            <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">_find_matched_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">er_bids_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">er_bids_path</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">meg_calibration_fpath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1684,22 +1819,21 @@
 
       </div>
     </div>
-    
+  
   <script src="../../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-
-    <footer class="footer mt-5 mt-md-0">
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-22.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-17.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.1.<br/>
 </p>
     </div>
     

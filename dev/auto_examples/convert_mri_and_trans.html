@@ -28,8 +28,8 @@
         code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
     </style>
 
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
@@ -39,7 +39,7 @@
     
   <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -570,10 +570,10 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/dataset_description.js
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.4.0&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.6.0&quot;,
     &quot;DatasetType&quot;: &quot;raw&quot;,
     &quot;Authors&quot;: [
-        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
+        &quot;[Unspecified]&quot;
     ]
 }
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
@@ -593,6 +593,8 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-
     &quot;DigitizedHeadPoints&quot;: true,
     &quot;MEGChannelCount&quot;: 306,
     &quot;MEGREFChannelCount&quot;: 0,
+    &quot;ContinuousHeadLocalization&quot;: false,
+    &quot;HeadCoilFrequency&quot;: [],
     &quot;EEGChannelCount&quot;: 60,
     &quot;EOGChannelCount&quot;: 1,
     &quot;ECGChannelCount&quot;: 0,
@@ -690,7 +692,7 @@ w.r.t. the T1 image.</p>
     <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">,</span>  <span class="c1"># our transformation matrix</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># this will print out the sidecar file</span>
 <span class="p">)</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">anat_dir</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">directory</span></a>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">anat_dir</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">directory</span></a>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -756,7 +758,7 @@ transformation matrix using <code class="docutils literal notranslate"><span cla
 Ready.
 Reading events from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-/home/circleci/project/mne_bids/read.py:418: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:470: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
 </pre></div>
 </div>
@@ -831,7 +833,7 @@ basename: sub-01_ses-01_FLASH.nii.gz)
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># this will print out the sidecar file</span>
 <span class="p">)</span>
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">anat_dir</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">directory</span></a>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">anat_dir</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-property"><span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">directory</span></a>
 
 <span class="c1"># Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1_nii_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">anat_dir</span></a><span class="p">,</span> <span class="s1">&#39;sub-01_ses-01_T1w.nii.gz&#39;</span><span class="p">)</span>
@@ -1103,7 +1105,7 @@ images are already registered.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  5.634 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  28.487 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1136,22 +1138,21 @@ images are already registered.</p>
 
       </div>
     </div>
-    
+  
   <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-
-    <footer class="footer mt-5 mt-md-0">
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-22.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-17.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.1.<br/>
 </p>
     </div>
     

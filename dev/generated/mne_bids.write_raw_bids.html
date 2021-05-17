@@ -28,8 +28,8 @@
         code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
     </style>
 
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
@@ -39,7 +39,7 @@
     
   <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -341,8 +341,8 @@
   <div class="section" id="mne-bids-write-raw-bids">
 <h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.write_raw_bids">
-<code class="sig-prename descclassname"><span class="pre">mne_bids.</span></code><code class="sig-name descname"><span class="pre">write_raw_bids</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="mne_bids.write_raw_bids">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_room</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save raw data to a BIDS-compliant folder structure.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -362,7 +362,7 @@ in the sidecars manually.</p></li>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a>. The data
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a>. The data
 should not be loaded from disk, i.e., <code class="docutils literal notranslate"><span class="pre">raw.preload</span></code> must be
 <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
@@ -397,7 +397,7 @@ Example:</p>
 object.</p>
 </dd>
 <dt><strong>events_data</strong><span class="classifier">path-like | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
-sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
+sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
 are always written).
 If a path, specifies the location of an MNE events file.
 If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
@@ -407,7 +407,7 @@ Corresponding descriptions for all event IDs (listed in the third
 column of the MNE events array) must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
 parameter; otherwise, an exception is raised.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will only be inferred from the the raw object’s
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">None</span></code>, writes the union of <code class="docutils literal notranslate"><span class="pre">events_data</span></code> and
@@ -469,6 +469,12 @@ data again.</p>
 add support for Windows 10 at a later time.</p>
 </div>
 </dd>
+<dt><strong>empty_room</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
+only supported for MEG data, and only if the <code class="docutils literal notranslate"><span class="pre">root</span></code> attributes of
+<code class="docutils literal notranslate"><span class="pre">bids_path</span></code> and <code class="docutils literal notranslate"><span class="pre">empty_room</span></code> are the same. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code>
+(default) if you do not wish to specify an associated empty-room
+recording.</p>
+</dd>
 <dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any existing files with the same BIDS parameters
@@ -496,10 +502,10 @@ no content will be printed.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
@@ -507,15 +513,15 @@ no content will be printed.</p>
 <code class="docutils literal notranslate"><span class="pre">raw.info['meas_date']</span></code> are set to proper (not-<code class="docutils literal notranslate"><span class="pre">None</span></code>) values to allow
 for the correct computation of each participant’s age when creating
 <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>.</p>
-<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
+<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
 <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> to events. Additionally, any events supplied via
 <code class="docutils literal notranslate"><span class="pre">events_data</span></code> will be written too. To avoid writing of annotations,
 remove them from the raw file via <code class="docutils literal notranslate"><span class="pre">raw.set_annotations(None)</span></code> before
 invoking <code class="docutils literal notranslate"><span class="pre">write_raw_bids</span></code>.</p>
 <p>To write events encoded in a <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channel, you first need to create the
 events array manually and pass it to this function:</p>
-<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.23.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a> for more information on event
-extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
+<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.24.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.find_events()</span></code></a> for more information on
+event extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
 <p>When anonymizing <code class="docutils literal notranslate"><span class="pre">.edf</span></code> files, then the file format for EDF limits
 how far back we can set the recording date. Therefore, all anonymized
 EDF datasets will have an internal recording date of <code class="docutils literal notranslate"><span class="pre">01-01-1985</span></code>,
@@ -582,22 +588,21 @@ call <a class="reference internal" href="mne_bids.make_dataset_description.html#
 
       </div>
     </div>
-    
+  
   <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
 
-
-    <footer class="footer mt-5 mt-md-0">
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-04-22.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-17.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.1.<br/>
 </p>
     </div>
     
