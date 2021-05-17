@@ -89,9 +89,8 @@ jobs:
           at: doc/_build
 
       - run:
-          name: Check links (if on main)
+          name: Check links
           command: |
-            echo $current_branch
             make -C doc clean
             make -C doc linkcheck
 
