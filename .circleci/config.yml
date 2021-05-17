@@ -40,19 +40,6 @@ jobs:
             path: doc/_build/html/
             destination: dev
 
-        - run:
-            name: Check links (if on main)
-            command: |
-              current_branch=$(git rev-parse --abbrev-ref HEAD)
-              if (echo $current_branch | grep main) ; then
-                echo $current_branch
-                make -C doc clean
-                make -C doc linkcheck
-              else
-                echo $current_branch
-                echo "Skip running linkcheck."
-              fi
-
         # Store the data cache
         - save_cache:
             key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
@@ -91,6 +78,31 @@ jobs:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
+
+  link-check:
+    # will only be run on main branch
+    docker:
+      - image: node:8
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: doc/_build
+
+      - run:
+          name: Check links (if on main)
+          command: |
+            current_branch=$(git rev-parse --abbrev-ref HEAD)
+            if (echo $current_branch | grep main) ; then
+              echo $current_branch
+              make -C doc clean
+              make -C doc linkcheck
+            else
+              echo $current_branch
+              echo "Skip running linkcheck."
+            fi
+
+
 workflows:
   commit:
     jobs:
@@ -102,7 +114,7 @@ workflows:
             branches:
               only: main
 
-  scheduled:
+  nightly:
     jobs:
       - docs-build
 
@@ -113,3 +125,18 @@ workflows:
             branches:
               only:
                 - main
+  
+  weekly:
+    jobs:
+      - link-check
+          requires:
+            - docs-build
+
+    triggers:
+      - schedule:
+          cron: "0 4 * * 0"
+          filters:
+            branches:
+              only:
+                - main
+
