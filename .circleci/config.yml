@@ -120,7 +120,7 @@ workflows:
   
   weekly:
     jobs:
-      - link-check
+      - link-check:
           requires:
             - docs-build
 
