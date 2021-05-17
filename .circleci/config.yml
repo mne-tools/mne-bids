@@ -80,7 +80,6 @@ jobs:
 
 
   link-check:
-    # will only be run on main branch
     docker:
       - image: node:8
     steps:
@@ -92,16 +91,9 @@ jobs:
       - run:
           name: Check links (if on main)
           command: |
-            current_branch=$(git rev-parse --abbrev-ref HEAD)
-            if (echo $current_branch | grep main) ; then
-              echo $current_branch
-              make -C doc clean
-              make -C doc linkcheck
-            else
-              echo $current_branch
-              echo "Skip running linkcheck."
-            fi
-
+            echo $current_branch
+            make -C doc clean
+            make -C doc linkcheck
 
 workflows:
   commit:
