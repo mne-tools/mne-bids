@@ -645,7 +645,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     n_stimchan = len([ch for ch in raw.info['chs']
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
     n_dbschan = len([ch for ch in raw.info['chs']
-                      if ch['kind'] == FIFF.FIFFV_DBS_CH])
+                     if ch['kind'] == FIFF.FIFFV_DBS_CH])
 
     # Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found
     # Set DigitizedHeadPoints to True if any "Extra" points are found
