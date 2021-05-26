@@ -125,7 +125,7 @@ def _handle_datatype(raw, datatype, verbose=True):
             datatype = 'meg'
     else:
         datatypes = list()
-        ieeg_types = ['seeg', 'ecog']
+        ieeg_types = ['seeg', 'ecog', 'dbs']
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
             datatypes.append('ieeg')
         if 'meg' in raw:
@@ -459,7 +459,7 @@ def _check_datatype(raw, datatype):
     elif datatype == 'meg' and datatype in raw:
         datatype_matches = True
     elif datatype == 'ieeg':
-        ieeg_types = ('seeg', 'ecog')
+        ieeg_types = ('seeg', 'ecog', 'dbs')
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
             datatype_matches = True
     if not datatype_matches:
