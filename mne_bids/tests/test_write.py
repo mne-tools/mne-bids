@@ -1035,6 +1035,15 @@ def test_vhdr(_bids_validate, tmpdir):
     write_raw_bids(raw, bids_path, overwrite=False)
     _bids_validate(bids_root)
 
+    # Now let's test that the same works for new channel type 'dbs'
+    raw = _read_raw_brainvision(raw_fname)
+    raw.set_channel_types({raw.ch_names[i]: 'dbs'
+                           for i in mne.pick_types(raw.info, eeg=True)})
+    bids_root = tmpdir.mkdir('bids_dbs')
+    bids_path.update(root=bids_root)
+    write_raw_bids(raw, bids_path, overwrite=False)
+    _bids_validate(bids_root)
+
     # Test coords and impedance writing
     # first read the data and set a montage
     data_path = op.join(testing.data_path(), 'montage')

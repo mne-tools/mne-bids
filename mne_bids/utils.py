@@ -67,7 +67,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     if fro == 'mne' and to == 'bids':
         mapping = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                        ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
-                       resp='RESP', bio='MISC',
+                       resp='RESP', bio='MISC', dbs='DBS',
                        # MEG channels
                        meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
                        megrefgradaxial='MEGREFGRADAXIAL',
@@ -80,7 +80,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
                        RESP='resp',
                        # No MEG channels for now
                        # Many to one mapping
-                       VEOG='eog', HEOG='eog')
+                       VEOG='eog', HEOG='eog', DBS='dbs')
     else:
         raise ValueError('Only two types of mappings are currently supported: '
                          'from mne to bids, or from bids to mne. However, '
