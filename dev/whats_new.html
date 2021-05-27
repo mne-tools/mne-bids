@@ -280,6 +280,7 @@
 <li><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> now has property getter and setter methods for all BIDS entities, i.e., you can now do things like <code class="docutils literal notranslate"><span class="pre">bids_path.subject</span> <span class="pre">=</span> <span class="pre">'foo'</span></code> and don’t have to resort to <code class="docutils literal notranslate"><span class="pre">bids_path.update()</span></code>. This also ensures you’ll get proper completion suggestions from your favorite Python IDE, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/786">#786</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> now stores information about continuous head localization measurements (e.g., Elekta/Neuromag cHPI) in the MEG sidecar file, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/794">#794</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> gained a new parameter <em class="xref py py-obj">empty_room</em> that allows to specify an associated empty-room recording when writing an MEG data file. This information will be stored in the <code class="docutils literal notranslate"><span class="pre">AssociatedEmptyRoom</span></code> field of the MEG JSON sidecar file, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/795">#795</a>)</p></li>
+<li><p>Added support for the new channel type <em class="xref py py-obj">‘dbs’</em> (Deep Brain Stimulation), which was introduced in MNE-Python 0.23, by <a class="reference external" href="https://github.com/richardkoehler">Richard Köhler</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/800">#800</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="api-and-behavior-changes">
@@ -338,13 +339,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-17.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-27.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.1.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
 </p>
     </div>
     

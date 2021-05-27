@@ -251,7 +251,7 @@
     <span class="k">if</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span><span class="p">:</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
                        <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">,</span>
-                       <span class="n">resp</span><span class="o">=</span><span class="s1">&#39;RESP&#39;</span><span class="p">,</span> <span class="n">bio</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span>
+                       <span class="n">resp</span><span class="o">=</span><span class="s1">&#39;RESP&#39;</span><span class="p">,</span> <span class="n">bio</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">dbs</span><span class="o">=</span><span class="s1">&#39;DBS&#39;</span><span class="p">,</span>
                        <span class="c1"># MEG channels</span>
                        <span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span> <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span>
                        <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span>
@@ -264,7 +264,7 @@
                        <span class="n">RESP</span><span class="o">=</span><span class="s1">&#39;resp&#39;</span><span class="p">,</span>
                        <span class="c1"># No MEG channels for now</span>
                        <span class="c1"># Many to one mapping</span>
-                       <span class="n">VEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">HEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">)</span>
+                       <span class="n">VEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">HEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">DBS</span><span class="o">=</span><span class="s1">&#39;dbs&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only two types of mappings are currently supported: &#39;</span>
                          <span class="s1">&#39;from mne to bids, or from bids to mne. However, &#39;</span>
@@ -309,7 +309,7 @@
             <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">]</span>
+        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="s1">&#39;dbs&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">raw</span> <span class="k">for</span> <span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">ieeg_types</span><span class="p">):</span>
             <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ieeg&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
@@ -643,7 +643,7 @@
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span>
-        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">)</span>
+        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="s1">&#39;dbs&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">raw</span> <span class="k">for</span> <span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">ieeg_types</span><span class="p">):</span>
             <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">datatype_matches</span><span class="p">:</span>
@@ -676,13 +676,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-17.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-27.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.1.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
 </p>
     </div>
     

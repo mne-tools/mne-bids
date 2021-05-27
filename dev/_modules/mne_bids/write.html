@@ -278,7 +278,8 @@
                     <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;ElectroMyoGram&#39;</span><span class="p">,</span>
                     <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;Miscellaneous&#39;</span><span class="p">,</span>
                     <span class="n">bio</span><span class="o">=</span><span class="s1">&#39;Biological&#39;</span><span class="p">,</span>
-                    <span class="n">ias</span><span class="o">=</span><span class="s1">&#39;Internal Active Shielding&#39;</span><span class="p">)</span>
+                    <span class="n">ias</span><span class="o">=</span><span class="s1">&#39;Internal Active Shielding&#39;</span><span class="p">,</span>
+                    <span class="n">dbs</span><span class="o">=</span><span class="s1">&#39;Deep Brain Stimulation&#39;</span><span class="p">)</span>
     <span class="n">get_specific</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;ref_meg&#39;</span><span class="p">,</span> <span class="s1">&#39;grad&#39;</span><span class="p">)</span>
 
     <span class="c1"># get the manufacturer from the file in the Raw object</span>
@@ -827,6 +828,8 @@
                       <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MISC_CH</span><span class="p">])</span>
     <span class="n">n_stimchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
                       <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_STIM_CH</span><span class="p">])</span> <span class="o">-</span> <span class="n">n_ignored</span>
+    <span class="n">n_dbschan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_DBS_CH</span><span class="p">])</span>
 
     <span class="c1"># Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found</span>
     <span class="c1"># Set DigitizedHeadPoints to True if any &quot;Extra&quot; points are found</span>
@@ -907,8 +910,7 @@
     <span class="n">ch_info_json_ieeg</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;iEEGReference&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;ECOGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_ecogchan</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;SEEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_seegchan</span><span class="p">)]</span>
-
+        <span class="p">(</span><span class="s1">&#39;SEEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_seegchan</span> <span class="o">+</span> <span class="n">n_dbschan</span><span class="p">)]</span>
     <span class="n">ch_info_ch_counts</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;EEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_eegchan</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;EOGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_eogchan</span><span class="p">),</span>
@@ -2196,13 +2198,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-17.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-05-27.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.1.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.2.<br/>
 </p>
     </div>
     
