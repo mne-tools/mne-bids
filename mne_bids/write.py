@@ -94,7 +94,8 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
                     emg='ElectroMyoGram',
                     misc='Miscellaneous',
                     bio='Biological',
-                    ias='Internal Active Shielding')
+                    ias='Internal Active Shielding',
+                    dbs='Deep Brain Stimulation')
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
@@ -643,6 +644,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                       if ch['kind'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
+    n_dbschan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_DBS_CH])
 
     # Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found
     # Set DigitizedHeadPoints to True if any "Extra" points are found
@@ -723,8 +726,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     ch_info_json_ieeg = [
         ('iEEGReference', 'n/a'),
         ('ECOGChannelCount', n_ecogchan),
-        ('SEEGChannelCount', n_seegchan)]
-
+        ('SEEGChannelCount', n_seegchan + n_dbschan)]
     ch_info_ch_counts = [
         ('EEGChannelCount', n_eegchan),
         ('EOGChannelCount', n_eogchan),

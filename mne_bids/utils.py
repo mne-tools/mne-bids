@@ -67,7 +67,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     if fro == 'mne' and to == 'bids':
         mapping = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                        ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
-                       resp='RESP', bio='MISC',
+                       resp='RESP', bio='MISC', dbs='DBS',
                        # MEG channels
                        meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
                        megrefgradaxial='MEGREFGRADAXIAL',
@@ -80,7 +80,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
                        RESP='resp',
                        # No MEG channels for now
                        # Many to one mapping
-                       VEOG='eog', HEOG='eog')
+                       VEOG='eog', HEOG='eog', DBS='dbs')
     else:
         raise ValueError('Only two types of mappings are currently supported: '
                          'from mne to bids, or from bids to mne. However, '
@@ -125,7 +125,7 @@ def _handle_datatype(raw, datatype, verbose=True):
             datatype = 'meg'
     else:
         datatypes = list()
-        ieeg_types = ['seeg', 'ecog']
+        ieeg_types = ['seeg', 'ecog', 'dbs']
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
             datatypes.append('ieeg')
         if 'meg' in raw:
@@ -459,7 +459,7 @@ def _check_datatype(raw, datatype):
     elif datatype == 'meg' and datatype in raw:
         datatype_matches = True
     elif datatype == 'ieeg':
-        ieeg_types = ('seeg', 'ecog')
+        ieeg_types = ('seeg', 'ecog', 'dbs')
         if any(ieeg_type in raw for ieeg_type in ieeg_types):
             datatype_matches = True
     if not datatype_matches:
