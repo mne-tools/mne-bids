@@ -42,6 +42,7 @@ Enhancements
 - :class:`mne_bids.BIDSPath` now has property getter and setter methods for all BIDS entities, i.e., you can now do things like ``bids_path.subject = 'foo'`` and don't have to resort to ``bids_path.update()``. This also ensures you'll get proper completion suggestions from your favorite Python IDE, by `Richard Höchenberger`_ (:gh:`786`)
 - :func:`mne_bids.write_raw_bids` now stores information about continuous head localization measurements (e.g., Elekta/Neuromag cHPI) in the MEG sidecar file, by `Richard Höchenberger`_ (:gh:`794`)
 - :func:`mne_bids.write_raw_bids` gained a new parameter `empty_room` that allows to specify an associated empty-room recording when writing an MEG data file. This information will be stored in the ``AssociatedEmptyRoom`` field of the MEG JSON sidecar file, by `Richard Höchenberger`_ (:gh:`795`)
+- Added support for the new channel type `'dbs'`, which was introduced in MNE Version 0.23.0, by `Richard Köhler`_ (:gh:`800`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^

@@ -49,12 +49,12 @@ def test_handle_datatype():
     n_channels = 2
     sampling_rate = 100
     data = random((n_channels, sampling_rate))
+    # datatype is given, check once for each datatype
     channel_types = ['grad', 'eeg', 'ecog', 'seeg', 'dbs']
-    expected_modalities = ['meg', 'eeg', 'ieeg', 'ieeg', 'ieeg']
-    # do it once for each type ... and once for "no type"
-    for chtype, datatype in zip(channel_types, expected_modalities):
+    datatypes = ['meg', 'eeg', 'ieeg', 'ieeg', 'ieeg']
+    for ch_type, datatype in zip(channel_types, datatypes):
         info = mne.create_info(n_channels, sampling_rate,
-                               ch_types=[chtype] * 2)
+                               ch_types=[ch_type] * 2)
         raw = mne.io.RawArray(data, info)
         assert _handle_datatype(raw, datatype) == datatype
     # datatype is not given, will be inferred if possible
