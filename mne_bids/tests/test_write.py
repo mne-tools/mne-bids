@@ -1188,8 +1188,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
     bids_fname = bids_path.copy().update(run=run2)
-    # add data in as a montage
-    ch_names = raw.ch_names
+    # add data in as a montage, but .set_montage only works for some
+    # channel types, so make a specific selection
+    ch_names = [chname
+                for chname, chtyp in zip(raw.ch_names, raw.get_channel_types())
+                if chtyp in ['eeg', 'seeg', 'ecog', 'dbs']]
     elec_locs = np.random.random((len(ch_names), 3))
 
     # test what happens if there is some nan entries
@@ -1198,11 +1201,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame='head')
 
-    if check_version('mne', '0.24'):
-        with pytest.warns(RuntimeWarning, match='Not setting position'):
-            raw.set_montage(eeg_montage)
-    else:
-        raw.set_montage(eeg_montage)
+    raw.set_montage(eeg_montage)
 
     # electrodes are not written w/o landmarks
     with pytest.warns(RuntimeWarning, match='Skipping EEG electrodes.tsv... '
@@ -1222,11 +1221,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
                                                 lpa=[0, 1, 0],
                                                 rpa=[0, 0, 1])
 
-    if check_version('mne', '0.24'):
-        with pytest.warns(RuntimeWarning, match='Not setting position'):
-            raw.set_montage(eeg_montage)
-    else:
-        raw.set_montage(eeg_montage)
+    raw.set_montage(eeg_montage)
 
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
@@ -1326,17 +1321,17 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
 
     # test writing electrode coordinates (.tsv)
     # and coordinate system (.json)
-    ch_names = ieeg_raw.ch_names
+    ch_names = [chname
+                for chname, chtyp in
+                zip(ieeg_raw.ch_names, ieeg_raw.get_channel_types())
+                if chtyp in ['eeg', 'seeg', 'ecog', 'dbs']]
+
     elec_locs = np.random.random((len(ch_names), 3)).tolist()
     ch_pos = dict(zip(ch_names, elec_locs))
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                  coord_frame='mni_tal')
 
-    if check_version('mne', '0.24'):
-        with pytest.warns(RuntimeWarning, match='Not setting position'):
-            ieeg_raw.set_montage(ecog_montage)
-    else:
-        ieeg_raw.set_montage(ecog_montage)
+    ieeg_raw.set_montage(ecog_montage)
 
     bids_root = tmpdir.mkdir('bids3')
     bids_path.update(root=bids_root, datatype='ieeg')
