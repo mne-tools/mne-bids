@@ -395,19 +395,6 @@ def test_fif(_bids_validate, tmpdir):
     events = events[events[:, 2] != 0]
 
     raw = _read_raw_fif(raw_fname)
-    # add data in as a montage for MEG
-    ch_names = raw.ch_names
-    elec_locs = np.random.random((len(ch_names), 3)).tolist()
-    ch_pos = dict(zip(ch_names, elec_locs))
-    meg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                                coord_frame='head')
-
-    if check_version('mne', '0.24'):
-        with pytest.warns(RuntimeWarning, match='Not setting position'):
-            raw.set_montage(meg_montage)
-    else:
-        raw.set_montage(meg_montage)
-
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=False)
 
