@@ -1190,10 +1190,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     bids_fname = bids_path.copy().update(run=run2)
     # add data in as a montage, but .set_montage only works for some
     # channel types, so make a specific selection
-    ch_names = [chname
+    ch_names = [ch_name
                 for ch_name, ch_type in
                 zip(raw.ch_names, raw.get_channel_types())
-                if chtyp in ['eeg', 'seeg', 'ecog', 'dbs']]
+                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs']]
     elec_locs = np.random.random((len(ch_names), 3))
 
     # test what happens if there is some nan entries
