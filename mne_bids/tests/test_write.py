@@ -402,7 +402,10 @@ def test_fif(_bids_validate, tmpdir):
     meg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame='head')
 
-    with pytest.warns(RuntimeWarning, match='Not setting position'):
+    if check_version('mne', '0.24'):
+        with pytest.warns(RuntimeWarning, match='Not setting position'):
+            raw.set_montage(meg_montage)
+    else:
         raw.set_montage(meg_montage)
 
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
@@ -467,7 +470,10 @@ def test_fif(_bids_validate, tmpdir):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype='eeg')
-    with pytest.warns(RuntimeWarning, match='Not setting position'):
+    if check_version('mne', '0.24'):
+        with pytest.warns(RuntimeWarning, match='Not setting position'):
+            raw2 = read_raw_bids(bids_path=bids_path)
+    else:
         raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
@@ -1205,9 +1211,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame='head')
 
-    # catch warning that special channel types (e.g., EMG) are not being
-    # set during set_montage
-    with pytest.warns(RuntimeWarning, match='Not setting position'):
+    if check_version('mne', '0.24'):
+        with pytest.warns(RuntimeWarning, match='Not setting position'):
+            raw.set_montage(eeg_montage)
+    else:
         raw.set_montage(eeg_montage)
 
     # electrodes are not written w/o landmarks
@@ -1228,9 +1235,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
                                                 lpa=[0, 1, 0],
                                                 rpa=[0, 0, 1])
 
-    # catch warning that special channel types (e.g., EMG) are not being
-    # set during set_montage
-    with pytest.warns(RuntimeWarning, match='Not setting position'):
+    if check_version('mne', '0.24'):
+        with pytest.warns(RuntimeWarning, match='Not setting position'):
+            raw.set_montage(eeg_montage)
+    else:
         raw.set_montage(eeg_montage)
 
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
@@ -1337,9 +1345,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                  coord_frame='mni_tal')
 
-    # catch warning that special channel types (e.g., EMG) are not being
-    # set during set_montage
-    with pytest.warns(RuntimeWarning, match='Not setting position'):
+    if check_version('mne', '0.24'):
+        with pytest.warns(RuntimeWarning, match='Not setting position'):
+            ieeg_raw.set_montage(ecog_montage)
+    else:
         ieeg_raw.set_montage(ecog_montage)
 
     bids_root = tmpdir.mkdir('bids3')
