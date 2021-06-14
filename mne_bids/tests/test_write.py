@@ -1191,7 +1191,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     # add data in as a montage, but .set_montage only works for some
     # channel types, so make a specific selection
     ch_names = [chname
-                for chname, chtyp in zip(raw.ch_names, raw.get_channel_types())
+                for ch_name, ch_type in
+                zip(raw.ch_names, raw.get_channel_types())
                 if chtyp in ['eeg', 'seeg', 'ecog', 'dbs']]
     elec_locs = np.random.random((len(ch_names), 3))
 
@@ -1318,10 +1319,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     # test writing electrode coordinates (.tsv)
     # and coordinate system (.json)
     # .set_montage only works for some channel types -> specific selection
-    ch_names = [chname
-                for chname, chtyp in
+    ch_names = [ch_name
+                for ch_name, ch_type in
                 zip(ieeg_raw.ch_names, ieeg_raw.get_channel_types())
-                if chtyp in ['eeg', 'seeg', 'ecog', 'dbs']]
+                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs']]
 
     elec_locs = np.random.random((len(ch_names), 3)).tolist()
     ch_pos = dict(zip(ch_names, elec_locs))
