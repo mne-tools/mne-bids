@@ -462,7 +462,6 @@ def test_fif(_bids_validate, tmpdir):
             raw2 = read_raw_bids(bids_path=bids_path)
     else:
         raw2 = read_raw_bids(bids_path=bids_path)
-    raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
     events2, _ = mne.events_from_annotations(raw2, event_id)
