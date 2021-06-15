@@ -395,14 +395,6 @@ def test_fif(_bids_validate, tmpdir):
     events = events[events[:, 2] != 0]
 
     raw = _read_raw_fif(raw_fname)
-    # add data in as a montage for MEG
-    ch_names = raw.ch_names
-    elec_locs = np.random.random((len(ch_names), 3)).tolist()
-    ch_pos = dict(zip(ch_names, elec_locs))
-    meg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                                coord_frame='head')
-    raw.set_montage(meg_montage)
-
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=False)
 
@@ -465,7 +457,11 @@ def test_fif(_bids_validate, tmpdir):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype='eeg')
-    raw2 = read_raw_bids(bids_path=bids_path)
+    if check_version('mne', '0.24'):
+        with pytest.warns(RuntimeWarning, match='Not setting position'):
+            raw2 = read_raw_bids(bids_path=bids_path)
+    else:
+        raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
     events2, _ = mne.events_from_annotations(raw2, event_id)
@@ -1192,8 +1188,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
     bids_fname = bids_path.copy().update(run=run2)
-    # add data in as a montage
-    ch_names = raw.ch_names
+    # add data in as a montage, but .set_montage only works for some
+    # channel types, so make a specific selection
+    ch_names = [ch_name
+                for ch_name, ch_type in
+                zip(raw.ch_names, raw.get_channel_types())
+                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs', 'fnirs']]
     elec_locs = np.random.random((len(ch_names), 3))
 
     # test what happens if there is some nan entries
@@ -1318,7 +1318,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
 
     # test writing electrode coordinates (.tsv)
     # and coordinate system (.json)
-    ch_names = ieeg_raw.ch_names
+    # .set_montage only works for some channel types -> specific selection
+    ch_names = [ch_name
+                for ch_name, ch_type in
+                zip(ieeg_raw.ch_names, ieeg_raw.get_channel_types())
+                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs', 'fnirs']]
+
     elec_locs = np.random.random((len(ch_names), 3)).tolist()
     ch_pos = dict(zip(ch_names, elec_locs))
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,

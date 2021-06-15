@@ -1,6 +1,6 @@
 [![Codecov](https://codecov.io/gh/mne-tools/mne-bids/branch/main/graph/badge.svg)](https://codecov.io/gh/mne-tools/mne-bids)
 [![GitHub Actions](https://github.com/mne-tools/mne-bids/workflows/build/badge.svg)](https://github.com/mne-tools/mne-bids/actions)
-[![CircleCI](https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg)](https://circleci.com/gh/mne-tools/mne-bids)
+[![CircleCI](https://circleci.com/gh/mne-tools/mne-bids.svg?style=shield)](https://circleci.com/gh/mne-tools/mne-bids)
 [![PyPI Download count](https://pepy.tech/badge/mne-bids)](https://pepy.tech/project/mne-bids)
 [![Latest PyPI release](https://img.shields.io/pypi/v/mne-bids.svg)](https://pypi.org/project/mne-bids/)
 [![Latest conda-forge release](https://img.shields.io/conda/vn/conda-forge/mne-bids.svg)](https://anaconda.org/conda-forge/mne-bids/)

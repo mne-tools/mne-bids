@@ -21,9 +21,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: style-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -43,15 +47,20 @@ jobs:
         os: [ubuntu-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
+    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
+    - uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: build-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
 
     - name: Update pip, wheel, and setuptools
       run: python -m pip install --upgrade pip wheel setuptools
 
-    - uses: actions/checkout@v2
     - name: Build sdist
       run: python setup.py sdist
     - name: Install sdist
@@ -106,13 +115,22 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: 12
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Restore cache
+      # Restoring cache on Ubuntu 20.04 seems buggy
+      # only do it on other operating systems
+      # https://stackoverflow.com/q/61875869/5201771
+      if: "matrix.os != 'ubuntu-latest'"
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: test-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
     - name: Install Python dependencies using pip
       run: |
         python -m pip install --upgrade pip wheel
@@ -161,7 +179,7 @@ jobs:
         python -m pytest . --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
       shell: bash
     - name: Upload coverage stats to codecov
-      if: "matrix.os == 'ubuntu-latest'"
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' && matrix.bids-validator == 'main' }}
       uses: codecov/codecov-action@v1
       with:
         file: ./coverage.xml
