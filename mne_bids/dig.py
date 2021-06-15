@@ -516,8 +516,8 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
 
     # add montage to Raw object
     # XXX: Starting with mne 0.24, this will raise a RuntimeWarning
-    #      if channel types are included outside of (EEG/sEEG/ECoG/DBS).
-    #      Probably needs a fix in the future.
+    #      if channel types are included outside of
+    #      (EEG/sEEG/ECoG/DBS/fNIRS). Probably needs a fix in the future.
     raw.set_montage(montage, on_missing='warn', verbose=verbose)
 
     return montage

@@ -1193,7 +1193,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     ch_names = [ch_name
                 for ch_name, ch_type in
                 zip(raw.ch_names, raw.get_channel_types())
-                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs']]
+                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs', 'fnirs']]
     elec_locs = np.random.random((len(ch_names), 3))
 
     # test what happens if there is some nan entries
@@ -1322,7 +1322,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     ch_names = [ch_name
                 for ch_name, ch_type in
                 zip(ieeg_raw.ch_names, ieeg_raw.get_channel_types())
-                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs']]
+                if ch_type in ['eeg', 'seeg', 'ecog', 'dbs', 'fnirs']]
 
     elec_locs = np.random.random((len(ch_names), 3)).tolist()
     ch_pos = dict(zip(ch_names, elec_locs))
