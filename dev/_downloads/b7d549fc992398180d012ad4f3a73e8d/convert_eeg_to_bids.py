@@ -125,6 +125,7 @@ montage = mne.channels.read_dig_captrak(captrak_path)
 montage.rename_channels(dict(zip(montage.ch_names, raw.ch_names)))
 
 # "attach" the electrode coordinates to the `raw` object
+# Note that this only works for some channel types (EEG/sEEG/ECoG/DBS/fNIRS)
 raw.set_montage(montage)
 
 # show the electrode positions
