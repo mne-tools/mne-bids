@@ -122,7 +122,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v2
+    - name: Restore cache
+      # Restoring cache on Ubuntu 20.04 seems buggy
+      # only do it on other operating systems
+      # https://stackoverflow.com/q/61875869/5201771
+      if: "matrix.os != 'ubuntu-latest'"
+      uses: actions/cache@v2
       with:
         path: ${{ env.pythonLocation }}
         key: test-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
