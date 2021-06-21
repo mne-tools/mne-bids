@@ -825,9 +825,6 @@ def _write_raw_fif(raw, bids_fname):
         should be saved.
 
     """
-    if (not raw.preload) and (bids_fname in raw._filenames):
-        raw.load_data()
-
     raw.save(bids_fname, fmt=raw.orig_format, split_naming='bids',
              overwrite=True)
 
@@ -1437,6 +1434,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     if os.path.exists(bids_path.fpath):
         if overwrite:
+            # Need to load data before removing its source
+            raw.load_data()
             if bids_path.fpath.is_dir():
                 shutil.rmtree(bids_path.fpath)
             else:
