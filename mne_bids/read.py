@@ -261,8 +261,8 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
                 module='mne'
             )
             raw.anonymize(daysback=None, keep_his=True)
-    
         raw.set_meas_date(acq_time)
+
     return raw
 
 
