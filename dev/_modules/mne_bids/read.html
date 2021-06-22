@@ -390,7 +390,10 @@
     <span class="c1"># to work nicely with windows</span>
     <span class="n">data_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">fname</span>
     <span class="n">fnames</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
-    <span class="n">acq_times</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;acq_time&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;acq_time&#39;</span> <span class="ow">in</span> <span class="n">scans_tsv</span><span class="p">:</span>
+        <span class="n">acq_times</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;acq_time&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">acq_times</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span>
     <span class="n">row_ind</span> <span class="o">=</span> <span class="n">fnames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span>
 
     <span class="c1"># check whether all split files have the same acq_time</span>
