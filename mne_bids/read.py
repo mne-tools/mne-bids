@@ -240,7 +240,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         if verbose:
             logger.debug(f'Loaded {scans_fname} scans file to set '
                          f'acq_time as {acq_time}.')
-        # First set measurement data to None and then call call anonymize() to
+        # First set measurement date to None and then call call anonymize() to
         # remove any traces of the measurement date we wish
         # to replace – it might lurk out in more places than just
         # raw.info['meas_date'], e.g. in info['meas_id]['secs'] and in
