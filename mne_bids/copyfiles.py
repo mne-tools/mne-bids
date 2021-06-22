@@ -502,20 +502,21 @@ def copyfile_eeglab(src, dest):
     if not mne.utils.check_version('scipy', '1.5.0'):  # pragma: no cover
         raise ImportError('SciPy >=1.5.0 is required handling EEGLAB data.')
 
-    # Get extenstion of the EEGLAB file
+    # Get extension of the EEGLAB file
     _, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
         raise ValueError(f'Need to move data with same extension'
                          f' but got {ext_src}, {ext_dest}')
 
-    # Load the EEG struct.
+    # Load the EEG struct
     uint16_codec = None
-    mat = loadmat(file_name=src, simplify_cells=True,
+    eeg = loadmat(file_name=src, simplify_cells=True,
                   appendmat=False, uint16_codec=uint16_codec)
-    if 'EEG' not in mat:
-        raise ValueError(f'Could not find "EEG" field in {src}')
-    eeg = mat['EEG']
+    oldstyle = False
+    if 'EEG' in eeg:
+        eeg = eeg['EEG']
+        oldstyle = True
 
     if isinstance(eeg['data'], str):
         # If the data field is a string, it points to a .fdt file in src dir
@@ -532,7 +533,7 @@ def copyfile_eeglab(src, dest):
         eeg['data'] = tail
 
         # Save the EEG dictionary as a Matlab struct again
-        mdict = dict(EEG=eeg)
+        mdict = dict(EEG=eeg) if oldstyle else eeg
         savemat(file_name=dest, mdict=mdict, appendmat=False)
     else:
         # If no .fdt file, simply copy the .set file, no modifications

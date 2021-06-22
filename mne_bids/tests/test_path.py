@@ -821,7 +821,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
                        match='The root of the "bids_path" must be set'):
         bids_path.copy().update(root=None).find_empty_room()
 
-    # assert that we get error if meas_date is not available.
+    # assert that we get an error if meas_date is not available.
     raw = read_raw_bids(bids_path=bids_path)
     raw.set_meas_date(None)
     anonymize_info(raw.info)
@@ -829,6 +829,51 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     with pytest.raises(ValueError, match='The provided recording does not '
                                          'have a measurement date set'):
         bids_path.find_empty_room()
+
+    # test that the `AssociatedEmptyRoom` key in MEG sidecar is respected
+
+    bids_root = tmpdir.mkdir('associated-empty-room')
+    raw = _read_raw_fif(raw_fname)
+    meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
+    er_date = datetime(year=2010, month=1, day=1, tzinfo=timezone.utc)
+    raw.set_meas_date(meas_date)
+
+    er_raw_matching_date = er_raw.copy().set_meas_date(meas_date)
+    er_raw_associated = er_raw.copy().set_meas_date(er_date)
+
+    # First write empty-room data
+    # We write two empty-room recordings: one with a date matching exactly the
+    # experimental measurement date, and one dated approx. 10 years earlier
+    # We will want to enforce using the older recording via
+    # `AssociatedEmptyRoom` (without AssociatedEmptyRoom, find_empty_room()
+    # would return the recording with the matching date instead)
+    er_matching_date_bids_path = BIDSPath(
+        subject='emptyroom', session='20200110', task='noise', root=bids_root,
+        datatype='meg', suffix='meg', extension='.fif')
+    write_raw_bids(er_raw_matching_date, bids_path=er_matching_date_bids_path)
+
+    er_associated_bids_path = (er_matching_date_bids_path.copy()
+                               .update(session='20100101'))
+    write_raw_bids(er_raw_associated, bids_path=er_associated_bids_path)
+
+    # Now we write experimental data and associate it with the earlier
+    # empty-room recording
+    bids_path = (er_matching_date_bids_path.copy()
+                 .update(subject='01', session=None, task='task'))
+    write_raw_bids(raw, bids_path=bids_path,
+                   empty_room=er_associated_bids_path)
+
+    # Retrieve empty-room BIDSPath
+    assert bids_path.find_empty_room() == er_associated_bids_path
+
+    # Should only work for MEG
+    with pytest.raises(ValueError, match='only supported for MEG'):
+        bids_path.copy().update(datatype='eeg').find_empty_room()
+
+    # Don't create `AssociatedEmptyRoom` entry in sidecar – we should now
+    # retrieve the empty-room recording closer in time
+    write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
+    assert bids_path.find_empty_room() == er_matching_date_bids_path
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

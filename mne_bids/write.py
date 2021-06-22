@@ -16,6 +16,8 @@ from datetime import datetime, timezone, timedelta
 import shutil
 from collections import defaultdict, OrderedDict
 
+from pkg_resources import parse_version
+
 import numpy as np
 from scipy import linalg
 import mne
@@ -92,7 +94,8 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
                     emg='ElectroMyoGram',
                     misc='Miscellaneous',
                     bio='Biological',
-                    ias='Internal Active Shielding')
+                    ias='Internal Active Shielding',
+                    dbs='Deep Brain Stimulation')
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
@@ -562,8 +565,8 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
     return vox_landmarks
 
 
-def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
-                  verbose=True):
+def _sidecar_json(raw, task, manufacturer, fname, datatype,
+                  emptyroom_fname=None, overwrite=False, verbose=True):
     """Create a sidecar json file depending on the suffix and save it.
 
     The sidecar json file provides meta data about the data
@@ -582,6 +585,9 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         Filename to save the sidecar json to.
     datatype : str
         Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
+    emptyroom_fname : str | mne_bids.BIDSPath
+        For MEG recordings, the path to an empty-room data file to be
+        associated with ``raw``. Only supported for MEG.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -638,6 +644,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
                       if ch['kind'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
+    n_dbschan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_DBS_CH])
 
     # Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found
     # Set DigitizedHeadPoints to True if any "Extra" points are found
@@ -654,6 +662,37 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
                     raw.filenames[0].endswith('.fif'):
                 digitized_head_points = True
 
+    # Compile cHPI information, if any.
+    from mne.io.ctf import RawCTF
+    from mne.io.kit.kit import RawKIT
+
+    chpi = False
+    hpi_freqs = np.array([])
+    if (datatype == 'meg' and
+            parse_version(mne.__version__) > parse_version('0.23')):
+        # We need to handle different data formats differently
+        if isinstance(raw, RawCTF):
+            try:
+                mne.chpi.extract_chpi_locs_ctf(raw)
+                chpi = True
+            except RuntimeError:
+                logger.info('Could not find cHPI information in raw data.')
+        elif isinstance(raw, RawKIT):
+            try:
+                mne.chpi.extract_chpi_locs_kit(raw)
+                chpi = True
+            except (RuntimeError, ValueError):
+                logger.info('Could not find cHPI information in raw data.')
+        else:
+            hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
+                                                     on_missing='ignore')
+            if hpi_freqs.size > 0:
+                chpi = True
+    elif datatype == 'meg':
+        logger.info('Cannot check for & write continuous head localization '
+                    'information: requires MNE-Python >= 0.24')
+        chpi = None
+
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
         ('TaskName', task),
@@ -663,21 +702,31 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
         ('SoftwareFilters', 'n/a'),
         ('RecordingDuration', raw.times[-1]),
         ('RecordingType', rec_type)]
+
     ch_info_json_meg = [
         ('DewarPosition', 'n/a'),
         ('DigitizedLandmarks', digitized_landmark),
         ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
+
+    if chpi is not None:
+        ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
+        ch_info_json_meg.append(('HeadCoilFrequency', list(hpi_freqs)))
+
+    if emptyroom_fname is not None:
+        ch_info_json_meg.append(('AssociatedEmptyRoom', str(emptyroom_fname)))
+
     ch_info_json_eeg = [
         ('EEGReference', 'n/a'),
         ('EEGGround', 'n/a'),
         ('EEGPlacementScheme', _infer_eeg_placement_scheme(raw)),
         ('Manufacturer', manufacturer)]
+
     ch_info_json_ieeg = [
         ('iEEGReference', 'n/a'),
         ('ECOGChannelCount', n_ecogchan),
-        ('SEEGChannelCount', n_seegchan)]
+        ('SEEGChannelCount', n_seegchan + n_dbschan)]
     ch_info_ch_counts = [
         ('EEGChannelCount', n_eegchan),
         ('EOGChannelCount', n_eogchan),
@@ -946,6 +995,7 @@ def make_dataset_description(path, name, data_license=None,
 def write_raw_bids(raw, bids_path, events_data=None,
                    event_id=None, anonymize=None,
                    format='auto', symlink=False,
+                   empty_room=None,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1069,6 +1119,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
 
+    empty_room : mne_bids.BIDSPath | None
+        The empty-room recording to be associated with this file. This is
+        only supported for MEG data, and only if the ``root`` attributes of
+        ``bids_path`` and ``empty_room`` are the same. Pass ``None``
+        (default) if you do not wish to specify an associated empty-room
+        recording.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1111,8 +1167,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         events = mne.find_events(raw, min_duration=0.002)
         write_raw_bids(..., events_data=events)
 
-    See the documentation of `mne.find_events` for more information on event
-    extraction from ``STIM`` channels.
+    See the documentation of :func:`mne.find_events` for more information on
+    event extraction from ``STIM`` channels.
 
     When anonymizing ``.edf`` files, then the file format for EDF limits
     how far back we can set the recording date. Therefore, all anonymized
@@ -1175,6 +1231,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise RuntimeError('You passed event_id, but no events_data NumPy '
                            'array. You need to pass both, or neither.')
 
+    _validate_type(item=empty_room, item_name='empty_room',
+                   types=(BIDSPath, None))
+
     raw = raw.copy()
 
     raw_fname = raw.filenames[0]
@@ -1213,15 +1272,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise ValueError(msg)
 
     datatype = _handle_datatype(raw, bids_path.datatype, verbose)
-    bids_path = bids_path.copy()
-    bids_path = bids_path.update(
-        datatype=datatype, suffix=datatype, extension=ext)
+    bids_path = (bids_path.copy()
+                 .update(datatype=datatype, suffix=datatype, extension=ext))
 
     # check whether the info provided indicates that the data is emptyroom
     # data
-    emptyroom = False
-    if bids_path.subject == 'emptyroom' and bids_path.task == 'noise':
-        emptyroom = True
+    data_is_emptyroom = False
+    if (bids_path.datatype == 'meg' and bids_path.subject == 'emptyroom' and
+            bids_path.task == 'noise'):
+        data_is_emptyroom = True
         # check the session date provided is consistent with the value in raw
         meas_date = raw.info.get('meas_date', None)
         if meas_date is not None:
@@ -1230,12 +1289,39 @@ def write_raw_bids(raw, bids_path, events_data=None,
                                                    tz=timezone.utc)
             er_date = meas_date.strftime('%Y%m%d')
             if er_date != bids_path.session:
-                raise ValueError("Date provided for session doesn't match "
-                                 "session date.")
+                raise ValueError(
+                    f"The date provided for the empty-room session "
+                    f"({bids_path.session}) doesn't match the empty-room "
+                    f"recording date found in the data's info structure "
+                    f"({er_date})."
+                )
             if anonymize is not None and 'daysback' in anonymize:
                 meas_date = meas_date - timedelta(anonymize['daysback'])
                 session = meas_date.strftime('%Y%m%d')
                 bids_path = bids_path.copy().update(session=session)
+
+    associated_er_path = None
+    if empty_room is not None:
+        if bids_path.datatype != 'meg':
+            raise ValueError('"empty_room" is only supported for '
+                             'MEG data.')
+        if data_is_emptyroom:
+            raise ValueError('You cannot write empty-room data and pass '
+                             '"empty_room" at the same time.')
+        if bids_path.root != empty_room.root:
+            raise ValueError('The MEG data and its associated empty-room '
+                             'recording must share the same BIDS root.')
+
+        associated_er_path = empty_room.fpath
+        if not associated_er_path.exists():
+            raise FileNotFoundError(f'Empty-room data file not found: '
+                                    f'{associated_er_path}')
+
+        # Turn it into a path relative to the BIDS root
+        associated_er_path = Path(str(associated_er_path)
+                                  .replace(str(empty_room.root), ''))
+        # Ensure it works on Windows too
+        associated_er_path = associated_er_path.as_posix()
 
     data_path = bids_path.mkdir().directory
 
@@ -1303,7 +1389,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     _participants_json(participants_json_fname, True, verbose)
 
     # for MEG, we only write coordinate system
-    if bids_path.datatype == 'meg' and not emptyroom:
+    if bids_path.datatype == 'meg' and not data_is_emptyroom:
         _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
                                 sensor_coord_system=orient,
                                 fname=coordsystem_path.fpath,
@@ -1319,7 +1405,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                        f'for data type "{bids_path.datatype}". Skipping ...')
 
     # Write events.
-    if not emptyroom:
+    if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
             events_data, event_id, raw, verbose=False
         )
@@ -1337,17 +1423,27 @@ def write_raw_bids(raw, bids_path, events_data=None,
     make_dataset_description(bids_path.root, name=" ", overwrite=False,
                              verbose=verbose)
 
-    _sidecar_json(raw, bids_path.task, manufacturer, sidecar_path.fpath,
-                  bids_path.datatype, overwrite, verbose)
+    _sidecar_json(raw, task=bids_path.task, manufacturer=manufacturer,
+                  fname=sidecar_path.fpath, datatype=bids_path.datatype,
+                  emptyroom_fname=associated_er_path,
+                  overwrite=overwrite, verbose=verbose)
     _channels_tsv(raw, channels_path.fpath, overwrite, verbose)
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
 
-    if os.path.exists(bids_path.fpath) and not overwrite:
-        raise FileExistsError(
-            f'"{bids_path.fpath}" already exists. '  # noqa: F821
-            'Please set overwrite to True.')
+    if os.path.exists(bids_path.fpath):
+        if overwrite:
+            # Need to load data before removing its source
+            raw.load_data()
+            if bids_path.fpath.is_dir():
+                shutil.rmtree(bids_path.fpath)
+            else:
+                bids_path.fpath.unlink()
+        else:
+            raise FileExistsError(
+                f'"{bids_path.fpath}" already exists. '  # noqa: F821
+                'Please set overwrite to True.')
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant

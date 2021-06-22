@@ -50,8 +50,8 @@ def test_handle_datatype():
     sampling_rate = 100
     data = random((n_channels, sampling_rate))
     # datatype is given, check once for each datatype
-    channel_types = ['grad', 'eeg', 'ecog', 'seeg']
-    datatypes = ['meg', 'eeg', 'ieeg', 'ieeg']
+    channel_types = ['grad', 'eeg', 'ecog', 'seeg', 'dbs']
+    datatypes = ['meg', 'eeg', 'ieeg', 'ieeg', 'ieeg']
     for ch_type, datatype in zip(channel_types, datatypes):
         info = mne.create_info(n_channels, sampling_rate,
                                ch_types=[ch_type] * 2)

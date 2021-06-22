@@ -110,6 +110,7 @@ raw.info['bads'].extend(['BTM1', 'BTM2', 'BTM3', 'BTM4', 'BTM5', 'BTM6',
                          'EKGL', 'EKGR'])
 
 # set montage
+# (note that this only works for some channel types: EEG/sEEG/ECoG/DBS/fNIRS)
 raw.set_montage(montage, on_missing='warn')
 
 ###############################################################################

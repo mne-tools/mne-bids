@@ -16,7 +16,7 @@ jobs:
         # Also restore pip cache to speed up installations
         - restore_cache:
             keys:
-              - pip-cache-0-{{ checksum "./test_requirements.txt" }}
+              - pip-cache-0-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
 
         - run:
             name: Get Python running
@@ -40,19 +40,6 @@ jobs:
             path: doc/_build/html/
             destination: dev
 
-        - run:
-            name: Check links (if on main)
-            command: |
-              current_branch=$(git rev-parse --abbrev-ref HEAD)
-              if (echo $current_branch | grep main) ; then
-                echo $current_branch
-                make -C doc clean
-                make -C doc linkcheck
-              else
-                echo $current_branch
-                echo "Skip running linkcheck."
-              fi
-
         # Store the data cache
         - save_cache:
             key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
@@ -61,7 +48,7 @@ jobs:
 
         # Store pip cache
         - save_cache:
-            key: pip-cache-0-{{ checksum "./test_requirements.txt" }}
+            key: pip-cache-0-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
             paths:
               - ~/.cache/pip
 
@@ -91,6 +78,34 @@ jobs:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
+
+  link-check:
+    docker:
+      - image: cimg/python:3.8
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: doc/_build
+
+      - restore_cache:
+          keys:
+            - pip-cache-0-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+
+      - run:
+          name: Get Python running
+          command: |
+            python -m pip install --user --upgrade --progress-bar off pip
+            python -m pip install --user --upgrade --progress-bar off -r test_requirements.txt
+            python -m pip install --user --upgrade --progress-bar off -r doc/requirements.txt
+            python -m pip install --upgrade --no-deps https://api.github.com/repos/mne-tools/mne-python/zipball/main
+            python -m pip install --user -e .
+
+      - run:
+          name: Check links
+          command: |
+            make -C doc linkcheck
+
 workflows:
   commit:
     jobs:
@@ -102,13 +117,28 @@ workflows:
             branches:
               only: main
 
-  scheduled:
+  nightly:
     jobs:
       - docs-build
 
     triggers:
       - schedule:
           cron: "0 4 * * *"
+          filters:
+            branches:
+              only:
+                - main
+
+  weekly:
+    jobs:
+      - docs-build
+      - link-check:
+          requires:
+            - docs-build
+
+    triggers:
+      - schedule:
+          cron: "0 4 * * 0"
           filters:
             branches:
               only:

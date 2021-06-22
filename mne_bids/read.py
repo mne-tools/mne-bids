@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
+from mne.io.pick import pick_channels_regexp
 from mne.utils import has_nibabel, logger, warn
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
@@ -239,12 +240,17 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         if verbose:
             logger.debug(f'Loaded {scans_fname} scans file to set '
                          f'acq_time as {acq_time}.')
+        # Call anonymize() to remove any traces of the measurement date we wish
+        # to replace – it might lurk out in more places than just
+        # raw.info['meas_date'], e.g. in info['meas_id]['secs'] and in
+        # info['file_id'], which are not affected by set_meas_date().
+        raw.anonymize(daysback=None, keep_his=True)
         raw.set_meas_date(acq_time)
     return raw
 
 
 def _handle_info_reading(sidecar_fname, raw, verbose=None):
-    """Read associated sidecar.json and populate raw.
+    """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
     """
@@ -271,6 +277,57 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
                              "Sidecar JSON is -> {} ".format(line_freq))
 
     raw.info["line_freq"] = line_freq
+
+    # get cHPI info
+    chpi = sidecar_json.get('ContinuousHeadLocalization')
+    if chpi is None:
+        # no cHPI info in the sidecar – leave raw.info unchanged
+        pass
+    elif chpi is True:
+        from mne.io.ctf import RawCTF
+        from mne.io.kit.kit import RawKIT
+
+        if isinstance(raw, RawCTF):
+            # Pick channels corresponding to the cHPI positions
+            hpi_picks = pick_channels_regexp(raw.info['ch_names'],
+                                             'HLC00[123][123].*')
+            if len(hpi_picks) != 9:
+                raise ValueError(
+                    f'Could not find all cHPI channels that we expected for '
+                    f'CTF data. Expected: 9, found: {len(hpi_picks)}'
+                )
+            logger.info('Cannot verify that the cHPI frequencies provided in '
+                        'the MEG JSON sidecar file correspond to the raw data '
+                        'for CTF files.')
+        elif isinstance(raw, RawKIT):
+            logger.info('Cannot verify that the cHPI information provided in '
+                        'the MEG JSON sidecar file corresponds to the raw '
+                        'data for KIT files.')
+        else:
+            hpi_freqs_json = sidecar_json['HeadCoilFrequency']
+            try:
+                hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
+            except ValueError:
+                logger.info(
+                    'Cannot verify that the cHPI frequencies provided in '
+                    'the MEG JSON sidecar file correspond to those in the '
+                    'raw data. (Was it converted from another format?)'
+                )
+            else:
+                if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
+                    raise ValueError(
+                        f'The cHPI coil frequencies in the sidecar file '
+                        f'{sidecar_fname}:\n    {hpi_freqs_json}\ndiffer from'
+                        f' what is stored in the raw data:\n'
+                        f'    {hpi_freqs_raw}\nCannot proceed.'
+                    )
+    else:
+        if raw.info['hpi_subsystem']:
+            logger.info('Dropping cHPI information stored in raw data, '
+                        'following specification in sidecar file')
+        raw.info['hpi_subsystem'] = None
+        raw.info['hpi_meas'] = []
+
     return raw
 
 

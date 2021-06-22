@@ -515,6 +515,9 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
                  f"(n/a) that are not marked as bad: {nan_chs}")
 
     # add montage to Raw object
+    # XXX: Starting with mne 0.24, this will raise a RuntimeWarning
+    #      if channel types are included outside of
+    #      (EEG/sEEG/ECoG/DBS/fNIRS). Probably needs a fix in the future.
     raw.set_montage(montage, on_missing='warn', verbose=verbose)
 
     return montage
