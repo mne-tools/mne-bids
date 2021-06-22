@@ -194,6 +194,7 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -424,12 +425,28 @@
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s1"> scans file to set &#39;</span>
                          <span class="sa">f</span><span class="s1">&#39;acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-        <span class="c1"># Call anonymize() to remove any traces of the measurement date we wish</span>
+        <span class="c1"># First set measurement date to None and then call call anonymize() to</span>
+        <span class="c1"># remove any traces of the measurement date we wish</span>
         <span class="c1"># to replace – it might lurk out in more places than just</span>
         <span class="c1"># raw.info[&#39;meas_date&#39;], e.g. in info[&#39;meas_id][&#39;secs&#39;] and in</span>
         <span class="c1"># info[&#39;file_id&#39;], which are not affected by set_meas_date().</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">anonymize</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># The combined use of set_meas_date(None) and anonymize() is suggested</span>
+        <span class="c1"># by the MNE documentation, and in fact we cannot load e.g. OpenNeuro</span>
+        <span class="c1"># ds003392 without this combination.</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_meas_date</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="c1"># This is to silence a warning emitted by MNE-Python &lt; 0.24. The</span>
+            <span class="c1"># warnings filter can be safely removed once we drop support for</span>
+            <span class="c1"># MNE-Python 0.23 and older.</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+                <span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Input info has &#39;meas_date&#39; set to None&quot;</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span>
+            <span class="p">)</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">anonymize</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_meas_date</span><span class="p">(</span><span class="n">acq_time</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">raw</span>
 
 
