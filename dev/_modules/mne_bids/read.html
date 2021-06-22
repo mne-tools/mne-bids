@@ -421,6 +421,11 @@
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s1"> scans file to set &#39;</span>
                          <span class="sa">f</span><span class="s1">&#39;acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="c1"># Call anonymize() to remove any traces of the measurement date we wish</span>
+        <span class="c1"># to replace – it might lurk out in more places than just</span>
+        <span class="c1"># raw.info[&#39;meas_date&#39;], e.g. in info[&#39;meas_id][&#39;secs&#39;] and in</span>
+        <span class="c1"># info[&#39;file_id&#39;], which are not affected by set_meas_date().</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">anonymize</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_meas_date</span><span class="p">(</span><span class="n">acq_time</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">raw</span>
 
