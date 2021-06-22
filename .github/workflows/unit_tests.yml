@@ -24,10 +24,10 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    # - uses: actions/cache@v2
-    #   with:
-    #     path: ${{ env.pythonLocation }}
-    #     key: style-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+    - uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: style-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -53,10 +53,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    # - uses: actions/cache@v2
-    #   with:
-    #     path: ${{ env.pythonLocation }}
-    #     key: build-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+    - uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: build-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
 
     - name: Update pip, wheel, and setuptools
       run: python -m pip install --upgrade pip wheel setuptools
@@ -122,15 +122,15 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    # - name: Restore cache
-    #   # Restoring cache on Ubuntu 20.04 seems buggy
-    #   # only do it on other operating systems
-    #   # https://stackoverflow.com/q/61875869/5201771
-    #   if: "matrix.os != 'ubuntu-latest'"
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: ${{ env.pythonLocation }}
-    #     key: test-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+    - name: Restore cache
+      # Restoring cache on Ubuntu 20.04 seems buggy
+      # only do it on other operating systems
+      # https://stackoverflow.com/q/61875869/5201771
+      if: "matrix.os != 'ubuntu-latest'"
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: test-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
     - name: Install Python dependencies using pip
       run: |
         python -m pip install --upgrade pip wheel
