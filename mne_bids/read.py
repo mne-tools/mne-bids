@@ -10,6 +10,7 @@ import os.path as op
 import glob
 import json
 import re
+import warnings
 from datetime import datetime, timezone
 
 import numpy as np
@@ -240,12 +241,28 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         if verbose:
             logger.debug(f'Loaded {scans_fname} scans file to set '
                          f'acq_time as {acq_time}.')
-        # Call anonymize() to remove any traces of the measurement date we wish
+        # First set measurement date to None and then call call anonymize() to
+        # remove any traces of the measurement date we wish
         # to replace – it might lurk out in more places than just
         # raw.info['meas_date'], e.g. in info['meas_id]['secs'] and in
         # info['file_id'], which are not affected by set_meas_date().
-        raw.anonymize(daysback=None, keep_his=True)
+        # The combined use of set_meas_date(None) and anonymize() is suggested
+        # by the MNE documentation, and in fact we cannot load e.g. OpenNeuro
+        # ds003392 without this combination.
+        raw.set_meas_date(None)
+        with warnings.catch_warnings():
+            # This is to silence a warning emitted by MNE-Python < 0.24. The
+            # warnings filter can be safely removed once we drop support for
+            # MNE-Python 0.23 and older.
+            warnings.filterwarnings(
+                action='ignore',
+                message="Input info has 'meas_date' set to None",
+                category=RuntimeWarning,
+                module='mne'
+            )
+            raw.anonymize(daysback=None, keep_his=True)
         raw.set_meas_date(acq_time)
+
     return raw
 
 
