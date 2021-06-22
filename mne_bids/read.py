@@ -206,7 +206,10 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     # to work nicely with windows
     data_fname = bids_path.datatype + '/' + fname
     fnames = scans_tsv['filename']
-    acq_times = scans_tsv['acq_time']
+    if 'acq_time' in scans_tsv:
+        acq_times = scans_tsv['acq_time']
+    else:
+        acq_times = ['n/a'] * len(fnames)
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
