@@ -67,6 +67,7 @@ Bug fixes
 - :func:`mne_bids.write_raw_bids` will handle different cased extensions for EDF files, such as `.edf` and `.EDF` by `Adam Li`_ (:gh: `765`)
 - :func:`mne_bids.inspect_dataset` didn't handle certain filenames correctly on some systems, by `Richard Höchenberger`_ (:gh:`769`)
 - :func:`mne_bids.write_raw_bids` now works across data types with ``overwrite=True``, by `Alexandre Gramfort`_ (:gh:`791`)
+- :func:`mne_bids.read_raw_bids` didn't always replace all traces of the measurement date stored in the raw data with the date found in `*_scans.tsv`, by `Richard Höchenberger`_ (:gh:`812`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

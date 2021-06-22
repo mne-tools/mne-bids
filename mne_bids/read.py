@@ -237,6 +237,11 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         if verbose:
             logger.debug(f'Loaded {scans_fname} scans file to set '
                          f'acq_time as {acq_time}.')
+        # First set meas_date to None and call anonymize_info to remove any
+        # traces of the measurement date we wish to replace – it might lurk out
+        # in more places than just raw.info['meas_date']!
+        raw.set_meas_date(None)
+        mne.io.anonymize_info(info=raw.info, keep_his=True)
         raw.set_meas_date(acq_time)
     return raw
 
