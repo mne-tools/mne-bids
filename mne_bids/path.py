@@ -29,7 +29,6 @@ from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             param_regex, _ensure_tuple)
 
 
-@functools.lru_cache(maxsize=None)
 def _find_matched_empty_room(bids_path):
     """Get matching empty-room file for an MEG recording."""
     # Check whether we have a BIDS root.
