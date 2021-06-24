@@ -29,6 +29,7 @@ from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             param_regex, _ensure_tuple)
 
 
+@functools.lru_cache(maxsize=None)
 def _find_matched_empty_room(bids_path):
     """Get matching empty-room file for an MEG recording."""
     # Check whether we have a BIDS root.
@@ -1539,6 +1540,7 @@ def _find_best_candidates(params, candidate_list):
     return best_candidates
 
 
+@functools.lru_cache(maxsize=None)
 def _get_datatypes_for_sub(*, root, sub, ses=None):
     """Retrieve data modalities for a specific subject and session."""
     subject_dir = op.join(root, f'sub-{sub}')
