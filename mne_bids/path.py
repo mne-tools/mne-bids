@@ -13,6 +13,7 @@ from os import path as op
 from pathlib import Path
 from datetime import datetime
 import json
+import functools
 from typing import Optional, Union
 
 import numpy as np
@@ -1302,6 +1303,7 @@ def _get_bids_suffix_and_ext(str_suffix):
     return suffix, ext
 
 
+@functools.lru_cache(maxsize=None)
 def get_datatypes(root):
     """Get list of data types ("modalities") present in a BIDS dataset.
 
@@ -1331,6 +1333,7 @@ def get_datatypes(root):
     return datatypes
 
 
+@functools.lru_cache(maxsize=None)
 def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_sessions=None, ignore_tasks=None, ignore_runs=None,
                     ignore_processings=None, ignore_spaces=None,
