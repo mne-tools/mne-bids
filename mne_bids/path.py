@@ -1357,7 +1357,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                   may take a **considerable** amount of time (seconds up to
                   several minutes). If you find yourself running into such
                   performance issues, consider limiting the search to only a
-                  subdirectory in the dataset, e.g., for a single subject or
+                  subdirectory in the dataset, e.g., to a single subject or
                   session only.
 
     entity_key : str
