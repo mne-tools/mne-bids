@@ -1346,7 +1346,20 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     Parameters
     ----------
     root : str | pathlib.Path
-        Path to the root of the BIDS directory.
+        Path to the "root" directory from which to start traversing to gather
+        BIDS entities from file- and folder names. This will commonly be the
+        BIDS root, but it may also be a subdirectory inside of a BIDS dataset,
+        e.g., the ``sub-X`` directory of a hypothetical subject ``X``.
+
+        .. note:: This function searches the names of all files and directories
+                  nested within ``root``. Depending on the size of your
+                  dataset and storage system, searching the entire BIDS dataset
+                  may take a **considerable** amount of time (seconds up to
+                  several minutes). If you find yourself running into such
+                  performance issues, consider limiting the search to only a
+                  subdirectory in the dataset, e.g., to a single subject or
+                  session only.
+
     entity_key : str
         The name of the entity key to search for.
     ignore_subjects : str | iterable | None
