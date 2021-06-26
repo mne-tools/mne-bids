@@ -1530,7 +1530,20 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    root : str | pathlib.Path</span>
-<span class="sd">        Path to the root of the BIDS directory.</span>
+<span class="sd">        Path to the &quot;root&quot; directory from which to start traversing to gather</span>
+<span class="sd">        BIDS entities from file- and folder names. This will commonly be the</span>
+<span class="sd">        BIDS root, but it may also be a subdirectory inside of a BIDS dataset,</span>
+<span class="sd">        e.g., the ``sub-X`` directory of a hypothetical subject ``X``.</span>
+
+<span class="sd">        .. note:: This function searches the names of all files and directories</span>
+<span class="sd">                  nested within ``root``. Depending on the size of your</span>
+<span class="sd">                  dataset and storage system, searching the entire BIDS dataset</span>
+<span class="sd">                  may take a **considerable** amount of time (seconds up to</span>
+<span class="sd">                  several minutes). If you find yourself running into such</span>
+<span class="sd">                  performance issues, consider limiting the search to only a</span>
+<span class="sd">                  subdirectory in the dataset, e.g., to a single subject or</span>
+<span class="sd">                  session only.</span>
+
 <span class="sd">    entity_key : str</span>
 <span class="sd">        The name of the entity key to search for.</span>
 <span class="sd">    ignore_subjects : str | iterable | None</span>
@@ -1827,7 +1840,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-06-22.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-06-26.<br/>
 </p>
     </div>
     
