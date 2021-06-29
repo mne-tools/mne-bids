@@ -992,10 +992,9 @@ def make_dataset_description(path, name, data_license=None,
     _write_json(fname, description, overwrite=True, verbose=verbose)
 
 
-def write_raw_bids(raw, bids_path, events_data=None,
-                   event_id=None, anonymize=None,
-                   format='auto', symlink=False,
-                   empty_room=None,
+def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
+                   anonymize=None, format='auto', symlink=False,
+                   empty_room=None, preloaded=False,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1014,9 +1013,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
     Parameters
     ----------
     raw : mne.io.Raw
-        The raw data. It must be an instance of `mne.io.Raw`. The data
-        should not be loaded from disk, i.e., ``raw.preload`` must be
-        ``False``.
+        The raw data. It must be an instance of `mne.io.Raw` that is not
+        already loaded from disk unless ``preloaded`` is explicitly set
+        ``True``. See warning for the ``preloaded`` parameter.
     bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. If the ``.datatype``
@@ -1125,6 +1124,19 @@ def write_raw_bids(raw, bids_path, events_data=None,
         ``bids_path`` and ``empty_room`` are the same. Pass ``None``
         (default) if you do not wish to specify an associated empty-room
         recording.
+    preloaded : bool
+        If ``True``, allow writing of preloaded raw objects
+        (i.e. ``raw.preload`` is ``True``).
+
+        .. warning::
+            BIDS was originally designed for unprocessed or minimally processed
+            data. For this reason, by default, we prevent writing of preloaded
+            data that may have been modified. Only use this option when
+            absolutely necessary: for example, manually converting from file
+            formats not supported by MNE or writing preprocessed derivatives.
+            Be aware that these use cases are untested and not officially
+            supported.
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1199,8 +1211,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise ValueError('raw.filenames is missing. Please set raw.filenames'
                          'as a list with the full path of original raw file.')
 
-    if raw.preload is not False:
-        raise ValueError('The data should not be preloaded.')
+    if raw.preload is not False and preloaded is False:
+        raise ValueError('The data is already loaded from disk and may be '
+                         'altered. See warning for the `preloaded` parameter.')
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '

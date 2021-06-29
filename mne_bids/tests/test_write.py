@@ -509,7 +509,7 @@ def test_fif(_bids_validate, tmpdir):
     raw = _read_raw_fif(raw_fname, preload=True)
     with pytest.raises(ValueError, match='preloaded'):
         write_raw_bids(raw, bids_path_meg, events_data=events,
-                       event_id=event_id, overwrite=False)
+                       event_id=event_id, preloaded=False, overwrite=False)
 
     # test anonymize
     raw = _read_raw_fif(raw_fname)
