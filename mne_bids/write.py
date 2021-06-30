@@ -994,7 +994,7 @@ def make_dataset_description(path, name, data_license=None,
 
 def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    anonymize=None, format='auto', symlink=False,
-                   empty_room=None, preloaded=False,
+                   empty_room=None, allow_preload=False,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1014,8 +1014,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     ----------
     raw : mne.io.Raw
         The raw data. It must be an instance of `mne.io.Raw` that is not
-        already loaded from disk unless ``preloaded`` is explicitly set
-        ``True``. See warning for the ``preloaded`` parameter.
+        already loaded from disk unless ``allow_preload`` is explicitly set
+        ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. If the ``.datatype``
@@ -1124,7 +1124,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         ``bids_path`` and ``empty_room`` are the same. Pass ``None``
         (default) if you do not wish to specify an associated empty-room
         recording.
-    preloaded : bool
+    allow_preload : bool
         If ``True``, allow writing of preloaded raw objects
         (i.e. ``raw.preload`` is ``True``).
 
@@ -1208,12 +1208,12 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                          'got %s' % type(raw))
 
     if not hasattr(raw, 'filenames') or raw.filenames[0] is None:
-        raise ValueError('raw.filenames is missing. Please set raw.filenames'
+        raise ValueError('raw.filenames is missing. Please set raw.filenames '
                          'as a list with the full path of original raw file.')
 
-    if raw.preload is not False and preloaded is False:
+    if raw.preload is not False and allow_preload is False:
         raise ValueError('The data is already loaded from disk and may be '
-                         'altered. See warning for the `preloaded` parameter.')
+                         'altered. See warning for "allow_preload".')
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
