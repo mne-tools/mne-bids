@@ -12,7 +12,7 @@ Bad channel selection can also be performed non-interactively.
 Furthermore, you can view and edit the experimental events and mark time
 segments as "bad".
 
-.. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html#annotating-raw-objects-interactively
+.. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/30_annotate_raw.html#annotating-raw-objects-interactively
 """  # noqa:E501
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
