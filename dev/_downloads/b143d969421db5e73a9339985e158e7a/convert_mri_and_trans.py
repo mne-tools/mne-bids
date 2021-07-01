@@ -360,7 +360,7 @@ plt.show()
 # .. LINKS
 #
 # .. _coregistration GUI:
-#    https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html#defining-the-headmri-trans-using-the-gui
+#    https://mne.tools/stable/auto_tutorials/forward/20_source_alignment.html#defining-the-headmri-trans-using-the-gui
 # .. _mne_source_coords:
 #    https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html
 # .. _mne_sample_data:
