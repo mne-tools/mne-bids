@@ -1125,8 +1125,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         (default) if you do not wish to specify an associated empty-room
         recording.
     allow_preload : bool
-        If ``True``, allow writing of preloaded raw objects
-        (i.e. ``raw.preload`` is ``True``).
+        If ``True``, allow writing of preloaded raw objects (i.e.,
+        ``raw.preload`` is ``True``). Because the original file is ignored, you
+        must specify what ``format`` to write (not ``auto``).
 
         .. warning::
             BIDS was originally designed for unprocessed or minimally processed
@@ -1134,8 +1135,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             data that may have been modified. Only use this option when
             absolutely necessary: for example, manually converting from file
             formats not supported by MNE or writing preprocessed derivatives.
-            Be aware that these use cases are untested and not officially
-            supported.
+            Be aware that these use cases are not fully supported.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
@@ -1207,13 +1207,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raise ValueError('raw_file must be an instance of BaseRaw, '
                          'got %s' % type(raw))
 
-    if not hasattr(raw, 'filenames') or raw.filenames[0] is None:
-        raise ValueError('raw.filenames is missing. Please set raw.filenames '
-                         'as a list with the full path of original raw file.')
-
-    if raw.preload is not False and allow_preload is False:
+    if raw.preload is not False and not allow_preload:
         raise ValueError('The data is already loaded from disk and may be '
                          'altered. See warning for "allow_preload".')
+
+    if ((not hasattr(raw, 'filenames') or raw.filenames[0] is None) and
+            not allow_preload):
+        raise ValueError('raw.filenames is missing. Please set raw.filenames '
+                         'as a list with the full path of original raw file.')
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
@@ -1248,24 +1249,38 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    types=(BIDSPath, None))
 
     raw = raw.copy()
+    convert = False  # flag if converting not copying
 
-    raw_fname = raw.filenames[0]
-    if '.ds' in op.dirname(raw.filenames[0]):
-        raw_fname = op.dirname(raw.filenames[0])
-    # point to file containing header info for multifile systems
-    raw_fname = raw_fname.replace('.eeg', '.vhdr')
-    raw_fname = raw_fname.replace('.fdt', '.set')
-    raw_fname = raw_fname.replace('.dat', '.lay')
-    _, ext = _parse_ext(raw_fname, verbose=verbose)
+    # Load file, filename, extension
+    if not allow_preload:
+        raw_fname = raw.filenames[0]
+        if '.ds' in op.dirname(raw.filenames[0]):
+            raw_fname = op.dirname(raw.filenames[0])
+        # point to file containing header info for multifile systems
+        raw_fname = raw_fname.replace('.eeg', '.vhdr')
+        raw_fname = raw_fname.replace('.fdt', '.set')
+        raw_fname = raw_fname.replace('.dat', '.lay')
+        _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    if ext not in ALLOWED_INPUT_EXTENSIONS:
-        raise ValueError(f'Unrecognized file format {ext}')
+        if ext not in ALLOWED_INPUT_EXTENSIONS:
+            raise ValueError(f'Unrecognized file format {ext}')
 
-    if symlink and ext != '.fif':
-        raise NotImplementedError('Symlinks are currently only supported for '
-                                  'FIFF files.')
+        if symlink and ext != '.fif':
+            raise NotImplementedError('Symlinks are currently only supported '
+                                      'for FIFF files.')
 
-    raw_orig = reader[ext](**raw._init_kwargs)
+        raw_orig = reader[ext](**raw._init_kwargs)
+    else:
+        if format == 'BrainVision':
+            ext = '.vhdr'
+        elif format == 'FIF':
+            ext = '.fif'
+        else:
+            raise ValueError('For preloaded data, you must specify a valid '
+                             'format. See "allow_preload".')
+        raw_orig = raw
+
+    # Check times
     if not np.array_equal(raw.times, raw_orig.times):
         if len(raw.times) == len(raw_orig.times):
             msg = ("raw.times has changed since reading from disk, but "
@@ -1284,12 +1299,12 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 'https://github.com/mne-tools/mne-bids/issues')
         raise ValueError(msg)
 
+    # Initialize BIDS path
     datatype = _handle_datatype(raw, bids_path.datatype, verbose)
     bids_path = (bids_path.copy()
                  .update(datatype=datatype, suffix=datatype, extension=ext))
 
-    # check whether the info provided indicates that the data is emptyroom
-    # data
+    # Check whether provided info and raw indicates valid MEG emptyroom data
     data_is_emptyroom = False
     if (bids_path.datatype == 'meg' and bids_path.subject == 'emptyroom' and
             bids_path.task == 'noise'):
@@ -1336,14 +1351,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 
-    data_path = bids_path.mkdir().directory
-
     # In case of an "emptyroom" subject, BIDSPath() will raise
     # an exception if we don't provide a valid task ("noise"). Now,
     # scans_fname, electrodes_fname, and coordsystem_fname must NOT include
     # the task entity. Therefore, we cannot generate them with
     # BIDSPath() directly. Instead, we use BIDSPath() directly
     # as it does not make any advanced check.
+
+    data_path = bids_path.mkdir().directory
 
     # create *_scans.tsv
     session_path = BIDSPath(subject=bids_path.subject,
@@ -1368,7 +1383,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         suffix='channels', extension='.tsv')
 
     # Anonymize
-    convert = False
     if anonymize is not None:
         daysback, keep_his = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his, verbose=verbose)
