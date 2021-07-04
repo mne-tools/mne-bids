@@ -51,6 +51,7 @@ from mne.source_space import head_to_mri
 
 from mne_bids import (write_raw_bids, BIDSPath, write_anat,
                       get_head_mri_trans, print_dir_tree)
+from mne_bids.viz import plot_anat_landmarks
 
 ###############################################################################
 # We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
@@ -134,16 +135,20 @@ t1w_bids_path = write_anat(
 anat_dir = t1w_bids_path.directory
 
 ###############################################################################
-# Let's have another look at our BIDS directory
+# Let's have another look at our BIDS directory and plot the written landmarks
 print_dir_tree(output_path)
+
+plot_anat_landmarks(t1w_bids_path, vmax=160)
+plt.suptitle('T1 MRI')
 
 ###############################################################################
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
-# transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
+# transformation matrix using ``MNE-BIDS`` and the BIDS dataset since we
+# have now anatomical landmarks.
 estim_trans = get_head_mri_trans(bids_path=bids_path)
 
 ###############################################################################
-# Finally, let's use the T1 weighted MRI image and plot the anatomical
+# One can also directly use the T1 weighted MRI image and plot the anatomical
 # landmarks Nasion, LPA, and RPA onto the brain image. For that, we can
 # extract the location of Nasion, LPA, and RPA from the MEG file, apply our
 # transformation matrix :code:`trans`, and plot the results.
@@ -169,7 +174,7 @@ mri_pos = head_to_mri(pos=pos,
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
-fig, axs = plt.subplots(3, 1, figsize=(7, 7), facecolor='k')
+fig, axs = plt.subplots(3, 1, figsize=(7, 7))
 for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
     plot_anat(t1_nii_fname, axes=axs[point_idx],
               cut_coords=mri_pos[point_idx, :],
@@ -214,9 +219,8 @@ anat_dir = t1w_bids_path.directory
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(t1_nii_fname, axes=ax, title='Defaced', vmax=160)
-plt.show()
+plot_anat_landmarks(t1w_bids_path, vmax=160)
+plt.suptitle('T1 Defaced')
 
 ###############################################################################
 # Writing defaced and anonymized FLASH MRI image
@@ -250,9 +254,8 @@ flash_bids_path = write_anat(
 flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
+plot_anat_landmarks(flash_bids_path, vmax=700)
+plt.suptitle('Flash Defaced')
 
 ###############################################################################
 # Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image
@@ -282,9 +285,8 @@ flash_bids_path = write_anat(
 )
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
+plot_anat_landmarks(flash_bids_path, vmax=700)
+plt.suptitle('Flash Defaced')
 
 ###############################################################################
 # Option 3 : Compute the landmarks in scanner RAS or mri voxel space from trans
@@ -324,9 +326,8 @@ flash_bids_path = write_anat(
 )
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
+plot_anat_landmarks(flash_bids_path, vmax=700)
+plt.suptitle('Flash Defaced')
 
 ##############################################################################
 # Let's now pass it in voxel coordinates
@@ -352,9 +353,8 @@ flash_bids_path = write_anat(
 )
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
+plot_anat_landmarks(flash_bids_path, vmax=700)
+plt.suptitle('Flash Defaced')
 
 ###############################################################################
 # .. LINKS

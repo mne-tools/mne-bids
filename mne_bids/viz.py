@@ -1,0 +1,70 @@
+import json
+
+import numpy as np
+from scipy import linalg
+
+import nibabel as nib
+from mne.utils import warn
+import mne
+
+
+def plot_anat_landmarks(bids_path, vmax=None, show=True):
+    """Plot anatomical landmarks attached to an MRI image.
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        Path of the MRI image.
+    vmax : float
+        Maximum colormap value.
+    show : bool
+        Call pyplot.show() at the end. Defaults to True.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure | None
+        The figure object containing the plot. None if no landmarks
+        are avaiable.
+    """
+    import matplotlib.pyplot as plt
+    from nilearn.plotting import plot_anat
+
+    nii = nib.load(str(bids_path))
+
+    json_path = bids_path.copy().update(extension=".json")
+
+    n_landmarks = 0
+    if json_path.fpath.exists():
+        json_content = json.load(open(json_path))
+        coords_dict = json_content.get("AnatomicalLandmarkCoordinates", dict())
+        n_landmarks = len(coords_dict)
+
+    if not n_landmarks:
+        warn("No landmarks available with the image")
+        return
+
+    # Move the coords_dict from MRI Voxel to RAS
+    mgh = nib.MGHImage(nii.dataobj, nii.affine)
+    ras2vox = mgh.header.get_ras2vox()
+    vox2ras = linalg.inv(ras2vox)
+    for label in coords_dict:
+        vox_pos = np.array(coords_dict[label])
+        ras_pos = mne.transforms.apply_trans(vox2ras, vox_pos)
+        coords_dict[label] = ras_pos
+
+    ########################################################################
+    # Plot it with nilearn
+    fig, axs = plt.subplots(
+        n_landmarks, 1, figsize=(6, 2.3 * n_landmarks),
+        facecolor="w")
+
+    for point_idx, (label, ras_pos) in enumerate(coords_dict.items()):
+        plot_anat(
+            str(bids_path), axes=axs[point_idx], cut_coords=ras_pos,
+            title=label, vmax=vmax,
+        )
+
+    if show:
+        plt.show()
+
+    return fig
