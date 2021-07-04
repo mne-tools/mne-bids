@@ -782,21 +782,29 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
                            'with "{}". Tried: "{}" but it does not exist.'
                            .format(t1w_json_path, t1w_path))
     t1_nifti = nib.load(t1w_path)
+
     # Convert T1 to LIA (freesurfer stores scanner RAS in LIA)
-    ori_trans = nib.orientations.ornt_transform(
-        nib.orientations.axcodes2ornt(
-            nib.orientations.aff2axcodes(t1_nifti.affine)),
-        nib.orientations.axcodes2ornt('LIA'))
-    t1_lia = t1_nifti.as_reoriented(ori_trans)
+    # If already in LIA, avoid potentially lossy conversion
+    if nib.orientations.aff2axcodes(t1_nifti.affine) != tuple('LIA'):
+        # Reorient T1
+        ori_trans = nib.orientations.ornt_transform(
+            nib.orientations.axcodes2ornt(
+                nib.orientations.aff2axcodes(t1_nifti.affine)),
+            nib.orientations.axcodes2ornt('LIA'))
+        t1_lia = t1_nifti.as_reoriented(ori_trans)
+
+        # Convert the landmarks to LIA as well
+        # Original orientation -> real world coordinates
+        mri_landmarks = apply_trans(t1_nifti.affine, mri_landmarks)
+        # Real world coordinates -> LIA
+        mri_landmarks = apply_trans(np.linalg.inv(t1_lia.affine),
+                                    mri_landmarks)
+
+        # Assign nifti to transformed image
+        t1_nifti = t1_lia
 
     # Convert to MGH format to access vox2ras method
-    t1_mgh = nib.MGHImage(t1_lia.dataobj, t1_lia.affine)
-
-    # Convert the landmarks to LIA as well
-    # Original orientation -> real world coordinates
-    mri_landmarks = apply_trans(t1_nifti.affine, mri_landmarks)
-    # Real world coordinates -> LIA
-    mri_landmarks = apply_trans(np.linalg.inv(t1_lia.affine), mri_landmarks)
+    t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
 
     # now extract transformation matrix and put back to RAS coordinates of MRI
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
