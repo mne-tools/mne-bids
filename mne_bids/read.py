@@ -677,7 +677,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     return raw
 
 
-def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
+def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
+                       t1_freesurfer_fname=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -782,8 +783,16 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
                            'with "{}". Tried: "{}" but it does not exist.'
                            .format(t1w_json_path, t1w_path))
     t1_nifti = nib.load(t1w_path)
+
+    # Move MRI landmarks from vox to RAS
+    mri_landmarks = apply_trans(t1_nifti.affine, mri_landmarks)
+
     # Convert to MGH format to access vox2ras method
-    t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
+    # t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
+    t1_mgh = nib.load(t1_freesurfer_fname)
+
+    # Move MRI landmarks from RAS to Freesurfer vox
+    mri_landmarks = apply_trans(np.linalg.inv(t1_mgh.affine), mri_landmarks)
 
     # now extract transformation matrix and put back to RAS coordinates of MRI
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
