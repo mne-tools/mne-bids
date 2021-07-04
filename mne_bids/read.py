@@ -678,12 +678,15 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
 
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
-    """Produce transformation matrix from MEG and MRI landmark points.
+    """Get transformation matrix from MEG head to MRI Surface RAS coordinates.
+
+    This function requires to have three landmark points in both coordinate
+    systems.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
     files of (i) the MEG and (ii) the T1-weighted MRI data. The two sets of
     points will then be used to calculate a transformation matrix from head
-    coordinates to MRI coordinates.
+    coordinates to MRI surface RAS coordinates.
 
     .. note:: The MEG and MRI data need **not** necessarily be stored in the
               same session or even in the same BIDS dataset. See the
@@ -782,6 +785,21 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
                            'with "{}". Tried: "{}" but it does not exist.'
                            .format(t1w_json_path, t1w_path))
     t1_nifti = nib.load(t1w_path)
+
+    # Change image orientation to LIA
+    affine = t1_nifti.affine
+    axcodes = nib.orientations.aff2axcodes(affine)
+    ornt = nib.orientations.axcodes2ornt(
+        axcodes, labels=(('R', 'L'), ('S', 'I'), ('P', 'A'))
+    )
+    t1_nifti = t1_nifti.as_reoriented(ornt)
+    # Compute trans to change the voxel coordinates
+    vox_trans = np.linalg.inv(t1_nifti.affine) @ affine
+    mri_landmarks = apply_trans(vox_trans, mri_landmarks)
+
+    # t1_img is now in LIA
+    assert nib.orientations.aff2axcodes(t1_nifti.affine) == ('L', 'I', 'A')
+
     # Convert to MGH format to access vox2ras method
     t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
 
