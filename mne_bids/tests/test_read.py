@@ -207,6 +207,7 @@ def test_get_head_mri_trans(tmpdir):
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
+    subjects_dir = op.join(data_path, 'subjects')
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -233,7 +234,8 @@ def test_get_head_mri_trans(tmpdir):
     t1w_bidspath = BIDSPath(subject=subject_id, session=session_id,
                             acquisition=acq, root=tmpdir)
     t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              raw=raw, trans=trans, verbose=True)
+                              raw=raw, trans=trans, subject='sample',
+                              subjects_dir=subjects_dir, verbose=True)
     anat_dir = t1w_bidspath.directory
 
     # Try to get trans back through fitting points
@@ -255,7 +257,8 @@ def test_get_head_mri_trans(tmpdir):
     # sidecar, and also accept "nasion" instead of just "NAS"
     raw = _read_raw_fif(raw_fname)
     t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              raw=raw, trans=trans, overwrite=True)
+                              raw=raw, trans=trans, subject='sample',
+                              subjects_dir=subjects_dir, overwrite=True)
 
     t1w_json_fpath = t1w_bidspath.copy().update(extension='.json').fpath
     with t1w_json_fpath.open('r', encoding='utf-8') as f:
@@ -282,9 +285,11 @@ def test_get_head_mri_trans(tmpdir):
     raw = _read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path=meg_bids_path)
-    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
-    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
-                                    t1_bids_path=t1_bids_path)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans,
+               subject='sample', subjects_dir=subjects_dir)
+    read_trans = get_head_mri_trans(
+        bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
+        subject='sample', subjects_dir=subjects_dir)
     assert np.allclose(trans['trans'], read_trans['trans'])
 
     # Case 2: different sessions
@@ -294,9 +299,11 @@ def test_get_head_mri_trans(tmpdir):
     t1_bids_path = meg_bids_path.copy().update(session='02')
 
     write_raw_bids(raw, bids_path=meg_bids_path)
-    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
-    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
-                                    t1_bids_path=t1_bids_path)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans,
+               subject='sample', subjects_dir=subjects_dir)
+    read_trans = get_head_mri_trans(
+        bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
+        subject='sample', subjects_dir=subjects_dir)
     assert np.allclose(trans['trans'], read_trans['trans'])
 
 

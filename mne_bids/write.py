@@ -31,7 +31,9 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel, logger, warn, _validate_type
+from mne.utils import (check_version, has_nibabel, logger, warn,
+                       _validate_type, get_subjects_dir,
+                       run_subprocess)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -1543,8 +1545,35 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
+def make_minimal_subjects_dir(t1_bids_path, subject=None, subjects_dir=None):
+    """Make a minimal freesurfer recon-all subjects directory.
+
+    .. note:: Requires freesurfer.
+
+    Parameters
+    ----------
+    t1_bids_path : mne_bids.BIDSPath | str | pathlib.Path | None
+        The path of the T1w image.
+    subject : str | None
+        The subject identifier used for the minimal freesurfer recon-all
+        directory. If None, defaults to the subject from ``t1_bids_path``.
+    subjects_dir : str | pathlib.Path | None
+        The subjects directory used for the freesurfer recon. If None,
+        defaults to the SUBJECTS_DIR environment variable.
+    """
+    env = os.environ.copy()
+    subject = t1_bids_path.subject if subject is None else subject
+    subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
+    env['SUBJECTS_DIR'] = subjects_dir
+    if not op.isdir(op.join(subjects_dir, subject, 'mri')):
+        os.makedirs(op.join(subjects_dir, subject, 'mri'))
+    t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+    run_subprocess(f'mri_convert {str(t1_bids_path)} {t1_fname} --conform')
+
+
 def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
-               t1w=None, deface=False, overwrite=False, verbose=False):
+               subject=None, subjects_dir=None, deface=False,
+               overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given an MRI scan, format and store the MR data according to BIDS in the
@@ -1576,12 +1605,16 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         also be a string pointing to a ``.trans`` file containing the
         transformation matrix. If ``None`` and no ``landmarks`` parameter is
         passed, no sidecar JSON file will be created.
-    t1w : str | pathlib.Path | NibabelImageObject | None
-        This parameter is useful if image written is not already a T1 image.
-        If the image written is to have a sidecar or be defaced,
-        this can be done using `raw`, `trans` and `t1w`. The T1 must be
-        passed here because the coregistration uses freesurfer surfaces which
-        are in T1 space.
+    subject : str | None
+        The subject identifier used for the freesurfer recon-all. If None,
+        defaults to the ``sub`` in ``bids_path``. Must be provided to write
+        the anatomical landmarks if they are not provided in mri voxel space.
+        This is because the head coordinate of a
+        :class:`mne.channels.DigMontage` is aligned using freesurfer surfaces.
+    subjects_dir : str | pathlib.Path | None
+        The subjects directory used for the freesurfer recon. If None, defaults
+        to the ``SUBJECTS_DIR`` environment variable. Must be provided to write
+        anatomical landmarks if they are not provided in mri voxel space.
     deface : bool | dict
         If False, no defacing is performed.
         If True, deface with default parameters.
@@ -1699,16 +1732,32 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
             raise ValueError('Coordinate frame not recognized, '
                              f'found {coord_frame}')
 
+        subject = bids_path.subject if subject is None else subject
+        subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
+        t1w_img = None
+
         # If the `coord_frame` isn't in head space, we don't need the `trans`
         if coord_frame != FIFF.FIFFV_COORD_HEAD and trans is not None:
             raise ValueError('`trans` was provided but `landmark` data is '
                              'in mri space. Please use only one of these.')
 
-        if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI) \
-                and bids_path.suffix != 'T1w' and t1w is None:
-            raise ValueError('The T1 must be passed as `t1w` or `landmarks` '
-                             'must be passed in `mri_voxel` or `ras` (scanner '
-                             'RAS) coordinate frames for non T1-images')
+        if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
+            if subject is None or subjects_dir is None:
+                raise ValueError('``subject`` and ``subjects_dir`` must be '
+                                 'provided when the coordinate frame is '
+                                 '``head`` or ``mri`` because the freesurfer '
+                                 'surfaces were used to align the coordinate '
+                                 'frames')
+            if not op.isdir(op.join(subjects_dir, subject)):
+                raise ValueError(
+                    'freesurfer recon-all subject directory not found, '
+                    f'got {op.join(subjects_dir, subject)}')
+            t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+            if not op.isfile(t1_fname):
+                raise ValueError('Freesurfer recon-all ``subject`` folder '
+                                 'is incorrect or improperly formatted, '
+                                 f'got {op.join(subjects_dir, subject)}')
+            t1w_img = _load_image(t1_fname, name='T1.mgz')
 
         if coord_frame != FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
             # Make MGH image for header properties
@@ -1725,9 +1774,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                 landmarks *= 1e3  # m to mm conversion
 
             # need get scanner RAS: MRI--[inv vox2ras_tkr]-->scanner RAS
-            if bids_path.suffix != 'T1w' and coord_frame in \
-                    (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
-                t1w_img = _load_image(t1w, name='t1w')
+            if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
                 t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
                 # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
                 landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)

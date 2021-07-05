@@ -63,6 +63,7 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
+subjects_dir = op.join(data_path, 'subjects')  # freesurfer subjects directory
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -129,6 +130,8 @@ t1w_bids_path = write_anat(
     bids_path=t1w_bids_path,
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
+    subject='sample',  # freesurfer subject
+    subjects_dir=subjects_dir,  # freesurfer subjects directory
     verbose=True  # this will print out the sidecar file
 )
 anat_dir = t1w_bids_path.directory
@@ -140,7 +143,8 @@ print_dir_tree(output_path)
 # %%
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
-estim_trans = get_head_mri_trans(bids_path=bids_path)
+estim_trans = get_head_mri_trans(bids_path=bids_path, subject='sample',
+                                 subjects_dir=subjects_dir)
 
 # %%
 # Finally, let's use the T1 weighted MRI image and plot the anatomical
@@ -163,7 +167,7 @@ pos = np.asarray((raw.info['dig'][0]['r'],
 mri_pos = head_to_mri(pos=pos,
                       subject='sample',
                       mri_head_t=estim_trans,
-                      subjects_dir=op.join(data_path, 'subjects'))
+                      subjects_dir=subjects_dir)
 
 # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
@@ -204,6 +208,8 @@ t1w_bids_path = write_anat(
     bids_path=bids_path,
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
+    subject='sample',
+    subjects_dir=subjects_dir,
     deface=True,
     overwrite=True,
     verbose=True  # this will print out the sidecar file
@@ -240,7 +246,8 @@ flash_bids_path = write_anat(
     bids_path=flash_bids_path,
     raw=raw,
     trans=trans,
-    t1w=t1_mgh_fname,
+    subject='sample',
+    subjects_dir=subjects_dir,
     deface=True,
     overwrite=True,
     verbose=True  # this will print out the sidecar file
@@ -304,7 +311,7 @@ head_pos = np.asarray((raw.info['dig'][0]['r'],
 ras_pos = head_to_mri(pos=head_pos,
                       subject='sample',
                       mri_head_t=trans,
-                      subjects_dir=op.join(data_path, 'subjects')) / 1e3
+                      subjects_dir=subjects_dir) / 1e3
 
 montage_ras = mne.channels.make_dig_montage(
     lpa=ras_pos[0],
