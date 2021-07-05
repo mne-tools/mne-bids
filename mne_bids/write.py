@@ -1732,16 +1732,15 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
             raise ValueError('Coordinate frame not recognized, '
                              f'found {coord_frame}')
 
-        subject = bids_path.subject if subject is None else subject
-        subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-        t1w_img = None
-
         # If the `coord_frame` isn't in head space, we don't need the `trans`
         if coord_frame != FIFF.FIFFV_COORD_HEAD and trans is not None:
             raise ValueError('`trans` was provided but `landmark` data is '
                              'in mri space. Please use only one of these.')
 
+        t1w_img = None
         if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
+            subject = bids_path.subject if subject is None else subject
+            subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
             if subject is None or subjects_dir is None:
                 raise ValueError('``subject`` and ``subjects_dir`` must be '
                                  'provided when the coordinate frame is '
