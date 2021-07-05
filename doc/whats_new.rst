@@ -69,8 +69,10 @@ Bug fixes
 - :func:`mne_bids.write_raw_bids` now works across data types with ``overwrite=True``, by `Alexandre Gramfort`_ (:gh:`791`)
 - :func:`mne_bids.read_raw_bids` didn't always replace all traces of the measurement date and time stored in the raw data with the date found in `*_scans.tsv`, by `Richard Höchenberger`_ (:gh:`812`, :gh:`815`)
 - :func:`mne_bids.read_raw_bids` crashed when the (optional) ``acq_time`` column was missing in ``*_scans.tsv``, by `Alexandre Gramfort`_ (:gh:`814`)
+<<<<<<< HEAD
 - :func:`mne_bids.write_raw_bids` doesn't crash anymore if the designated output directory contains the string ``"tsv"``, by `Richard Höchenberger`_ (:gh:`833`)
 - :func:`mne_bids.get_head_mri_trans` gave incorrect results when the T1 image was not in LIA format, now all formats function properly, by `Alex Rockhill`_ (:gh:`826`)
+- :func:`mne_bids.get_head_mri_trans` and :func:`mne_bids.write_anat` used a T1w image but depended specifically on the freesurfer T1w image. Now the freesurfer subject directory is used, by `Alex Rockhill`_ (:gh:`827`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
