@@ -1545,8 +1545,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
-def make_minimal_subjects_dir(t1_bids_path, subject=None, subjects_dir=None):
-    """Make a minimal freesurfer recon-all subjects directory.
+def make_minimal_subject_dir(t1_bids_path, subject=None, subjects_dir=None):
+    """Make a minimal freesurfer recon-all subject directory.
 
     .. note:: Requires freesurfer.
 

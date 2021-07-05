@@ -45,7 +45,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_bad_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      make_minimal_subjects_dir)
+                      make_minimal_subject_dir)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -1527,11 +1527,11 @@ def _check_anat_json(bids_path):
 
 
 @requires_freesurfer('mri_convert')
-def test_make_minimal_subjects_dir(tmpdir):
+def test_make_minimal_subject_dir(tmpdir):
     """Test making a minimal subjects directory for coordinate transforms."""
     data_path = testing.data_path()
     t1_bids_path = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
-    make_minimal_subjects_dir(t1_bids_path, tmpdir, 'test')
+    make_minimal_subject_dir(t1_bids_path, tmpdir, 'test')
     assert op.isfile(op.join(tmpdir, 'test', 'mri', 'T1.mgz'))
 
 
