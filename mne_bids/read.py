@@ -154,8 +154,14 @@ def _read_events(events_data, event_id, raw, verbose=None):
         verbose=verbose
     )
     all_dur = raw.annotations.duration
-    if all_events.size == 0:
-        warn('No events found or provided.')
+
+    # warn no events if not rest
+    if (all_events.size == 0 and hasattr(raw, 'filenames') and raw.filenames[0]
+            is not None and '_task-rest' not in raw.filenames[0]):
+        warn('No events found or provided. Please add annotations to the raw '
+             'data, or provide the events_data and event_id parameters. For '
+             'resting state data, BIDS recommends naming the task using '
+             'labels beginning with "rest".')
 
     return all_events, all_dur, all_desc
 
