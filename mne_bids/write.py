@@ -1553,7 +1553,7 @@ def get_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
-    info : Instance of Info
+    info : mne.Info
         The measurement information from an electrophysiology recording of
         the subject with the anatomical landmarks stored in its
         :class:`mne.channels.DigMontage`.
