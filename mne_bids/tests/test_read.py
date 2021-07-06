@@ -22,13 +22,14 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 from mne.io.constants import FIFF
-from mne.utils import requires_nibabel, object_diff, requires_version
+from mne.utils import (requires_nibabel, object_diff, requires_version,
+                       requires_freesurfer)
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
 from mne_bids import BIDSPath
 from mne_bids.config import MNE_STR_TO_FRAME
-from mne_bids.read import (read_raw_bids,
+from mne_bids.read import (read_raw_bids, _make_minimal_subject_dir,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
@@ -981,3 +982,12 @@ def test_ignore_exclude_param(tmpdir):
     raw = read_raw_bids(bids_path=bids_path, verbose=False,
                         extra_params=dict(exclude=[ch_name]))
     assert ch_name in raw.ch_names
+
+
+@requires_freesurfer('mri_convert')
+def test_make_minimal_subject_dir(tmpdir):
+    """Test making a minimal subjects directory for coordinate transforms."""
+    data_path = testing.data_path()
+    t1_bids_path = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+    _make_minimal_subject_dir(t1_bids_path, tmpdir, 'test')
+    assert op.isfile(op.join(tmpdir, 'test', 'mri', 'T1.mgz'))

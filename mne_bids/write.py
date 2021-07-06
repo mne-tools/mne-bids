@@ -32,8 +32,7 @@ except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn,
-                       _validate_type, get_subjects_dir,
-                       run_subprocess)
+                       _validate_type, get_subjects_dir)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -1543,32 +1542,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
         print(f'Wrote {scans_path.fpath} entry with {scan_relative_fpath}.')
 
     return bids_path
-
-
-def make_minimal_subject_dir(t1_bids_path, subject=None, subjects_dir=None):
-    """Make a minimal freesurfer recon-all subject directory.
-
-    .. note:: Requires freesurfer.
-
-    Parameters
-    ----------
-    t1_bids_path : mne_bids.BIDSPath | str | pathlib.Path | None
-        The path of the T1w image.
-    subject : str | None
-        The subject identifier used for the minimal freesurfer recon-all
-        directory. If None, defaults to the subject from ``t1_bids_path``.
-    subjects_dir : str | pathlib.Path | None
-        The subjects directory used for the freesurfer recon. If None,
-        defaults to the SUBJECTS_DIR environment variable.
-    """
-    env = os.environ.copy()
-    subject = t1_bids_path.subject if subject is None else subject
-    subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    env['SUBJECTS_DIR'] = subjects_dir
-    if not op.isdir(op.join(subjects_dir, subject, 'mri')):
-        os.makedirs(op.join(subjects_dir, subject, 'mri'))
-    t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
-    run_subprocess(f'mri_convert {str(t1_bids_path)} {t1_fname} --conform')
 
 
 def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,

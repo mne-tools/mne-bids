@@ -6,6 +6,7 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
+import os
 import os.path as op
 import glob
 import json
@@ -17,7 +18,8 @@ import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
-from mne.utils import has_nibabel, logger, warn, get_subjects_dir
+from mne.utils import (has_nibabel, logger, warn, get_subjects_dir,
+                       requires_freesurfer, run_subprocess)
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -502,6 +504,22 @@ def _handle_channels_reading(channels_fname, raw):
     return raw
 
 
+@requires_freesurfer('mri_convert')
+def _make_minimal_subject_dir(t1_bids_path):
+    """Make a minimal freesurfer subject directory for recovering trans."""
+    subjects_dir = mne.utils._TempDir()
+    subject = t1_bids_path.subject
+    env = os.environ.copy()
+    subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
+    env['SUBJECTS_DIR'] = subjects_dir
+    if not op.isdir(op.join(subjects_dir, subject, 'mri')):
+        os.makedirs(op.join(subjects_dir, subject, 'mri'))
+    t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+    run_subprocess(['mri_convert', str(t1_bids_path), t1_fname, '--conform'],
+                   env=env)
+    return t1_fname
+
+
 def read_raw_bids(bids_path, extra_params=None, verbose=True):
     """Read BIDS compatible data.
 
@@ -782,12 +800,14 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     # neuromag RAS coordinate system in order to compare the with MEG landmarks
     # see also: `mne_bids.write.write_anat`
     subject = meg_bids_path.subject if subject is None else subject
-    subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
+    subjects_dir = get_subjects_dir(subjects_dir, raise_error=False)
     fs_t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
     if not op.isfile(fs_t1_fname):
-        raise ValueError('Freesurfer recon-all ``subject`` folder '
-                         'is incorrect or improperly formatted, '
-                         f'got {op.join(subjects_dir, subject)}')
+        warn('Freesurfer recon-all ``subject`` folder '
+             f'not found, got {op.join(subjects_dir, subject)}. '
+             'Using freesurfer to recover the transform to '
+             'freesurfer surface space (surface RAS)')
+        fs_t1_fname = _make_minimal_subject_dir(t1_bids_path)
     fs_t1_mgh = nib.load(fs_t1_fname)
 
     t1_nifti = nib.load(t1_bids_path)
