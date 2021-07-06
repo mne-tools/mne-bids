@@ -1544,9 +1544,77 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
-def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
-               subject=None, subjects_dir=None, deface=False,
-               overwrite=False, verbose=False):
+def get_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
+    """Get landmarks transformed to image voxel coordinates from head space.
+
+    Parameters
+    ----------
+    image : str | pathlib.Path | NibabelImageObject
+        Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
+        readable by nibabel. Can also be a nibabel image object of an
+        MRI scan. Will be written as a .nii.gz file.
+    info : Instance of Info
+        The measurement information from an electrophysiology recording of
+        the subject with the anatomical landmarks stored in its
+        :class:`mne.channels.DigMontage`.
+    trans : mne.transforms.Transform | str
+        The transformation matrix from head to MRI coordinates. Can
+        also be a string pointing to a ``.trans`` file containing the
+        transformation matrix. If ``None`` and no ``landmarks`` parameter is
+        passed, no sidecar JSON file will be created.
+    fs_subject : str
+        The subject identifier used for the freesurfer recon-all. If None,
+        defaults to the ``sub`` in ``bids_path``. Must be provided to write
+        the anatomical landmarks if they are not provided in mri voxel space.
+        This is because the head coordinate of a
+        :class:`mne.channels.DigMontage` is aligned using freesurfer surfaces.
+    fs_subjects_dir : str | pathlib.Path | None
+        The subjects directory used for the freesurfer recon. If None, defaults
+        to the ``SUBJECTS_DIR`` environment variable. Must be provided to write
+        anatomical landmarks if they are not provided in mri voxel space.
+
+    Returns
+    -------
+    landmarks : mne.channels.DigMontage
+        The DigMontage with the landmarks in voxel space.
+
+    """
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+    coords_dict, coord_frame = _get_fid_coords(info['dig'])
+    if coord_frame != FIFF.FIFFV_COORD_HEAD:
+        raise ValueError('Fiducial coordinates in `info` must be in '
+                         f'the head coordinate frame, got {coord_frame}')
+    landmarks = np.asarray((coords_dict['lpa'],
+                            coords_dict['nasion'],
+                            coords_dict['rpa']))
+    # get trans and ensure it is from head to MRI
+    trans, _ = _get_trans(trans, fro='head', to='mri')
+    landmarks = _meg_landmarks_to_mri_landmarks(landmarks, trans)
+    fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=True)
+    t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
+    if not t1_fname.exists():
+        raise ValueError('Freesurfer recon-all ``subject`` folder '
+                         'is incorrect or improperly formatted, '
+                         f'got {Path(fs_subjects_dir) / fs_subject}')
+    t1w_img = _load_image(str(t1_fname), name='T1.mgz')
+    t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
+    # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
+    landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
+    # go to T1 scanner space from T1 voxel space
+    landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
+    img_nii = _load_image(image, name='image')
+    img_mgh = nib.MGHImage(img_nii.dataobj, img_nii.affine)
+    landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)
+    landmarks = mne.channels.make_dig_montage(
+        lpa=landmarks[0], nasion=landmarks[1], rpa=landmarks[2],
+        coord_frame='mri_voxel')
+    return landmarks
+
+
+def write_anat(image, bids_path, landmarks=None, deface=False,
+               raw=None, trans=None, t1w=None, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given an MRI scan, format and store the MR data according to BIDS in the
@@ -1556,8 +1624,8 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
 
     .. note:: To generate the JSON sidecar with anatomical landmark
               coordinates ("fiducials"), you need to pass the landmarks via
-              the ``landmarks`` parameter, or supply a raw file via ``raw``
-              and transformation matrix via the ``trans`` parameter.
+              the ``landmarks`` parameter. :func:`mne_bids.get_landmarks`
+              may be useful for getting the ``landmarks``.
 
     Parameters
     ----------
@@ -1570,24 +1638,6 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
-    raw : mne.io.Raw | None
-        The raw data of ``subject`` corresponding to the MR scan in ``image``.
-        If ``None``, ``trans`` has to be ``None`` as well
-    trans : mne.transforms.Transform | str | None
-        The transformation matrix from head to MRI coordinates. Can
-        also be a string pointing to a ``.trans`` file containing the
-        transformation matrix. If ``None`` and no ``landmarks`` parameter is
-        passed, no sidecar JSON file will be created.
-    subject : str | None
-        The subject identifier used for the freesurfer recon-all. If None,
-        defaults to the ``sub`` in ``bids_path``. Must be provided to write
-        the anatomical landmarks if they are not provided in mri voxel space.
-        This is because the head coordinate of a
-        :class:`mne.channels.DigMontage` is aligned using freesurfer surfaces.
-    subjects_dir : str | pathlib.Path | None
-        The subjects directory used for the freesurfer recon. If None, defaults
-        to the ``SUBJECTS_DIR`` environment variable. Must be provided to write
-        anatomical landmarks if they are not provided in mri voxel space.
     deface : bool | dict
         If False, no defacing is performed.
         If True, deface with default parameters.
@@ -1606,6 +1656,23 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         from the head model using `mne coreg` GUI, or they can be determined
         from the MRI using `freeview`.  If ``None`` and no ``trans`` parameter
         is passed, no sidecar JSON file will be created.
+    raw : mne.io.Raw | None
+        The raw data of ``subject`` corresponding to the MR scan in ``image``.
+        If ``None``, ``trans`` has to be ``None`` as well.
+        Deprecated, use :func:`mne_bids.get_landmarks` instead.
+    trans : mne.transforms.Transform | str | None
+        The transformation matrix from head to MRI coordinates. Can
+        also be a string pointing to a ``.trans`` file containing the
+        transformation matrix. If ``None`` and no ``landmarks`` parameter is
+        passed, no sidecar JSON file will be created.
+        Deprecated, use :func:`mne_bids.get_landmarks` instead.
+    t1w : str | pathlib.Path | NibabelImageObject | None
+        This parameter is useful if image written is not already a T1 image.
+        If the image written is to have a sidecar or be defaced,
+        this can be done using `raw`, `trans` and `t1w`. The T1 must be
+        passed here because the coregistration uses freesurfer surfaces which
+        are in T1 space.
+        Deprecated, use :func:`mne_bids.get_landmarks` instead.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1628,17 +1695,14 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    write_sidecar = trans is not None or landmarks is not None
+    if raw is not None or trans is not None or t1w is not None:
+        raise ValueError('`raw`, `trans` and `t1w` are depreciated '
+                         'use `mne_bids.get_landmarks` instead')
 
-    if not write_sidecar and raw is not None:
-        warn('Ignoring `raw` keyword argument: `trans`, `landmarks`, '
-             'or both (if landmarks are in head space) are needed '
-             'to write the sidecar file')
+    write_sidecar = landmarks is not None
 
-    if deface and not write_sidecar:
-        raise ValueError('Either `raw` and `trans` must be provided, '
-                         'or `landmarks` must be provided to deface '
-                         'the image')
+    if deface and landmarks is None:
+        raise ValueError('`landmarks` must be provided to deface the image')
 
     # Check if the root is available
     if bids_path.root is None:
@@ -1673,95 +1737,29 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if write_sidecar:
-        # Get landmarks and their coordinate frame
-        if landmarks is not None and raw is not None:
-            raise ValueError('Please use EITHER `landmarks` or `raw`, '
-                             'which digitization to use is ambiguous.')
-
-        if trans is not None:
-            # get trans and ensure it is from head to MRI
-            trans, _ = _get_trans(trans, fro='head', to='mri')
-
-            if landmarks is None and not isinstance(raw, BaseRaw):
-                raise ValueError('`raw` must be specified if `trans` '
-                                 'is not None')
-
         if isinstance(landmarks, str):
             landmarks, coord_frame = read_fiducials(landmarks)
             landmarks = np.array([landmark['r'] for landmark in
                                   landmarks], dtype=float)  # unpack
         else:
             # Prepare to write the sidecar JSON, extract MEG landmarks
-            coords_dict, coord_frame = _get_fid_coords(
-                landmarks.dig if raw is None else raw.info['dig'])
+            coords_dict, coord_frame = _get_fid_coords(landmarks.dig)
             landmarks = np.asarray((coords_dict['lpa'],
                                     coords_dict['nasion'],
                                     coords_dict['rpa']))
 
         # check if coord frame is supported
-        if coord_frame not in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI,
-                               FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+        if coord_frame not in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                                FIFF.FIFFV_MNE_COORD_RAS):
-            raise ValueError('Coordinate frame not recognized, '
+            raise ValueError('Coordinate frame not supported, '
                              f'found {coord_frame}')
 
-        # If the `coord_frame` isn't in head space, we don't need the `trans`
-        if coord_frame != FIFF.FIFFV_COORD_HEAD and trans is not None:
-            raise ValueError('`trans` was provided but `landmark` data is '
-                             'in mri space. Please use only one of these.')
-
-        t1w_img = None
-        if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
-            subject = bids_path.subject if subject is None else subject
-            subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-            if subject is None or subjects_dir is None:
-                raise ValueError('``subject`` and ``subjects_dir`` must be '
-                                 'provided when the coordinate frame is '
-                                 '``head`` or ``mri`` because the freesurfer '
-                                 'surfaces were used to align the coordinate '
-                                 'frames')
-            if not op.isdir(op.join(subjects_dir, subject)):
-                raise ValueError(
-                    'freesurfer recon-all subject directory not found, '
-                    f'got {op.join(subjects_dir, subject)}')
-            t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
-            if not op.isfile(t1_fname):
-                raise ValueError('Freesurfer recon-all ``subject`` folder '
-                                 'is incorrect or improperly formatted, '
-                                 f'got {op.join(subjects_dir, subject)}')
-            t1w_img = _load_image(t1_fname, name='T1.mgz')
-
-        if coord_frame != FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
+        # convert to voxels from scanner RAS to voxels
+        if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
             # Make MGH image for header properties
             img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
-
-            if coord_frame == FIFF.FIFFV_COORD_HEAD:
-                if trans is None:
-                    raise ValueError('Head space landmarks provided, '
-                                     '`trans` required')
-
-                landmarks = _meg_landmarks_to_mri_landmarks(
-                    landmarks, trans)
-            elif coord_frame == FIFF.FIFFV_COORD_MRI:
-                landmarks *= 1e3  # m to mm conversion
-
-            # need get scanner RAS: MRI--[inv vox2ras_tkr]-->scanner RAS
-            if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
-                t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
-                # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
-                landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
-                # go to T1 scanner space from T1 voxel space
-                landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
-                landmarks *= 1e-3  # mm -> m
-                coord_frame = FIFF.FIFFV_MNE_COORD_RAS
-
-            # convert to voxels from surface or scanner RAS depending on above
-            if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
-                # go from scanner RAS to image voxels
-                landmarks = _mri_scanner_ras_to_mri_voxels(
-                    landmarks * 1e3, img_mgh)
-            else:  # must be T1, going from surface RAS->voxels
-                landmarks = _mri_landmarks_to_mri_voxels(landmarks, img_mgh)
+            landmarks = _mri_scanner_ras_to_mri_voxels(
+                landmarks * 1e3, img_mgh)
 
         # Write sidecar.json
         img_json = dict()

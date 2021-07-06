@@ -22,21 +22,20 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 from mne.io.constants import FIFF
-from mne.utils import (requires_nibabel, object_diff, requires_version,
-                       requires_freesurfer)
+from mne.utils import requires_nibabel, object_diff, requires_version
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
 from mne_bids import BIDSPath
 from mne_bids.config import MNE_STR_TO_FRAME
-from mne_bids.read import (read_raw_bids, _make_minimal_subject_dir,
+from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_write_json)
 from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
-from mne_bids.write import write_anat, write_raw_bids
+from mne_bids.write import write_anat, write_raw_bids, get_landmarks
 
 subject_id = '01'
 session_id = '01'
@@ -222,7 +221,9 @@ def test_get_head_mri_trans(tmpdir):
 
     # We cannot recover trans if no MRI has yet been written
     with pytest.raises(RuntimeError, match='Did not find any T1w.json'):
-        estimated_trans = get_head_mri_trans(bids_path=bids_path)
+        estimated_trans = get_head_mri_trans(
+            bids_path=bids_path, fs_subject='sample',
+            fs_subjects_dir=subjects_dir)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
@@ -234,13 +235,15 @@ def test_get_head_mri_trans(tmpdir):
 
     t1w_bidspath = BIDSPath(subject=subject_id, session=session_id,
                             acquisition=acq, root=tmpdir)
+    landmarks = get_landmarks(t1w_mgh, raw.info, trans, fs_subject='sample',
+                              fs_subjects_dir=subjects_dir)
     t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              raw=raw, trans=trans, subject='sample',
-                              subjects_dir=subjects_dir, verbose=True)
+                              landmarks=landmarks, verbose=True)
     anat_dir = t1w_bidspath.directory
 
     # Try to get trans back through fitting points
-    estimated_trans = get_head_mri_trans(bids_path=bids_path)
+    estimated_trans = get_head_mri_trans(
+        bids_path=bids_path, fs_subject='sample', fs_subjects_dir=subjects_dir)
 
     assert trans['from'] == estimated_trans['from']
     assert trans['to'] == estimated_trans['to']
@@ -250,17 +253,17 @@ def test_get_head_mri_trans(tmpdir):
     raw.info['dig'][0]['r'] = np.full(3, np.nan)
     sh.rmtree(anat_dir)
     bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                           raw=raw, trans=trans, subject='sample',
-                           subjects_dir=op.join(data_path, 'subjects'))
+                           landmarks=landmarks)
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
-        estimated_trans = get_head_mri_trans(bids_path=bids_path)
+        estimated_trans = get_head_mri_trans(bids_path=bids_path,
+                                             fs_subject='sample',
+                                             fs_subjects_dir=subjects_dir)
 
     # test we are permissive for different casings of landmark names in the
     # sidecar, and also accept "nasion" instead of just "NAS"
     raw = _read_raw_fif(raw_fname)
     t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              raw=raw, trans=trans, subject='sample',
-                              subjects_dir=subjects_dir, overwrite=True)
+                              landmarks=landmarks, overwrite=True)
 
     t1w_json_fpath = t1w_bidspath.copy().update(extension='.json').fpath
     with t1w_json_fpath.open('r', encoding='utf-8') as f:
@@ -275,8 +278,9 @@ def test_get_head_mri_trans(tmpdir):
     with t1w_json_fpath.open('w', encoding='utf-8') as f:
         json.dump(t1w_json, f)
 
-    estimated_trans = get_head_mri_trans(bids_path=(_bids_path.copy()
-                                                    .update(root=tmpdir)))
+    estimated_trans = get_head_mri_trans(
+        bids_path=_bids_path.copy().update(root=tmpdir),
+        fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
     # Test t1_bids_path parameter
@@ -287,11 +291,12 @@ def test_get_head_mri_trans(tmpdir):
     raw = _read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path=meg_bids_path)
-    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans,
-               subject='sample', subjects_dir=subjects_dir)
+    landmarks = get_landmarks(t1w_mgh, raw.info, trans, fs_subject='sample',
+                              fs_subjects_dir=subjects_dir)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, landmarks=landmarks)
     read_trans = get_head_mri_trans(
         bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
-        subject='sample', subjects_dir=subjects_dir)
+        fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert np.allclose(trans['trans'], read_trans['trans'])
 
     # Case 2: different sessions
@@ -301,8 +306,7 @@ def test_get_head_mri_trans(tmpdir):
     t1_bids_path = meg_bids_path.copy().update(session='02')
 
     write_raw_bids(raw, bids_path=meg_bids_path)
-    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans,
-               subject='sample', subjects_dir=subjects_dir)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, landmarks=landmarks)
     read_trans = get_head_mri_trans(
         bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
         subject='sample', subjects_dir=subjects_dir)
@@ -827,13 +831,15 @@ def test_get_head_mri_trans_ctf(fname, tmpdir):
 
     t1w_bids_path = BIDSPath(subject=subject_id, session=session_id,
                              acquisition=acq, root=tmpdir)
-    write_anat(t1w_mgh, bids_path=t1w_bids_path,
-               raw=raw_ctf, trans=trans, subject='sample',
-               subjects_dir=op.join(data_path, 'subjects'))
+    landmarks = get_landmarks(t1w_mgh, raw_ctf.info, trans,
+                              fs_subject='sample',
+                              fs_subjects_dir=op.join(data_path, 'subjects'))
+    write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks)
 
     # Try to get trans back through fitting points
-    estimated_trans = get_head_mri_trans(bids_path=bids_path,
-                                         extra_params=dict(clean_names=True))
+    estimated_trans = get_head_mri_trans(
+        bids_path=bids_path, extra_params=dict(clean_names=True),
+        fs_subject='sample', fs_subjects_dir=op.join(data_path, 'subjects'))
 
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
@@ -982,12 +988,3 @@ def test_ignore_exclude_param(tmpdir):
     raw = read_raw_bids(bids_path=bids_path, verbose=False,
                         extra_params=dict(exclude=[ch_name]))
     assert ch_name in raw.ch_names
-
-
-@requires_freesurfer('mri_convert')
-def test_make_minimal_subject_dir(tmpdir):
-    """Test making a minimal subjects directory for coordinate transforms."""
-    data_path = testing.data_path()
-    t1_bids_path = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
-    _make_minimal_subject_dir(t1_bids_path, tmpdir, 'test')
-    assert op.isfile(op.join(tmpdir, 'test', 'mri', 'T1.mgz'))

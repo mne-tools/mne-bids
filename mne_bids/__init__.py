@@ -9,6 +9,7 @@ from mne_bids.read import get_head_mri_trans, read_raw_bids
 from mne_bids.utils import (get_anonymization_daysback)
 from mne_bids.write import (make_dataset_description, write_anat,
                             write_raw_bids, mark_bad_channels,
-                            write_meg_calibration, write_meg_crosstalk)
+                            write_meg_calibration, write_meg_crosstalk,
+                            get_landmarks)
 from mne_bids.sidecar_updates import update_sidecar_json
 from mne_bids.inspect import inspect_dataset
