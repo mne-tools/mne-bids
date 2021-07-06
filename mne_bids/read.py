@@ -518,7 +518,7 @@ def _handle_channels_reading(channels_fname, raw):
 
         ch_diff = set(bads_tsv) - set(bads_avail)
         if ch_diff:
-            warn(f'Cannot mark "bad" status for the following channels, as '
+            warn(f'Cannot set "bad" status for the following channels, as '
                  f'they are missing in the raw data: '
                  f'{", ".join(sorted(ch_diff))}')
 

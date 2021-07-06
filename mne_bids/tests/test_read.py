@@ -972,3 +972,60 @@ def test_ignore_exclude_param(tmpdir):
     raw = read_raw_bids(bids_path=bids_path, verbose=False,
                         extra_params=dict(exclude=[ch_name]))
     assert ch_name in raw.ch_names
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_channels_tXv_raw_mismatch(tmpdir):  # FIXME rename one #833 is merged
+    """Test behavior when channels.tsv contains channels not found in raw."""
+    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg',
+                                         task='rest')
+
+    # Remove one channel from the raw data without updating channels.tsv
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    raw_path = bids_path.copy().update(extension='.fif').fpath
+    raw = _read_raw(raw_path, preload=True)
+    raw.drop_channels(ch_names=raw.ch_names[-1])
+    raw.load_data()
+    raw.save(raw_path, overwrite=True)
+
+    with pytest.warns(
+        RuntimeWarning,
+        match='number of channels in the channels.tsv sidecar .* '
+              'does not match the number of channels in the raw data'
+    ):
+        read_raw_bids(bids_path)
+
+    # Remame a channel in the raw data without updating channels.tsv
+    # (number of channels in channels.tsv and raw remains different)
+    ch_name_orig = raw.ch_names[-1]
+    ch_name_new = 'MEGtest'
+    raw.rename_channels({ch_name_orig: ch_name_new})
+    raw.save(raw_path, overwrite=True)
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=f'Cannot set channel type for the following channels, as they '
+              f'are missing in the raw data: {ch_name_orig}'
+    ):
+        read_raw_bids(bids_path)
+
+    # Mark channel as bad in channels.tsv and remove it from the raw data
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    ch_name_orig = raw.ch_names[-1]
+    ch_name_new = 'MEGtest'
+
+    raw.info['bads'] = [ch_name_orig]
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    raw.drop_channels(raw.ch_names[-2])
+    raw.rename_channels({ch_name_orig: ch_name_new})
+    raw.save(raw_path, overwrite=True)
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=f'Cannot set "bad" status for the following channels, as '
+              f'they are missing in the raw data: {ch_name_orig}'
+    ):
+        read_raw_bids(bids_path)
