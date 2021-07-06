@@ -313,6 +313,12 @@ def test_get_head_mri_trans(tmpdir):
         fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert np.allclose(trans['trans'], read_trans['trans'])
 
+    # Test that incorrect subject directory throws error
+    with pytest.raises(ValueError, match='subject folder not found'):
+        estimated_trans = get_head_mri_trans(
+            bids_path=bids_path, fs_subject='bad',
+            fs_subjects_dir=subjects_dir)
+
 
 def test_handle_events_reading(tmpdir):
     """Test reading events from a BIDS events.tsv file."""

@@ -783,7 +783,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
     fs_t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not fs_t1_fname.exists():
-        raise ValueError('Freesurfer recon-all ``subject`` folder not found, '
+        raise ValueError('Freesurfer recon-all subject folder not found, '
                          f'got {Path(fs_subjects_dir) / fs_subject}. ')
     fs_t1_mgh = nib.load(str(fs_t1_fname))
 

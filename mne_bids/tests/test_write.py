@@ -1654,6 +1654,12 @@ def test_write_anat(_bids_validate, tmpdir):
     # Validate that files are as expected
     _check_anat_json(bids_path)
 
+    # Test depreciation
+    with pytest.raises(ValueError,
+                       match='`raw`, `trans` and `t1w` are depreciated'):
+        write_anat(
+            t1w_mgh, **dict(kwargs, raw=raw, trans='test', t1w=t1w_mgh))
+
     # Now try some anat writing that will fail
     # We already have some MRI data there
     with pytest.raises(IOError, match='`overwrite` is set to False'):
