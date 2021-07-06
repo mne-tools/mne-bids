@@ -31,7 +31,7 @@ to store such data, despite it being modified before writing.
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # Load the ``sample`` dataset, and create a concatenated raw data object.
 
 from pathlib import Path
@@ -52,7 +52,7 @@ raw = mne.io.read_raw_fif(raw_fname)
 raw.info['line_freq'] = 60
 raw_concat = mne.concatenate_raws([raw.copy(), raw])
 
-###############################################################################
+# %%
 # Trying to write these data will fail.
 
 try:
@@ -60,7 +60,7 @@ try:
 except ValueError as e:
     print(f'Data cannot be written. Exception message was: {e}')
 
-###############################################################################
+# %%
 # We can work around this limitation by first writing the modified data to
 # a temporary file, reading it back in, and then writing it via MNE-BIDS.
 
@@ -70,7 +70,7 @@ with NamedTemporaryFile(suffix='_raw.fif') as f:
     raw_concat = mne.io.read_raw_fif(fname, preload=False)
     write_raw_bids(raw=raw_concat, bids_path=bids_path, overwrite=True)
 
-###############################################################################
+# %%
 # That's it!
 #
 # .. warning:: **Remember, this should only ever be a last resort!**
