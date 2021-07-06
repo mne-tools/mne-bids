@@ -1820,9 +1820,10 @@ def test_write_anat_pathlike(tmpdir):
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
-    bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path, raw=raw,
-                           trans=trans, deface=True, fs_subject='sample',
-                           fs_subjects_dir=op.join(data_path, 'subjects'),
+    landmarks = get_landmarks(t1w_mgh_fname, raw.info, trans, 'sample',
+                              fs_subjects_dir=op.join(data_path, 'subjects'))
+    bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path,
+                           landmarks=landmarks, deface=True,
                            verbose=True, overwrite=True)
 
     # write_anat() should return a BIDSPath.
