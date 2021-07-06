@@ -39,7 +39,7 @@ References
 #
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # We are importing everything we need for this example:
 import os.path as op
 
@@ -47,7 +47,7 @@ import mne
 
 from mne_bids.copyfiles import copyfile_brainvision
 
-###############################################################################
+# %%
 # Download some example data
 # --------------------------
 # To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
@@ -59,7 +59,7 @@ from mne_bids.copyfiles import copyfile_brainvision
 data_path = mne.datasets.testing.data_path()
 examples_dir = op.join(data_path, 'Brainvision')
 
-###############################################################################
+# %%
 # Rename the recording
 # --------------------
 # Above, at the top of the example, we imported
@@ -88,7 +88,7 @@ copyfile_brainvision(vhdr_file, vhdr_file_renamed, verbose=True)
 raw = mne.io.read_raw_brainvision(vhdr_file)
 raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
 
-###############################################################################
+# %%
 # Further information
 # -------------------
 #

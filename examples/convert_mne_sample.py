@@ -21,7 +21,7 @@ In a second step we will read the organized dataset using MNE-BIDS.
 #
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # First we import some basic Python libraries, followed by MNE-Python and its
 # sample data, and then finally the MNE-BIDS functions we need for this example
 
@@ -35,7 +35,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, write_meg_calibration,
                       write_meg_crosstalk, BIDSPath, print_dir_tree)
 from mne_bids.stats import count_events
 
-###############################################################################
+# %%
 # Now we can read the MNE sample data. We define an `event_id` based on our
 # knowledge of the data, to give meaning to events in the data.
 #
@@ -50,7 +50,7 @@ raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
-###############################################################################
+# %%
 # To ensure the output path doesn't contain any leftover files from previous
 # tests and example runs, we simply delete it.
 #
@@ -60,7 +60,7 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 if op.exists(output_path):
     shutil.rmtree(output_path)
 
-###############################################################################
+# %%
 #
 # .. note::
 #
@@ -82,7 +82,7 @@ bids_path = BIDSPath(subject='01', session='01',
 write_raw_bids(raw, bids_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
-###############################################################################
+# %%
 # The sample MEG dataset comes with fine-calibration and crosstalk files that
 # are required when processing Elekta/Neuromag/MEGIN data using MaxFilter®.
 # Let's store these data in appropriate places, too.
@@ -93,25 +93,25 @@ ct_fname = op.join(data_path, 'SSS', 'ct_sparse_mgh.fif')
 write_meg_calibration(cal_fname, bids_path)
 write_meg_crosstalk(ct_fname, bids_path)
 
-###############################################################################
+# %%
 # Now let's see the structure of the BIDS folder we created.
 
 print_dir_tree(output_path)
 
-###############################################################################
+# %%
 # Now let's get an overview of the events on the whole dataset
 
 counts = count_events(output_path)
 counts
 
-###############################################################################
+# %%
 # A big advantage of having data organized according to BIDS is that software
 # packages can automate your workflow. For example, reading the data back
 # into MNE-Python can easily be done using :func:`read_raw_bids`.
 
 raw = read_raw_bids(bids_path=bids_path)
 
-###############################################################################
+# %%
 # The resulting data is already in a convenient form to create epochs and
 # evoked data.
 
@@ -119,14 +119,14 @@ events, event_id = mne.events_from_annotations(raw)
 epochs = mne.Epochs(raw, events, event_id)
 epochs['Auditory'].average().plot()
 
-###############################################################################
+# %%
 # It is trivial to retrieve the path of the fine-calibration and crosstalk
 # files, too.
 
 print(bids_path.meg_calibration_fpath)
 print(bids_path.meg_crosstalk_fpath)
 
-###############################################################################
+# %%
 # The README created by :func:`write_raw_bids` also takes care of the citation
 # for mne-bids. If you are preparing a manuscript, please make sure to also
 # cite MNE-BIDS there.
