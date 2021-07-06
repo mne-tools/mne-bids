@@ -783,18 +783,26 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     # see also: `mne_bids.write.write_anat`
     subject = meg_bids_path.subject if subject is None else subject
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
-    if not op.isfile(t1_fname):
+    fs_t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+    if not op.isfile(fs_t1_fname):
         raise ValueError('Freesurfer recon-all ``subject`` folder '
                          'is incorrect or improperly formatted, '
                          f'got {op.join(subjects_dir, subject)}')
-    t1_nifti = nib.load(t1_fname)
+    fs_t1_mgh = nib.load(fs_t1_fname)
+
+    t1_nifti = nib.load(t1_bids_path)
 
     # Convert to MGH format to access vox2ras method
     t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
 
+    # convert to scanner RAS
+    mri_landmarks = apply_trans(t1_mgh.header.get_vox2ras(), mri_landmarks)
+
+    # convert to freesurfer T1 voxels (same scanner RAS as T1)
+    mri_landmarks = apply_trans(fs_t1_mgh.header.get_ras2vox(), mri_landmarks)
+
     # now extract transformation matrix and put back to RAS coordinates of MRI
-    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+    vox2ras_tkr = fs_t1_mgh.header.get_vox2ras_tkr()
     mri_landmarks = apply_trans(vox2ras_tkr, mri_landmarks)
     mri_landmarks = mri_landmarks * 1e-3
 

@@ -249,7 +249,8 @@ def test_get_head_mri_trans(tmpdir):
     raw.info['dig'][0]['r'] = np.full(3, np.nan)
     sh.rmtree(anat_dir)
     bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                           raw=raw, trans=trans)
+                           raw=raw, trans=trans, subject='sample',
+                           subjects_dir=op.join(data_path, 'subjects'))
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
         estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
@@ -826,7 +827,8 @@ def test_get_head_mri_trans_ctf(fname, tmpdir):
     t1w_bids_path = BIDSPath(subject=subject_id, session=session_id,
                              acquisition=acq, root=tmpdir)
     write_anat(t1w_mgh, bids_path=t1w_bids_path,
-               raw=raw_ctf, trans=trans)
+               raw=raw_ctf, trans=trans, subject='sample',
+               subjects_dir=op.join(data_path, 'subjects'))
 
     # Try to get trans back through fitting points
     estimated_trans = get_head_mri_trans(bids_path=bids_path,

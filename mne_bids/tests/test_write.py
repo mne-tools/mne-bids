@@ -1641,7 +1641,7 @@ def test_write_anat(_bids_validate, tmpdir):
     # test deface
     bids_path = write_anat(t1w_mgh, **kwargs)
     anat_dir = bids_path.directory
-    t1w = nib.load(op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz'))
+    t1w = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
     vox_sum = t1w.get_fdata().sum()
 
     _check_anat_json(bids_path)
@@ -1649,7 +1649,7 @@ def test_write_anat(_bids_validate, tmpdir):
     # Check that increasing inset leads to more voxels at 0
     bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=25.)))
     anat_dir2 = bids_path.directory
-    t1w2 = nib.load(op.join(anat_dir2, 'sub-01_ses-01_T1w.nii.gz'))
+    t1w2 = nib.load(op.join(anat_dir2, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
     vox_sum2 = t1w2.get_fdata().sum()
 
     _check_anat_json(bids_path)
@@ -1659,7 +1659,7 @@ def test_write_anat(_bids_validate, tmpdir):
     # Check that increasing theta leads to more voxels at 0
     bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=45)))
     anat_dir3 = bids_path.directory
-    t1w3 = nib.load(op.join(anat_dir3, 'sub-01_ses-01_T1w.nii.gz'))
+    t1w3 = nib.load(op.join(anat_dir3, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
     vox_sum3 = t1w3.get_fdata().sum()
 
     assert vox_sum > vox_sum3
@@ -1746,20 +1746,18 @@ def test_write_anat(_bids_validate, tmpdir):
         if not in_head:
             # crash for raw also
             with pytest.raises(ValueError, match='use EITHER `landmarks`'):
-                write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                           trans=trans, deface=True, landmarks=landmarks,
-                           verbose=True, overwrite=True)
+                write_anat(t1w_mgh, **dict(kwargs, trans=None,
+                                           landmarks=landmarks))
 
             # crash for trans also
             with pytest.raises(ValueError, match='`trans` was provided'):
-                write_anat(t1w_mgh, bids_path=bids_path, trans=trans,
-                           deface=True, landmarks=landmarks, verbose=True,
-                           overwrite=True)
+                write_anat(t1w_mgh, **dict(kwargs, raw=None,
+                                           landmarks=landmarks))
 
     # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='Head space landmarks provided'):
-        write_anat(t1w_mgh, bids_path=bids_path, deface=True,
-                   landmarks=meg_landmarks, verbose=True, overwrite=True)
+        write_anat(t1w_mgh, **dict(kwargs, landmarks=meg_landmarks,
+                                   raw=None, trans=None))
 
     # test unsupported (any coord_frame other than head and mri) coord_frame
     fail_landmarks = meg_landmarks.copy()
@@ -1789,9 +1787,9 @@ def test_write_anat(_bids_validate, tmpdir):
     flash1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox1 = flash1.get_fdata()
 
-    # test raw + trans + t1w
+    # test raw + trans + freesurfer t1
     write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
-               t1w=t1w_mgh, overwrite=True)
+               subject='sample', subjects_dir=subjects_dir, overwrite=True)
     flash2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox2 = flash2.get_fdata()
     assert_array_equal(fvox1, fvox2)
@@ -1868,8 +1866,9 @@ def test_write_anat_pathlike(tmpdir):
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
     bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path, raw=raw,
-                           trans=trans, deface=True, verbose=True,
-                           overwrite=True)
+                           trans=trans, deface=True, subject='sample',
+                           subjects_dir=op.join(data_path, 'subjects'),
+                           verbose=True, overwrite=True)
 
     # write_anat() should return a BIDSPath.
     assert isinstance(bids_path, BIDSPath)
