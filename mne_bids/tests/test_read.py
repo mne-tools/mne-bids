@@ -975,7 +975,7 @@ def test_ignore_exclude_param(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_channels_tXv_raw_mismatch(tmpdir):  # FIXME rename one #833 is merged
+def test_channels_tsv_raw_mismatch(tmpdir):
     """Test behavior when channels.tsv contains channels not found in raw."""
     bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg',
                                          task='rest')
