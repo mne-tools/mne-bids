@@ -225,36 +225,39 @@ class BIDSPath(object):
     Examples
     --------
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
-                             suffix='ieeg', extension='.edf')
+    ...                      suffix='ieeg', extension='.edf')
     >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_path
-    BIDSPath(root: None,
+    BIDSPath(
+    root: None
+    datatype: ieeg
     basename: sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
     >>> new_bids_path = bids_path.copy().update(subject='test2',
-                                                session='one')
+    ...                                         session='one')
     >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> # printing the BIDSPath will show relative path when
     >>> # root is not set
     >>> print(new_bids_path)
     sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
-    >>> new_bids_path.update(suffix='channels', extension='.tsv')
+    >>> new_bids_path = new_bids_path.update(suffix='channels',
+    ...                                      extension='.tsv')
     >>> # setting suffix without an identifiable datatype will
     >>> # result in a wildcard at the datatype directory level
     >>> print(new_bids_path)
-    sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv
+    sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv
     >>> # set a root for the BIDS dataset
-    >>> new_bids_path.update(root='/bids_dataset')
+    >>> new_bids_path = new_bids_path.update(root='/bids_dataset')
     >>> print(new_bids_path.root)
     /bids_dataset
     >>> print(new_bids_path.basename)
-    sub-test2_ses-one_task-mytask_ieeg.edf
+    sub-test2_ses-one_task-mytask_channels.tsv
     >>> print(new_bids_path)
-    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
+    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv
     >>> print(new_bids_path.directory)
-    /bids_dataset/sub-test2/ses-one/ieeg/
+    /bids_dataset/sub-test2/ses-one/ieeg
 
     Notes
     -----
@@ -651,13 +654,13 @@ class BIDSPath(object):
         :func:`mne_bids.BIDSPath`:
 
         >>> bids_path = BIDSPath(subject='test', session='two',
-                                     task='mytask', suffix='channels',
-                                     extension='.tsv')
+        ...                      task='mytask', suffix='channels',
+        ...                      extension='.tsv')
         >>> print(bids_path.basename)
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_path.update(acquisition='test', suffix='ieeg',
-                             extension='.vhdr', task=None)
+        >>> bids_path = bids_path.update(acquisition='test', suffix='ieeg',
+        ...                              extension='.vhdr', task=None)
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
@@ -1147,16 +1150,16 @@ def get_entities_from_fname(fname, on_error='raise'):
     --------
     >>> fname = 'sub-01_ses-exp_run-02_meg.fif'
     >>> get_entities_from_fname(fname)
-    {'subject': '01',
-    'session': 'exp',
-    'task': None,
-    'acquisition': None,
-    'run': '02',
-    'processing': None,
-    'space': None,
-    'recording': None,
-    'split': None,
-    'suffix': 'meg'}
+    {'subject': '01', \
+'session': 'exp', \
+'task': None, \
+'acquisition': None, \
+'run': '02', \
+'processing': None, \
+'space': None, \
+'recording': None, \
+'split': None, \
+'suffix': 'meg'}
     """
     if on_error not in ('warn', 'raise', 'ignore'):
         raise ValueError(f'Acceptable values for on_error are: warn, raise, '
@@ -1400,9 +1403,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     --------
     >>> root = os.path.expanduser('~/mne_data/eeg_matchingpennies')
     >>> entity_key = 'subject'
-    >>> get_entity_vals(root, entity_key)
+    >>> get_entity_vals(root, entity_key) # doctest: +SKIP
     ['05', '06', '07', '08', '09', '10', '11']
-    >>> get_entity_vals(root, entity_key, with_key=True)
+    >>> get_entity_vals(root, entity_key, with_key=True) # doctest: +SKIP
     ['sub-05', 'sub-06', 'sub-07', 'sub-08', 'sub-09', 'sub-10', 'sub-11']
 
     Notes
