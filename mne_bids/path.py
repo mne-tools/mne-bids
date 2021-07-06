@@ -1399,7 +1399,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     Examples
     --------
     >>> root = os.path.expanduser('~/mne_data/eeg_matchingpennies')
-    >>> entity_key = 'sub'
+    >>> entity_key = 'subject'
     >>> get_entity_vals(root, entity_key)
     ['05', '06', '07', '08', '09', '10', '11']
     >>> get_entity_vals(root, entity_key, with_key=True)
