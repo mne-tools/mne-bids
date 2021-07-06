@@ -26,7 +26,8 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              ANNOTATIONS_TO_KEEP,
                              reader, _map_options)
-from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
+from mne_bids.utils import (_extract_landmarks, _get_ch_type_mapping,
+                            _is_freesurfer_conform)
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype)
 
@@ -708,11 +709,21 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         in an entirely different BIDS dataset than the MEG data.
 
         .. versionadded:: 0.8
+    t1_freesurfer_fname : str | Path | None
+        The path to the T1 image in FreeSurfer 'conform' state to be able
+        to get valid Surface RAS coordinates. This parameter is recommended
+        to avoid mistakes and is mandatory if it is detected that the T1w
+        image available in the BIDS dataset is not FreeSurfer 'conform'.
+        See --conform option in FreeSurfer mri_convert command. The parameter
+        is typically the T1.mgz file from the FreeSurfer reconstruction folder.
+
+        .. versionadded:: 0.8
 
     Returns
     -------
     trans : mne.transforms.Transform
-        The data transformation matrix from head to MRI coordinates.
+        The data transformation matrix from head to MRI (surface RAS)
+        coordinates.
     """
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
@@ -787,11 +798,21 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     # Move MRI landmarks from vox to RAS
     mri_landmarks = apply_trans(t1_nifti.affine, mri_landmarks)
 
-    # Convert to MGH format to access vox2ras method
-    # t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
-    t1_mgh = nib.load(t1_freesurfer_fname)
+    # Get some MGH format to access vox2ras_tkr method
+    if _is_freesurfer_conform(t1_nifti):
+        t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
+    else:
+        if t1_freesurfer_fname:
+            raise ValueError(
+                "Passing the t1_freesurfer_fname parameter is required "
+                "if the available T1 image is not in FreeSurfer 'conform' "
+                "state. A good value for the t1_freesurfer_fname parameter "
+                "is the path to the T1.mgz file from FreeSurfer "
+                "reconstruction folder."
+            )
+        t1_mgh = nib.load(t1_freesurfer_fname)
 
-    # Move MRI landmarks from RAS to Freesurfer vox
+    # Move MRI landmarks from MRI Voxels to RAS
     mri_landmarks = apply_trans(np.linalg.inv(t1_mgh.affine), mri_landmarks)
 
     # now extract transformation matrix and put back to RAS coordinates of MRI

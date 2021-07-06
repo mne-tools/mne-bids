@@ -39,7 +39,8 @@ from mne_bids.dig import _write_dig_bids, _write_coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _get_ch_type_mapping, _check_anonymize,
-                            _stamp_to_dt, _handle_datatype)
+                            _stamp_to_dt, _handle_datatype,
+                            _is_freesurfer_conform)
 from mne_bids import BIDSPath
 from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
@@ -1665,6 +1666,23 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     # Try to read our MRI file and convert to MGH representation
     image_nii = _load_image(image)
 
+    # Check that the T1 image available is in FreeSurfer conform
+    # space (required if a trans is passed or landmarks are in
+    # surface RAS coordinate).
+    ref_t1w_nii = image_nii
+    if bids_path.suffix != 'T1w':
+        ref_t1w_nii = nib.load(str(t1w))
+    t1w_is_conform = _is_freesurfer_conform(ref_t1w_nii)
+
+    if trans is not None and not t1w_is_conform:
+        raise ValueError(
+            "When passing 'trans' the T1 MRI image must be in FreeSurfer "
+            "'conform' (e.g. the T1.mgz file) to able to get valid landmarks "
+            "coordinates. Please pass directly the coordinates with the "
+            "landmarks parameter. See --conform option in FreeSurfer "
+            "mri_convert command for information."
+        )
+
     # Check if we have necessary conditions for writing a sidecar JSON
     if write_sidecar:
         # Get landmarks and their coordinate frame
@@ -1709,6 +1727,17 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
             raise ValueError('The T1 must be passed as `t1w` or `landmarks` '
                              'must be passed in `mri_voxel` or `ras` (scanner '
                              'RAS) coordinate frames for non T1-images')
+
+        if (coord_frame == FIFF.FIFFV_COORD_MRI and
+                not t1w_is_conform):
+            raise ValueError(
+                "When passing 'landmarks' in surface RAS coordinates the T1 "
+                "MRI image must be in FreeSurfer 'conform' (e.g. the T1.mgz "
+                "file) to able to get valid landmarks coordinates. Please "
+                "pass landmarks in MRI RAS coordinates or in MRI voxels "
+                "directly. See --conform option in FreeSurfer mri_convert"
+                "command for information."
+            )
 
         if coord_frame != FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
             # Make MGH image for header properties

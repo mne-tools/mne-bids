@@ -18,7 +18,7 @@ from mne.channels import make_standard_montage
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import warn, logger
+from mne.utils import warn, logger, has_nibabel
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
@@ -468,3 +468,44 @@ def _check_datatype(raw, datatype):
             '`bids_path.update(datatype="<datatype>")` or use '
             'raw.set_channel_types to set the correct channel types in '
             'the raw object.')
+
+
+def _is_freesurfer_conform(img):
+    """Check that an image file is a FreeSurfer conform image.
+
+    Freesurfer conform images must be (256, 256, 256)
+    with 1mm isotropic resolution and be in LIA orientation.
+
+    Parameters
+    ----------
+    img : SpatialImage
+        The image to check.
+
+    Returns
+    -------
+    is_conform : bool
+        True if img is in FreeSurfer conform state.
+    """
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+
+    ori = nib.orientations.aff2axcodes(img.affine)
+    if ori != tuple('LIA'):
+        return False
+    hdr = img.header
+    if hdr.get_data_shape() != (256, 256, 256):
+        return False
+    if hdr.get_zooms() != (1, 1, 1):
+        return False
+
+    affine = img.affine
+    target_affine_rot = np.array(
+        [[-1, 0, 0],
+         [0, 0, 1],
+         [0, -1, 0]]
+    )
+    if not np.allclose(affine[:3, :3], target_affine_rot):
+        return False
+
+    return True
