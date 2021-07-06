@@ -2806,3 +2806,18 @@ def test_write_associated_emptyroom(_bids_validate, tmpdir):
             .as_posix()  # make test work on Windows, too
             .endswith(meg_json_data['AssociatedEmptyRoom']))
     assert meg_json_data['AssociatedEmptyRoom'].startswith('/')
+
+
+@pytest.mark.parametrize(
+    'dir_name', ('tsv_test', 'json_test')
+)
+def test_write_raw_special_paths(tmpdir, dir_name):
+    """Test writing to locations containing strings with special meaning."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    root = Path(tmpdir) / dir_name
+    bids_path = _bids_path.copy().update(root=root)
+    write_raw_bids(raw=raw, bids_path=bids_path)
