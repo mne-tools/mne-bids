@@ -26,7 +26,7 @@ data. Specifically, we will follow these steps:
 #
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # We are importing everything we need for this example:
 import os.path as op
 import shutil
@@ -37,7 +37,7 @@ from mne.datasets import eegbci
 from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
 from mne_bids.stats import count_events
 
-###############################################################################
+# %%
 # Download the data
 # -----------------
 #
@@ -63,7 +63,7 @@ subject = 1
 run = 2
 eegbci.load_data(subject=subject, runs=run, update_path=True)
 
-###############################################################################
+# %%
 # Let's see whether the data has been downloaded using a quick visualization
 # of the directory tree.
 
@@ -73,7 +73,7 @@ data_dir = op.join(mne_data_dir, 'MNE-eegbci-data')
 
 print_dir_tree(data_dir)
 
-###############################################################################
+# %%
 # The data are in the `European Data Format <https://www.edfplus.info/>`_ with
 # the ``.edf`` extension, which is good for us because next to the
 # `BrainVision format`_, EDF is one of the recommended file formats for EEG
@@ -84,7 +84,7 @@ print_dir_tree(data_dir)
 #
 # We will do exactly that in the next step.
 
-###############################################################################
+# %%
 # Convert to BIDS
 # ---------------
 #
@@ -100,7 +100,7 @@ edf_path = eegbci.load_data(subject=subject, runs=run)[0]
 raw = mne.io.read_raw_edf(edf_path, preload=False)
 raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
-###############################################################################
+# %%
 # For the sake of the example we will also pretend that we have the electrode
 # coordinates for the data recordings.
 # We will use a coordinates file from the MNE testing data in `CapTrak`_
@@ -131,7 +131,7 @@ raw.set_montage(montage)
 # show the electrode positions
 raw.plot_sensors()
 
-###############################################################################
+# %%
 # With these steps, we have everything to start a new BIDS directory using
 # our data.
 #
@@ -149,7 +149,7 @@ raw.plot_sensors()
 # ... as you can see in the docstring:
 print(write_raw_bids.__doc__)
 
-###############################################################################
+# %%
 # We loaded ``S001R02.edf``, which corresponds to subject 1 in the second run.
 # In the second run of the experiment, the task was to rest with closed eyes.
 
@@ -160,7 +160,7 @@ subject_id = '001'
 task = 'RestEyesClosed'
 bids_root = op.join(mne_data_dir, 'eegmmidb_bids_eeg_example')
 
-###############################################################################
+# %%
 # To ensure the output path doesn't contain any leftover files from previous
 # tests and example runs, we simply delete it.
 #
@@ -170,29 +170,29 @@ bids_root = op.join(mne_data_dir, 'eegmmidb_bids_eeg_example')
 if op.exists(bids_root):
     shutil.rmtree(bids_root)
 
-###############################################################################
+# %%
 # The data contains annotations; which will be converted to events
 # automatically by MNE-BIDS when writing the BIDS data:
 
 print(raw.annotations)
 
-###############################################################################
+# %%
 # Finally, let's write the BIDS data!
 
 bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
 write_raw_bids(raw, bids_path, overwrite=True)
 
-###############################################################################
+# %%
 # What does our fresh BIDS directory look like?
 print_dir_tree(bids_root)
 
-###############################################################################
+# %%
 # Finally let's get an overview of the events on the whole dataset
 
 counts = count_events(bids_root)
 counts
 
-###############################################################################
+# %%
 # We can see that MNE-BIDS wrote several important files related to subject 1
 # for us:
 #
@@ -226,7 +226,7 @@ with open(readme, 'r', encoding='utf-8-sig') as fid:
 print(text)
 
 
-###############################################################################
+# %%
 # Now it's time to manually check the BIDS directory and the meta files to add
 # all the information that MNE-BIDS could not infer. For instance, you must
 # describe EEGReference and EEGGround yourself. It's easy to find these by

@@ -33,7 +33,7 @@ See the documentation pages in the MNE docs for more information on
 #          Alex Gramfort <alexandre.gramfort@inria.fr>
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # We are importing everything we need for this example:
 
 import os.path as op
@@ -52,7 +52,7 @@ from mne.source_space import head_to_mri
 from mne_bids import (write_raw_bids, BIDSPath, write_anat,
                       get_head_mri_trans, print_dir_tree)
 
-###############################################################################
+# %%
 # We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
 # BIDS dataset. For more information, you can checkout the respective
 # :ref:`example <ex-convert-mne-sample>`.
@@ -64,7 +64,7 @@ raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
 
-###############################################################################
+# %%
 # To ensure the output path doesn't contain any leftover files from previous
 # tests and example runs, we simply delete it.
 #
@@ -74,7 +74,7 @@ output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
 if op.exists(output_path):
     shutil.rmtree(output_path)
 
-###############################################################################
+# %%
 # Read the input data and store it as BIDS data.
 
 raw = mne.io.read_raw_fif(raw_fname)
@@ -89,11 +89,11 @@ bids_path = BIDSPath(subject=sub, session=ses, task=task,
 write_raw_bids(raw, bids_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
-###############################################################################
+# %%
 # Print the directory tree
 print_dir_tree(output_path)
 
-###############################################################################
+# %%
 # Writing T1 image
 # ----------------
 #
@@ -111,7 +111,7 @@ trans_fname = op.join(data_path, 'MEG', 'sample',
 trans = mne.read_trans(trans_fname)
 print(trans)
 
-###############################################################################
+# %%
 # We can save the MRI to our existing BIDS directory and at the same time
 # create a JSON sidecar file that contains metadata, we will later use to
 # retrieve our transformation matrix :code:`trans`. The metadata will here
@@ -133,16 +133,16 @@ t1w_bids_path = write_anat(
 )
 anat_dir = t1w_bids_path.directory
 
-###############################################################################
+# %%
 # Let's have another look at our BIDS directory
 print_dir_tree(output_path)
 
-###############################################################################
+# %%
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
 estim_trans = get_head_mri_trans(bids_path=bids_path)
 
-###############################################################################
+# %%
 # Finally, let's use the T1 weighted MRI image and plot the anatomical
 # landmarks Nasion, LPA, and RPA onto the brain image. For that, we can
 # extract the location of Nasion, LPA, and RPA from the MEG file, apply our
@@ -176,7 +176,7 @@ for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
               title=label, vmax=160)
 plt.show()
 
-###############################################################################
+# %%
 # Writing FLASH MRI image
 # -----------------------
 #
@@ -194,7 +194,7 @@ write_anat(
     verbose=True
 )
 
-###############################################################################
+# %%
 # Writing defaced and anonymized T1 image
 # ---------------------------------------
 #
@@ -218,7 +218,7 @@ fig, ax = plt.subplots()
 plot_anat(t1_nii_fname, axes=ax, title='Defaced', vmax=160)
 plt.show()
 
-###############################################################################
+# %%
 # Writing defaced and anonymized FLASH MRI image
 # ----------------------------------------------
 #
@@ -232,7 +232,7 @@ plt.show()
 # fiducial coordinates from the `raw` and apply the `trans` yourself.
 # Let's explore the different options to do this.
 
-###############################################################################
+# %%
 # Option 1 : Pass `t1w` with `raw` and `trans`
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 flash_bids_path = write_anat(
@@ -254,7 +254,7 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-###############################################################################
+# %%
 # Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
@@ -286,7 +286,7 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-###############################################################################
+# %%
 # Option 3 : Compute the landmarks in scanner RAS or mri voxel space from trans
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #
@@ -328,7 +328,7 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-##############################################################################
+# %%
 # Let's now pass it in voxel coordinates
 flash_mri_hdr = nib.load(flash_mgh_fname).header
 flash_vox_pos = mne.transforms.apply_trans(
@@ -356,7 +356,7 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-###############################################################################
+# %%
 # .. LINKS
 #
 # .. _coregistration GUI:
