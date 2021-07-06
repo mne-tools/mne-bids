@@ -1345,8 +1345,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
     # For the remaining files, we can use BIDSPath to alter.
     readme_fname = op.join(bids_path.root, 'README')
     participants_tsv_fname = op.join(bids_path.root, 'participants.tsv')
-    participants_json_fname = participants_tsv_fname.replace('tsv',
-                                                             'json')
+    participants_json_fname = participants_tsv_fname.replace('.tsv',
+                                                             '.json')
 
     sidecar_path = bids_path.copy().update(suffix=bids_path.datatype,
                                            extension='.json')
