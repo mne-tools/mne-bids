@@ -1529,8 +1529,8 @@
     <span class="c1"># For the remaining files, we can use BIDSPath to alter.</span>
     <span class="n">readme_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;README&#39;</span><span class="p">)</span>
     <span class="n">participants_tsv_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
-    <span class="n">participants_json_fname</span> <span class="o">=</span> <span class="n">participants_tsv_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
-                                                             <span class="s1">&#39;json&#39;</span><span class="p">)</span>
+    <span class="n">participants_json_fname</span> <span class="o">=</span> <span class="n">participants_tsv_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
+                                                             <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
 
     <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
                                            <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
