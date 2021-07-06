@@ -1595,7 +1595,7 @@ def get_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=True)
     t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not t1_fname.exists():
-        raise ValueError('Freesurfer recon-all ``subject`` folder '
+        raise ValueError('Freesurfer recon-all subject folder '
                          'is incorrect or improperly formatted, '
                          f'got {Path(fs_subjects_dir) / fs_subject}')
     t1w_img = _load_image(str(t1_fname), name='T1.mgz')

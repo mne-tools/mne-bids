@@ -42,7 +42,6 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 
-import nibabel as nib
 from nilearn.plotting import plot_anat
 
 import mne
@@ -253,12 +252,6 @@ landmarks = get_landmarks(
     fs_subjects_dir=fs_subjects_dir,  # freesurfer subjects directory
 )
 
-<<<<<<< HEAD
-# %%
-# Option 1 : Pass `t1w` with `raw` and `trans`
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-=======
->>>>>>> 8a77636 (almost done)
 flash_bids_path = write_anat(
     image=flash_mgh_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
@@ -276,11 +269,6 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-<<<<<<< HEAD
-# %%
-# Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-=======
 ###############################################################################
 # Using manual landmarks coordinates in scanner RAS
 # -------------------------------------------------
@@ -288,7 +276,6 @@ plt.show()
 # You can also find landmarks with a 3D image viewer (e.g. freeview). If you
 # have not aligned the channel locations (including fiducials) using the
 # coregistration GUI or if this is just more convenient.
->>>>>>> 8a77636 (almost done)
 #
 # .. note:: In freeview, you need to use "RAS" and not "TkReg RAS" for this.
 #           You can also use voxel coordinates but, in freeview, they
@@ -319,81 +306,7 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-<<<<<<< HEAD
-# %%
-# Option 3 : Compute the landmarks in scanner RAS or mri voxel space from trans
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#
-# Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
-# and the 'r' key will provide us with the xyz coordinates.
-#
-# .. note::
-#
-#   We can use in the head_to_mri function based on T1 as the T1 and FLASH
-#   images are already registered.
-head_pos = np.asarray((raw.info['dig'][0]['r'],
-                       raw.info['dig'][1]['r'],
-                       raw.info['dig'][2]['r']))
-
-ras_pos = head_to_mri(pos=head_pos,
-                      subject='sample',
-                      mri_head_t=trans,
-                      subjects_dir=subjects_dir) / 1e3
-
-montage_ras = mne.channels.make_dig_montage(
-    lpa=ras_pos[0],
-    nasion=ras_pos[1],
-    rpa=ras_pos[2],
-    coord_frame='ras'
-)
-
-# pass FLASH scanner RAS coordinates
-flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
-    bids_path=flash_bids_path,
-    landmarks=montage_ras,
-    deface=True,
-    overwrite=True,
-    verbose=True  # this will print out the sidecar file
-)
-
-# Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
-
-# %%
-# Let's now pass it in voxel coordinates
-flash_mri_hdr = nib.load(flash_mgh_fname).header
-flash_vox_pos = mne.transforms.apply_trans(
-    flash_mri_hdr.get_ras2vox(), ras_pos * 1e3)
-
-montage_flash_vox = mne.channels.make_dig_montage(
-    lpa=flash_vox_pos[0],
-    nasion=flash_vox_pos[1],
-    rpa=flash_vox_pos[2],
-    coord_frame='mri_voxel'
-)
-
-# pass FLASH voxel coordinates
-flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
-    bids_path=flash_bids_path,
-    landmarks=montage_flash_vox,
-    deface=True,
-    overwrite=True,
-    verbose=True  # this will print out the sidecar file
-)
-
-# Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
-
-# %%
-=======
 ###############################################################################
->>>>>>> 8a77636 (almost done)
 # .. LINKS
 #
 # .. _coregistration GUI:

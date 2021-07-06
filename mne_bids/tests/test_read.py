@@ -220,7 +220,7 @@ def test_get_head_mri_trans(tmpdir):
                    overwrite=False)
 
     # We cannot recover trans if no MRI has yet been written
-    with pytest.raises(RuntimeError, match='Did not find any T1w.json'):
+    with pytest.raises(RuntimeError, match='Did not find any T1w'):
         estimated_trans = get_head_mri_trans(
             bids_path=bids_path, fs_subject='sample',
             fs_subjects_dir=subjects_dir)
@@ -233,13 +233,11 @@ def test_get_head_mri_trans(tmpdir):
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    t1w_bidspath = BIDSPath(subject=subject_id, session=session_id,
-                            acquisition=acq, root=tmpdir)
     landmarks = get_landmarks(t1w_mgh, raw.info, trans, fs_subject='sample',
                               fs_subjects_dir=subjects_dir)
-    t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              landmarks=landmarks, verbose=True)
-    anat_dir = t1w_bidspath.directory
+    t1w_bids_path = write_anat(
+        t1w_mgh, bids_path=bids_path, landmarks=landmarks, verbose=True)
+    anat_dir = bids_path.directory
 
     # Try to get trans back through fitting points
     estimated_trans = get_head_mri_trans(
@@ -252,20 +250,23 @@ def test_get_head_mri_trans(tmpdir):
     # provoke an error by introducing NaNs into MEG coords
     raw.info['dig'][0]['r'] = np.full(3, np.nan)
     sh.rmtree(anat_dir)
-    bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                           landmarks=landmarks)
+    bad_landmarks = get_landmarks(t1w_mgh, raw.info, trans, 'sample',
+                                  op.join(data_path, 'subjects'))
+    write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=bad_landmarks)
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
-        estimated_trans = get_head_mri_trans(bids_path=bids_path,
+        estimated_trans = get_head_mri_trans(bids_path=t1w_bids_path,
                                              fs_subject='sample',
                                              fs_subjects_dir=subjects_dir)
 
     # test we are permissive for different casings of landmark names in the
     # sidecar, and also accept "nasion" instead of just "NAS"
     raw = _read_raw_fif(raw_fname)
-    t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              landmarks=landmarks, overwrite=True)
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                   overwrite=True)  # overwrite with new acq
+    t1w_bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+                               landmarks=landmarks, overwrite=True)
 
-    t1w_json_fpath = t1w_bidspath.copy().update(extension='.json').fpath
+    t1w_json_fpath = t1w_bids_path.copy().update(extension='.json').fpath
     with t1w_json_fpath.open('r', encoding='utf-8') as f:
         t1w_json = json.load(f)
 
@@ -279,7 +280,7 @@ def test_get_head_mri_trans(tmpdir):
         json.dump(t1w_json, f)
 
     estimated_trans = get_head_mri_trans(
-        bids_path=_bids_path.copy().update(root=tmpdir),
+        bids_path=bids_path,
         fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
@@ -309,7 +310,7 @@ def test_get_head_mri_trans(tmpdir):
     write_anat(t1w_mgh, bids_path=t1_bids_path, landmarks=landmarks)
     read_trans = get_head_mri_trans(
         bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
-        subject='sample', subjects_dir=subjects_dir)
+        fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert np.allclose(trans['trans'], read_trans['trans'])
 
 

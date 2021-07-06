@@ -741,14 +741,11 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     meg_bids_path.update(datatype='meg', suffix='meg')
 
     # Get the sidecar file for MRI landmarks
-    if t1_bids_path is None:
-        t1_bids_path = meg_bids_path.copy().update(suffix='T1w',
-                                                   datatype='anat')
-    else:
-        t1_bids_path = t1_bids_path.copy().update(suffix='T1w',
-                                                  datatype='anat')
-    t1w_json_path = _find_matching_sidecar(t1_bids_path, suffix='T1w',
-                                           extension='.json')
+    match_bids_path = meg_bids_path if t1_bids_path is None else t1_bids_path
+    t1w_path = _find_matching_sidecar(
+        match_bids_path, suffix='T1w', extension='.nii.gz')
+    t1w_json_path = _find_matching_sidecar(
+        match_bids_path, suffix='T1w', extension='.json')
 
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r', encoding='utf-8') as f:
@@ -790,7 +787,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
                          f'got {Path(fs_subjects_dir) / fs_subject}. ')
     fs_t1_mgh = nib.load(str(fs_t1_fname))
 
-    t1_nifti = nib.load(str(t1_bids_path))
+    t1_nifti = nib.load(str(t1w_path))
 
     # Convert to MGH format to access vox2ras method
     t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
