@@ -490,9 +490,10 @@ def _handle_channels_reading(channels_fname, raw):
     synthesized_stim_ch_name = 'STI 014'
     if (synthesized_stim_ch_name in raw.ch_names and
         synthesized_stim_ch_name not in ch_names_tsv):
-        logger.info('The stimulus channel "STI 014" is present in the raw '
-                    'data, but not included in channels.tsv. Removing the '
-                    'channel.')
+        logger.info(
+            f'The stimulus channel "{synthesized_stim_ch_name}" is present in '
+            f'the raw data, but not included in channels.tsv. Removing the '
+            f'channel.')
         raw.drop_channels([synthesized_stim_ch_name])
 
     # Rename channels in loaded Raw to match those read from the BIDS sidecar
