@@ -146,13 +146,13 @@ def _update_sidecar(sidecar_fname, key, val):
         json.dump(sidecar_json, fout)
 
 
-def update_anat_landmarks(bids_path, raw, trans, t1w=None):
+def update_anat_landmarks(bids_path, info, trans, t1w=None):
     from .write import _process_landmarks, _load_image, _write_anat_json
 
     image = _load_image(bids_path.path)
     trans, _ = _get_trans(trans, fro='head', to='mri')
     image_nii = _load_image(image)
-    coords_dict, coord_frame = _get_fid_coords(raw.info['dig'])
+    coords_dict, coord_frame = _get_fid_coords(info['dig'])
     landmarks = np.asarray((coords_dict['lpa'],
                             coords_dict['nasion'],
                             coords_dict['rpa']))
