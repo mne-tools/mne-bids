@@ -70,17 +70,18 @@ def update_sidecar_json(bids_path, entries, verbose=True):
 
     Examples
     --------
+    >>> from mne_bids import BIDSPath
     >>> # update sidecar json file
     >>> bids_path = BIDSPath(root='./', subject='001', session='001',
-                             task='test', run='01', suffix='ieeg',
-                             extension='.json')
+    ...                      task='test', run='01', suffix='ieeg',
+    ...                      extension='.json')
     >>> entries = {'PowerLineFrequency': 50}
-    >>> update_sidecar_json(bids_path, entries)
+    >>> update_sidecar_json(bids_path, entries)  # doctest: +SKIP
     >>> # update sidecar coordsystem json file
     >>> bids_path = BIDSPath(root='./', subject='001', session='001',
-                             suffix='coordsystem', extension='.json')
+    ...                      suffix='coordsystem', extension='.json')
     >>> entries = {'iEEGCoordinateSystem,': 'Other'}
-    >>> update_sidecar_json(bids_path, entries)
+    >>> update_sidecar_json(bids_path, entries)  # doctest: +SKIP
     """
     # get all matching json files
     bids_path = bids_path.copy()
