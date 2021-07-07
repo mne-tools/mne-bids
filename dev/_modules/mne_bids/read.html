@@ -672,18 +672,53 @@
         <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">channel_type_dict</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
 
+    <span class="c1"># Special handling for (synthesized) stimulus channel</span>
+    <span class="n">synthesized_stim_ch_name</span> <span class="o">=</span> <span class="s1">&#39;STI 014&#39;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">synthesized_stim_ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span> <span class="ow">and</span>
+            <span class="n">synthesized_stim_ch_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names_tsv</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;The stimulus channel &quot;</span><span class="si">{</span><span class="n">synthesized_stim_ch_name</span><span class="si">}</span><span class="s1">&quot; is present in &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;the raw data, but not included in channels.tsv. Removing the &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;channel.&#39;</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="n">synthesized_stim_ch_name</span><span class="p">])</span>
+
     <span class="c1"># Rename channels in loaded Raw to match those read from the BIDS sidecar</span>
-    <span class="k">for</span> <span class="n">bids_ch_name</span><span class="p">,</span> <span class="n">raw_ch_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">copy</span><span class="p">()):</span>
-        <span class="k">if</span> <span class="n">bids_ch_name</span> <span class="o">!=</span> <span class="n">raw_ch_name</span><span class="p">:</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">({</span><span class="n">raw_ch_name</span><span class="p">:</span> <span class="n">bids_ch_name</span><span class="p">})</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The number of channels in the channels.tsv sidecar file &#39;</span>
+             <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span><span class="si">}</span><span class="s1">) does not match the number of channels &#39;</span>
+             <span class="sa">f</span><span class="s1">&#39;in the raw data file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s1">). Will not try to &#39;</span>
+             <span class="sa">f</span><span class="s1">&#39;set channel names.&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">bids_ch_name</span><span class="p">,</span> <span class="n">raw_ch_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span>
+                                             <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">copy</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">bids_ch_name</span> <span class="o">!=</span> <span class="n">raw_ch_name</span><span class="p">:</span>
+                <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">({</span><span class="n">raw_ch_name</span><span class="p">:</span> <span class="n">bids_ch_name</span><span class="p">})</span>
 
     <span class="c1"># Set the channel types in the raw data according to channels.tsv</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">channel_type_dict</span><span class="p">)</span>
+    <span class="n">ch_type_map_avail</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">ch_name</span><span class="p">:</span> <span class="n">ch_type</span>
+        <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="n">channel_type_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span>
+    <span class="p">}</span>
+    <span class="n">ch_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_type_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">ch_type_map_avail</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">ch_diff</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot set channel type for the following channels, as they &#39;</span>
+             <span class="sa">f</span><span class="s1">&#39;are missing in the raw data: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">ch_type_map_avail</span><span class="p">)</span>
 
     <span class="c1"># Set bad channels based on _channels.tsv sidecar</span>
     <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
-        <span class="n">bads</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">)</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads</span>
+        <span class="n">bads_tsv</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">)</span>
+        <span class="n">bads_avail</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch_name</span> <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads_tsv</span>
+                      <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
+
+        <span class="n">ch_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">bads_tsv</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">bads_avail</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ch_diff</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot set &quot;bad&quot; status for the following channels, as &#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;they are missing in the raw data: &#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads_avail</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
