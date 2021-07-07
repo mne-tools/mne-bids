@@ -488,18 +488,53 @@ def _handle_channels_reading(channels_fname, raw):
         if updated_ch_type is not None:
             channel_type_dict[ch_name] = updated_ch_type
 
+    # Special handling for (synthesized) stimulus channel
+    synthesized_stim_ch_name = 'STI 014'
+    if (synthesized_stim_ch_name in raw.ch_names and
+            synthesized_stim_ch_name not in ch_names_tsv):
+        logger.info(
+            f'The stimulus channel "{synthesized_stim_ch_name}" is present in '
+            f'the raw data, but not included in channels.tsv. Removing the '
+            f'channel.')
+        raw.drop_channels([synthesized_stim_ch_name])
+
     # Rename channels in loaded Raw to match those read from the BIDS sidecar
-    for bids_ch_name, raw_ch_name in zip(ch_names_tsv, raw.ch_names.copy()):
-        if bids_ch_name != raw_ch_name:
-            raw.rename_channels({raw_ch_name: bids_ch_name})
+    if len(ch_names_tsv) != len(raw.ch_names):
+        warn(f'The number of channels in the channels.tsv sidecar file '
+             f'({len(ch_names_tsv)}) does not match the number of channels '
+             f'in the raw data file ({len(raw.ch_names)}). Will not try to '
+             f'set channel names.')
+    else:
+        for bids_ch_name, raw_ch_name in zip(ch_names_tsv,
+                                             raw.ch_names.copy()):
+            if bids_ch_name != raw_ch_name:
+                raw.rename_channels({raw_ch_name: bids_ch_name})
 
     # Set the channel types in the raw data according to channels.tsv
-    raw.set_channel_types(channel_type_dict)
+    ch_type_map_avail = {
+        ch_name: ch_type
+        for ch_name, ch_type in channel_type_dict.items()
+        if ch_name in raw.ch_names
+    }
+    ch_diff = set(channel_type_dict.keys()) - set(ch_type_map_avail.keys())
+    if ch_diff:
+        warn(f'Cannot set channel type for the following channels, as they '
+             f'are missing in the raw data: {", ".join(sorted(ch_diff))}')
+    raw.set_channel_types(ch_type_map_avail)
 
     # Set bad channels based on _channels.tsv sidecar
     if 'status' in channels_dict:
-        bads = _get_bads_from_tsv_data(channels_dict)
-        raw.info['bads'] = bads
+        bads_tsv = _get_bads_from_tsv_data(channels_dict)
+        bads_avail = [ch_name for ch_name in bads_tsv
+                      if ch_name in raw.ch_names]
+
+        ch_diff = set(bads_tsv) - set(bads_avail)
+        if ch_diff:
+            warn(f'Cannot set "bad" status for the following channels, as '
+                 f'they are missing in the raw data: '
+                 f'{", ".join(sorted(ch_diff))}')
+
+        raw.info['bads'] = bads_avail
 
     return raw
 
