@@ -1789,7 +1789,7 @@ def _write_anat_json(*, bids_path, landmarks, overwrite, verbose):
     fname = bids_path.copy().update(extension='.json')
     if op.isfile(fname) and not overwrite:
         raise IOError(f'Wanted to write a file but it already exists and '
-                      f'`overwrite` is set to False. File: "fname"')
+                      f'`overwrite` is set to False. File: "{fname}"')
     _write_json(fname=fname, dictionary=img_json, overwrite=overwrite,
                 verbose=verbose)
 
