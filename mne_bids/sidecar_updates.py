@@ -162,5 +162,17 @@ def update_anat_landmarks(bids_path, info, trans, t1w=None):
             coord_frame=coord_frame, trans=trans, landmarks=landmarks
         )
 
-    _write_anat_json(bids_path=bids_path, landmarks=landmarks, overwrite=True,
-                     verbose=False)
+    json ={
+        'AnatomicalLandmarkCoordinates': {
+            'LPA': list(landmarks[0, :]),
+            'NAS': list(landmarks[1, :]),
+            'RPA': list(landmarks[2, :])
+        }
+    }
+
+    json_bids_path = bids_path.copy().update(extension='.json')
+
+    if not json_bids_path.fpath.exists():
+        json_bids_path.fpath.touch()
+
+    update_sidecar_json(bids_path=json_bids_path, entries=json)
