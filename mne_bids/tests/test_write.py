@@ -189,7 +189,7 @@ def test_write_participants(_bids_validate, tmpdir):
     data['test_col2'] = ['n/a'] * len(data['participant_id'])
     orig_key_order = list(data.keys())
     _to_tsv(data, participants_tsv)
-    # crate corresponding json entry
+    # create corresponding json entry
     participants_json_fpath = tmpdir / 'participants.json'
     json_field = {
         'Description': 'trial-outcome',

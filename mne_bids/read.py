@@ -285,7 +285,7 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
     if raw.info["line_freq"] is not None and line_freq is not None:
         # if both have a set Power Line Frequency, then
         # check that they are the same, else there is a
-        # discrepency in the metadata of the dataset.
+        # discrepancy in the metadata of the dataset.
         if raw.info["line_freq"] != line_freq:
             raise ValueError("Line frequency in sidecar json does "
                              "not match the info datastructure of "
@@ -406,10 +406,12 @@ def _handle_events_reading(events_fname, raw):
         descriptions = np.array(['n/a'] * len(events_dict['onset']), dtype=str)
 
     # Deal with "n/a" strings before converting to float
-    ons = [np.nan if on == 'n/a' else on for on in events_dict['onset']]
-    dus = [0 if du == 'n/a' else du for du in events_dict['duration']]
-    onsets = np.asarray(ons, dtype=float)
-    durations = np.asarray(dus, dtype=float)
+    onsets = np.array(
+        [np.nan if on == 'n/a' else on for on in events_dict['onset']],
+        dtype=float)
+    durations = np.array(
+        [0 if du == 'n/a' else du for du in events_dict['duration']],
+        dtype=float)
 
     # Keep only events where onset is known
     good_events_idx = ~np.isnan(onsets)
