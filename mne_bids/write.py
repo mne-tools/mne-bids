@@ -1543,6 +1543,68 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
+def _process_landmarks(*, bids_path, t1w, image_nii, coord_frame, trans,
+                       landmarks):
+    """Massage the landmarks based on their respective coordinate frame."""
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+
+    if coord_frame not in (FIFF.FIFFV_COORD_HEAD,
+                           FIFF.FIFFV_COORD_MRI,
+                           FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+                           FIFF.FIFFV_MNE_COORD_RAS):
+        raise ValueError('Coordinate frame not recognized, '
+                            f'found {coord_frame}')
+
+    # If the `coord_frame` isn't in head space, we don't need the `trans`
+    if coord_frame != FIFF.FIFFV_COORD_HEAD and trans is not None:
+        raise ValueError('`trans` was provided but `landmark` data is '
+                            'in mri space. Please use only one of these.')
+
+    if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI) \
+            and bids_path.suffix != 'T1w' and t1w is None:
+        raise ValueError('The T1 must be passed as `t1w` or `landmarks` '
+                         'must be passed in `mri_voxel` or `ras` (scanner '
+                         'RAS) coordinate frames for non T1-images')
+
+    if coord_frame != FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
+        # Make MGH image for header properties
+        img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
+
+        if coord_frame == FIFF.FIFFV_COORD_HEAD:
+            if trans is None:
+                raise ValueError('Head space landmarks provided, '
+                                    '`trans` required')
+
+            landmarks = _meg_landmarks_to_mri_landmarks(
+                landmarks, trans)
+        elif coord_frame == FIFF.FIFFV_COORD_MRI:
+            landmarks *= 1e3  # m to mm conversion
+
+        # need get scanner RAS: MRI--[inv vox2ras_tkr]-->scanner RAS
+        if bids_path.suffix != 'T1w' and coord_frame in \
+                (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
+            t1w_img = _load_image(t1w, name='t1w')
+            t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
+            # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
+            landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
+            # go to T1 scanner space from T1 voxel space
+            landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
+            landmarks *= 1e-3  # mm -> m
+            coord_frame = FIFF.FIFFV_MNE_COORD_RAS
+
+        # convert to voxels from surface or scanner RAS depending on above
+        if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
+            # go from scanner RAS to image voxels
+            landmarks = _mri_scanner_ras_to_mri_voxels(
+                landmarks * 1e3, img_mgh)
+        else:  # must be T1, going from surface RAS->voxels
+            landmarks = _mri_landmarks_to_mri_voxels(landmarks, img_mgh)
+
+    return landmarks, coord_frame
+
+
 def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                t1w=None, deface=False, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
@@ -1692,70 +1754,13 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                                     coords_dict['nasion'],
                                     coords_dict['rpa']))
 
-        # check if coord frame is supported
-        if coord_frame not in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI,
-                               FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
-                               FIFF.FIFFV_MNE_COORD_RAS):
-            raise ValueError('Coordinate frame not recognized, '
-                             f'found {coord_frame}')
+        landmarks, coord_frame = _process_landmarks(
+            bids_path=bids_path, t1w=t1w, image_nii=image_nii,
+            coord_frame=coord_frame, trans=trans, landmarks=landmarks
+        )
 
-        # If the `coord_frame` isn't in head space, we don't need the `trans`
-        if coord_frame != FIFF.FIFFV_COORD_HEAD and trans is not None:
-            raise ValueError('`trans` was provided but `landmark` data is '
-                             'in mri space. Please use only one of these.')
-
-        if coord_frame in (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI) \
-                and bids_path.suffix != 'T1w' and t1w is None:
-            raise ValueError('The T1 must be passed as `t1w` or `landmarks` '
-                             'must be passed in `mri_voxel` or `ras` (scanner '
-                             'RAS) coordinate frames for non T1-images')
-
-        if coord_frame != FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
-            # Make MGH image for header properties
-            img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
-
-            if coord_frame == FIFF.FIFFV_COORD_HEAD:
-                if trans is None:
-                    raise ValueError('Head space landmarks provided, '
-                                     '`trans` required')
-
-                landmarks = _meg_landmarks_to_mri_landmarks(
-                    landmarks, trans)
-            elif coord_frame == FIFF.FIFFV_COORD_MRI:
-                landmarks *= 1e3  # m to mm conversion
-
-            # need get scanner RAS: MRI--[inv vox2ras_tkr]-->scanner RAS
-            if bids_path.suffix != 'T1w' and coord_frame in \
-                    (FIFF.FIFFV_COORD_HEAD, FIFF.FIFFV_COORD_MRI):
-                t1w_img = _load_image(t1w, name='t1w')
-                t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
-                # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
-                landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
-                # go to T1 scanner space from T1 voxel space
-                landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
-                landmarks *= 1e-3  # mm -> m
-                coord_frame = FIFF.FIFFV_MNE_COORD_RAS
-
-            # convert to voxels from surface or scanner RAS depending on above
-            if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
-                # go from scanner RAS to image voxels
-                landmarks = _mri_scanner_ras_to_mri_voxels(
-                    landmarks * 1e3, img_mgh)
-            else:  # must be T1, going from surface RAS->voxels
-                landmarks = _mri_landmarks_to_mri_voxels(landmarks, img_mgh)
-
-        # Write sidecar.json
-        img_json = dict()
-        img_json['AnatomicalLandmarkCoordinates'] = \
-            {'LPA': list(landmarks[0, :]),
-             'NAS': list(landmarks[1, :]),
-             'RPA': list(landmarks[2, :])}
-        fname = bids_path.copy().update(extension='.json')
-        if op.isfile(fname) and not overwrite:
-            raise IOError('Wanted to write a file but it already exists and '
-                          '`overwrite` is set to False. File: "{}"'
-                          .format(fname))
-        _write_json(fname, img_json, overwrite, verbose)
+        _write_anat_json(bids_path=bids_path, landmarks=landmarks,
+                         overwrite=overwrite, verbose=verbose)
 
         if deface:
             image_nii = _deface(image_nii, landmarks, deface)
@@ -1771,6 +1776,22 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
     nib.save(image_nii, bids_path.fpath)
 
     return bids_path
+
+
+def _write_anat_json(*, bids_path, landmarks, overwrite, verbose):
+    # Write sidecar.json
+    img_json = dict()
+    img_json['AnatomicalLandmarkCoordinates'] = {
+        'LPA': list(landmarks[0, :]),
+        'NAS': list(landmarks[1, :]),
+        'RPA': list(landmarks[2, :])
+    }
+    fname = bids_path.copy().update(extension='.json')
+    if op.isfile(fname) and not overwrite:
+        raise IOError(f'Wanted to write a file but it already exists and '
+                      f'`overwrite` is set to False. File: "fname"')
+    _write_json(fname=fname, dictionary=img_json, overwrite=overwrite,
+                verbose=verbose)
 
 
 def mark_bad_channels(ch_names, descriptions=None, *, bids_path,

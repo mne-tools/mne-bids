@@ -7,6 +7,14 @@
 import json
 from collections import OrderedDict
 
+import numpy as np
+
+try:
+    from mne.io._digitization import _get_fid_coords
+except ImportError:
+    from mne._digitization._utils import _get_fid_coords
+
+from mne.transforms import _get_trans
 from mne.utils import logger
 
 from mne_bids.utils import _write_json
@@ -136,3 +144,23 @@ def _update_sidecar(sidecar_fname, key, val):
     sidecar_json[key] = val
     with open(sidecar_fname, 'w', encoding='utf-8') as fout:
         json.dump(sidecar_json, fout)
+
+
+def update_anat_landmarks(bids_path, raw, trans, t1w=None):
+    from .write import _process_landmarks, _load_image, _write_anat_json
+
+    image = _load_image(bids_path.path)
+    trans, _ = _get_trans(trans, fro='head', to='mri')
+    image_nii = _load_image(image)
+    coords_dict, coord_frame = _get_fid_coords(raw.info['dig'])
+    landmarks = np.asarray((coords_dict['lpa'],
+                            coords_dict['nasion'],
+                            coords_dict['rpa']))
+
+    landmarks, coord_frame = _process_landmarks(
+            bids_path=bids_path, t1w=t1w, image_nii=image_nii,
+            coord_frame=coord_frame, trans=trans, landmarks=landmarks
+        )
+
+    _write_anat_json(bids_path=bids_path, landmarks=landmarks, overwrite=True,
+                     verbose=False)
