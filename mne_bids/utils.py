@@ -378,7 +378,7 @@ def get_anonymization_daysback(raws):
     BIDS requires that anonymized dates be before 1925. In order to
     preserve the longitudinal structure and ensure anonymization, the
     user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the miniumum number of daysback
+    of `write_raw_bids`. To determine the minimum number of daysback
     necessary, this function will calculate the minimum number based on
     the most recent measurement date of raw objects.
 
