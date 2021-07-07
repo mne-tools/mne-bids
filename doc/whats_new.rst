@@ -53,6 +53,7 @@ API and behavior changes
 - :func:`mne_bids.read_raw_bids` now passes ``allow_maxshield=True`` to the MNE-Python reader function by default when reading FIFF files. Previously, ``extra_params=dict(allow_maxshield=True)`` had to be passed explicitly, by `Richard Höchenberger`_ (:gh:`787`)
 - The ``raw_to_bids`` command has lost its ``--allow_maxshield`` parameter. If writing a FIFF file, we will now always assume that writing data before applying a Maxwell filter is fine, by `Richard Höchenberger`_ (:gh:`787`)
 - :meth:`mne_bids.BIDSPath.find_empty_room` now first looks for an ``AssociatedEmptyRoom`` field in the MEG JSON sidecar file to retrieve the empty-room recording; only if this information is missing, it will proceed to try and find the best-matching empty-room recording based on measurement date (i.e., fall back to the previous behavior), by `Richard Höchenberger`_ (:gh:`795`)
+- If :func:`mne_bids.read_raw_bids` encounters raw data with the ``STI 014`` stimulus channel and this channel is not explicitly listed in ``*_channels.tsv``, it is now automatically removed upon reading, by `Richard Höchenberger`_ (:gh:`823`)
 
 Requirements
 ^^^^^^^^^^^^

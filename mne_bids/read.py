@@ -486,6 +486,15 @@ def _handle_channels_reading(channels_fname, raw):
         if updated_ch_type is not None:
             channel_type_dict[ch_name] = updated_ch_type
 
+    # Special handling for (synthesized) stimulus channel
+    synthesized_stim_ch_name = 'STI 014'
+    if (synthesized_stim_ch_name in raw.ch_names and
+        synthesized_stim_ch_name not in ch_names_tsv):
+        logger.info('The stimulus channel "STI 014" is present in the raw '
+                    'data, but not included in channels.tsv. Removing the '
+                    'channel.')
+        raw.drop_channels([synthesized_stim_ch_name])
+
     # Rename channels in loaded Raw to match those read from the BIDS sidecar
     if len(ch_names_tsv) != len(raw.ch_names):
         warn(f'The number of channels in the channels.tsv sidecar file '
