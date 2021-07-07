@@ -162,7 +162,7 @@ def update_anat_landmarks(bids_path, info, trans, t1w=None):
             coord_frame=coord_frame, trans=trans, landmarks=landmarks
         )
 
-    json ={
+    json = {
         'AnatomicalLandmarkCoordinates': {
             'LPA': list(landmarks[0, :]),
             'NAS': list(landmarks[1, :]),
