@@ -1798,8 +1798,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         # check if coord frame is supported
         if coord_frame not in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                                FIFF.FIFFV_MNE_COORD_RAS):
-            raise ValueError('Coordinate frame not supported, '
-                             f'found {coord_frame}')
+            raise ValueError(f'Coordinate frame not supported: {coord_frame}')
 
         # convert to voxels from scanner RAS to voxels
         if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
