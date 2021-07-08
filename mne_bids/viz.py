@@ -5,7 +5,6 @@ from scipy import linalg
 import nibabel as nib
 
 import mne
-from mne.utils import warn
 
 
 def plot_anat_landmarks(bids_path, vmax=None, show=True):
@@ -41,13 +40,9 @@ def plot_anat_landmarks(bids_path, vmax=None, show=True):
     if not n_landmarks:
         raise ValueError("No landmarks available with the image")
 
-    # Move the coords_dict from MRI Voxel to RAS
-    mgh = nib.MGHImage(nii.dataobj, nii.affine)
-    ras2vox = mgh.header.get_ras2vox()
-    vox2ras = linalg.inv(ras2vox)
     for label in coords_dict:
         vox_pos = np.array(coords_dict[label])
-        ras_pos = mne.transforms.apply_trans(vox2ras, vox_pos)
+        ras_pos = mne.transforms.apply_trans(nii.affine, vox_pos)
         coords_dict[label] = ras_pos
 
     ########################################################################
