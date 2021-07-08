@@ -1592,6 +1592,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
 def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     """Get anatomical landmarks transformed from "head" to MRI "voxel" coordinates.
 
+    The landmarks obtained are defined w.r.t. the MRI passed to the ``image``
+    parameter.
+
     Parameters
     ----------
     image : str | pathlib.Path | NibabelImageObject
@@ -1622,7 +1625,6 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     -------
     landmarks : mne.channels.DigMontage
         A montage with the landmarks in MRI voxel space.
-
     """
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
