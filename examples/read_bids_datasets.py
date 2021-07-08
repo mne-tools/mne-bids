@@ -122,7 +122,7 @@ print(bids_path.match())
 # pass a ``suffix``, which is the last part of the filename just before the
 # extension -- ``'channels'`` and ``'events'`` for the two TSV files in
 # our example, and ``'eeg'`` for EEG raw data. For MEG and EEG raw data, the
-# suffix is identical to the datatype, so don't let yourselve be confused here!
+# suffix is identical to the datatype, so don't let yourself be confused here!
 
 task = 'rest'
 suffix = 'eeg'

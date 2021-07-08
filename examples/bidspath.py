@@ -137,7 +137,7 @@ print(bids_path.fpath)
 # %%
 # Awesome! We're almost done! Two important things are still missing, though:
 # the so-called **suffix** and the filename **extension**. Sometimes these
-# terms are used interchangably, but in BIDS, they have a very specific
+# terms are used interchangeably, but in BIDS, they have a very specific
 # and different meaning!
 #
 # The **suffix** is the last part of a BIDS filename before the extension. It

@@ -98,8 +98,8 @@ for raw, bids_path in zip(raw_list, bids_list):
     # change or delete this number before putting code online, you
     # wouldn't want to inadvertently de-anonymize your data.
     #
-    # Note that we do not need to pass any events, as teh dataset is already
-    # equipped witn annotations, which wll be converted to BIDS events
+    # Note that we do not need to pass any events, as the dataset is already
+    # equipped with annotations, which will be converted to BIDS events
     # automatically.
     write_raw_bids(raw, bids_path,
                    anonymize=dict(daysback=daysback_min + 2117),
