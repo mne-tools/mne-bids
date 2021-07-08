@@ -35,7 +35,7 @@ from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_write_json)
 from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
-from mne_bids.write import write_anat, write_raw_bids, get_landmarks
+from mne_bids.write import write_anat, write_raw_bids, get_anat_landmarks
 
 subject_id = '01'
 session_id = '01'
@@ -233,8 +233,9 @@ def test_get_head_mri_trans(tmpdir):
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    landmarks = get_landmarks(t1w_mgh, raw.info, trans, fs_subject='sample',
-                              fs_subjects_dir=subjects_dir)
+    landmarks = get_anat_landmarks(
+        t1w_mgh, raw.info, trans, fs_subject='sample',
+        fs_subjects_dir=subjects_dir)
     t1w_bids_path = write_anat(
         t1w_mgh, bids_path=bids_path, landmarks=landmarks, verbose=True)
     anat_dir = bids_path.directory
@@ -250,8 +251,8 @@ def test_get_head_mri_trans(tmpdir):
     # provoke an error by introducing NaNs into MEG coords
     raw.info['dig'][0]['r'] = np.full(3, np.nan)
     sh.rmtree(anat_dir)
-    bad_landmarks = get_landmarks(t1w_mgh, raw.info, trans, 'sample',
-                                  op.join(data_path, 'subjects'))
+    bad_landmarks = get_anat_landmarks(t1w_mgh, raw.info, trans, 'sample',
+                                       op.join(data_path, 'subjects'))
     write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=bad_landmarks)
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
         estimated_trans = get_head_mri_trans(bids_path=t1w_bids_path,
@@ -292,8 +293,9 @@ def test_get_head_mri_trans(tmpdir):
     raw = _read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path=meg_bids_path)
-    landmarks = get_landmarks(t1w_mgh, raw.info, trans, fs_subject='sample',
-                              fs_subjects_dir=subjects_dir)
+    landmarks = get_anat_landmarks(
+        t1w_mgh, raw.info, trans, fs_subject='sample',
+        fs_subjects_dir=subjects_dir)
     write_anat(t1w_mgh, bids_path=t1_bids_path, landmarks=landmarks)
     read_trans = get_head_mri_trans(
         bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
@@ -838,9 +840,9 @@ def test_get_head_mri_trans_ctf(fname, tmpdir):
 
     t1w_bids_path = BIDSPath(subject=subject_id, session=session_id,
                              acquisition=acq, root=tmpdir)
-    landmarks = get_landmarks(t1w_mgh, raw_ctf.info, trans,
-                              fs_subject='sample',
-                              fs_subjects_dir=op.join(data_path, 'subjects'))
+    landmarks = get_anat_landmarks(
+        t1w_mgh, raw_ctf.info, trans, fs_subject='sample',
+        fs_subjects_dir=op.join(data_path, 'subjects'))
     write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks)
 
     # Try to get trans back through fitting points

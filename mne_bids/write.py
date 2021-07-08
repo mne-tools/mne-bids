@@ -26,12 +26,8 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, read_fiducials
-try:
-    from mne.io._digitization import _get_fid_coords
-except ImportError:
-    from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.utils import (check_version, has_nibabel, logger, warn,
+from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir)
 import mne.preprocessing
 
@@ -141,6 +137,55 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
     _write_tsv(fname, ch_data, overwrite, verbose)
+
+
+_cardinal_ident_mapping = {
+    FIFF.FIFFV_POINT_NASION: 'nasion',
+    FIFF.FIFFV_POINT_LPA: 'lpa',
+    FIFF.FIFFV_POINT_RPA: 'rpa',
+}
+
+
+def _get_fid_coords(dig, raise_error=True):
+    """Get the fiducial coordinates from a dig montage.
+
+    Parameters
+    ----------
+    dig : mne.channels.DigMontage
+        The dig montage with the fiducial coordinates.
+    raise_error : bool
+        Whether to raise an error if the coordinates are missing or
+        incorrectly formatted
+
+    Returns
+    -------
+    fid_coords : mne.utils.Bunch
+        The coordinates stored by fiducial name.
+    coord_frame : int
+        The integer key corresponding to the coordinate frame of the montage.
+    """
+    fid_coords = Bunch(nasion=None, lpa=None, rpa=None)
+    fid_coord_frames = dict()
+
+    for d in dig:
+        if d['kind'] == FIFF.FIFFV_POINT_CARDINAL:
+            key = _cardinal_ident_mapping[d['ident']]
+            fid_coords[key] = d['r']
+            fid_coord_frames[key] = d['coord_frame']
+
+    if len(fid_coord_frames) > 0 and raise_error:
+        if set(fid_coord_frames.keys()) != set(['nasion', 'lpa', 'rpa']):
+            raise ValueError(
+                f'Some fiducial points are missing, got {fid_coords.keys()}')
+
+        if len(set(fid_coord_frames.values())) > 1:
+            raise ValueError(
+                'All fiducial points must be in the same coordinate system, '
+                f'got {len(fid_coord_frames)})')
+
+    coord_frame = fid_coord_frames.popitem()[1] if fid_coord_frames else None
+
+    return fid_coords, coord_frame
 
 
 def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
@@ -1544,7 +1589,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
-def get_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
+def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     """Get landmarks transformed to image voxel coordinates from head space.
 
     Parameters

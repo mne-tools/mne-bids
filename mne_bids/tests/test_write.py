@@ -34,10 +34,6 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 
-try:
-    from mne.io._digitization import _get_fid_coords
-except ImportError:
-    from mne._digitization._utils import _get_fid_coords
 from mne.datasets import testing
 from mne.utils import check_version, requires_nibabel, requires_version
 from mne.io import anonymize_info
@@ -48,7 +44,8 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_bad_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      get_landmarks)
+                      get_anat_landmarks)
+from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -1529,7 +1526,7 @@ def _check_anat_json(bids_path):
                                       point)
 
 
-def test_get_landmarks():
+def test_get_anat_landmarks():
     """Test getting anatomical landmarks in image space."""
     data_path = testing.data_path()
     # Get the T1 weighted MRI data file
@@ -1553,16 +1550,16 @@ def test_get_landmarks():
     ex = TypeError
 
     with pytest.raises(ex, match=match):
-        get_landmarks(**dict(kwargs, trans=wrong_type))
+        get_anat_landmarks(**dict(kwargs, trans=wrong_type))
 
     # trans is a str, but file does not exist
     wrong_fname = 'not_a_trans'
     match = 'trans file "{}" not found'.format(wrong_fname)
     with pytest.raises(IOError, match=match):
-        get_landmarks(**dict(kwargs, trans=wrong_fname))
+        get_anat_landmarks(**dict(kwargs, trans=wrong_fname))
 
     # However, reading trans if it is a string pointing to trans is fine
-    get_landmarks(**dict(kwargs, trans=trans_fname))
+    get_anat_landmarks(**dict(kwargs, trans=trans_fname))
 
     # test unsupported coord_frame
     fail_info = raw.info.copy()
@@ -1571,11 +1568,29 @@ def test_get_landmarks():
     fail_info['dig'][2]['coord_frame'] = 3
 
     with pytest.raises(ValueError, match='must be in the head'):
-        get_landmarks(**dict(kwargs, info=fail_info))
+        get_anat_landmarks(**dict(kwargs, info=fail_info))
 
     # test bad freesurfer directory
     with pytest.raises(ValueError, match='subject folder is incorrect'):
-        get_landmarks(**dict(kwargs, fs_subject='bad'))
+        get_anat_landmarks(**dict(kwargs, fs_subject='bad'))
+
+    # test _get_fid_coords
+    fail_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        coord_frame='mri_voxel')
+
+    with pytest.raises(ValueError, match='Some fiducial points are missing'):
+        _get_fid_coords(fail_landmarks.dig, raise_error=True)
+
+    fail_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        nasion=[41.87363, 32.24694, 74.55314],
+        rpa=[17.23812, 53.08294, 47.01789],
+        coord_frame='mri_voxel')
+    fail_landmarks.dig[2]['coord_frame'] = 99
+
+    with pytest.raises(ValueError, match='must be in the same coordinate'):
+        _get_fid_coords(fail_landmarks.dig, raise_error=True)
 
     # test main
     mri_voxel_landmarks = mne.channels.make_dig_montage(
@@ -1588,7 +1603,7 @@ def test_get_landmarks():
     mri_voxel_landmarks = np.asarray((coords_dict['lpa'],
                                       coords_dict['nasion'],
                                       coords_dict['rpa']))
-    landmarks = get_landmarks(**kwargs)
+    landmarks = get_anat_landmarks(**kwargs)
     coords_dict2, coord_frame = _get_fid_coords(landmarks.dig)
     landmarks = np.asarray((coords_dict2['lpa'],
                             coords_dict2['nasion'],
@@ -1748,8 +1763,8 @@ def test_write_anat(_bids_validate, tmpdir):
     flash_mgh = \
         op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
     trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
-    landmarks = get_landmarks(flash_mgh, raw.info, trans_fname, 'sample',
-                              op.join(data_path, 'subjects'))
+    landmarks = get_anat_landmarks(flash_mgh, raw.info, trans_fname, 'sample',
+                                   op.join(data_path, 'subjects'))
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix='FLASH', root=bids_root)
     kwargs.update(bids_path=bids_path, landmarks=landmarks)
@@ -1826,8 +1841,9 @@ def test_write_anat_pathlike(tmpdir):
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
-    landmarks = get_landmarks(t1w_mgh_fname, raw.info, trans, 'sample',
-                              fs_subjects_dir=op.join(data_path, 'subjects'))
+    landmarks = get_anat_landmarks(
+        t1w_mgh_fname, raw.info, trans, 'sample',
+        fs_subjects_dir=op.join(data_path, 'subjects'))
     bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path,
                            landmarks=landmarks, deface=True,
                            verbose=True, overwrite=True)

@@ -779,7 +779,8 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     # The MRI landmarks are in "voxels". We need to convert the to the
     # neuromag RAS coordinate system in order to compare the with MEG landmarks
     # see also: `mne_bids.write.write_anat`
-    fs_subject = meg_bids_path.subject if fs_subject is None else fs_subject
+    if fs_subject is None:
+        fs_subject = f'sub-{meg_bids_path.subject}'
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
     fs_t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not fs_t1_fname.exists():

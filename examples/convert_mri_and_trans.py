@@ -34,7 +34,7 @@ See the documentation pages in the MNE docs for more information on
 # License: BSD (3-clause)
 
 # %%
-# We are importing everything we need for this example:
+# Let's import everything we need for this example:
 
 import os.path as op
 import shutil
@@ -48,7 +48,7 @@ import mne
 from mne.datasets import sample
 from mne.source_space import head_to_mri
 
-from mne_bids import (write_raw_bids, BIDSPath, write_anat, get_landmarks,
+from mne_bids import (write_raw_bids, BIDSPath, write_anat, get_anat_landmarks,
                       get_head_mri_trans, print_dir_tree)
 
 # %%
@@ -103,7 +103,7 @@ print_dir_tree(output_path)
 # matrix :code:`trans`.
 
 # Get the path to our MRI scan
-t1_mgh_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+t1_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
 
 # Load the transformation matrix and show what it looks like
 trans_fname = op.join(data_path, 'MEG', 'sample',
@@ -125,8 +125,8 @@ t1w_bids_path = \
 
 # use ``trans`` to transform landmarks from the ``raw`` file to
 # the voxel space of the image
-landmarks = get_landmarks(
-    t1_mgh_fname,  # path to the MRI scan
+landmarks = get_anat_landmarks(
+    t1_fname,  # path to the MRI scan
     info=raw.info,  # the MEG data file info from the same subject as the MRI
     trans=trans,  # our transformation matrix
     fs_subject='sample',  # freesurfer subject
@@ -135,7 +135,7 @@ landmarks = get_landmarks(
 
 # We use the write_anat function
 t1w_bids_path = write_anat(
-    image=t1_mgh_fname,  # path to the MRI scan
+    image=t1_fname,  # path to the MRI scan
     bids_path=t1w_bids_path,
     landmarks=landmarks,  # the landmarks determined from the GUI transformed
     verbose=True  # this will print out the sidecar file
@@ -201,14 +201,14 @@ plt.show()
 #
 # We can write another types of MRI data such as FLASH images for BEM models
 
-flash_mgh_fname = \
+flash_fname = \
     op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
 
 flash_bids_path = \
     BIDSPath(subject=sub, session=ses, root=output_path, suffix='FLASH')
 
 write_anat(
-    image=flash_mgh_fname,
+    image=flash_fname,
     bids_path=flash_bids_path,
     verbose=True
 )
@@ -219,7 +219,7 @@ write_anat(
 #
 # We can deface the MRI for anonymization by passing ``deface=True``.
 t1w_bids_path = write_anat(
-    image=t1_mgh_fname,  # path to the MRI scan
+    image=t1_fname,  # path to the MRI scan
     bids_path=bids_path,
     landmarks=landmarks,
     deface=True,
@@ -244,8 +244,8 @@ plt.show()
 
 # use ``trans`` to transform landmarks from the ``raw`` file to
 # the voxel space of the image
-landmarks = get_landmarks(
-    flash_mgh_fname,  # path to the FLASH scan
+landmarks = get_anat_landmarks(
+    flash_fname,  # path to the FLASH scan
     info=raw.info,  # the MEG data file info from the same subject as the MRI
     trans=trans,  # our transformation matrix
     fs_subject='sample',  # freesurfer subject
@@ -253,7 +253,7 @@ landmarks = get_landmarks(
 )
 
 flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
+    image=flash_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
     landmarks=landmarks,
     deface=True,
@@ -269,7 +269,7 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-###############################################################################
+# %%
 # Using manual landmarks coordinates in scanner RAS
 # -------------------------------------------------
 #
@@ -293,7 +293,7 @@ landmarks = mne.channels.make_dig_montage(
 )
 
 flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
+    image=flash_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
     landmarks=landmarks,
     deface=True,
@@ -306,7 +306,7 @@ fig, ax = plt.subplots()
 plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
-###############################################################################
+# %%
 # .. LINKS
 #
 # .. _coregistration GUI:
