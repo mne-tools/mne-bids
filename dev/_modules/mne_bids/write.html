@@ -210,12 +210,9 @@
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">channel_type</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mne.io._digitization</span> <span class="kn">import</span> <span class="n">_get_fid_coords</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mne._digitization._utils</span> <span class="kn">import</span> <span class="n">_get_fid_coords</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">_validate_type</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">Bunch</span><span class="p">,</span>
+                       <span class="n">_validate_type</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">mne.preprocessing</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
@@ -324,6 +321,55 @@
     <span class="n">ch_data</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">ch_data</span><span class="p">,</span> <span class="n">ignored_channels</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
 
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+
+<span class="n">_cardinal_ident_mapping</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">:</span> <span class="s1">&#39;nasion&#39;</span><span class="p">,</span>
+    <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">:</span> <span class="s1">&#39;lpa&#39;</span><span class="p">,</span>
+    <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">:</span> <span class="s1">&#39;rpa&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_get_fid_coords</span><span class="p">(</span><span class="n">dig</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the fiducial coordinates from a DigMontage.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dig : mne.channels.DigMontage</span>
+<span class="sd">        The dig montage with the fiducial coordinates.</span>
+<span class="sd">    raise_error : bool</span>
+<span class="sd">        Whether to raise an error if the coordinates are missing or</span>
+<span class="sd">        incorrectly formatted</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fid_coords : mne.utils.Bunch</span>
+<span class="sd">        The coordinates stored by fiducial name.</span>
+<span class="sd">    coord_frame : int</span>
+<span class="sd">        The integer key corresponding to the coordinate frame of the montage.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fid_coords</span> <span class="o">=</span> <span class="n">Bunch</span><span class="p">(</span><span class="n">nasion</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lpa</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rpa</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">fid_coord_frames</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_CARDINAL</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">_cardinal_ident_mapping</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]]</span>
+            <span class="n">fid_coords</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span>
+            <span class="n">fid_coord_frames</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fid_coord_frames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">raise_error</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">fid_coord_frames</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;nasion&#39;</span><span class="p">,</span> <span class="s1">&#39;lpa&#39;</span><span class="p">,</span> <span class="s1">&#39;rpa&#39;</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Some fiducial points are missing, got </span><span class="si">{</span><span class="n">fid_coords</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">fid_coord_frames</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;All fiducial points must be in the same coordinate system, &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">fid_coord_frames</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+
+    <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">fid_coord_frames</span><span class="o">.</span><span class="n">popitem</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">fid_coord_frames</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">fid_coords</span><span class="p">,</span> <span class="n">coord_frame</span>
 
 
 <span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1727,8 +1773,79 @@
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
-<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">t1w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="get_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks">[docs]</a><span class="k">def</span> <span class="nf">get_anat_landmarks</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get anatomical landmarks transformed from &quot;head&quot; to MRI &quot;voxel&quot; coordinates.</span>
+
+<span class="sd">    The landmarks obtained are defined w.r.t. the MRI passed to the ``image``</span>
+<span class="sd">    parameter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    image : str | pathlib.Path | NibabelImageObject</span>
+<span class="sd">        Path to an MRI scan (e.g. T1w) of the subject. Can be in any format</span>
+<span class="sd">        readable by nibabel. Can also be a nibabel image object of an</span>
+<span class="sd">        MRI scan. Will be written as a .nii.gz file.</span>
+<span class="sd">    info : mne.Info</span>
+<span class="sd">        The measurement information from an electrophysiology recording of</span>
+<span class="sd">        the subject with the anatomical landmarks stored in its</span>
+<span class="sd">        :class:`mne.channels.DigMontage`.</span>
+<span class="sd">    trans : mne.transforms.Transform | str</span>
+<span class="sd">        The transformation matrix from head to MRI coordinates. Can</span>
+<span class="sd">        also be a string pointing to a ``.trans`` file containing the</span>
+<span class="sd">        transformation matrix. If ``None`` and no ``landmarks`` parameter is</span>
+<span class="sd">        passed, no sidecar JSON file will be created.</span>
+<span class="sd">    fs_subject : str</span>
+<span class="sd">        The subject identifier used for FreeSurfer. If ``None``, defaults to</span>
+<span class="sd">        the ``subject`` entity in ``bids_path``. Must be provided to write</span>
+<span class="sd">        the anatomical landmarks if they are not provided in MRI voxel space.</span>
+<span class="sd">        This is because the head coordinate of a</span>
+<span class="sd">        :class:`mne.channels.DigMontage` is aligned using FreeSurfer surfaces.</span>
+<span class="sd">    fs_subjects_dir : str | pathlib.Path | None</span>
+<span class="sd">        The FreeSurfer subjects directory. If ``None``, defaults to the</span>
+<span class="sd">        ``SUBJECTS_DIR`` environment variable. Must be provided to write</span>
+<span class="sd">        anatomical landmarks if they are not provided in MRI voxel space.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    landmarks : mne.channels.DigMontage</span>
+<span class="sd">        A montage with the landmarks in MRI voxel space.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="n">coords_dict</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">!=</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Fiducial coordinates in `info` must be in &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;the head coordinate frame, got </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span>
+                            <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span>
+                            <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]))</span>
+    <span class="c1"># get trans and ensure it is from head to MRI</span>
+    <span class="n">trans</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">)</span>
+    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
+    <span class="n">fs_subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">t1_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span> <span class="o">/</span> <span class="s1">&#39;mri&#39;</span> <span class="o">/</span> <span class="s1">&#39;T1.mgz&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">t1_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Freesurfer recon-all subject folder &#39;</span>
+                         <span class="s1">&#39;is incorrect or improperly formatted, &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;got </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">t1w_img</span> <span class="o">=</span> <span class="n">_load_image</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t1_fname</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;T1.mgz&#39;</span><span class="p">)</span>
+    <span class="n">t1w_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">t1w_img</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1w_img</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+    <span class="c1"># go to T1 voxel space from surface RAS/TkReg RAS/freesurfer</span>
+    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">t1w_mgh</span><span class="p">)</span>
+    <span class="c1"># go to T1 scanner space from T1 voxel space</span>
+    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_voxels_to_mri_scanner_ras</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">t1w_mgh</span><span class="p">)</span>
+    <span class="n">img_nii</span> <span class="o">=</span> <span class="n">_load_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>
+    <span class="n">img_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">img_nii</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">img_nii</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
+    <span class="n">landmarks</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span><span class="p">(</span>
+        <span class="n">lpa</span><span class="o">=</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nasion</span><span class="o">=</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rpa</span><span class="o">=</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">landmarks</span></div>
+
+
+<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
 
 <span class="sd">    Given an MRI scan, format and store the MR data according to BIDS in the</span>
@@ -1738,8 +1855,8 @@
 
 <span class="sd">    .. note:: To generate the JSON sidecar with anatomical landmark</span>
 <span class="sd">              coordinates (&quot;fiducials&quot;), you need to pass the landmarks via</span>
-<span class="sd">              the ``landmarks`` parameter, or supply a raw file via ``raw``</span>
-<span class="sd">              and transformation matrix via the ``trans`` parameter.</span>
+<span class="sd">              the ``landmarks`` parameter. :func:`mne_bids.get_anat_landmarks`</span>
+<span class="sd">              may be useful for getting the ``landmarks``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1752,20 +1869,12 @@
 <span class="sd">        **must** have the ``root`` and ``subject`` attributes set.</span>
 <span class="sd">        The suffix is assumed to be ``&#39;T1w&#39;`` if not present. It can</span>
 <span class="sd">        also be ``&#39;FLASH&#39;``, for example, to indicate FLASH MRI.</span>
-<span class="sd">    raw : mne.io.Raw | None</span>
-<span class="sd">        The raw data of ``subject`` corresponding to the MR scan in ``image``.</span>
-<span class="sd">        If ``None``, ``trans`` has to be ``None`` as well</span>
-<span class="sd">    trans : mne.transforms.Transform | str | None</span>
-<span class="sd">        The transformation matrix from head to MRI coordinates. Can</span>
-<span class="sd">        also be a string pointing to a ``.trans`` file containing the</span>
-<span class="sd">        transformation matrix. If ``None`` and no ``landmarks`` parameter is</span>
-<span class="sd">        passed, no sidecar JSON file will be created.</span>
-<span class="sd">    t1w : str | pathlib.Path | NibabelImageObject | None</span>
-<span class="sd">        This parameter is useful if image written is not already a T1 image.</span>
-<span class="sd">        If the image written is to have a sidecar or be defaced,</span>
-<span class="sd">        this can be done using `raw`, `trans` and `t1w`. The T1 must be</span>
-<span class="sd">        passed here because the coregistration uses freesurfer surfaces which</span>
-<span class="sd">        are in T1 space.</span>
+<span class="sd">    landmarks : mne.channels.DigMontage | str | None</span>
+<span class="sd">        The DigMontage or filepath to a DigMontage with landmarks that can be</span>
+<span class="sd">        passed to provide information for defacing. Landmarks can be determined</span>
+<span class="sd">        from the head model using `mne coreg` GUI, or they can be determined</span>
+<span class="sd">        from the MRI using freeview.  If ``None`` and no ``trans`` parameter</span>
+<span class="sd">        is passed, no sidecar JSON file will be created.</span>
 <span class="sd">    deface : bool | dict</span>
 <span class="sd">        If False, no defacing is performed.</span>
 <span class="sd">        If True, deface with default parameters.</span>
@@ -1778,12 +1887,29 @@
 <span class="sd">        - `theta`: is the angle of the defacing shear in degrees relative</span>
 <span class="sd">          to vertical (default 15).</span>
 
-<span class="sd">    landmarks : mne.channels.DigMontage | str | None</span>
-<span class="sd">        The DigMontage or filepath to a DigMontage with landmarks that can be</span>
-<span class="sd">        passed to provide information for defacing. Landmarks can be determined</span>
-<span class="sd">        from the head model using `mne coreg` GUI, or they can be determined</span>
-<span class="sd">        from the MRI using `freeview`.  If ``None`` and no ``trans`` parameter</span>
-<span class="sd">        is passed, no sidecar JSON file will be created.</span>
+<span class="sd">    raw : mne.io.Raw | None</span>
+<span class="sd">        The raw data of ``subject`` corresponding to the MR scan in ``image``.</span>
+<span class="sd">        If ``None``, ``trans`` has to be ``None`` as well.</span>
+
+<span class="sd">        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.</span>
+
+<span class="sd">    trans : mne.transforms.Transform | str | None</span>
+<span class="sd">        The transformation matrix from head to MRI coordinates. Can</span>
+<span class="sd">        also be a string pointing to a ``.trans`` file containing the</span>
+<span class="sd">        transformation matrix. If ``None`` and no ``landmarks`` parameter is</span>
+<span class="sd">        passed, no sidecar JSON file will be created.</span>
+
+<span class="sd">        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.</span>
+
+<span class="sd">    t1w : str | pathlib.Path | NibabelImageObject | None</span>
+<span class="sd">        This parameter is useful if image written is not already a T1 image.</span>
+<span class="sd">        If the image written is to have a sidecar or be defaced,</span>
+<span class="sd">        this can be done using `raw`, `trans` and `t1w`. The T1 must be</span>
+<span class="sd">        passed here because the coregistration uses freesurfer surfaces which</span>
+<span class="sd">        are in T1 space.</span>
+
+<span class="sd">        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.</span>
+
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to False.</span>
@@ -1793,6 +1919,7 @@
 <span class="sd">        match the current data will be replaced.</span>
 <span class="sd">        If overwrite is False, no existing data will be overwritten or</span>
 <span class="sd">        replaced.</span>
+
 <span class="sd">    verbose : bool</span>
 <span class="sd">        If ``True``, this will print a snippet of the sidecar files. If</span>
 <span class="sd">        ``False``, no content will be printed.</span>
@@ -1806,17 +1933,16 @@
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
     <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 
-    <span class="n">write_sidecar</span> <span class="o">=</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">t1w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`raw`, `trans` and `t1w` are depreciated &#39;</span>
+                         <span class="s1">&#39;use `mne_bids.get_anat_landmarks` instead&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">write_sidecar</span> <span class="ow">and</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Ignoring `raw` keyword argument: `trans`, `landmarks`, &#39;</span>
-             <span class="s1">&#39;or both (if landmarks are in head space) are needed &#39;</span>
-             <span class="s1">&#39;to write the sidecar file&#39;</span><span class="p">)</span>
+    <span class="k">del</span> <span class="n">raw</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">t1w</span>
 
-    <span class="k">if</span> <span class="n">deface</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">write_sidecar</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Either `raw` and `trans` must be provided, &#39;</span>
-                         <span class="s1">&#39;or `landmarks` must be provided to deface &#39;</span>
-                         <span class="s1">&#39;the image&#39;</span><span class="p">)</span>
+    <span class="n">write_sidecar</span> <span class="o">=</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">deface</span> <span class="ow">and</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`landmarks` must be provided to deface the image&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if the root is available</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1851,82 +1977,28 @@
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
     <span class="k">if</span> <span class="n">write_sidecar</span><span class="p">:</span>
-        <span class="c1"># Get landmarks and their coordinate frame</span>
-        <span class="k">if</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Please use EITHER `landmarks` or `raw`, &#39;</span>
-                             <span class="s1">&#39;which digitization to use is ambiguous.&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># get trans and ensure it is from head to MRI</span>
-            <span class="n">trans</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`raw` must be specified if `trans` &#39;</span>
-                                 <span class="s1">&#39;is not None&#39;</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">landmarks</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
             <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">landmark</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">landmark</span> <span class="ow">in</span>
                                   <span class="n">landmarks</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># unpack</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Prepare to write the sidecar JSON, extract MEG landmarks</span>
-            <span class="n">coords_dict</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span>
-                <span class="n">landmarks</span><span class="o">.</span><span class="n">dig</span> <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
+            <span class="n">coords_dict</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span><span class="n">landmarks</span><span class="o">.</span><span class="n">dig</span><span class="p">)</span>
             <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span>
                                     <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span>
                                     <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]))</span>
 
         <span class="c1"># check if coord frame is supported</span>
-        <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span><span class="p">,</span>
-                               <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_MRI_VOXEL</span><span class="p">,</span>
+        <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_MRI_VOXEL</span><span class="p">,</span>
                                <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Coordinate frame not recognized, &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Coordinate frame not supported: </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="c1"># If the `coord_frame` isn&#39;t in head space, we don&#39;t need the `trans`</span>
-        <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">!=</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span> <span class="ow">and</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`trans` was provided but `landmark` data is &#39;</span>
-                             <span class="s1">&#39;in mri space. Please use only one of these.&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">in</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span><span class="p">)</span> \
-                <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;T1w&#39;</span> <span class="ow">and</span> <span class="n">t1w</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The T1 must be passed as `t1w` or `landmarks` &#39;</span>
-                             <span class="s1">&#39;must be passed in `mri_voxel` or `ras` (scanner &#39;</span>
-                             <span class="s1">&#39;RAS) coordinate frames for non T1-images&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">!=</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_MRI_VOXEL</span><span class="p">:</span>
+        <span class="c1"># convert to voxels from scanner RAS to voxels</span>
+        <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span><span class="p">:</span>
             <span class="c1"># Make MGH image for header properties</span>
             <span class="n">img_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">image_nii</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">image_nii</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Head space landmarks provided, &#39;</span>
-                                     <span class="s1">&#39;`trans` required&#39;</span><span class="p">)</span>
-
-                <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span>
-                    <span class="n">landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span><span class="p">:</span>
-                <span class="n">landmarks</span> <span class="o">*=</span> <span class="mf">1e3</span>  <span class="c1"># m to mm conversion</span>
-
-            <span class="c1"># need get scanner RAS: MRI--[inv vox2ras_tkr]--&gt;scanner RAS</span>
-            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;T1w&#39;</span> <span class="ow">and</span> <span class="n">coord_frame</span> <span class="ow">in</span> \
-                    <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span><span class="p">,</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span><span class="p">):</span>
-                <span class="n">t1w_img</span> <span class="o">=</span> <span class="n">_load_image</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;t1w&#39;</span><span class="p">)</span>
-                <span class="n">t1w_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">t1w_img</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1w_img</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
-                <span class="c1"># go to T1 voxel space from surface RAS/TkReg RAS/freesurfer</span>
-                <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">t1w_mgh</span><span class="p">)</span>
-                <span class="c1"># go to T1 scanner space from T1 voxel space</span>
-                <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_voxels_to_mri_scanner_ras</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">t1w_mgh</span><span class="p">)</span>
-                <span class="n">landmarks</span> <span class="o">*=</span> <span class="mf">1e-3</span>  <span class="c1"># mm -&gt; m</span>
-                <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span>
-
-            <span class="c1"># convert to voxels from surface or scanner RAS depending on above</span>
-            <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span><span class="p">:</span>
-                <span class="c1"># go from scanner RAS to image voxels</span>
-                <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span>
-                    <span class="n">landmarks</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># must be T1, going from surface RAS-&gt;voxels</span>
-                <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
+            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span>
+                <span class="n">landmarks</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
 
         <span class="c1"># Write sidecar.json</span>
         <span class="n">img_json</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -2200,7 +2272,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-07.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-08.<br/>
 </p>
     </div>
     

@@ -191,6 +191,7 @@
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">re</span>
@@ -201,7 +202,7 @@
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span><span class="p">,</span> <span class="n">read_events</span><span class="p">,</span> <span class="n">events_from_annotations</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">pick_channels_regexp</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">get_subjects_dir</span>
 <span class="kn">from</span> <span class="nn">mne.coreg</span> <span class="kn">import</span> <span class="n">fit_matched_points</span>
 <span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">apply_trans</span>
 
@@ -898,7 +899,8 @@
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
-<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1_bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1_bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
 
 <span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
@@ -913,7 +915,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    bids_path : mne_bids.BIDSPath</span>
-<span class="sd">        The path of the MEG recording.</span>
+<span class="sd">        The path of the electrophysiology recording.</span>
 <span class="sd">    extra_params : None | dict</span>
 <span class="sd">        Extra parameters to be passed to :func:`mne.io.read_raw` when reading</span>
 <span class="sd">        the MEG file.</span>
@@ -926,6 +928,12 @@
 <span class="sd">        Use this parameter e.g. if the T1 scan was recorded during a different</span>
 <span class="sd">        session than the MEG. It is even possible to point to a T1 image stored</span>
 <span class="sd">        in an entirely different BIDS dataset than the MEG data.</span>
+<span class="sd">    fs_subject : str | None</span>
+<span class="sd">        The subject identifier used for FreeSurfer. If ``None``, defaults to</span>
+<span class="sd">        the ``subject`` entity in ``bids_path``.</span>
+<span class="sd">    fs_subjects_dir : str | pathlib.Path | None</span>
+<span class="sd">        The FreeSurfer subjects directory. If ``None``, defaults to the</span>
+<span class="sd">        ``SUBJECTS_DIR`` environment variable.</span>
 
 <span class="sd">        .. versionadded:: 0.8</span>
 
@@ -954,14 +962,11 @@
     <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get the sidecar file for MRI landmarks</span>
-    <span class="k">if</span> <span class="n">t1_bids_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">meg_bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span>
-                                               <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">t1_bids_path</span> <span class="o">=</span> <span class="n">t1_bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span>
-                                                  <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;anat&#39;</span><span class="p">)</span>
-        <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">t1_bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span>
-                                               <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+    <span class="n">match_bids_path</span> <span class="o">=</span> <span class="n">meg_bids_path</span> <span class="k">if</span> <span class="n">t1_bids_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t1_bids_path</span>
+    <span class="n">t1w_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">match_bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+    <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">match_bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get MRI landmarks from the JSON sidecar</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -995,19 +1000,28 @@
     <span class="c1"># The MRI landmarks are in &quot;voxels&quot;. We need to convert the to the</span>
     <span class="c1"># neuromag RAS coordinate system in order to compare the with MEG landmarks</span>
     <span class="c1"># see also: `mne_bids.write.write_anat`</span>
-    <span class="n">t1w_path</span> <span class="o">=</span> <span class="n">t1w_json_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span> <span class="s1">&#39;.nii&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">t1w_path</span><span class="p">):</span>
-        <span class="n">t1w_path</span> <span class="o">+=</span> <span class="s1">&#39;.gz&#39;</span>  <span class="c1"># perhaps it is .nii.gz? ... else raise an error</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">t1w_path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not find the T1 weighted MRI associated &#39;</span>
-                           <span class="s1">&#39;with &quot;</span><span class="si">{}</span><span class="s1">&quot;. Tried: &quot;</span><span class="si">{}</span><span class="s1">&quot; but it does not exist.&#39;</span>
-                           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="p">,</span> <span class="n">t1w_path</span><span class="p">))</span>
-    <span class="n">t1_nifti</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t1w_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fs_subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fs_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">meg_bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">fs_subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fs_t1_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span> <span class="o">/</span> <span class="s1">&#39;mri&#39;</span> <span class="o">/</span> <span class="s1">&#39;T1.mgz&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">fs_t1_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">fs_t1_fname</span><span class="si">}</span><span class="s2">. Consider running FreeSurfer&#39;s &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;recon-all` for subject </span><span class="si">{</span><span class="n">fs_subject</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">fs_t1_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fs_t1_fname</span><span class="p">))</span>
+    <span class="n">t1_nifti</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t1w_path</span><span class="p">))</span>
+
     <span class="c1"># Convert to MGH format to access vox2ras method</span>
     <span class="n">t1_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">t1_nifti</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1_nifti</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
 
+    <span class="c1"># convert to scanner RAS</span>
+    <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">t1_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras</span><span class="p">(),</span> <span class="n">mri_landmarks</span><span class="p">)</span>
+
+    <span class="c1"># convert to FreeSurfer T1 voxels (same scanner RAS as T1)</span>
+    <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">fs_t1_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_ras2vox</span><span class="p">(),</span> <span class="n">mri_landmarks</span><span class="p">)</span>
+
     <span class="c1"># now extract transformation matrix and put back to RAS coordinates of MRI</span>
-    <span class="n">vox2ras_tkr</span> <span class="o">=</span> <span class="n">t1_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras_tkr</span><span class="p">()</span>
+    <span class="n">vox2ras_tkr</span> <span class="o">=</span> <span class="n">fs_t1_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras_tkr</span><span class="p">()</span>
     <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">vox2ras_tkr</span><span class="p">,</span> <span class="n">mri_landmarks</span><span class="p">)</span>
     <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">mri_landmarks</span> <span class="o">*</span> <span class="mf">1e-3</span>
 
@@ -1052,7 +1066,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-07.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-08.<br/>
 </p>
     </div>
     

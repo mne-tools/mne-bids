@@ -248,6 +248,11 @@
    mne_bids.inspect_dataset
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_anat_landmarks.html">
+   mne_bids.get_anat_landmarks
+  </a>
+ </li>
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
@@ -342,7 +347,7 @@
 <h1>mne_bids.get_head_mri_trans<a class="headerlink" href="#mne-bids-get-head-mri-trans" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.get_head_mri_trans">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_head_mri_trans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1_bids_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#get_head_mri_trans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_head_mri_trans" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_head_mri_trans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1_bids_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subjects_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#get_head_mri_trans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_head_mri_trans" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce transformation matrix from MEG and MRI landmark points.</p>
 <p>Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
 files of (i) the MEG and (ii) the T1-weighted MRI data. The two sets of
@@ -357,7 +362,7 @@ same session or even in the same BIDS dataset. See the
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The path of the MEG recording.</p>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The path of the electrophysiology recording.</p>
 </dd>
 <dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to <a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw.html#mne.io.read_raw" title="(in MNE v0.24.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw()</span></code></a> when reading
 the MEG file.</p>
@@ -370,6 +375,12 @@ that, pass a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids
 Use this parameter e.g. if the T1 scan was recorded during a different
 session than the MEG. It is even possible to point to a T1 image stored
 in an entirely different BIDS dataset than the MEG data.</p>
+</dd>
+<dt><strong>fs_subject</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The subject identifier used for FreeSurfer. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to
+the <code class="docutils literal notranslate"><span class="pre">subject</span></code> entity in <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>.</p>
+</dd>
+<dt><strong>fs_subjects_dir</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The FreeSurfer subjects directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to the
+<code class="docutils literal notranslate"><span class="pre">SUBJECTS_DIR</span></code> environment variable.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 0.8.</span></p>
 </div>
@@ -418,7 +429,7 @@ in an entirely different BIDS dataset than the MEG data.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-07.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-08.<br/>
 </p>
     </div>
     

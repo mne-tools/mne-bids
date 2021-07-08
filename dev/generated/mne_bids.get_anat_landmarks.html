@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read_raw_bids &#8212; MNE-BIDS 0.8.dev0 documentation</title>
+    <title>mne_bids.get_anat_landmarks &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -47,8 +47,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.write_meg_calibration" href="mne_bids.write_meg_calibration.html" />
-    <link rel="prev" title="mne_bids.write_raw_bids" href="mne_bids.write_raw_bids.html" />
+    <link rel="next" title="mne_bids.stats.count_events" href="mne_bids.stats.count_events.html" />
+    <link rel="prev" title="mne_bids.inspect_dataset" href="mne_bids.inspect_dataset.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -168,8 +168,8 @@
    mne_bids.write_raw_bids
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.read_raw_bids.html">
    mne_bids.read_raw_bids
   </a>
  </li>
@@ -248,8 +248,8 @@
    mne_bids.inspect_dataset
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_bids.get_anat_landmarks.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_bids.get_anat_landmarks
   </a>
  </li>
@@ -313,11 +313,11 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#examples-using-mne-bids-read-raw-bids">
+  <a class="reference internal nav-link" href="#examples-using-mne-bids-get-anat-landmarks">
    Examples using
    <code class="docutils literal notranslate">
     <span class="pre">
-     mne_bids.read_raw_bids
+     mne_bids.get_anat_landmarks
     </span>
    </code>
   </a>
@@ -343,85 +343,56 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-read-raw-bids">
-<h1>mne_bids.read_raw_bids<a class="headerlink" href="#mne-bids-read-raw-bids" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-get-anat-landmarks">
+<h1>mne_bids.get_anat_landmarks<a class="headerlink" href="#mne-bids-get-anat-landmarks" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.read_raw_bids">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">read_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read BIDS compatible data.</p>
-<p>Will attempt to read associated events.tsv and channels.tsv files to
-populate the returned raw object with raw.annotations and raw.info[‘bads’].</p>
+<dt class="sig sig-object py" id="mne_bids.get_anat_landmarks">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_anat_landmarks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subjects_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#get_anat_landmarks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_anat_landmarks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get anatomical landmarks transformed from “head” to MRI “voxel” coordinates.</p>
+<p>The landmarks obtained are defined w.r.t. the MRI passed to the <code class="docutils literal notranslate"><span class="pre">image</span></code>
+parameter.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The file to read. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
-<strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. The <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> attribute
-<strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is not set and only one data type
-(e.g., only EEG or MEG data) is present in the dataset, it will be
-selected automatically.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> points to a symbolic link of a <code class="docutils literal notranslate"><span class="pre">.fif</span></code> file
-without a <code class="docutils literal notranslate"><span class="pre">split</span></code> entity, the link will be resolved before
-reading.</p>
-</div>
+<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.1+100.g9fdf5e3e)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a></span></dt><dd><p>Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
+readable by nibabel. Can also be a nibabel image object of an
+MRI scan. Will be written as a .nii.gz file.</p>
 </dd>
-<dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions.
-Note that the <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter, which is supported by some
-MNE-Python readers, is not supported; instead, you need to subset
-your channels <strong>after</strong> reading.</p>
+<dt><strong>info</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Info</span></code></a></span></dt><dd><p>The measurement information from an electrophysiology recording of
+the subject with the anatomical landmarks stored in its
+<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a>.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>The verbosity level.</p>
+<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
+also be a string pointing to a <code class="docutils literal notranslate"><span class="pre">.trans</span></code> file containing the
+transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and no <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> parameter is
+passed, no sidecar JSON file will be created.</p>
+</dd>
+<dt><strong>fs_subject</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The subject identifier used for FreeSurfer. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to
+the <code class="docutils literal notranslate"><span class="pre">subject</span></code> entity in <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>. Must be provided to write
+the anatomical landmarks if they are not provided in MRI voxel space.
+This is because the head coordinate of a
+<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> is aligned using FreeSurfer surfaces.</p>
+</dd>
+<dt><strong>fs_subjects_dir</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The FreeSurfer subjects directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to the
+<code class="docutils literal notranslate"><span class="pre">SUBJECTS_DIR</span></code> environment variable. Must be provided to write
+anatomical landmarks if they are not provided in MRI voxel space.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The data as MNE-Python Raw object.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></dt><dd><p>If multiple recording data types are present in the dataset, but
-<code class="docutils literal notranslate"><span class="pre">datatype=None</span></code>.</p>
-</dd>
-<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></dt><dd><p>If more than one data files exist for the specified recording.</p>
-</dd>
-<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></dt><dd><p>If no data file in a supported format can be located.</p>
-</dd>
-<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If the specified <code class="docutils literal notranslate"><span class="pre">datatype</span></code> cannot be found in the dataset.</p>
+<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a></span></dt><dd><p>A montage with the landmarks in MRI voxel space.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-read-raw-bids">
-<span id="sphx-glr-backreferences-mne-bids-read-raw-bids"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids</span></code><a class="headerlink" href="#examples-using-mne-bids-read-raw-bids" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the `O..."><div class="figure align-default" id="id1">
-<img alt="01. Read BIDS datasets" src="../_images/sphx_glr_read_bids_datasets_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">01. Read BIDS datasets</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id2">
-<img alt="02. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><div class="figure align-default" id="id3">
-<img alt="03. Interactive data inspection and bad channel selection" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id4">
-<img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><div class="figure align-default" id="id5">
-<img alt="09. Storing empty room data in BIDS format" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the ..."><div class="figure align-default" id="id6">
-<img alt="12. Update BIDS datasets" src="../_images/sphx_glr_update_bids_datasets_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">12. Update BIDS datasets</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<div class="section" id="examples-using-mne-bids-get-anat-landmarks">
+<span id="sphx-glr-backreferences-mne-bids-get-anat-landmarks"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks</span></code><a class="headerlink" href="#examples-using-mne-bids-get-anat-landmarks" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id1">
+<img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="sphx-glr-clear"></div></div>
 </div>
@@ -432,8 +403,8 @@ your channels <strong>after</strong> reading.</p>
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="mne_bids.write_raw_bids.html" title="previous page">mne_bids.write_raw_bids</a>
-    <a class='right-next' id="next-link" href="mne_bids.write_meg_calibration.html" title="next page">mne_bids.write_meg_calibration</a>
+    <a class='left-prev' id="prev-link" href="mne_bids.inspect_dataset.html" title="previous page">mne_bids.inspect_dataset</a>
+    <a class='right-next' id="next-link" href="mne_bids.stats.count_events.html" title="next page">mne_bids.stats.count_events</a>
 
               </div>
               
