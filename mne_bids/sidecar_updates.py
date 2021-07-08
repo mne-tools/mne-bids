@@ -141,14 +141,27 @@ def _update_sidecar(sidecar_fname, key, val):
 
 
 def update_anat_landmarks(bids_path, landmarks):
-    """[summary]
+    """Update the anatomical landmark coordinates of an MRI scan.
+
+    This will change the ``AnatomicalLandmarkCoordinates`` entry in the
+    respective JSON sidecar file, or create it if it doesn't exist.
 
     Parameters
     ----------
     bids_path : mne_bids.BIDSPath
-        [description]
+        Path of the MR image.
     landmarks : mne.channels.DigMontage
-        [description]
+        An :class:`mne.channels.DigMontage` instance with coordinates for the
+        nasion and left and right pre-auricular points in MRI voxel
+        coordinates.
+
+        .. note:: :func:`mne_bids.get_anat_landmarks` provides a convenient and
+                  reliable way to generate the landmark coordinates in the
+                  required coordinate system.
+
+    Notes
+    -----
+    .. versionadded:: 0.8
     """
     _validate_type(item=bids_path, types=BIDSPath, item_name='bids_path')
     _validate_type(item=landmarks, types=DigMontage, item_name='landmarks')
