@@ -316,7 +316,7 @@ def test_get_head_mri_trans(tmpdir):
     assert np.allclose(trans['trans'], read_trans['trans'])
 
     # Test that incorrect subject directory throws error
-    with pytest.raises(ValueError, match='subject folder not found'):
+    with pytest.raises(ValueError, match='Could not find'):
         estimated_trans = get_head_mri_trans(
             bids_path=bids_path, fs_subject='bad',
             fs_subjects_dir=subjects_dir)
