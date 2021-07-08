@@ -7,8 +7,10 @@
 import json
 from collections import OrderedDict
 
-from mne.utils import logger
-
+from mne.channels import DigMontage
+from mne.io.constants import FIFF
+from mne.utils import logger, _validate_type
+from mne_bids import BIDSPath
 from mne_bids.utils import _write_json
 
 
@@ -136,3 +138,59 @@ def _update_sidecar(sidecar_fname, key, val):
     sidecar_json[key] = val
     with open(sidecar_fname, 'w', encoding='utf-8') as fout:
         json.dump(sidecar_json, fout)
+
+
+def update_anat_landmarks(bids_path, landmarks):
+    """[summary]
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        [description]
+    landmarks : mne.channels.DigMontage
+        [description]
+    """
+    _validate_type(item=bids_path, types=BIDSPath, item_name='bids_path')
+    _validate_type(item=landmarks, types=DigMontage, item_name='landmarks')
+
+    positions = landmarks.get_positions()
+    coord_frame = positions['coord_frame']
+    if coord_frame != 'mri_voxel':
+        raise ValueError(
+            f'The landmarks must be specified in MRI voxel coordinates, but '
+            f'provided DigMontage is in "{coord_frame}"')
+
+    # Extract the cardinal points
+    name_to_coords_map = {
+        'LPA': positions['lpa'],
+        'NAS': positions['nasion'],
+        'RPA': positions['rpa']
+    }
+
+    # Check if coordinates for any cardinal point are missing, and convert to
+    # a list so we can easily store the data in JSON format
+    missing_points = []
+    for name, coords in name_to_coords_map.copy().items():
+        if coords is None:
+            missing_points.append(name)
+        else:
+            name_to_coords_map[name] = list(coords)
+
+    if missing_points:
+        raise ValueError(
+            f'The provided DigMontage did not contain all required cardinal '
+            f'points (nasion and left and right pre-auricular points). The '
+            f'following points are missing: '
+            f'{", ".join(missing_points)}')
+
+    json = {
+        'AnatomicalLandmarkCoordinates': {
+            name_to_coords_map
+        }
+    }
+
+    json_bids_path = bids_path.copy().update(extension='.json')
+    if not json_bids_path.fpath.exists():  # Must exist before we can update it
+        json_bids_path.fpath.touch()
+
+    update_sidecar_json(bids_path=json_bids_path, entries=json)
