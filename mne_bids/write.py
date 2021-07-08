@@ -1554,8 +1554,8 @@ def _process_landmarks(*, bids_path, t1w, image_nii, coord_frame, trans,
                            FIFF.FIFFV_COORD_MRI,
                            FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                            FIFF.FIFFV_MNE_COORD_RAS):
-        raise ValueError('Coordinate frame not recognized, '
-                            f'found {coord_frame}')
+        raise ValueError(f'Coordinate frame not recognized, found '
+                         f'{coord_frame}')
 
     # If the `coord_frame` isn't in head space, we don't need the `trans`
     if coord_frame != FIFF.FIFFV_COORD_HEAD and trans is not None:
