@@ -34,7 +34,7 @@ See the documentation pages in the MNE docs for more information on
 # License: BSD (3-clause)
 
 # %%
-# We are importing everything we need for this example:
+# Let's import everything we need for this example:
 
 import os.path as op
 import shutil
@@ -42,14 +42,13 @@ import shutil
 import numpy as np
 import matplotlib.pyplot as plt
 
-import nibabel as nib
 from nilearn.plotting import plot_anat
 
 import mne
 from mne.datasets import sample
 from mne.source_space import head_to_mri
 
-from mne_bids import (write_raw_bids, BIDSPath, write_anat,
+from mne_bids import (write_raw_bids, BIDSPath, write_anat, get_anat_landmarks,
                       get_head_mri_trans, print_dir_tree)
 
 # %%
@@ -63,6 +62,7 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
+fs_subjects_dir = op.join(data_path, 'subjects')  # FreeSurfer subjects dir
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -103,7 +103,7 @@ print_dir_tree(output_path)
 # matrix :code:`trans`.
 
 # Get the path to our MRI scan
-t1_mgh_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+t1_fname = op.join(fs_subjects_dir, 'sample', 'mri', 'T1.mgz')
 
 # Load the transformation matrix and show what it looks like
 trans_fname = op.join(data_path, 'MEG', 'sample',
@@ -120,15 +120,24 @@ print(trans)
 # w.r.t. the T1 image.
 
 # First create the BIDSPath object.
-t1w_bids_path = \
-    BIDSPath(subject=sub, session=ses, root=output_path, suffix='T1w')
+t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path,
+                         suffix='T1w')
+
+# use ``trans`` to transform landmarks from the ``raw`` file to
+# the voxel space of the image
+landmarks = get_anat_landmarks(
+    t1_fname,  # path to the MRI scan
+    info=raw.info,  # the MEG data file info from the same subject as the MRI
+    trans=trans,  # our transformation matrix
+    fs_subject='sample',  # FreeSurfer subject
+    fs_subjects_dir=fs_subjects_dir,  # FreeSurfer subjects directory
+)
 
 # We use the write_anat function
 t1w_bids_path = write_anat(
-    image=t1_mgh_fname,  # path to the MRI scan
+    image=t1_fname,  # path to the MRI scan
     bids_path=t1w_bids_path,
-    raw=raw,  # the raw MEG data file connected to the MRI
-    trans=trans,  # our transformation matrix
+    landmarks=landmarks,  # the landmarks in MRI voxel space
     verbose=True  # this will print out the sidecar file
 )
 anat_dir = t1w_bids_path.directory
@@ -140,7 +149,17 @@ print_dir_tree(output_path)
 # %%
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
-estim_trans = get_head_mri_trans(bids_path=bids_path)
+# This function converts the anatomical landmarks stored in the T1 sidecar
+# file into FreeSurfer surface RAS space, and aligns the landmarks in the
+# electrophysiology data with them. This way your electrophysiology channel
+# locations can be transformed to surface RAS space using the ``trans`` which
+# is crucial for source localization and other uses of the FreeSurfer surfaces.
+#
+# .. note:: If this dataset were shared with you, you would first have to use
+#           the T1 image as input for the FreeSurfer recon-all, see
+#           :ref:`tut-freesurfer-mne`.
+estim_trans = get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
+                                 fs_subjects_dir=fs_subjects_dir)
 
 # %%
 # Finally, let's use the T1 weighted MRI image and plot the anatomical
@@ -163,7 +182,7 @@ pos = np.asarray((raw.info['dig'][0]['r'],
 mri_pos = head_to_mri(pos=pos,
                       subject='sample',
                       mri_head_t=estim_trans,
-                      subjects_dir=op.join(data_path, 'subjects'))
+                      subjects_dir=fs_subjects_dir)
 
 # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
@@ -182,14 +201,13 @@ plt.show()
 #
 # We can write another types of MRI data such as FLASH images for BEM models
 
-flash_mgh_fname = \
-    op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+flash_fname = op.join(fs_subjects_dir, 'sample', 'mri', 'flash', 'mef05.mgz')
 
 flash_bids_path = \
     BIDSPath(subject=sub, session=ses, root=output_path, suffix='FLASH')
 
 write_anat(
-    image=flash_mgh_fname,
+    image=flash_fname,
     bids_path=flash_bids_path,
     verbose=True
 )
@@ -200,10 +218,9 @@ write_anat(
 #
 # We can deface the MRI for anonymization by passing ``deface=True``.
 t1w_bids_path = write_anat(
-    image=t1_mgh_fname,  # path to the MRI scan
+    image=t1_fname,  # path to the MRI scan
     bids_path=bids_path,
-    raw=raw,  # the raw MEG data file connected to the MRI
-    trans=trans,  # our transformation matrix
+    landmarks=landmarks,
     deface=True,
     overwrite=True,
     verbose=True  # this will print out the sidecar file
@@ -222,25 +239,22 @@ plt.show()
 # Writing defaced and anonymized FLASH MRI image
 # ----------------------------------------------
 #
-# Defacing the FLASH is a bit more complicated because it uses different
-# coordinates than the T1. Since, in the example dataset, we used the head
-# surface (which was reconstructed by freesurfer from the T1) to align the
-# digitization points, the points are relative to the T1-defined coordinate
-# system (called surface or TkReg RAS). Thus, you can you can provide the T1
-# or you can find the fiducials in FLASH voxel space or scanner RAS coordinates
-# using your favorite 3D image view (e.g. freeview). You can also read the
-# fiducial coordinates from the `raw` and apply the `trans` yourself.
-# Let's explore the different options to do this.
+# Defacing the FLASH works just like the T1 as long as they are aligned.
 
-# %%
-# Option 1 : Pass `t1w` with `raw` and `trans`
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# use ``trans`` to transform landmarks from the ``raw`` file to
+# the voxel space of the image
+landmarks = get_anat_landmarks(
+    flash_fname,  # path to the FLASH scan
+    info=raw.info,  # the MEG data file info from the same subject as the MRI
+    trans=trans,  # our transformation matrix
+    fs_subject='sample',  # freesurfer subject
+    fs_subjects_dir=fs_subjects_dir,  # freesurfer subjects directory
+)
+
 flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
+    image=flash_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
-    raw=raw,
-    trans=trans,
-    t1w=t1_mgh_fname,
+    landmarks=landmarks,
     deface=True,
     overwrite=True,
     verbose=True  # this will print out the sidecar file
@@ -255,11 +269,16 @@ plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
 # %%
-# Option 2 : Use manual landmarks coordinates in scanner RAS for FLASH image
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Using manual landmark coordinates in scanner RAS
+# ------------------------------------------------
 #
-# You can find such landmarks with a 3D image viewer (e.g. freeview).
-# Note that, in freeview, this is called "RAS" and not "TkReg RAS"
+# You can also find landmarks with a 3D image viewer (e.g. FreeView) if you
+# have not aligned the channel locations (including fiducials) using the
+# coregistration GUI or if this is just more convenient.
+#
+# .. note:: In FreeView, you need to use "RAS" and not "TkReg RAS" for this.
+#           You can also use voxel coordinates but, in FreeView, they
+#           are integers and so not as precise as the "RAS" decimal numbers.
 flash_ras_landmarks = \
     np.array([[-74.53102838, 19.62854953, -52.2888194],
               [-1.89454315, 103.69850925, 4.97120376],
@@ -273,79 +292,9 @@ landmarks = mne.channels.make_dig_montage(
 )
 
 flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
+    image=flash_fname,  # path to the MRI scan
     bids_path=flash_bids_path,
     landmarks=landmarks,
-    deface=True,
-    overwrite=True,
-    verbose=True  # this will print out the sidecar file
-)
-
-# Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
-
-# %%
-# Option 3 : Compute the landmarks in scanner RAS or mri voxel space from trans
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#
-# Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
-# and the 'r' key will provide us with the xyz coordinates.
-#
-# .. note::
-#
-#   We can use in the head_to_mri function based on T1 as the T1 and FLASH
-#   images are already registered.
-head_pos = np.asarray((raw.info['dig'][0]['r'],
-                       raw.info['dig'][1]['r'],
-                       raw.info['dig'][2]['r']))
-
-ras_pos = head_to_mri(pos=head_pos,
-                      subject='sample',
-                      mri_head_t=trans,
-                      subjects_dir=op.join(data_path, 'subjects')) / 1e3
-
-montage_ras = mne.channels.make_dig_montage(
-    lpa=ras_pos[0],
-    nasion=ras_pos[1],
-    rpa=ras_pos[2],
-    coord_frame='ras'
-)
-
-# pass FLASH scanner RAS coordinates
-flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
-    bids_path=flash_bids_path,
-    landmarks=montage_ras,
-    deface=True,
-    overwrite=True,
-    verbose=True  # this will print out the sidecar file
-)
-
-# Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
-
-# %%
-# Let's now pass it in voxel coordinates
-flash_mri_hdr = nib.load(flash_mgh_fname).header
-flash_vox_pos = mne.transforms.apply_trans(
-    flash_mri_hdr.get_ras2vox(), ras_pos * 1e3)
-
-montage_flash_vox = mne.channels.make_dig_montage(
-    lpa=flash_vox_pos[0],
-    nasion=flash_vox_pos[1],
-    rpa=flash_vox_pos[2],
-    coord_frame='mri_voxel'
-)
-
-# pass FLASH voxel coordinates
-flash_bids_path = write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
-    bids_path=flash_bids_path,
-    landmarks=montage_flash_vox,
     deface=True,
     overwrite=True,
     verbose=True  # this will print out the sidecar file

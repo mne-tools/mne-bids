@@ -7,6 +7,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
+from pathlib import Path
 import glob
 import json
 import re
@@ -17,7 +18,7 @@ import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
-from mne.utils import has_nibabel, logger, warn
+from mne.utils import has_nibabel, logger, warn, get_subjects_dir
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -714,7 +715,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     return raw
 
 
-def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
+def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
+                       fs_subject=None, fs_subjects_dir=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -729,7 +731,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
     Parameters
     ----------
     bids_path : mne_bids.BIDSPath
-        The path of the MEG recording.
+        The path of the electrophysiology recording.
     extra_params : None | dict
         Extra parameters to be passed to :func:`mne.io.read_raw` when reading
         the MEG file.
@@ -742,6 +744,12 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
         Use this parameter e.g. if the T1 scan was recorded during a different
         session than the MEG. It is even possible to point to a T1 image stored
         in an entirely different BIDS dataset than the MEG data.
+    fs_subject : str | None
+        The subject identifier used for FreeSurfer. If ``None``, defaults to
+        the ``subject`` entity in ``bids_path``.
+    fs_subjects_dir : str | pathlib.Path | None
+        The FreeSurfer subjects directory. If ``None``, defaults to the
+        ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
 
@@ -770,14 +778,11 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
     meg_bids_path.update(datatype='meg', suffix='meg')
 
     # Get the sidecar file for MRI landmarks
-    if t1_bids_path is None:
-        t1w_json_path = _find_matching_sidecar(meg_bids_path, suffix='T1w',
-                                               extension='.json')
-    else:
-        t1_bids_path = t1_bids_path.copy().update(suffix='T1w',
-                                                  datatype='anat')
-        t1w_json_path = _find_matching_sidecar(t1_bids_path, suffix='T1w',
-                                               extension='.json')
+    match_bids_path = meg_bids_path if t1_bids_path is None else t1_bids_path
+    t1w_path = _find_matching_sidecar(
+        match_bids_path, suffix='T1w', extension='.nii.gz')
+    t1w_json_path = _find_matching_sidecar(
+        match_bids_path, suffix='T1w', extension='.json')
 
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r', encoding='utf-8') as f:
@@ -811,19 +816,28 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None):
     # The MRI landmarks are in "voxels". We need to convert the to the
     # neuromag RAS coordinate system in order to compare the with MEG landmarks
     # see also: `mne_bids.write.write_anat`
-    t1w_path = t1w_json_path.replace('.json', '.nii')
-    if not op.exists(t1w_path):
-        t1w_path += '.gz'  # perhaps it is .nii.gz? ... else raise an error
-    if not op.exists(t1w_path):
-        raise RuntimeError('Could not find the T1 weighted MRI associated '
-                           'with "{}". Tried: "{}" but it does not exist.'
-                           .format(t1w_json_path, t1w_path))
-    t1_nifti = nib.load(t1w_path)
+    if fs_subject is None:
+        fs_subject = f'sub-{meg_bids_path.subject}'
+    fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
+    fs_t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
+    if not fs_t1_fname.exists():
+        raise ValueError(
+            f"Could not find {fs_t1_fname}. Consider running FreeSurfer's "
+            f"'recon-all` for subject {fs_subject}.")
+    fs_t1_mgh = nib.load(str(fs_t1_fname))
+    t1_nifti = nib.load(str(t1w_path))
+
     # Convert to MGH format to access vox2ras method
     t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
 
+    # convert to scanner RAS
+    mri_landmarks = apply_trans(t1_mgh.header.get_vox2ras(), mri_landmarks)
+
+    # convert to FreeSurfer T1 voxels (same scanner RAS as T1)
+    mri_landmarks = apply_trans(fs_t1_mgh.header.get_ras2vox(), mri_landmarks)
+
     # now extract transformation matrix and put back to RAS coordinates of MRI
-    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+    vox2ras_tkr = fs_t1_mgh.header.get_vox2ras_tkr()
     mri_landmarks = apply_trans(vox2ras_tkr, mri_landmarks)
     mri_landmarks = mri_landmarks * 1e-3
 
