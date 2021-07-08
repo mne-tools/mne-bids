@@ -2,10 +2,10 @@ import json
 
 import numpy as np
 from scipy import linalg
-
 import nibabel as nib
-from mne.utils import warn
+
 import mne
+from mne.utils import warn
 
 
 def plot_anat_landmarks(bids_path, vmax=None, show=True):
@@ -18,7 +18,7 @@ def plot_anat_landmarks(bids_path, vmax=None, show=True):
     vmax : float
         Maximum colormap value.
     show : bool
-        Call pyplot.show() at the end. Defaults to True.
+        Whether to show the figure after plotting. Defaults to ``True``.
 
     Returns
     -------

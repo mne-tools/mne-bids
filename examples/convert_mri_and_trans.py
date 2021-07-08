@@ -148,7 +148,7 @@ plt.suptitle('T1 MRI')
 estim_trans = get_head_mri_trans(bids_path=bids_path)
 
 ###############################################################################
-# One can also directly use the T1 weighted MRI image and plot the anatomical
+# One can also directly use the T1-weighted MR image and plot the anatomical
 # landmarks Nasion, LPA, and RPA onto the brain image. For that, we can
 # extract the location of Nasion, LPA, and RPA from the MEG file, apply our
 # transformation matrix :code:`trans`, and plot the results.
