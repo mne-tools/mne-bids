@@ -745,11 +745,11 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         session than the MEG. It is even possible to point to a T1 image stored
         in an entirely different BIDS dataset than the MEG data.
     fs_subject : str | None
-        The subject identifier used for the freesurfer recon-all. If None,
-        defaults to the ``sub`` in ``bids_path``.
+        The subject identifier used for FreeSurfer. If ``None``, defaults to
+        the ``subject`` entity in ``bids_path``.
     fs_subjects_dir : str | pathlib.Path | None
-        The subjects directory used for the freesurfer recon. If None, defaults
-        to the ``SUBJECTS_DIR`` environment variable.
+        The FreeSurfer subjects directory. If ``None``, defaults to the
+        ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
 
@@ -821,10 +821,10 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
     fs_t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not fs_t1_fname.exists():
-        raise ValueError('Freesurfer recon-all subject folder not found, '
-                         f'got {Path(fs_subjects_dir) / fs_subject}. ')
+        raise ValueError(
+            f"Could not find {fs_t1_fname}. Consider running FreeSurfer's "
+            f"'recon-all` for subject {fs_subject}.")
     fs_t1_mgh = nib.load(str(fs_t1_fname))
-
     t1_nifti = nib.load(str(t1w_path))
 
     # Convert to MGH format to access vox2ras method
@@ -833,7 +833,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     # convert to scanner RAS
     mri_landmarks = apply_trans(t1_mgh.header.get_vox2ras(), mri_landmarks)
 
-    # convert to freesurfer T1 voxels (same scanner RAS as T1)
+    # convert to FreeSurfer T1 voxels (same scanner RAS as T1)
     mri_landmarks = apply_trans(fs_t1_mgh.header.get_ras2vox(), mri_landmarks)
 
     # now extract transformation matrix and put back to RAS coordinates of MRI

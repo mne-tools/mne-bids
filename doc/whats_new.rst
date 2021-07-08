@@ -54,7 +54,7 @@ API and behavior changes
 - The ``raw_to_bids`` command has lost its ``--allow_maxshield`` parameter. If writing a FIFF file, we will now always assume that writing data before applying a Maxwell filter is fine, by `Richard Höchenberger`_ (:gh:`787`)
 - :meth:`mne_bids.BIDSPath.find_empty_room` now first looks for an ``AssociatedEmptyRoom`` field in the MEG JSON sidecar file to retrieve the empty-room recording; only if this information is missing, it will proceed to try and find the best-matching empty-room recording based on measurement date (i.e., fall back to the previous behavior), by `Richard Höchenberger`_ (:gh:`795`)
 - If :func:`mne_bids.read_raw_bids` encounters raw data with the ``STI 014`` stimulus channel and this channel is not explicitly listed in ``*_channels.tsv``, it is now automatically removed upon reading, by `Richard Höchenberger`_ (:gh:`823`)
-- :func:`mne_bids.get_anat_landmarks` was added to clarify and simplify the landmark process before being passed to :func:`mne_bids.write_anat`, this depreciated the arguments ``raw``, ``trans`` and ``t1w`` to :func:`mne_bids.write_anat`, by `Alex Rockhill`_ (:gh:`827`)
+- :func:`mne_bids.get_anat_landmarks` was added to clarify and simplify the process of generating landmarks that now need to be passed to :func:`mne_bids.write_anat`; this depreciates the arguments ``raw``, ``trans`` and ``t1w`` of :func:`mne_bids.write_anat`, by `Alex Rockhill`_ (:gh:`827`)
 
 Requirements
 ^^^^^^^^^^^^

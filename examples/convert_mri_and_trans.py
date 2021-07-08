@@ -62,7 +62,7 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
-fs_subjects_dir = op.join(data_path, 'subjects')  # freesurfer subjects dir
+fs_subjects_dir = op.join(data_path, 'subjects')  # FreeSurfer subjects dir
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -103,7 +103,7 @@ print_dir_tree(output_path)
 # matrix :code:`trans`.
 
 # Get the path to our MRI scan
-t1_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+t1_fname = op.join(fs_subjects_dir, 'sample', 'mri', 'T1.mgz')
 
 # Load the transformation matrix and show what it looks like
 trans_fname = op.join(data_path, 'MEG', 'sample',
@@ -120,8 +120,8 @@ print(trans)
 # w.r.t. the T1 image.
 
 # First create the BIDSPath object.
-t1w_bids_path = \
-    BIDSPath(subject=sub, session=ses, root=output_path, suffix='T1w')
+t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path,
+                         suffix='T1w')
 
 # use ``trans`` to transform landmarks from the ``raw`` file to
 # the voxel space of the image
@@ -129,15 +129,15 @@ landmarks = get_anat_landmarks(
     t1_fname,  # path to the MRI scan
     info=raw.info,  # the MEG data file info from the same subject as the MRI
     trans=trans,  # our transformation matrix
-    fs_subject='sample',  # freesurfer subject
-    fs_subjects_dir=fs_subjects_dir,  # freesurfer subjects directory
+    fs_subject='sample',  # FreeSurfer subject
+    fs_subjects_dir=fs_subjects_dir,  # FreeSurfer subjects directory
 )
 
 # We use the write_anat function
 t1w_bids_path = write_anat(
     image=t1_fname,  # path to the MRI scan
     bids_path=t1w_bids_path,
-    landmarks=landmarks,  # the landmarks determined from the GUI transformed
+    landmarks=landmarks,  # the landmarks in MRI voxel space
     verbose=True  # this will print out the sidecar file
 )
 anat_dir = t1w_bids_path.directory
@@ -150,10 +150,10 @@ print_dir_tree(output_path)
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
 # This function converts the anatomical landmarks stored in the T1 sidecar
-# file into freesurfer surface RAS space, and aligns the landmarks in the
+# file into FreeSurfer surface RAS space, and aligns the landmarks in the
 # electrophysiology data with them. This way your electrophysiology channel
 # locations can be transformed to surface RAS space using the ``trans`` which
-# is crucial for source localization and other uses of the freesurfer surfaces.
+# is crucial for source localization and other uses of the FreeSurfer surfaces.
 #
 # .. note:: If this dataset were shared with you, you would first have to use
 #           the T1 image as input for the Freesurfer recon-all, see
@@ -201,8 +201,7 @@ plt.show()
 #
 # We can write another types of MRI data such as FLASH images for BEM models
 
-flash_fname = \
-    op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+flash_fname =  op.join(fs_subjects_dir, 'sample', 'mri', 'flash', 'mef05.mgz')
 
 flash_bids_path = \
     BIDSPath(subject=sub, session=ses, root=output_path, suffix='FLASH')
@@ -270,15 +269,15 @@ plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
 plt.show()
 
 # %%
-# Using manual landmarks coordinates in scanner RAS
-# -------------------------------------------------
+# Using manual landmark coordinates in scanner RAS
+# ------------------------------------------------
 #
-# You can also find landmarks with a 3D image viewer (e.g. freeview). If you
+# You can also find landmarks with a 3D image viewer (e.g. FreeView) if you
 # have not aligned the channel locations (including fiducials) using the
 # coregistration GUI or if this is just more convenient.
 #
-# .. note:: In freeview, you need to use "RAS" and not "TkReg RAS" for this.
-#           You can also use voxel coordinates but, in freeview, they
+# .. note:: In FreeView, you need to use "RAS" and not "TkReg RAS" for this.
+#           You can also use voxel coordinates but, in FreeView, they
 #           are integers and so not as precise as the "RAS" decimal numbers.
 flash_ras_landmarks = \
     np.array([[-74.53102838, 19.62854953, -52.2888194],

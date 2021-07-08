@@ -147,7 +147,7 @@ _cardinal_ident_mapping = {
 
 
 def _get_fid_coords(dig, raise_error=True):
-    """Get the fiducial coordinates from a dig montage.
+    """Get the fiducial coordinates from a DigMontage.
 
     Parameters
     ----------
@@ -1590,7 +1590,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
 
 def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
-    """Get landmarks transformed to image voxel coordinates from head space.
+    """Get anatomical landmarks transformed from "head" to MRI "voxel" coordinates.
 
     Parameters
     ----------
@@ -1614,14 +1614,14 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
         This is because the head coordinate of a
         :class:`mne.channels.DigMontage` is aligned using freesurfer surfaces.
     fs_subjects_dir : str | pathlib.Path | None
-        The subjects directory used for the freesurfer recon. If None, defaults
-        to the ``SUBJECTS_DIR`` environment variable. Must be provided to write
-        anatomical landmarks if they are not provided in mri voxel space.
+        The FreeSurfer subjects directory. If ``None``, defaults to the
+        ``SUBJECTS_DIR`` environment variable. Must be provided to write
+        anatomical landmarks if they are not provided in MRI voxel space.
 
     Returns
     -------
     landmarks : mne.channels.DigMontage
-        The DigMontage with the landmarks in voxel space.
+        A montage with the landmarks in MRI voxel space.
 
     """
     if not has_nibabel():  # pragma: no cover
