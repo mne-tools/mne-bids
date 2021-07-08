@@ -143,14 +143,14 @@ t1w_bids_path = write_anat(
 )
 anat_dir = t1w_bids_path.directory
 
-###############################################################################
+# %%
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset since we
 # have now anatomical landmarks.
 estim_trans = get_head_mri_trans(
     bids_path=bids_path, fs_subject='sample', fs_subjects_dir=fs_subjects_dir)
 
-###############################################################################
+# %%
 # Let's have another look at our BIDS directory and plot the written landmarks
 print_dir_tree(output_path)
 
