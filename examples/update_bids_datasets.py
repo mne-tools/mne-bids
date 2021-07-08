@@ -15,7 +15,7 @@ modify BIDS-formatted data.
 #
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # Imports
 # -------
 # We are importing everything we need for this example:
@@ -24,7 +24,7 @@ from mne.datasets import somato
 from mne_bids import (BIDSPath, read_raw_bids,
                       print_dir_tree, make_report, update_sidecar_json)
 
-###############################################################################
+# %%
 # We will be using the `MNE somato data <mne_somato_data_>`_, which
 # is already stored in BIDS format.
 # For more information, you can check out the
@@ -38,7 +38,7 @@ from mne_bids import (BIDSPath, read_raw_bids,
 # BIDS dataset.
 bids_root = somato.data_path()
 
-###############################################################################
+# %%
 # Explore the dataset contents
 # ----------------------------
 #
@@ -52,7 +52,7 @@ print_dir_tree(bids_root, max_depth=3)
 # We can generate a report of the existing dataset
 print(make_report(bids_root))
 
-###############################################################################
+# %%
 # Update the sidecar JSON dataset contents
 # ----------------------------------------
 #
@@ -92,7 +92,7 @@ entries = {
 # Now update all sidecar fields according to our updating dictionary
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
-###############################################################################
+# %%
 # Read the updated dataset
 # ------------------------
 
@@ -100,13 +100,13 @@ update_sidecar_json(bids_path=sidecar_path, entries=entries)
 raw = read_raw_bids(bids_path=bids_path)
 print(raw.info['line_freq'])
 
-###############################################################################
+# %%
 # Generate a new report based on the updated metadata.
 
 # The manufacturer was changed to ``MEGIN``
 print(make_report(bids_root))
 
-###############################################################################
+# %%
 # We can revert the changes by updating the sidecar again.
 
 # update the sidecar data to have a new PowerLineFrequency
@@ -114,7 +114,7 @@ entries['Manufacturer'] = "Elekta"
 entries['PowerLineFrequency'] = 50
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
-###############################################################################
+# %%
 # Now let us inspect the dataset again by generating the report again. Now that
 # ``update_sidecar_json`` was called, the metadata will be updated.
 
@@ -125,7 +125,7 @@ print(raw.info['line_freq'])
 # Generate the report with updated fields
 print(make_report(bids_root))
 
-###############################################################################
+# %%
 # .. LINKS
 #
 # .. _mne_somato_data:

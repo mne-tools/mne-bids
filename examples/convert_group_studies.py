@@ -16,7 +16,7 @@ checking out this group conversion example: :ref:`ex-convert-mne-sample`
 #
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # Let us import ``mne_bids``
 
 import os.path as op
@@ -30,7 +30,7 @@ from mne_bids import (write_raw_bids, BIDSPath,
                       print_dir_tree)
 from mne_bids.stats import count_events
 
-###############################################################################
+# %%
 # And fetch the data for several subjects and runs of a single task.
 
 subject_ids = [1, 2]
@@ -54,13 +54,13 @@ for subject_id in subject_ids:
 mne_data_dir = mne.get_config('MNE_DATASETS_EEGBCI_PATH')
 data_dir = op.join(mne_data_dir, 'MNE-eegbci-data')
 
-###############################################################################
+# %%
 # Let us loop over the subjects and create BIDS-compatible folder
 
 # Make a path where we can save the data to
 bids_root = op.join(mne_data_dir, 'eegmmidb_bids_group_conversion')
 
-###############################################################################
+# %%
 # To ensure the output path doesn't contain any leftover files from previous
 # tests and example runs, we simply delete it.
 #
@@ -70,7 +70,7 @@ bids_root = op.join(mne_data_dir, 'eegmmidb_bids_group_conversion')
 if op.exists(bids_root):
     shutil.rmtree(bids_root)
 
-###############################################################################
+# %%
 # Get a list of the raw objects for this dataset to use their dates
 # to determine the number of daysback to use to anonymize.
 # While we're looping through the files, also generate the
@@ -98,25 +98,25 @@ for raw, bids_path in zip(raw_list, bids_list):
     # change or delete this number before putting code online, you
     # wouldn't want to inadvertently de-anonymize your data.
     #
-    # Note that we do not need to pass any events, as teh dataset is already
-    # equipped witn annotations, which wll be converted to BIDS events
+    # Note that we do not need to pass any events, as the dataset is already
+    # equipped with annotations, which will be converted to BIDS events
     # automatically.
     write_raw_bids(raw, bids_path,
                    anonymize=dict(daysback=daysback_min + 2117),
                    overwrite=True)
 
-###############################################################################
+# %%
 # Now let's see the structure of the BIDS folder we created.
 
 print_dir_tree(bids_root)
 
-###############################################################################
+# %%
 # Now let's get an overview of the events on the whole dataset
 
 counts = count_events(bids_root)
 counts
 
-###############################################################################
+# %%
 # Now let's generate a report on the dataset.
 dataset_report = make_report(root=bids_root)
 print(dataset_report)

@@ -30,7 +30,7 @@ inspect BIDS-formatted data.
 #
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # Imports
 # -------
 # We are importing everything we need for this example:
@@ -41,7 +41,7 @@ import openneuro
 from mne.datasets import sample
 from mne_bids import BIDSPath, read_raw_bids, print_dir_tree, make_report
 
-###############################################################################
+# %%
 # Download a subject's data from an OpenNeuro BIDS dataset
 # --------------------------------------------------------
 #
@@ -67,7 +67,7 @@ if not op.isdir(bids_root):
 openneuro.download(dataset=dataset, target_dir=bids_root,
                    include=[f'sub-{subject}'])
 
-###############################################################################
+# %%
 # Explore the dataset contents
 # ----------------------------
 #
@@ -78,13 +78,13 @@ openneuro.download(dataset=dataset, target_dir=bids_root,
 
 print_dir_tree(bids_root, max_depth=4)
 
-###############################################################################
+# %%
 # We can even ask MNE-BIDS to produce a human-readbale summary report
 # on the dataset contents.
 
 print(make_report(bids_root))
 
-###############################################################################
+# %%
 # Now it's time to get ready for reading some of the data! First, we need to
 # create an :class:`mne_bids.BIDSPath`, which is the workhorse object of
 # MNE-BIDS when it comes to file and folder operations.
@@ -99,12 +99,12 @@ datatype = 'eeg'
 session = 'off'
 bids_path = BIDSPath(root=bids_root, session=session, datatype=datatype)
 
-###############################################################################
+# %%
 # We can now retrieve a list of all MEG-related files in the dataset:
 
 print(bids_path.match())
 
-###############################################################################
+# %%
 # The returned list contains ``BIDSpaths`` of 3 files:
 # ``sub-pd6_ses-off_task-rest_channels.tsv``,
 # ``sub-pd6_ses-off_task-rest_events.tsv``, and
@@ -122,7 +122,7 @@ print(bids_path.match())
 # pass a ``suffix``, which is the last part of the filename just before the
 # extension -- ``'channels'`` and ``'events'`` for the two TSV files in
 # our example, and ``'eeg'`` for EEG raw data. For MEG and EEG raw data, the
-# suffix is identical to the datatype, so don't let yourselve be confused here!
+# suffix is identical to the datatype, so don't let yourself be confused here!
 
 task = 'rest'
 suffix = 'eeg'
@@ -130,12 +130,12 @@ suffix = 'eeg'
 bids_path = BIDSPath(subject=subject, session=session, task=task,
                      suffix=suffix, datatype=datatype, root=bids_root)
 
-###############################################################################
+# %%
 # Now let's print the contents of ``bids_path``.
 
 print(bids_path)
 
-###############################################################################
+# %%
 # You probably noticed two things: Firstly, this looks like an ordinary string
 # now, not like the more-or-less neatly formatted output we saw before. And
 # secondly, that there's suddenly a filename extension which we never specified
@@ -149,7 +149,7 @@ print(bids_path)
 
 bids_path
 
-###############################################################################
+# %%
 # The ``root`` here is – you guessed it – the directory we passed via the
 # ``root`` parameter: the "home" of our BIDS dataset. The ``datatype``, again,
 # is self-explanatory. The ``basename``, on the other hand, is created
@@ -169,7 +169,7 @@ bids_path
 # more portable. Note that, however, you **can** explicitly specify an
 # extension too, by passing e.g. ``extension='.bdf'`` to ``BIDSPath``.
 
-###############################################################################
+# %%
 # Read the data
 # -------------
 #
@@ -177,7 +177,7 @@ bids_path
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
-###############################################################################
+# %%
 # Now we can inspect the ``raw`` object to check that it contains to correct
 # metadata.
 #
@@ -185,26 +185,26 @@ raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
 print(raw.info['subject_info'])
 
-###############################################################################
+# %%
 # Power line frequency is here.
 
 print(raw.info['line_freq'])
 
-###############################################################################
+# %%
 # Sampling frequency is here.
 
 print(raw.info['sfreq'])
 
-###############################################################################
+# %%
 # Events are now Annotations
 print(raw.annotations)
 
-###############################################################################
+# %%
 # Plot the raw data.
 
 raw.plot()
 
-###############################################################################
+# %%
 # .. LINKS
 #
 # .. _parkinsons_eeg_dataset:

@@ -306,7 +306,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     copyfile_kit
 
     """
-    # Get extenstion of the brainvision file
+    # Get extension of the brainvision file
     fname_src, ext_src = _parse_ext(vhdr_src)
     fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
@@ -402,7 +402,7 @@ def copyfile_edf(src, dest, anonymize=None):
             'startdate' field of the file. The correctly-shifted year will be
             written to the 'local recording identification' region of the
             file header, which may not be parsed by all EDF/EDF+/BDF reader
-            softwares.
+            software.
 
         `keep_his` : bool
             By default (False), all subject information next to the recording

@@ -35,7 +35,7 @@ from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_write_json)
 from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
-from mne_bids.write import write_anat, write_raw_bids
+from mne_bids.write import write_anat, write_raw_bids, get_anat_landmarks
 
 subject_id = '01'
 session_id = '01'
@@ -207,6 +207,7 @@ def test_get_head_mri_trans(tmpdir):
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
+    subjects_dir = op.join(data_path, 'subjects')
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -219,8 +220,10 @@ def test_get_head_mri_trans(tmpdir):
                    overwrite=False)
 
     # We cannot recover trans if no MRI has yet been written
-    with pytest.raises(RuntimeError, match='Did not find any T1w.json'):
-        estimated_trans = get_head_mri_trans(bids_path=bids_path)
+    with pytest.raises(RuntimeError, match='Did not find any T1w'):
+        estimated_trans = get_head_mri_trans(
+            bids_path=bids_path, fs_subject='sample',
+            fs_subjects_dir=subjects_dir)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
@@ -230,14 +233,16 @@ def test_get_head_mri_trans(tmpdir):
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    t1w_bidspath = BIDSPath(subject=subject_id, session=session_id,
-                            acquisition=acq, root=tmpdir)
-    t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              raw=raw, trans=trans, verbose=True)
-    anat_dir = t1w_bidspath.directory
+    landmarks = get_anat_landmarks(
+        t1w_mgh, raw.info, trans, fs_subject='sample',
+        fs_subjects_dir=subjects_dir)
+    t1w_bids_path = write_anat(
+        t1w_mgh, bids_path=bids_path, landmarks=landmarks, verbose=True)
+    anat_dir = bids_path.directory
 
     # Try to get trans back through fitting points
-    estimated_trans = get_head_mri_trans(bids_path=bids_path)
+    estimated_trans = get_head_mri_trans(
+        bids_path=bids_path, fs_subject='sample', fs_subjects_dir=subjects_dir)
 
     assert trans['from'] == estimated_trans['from']
     assert trans['to'] == estimated_trans['to']
@@ -246,18 +251,23 @@ def test_get_head_mri_trans(tmpdir):
     # provoke an error by introducing NaNs into MEG coords
     raw.info['dig'][0]['r'] = np.full(3, np.nan)
     sh.rmtree(anat_dir)
-    bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                           raw=raw, trans=trans)
+    bad_landmarks = get_anat_landmarks(t1w_mgh, raw.info, trans, 'sample',
+                                       op.join(data_path, 'subjects'))
+    write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=bad_landmarks)
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
-        estimated_trans = get_head_mri_trans(bids_path=bids_path)
+        estimated_trans = get_head_mri_trans(bids_path=t1w_bids_path,
+                                             fs_subject='sample',
+                                             fs_subjects_dir=subjects_dir)
 
     # test we are permissive for different casings of landmark names in the
     # sidecar, and also accept "nasion" instead of just "NAS"
     raw = _read_raw_fif(raw_fname)
-    t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                              raw=raw, trans=trans, overwrite=True)
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                   overwrite=True)  # overwrite with new acq
+    t1w_bids_path = write_anat(t1w_mgh, bids_path=bids_path,
+                               landmarks=landmarks, overwrite=True)
 
-    t1w_json_fpath = t1w_bidspath.copy().update(extension='.json').fpath
+    t1w_json_fpath = t1w_bids_path.copy().update(extension='.json').fpath
     with t1w_json_fpath.open('r', encoding='utf-8') as f:
         t1w_json = json.load(f)
 
@@ -270,8 +280,9 @@ def test_get_head_mri_trans(tmpdir):
     with t1w_json_fpath.open('w', encoding='utf-8') as f:
         json.dump(t1w_json, f)
 
-    estimated_trans = get_head_mri_trans(bids_path=(_bids_path.copy()
-                                                    .update(root=tmpdir)))
+    estimated_trans = get_head_mri_trans(
+        bids_path=bids_path,
+        fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
     # Test t1_bids_path parameter
@@ -282,9 +293,13 @@ def test_get_head_mri_trans(tmpdir):
     raw = _read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path=meg_bids_path)
-    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
-    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
-                                    t1_bids_path=t1_bids_path)
+    landmarks = get_anat_landmarks(
+        t1w_mgh, raw.info, trans, fs_subject='sample',
+        fs_subjects_dir=subjects_dir)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, landmarks=landmarks)
+    read_trans = get_head_mri_trans(
+        bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
+        fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert np.allclose(trans['trans'], read_trans['trans'])
 
     # Case 2: different sessions
@@ -294,10 +309,17 @@ def test_get_head_mri_trans(tmpdir):
     t1_bids_path = meg_bids_path.copy().update(session='02')
 
     write_raw_bids(raw, bids_path=meg_bids_path)
-    write_anat(t1w_mgh, bids_path=t1_bids_path, raw=raw, trans=trans)
-    read_trans = get_head_mri_trans(bids_path=meg_bids_path,
-                                    t1_bids_path=t1_bids_path)
+    write_anat(t1w_mgh, bids_path=t1_bids_path, landmarks=landmarks)
+    read_trans = get_head_mri_trans(
+        bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
+        fs_subject='sample', fs_subjects_dir=subjects_dir)
     assert np.allclose(trans['trans'], read_trans['trans'])
+
+    # Test that incorrect subject directory throws error
+    with pytest.raises(ValueError, match='Could not find'):
+        estimated_trans = get_head_mri_trans(
+            bids_path=bids_path, fs_subject='bad',
+            fs_subjects_dir=subjects_dir)
 
 
 def test_handle_events_reading(tmpdir):
@@ -818,12 +840,15 @@ def test_get_head_mri_trans_ctf(fname, tmpdir):
 
     t1w_bids_path = BIDSPath(subject=subject_id, session=session_id,
                              acquisition=acq, root=tmpdir)
-    write_anat(t1w_mgh, bids_path=t1w_bids_path,
-               raw=raw_ctf, trans=trans)
+    landmarks = get_anat_landmarks(
+        t1w_mgh, raw_ctf.info, trans, fs_subject='sample',
+        fs_subjects_dir=op.join(data_path, 'subjects'))
+    write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks)
 
     # Try to get trans back through fitting points
-    estimated_trans = get_head_mri_trans(bids_path=bids_path,
-                                         extra_params=dict(clean_names=True))
+    estimated_trans = get_head_mri_trans(
+        bids_path=bids_path, extra_params=dict(clean_names=True),
+        fs_subject='sample', fs_subjects_dir=op.join(data_path, 'subjects'))
 
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
@@ -972,3 +997,60 @@ def test_ignore_exclude_param(tmpdir):
     raw = read_raw_bids(bids_path=bids_path, verbose=False,
                         extra_params=dict(exclude=[ch_name]))
     assert ch_name in raw.ch_names
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_channels_tsv_raw_mismatch(tmpdir):
+    """Test behavior when channels.tsv contains channels not found in raw."""
+    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg',
+                                         task='rest')
+
+    # Remove one channel from the raw data without updating channels.tsv
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    raw_path = bids_path.copy().update(extension='.fif').fpath
+    raw = _read_raw(raw_path, preload=True)
+    raw.drop_channels(ch_names=raw.ch_names[-1])
+    raw.load_data()
+    raw.save(raw_path, overwrite=True)
+
+    with pytest.warns(
+        RuntimeWarning,
+        match='number of channels in the channels.tsv sidecar .* '
+              'does not match the number of channels in the raw data'
+    ):
+        read_raw_bids(bids_path)
+
+    # Remame a channel in the raw data without updating channels.tsv
+    # (number of channels in channels.tsv and raw remains different)
+    ch_name_orig = raw.ch_names[-1]
+    ch_name_new = 'MEGtest'
+    raw.rename_channels({ch_name_orig: ch_name_new})
+    raw.save(raw_path, overwrite=True)
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=f'Cannot set channel type for the following channels, as they '
+              f'are missing in the raw data: {ch_name_orig}'
+    ):
+        read_raw_bids(bids_path)
+
+    # Mark channel as bad in channels.tsv and remove it from the raw data
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    ch_name_orig = raw.ch_names[-1]
+    ch_name_new = 'MEGtest'
+
+    raw.info['bads'] = [ch_name_orig]
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    raw.drop_channels(raw.ch_names[-2])
+    raw.rename_channels({ch_name_orig: ch_name_new})
+    raw.save(raw_path, overwrite=True)
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=f'Cannot set "bad" status for the following channels, as '
+              f'they are missing in the raw data: {ch_name_orig}'
+    ):
+        read_raw_bids(bids_path)

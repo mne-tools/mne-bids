@@ -11,12 +11,12 @@ operations. Learn here how to use it.
 # Author: Richard Höchenberger <richard.hoechenberger@gmail.com>
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # Obviously, to start exploring BIDSPath, we first need to import it.
 
 from mne_bids import BIDSPath
 
-###############################################################################
+# %%
 # Now let's discuss a little bit of background on the BIDS file and folder
 # naming scheme. The first term we are going to introduce is the **BIDS root**.
 # The BIDS root is simply the root folder of your BIDS dataset. For
@@ -32,7 +32,7 @@ from mne_bids import BIDSPath
 
 bids_root = './my_bids_root'
 
-###############################################################################
+# %%
 # This refers to a folder named `my_bids_root` in the current working
 # directory. Finally, let is create a ``BIDSPath``, and tell it about our
 # BIDS root. We can then also query the ``BIDSPath`` for its root.
@@ -40,7 +40,7 @@ bids_root = './my_bids_root'
 bids_path = BIDSPath(root=bids_root)
 print(bids_path.root)
 
-###############################################################################
+# %%
 # Great! But not really useful so far. BIDS also asks us to specify **subject
 # identifiers**. We can either create a new ``BIDSPath``, or update our
 # existing one. The value can be retrieved via the ``.subject`` attribute.
@@ -55,7 +55,7 @@ print(bids_path_new.subject)
 bids_path.update(subject=subject)
 print(bids_path.subject)
 
-###############################################################################
+# %%
 # In this example, we are going to update the existing ``BIDSPath`` using its
 # ``update()`` method. But note that all parameters we pass to this method can
 # also be used when creating a ``BIDSPath``.
@@ -70,7 +70,7 @@ session = 'test'
 bids_path.update(session=session)
 print(bids_path.session)
 
-###############################################################################
+# %%
 # Now that was easy! We're almost there! We also need to specify a
 # **data type**, i.e., ``meg`` for MEG data, ``eeg`` and ``ieeg`` for EEG and
 # iEEG data, or ``anat`` for anatomical MRI scans. Typically, MNE-BIDS will
@@ -82,11 +82,11 @@ datatype = 'meg'
 bids_path.update(datatype=datatype)
 print(bids_path.datatype)
 
-###############################################################################
+# %%
 # Excellent! Let's have a look at the path we have constructed!
 print(bids_path)
 
-###############################################################################
+# %%
 # As you can see, ``BIDSPath`` automatically arranged all the information we
 # provided such that it creates a valid BIDS folder structure. You can also
 # retrieve a `pathlib.Path` object of this path:
@@ -94,12 +94,12 @@ print(bids_path)
 pathlib_path = bids_path.fpath
 pathlib_path
 
-###############################################################################
+# %%
 # Let's have a closer look at the components of our ``BIDSPath`` again.
 
 bids_path
 
-###############################################################################
+# %%
 # The most interesting thing here is probably the **basename**. It's what
 # MNE-BIDS uses to name individual files. The basename consists of a set of
 # so-called **entities**, which are concatenated using underscores. You can
@@ -107,7 +107,7 @@ bids_path
 
 bids_path.basename
 
-###############################################################################
+# %%
 # The two entities you can see here are the ``subject`` entity (``sub``) and
 # the ``session`` entity (``ses``). Each entity name also has a value; for
 # ``sub``, this is ``123``, and for ``ses``, it is ``test`` in our example.
@@ -117,7 +117,7 @@ bids_path.basename
 
 bids_path.entities
 
-###############################################################################
+# %%
 # As you can see, most entity keys are set to ``None``, which is the default
 # and implies that no value has been set. Let us add a ``run`` entity, and
 # remove the ``session``:
@@ -127,17 +127,17 @@ session = None
 bids_path.update(run=run, session=session)
 bids_path
 
-###############################################################################
+# %%
 # As you can see, the ``basename`` has been updated. In fact, the entire
 # **path** has been updated, and the ``ses-test`` folder has been dropped from
 # the path:
 
 print(bids_path.fpath)
 
-###############################################################################
+# %%
 # Awesome! We're almost done! Two important things are still missing, though:
 # the so-called **suffix** and the filename **extension**. Sometimes these
-# terms are used interchangably, but in BIDS, they have a very specific
+# terms are used interchangeably, but in BIDS, they have a very specific
 # and different meaning!
 #
 # The **suffix** is the last part of a BIDS filename before the extension. It
@@ -155,7 +155,7 @@ bids_path.update(suffix='meg', extension='fif')
 print(bids_path.fpath)
 bids_path
 
-###############################################################################
+# %%
 # By default, most MNE-BIDS functions will try to infer to correct
 # suffix and extension for your data, and you don't need to specify them
 # manually.
