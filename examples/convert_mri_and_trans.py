@@ -156,7 +156,7 @@ print_dir_tree(output_path)
 # is crucial for source localization and other uses of the FreeSurfer surfaces.
 #
 # .. note:: If this dataset were shared with you, you would first have to use
-#           the T1 image as input for the Freesurfer recon-all, see
+#           the T1 image as input for the FreeSurfer recon-all, see
 #           :ref:`tut-freesurfer-mne`.
 estim_trans = get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
                                  fs_subjects_dir=fs_subjects_dir)

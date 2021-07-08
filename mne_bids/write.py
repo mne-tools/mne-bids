@@ -1611,11 +1611,11 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
         transformation matrix. If ``None`` and no ``landmarks`` parameter is
         passed, no sidecar JSON file will be created.
     fs_subject : str
-        The subject identifier used for the freesurfer recon-all. If None,
-        defaults to the ``sub`` in ``bids_path``. Must be provided to write
-        the anatomical landmarks if they are not provided in mri voxel space.
+        The subject identifier used for FreeSurfer. If ``None``, defaults to
+        the ``subject`` entity in ``bids_path``. Must be provided to write
+        the anatomical landmarks if they are not provided in MRI voxel space.
         This is because the head coordinate of a
-        :class:`mne.channels.DigMontage` is aligned using freesurfer surfaces.
+        :class:`mne.channels.DigMontage` is aligned using FreeSurfer surfaces.
     fs_subjects_dir : str | pathlib.Path | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable. Must be provided to write
