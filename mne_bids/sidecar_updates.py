@@ -8,7 +8,6 @@ import json
 from collections import OrderedDict
 
 from mne.channels import DigMontage
-from mne.io.constants import FIFF
 from mne.utils import logger, _validate_type
 from mne_bids import BIDSPath
 from mne_bids.utils import _write_json
