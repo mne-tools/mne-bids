@@ -956,7 +956,7 @@ def make_dataset_description(path, name, data_license=None,
     name : str
         The name of this BIDS dataset.
     data_license : str | None
-        The license under which this datset is published.
+        The license under which this dataset is published.
     authors : list | str | None
         List of individuals who contributed to the creation/curation of the
         dataset. Must be a list of str or a single comma separated str
