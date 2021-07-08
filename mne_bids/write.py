@@ -910,7 +910,7 @@ def make_dataset_description(path, name, data_license=None,
     name : str
         The name of this BIDS dataset.
     data_license : str | None
-        The license under which this datset is published.
+        The license under which this dataset is published.
     authors : list | str | None
         List of individuals who contributed to the creation/curation of the
         dataset. Must be a list of str or a single comma separated str
@@ -1373,8 +1373,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # For the remaining files, we can use BIDSPath to alter.
     readme_fname = op.join(bids_path.root, 'README')
     participants_tsv_fname = op.join(bids_path.root, 'participants.tsv')
-    participants_json_fname = participants_tsv_fname.replace('tsv',
-                                                             'json')
+    participants_json_fname = participants_tsv_fname.replace('.tsv',
+                                                             '.json')
 
     sidecar_path = bids_path.copy().update(suffix=bids_path.datatype,
                                            extension='.json')

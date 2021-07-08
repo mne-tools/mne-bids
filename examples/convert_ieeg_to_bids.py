@@ -57,7 +57,7 @@ from mne_bids import (write_raw_bids, BIDSPath,
                       read_raw_bids, print_dir_tree)
 
 
-###############################################################################
+# %%
 # Step 1: Download the data
 # -------------------------
 #
@@ -85,7 +85,7 @@ elec = np.empty(shape=(len(ch_names), 3))
 for ind, axis in enumerate(['x', 'y', 'z']):
     elec[:, ind] = list(map(float, electrode_tsv[axis]))
 
-###############################################################################
+# %%
 # Now we make a montage stating that the iEEG contacts are in the MNI
 # coordinate system, which corresponds to the `fsaverage` subject in
 # FreeSurfer. For example, one can look at how MNE-Python deals with iEEG data
@@ -96,7 +96,7 @@ montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
 print(f'Created {len(ch_names)} channel positions')
 print(dict(zip(ch_names, elec)))
 
-###############################################################################
+# %%
 # We will load a :class:`mne.io.Raw` object and
 # use the montage we created.
 info = mne.create_info(ch_names, 1000., 'ecog')
@@ -113,7 +113,7 @@ raw.info['bads'].extend(['BTM1', 'BTM2', 'BTM3', 'BTM4', 'BTM5', 'BTM6',
 # (note that this only works for some channel types: EEG/sEEG/ECoG/DBS/fNIRS)
 raw.set_montage(montage, on_missing='warn')
 
-###############################################################################
+# %%
 # Let us confirm what our channel coordinates look like.
 
 # make a plot of the sensors in 2D plane
@@ -128,7 +128,7 @@ ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
 print("The channel coordinates before writing into BIDS: ")
 pprint([x for x in zip(ch_names, pos)])
 
-###############################################################################
+# %%
 # BIDS vs MNE-Python Coordinate Systems
 # -------------------------------------
 #
@@ -168,7 +168,7 @@ pprint([x for x in zip(ch_names, pos)])
 # ... as you can see in the docstring:
 print(write_raw_bids.__doc__)
 
-###############################################################################
+# %%
 # Let us initialize some of the necessary data for the subject.
 
 # There is a subject, and specific task for the dataset.
@@ -181,7 +181,7 @@ mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 # There is the root directory for where we will write our data.
 bids_root = op.join(mne_data_dir, 'ieegmmidb_bids')
 
-###############################################################################
+# %%
 # To ensure the output path doesn't contain any leftover files from previous
 # tests and example runs, we simply delete it.
 #
@@ -191,7 +191,7 @@ bids_root = op.join(mne_data_dir, 'ieegmmidb_bids')
 if op.exists(bids_root):
     shutil.rmtree(bids_root)
 
-###############################################################################
+# %%
 # Now we just need to specify a few iEEG details to make things work:
 # We need the basename of the dataset. In addition, :func:`write_raw_bids`
 # requires the ``.filenames`` attribute of the Raw object to be non-empty,
@@ -207,14 +207,14 @@ bids_path = BIDSPath(subject=subject_id,
 write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
                overwrite=True)
 
-###############################################################################
+# %%
 # Step 3: Check and compare with standard
 # ---------------------------------------
 
 # Now we have written our BIDS directory.
 print_dir_tree(bids_root)
 
-###############################################################################
+# %%
 # Step 4: Cite mne-bids
 # ---------------------
 # We can see that the appropriate citations are already written in the README.
@@ -225,7 +225,7 @@ with open(readme, 'r', encoding='utf-8-sig') as fid:
     text = fid.read()
 print(text)
 
-###############################################################################
+# %%
 # MNE-BIDS has created a suitable directory structure for us, and among other
 # meta data files, it started an ``events.tsv``` and ``channels.tsv`` file,
 # and created an initial ``dataset_description.json`` file on top!
@@ -245,7 +245,7 @@ print(text)
 #
 # Command line tool: https://www.npmjs.com/package/bids-validator
 
-###############################################################################
+# %%
 # Step 5: Plot output channels and check that they match!
 # -------------------------------------------------------
 #

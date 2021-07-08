@@ -189,7 +189,7 @@ def test_write_participants(_bids_validate, tmpdir):
     data['test_col2'] = ['n/a'] * len(data['participant_id'])
     orig_key_order = list(data.keys())
     _to_tsv(data, participants_tsv)
-    # crate corresponding json entry
+    # create corresponding json entry
     participants_json_fpath = tmpdir / 'participants.json'
     json_field = {
         'Description': 'trial-outcome',
@@ -2832,3 +2832,18 @@ def test_preload(_bids_validate, tmpdir):
     write_raw_bids(raw, bids_path, allow_preload=True, format='BrainVision',
                    verbose=False, overwrite=True)
     _bids_validate(bids_root)
+
+
+@pytest.mark.parametrize(
+    'dir_name', ('tsv_test', 'json_test')
+)
+def test_write_raw_special_paths(tmpdir, dir_name):
+    """Test writing to locations containing strings with special meaning."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    root = Path(tmpdir) / dir_name
+    bids_path = _bids_path.copy().update(root=root)
+    write_raw_bids(raw=raw, bids_path=bids_path)

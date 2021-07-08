@@ -16,12 +16,12 @@ wish to create these files/folders on your own.
 # Authors: Chris Holdgraf <choldgraf@berkeley.edu>
 # License: BSD (3-clause)
 
-###############################################################################
+# %%
 # First we will import the relevant functions
 
 from mne_bids import BIDSPath
 
-###############################################################################
+# %%
 # Creating file names for BIDS
 # ----------------------------
 #
@@ -34,14 +34,14 @@ bids_path = BIDSPath(subject='test', session='two', task='mytask',
                      suffix='events', extension='.tsv')
 print(bids_path)
 
-###############################################################################
+# %%
 # You may also omit the suffix, which will result in *only* a prefix for a
 # file name. This could then prepended to many more files.
 
 bids_path = BIDSPath(subject='test', task='mytask')
 print(bids_path)
 
-###############################################################################
+# %%
 # Creating folders
 # ----------------
 #
