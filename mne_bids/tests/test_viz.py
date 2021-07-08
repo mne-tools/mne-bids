@@ -4,10 +4,9 @@ import pytest
 
 import mne
 from mne.datasets import testing
+from mne.utils import requires_nibabel, requires_version
 from mne_bids.viz import plot_anat_landmarks
 from mne_bids import BIDSPath, write_anat
-
-from mne.utils import requires_nibabel, requires_version
 
 
 @requires_nibabel()
