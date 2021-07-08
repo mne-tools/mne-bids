@@ -147,14 +147,14 @@ anat_dir = t1w_bids_path.directory
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset since we
 # have now anatomical landmarks.
-estim_trans = get_head_mri_trans(bids_path=bids_path)
+estim_trans = get_head_mri_trans(
+    bids_path=bids_path, fs_subject='sample', fs_subjects_dir=fs_subjects_dir)
 
 ###############################################################################
 # Let's have another look at our BIDS directory and plot the written landmarks
 print_dir_tree(output_path)
 
 plot_anat_landmarks(t1w_bids_path, vmax=160)
-plt.suptitle('T1 MRI')
 
 # %%
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
@@ -242,7 +242,6 @@ t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
 plot_anat_landmarks(t1w_bids_path, vmax=160)
-plt.suptitle('T1 Defaced')
 
 # %%
 # Writing defaced and anonymized FLASH MRI image
@@ -274,7 +273,6 @@ flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
 
 # Plot it
 plot_anat_landmarks(flash_bids_path, vmax=700)
-plt.suptitle('Flash Defaced')
 
 # %%
 # Using manual landmark coordinates in scanner RAS
@@ -310,7 +308,6 @@ flash_bids_path = write_anat(
 
 # Plot it
 plot_anat_landmarks(flash_bids_path, vmax=700)
-plt.suptitle('Flash Defaced')
 
 # %%
 # .. LINKS

@@ -22,9 +22,8 @@ def plot_anat_landmarks(bids_path, vmax=None, show=True):
 
     Returns
     -------
-    fig : matplotlib.figure.Figure | None
-        The figure object containing the plot. None if no landmarks
-        are avaiable.
+    fig : matplotlib.figure.Figure
+        The figure object containing the plot.
     """
     import matplotlib.pyplot as plt
     from nilearn.plotting import plot_anat
@@ -40,8 +39,7 @@ def plot_anat_landmarks(bids_path, vmax=None, show=True):
         n_landmarks = len(coords_dict)
 
     if not n_landmarks:
-        warn("No landmarks available with the image")
-        return
+        raise ValueError("No landmarks available with the image")
 
     # Move the coords_dict from MRI Voxel to RAS
     mgh = nib.MGHImage(nii.dataobj, nii.affine)
@@ -64,7 +62,9 @@ def plot_anat_landmarks(bids_path, vmax=None, show=True):
             title=label, vmax=vmax,
         )
 
+    plt.suptitle(bids_path.fpath.name)
+
     if show:
-        plt.show()
+        fig.show()
 
     return fig
