@@ -1669,7 +1669,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
 
     .. note:: To generate the JSON sidecar with anatomical landmark
               coordinates ("fiducials"), you need to pass the landmarks via
-              the ``landmarks`` parameter. :func:`mne_bids.get_landmarks`
+              the ``landmarks`` parameter. :func:`mne_bids.get_anat_landmarks`
               may be useful for getting the ``landmarks``.
 
     Parameters
@@ -1704,20 +1704,20 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
     raw : mne.io.Raw | None
         The raw data of ``subject`` corresponding to the MR scan in ``image``.
         If ``None``, ``trans`` has to be ``None`` as well.
-        Deprecated, use :func:`mne_bids.get_landmarks` instead.
+        Deprecated, use :func:`mne_bids.get_anat_landmarks` instead.
     trans : mne.transforms.Transform | str | None
         The transformation matrix from head to MRI coordinates. Can
         also be a string pointing to a ``.trans`` file containing the
         transformation matrix. If ``None`` and no ``landmarks`` parameter is
         passed, no sidecar JSON file will be created.
-        Deprecated, use :func:`mne_bids.get_landmarks` instead.
+        Deprecated, use :func:`mne_bids.get_anat_landmarks` instead.
     t1w : str | pathlib.Path | NibabelImageObject | None
         This parameter is useful if image written is not already a T1 image.
         If the image written is to have a sidecar or be defaced,
         this can be done using `raw`, `trans` and `t1w`. The T1 must be
         passed here because the coregistration uses freesurfer surfaces which
         are in T1 space.
-        Deprecated, use :func:`mne_bids.get_landmarks` instead.
+        Deprecated, use :func:`mne_bids.get_anat_landmarks` instead.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1742,7 +1742,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
 
     if raw is not None or trans is not None or t1w is not None:
         raise ValueError('`raw`, `trans` and `t1w` are depreciated '
-                         'use `mne_bids.get_landmarks` instead')
+                         'use `mne_bids.get_anat_landmarks` instead')
 
     write_sidecar = landmarks is not None
 
