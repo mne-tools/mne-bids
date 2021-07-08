@@ -201,7 +201,7 @@ plt.show()
 #
 # We can write another types of MRI data such as FLASH images for BEM models
 
-flash_fname =  op.join(fs_subjects_dir, 'sample', 'mri', 'flash', 'mef05.mgz')
+flash_fname = op.join(fs_subjects_dir, 'sample', 'mri', 'flash', 'mef05.mgz')
 
 flash_bids_path = \
     BIDSPath(subject=sub, session=ses, root=output_path, suffix='FLASH')
