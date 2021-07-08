@@ -1685,6 +1685,12 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
+    landmarks : mne.channels.DigMontage | str | None
+        The DigMontage or filepath to a DigMontage with landmarks that can be
+        passed to provide information for defacing. Landmarks can be determined
+        from the head model using `mne coreg` GUI, or they can be determined
+        from the MRI using freeview.  If ``None`` and no ``trans`` parameter
+        is passed, no sidecar JSON file will be created.
     deface : bool | dict
         If False, no defacing is performed.
         If True, deface with default parameters.
@@ -1697,29 +1703,29 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         - `theta`: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
-    landmarks : mne.channels.DigMontage | str | None
-        The DigMontage or filepath to a DigMontage with landmarks that can be
-        passed to provide information for defacing. Landmarks can be determined
-        from the head model using `mne coreg` GUI, or they can be determined
-        from the MRI using `freeview`.  If ``None`` and no ``trans`` parameter
-        is passed, no sidecar JSON file will be created.
     raw : mne.io.Raw | None
         The raw data of ``subject`` corresponding to the MR scan in ``image``.
         If ``None``, ``trans`` has to be ``None`` as well.
-        Deprecated, use :func:`mne_bids.get_anat_landmarks` instead.
+
+        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.
+
     trans : mne.transforms.Transform | str | None
         The transformation matrix from head to MRI coordinates. Can
         also be a string pointing to a ``.trans`` file containing the
         transformation matrix. If ``None`` and no ``landmarks`` parameter is
         passed, no sidecar JSON file will be created.
-        Deprecated, use :func:`mne_bids.get_anat_landmarks` instead.
+
+        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.
+
     t1w : str | pathlib.Path | NibabelImageObject | None
         This parameter is useful if image written is not already a T1 image.
         If the image written is to have a sidecar or be defaced,
         this can be done using `raw`, `trans` and `t1w`. The T1 must be
         passed here because the coregistration uses freesurfer surfaces which
         are in T1 space.
-        Deprecated, use :func:`mne_bids.get_anat_landmarks` instead.
+
+        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1729,6 +1735,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         match the current data will be replaced.
         If overwrite is False, no existing data will be overwritten or
         replaced.
+
     verbose : bool
         If ``True``, this will print a snippet of the sidecar files. If
         ``False``, no content will be printed.
@@ -1745,6 +1752,8 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
     if raw is not None or trans is not None or t1w is not None:
         raise ValueError('`raw`, `trans` and `t1w` are depreciated '
                          'use `mne_bids.get_anat_landmarks` instead')
+
+    del raw, trans, t1w
 
     write_sidecar = landmarks is not None
 
