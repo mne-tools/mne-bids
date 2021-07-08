@@ -11,5 +11,5 @@ from mne_bids.write import (make_dataset_description, write_anat,
                             write_raw_bids, mark_bad_channels,
                             write_meg_calibration, write_meg_crosstalk,
                             get_anat_landmarks)
-from mne_bids.sidecar_updates import update_sidecar_json
+from mne_bids.sidecar_updates import update_sidecar_json, update_anat_landmarks
 from mne_bids.inspect import inspect_dataset
