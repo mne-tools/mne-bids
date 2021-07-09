@@ -254,7 +254,7 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<span class="k">def</span> <span class="nf">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve events (for use in *_events.tsv) from FIFF/array &amp; Annotations.</span>
 
 <span class="sd">    Parameters</span>
@@ -268,6 +268,8 @@
 <span class="sd">        mapping a description key to an integer-valued event code.</span>
 <span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    task : str | None</span>
+<span class="sd">        If task may be resting state, silence warnings.</span>
 <span class="sd">    verbose : bool | str | int | None</span>
 <span class="sd">        If not None, override default verbose level (see :func:`mne.verbose`).</span>
 
@@ -341,8 +343,8 @@
     <span class="n">all_dur</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">duration</span>
 
     <span class="c1"># warn no events if not rest</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;filenames&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;_task-rest&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;rest&#39;</span><span class="p">)):</span>
         <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No events found or provided. Please add annotations to the raw &#39;</span>
              <span class="s1">&#39;data, or provide the events_data and event_id parameters. For &#39;</span>
              <span class="s1">&#39;resting state data, BIDS recommends naming the task using &#39;</span>
