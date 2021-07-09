@@ -194,6 +194,10 @@ def test_update_anat_landmarks(tmpdir):
     update_anat_landmarks(bids_path=bids_path_mri_no_ext,
                           landmarks=landmarks_new)
 
+    bids_path_mri_no_datatype = bids_path_mri.copy().update(datatype=None)
+    update_anat_landmarks(bids_path=bids_path_mri_no_datatype,
+                          landmarks=landmarks)
+
     # Check handling of invalid input
     bids_path_invalid = bids_path_mri.copy().update(datatype='meg')
     with pytest.raises(ValueError, match='Can only operate on "anat"'):
