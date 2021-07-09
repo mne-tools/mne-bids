@@ -165,6 +165,44 @@ def update_anat_landmarks(bids_path, landmarks):
     _validate_type(item=bids_path, types=BIDSPath, item_name='bids_path')
     _validate_type(item=landmarks, types=DigMontage, item_name='landmarks')
 
+    # Do some path verifications and fill in some gaps the users might have
+    # left (datatype and extension)
+    # XXX We could be more stringent (and less user-friendly) and insist on a
+    # XXX full specification of all parts of the BIDSPath, thoughts?
+    bids_path_mri = bids_path.copy()
+    if bids_path_mri.datatype is None:
+        bids_path_mri.datatype = 'anat'
+
+    if bids_path_mri.datatype != 'anat':
+        raise ValueError(
+            f'Can only operate on "anat" MRI data, but the provided bids_path '
+            f'points to: {bids_path_mri.datatype}')
+
+    if bids_path_mri.suffix is None:
+        raise ValueError('Please specify the "suffix" entity of the provided '
+                         'bids_path.')
+    elif bids_path_mri.suffix not in ('T1w', 'FLASH'):
+        raise ValueError(
+            f'Can only operate on "T1w" and "FLASH" images, but the bids_path '
+            f'suffix indicates: {bids_path_mri.suffix}')
+
+    valid_extensions = ('.nii', '.nii.gz')
+    file_exists = False
+    if bids_path_mri.extension is None:
+        for extension in valid_extensions:
+            bids_path_mri.extension = extension
+            if bids_path_mri.fpath.exists():
+                file_exists = True
+                break
+
+    if not file_exists:
+        tried_fnames = [f'bids_path_mri.fpath.stem{ext}'
+                        for ext in valid_extensions]
+        raise ValueError(
+            f'Could not find an MRI scan. Please check theprovided bids_path. '
+            f'Tried the following filenames: '
+            f'{", ".join(tried_fnames)}')
+
     positions = landmarks.get_positions()
     coord_frame = positions['coord_frame']
     if coord_frame != 'mri_voxel':
@@ -201,8 +239,8 @@ def update_anat_landmarks(bids_path, landmarks):
         }
     }
 
-    json_bids_path = bids_path.copy().update(extension='.json')
-    if not json_bids_path.fpath.exists():  # Must exist before we can update it
-        json_bids_path.fpath.touch()
+    bids_path_json = bids_path.copy().update(extension='.json')
+    if not bids_path_json.fpath.exists():  # Must exist before we can update it
+        bids_path_json.fpath.touch()
 
-    update_sidecar_json(bids_path=json_bids_path, entries=json)
+    update_sidecar_json(bids_path=bids_path_json, entries=json)
