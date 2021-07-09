@@ -227,7 +227,7 @@ def update_anat_landmarks(bids_path, landmarks):
     # Check if coordinates for any cardinal point are missing, and convert to
     # a list so we can easily store the data in JSON format
     missing_points = []
-    for name, coords in name_to_coords_map.copy().items():
+    for name, coords in name_to_coords_map.items():
         if coords is None:
             missing_points.append(name)
         else:
