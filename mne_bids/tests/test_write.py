@@ -509,9 +509,9 @@ def test_fif(_bids_validate, tmpdir):
 
     # try and write preloaded data
     raw = _read_raw_fif(raw_fname, preload=True)
-    with pytest.raises(ValueError, match='preloaded'):
+    with pytest.raises(ValueError, match='allow_preload'):
         write_raw_bids(raw, bids_path_meg, events_data=events,
-                       event_id=event_id, overwrite=False)
+                       event_id=event_id, allow_preload=False, overwrite=False)
 
     # test anonymize
     raw = _read_raw_fif(raw_fname)
@@ -563,10 +563,6 @@ def test_fif(_bids_validate, tmpdir):
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_path)
-
-    del raw._filenames
-    with pytest.raises(ValueError, match='raw.filenames is missing'):
-        write_raw_bids(raw, bids_path2)
 
     _bids_validate(bids_root)
 
@@ -2776,6 +2772,32 @@ def test_write_associated_emptyroom(_bids_validate, tmpdir):
             .as_posix()  # make test work on Windows, too
             .endswith(meg_json_data['AssociatedEmptyRoom']))
     assert meg_json_data['AssociatedEmptyRoom'].startswith('/')
+
+
+def test_preload(_bids_validate, tmpdir):
+    """Test writing custom preloaded raw objects"""
+    bids_root = tmpdir.mkdir('bids')
+    bids_path = _bids_path.copy().update(root=bids_root)
+    sfreq, n_points = 1024., int(1e6)
+    info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
+                           ['eeg'] * 5)
+    rng = np.random.RandomState(99)
+    raw = mne.io.RawArray(rng.random((5, n_points)) * 1e-6, info)
+    raw.orig_format = 'single'
+    raw.info['line_freq'] = 60
+
+    # reject preloaded by default
+    with pytest.raises(ValueError, match='allow_preload'):
+        write_raw_bids(raw, bids_path, verbose=False, overwrite=True)
+
+    # preloaded raw must specify format
+    with pytest.raises(ValueError, match='format'):
+        write_raw_bids(raw, bids_path, allow_preload=True,
+                       verbose=False, overwrite=True)
+
+    write_raw_bids(raw, bids_path, allow_preload=True, format='BrainVision',
+                   verbose=False, overwrite=True)
+    _bids_validate(bids_root)
 
 
 @pytest.mark.parametrize(

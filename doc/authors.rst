@@ -23,3 +23,4 @@
 .. _Eduard Ort: https://github.com/eort
 .. _Tom Donoghue: https://github.com/TomDonoghue
 .. _Richard Köhler: https://github.com/richardkoehler
+.. _Sin Kim: https://github.com/AKSoo
