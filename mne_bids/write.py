@@ -1612,10 +1612,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
 
 def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
-    """Get anatomical landmarks transformed from "head" to MRI "voxel" coordinates.
+    """Get anatomical landmarks in MRI voxel coordinates.
 
-    The landmarks obtained are defined w.r.t. the MRI passed to the ``image``
-    parameter.
+    This function transforms the fiducial points from "head" to MRI "voxel"
+    coordinate space. The landmarks obtained are defined w.r.t. the MRI passed
+    via the ``image`` parameter.
 
     Parameters
     ----------
