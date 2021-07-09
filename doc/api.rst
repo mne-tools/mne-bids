@@ -36,6 +36,7 @@ mne_bids
    get_datatypes
    update_sidecar_json
    inspect_dataset
+   get_anat_landmarks
 
 mne_bids.stats
 --------------
