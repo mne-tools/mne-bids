@@ -191,13 +191,14 @@ def test_update_anat_landmarks(tmpdir):
 
     # Check without extension provided
     bids_path_mri_no_ext = bids_path_mri.copy().update(extension=None)
-    update_anat_landmarks(bids_path=bids_path_mri, landmarks=landmarks_new)
+    update_anat_landmarks(bids_path=bids_path_mri_no_ext,
+                          landmarks=landmarks_new)
 
     # Check handling of invalid input
     bids_path_invalid = bids_path_mri.copy().update(datatype='meg')
     with pytest.raises(ValueError, match='Can only operate on "anat"'):
         update_anat_landmarks(bids_path=bids_path_invalid, landmarks=landmarks)
-    
+
     bids_path_invalid = bids_path_mri.copy().update(suffix=None)
     with pytest.raises(ValueError, match='lease specify the "suffix"'):
         update_anat_landmarks(bids_path=bids_path_invalid, landmarks=landmarks)
@@ -227,4 +228,3 @@ def test_update_anat_landmarks(tmpdir):
                        match='did not contain all required cardinal points'):
         update_anat_landmarks(bids_path=bids_path_mri,
                               landmarks=landmarks_invalid)
-
