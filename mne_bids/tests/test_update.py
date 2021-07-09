@@ -194,6 +194,7 @@ def test_update_anat_landmarks(tmpdir):
     update_anat_landmarks(bids_path=bids_path_mri_no_ext,
                           landmarks=landmarks_new)
 
+    # Check without datatytpe provided
     bids_path_mri_no_datatype = bids_path_mri.copy().update(datatype=None)
     update_anat_landmarks(bids_path=bids_path_mri_no_datatype,
                           landmarks=landmarks)
