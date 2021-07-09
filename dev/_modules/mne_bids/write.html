@@ -1222,10 +1222,9 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="n">empty_room</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="n">empty_room</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
 
@@ -1244,9 +1243,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    raw : mne.io.Raw</span>
-<span class="sd">        The raw data. It must be an instance of `mne.io.Raw`. The data</span>
-<span class="sd">        should not be loaded from disk, i.e., ``raw.preload`` must be</span>
-<span class="sd">        ``False``.</span>
+<span class="sd">        The raw data. It must be an instance of `mne.io.Raw` that is not</span>
+<span class="sd">        already loaded from disk unless ``allow_preload`` is explicitly set</span>
+<span class="sd">        to ``True``. See warning for the ``allow_preload`` parameter.</span>
 <span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``.root`` attribute set. If the ``.datatype``</span>
@@ -1355,6 +1354,19 @@
 <span class="sd">        ``bids_path`` and ``empty_room`` are the same. Pass ``None``</span>
 <span class="sd">        (default) if you do not wish to specify an associated empty-room</span>
 <span class="sd">        recording.</span>
+<span class="sd">    allow_preload : bool</span>
+<span class="sd">        If ``True``, allow writing of preloaded raw objects (i.e.,</span>
+<span class="sd">        ``raw.preload`` is ``True``). Because the original file is ignored, you</span>
+<span class="sd">        must specify what ``format`` to write (not ``auto``).</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            BIDS was originally designed for unprocessed or minimally processed</span>
+<span class="sd">            data. For this reason, by default, we prevent writing of preloaded</span>
+<span class="sd">            data that may have been modified. Only use this option when</span>
+<span class="sd">            absolutely necessary: for example, manually converting from file</span>
+<span class="sd">            formats not supported by MNE or writing preprocessed derivatives.</span>
+<span class="sd">            Be aware that these use cases are not fully supported.</span>
+
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to ``False``.</span>
@@ -1425,12 +1437,9 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;raw_file must be an instance of BaseRaw, &#39;</span>
                          <span class="s1">&#39;got </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;filenames&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;raw.filenames is missing. Please set raw.filenames&#39;</span>
-                         <span class="s1">&#39;as a list with the full path of original raw file.&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">preload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The data should not be preloaded.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">preload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_preload</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The data is already loaded from disk and may be &#39;</span>
+                         <span class="s1">&#39;altered. See warning for &quot;allow_preload&quot;.&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
@@ -1465,24 +1474,38 @@
                    <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">convert</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># flag if converting not copying</span>
 
-    <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s1">&#39;.ds&#39;</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="c1"># point to file containing header info for multifile systems</span>
-    <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
-    <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">)</span>
-    <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;.lay&#39;</span><span class="p">)</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="c1"># Load file, filename, extension</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_preload</span><span class="p">:</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;.ds&#39;</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># point to file containing header info for multifile systems</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">)</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;.lay&#39;</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized file format </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized file format </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">symlink</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Symlinks are currently only supported for &#39;</span>
-                                  <span class="s1">&#39;FIFF files.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">symlink</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Symlinks are currently only supported &#39;</span>
+                                      <span class="s1">&#39;for FIFF files.&#39;</span><span class="p">)</span>
 
-    <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="o">**</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
+        <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="o">**</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;BrainVision&#39;</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.vhdr&#39;</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;FIF&#39;</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.fif&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;For preloaded data, you must specify a valid &#39;</span>
+                             <span class="s1">&#39;format. See &quot;allow_preload&quot;.&#39;</span><span class="p">)</span>
+        <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">raw</span>
+
+    <span class="c1"># Check times</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;raw.times has changed since reading from disk, but &quot;</span>
@@ -1501,12 +1524,12 @@
                 <span class="s1">&#39;https://github.com/mne-tools/mne-bids/issues&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
+    <span class="c1"># Initialize BIDS path</span>
     <span class="n">datatype</span> <span class="o">=</span> <span class="n">_handle_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
                  <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">))</span>
 
-    <span class="c1"># check whether the info provided indicates that the data is emptyroom</span>
-    <span class="c1"># data</span>
+    <span class="c1"># Check whether provided info and raw indicates valid MEG emptyroom data</span>
     <span class="n">data_is_emptyroom</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span> <span class="ow">and</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">&#39;noise&#39;</span><span class="p">):</span>
@@ -1553,14 +1576,14 @@
         <span class="c1"># Ensure it works on Windows too</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
 
-    <span class="n">data_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span><span class="o">.</span><span class="n">directory</span>
-
     <span class="c1"># In case of an &quot;emptyroom&quot; subject, BIDSPath() will raise</span>
     <span class="c1"># an exception if we don&#39;t provide a valid task (&quot;noise&quot;). Now,</span>
     <span class="c1"># scans_fname, electrodes_fname, and coordsystem_fname must NOT include</span>
     <span class="c1"># the task entity. Therefore, we cannot generate them with</span>
     <span class="c1"># BIDSPath() directly. Instead, we use BIDSPath() directly</span>
     <span class="c1"># as it does not make any advanced check.</span>
+
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span><span class="o">.</span><span class="n">directory</span>
 
     <span class="c1"># create *_scans.tsv</span>
     <span class="n">session_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
@@ -1585,7 +1608,6 @@
         <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 
     <span class="c1"># Anonymize</span>
-    <span class="n">convert</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">anonymize</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
@@ -2272,7 +2294,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-08.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-09.<br/>
 </p>
     </div>
     

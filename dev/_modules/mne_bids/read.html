@@ -339,11 +339,14 @@
         <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
     <span class="p">)</span>
     <span class="n">all_dur</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">duration</span>
-    <span class="k">if</span> <span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="s1">&#39;rest&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No events found or provided. Please add annotations &#39;</span>
-             <span class="s1">&#39;to the raw data, or provide the events_data and &#39;</span>
-             <span class="s1">&#39;event_id parameters. If this is resting state data &#39;</span>
-             <span class="s1">&#39;it is recommended to name the task &quot;rest&quot;.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># warn no events if not rest</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;filenames&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;_task-rest&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No events found or provided. Please add annotations to the raw &#39;</span>
+             <span class="s1">&#39;data, or provide the events_data and event_id parameters. For &#39;</span>
+             <span class="s1">&#39;resting state data, BIDS recommends naming the task using &#39;</span>
+             <span class="s1">&#39;labels beginning with &quot;rest&quot;.&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">all_events</span><span class="p">,</span> <span class="n">all_dur</span><span class="p">,</span> <span class="n">all_desc</span>
 
@@ -1066,7 +1069,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-08.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-09.<br/>
 </p>
     </div>
     

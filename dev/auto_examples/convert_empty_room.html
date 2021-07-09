@@ -467,8 +467,8 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
     &quot;AnatomicalLandmarkCoordinateSystem&quot;: &quot;ElektaNeuromag&quot;,
     &quot;AnatomicalLandmarkCoordinateUnits&quot;: &quot;m&quot;
 }
-/home/circleci/project/mne_bids/read.py:159: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events_data and event_id parameters. If this is resting state data it is recommended to name the task &quot;rest&quot;.
-  warn(&#39;No events found or provided. Please add annotations &#39;
+/home/circleci/project/mne_bids/read.py:162: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events_data and event_id parameters. For resting state data, BIDS recommends naming the task using labels beginning with &quot;rest&quot;.
+  warn(&#39;No events found or provided. Please add annotations to the raw &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 
@@ -1053,7 +1053,7 @@ Ready.
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
   warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-/home/circleci/project/mne_bids/read.py:524: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:527: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(ch_type_map_avail)
 /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif
 </pre></div>
@@ -1077,12 +1077,12 @@ Ready.
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*events.tsv&quot;
   warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_channels.tsv.
-/home/circleci/project/mne_bids/read.py:524: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:527: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(ch_type_map_avail)
 &lt;Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~368 kB, data not loaded&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.228 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.113 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_empty_room.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1121,7 +1121,7 @@ Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-08.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-09.<br/>
 </p>
     </div>
     
