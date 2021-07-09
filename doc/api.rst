@@ -29,15 +29,15 @@ mne_bids
    write_anat
    mark_bad_channels
    get_anat_landmarks
+   update_anat_landmarks
    get_head_mri_trans
    get_anonymization_daysback
    print_dir_tree
    get_entities_from_fname
    get_entity_vals
    get_datatypes
-   update_sidecar_json
-   update_anat_landmarks
    inspect_dataset
+   update_sidecar_json
 
 mne_bids.stats
 --------------
