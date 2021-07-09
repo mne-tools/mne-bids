@@ -47,8 +47,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.stats.count_events" href="mne_bids.stats.count_events.html" />
-    <link rel="prev" title="mne_bids.inspect_dataset" href="mne_bids.inspect_dataset.html" />
+    <link rel="next" title="mne_bids.update_anat_landmarks" href="mne_bids.update_anat_landmarks.html" />
+    <link rel="prev" title="mne_bids.mark_bad_channels" href="mne_bids.mark_bad_channels.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -208,6 +208,16 @@
    mne_bids.mark_bad_channels
   </a>
  </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   mne_bids.get_anat_landmarks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.update_anat_landmarks.html">
+   mne_bids.update_anat_landmarks
+  </a>
+ </li>
  <li class="toctree-l1">
   <a class="reference internal" href="mne_bids.get_head_mri_trans.html">
    mne_bids.get_head_mri_trans
@@ -239,18 +249,13 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="mne_bids.update_sidecar_json.html">
-   mne_bids.update_sidecar_json
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="mne_bids.inspect_dataset.html">
    mne_bids.inspect_dataset
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   mne_bids.get_anat_landmarks
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.update_sidecar_json.html">
+   mne_bids.update_sidecar_json
   </a>
  </li>
 </ul>
@@ -348,9 +353,10 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.get_anat_landmarks">
 <span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_anat_landmarks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subjects_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#get_anat_landmarks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_anat_landmarks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get anatomical landmarks transformed from “head” to MRI “voxel” coordinates.</p>
-<p>The landmarks obtained are defined w.r.t. the MRI passed to the <code class="docutils literal notranslate"><span class="pre">image</span></code>
-parameter.</p>
+<dd><p>Get anatomical landmarks in MRI voxel coordinates.</p>
+<p>This function transforms the fiducial points from “head” to MRI “voxel”
+coordinate space. The landmarks obtained are defined w.r.t. the MRI passed
+via the <code class="docutils literal notranslate"><span class="pre">image</span></code> parameter.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -403,8 +409,8 @@ anatomical landmarks if they are not provided in MRI voxel space.</p>
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="mne_bids.inspect_dataset.html" title="previous page">mne_bids.inspect_dataset</a>
-    <a class='right-next' id="next-link" href="mne_bids.stats.count_events.html" title="next page">mne_bids.stats.count_events</a>
+    <a class='left-prev' id="prev-link" href="mne_bids.mark_bad_channels.html" title="previous page">mne_bids.mark_bad_channels</a>
+    <a class='right-next' id="next-link" href="mne_bids.update_anat_landmarks.html" title="next page">mne_bids.update_anat_landmarks</a>
 
               </div>
               

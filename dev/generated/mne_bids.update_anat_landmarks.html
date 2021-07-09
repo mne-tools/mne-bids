@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles.copyfile_kit &#8212; MNE-BIDS 0.8.dev0 documentation</title>
+    <title>mne_bids.update_anat_landmarks &#8212; MNE-BIDS 0.8.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -47,8 +47,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="MNE-BIDS Command Line Interface (CLI)" href="cli.html" />
-    <link rel="prev" title="mne_bids.copyfiles.copyfile_bti" href="mne_bids.copyfiles.copyfile_bti.html" />
+    <link rel="next" title="mne_bids.get_head_mri_trans" href="mne_bids.get_head_mri_trans.html" />
+    <link rel="prev" title="mne_bids.get_anat_landmarks" href="mne_bids.get_anat_landmarks.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -162,7 +162,7 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    <ul class="nav bd-sidenav">
+    <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_bids.write_raw_bids.html">
    mne_bids.write_raw_bids
@@ -213,8 +213,8 @@
    mne_bids.get_anat_landmarks
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_bids.update_anat_landmarks.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_bids.update_anat_landmarks
   </a>
  </li>
@@ -266,7 +266,7 @@
   </a>
  </li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html">
    mne_bids.copyfiles.copyfile_brainvision
@@ -292,8 +292,8 @@
    mne_bids.copyfiles.copyfile_bti
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">
    mne_bids.copyfiles.copyfile_kit
   </a>
  </li>
@@ -333,45 +333,39 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-copyfiles-copyfile-kit">
-<h1>mne_bids.copyfiles.copyfile_kit<a class="headerlink" href="#mne-bids-copyfiles-copyfile-kit" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-update-anat-landmarks">
+<h1>mne_bids.update_anat_landmarks<a class="headerlink" href="#mne-bids-update-anat-landmarks" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.copyfiles.copyfile_kit">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.copyfiles.</span></span><span class="sig-name descname"><span class="pre">copyfile_kit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_init_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_kit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_kit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy and rename KIT files to a new location.</p>
+<dt class="sig sig-object py" id="mne_bids.update_anat_landmarks">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">update_anat_landmarks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">landmarks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/sidecar_updates.html#update_anat_landmarks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.update_anat_landmarks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the anatomical landmark coordinates of an MRI scan.</p>
+<p>This will change the <code class="docutils literal notranslate"><span class="pre">AnatomicalLandmarkCoordinates</span></code> entry in the
+respective JSON sidecar file, or create it if it doesn’t exist.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>src</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Path to the source raw .con or .sqd folder.</p>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>Path of the MR image.</p>
 </dd>
-<dt><strong>dest</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Path to the destination of the new bids folder.</p>
-</dd>
-<dt><strong>subject_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The subject ID. Corresponds to “sub”.</p>
-</dd>
-<dt><strong>session_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The session identifier. Corresponds to “ses”.</p>
-</dd>
-<dt><strong>task</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The task identifier. Corresponds to “task”.</p>
-</dd>
-<dt><strong>run</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The run number. Corresponds to “run”.</p>
-</dd>
-<dt><strong>_init_kwargs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extract information of marker and headpoints</p>
+<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a></span></dt><dd><p>An <a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> instance with coordinates for the
+nasion and left and right pre-auricular points in MRI voxel
+coordinates.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks()</span></code></a> provides a convenient and
+reliable way to generate the landmark coordinates in the
+required coordinate system.</p>
+</div>
 </dd>
 </dl>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_brainvision</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti" title="mne_bids.copyfiles.copyfile_bti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_bti</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf" title="mne_bids.copyfiles.copyfile_ctf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_ctf</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf" title="mne_bids.copyfiles.copyfile_edf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_edf</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_eeglab</span></code></a></dt><dd></dd>
-</dl>
+<p class="rubric">Notes</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.8.</span></p>
 </div>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backreferences-mne-bids-copyfiles-copyfile-kit"></span></div>
+<span class="target" id="sphx-glr-backreferences-mne-bids-update-anat-landmarks"></span></div>
 
 
               </div>
@@ -379,8 +373,8 @@
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="mne_bids.copyfiles.copyfile_bti.html" title="previous page">mne_bids.copyfiles.copyfile_bti</a>
-    <a class='right-next' id="next-link" href="cli.html" title="next page">MNE-BIDS Command Line Interface (CLI)</a>
+    <a class='left-prev' id="prev-link" href="mne_bids.get_anat_landmarks.html" title="previous page">mne_bids.get_anat_landmarks</a>
+    <a class='right-next' id="next-link" href="mne_bids.get_head_mri_trans.html" title="next page">mne_bids.get_head_mri_trans</a>
 
               </div>
               

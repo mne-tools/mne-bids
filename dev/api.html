@@ -209,6 +209,16 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="generated/mne_bids.get_anat_landmarks.html">
+   mne_bids.get_anat_landmarks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html">
+   mne_bids.update_anat_landmarks
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html">
    mne_bids.get_head_mri_trans
   </a>
@@ -239,18 +249,13 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="generated/mne_bids.update_sidecar_json.html">
-   mne_bids.update_sidecar_json
-  </a>
- </li>
- <li class="toctree-l1">
   <a class="reference internal" href="generated/mne_bids.inspect_dataset.html">
    mne_bids.inspect_dataset
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="generated/mne_bids.get_anat_landmarks.html">
-   mne_bids.get_anat_landmarks
+  <a class="reference internal" href="generated/mne_bids.update_sidecar_json.html">
+   mne_bids.update_sidecar_json
   </a>
  </li>
 </ul>
@@ -387,6 +392,12 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.mark_bad_channels.html#mne_bids.mark_bad_channels" title="mne_bids.mark_bad_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mark_bad_channels</span></code></a>(ch_names[, descriptions, …])</p></td>
 <td><p>Update which channels are marked as “bad” in an existing BIDS dataset.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anat_landmarks</span></code></a>(image, info, trans, …)</p></td>
+<td><p>Get anatomical landmarks in MRI voxel coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks" title="mne_bids.update_anat_landmarks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_anat_landmarks</span></code></a>(bids_path, landmarks)</p></td>
+<td><p>Update the anatomical landmark coordinates of an MRI scan.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_head_mri_trans</span></code></a>(bids_path[, …])</p></td>
 <td><p>Produce transformation matrix from MEG and MRI landmark points.</p></td>
 </tr>
@@ -405,14 +416,11 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datatypes</span></code></a>(root)</p></td>
 <td><p>Get list of data types (“modalities”) present in a BIDS dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sidecar_json</span></code></a>(bids_path, entries[, …])</p></td>
-<td><p>Update sidecar files using a dictionary or JSON file.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspect_dataset</span></code></a>(bids_path[, find_flat, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspect_dataset</span></code></a>(bids_path[, find_flat, …])</p></td>
 <td><p>Inspect and annotate BIDS raw data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anat_landmarks</span></code></a>(image, info, trans, …)</p></td>
-<td><p>Get anatomical landmarks transformed from “head” to MRI “voxel” coordinates.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sidecar_json</span></code></a>(bids_path, entries[, …])</p></td>
+<td><p>Update sidecar files using a dictionary or JSON file.</p></td>
 </tr>
 </tbody>
 </table>

@@ -1796,10 +1796,11 @@
 
 
 <div class="viewcode-block" id="get_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks">[docs]</a><span class="k">def</span> <span class="nf">get_anat_landmarks</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get anatomical landmarks transformed from &quot;head&quot; to MRI &quot;voxel&quot; coordinates.</span>
+    <span class="sd">&quot;&quot;&quot;Get anatomical landmarks in MRI voxel coordinates.</span>
 
-<span class="sd">    The landmarks obtained are defined w.r.t. the MRI passed to the ``image``</span>
-<span class="sd">    parameter.</span>
+<span class="sd">    This function transforms the fiducial points from &quot;head&quot; to MRI &quot;voxel&quot;</span>
+<span class="sd">    coordinate space. The landmarks obtained are defined w.r.t. the MRI passed</span>
+<span class="sd">    via the ``image`` parameter.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
