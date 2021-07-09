@@ -10,6 +10,7 @@ import pytest
 import numpy as np
 
 import mne
+from mne.io.constants import FIFF
 from mne.datasets import testing
 from mne.utils import requires_nibabel
 
@@ -187,3 +188,43 @@ def test_update_anat_landmarks(tmpdir):
         landmarks_new.dig[1]['r'],
         mri_json['AnatomicalLandmarkCoordinates']['NAS']
     )
+
+    # Check without extension provided
+    bids_path_mri_no_ext = bids_path_mri.copy().update(extension=None)
+    update_anat_landmarks(bids_path=bids_path_mri, landmarks=landmarks_new)
+
+    # Check handling of invalid input
+    bids_path_invalid = bids_path_mri.copy().update(datatype='meg')
+    with pytest.raises(ValueError, match='Can only operate on "anat"'):
+        update_anat_landmarks(bids_path=bids_path_invalid, landmarks=landmarks)
+    
+    bids_path_invalid = bids_path_mri.copy().update(suffix=None)
+    with pytest.raises(ValueError, match='lease specify the "suffix"'):
+        update_anat_landmarks(bids_path=bids_path_invalid, landmarks=landmarks)
+
+    bids_path_invalid = bids_path_mri.copy().update(suffix='meg')
+    with pytest.raises(ValueError,
+                       match='Can only operate on "T1w" and "FLASH"'):
+        update_anat_landmarks(bids_path=bids_path_invalid, landmarks=landmarks)
+
+    bids_path_invalid = bids_path_mri.copy().update(subject='invalid')
+    with pytest.raises(ValueError, match='Could not find an MRI scan'):
+        update_anat_landmarks(bids_path=bids_path_invalid, landmarks=landmarks)
+
+    # Unsupported coordinate frame
+    landmarks_invalid = landmarks.copy()
+    for digpoint in landmarks_invalid.dig:
+        digpoint['coord_frame'] = FIFF.FIFFV_MNE_COORD_RAS
+
+    with pytest.raises(ValueError, match='must be specified in MRI voxel'):
+        update_anat_landmarks(bids_path=bids_path_mri,
+                              landmarks=landmarks_invalid)
+
+    # Missing cardinal point
+    landmarks_invalid = landmarks.copy()
+    del landmarks_invalid.dig[0]
+    with pytest.raises(ValueError,
+                       match='did not contain all required cardinal points'):
+        update_anat_landmarks(bids_path=bids_path_mri,
+                              landmarks=landmarks_invalid)
+

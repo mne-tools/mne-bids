@@ -187,20 +187,20 @@ def update_anat_landmarks(bids_path, landmarks):
             f'suffix indicates: {bids_path_mri.suffix}')
 
     valid_extensions = ('.nii', '.nii.gz')
-    tried_fnames = []
+    tried_paths = []
     file_exists = False
     if bids_path_mri.extension is None:
         # No extension was provided, start searching …
         for extension in valid_extensions:
             bids_path_mri.extension = extension
-            tried_fnames.append(bids_path_mri.fpath)
+            tried_paths.append(bids_path_mri.fpath)
 
             if bids_path_mri.fpath.exists():
                 file_exists = True
                 break
     else:
         # An extension was provided
-        tried_fnames.append(bids_path_mri.fpath)
+        tried_paths.append(bids_path_mri.fpath)
         if bids_path_mri.fpath.exists():
             file_exists = True
 
@@ -208,7 +208,7 @@ def update_anat_landmarks(bids_path, landmarks):
         raise ValueError(
             f'Could not find an MRI scan. Please check the provided '
             f'bids_path. Tried the following filenames: '
-            f'{", ".join(tried_fnames)}')
+            f'{", ".join([p.name for p in tried_paths])}')
 
     positions = landmarks.get_positions()
     coord_frame = positions['coord_frame']
