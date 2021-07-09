@@ -1475,7 +1475,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events_data, event_id, raw, verbose=False
+            events_data, event_id, raw, task=bids_path.task, verbose=False
         )
         if events_array.size != 0:
             _events_tsv(events=events_array, durations=event_dur, raw=raw,

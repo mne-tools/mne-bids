@@ -70,7 +70,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     return raw
 
 
-def _read_events(events_data, event_id, raw, verbose=None):
+def _read_events(events_data, event_id, raw, task=None, verbose=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
@@ -84,6 +84,8 @@ def _read_events(events_data, event_id, raw, verbose=None):
         mapping a description key to an integer-valued event code.
     raw : mne.io.Raw
         The data as MNE-Python Raw object.
+    task : str | None
+        If task may be resting state, silence warnings.
     verbose : bool | str | int | None
         If not None, override default verbose level (see :func:`mne.verbose`).
 
@@ -157,8 +159,8 @@ def _read_events(events_data, event_id, raw, verbose=None):
     all_dur = raw.annotations.duration
 
     # warn no events if not rest
-    if (all_events.size == 0 and hasattr(raw, 'filenames') and raw.filenames[0]
-            is not None and '_task-rest' not in raw.filenames[0]):
+    if (all_events.size == 0 and task is not None and
+            not task.startswith('rest')):
         warn('No events found or provided. Please add annotations to the raw '
              'data, or provide the events_data and event_id parameters. For '
              'resting state data, BIDS recommends naming the task using '
