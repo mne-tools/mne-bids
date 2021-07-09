@@ -562,10 +562,6 @@ def test_fif(_bids_validate, tmpdir):
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_path)
 
-    del raw._filenames
-    with pytest.raises(ValueError, match='raw.filenames is missing'):
-        write_raw_bids(raw, bids_path2)
-
     _bids_validate(bids_root)
 
     assert op.exists(op.join(bids_root, 'participants.tsv'))

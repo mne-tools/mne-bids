@@ -1015,7 +1015,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     raw : mne.io.Raw
         The raw data. It must be an instance of `mne.io.Raw` that is not
         already loaded from disk unless ``allow_preload`` is explicitly set
-        ``True``. See warning for the ``allow_preload`` parameter.
+        to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. If the ``.datatype``
@@ -1210,11 +1210,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     if raw.preload is not False and not allow_preload:
         raise ValueError('The data is already loaded from disk and may be '
                          'altered. See warning for "allow_preload".')
-
-    if ((not hasattr(raw, 'filenames') or raw.filenames[0] is None) and
-            not allow_preload):
-        raise ValueError('raw.filenames is missing. Please set raw.filenames '
-                         'as a list with the full path of original raw file.')
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
