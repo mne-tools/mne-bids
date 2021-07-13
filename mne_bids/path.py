@@ -224,6 +224,8 @@ class BIDSPath(object):
 
     Examples
     --------
+    Generate a BIDSPath object and inspect it
+
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
     ...                      suffix='ieeg', extension='.edf')
     >>> print(bids_path.basename)
@@ -233,22 +235,30 @@ class BIDSPath(object):
     root: None
     datatype: ieeg
     basename: sub-test_ses-two_task-mytask_ieeg.edf)
-    >>> # copy and update multiple entities at once
+
+    Copy and update multiple entities at once
+
     >>> new_bids_path = bids_path.copy().update(subject='test2',
     ...                                         session='one')
     >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
-    >>> # printing the BIDSPath will show relative path when
-    >>> # root is not set
+
+    Printing a BIDSPath will show a relative path when `root` is not set
+
     >>> print(new_bids_path)
     sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
+
+    Setting `suffix` without an identifiable datatype will make
+    BIDSPath try to guess the datatype
+
     >>> new_bids_path = new_bids_path.update(suffix='channels',
     ...                                      extension='.tsv')
-    >>> # setting suffix without an identifiable datatype will
-    >>> # result in a wildcard at the datatype directory level
     >>> print(new_bids_path)
     sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv
-    >>> # set a root for the BIDS dataset
+
+    You can set a new root for the BIDS dataset. Let's see what the
+    different properties look like for our object:
+
     >>> new_bids_path = new_bids_path.update(root='/bids_dataset')
     >>> print(new_bids_path.root)
     /bids_dataset
@@ -1401,12 +1411,12 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     Examples
     --------
-    >>> root = os.path.expanduser('~/mne_data/eeg_matchingpennies')
+    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> entity_key = 'subject'
-    >>> get_entity_vals(root, entity_key) # doctest: +SKIP
-    ['05', '06', '07', '08', '09', '10', '11']
-    >>> get_entity_vals(root, entity_key, with_key=True) # doctest: +SKIP
-    ['sub-05', 'sub-06', 'sub-07', 'sub-08', 'sub-09', 'sub-10', 'sub-11']
+    >>> get_entity_vals(root, entity_key)
+    ['01']
+    >>> get_entity_vals(root, entity_key, with_key=True)
+    ['sub-01']
 
     Notes
     -----

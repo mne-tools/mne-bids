@@ -1,7 +1,9 @@
 """Update BIDS directory structures and sidecar files meta data."""
 # Authors: Adam Li <adam2392@gmail.com>
 #          Austin Hurst <mynameisaustinhurst@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #          mne-bids developers
+#
 # License: BSD (3-clause)
 
 import json
@@ -71,18 +73,15 @@ def update_sidecar_json(bids_path, entries, verbose=True):
 
     Examples
     --------
-    >>> from mne_bids import BIDSPath
-    >>> # update sidecar json file
-    >>> bids_path = BIDSPath(root='./', subject='001', session='001',
-    ...                      task='test', run='01', suffix='ieeg',
-    ...                      extension='.json')
-    >>> entries = {'PowerLineFrequency': 50}
-    >>> update_sidecar_json(bids_path, entries)  # doctest: +SKIP
-    >>> # update sidecar coordsystem json file
-    >>> bids_path = BIDSPath(root='./', subject='001', session='001',
-    ...                      suffix='coordsystem', extension='.json')
-    >>> entries = {'iEEGCoordinateSystem,': 'Other'}
-    >>> update_sidecar_json(bids_path, entries)  # doctest: +SKIP
+    Update a sidecar JSON file
+
+    >>> from pathlib import Path
+    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
+    >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
+    ...                      suffix='eeg', extension='.json', root=root)
+    >>> entries = {'PowerLineFrequency': 60}
+    >>> update_sidecar_json(bids_path, entries, verbose=False)
+
     """
     # get all matching json files
     bids_path = bids_path.copy()

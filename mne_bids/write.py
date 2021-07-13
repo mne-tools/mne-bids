@@ -1900,30 +1900,40 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     --------
     Mark a single channel as bad.
 
-    >>> mark_bad_channels('MEG 0112', bids_path=bids_path) # doctest: +SKIP
+    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
+    >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
+    ...                      datatype='eeg', root=root)
+    >>> mark_bad_channels('C4', bids_path=bids_path, verbose=False)
+    Processing channel C4:
+        status: bad
+        description: n/a
 
-    Mark multiple channels as bad.
+    Mark multiple channels as bad, and add a description as to why.
 
-    >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, bids_path=bids_path) # doctest: +SKIP
-
-    Mark channels as bad, and add a description as to why.
-
-    >>> ch_names = ['MEG 0112', 'MEG 0131']
-    >>> descriptions = ['Only produced noise', 'Continuously flat']
-    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path) # doctest: +SKIP
+    >>> bads = ['C3', 'PO10']
+    >>> descriptions = ['very noisy', 'continuously flat']
+    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path,
+    ...                   verbose=False)
+    Processing channel C3:
+        status: bad
+        description: very noisy
+    Processing channel PO10:
+        status: bad
+        description: continuously flat
 
     Mark two channels as bad, and mark all others as good by setting
     ``overwrite=True``.
 
-    >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, bids_path=bids_path, overwrite=True) # doctest: +SKIP
+    >>> bads = ['C3', 'C4']
+    >>> mark_bad_channels(bads, bids_path=bids_path, # doctest: +SKIP
+    ...                   overwrite=True, verbose=False)
 
     Mark all channels as good by passing an empty list of bad channels, and
     setting ``overwrite=True``.
 
-    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True) # doctest: +SKIP
-
+    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True,
+    ...                   verbose=False)
+    Resetting status and description for all channels.
     """
     if not ch_names and not overwrite:
         raise ValueError('You did not pass a channel name, but set '
