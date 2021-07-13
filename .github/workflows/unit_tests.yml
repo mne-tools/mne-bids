@@ -182,7 +182,7 @@ jobs:
         --cov-report=xml \
         --cov-config=setup.cfg \
         --verbose \
-        --ignore mne-python
+        --ignore mne-python examples
       shell: bash
     - name: Upload coverage stats to codecov
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' && matrix.bids-validator == 'main' }}
