@@ -136,8 +136,7 @@ def _update_sidecar(sidecar_fname, key, val):
     with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
     sidecar_json[key] = val
-    with open(sidecar_fname, 'w', encoding='utf-8') as fout:
-        json.dump(sidecar_json, fout)
+    _write_json(sidecar_fname, sidecar_json, overwrite=True, verbose=False)
 
 
 def update_anat_landmarks(bids_path, landmarks):
@@ -247,7 +246,6 @@ def update_anat_landmarks(bids_path, landmarks):
 
     bids_path_json = bids_path.copy().update(extension='.json')
     if not bids_path_json.fpath.exists():  # Must exist before we can update it
-        with bids_path_json.fpath.open('w', encoding='utf-8') as f:
-            json.dump(dict(), f)
+        _write_json(bids_path_json.fpath, dict())
 
     update_sidecar_json(bids_path=bids_path_json, entries=mri_json)
