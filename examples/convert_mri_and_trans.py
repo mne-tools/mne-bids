@@ -46,7 +46,7 @@ from nilearn.plotting import plot_anat
 
 import mne
 from mne.datasets import sample
-from mne.source_space import head_to_mri
+from mne import head_to_mri
 
 from mne_bids import (write_raw_bids, BIDSPath, write_anat, get_anat_landmarks,
                       get_head_mri_trans, print_dir_tree)
