@@ -33,7 +33,7 @@ from mne_bids import BIDSPath
 bids_root = './my_bids_root'
 
 # %%
-# This refers to a folder named `my_bids_root` in the current working
+# This refers to a folder named ``my_bids_root`` in the current working
 # directory. Finally, let is create a ``BIDSPath``, and tell it about our
 # BIDS root. We can then also query the ``BIDSPath`` for its root.
 
