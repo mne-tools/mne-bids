@@ -27,6 +27,7 @@ Authors
 * `Richard Höchenberger`_
 * `Adam Li`_
 * `Richard Köhler`_ (new contributor)
+* `Jean-Rémi King`_ (new contributor)
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,6 +45,7 @@ Enhancements
 - :func:`mne_bids.write_raw_bids` gained a new parameter ``empty_room`` that allows to specify an associated empty-room recording when writing an MEG data file. This information will be stored in the ``AssociatedEmptyRoom`` field of the MEG JSON sidecar file, by `Richard Höchenberger`_ (:gh:`795`)
 - Added support for the new channel type ``'dbs'`` (Deep Brain Stimulation), which was introduced in MNE-Python 0.23, by `Richard Köhler`_ (:gh:`800`)
 - :func:`mne_bids.read_raw_bids` now warns in many situations when it encounters a mismatch between the channels in ``*_channels.tsv`` and the raw data, by `Richard Höchenberger`_ (:gh:`823`)
+- accepts ".mrk" head digitization files used in the KIT MEG system, by `Jean-Rémi King`_ (:gh:`842`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
