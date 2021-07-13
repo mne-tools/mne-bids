@@ -14,6 +14,9 @@ operations. Learn here how to use it.
 # %%
 # Obviously, to start exploring BIDSPath, we first need to import it.
 
+from pathlib import Path
+
+import mne_bids
 from mne_bids import BIDSPath
 
 # %%
@@ -27,10 +30,12 @@ from mne_bids import BIDSPath
 # consider where to store your data upon BIDS conversion. Again, the intended
 # target folder will be the BIDS root of your data.
 #
-# Let's just pick an arbitrary BIDS root, for the purpose of this
-# demonstration.
+# For the purpose of this demonstration, let's pick the ``tiny_bids`` example
+# dataset that ships with the MNE-BIDS test suite.
 
-bids_root = './my_bids_root'
+# We are using a pathlib.Path object for convenience, but you could just use
+# a string to specify ``bids_root`` here.
+bids_root = Path(mne_bids.__file__).parent / 'tests' / 'data' / 'tiny_bids'
 
 # %%
 # This refers to a folder named ``my_bids_root`` in the current working
@@ -45,7 +50,7 @@ print(bids_path.root)
 # identifiers**. We can either create a new ``BIDSPath``, or update our
 # existing one. The value can be retrieved via the ``.subject`` attribute.
 
-subject = '123'
+subject = '01'
 
 # Option 1: Create an entirely new BIDSPath.
 bids_path_new = BIDSPath(subject=subject, root=bids_root)
@@ -66,7 +71,7 @@ print(bids_path.subject)
 # information on our experimental session, and try to retrieve it again via
 # ``.session``.
 
-session = 'test'
+session = 'eeg'
 bids_path.update(session=session)
 print(bids_path.session)
 
@@ -78,7 +83,7 @@ print(bids_path.session)
 # using `mne_bids.write_raw_bids`. For the sake of this example, however, we
 # are going to specify the data type explicitly.
 
-datatype = 'meg'
+datatype = 'eeg'
 bids_path.update(datatype=datatype)
 print(bids_path.datatype)
 
@@ -110,7 +115,7 @@ bids_path.basename
 # %%
 # The two entities you can see here are the ``subject`` entity (``sub``) and
 # the ``session`` entity (``ses``). Each entity name also has a value; for
-# ``sub``, this is ``123``, and for ``ses``, it is ``test`` in our example.
+# ``sub``, this is ``01``, and for ``ses``, it is ``eeg`` in our example.
 # Entity names (or "keys") and values are separated via hyphens.
 # BIDS knows a much larger number of entities, and MNE-BIDS allows you to make
 # use of them. To get a list of all supported entities, use:
@@ -129,9 +134,23 @@ bids_path
 
 # %%
 # As you can see, the ``basename`` has been updated. In fact, the entire
-# **path** has been updated, and the ``ses-test`` folder has been dropped from
+# **path** has been updated, and the ``ses-eeg`` folder has been dropped from
 # the path:
 
+print(bids_path.fpath)
+
+# %%
+# Oups! The cell above produced a ``RuntimeWarning`` that our data file could
+# not be found. That's because we changed the ``run`` and ``session`` entities
+# above, and the ``tiny_bids`` dataset does not contain corresponding data.
+#
+# That shows us that ``BIDSPath`` is doing a lot of guess-work and checking
+# in the background, but note that this may change in the future.
+#
+# For now, let's revert to the last working iteration of our ``bids_path``
+# instance.
+
+bids_path.update(run=None, session='eeg')
 print(bids_path.fpath)
 
 # %%
@@ -151,7 +170,7 @@ print(bids_path.fpath)
 # ``.tsv``.
 # Let's put our new knowledge to use!
 
-bids_path.update(suffix='meg', extension='fif')
+bids_path.update(suffix='eeg', extension='.vhdr')
 print(bids_path.fpath)
 bids_path
 
