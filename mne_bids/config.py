@@ -131,7 +131,7 @@ ALLOWED_FILENAME_EXTENSIONS = (
     ALLOWED_INPUT_EXTENSIONS +
     ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'] +
     ['.pos', '.eeg', '.vmrk'] +  # extra datatype-specific metadata files.
-    ['.dat', '.EEG']  # extra eeg extensions
+    ['.mrk', '.dat', '.EEG']  # extra eeg extensions
 )
 
 # allowed BIDS path entities
