@@ -209,7 +209,8 @@ def _save_annotations(*, annotations, bids_path, verbose):
                         verbose='warning')
     raw.set_annotations(annotations)
     events, durs, descrs = _read_events(events_data=None, event_id=None,
-                                        raw=raw, verbose=False)
+                                        task=bids_path.task, raw=raw,
+                                        verbose=False)
 
     # Write sidecar – or remove it if no events are left.
     events_tsv_fname = (bids_path.copy()

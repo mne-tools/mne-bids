@@ -101,7 +101,7 @@ print(f'The following channels are currently marked as bad:\n'
       f'    {", ".join(raw.info["bads"])}\n')
 
 # %%
-# So currently, two channels are maked as bad: ``EEG 053`` and ``MEG 2443``.
+# So currently, two channels are marked as bad: ``EEG 053`` and ``MEG 2443``.
 # Let's assume that through visual data inspection, we found that two more
 # MEG channels are problematic, and we would like to mark them as bad as well.
 # To do that, we simply add them to a list, which we then pass to

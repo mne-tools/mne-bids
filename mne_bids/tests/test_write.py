@@ -43,7 +43,9 @@ from mne.io.kit.kit import get_kit_info
 from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_bad_channels, write_meg_calibration,
-                      write_meg_crosstalk, get_entities_from_fname)
+                      write_meg_crosstalk, get_entities_from_fname,
+                      get_anat_landmarks)
+from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -189,7 +191,7 @@ def test_write_participants(_bids_validate, tmpdir):
     data['test_col2'] = ['n/a'] * len(data['participant_id'])
     orig_key_order = list(data.keys())
     _to_tsv(data, participants_tsv)
-    # crate corresponding json entry
+    # create corresponding json entry
     participants_json_fpath = tmpdir / 'participants.json'
     json_field = {
         'Description': 'trial-outcome',
@@ -507,9 +509,9 @@ def test_fif(_bids_validate, tmpdir):
 
     # try and write preloaded data
     raw = _read_raw_fif(raw_fname, preload=True)
-    with pytest.raises(ValueError, match='preloaded'):
+    with pytest.raises(ValueError, match='allow_preload'):
         write_raw_bids(raw, bids_path_meg, events_data=events,
-                       event_id=event_id, overwrite=False)
+                       event_id=event_id, allow_preload=False, overwrite=False)
 
     # test anonymize
     raw = _read_raw_fif(raw_fname)
@@ -561,10 +563,6 @@ def test_fif(_bids_validate, tmpdir):
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_path)
-
-    del raw._filenames
-    with pytest.raises(ValueError, match='raw.filenames is missing'):
-        write_raw_bids(raw, bids_path2)
 
     _bids_validate(bids_root)
 
@@ -1524,6 +1522,93 @@ def _check_anat_json(bids_path):
                                       point)
 
 
+def test_get_anat_landmarks():
+    """Test getting anatomical landmarks in image space."""
+    data_path = testing.data_path()
+    # Get the T1 weighted MRI data file
+    # Needs to be converted to Nifti because we only have mgh in our test base
+    t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+    fs_subjects_dir = op.join(data_path, 'subjects')
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+    # Write some MRI data and supply a `trans`
+    trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
+    trans = mne.read_trans(trans_fname)
+
+    # define some keyword arguments to simplify testing
+    kwargs = dict(image=t1w_mgh, info=raw.info, trans=trans,
+                  fs_subject='sample', fs_subjects_dir=fs_subjects_dir)
+
+    # trans has a wrong type
+    wrong_type = 1
+    match = f'trans must be an instance of .*, got {type(wrong_type)} '
+    ex = TypeError
+
+    with pytest.raises(ex, match=match):
+        get_anat_landmarks(**dict(kwargs, trans=wrong_type))
+
+    # trans is a str, but file does not exist
+    wrong_fname = 'not_a_trans'
+    match = 'trans file "{}" not found'.format(wrong_fname)
+    with pytest.raises(IOError, match=match):
+        get_anat_landmarks(**dict(kwargs, trans=wrong_fname))
+
+    # However, reading trans if it is a string pointing to trans is fine
+    get_anat_landmarks(**dict(kwargs, trans=trans_fname))
+
+    # test unsupported coord_frame
+    fail_info = raw.info.copy()
+    fail_info['dig'][0]['coord_frame'] = 3
+    fail_info['dig'][1]['coord_frame'] = 3
+    fail_info['dig'][2]['coord_frame'] = 3
+
+    with pytest.raises(ValueError, match='must be in the head'):
+        get_anat_landmarks(**dict(kwargs, info=fail_info))
+
+    # test bad freesurfer directory
+    with pytest.raises(ValueError, match='subject folder is incorrect'):
+        get_anat_landmarks(**dict(kwargs, fs_subject='bad'))
+
+    # test _get_fid_coords
+    fail_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        coord_frame='mri_voxel')
+
+    with pytest.raises(ValueError, match='Some fiducial points are missing'):
+        _get_fid_coords(fail_landmarks.dig, raise_error=True)
+
+    fail_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        nasion=[41.87363, 32.24694, 74.55314],
+        rpa=[17.23812, 53.08294, 47.01789],
+        coord_frame='mri_voxel')
+    fail_landmarks.dig[2]['coord_frame'] = 99
+
+    with pytest.raises(ValueError, match='must be in the same coordinate'):
+        _get_fid_coords(fail_landmarks.dig, raise_error=True)
+
+    # test main
+    mri_voxel_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        nasion=[41.87363, 32.24694, 74.55314],
+        rpa=[17.23812, 53.08294, 47.01789],
+        coord_frame='mri_voxel')
+    coords_dict, mri_voxel_coord_frame = _get_fid_coords(
+        mri_voxel_landmarks.dig)
+    mri_voxel_landmarks = np.asarray((coords_dict['lpa'],
+                                      coords_dict['nasion'],
+                                      coords_dict['rpa']))
+    landmarks = get_anat_landmarks(**kwargs)
+    coords_dict2, coord_frame = _get_fid_coords(landmarks.dig)
+    landmarks = np.asarray((coords_dict2['lpa'],
+                            coords_dict2['nasion'],
+                            coords_dict2['rpa']))
+    assert mri_voxel_coord_frame == coord_frame
+    np.testing.assert_array_almost_equal(
+        mri_voxel_landmarks, landmarks, decimal=5)
+
+
 @requires_nibabel()
 def test_write_anat(_bids_validate, tmpdir):
     """Test writing anatomical data."""
@@ -1531,6 +1616,25 @@ def test_write_anat(_bids_validate, tmpdir):
     import nibabel as nib
     bids_root = tmpdir.mkdir('bids1')
     data_path = testing.data_path()
+
+    # Get the T1 weighted MRI data file
+    # Needs to be converted to Nifti because we only have mgh in our test base
+    t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+
+    # define hard-coded landmark locations in voxel and scanner RAS
+    mri_voxel_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        nasion=[41.87363, 32.24694, 74.55314],
+        rpa=[17.23812, 53.08294, 47.01789],
+        coord_frame='mri_voxel')
+
+    mri_scanner_ras_landmarks = mne.channels.make_dig_montage(
+        lpa=[-0.07453101, 0.01962855, -0.05228882],
+        nasion=[-0.00189453, 0.1036985, 0.00497122],
+        rpa=[0.07201203, 0.02109275, -0.05753678],
+        coord_frame='ras')
+
+    # write base bids directory
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -1548,19 +1652,12 @@ def test_write_anat(_bids_validate, tmpdir):
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=False)
 
-    # Write some MRI data and supply a `trans`
-    trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
-    trans = mne.read_trans(trans_fname)
+    # define some keyword arguments to simplify testing
+    kwargs = dict(bids_path=bids_path, landmarks=mri_voxel_landmarks,
+                  deface=True, verbose=True, overwrite=True)
 
-    # Get the T1 weighted MRI data file
-    # Needs to be converted to Nifti because we only have mgh in our test base
-    t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
-
-    bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         acquisition=acq, root=bids_root)
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                           raw=raw, trans=trans, deface=True, verbose=True,
-                           overwrite=True)
+    # test writing with no sidecar
+    bids_path = write_anat(t1w_mgh, **kwargs)
     anat_dir = bids_path.directory
     _bids_validate(bids_root)
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
@@ -1568,12 +1665,16 @@ def test_write_anat(_bids_validate, tmpdir):
     # Validate that files are as expected
     _check_anat_json(bids_path)
 
+    # Test depreciation
+    with pytest.raises(ValueError,
+                       match='`raw`, `trans` and `t1w` are depreciated'):
+        write_anat(
+            t1w_mgh, **dict(kwargs, raw=raw, trans='test', t1w=t1w_mgh))
+
     # Now try some anat writing that will fail
     # We already have some MRI data there
     with pytest.raises(IOError, match='`overwrite` is set to False'):
-        write_anat(t1w_mgh, bids_path=bids_path,
-                   raw=raw, trans=trans, verbose=True, deface=False,
-                   overwrite=False)
+        write_anat(t1w_mgh, **dict(kwargs, overwrite=False))
 
     # check overwrite no JSON
     with pytest.raises(IOError, match='it already exists'):
@@ -1582,12 +1683,7 @@ def test_write_anat(_bids_validate, tmpdir):
 
     # pass some invalid type as T1 MRI
     with pytest.raises(ValueError, match='must be a path to an MRI'):
-        write_anat(9999999999999, bids_path=bids_path, raw=raw,
-                   trans=trans, verbose=True, deface=False, overwrite=True)
-
-    with pytest.warns(RuntimeWarning, match='Ignoring `raw`'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   verbose=True, overwrite=True)
+        write_anat(9999999999999, **kwargs)
 
     # Return without writing sidecar
     sh.rmtree(anat_dir)
@@ -1597,58 +1693,26 @@ def test_write_anat(_bids_validate, tmpdir):
         _find_matching_sidecar(bids_path,
                                suffix='T1w', extension='.json')
 
-    # trans has a wrong type
-    wrong_type = 1
-    match = f'trans must be an instance of .*, got {type(wrong_type)} '
-    ex = TypeError
-
-    with pytest.raises(ex, match=match):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   trans=wrong_type, verbose=True, deface=False,
-                   overwrite=True)
-
-    # trans is a str, but file does not exist
-    wrong_fname = 'not_a_trans'
-    match = 'trans file "{}" not found'.format(wrong_fname)
-    with pytest.raises(IOError, match=match):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   trans=wrong_fname, verbose=True, overwrite=True)
-
-    # However, reading trans if it is a string pointing to trans is fine
-    write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-               trans=trans_fname, verbose=True, deface=False,
-               overwrite=True)
-
     # Writing without a session does NOT yield "ses-None" anywhere
     bids_path.update(session=None, acquisition=None)
+    kwargs.update(bids_path=bids_path)
     bids_path = write_anat(t1w_mgh, bids_path=bids_path)
     anat_dir2 = bids_path.directory
     assert 'ses-None' not in anat_dir2.as_posix()
     assert op.exists(op.join(anat_dir2, 'sub-01_T1w.nii.gz'))
 
-    # specify trans but not raw
-    with pytest.raises(ValueError, match='must be specified if `trans`'):
-        bids_path.update(session=session_id)
-        write_anat(t1w_mgh, bids_path=bids_path, raw=None,
-                   trans=trans, verbose=True, deface=False, overwrite=True)
-
     # test deface
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                           raw=raw, trans=trans_fname,
-                           verbose=True, deface=True, overwrite=True)
+    bids_path = write_anat(t1w_mgh, **kwargs)
     anat_dir = bids_path.directory
-    t1w = nib.load(op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz'))
+    t1w = nib.load(op.join(anat_dir, 'sub-01_T1w.nii.gz'))
     vox_sum = t1w.get_fdata().sum()
 
     _check_anat_json(bids_path)
 
     # Check that increasing inset leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                           raw=raw, trans=trans_fname,
-                           verbose=True, deface=dict(inset=25.),
-                           overwrite=True)
+    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=25.)))
     anat_dir2 = bids_path.directory
-    t1w2 = nib.load(op.join(anat_dir2, 'sub-01_ses-01_T1w.nii.gz'))
+    t1w2 = nib.load(op.join(anat_dir2, 'sub-01_T1w.nii.gz'))
     vox_sum2 = t1w2.get_fdata().sum()
 
     _check_anat_json(bids_path)
@@ -1656,12 +1720,9 @@ def test_write_anat(_bids_validate, tmpdir):
     assert vox_sum > vox_sum2
 
     # Check that increasing theta leads to more voxels at 0
-    bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                           raw=raw, trans=trans_fname,
-                           verbose=True, deface=dict(theta=45),
-                           overwrite=True)
+    bids_path = write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=45)))
     anat_dir3 = bids_path.directory
-    t1w3 = nib.load(op.join(anat_dir3, 'sub-01_ses-01_T1w.nii.gz'))
+    t1w3 = nib.load(op.join(anat_dir3, 'sub-01_T1w.nii.gz'))
     vox_sum3 = t1w3.get_fdata().sum()
 
     assert vox_sum > vox_sum3
@@ -1670,153 +1731,55 @@ def test_write_anat(_bids_validate, tmpdir):
         write_anat(t1w_mgh, bids_path=bids_path, deface=True,
                    verbose=True, overwrite=True)
 
-    with pytest.raises(ValueError, match='`raw` must be specified'):
-        write_anat(t1w_mgh, bids_path=bids_path, deface=True, trans=trans,
-                   verbose=True, overwrite=True)
-
     with pytest.raises(ValueError, match='inset must be numeric'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw, trans=trans,
-                   deface=dict(inset='small'), verbose=True, overwrite=True)
+        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset='small')))
 
     with pytest.raises(ValueError, match='inset should be positive'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   trans=trans, verbose=True, deface=dict(inset=-2.),
-                   overwrite=True)
+        write_anat(t1w_mgh, **dict(kwargs, deface=dict(inset=-2.)))
 
     with pytest.raises(ValueError, match='theta must be numeric'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   trans=trans, verbose=True, deface=dict(theta='big'),
-                   overwrite=True)
+        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta='big')))
 
     with pytest.raises(ValueError, match='theta should be between 0 and 90'):
-        write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                   trans=trans, verbose=True, deface=dict(theta=100),
-                   overwrite=True)
-
-    # Write some MRI data and supply `landmarks`
-    mri_voxel_landmarks = mne.channels.make_dig_montage(
-        lpa=[66.08580, 51.33362, 46.52982],
-        nasion=[41.87363, 32.24694, 74.55314],
-        rpa=[17.23812, 53.08294, 47.01789],
-        coord_frame='mri_voxel')
-
-    mri_landmarks = mne.channels.make_dig_montage(
-        lpa=[-0.06925741, 0.01058946, -0.02500086],
-        nasion=[0.00337909, 0.09465943, 0.03225916],
-        rpa=[0.07728562, 0.01205367, -0.03024882],
-        coord_frame='mri')
-
-    meg_landmarks = mne.channels.make_dig_montage(
-        lpa=[-7.13766068e-02, 0.00000000e+00, 5.12227416e-09],
-        nasion=[3.72529030e-09, 1.02605611e-01, 4.19095159e-09],
-        rpa=[7.52676800e-02, 0.00000000e+00, 5.58793545e-09],
-        coord_frame='head')
-
-    mri_scanner_ras_landmarks = mne.channels.make_dig_montage(
-        lpa=np.array([-0.07453101, 0.01962855, -0.05228882]),
-        nasion=np.array([-0.00189453, 0.1036985, 0.00497122]),
-        rpa=np.array([0.07201203, 0.02109275, -0.05753678]),
-        coord_frame='ras')
-
-    # test meg landmarks
-    tmp_dir = tmpdir.mkdir('bids2')
-    meg_landmarks_fif = op.join(tmp_dir, 'meg_landmarks.fif')
-    meg_landmarks.save(meg_landmarks_fif)
+        write_anat(t1w_mgh, **dict(kwargs, deface=dict(theta=100)))
 
     # test using landmarks
     bids_path.update(acquisition=acq)
 
-    all_img_data = []
-    for landmarks in [mri_voxel_landmarks,
-                      mri_landmarks,
-                      meg_landmarks,
-                      mri_scanner_ras_landmarks,
-                      meg_landmarks_fif]:
-
-        in_head = True if isinstance(landmarks, str) else \
-            landmarks.dig[0]['coord_frame'] == FIFF.FIFFV_COORD_HEAD
-
-        # Trans is required if landmarks are in head
-        bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                               deface=True, landmarks=landmarks,
-                               trans=trans if in_head else None,
-                               verbose=True, overwrite=True)
-        anat_dir = bids_path.directory
-        _bids_validate(bids_root)
-        _check_anat_json(bids_path)
-
-        img = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-        img_data = img.get_fdata()
-        all_img_data.append(img_data)
-
-        assert np.mean(all_img_data[0] == img_data) > 0.98
-
-        if not in_head:
-            # crash for raw also
-            with pytest.raises(ValueError, match='use EITHER `landmarks`'):
-                write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
-                           trans=trans, deface=True, landmarks=landmarks,
-                           verbose=True, overwrite=True)
-
-            # crash for trans also
-            with pytest.raises(ValueError, match='`trans` was provided'):
-                write_anat(t1w_mgh, bids_path=bids_path, trans=trans,
-                           deface=True, landmarks=landmarks, verbose=True,
-                           overwrite=True)
-
-    # test raise error on meg_landmarks with no trans
-    with pytest.raises(ValueError, match='Head space landmarks provided'):
-        write_anat(t1w_mgh, bids_path=bids_path, deface=True,
-                   landmarks=meg_landmarks, verbose=True, overwrite=True)
-
-    # test unsupported (any coord_frame other than head and mri) coord_frame
-    fail_landmarks = meg_landmarks.copy()
+    # test unsupported coord_frame
+    fail_landmarks = mri_voxel_landmarks.copy()
     fail_landmarks.dig[0]['coord_frame'] = 3
     fail_landmarks.dig[1]['coord_frame'] = 3
     fail_landmarks.dig[2]['coord_frame'] = 3
 
-    with pytest.raises(ValueError, match='Coordinate frame not recognized'):
-        write_anat(t1w_mgh, bids_path=bids_path, deface=True,
-                   landmarks=fail_landmarks, verbose=True, overwrite=True)
+    with pytest.raises(ValueError, match='Coordinate frame not supported'):
+        write_anat(t1w_mgh, **dict(kwargs, landmarks=fail_landmarks))
 
     # Test now using FLASH
     flash_mgh = \
         op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+    trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
+    landmarks = get_anat_landmarks(flash_mgh, raw.info, trans_fname, 'sample',
+                                   op.join(data_path, 'subjects'))
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix='FLASH', root=bids_root)
-    with pytest.raises(ValueError, match='The T1 must be passed as `t1w`'):
-        write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
-                   deface=True, verbose=True, overwrite=True)
+    kwargs.update(bids_path=bids_path, landmarks=landmarks)
 
-    write_anat(flash_mgh, bids_path=bids_path, overwrite=True)
-    write_anat(flash_mgh, bids_path=bids_path,
-               landmarks=mri_scanner_ras_landmarks, overwrite=True)
+    bids_path = write_anat(flash_mgh, **kwargs)
+    anat_dir = bids_path.directory
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     _bids_validate(bids_root)
 
     flash1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox1 = flash1.get_fdata()
 
-    # test raw + trans + t1w
-    write_anat(flash_mgh, bids_path=bids_path, raw=raw, trans=trans,
-               t1w=t1w_mgh, overwrite=True)
+    # test landmarks in scanner RAS coordinates
+    bids_path = write_anat(
+        flash_mgh, **dict(kwargs, landmarks=mri_scanner_ras_landmarks))
+    anat_dir = bids_path.directory
     flash2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
     fvox2 = flash2.get_fdata()
     assert_array_equal(fvox1, fvox2)
-
-    # test landmarks on T1 surface RAS coordinates
-    write_anat(flash_mgh, bids_path=bids_path, landmarks=mri_landmarks,
-               t1w=t1w_mgh, overwrite=True)
-    flash3 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
-    fvox3 = flash3.get_fdata()
-    assert_array_equal(fvox1, fvox3)
-
-    # test landmarks in head coordinates
-    write_anat(flash_mgh, bids_path=bids_path, landmarks=meg_landmarks,
-               trans=trans, t1w=t1w_mgh, overwrite=True)
-    flash4 = nib.load(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
-    fvox4 = flash4.get_fdata()
-    assert_array_equal(fvox1, fvox4)
 
 
 def test_write_raw_pathlike(tmpdir):
@@ -1874,9 +1837,12 @@ def test_write_anat_pathlike(tmpdir):
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
-    bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path, raw=raw,
-                           trans=trans, deface=True, verbose=True,
-                           overwrite=True)
+    landmarks = get_anat_landmarks(
+        t1w_mgh_fname, raw.info, trans, 'sample',
+        fs_subjects_dir=op.join(data_path, 'subjects'))
+    bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path,
+                           landmarks=landmarks, deface=True,
+                           verbose=True, overwrite=True)
 
     # write_anat() should return a BIDSPath.
     assert isinstance(bids_path, BIDSPath)
@@ -2806,3 +2772,44 @@ def test_write_associated_emptyroom(_bids_validate, tmpdir):
             .as_posix()  # make test work on Windows, too
             .endswith(meg_json_data['AssociatedEmptyRoom']))
     assert meg_json_data['AssociatedEmptyRoom'].startswith('/')
+
+
+def test_preload(_bids_validate, tmpdir):
+    """Test writing custom preloaded raw objects"""
+    bids_root = tmpdir.mkdir('bids')
+    bids_path = _bids_path.copy().update(root=bids_root)
+    sfreq, n_points = 1024., int(1e6)
+    info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
+                           ['eeg'] * 5)
+    rng = np.random.RandomState(99)
+    raw = mne.io.RawArray(rng.random((5, n_points)) * 1e-6, info)
+    raw.orig_format = 'single'
+    raw.info['line_freq'] = 60
+
+    # reject preloaded by default
+    with pytest.raises(ValueError, match='allow_preload'):
+        write_raw_bids(raw, bids_path, verbose=False, overwrite=True)
+
+    # preloaded raw must specify format
+    with pytest.raises(ValueError, match='format'):
+        write_raw_bids(raw, bids_path, allow_preload=True,
+                       verbose=False, overwrite=True)
+
+    write_raw_bids(raw, bids_path, allow_preload=True, format='BrainVision',
+                   verbose=False, overwrite=True)
+    _bids_validate(bids_root)
+
+
+@pytest.mark.parametrize(
+    'dir_name', ('tsv_test', 'json_test')
+)
+def test_write_raw_special_paths(tmpdir, dir_name):
+    """Test writing to locations containing strings with special meaning."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    root = Path(tmpdir) / dir_name
+    bids_path = _bids_path.copy().update(root=root)
+    write_raw_bids(raw=raw, bids_path=bids_path)
