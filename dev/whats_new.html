@@ -264,6 +264,7 @@
 <li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
 <li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
 <li><p><a class="reference external" href="https://github.com/richardkoehler">Richard Köhler</a> (new contributor)</p></li>
+<li><p><a class="reference external" href="https://kingjr.github.io/">Jean-Rémi King</a> (new contributor)</p></li>
 </ul>
 </div>
 <div class="section" id="detailed-list-of-changes">
@@ -282,6 +283,7 @@
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> gained a new parameter <code class="docutils literal notranslate"><span class="pre">empty_room</span></code> that allows to specify an associated empty-room recording when writing an MEG data file. This information will be stored in the <code class="docutils literal notranslate"><span class="pre">AssociatedEmptyRoom</span></code> field of the MEG JSON sidecar file, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/795">#795</a>)</p></li>
 <li><p>Added support for the new channel type <code class="docutils literal notranslate"><span class="pre">'dbs'</span></code> (Deep Brain Stimulation), which was introduced in MNE-Python 0.23, by <a class="reference external" href="https://github.com/richardkoehler">Richard Köhler</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/800">#800</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> now warns in many situations when it encounters a mismatch between the channels in <code class="docutils literal notranslate"><span class="pre">*_channels.tsv</span></code> and the raw data, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/823">#823</a>)</p></li>
+<li><p>MNE BIDS now accepts “.mrk” head digitization files used in the KIT/Yokogawa/Ricoh MEG system, by <a class="reference external" href="https://kingjr.github.io/">Jean-Rémi King</a> and <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/842">#842</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="api-and-behavior-changes">
@@ -348,13 +350,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-09.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-13.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.0.3.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.0.<br/>
 </p>
     </div>
     
