@@ -1,0 +1,18 @@
+{
+    "TaskName": "rest",
+    "Manufacturer": "BrainProducts",
+    "PowerLineFrequency": 60,
+    "SamplingFrequency": 5000.0,
+    "SoftwareFilters": "n/a",
+    "RecordingDuration": 0.9998,
+    "RecordingType": "continuous",
+    "EEGReference": "n/a",
+    "EEGGround": "n/a",
+    "EEGPlacementScheme": "based on the extended 10/20 system",
+    "EEGChannelCount": 64,
+    "EOGChannelCount": 2,
+    "ECGChannelCount": 1,
+    "EMGChannelCount": 0,
+    "MiscChannelCount": 0,
+    "TriggerChannelCount": 0
+}
