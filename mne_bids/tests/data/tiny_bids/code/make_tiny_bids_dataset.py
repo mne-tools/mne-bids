@@ -59,3 +59,4 @@ ds_json["Authors"] = ["MNE-BIDS Developers", "And Friends"]
 
 with open(dataset_description_json, "w") as fout:
     json.dump(ds_json, fout, indent=4)
+    fout.write("\n")
