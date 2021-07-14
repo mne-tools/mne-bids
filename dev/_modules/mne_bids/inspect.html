@@ -182,7 +182,13 @@
               <div>
                 
   <h1>Source code for mne_bids.inspect</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span></span><span class="sd">&quot;&quot;&quot;Inspect and annotate BIDS raw data.&quot;&quot;&quot;</span>
+<span class="c1"># Authors: Richard Höchenberger &lt;richard.hoechenberger@gmail.com&gt;</span>
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -262,8 +268,12 @@
 <span class="sd">    Disable flat channel &amp; segment detection, and apply a filter with a</span>
 <span class="sd">    passband of 1–30 Hz.</span>
 
-<span class="sd">    &gt;&gt;&gt; inspect_dataset(bids_path=bids_path, find_flat=False,</span>
-<span class="sd">                        l_freq=1, h_freq=30)</span>
+<span class="sd">    &gt;&gt;&gt; from mne_bids import BIDSPath</span>
+<span class="sd">    &gt;&gt;&gt; root = Path(&#39;./mne_bids/tests/data/tiny_bids&#39;).absolute()</span>
+<span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, task=&#39;rest&#39;, session=&#39;eeg&#39;,</span>
+<span class="sd">    ...                      suffix=&#39;eeg&#39;, extension=&#39;.vhdr&#39;, root=root)</span>
+<span class="sd">    &gt;&gt;&gt; inspect_dataset(bids_path=bids_path, find_flat=False,  # doctest: +SKIP</span>
+<span class="sd">    ...                 l_freq=1, h_freq=30)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">allowed_extensions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">]</span> <span class="o">+</span>
                              <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">]</span> <span class="o">+</span>
@@ -612,7 +622,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-13.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-14.<br/>
 </p>
     </div>
     

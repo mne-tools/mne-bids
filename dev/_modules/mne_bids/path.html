@@ -184,6 +184,7 @@
   <h1>Source code for mne_bids.path</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;BIDS compatible path functionality.&quot;&quot;&quot;</span>
 <span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">glob</span>
@@ -197,7 +198,7 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span>
@@ -408,37 +409,50 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    Generate a BIDSPath object and inspect it</span>
+
 <span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;,</span>
-<span class="sd">                             suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
+<span class="sd">    ...                      suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">    sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="sd">    &gt;&gt;&gt; bids_path</span>
-<span class="sd">    BIDSPath(root: None,</span>
+<span class="sd">    BIDSPath(</span>
+<span class="sd">    root: None</span>
+<span class="sd">    datatype: ieeg</span>
 <span class="sd">    basename: sub-test_ses-two_task-mytask_ieeg.edf)</span>
-<span class="sd">    &gt;&gt;&gt; # copy and update multiple entities at once</span>
+
+<span class="sd">    Copy and update multiple entities at once</span>
+
 <span class="sd">    &gt;&gt;&gt; new_bids_path = bids_path.copy().update(subject=&#39;test2&#39;,</span>
-<span class="sd">                                                session=&#39;one&#39;)</span>
+<span class="sd">    ...                                         session=&#39;one&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path.basename)</span>
 <span class="sd">    sub-test2_ses-one_task-mytask_ieeg.edf</span>
-<span class="sd">    &gt;&gt;&gt; # printing the BIDSPath will show relative path when</span>
-<span class="sd">    &gt;&gt;&gt; # root is not set</span>
+
+<span class="sd">    Printing a BIDSPath will show a relative path when `root` is not set</span>
+
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
 <span class="sd">    sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
-<span class="sd">    &gt;&gt;&gt; new_bids_path.update(suffix=&#39;channels&#39;, extension=&#39;.tsv&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; # setting suffix without an identifiable datatype will</span>
-<span class="sd">    &gt;&gt;&gt; # result in a wildcard at the datatype directory level</span>
+
+<span class="sd">    Setting `suffix` without an identifiable datatype will make</span>
+<span class="sd">    BIDSPath try to guess the datatype</span>
+
+<span class="sd">    &gt;&gt;&gt; new_bids_path = new_bids_path.update(suffix=&#39;channels&#39;,</span>
+<span class="sd">    ...                                      extension=&#39;.tsv&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
-<span class="sd">    sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv</span>
-<span class="sd">    &gt;&gt;&gt; # set a root for the BIDS dataset</span>
-<span class="sd">    &gt;&gt;&gt; new_bids_path.update(root=&#39;/bids_dataset&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; print(new_bids_path.root)</span>
+<span class="sd">    sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv</span>
+
+<span class="sd">    You can set a new root for the BIDS dataset. Let&#39;s see what the</span>
+<span class="sd">    different properties look like for our object:</span>
+
+<span class="sd">    &gt;&gt;&gt; new_bids_path = new_bids_path.update(root=&#39;/bids_dataset&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(new_bids_path.root.as_posix())</span>
 <span class="sd">    /bids_dataset</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path.basename)</span>
-<span class="sd">    sub-test2_ses-one_task-mytask_ieeg.edf</span>
+<span class="sd">    sub-test2_ses-one_task-mytask_channels.tsv</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
-<span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
-<span class="sd">    &gt;&gt;&gt; print(new_bids_path.directory)</span>
-<span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg/</span>
+<span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv</span>
+<span class="sd">    &gt;&gt;&gt; print(new_bids_path.directory.as_posix())</span>
+<span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -624,7 +638,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;The root directory of the BIDS dataset.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span>
 
@@ -661,12 +675,14 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the string representation of the path.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Representation in the style of `pathlib.Path`.&quot;&quot;&quot;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="se">\n</span><span class="s1">&#39;</span> \
-               <span class="sa">f</span><span class="s1">&#39;root: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span> \
+               <span class="sa">f</span><span class="s1">&#39;root: </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span> \
                <span class="sa">f</span><span class="s1">&#39;datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span> \
                <span class="sa">f</span><span class="s1">&#39;basename: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">)&#39;</span>
 
@@ -835,13 +851,13 @@
 <span class="sd">        :func:`mne_bids.BIDSPath`:</span>
 
 <span class="sd">        &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;,</span>
-<span class="sd">                                     task=&#39;mytask&#39;, suffix=&#39;channels&#39;,</span>
-<span class="sd">                                     extension=&#39;.tsv&#39;)</span>
+<span class="sd">        ...                      task=&#39;mytask&#39;, suffix=&#39;channels&#39;,</span>
+<span class="sd">        ...                      extension=&#39;.tsv&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="sd">        &gt;&gt;&gt; # Then, one can update this `BIDSPath` object in place</span>
-<span class="sd">        &gt;&gt;&gt; bids_path.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
-<span class="sd">                             extension=&#39;.vhdr&#39;, task=None)</span>
+<span class="sd">        &gt;&gt;&gt; bids_path = bids_path.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
+<span class="sd">        ...                              extension=&#39;.vhdr&#39;, task=None)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_acq-test_ieeg.vhdr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1331,16 +1347,16 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; fname = &#39;sub-01_ses-exp_run-02_meg.fif&#39;</span>
 <span class="sd">    &gt;&gt;&gt; get_entities_from_fname(fname)</span>
-<span class="sd">    {&#39;subject&#39;: &#39;01&#39;,</span>
-<span class="sd">    &#39;session&#39;: &#39;exp&#39;,</span>
-<span class="sd">    &#39;task&#39;: None,</span>
-<span class="sd">    &#39;acquisition&#39;: None,</span>
-<span class="sd">    &#39;run&#39;: &#39;02&#39;,</span>
-<span class="sd">    &#39;processing&#39;: None,</span>
-<span class="sd">    &#39;space&#39;: None,</span>
-<span class="sd">    &#39;recording&#39;: None,</span>
-<span class="sd">    &#39;split&#39;: None,</span>
-<span class="sd">    &#39;suffix&#39;: &#39;meg&#39;}</span>
+<span class="sd">    {&#39;subject&#39;: &#39;01&#39;, \</span>
+<span class="sd">&#39;session&#39;: &#39;exp&#39;, \</span>
+<span class="sd">&#39;task&#39;: None, \</span>
+<span class="sd">&#39;acquisition&#39;: None, \</span>
+<span class="sd">&#39;run&#39;: &#39;02&#39;, \</span>
+<span class="sd">&#39;processing&#39;: None, \</span>
+<span class="sd">&#39;space&#39;: None, \</span>
+<span class="sd">&#39;recording&#39;: None, \</span>
+<span class="sd">&#39;split&#39;: None, \</span>
+<span class="sd">&#39;suffix&#39;: &#39;meg&#39;}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Acceptable values for on_error are: warn, raise, &#39;</span>
@@ -1582,12 +1598,12 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; root = os.path.expanduser(&#39;~/mne_data/eeg_matchingpennies&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; root = Path(&#39;./mne_bids/tests/data/tiny_bids&#39;).absolute()</span>
 <span class="sd">    &gt;&gt;&gt; entity_key = &#39;subject&#39;</span>
 <span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key)</span>
-<span class="sd">    [&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
+<span class="sd">    [&#39;01&#39;]</span>
 <span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key, with_key=True)</span>
-<span class="sd">    [&#39;sub-05&#39;, &#39;sub-06&#39;, &#39;sub-07&#39;, &#39;sub-08&#39;, &#39;sub-09&#39;, &#39;sub-10&#39;, &#39;sub-11&#39;]</span>
+<span class="sd">    [&#39;sub-01&#39;]</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1840,7 +1856,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-13.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-14.<br/>
 </p>
     </div>
     

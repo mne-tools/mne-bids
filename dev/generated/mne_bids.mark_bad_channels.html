@@ -383,29 +383,40 @@ discarding their descriptions.</p>
 </dl>
 <p class="rubric">Examples</p>
 <p>Mark a single channel as bad.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">(</span><span class="s1">&#39;MEG 0112&#39;</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./mne_bids/tests/data/tiny_bids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;rest&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">(</span><span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">Processing channel C4:</span>
+<span class="go">    status: bad</span>
+<span class="go">    description: n/a</span>
 </pre></div>
 </div>
-<p>Mark multiple channels as bad.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MEG 0112&#39;</span><span class="p">,</span> <span class="s1">&#39;MEG 0131&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">(</span><span class="n">bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Mark channels as bad, and add a description as to why.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MEG 0112&#39;</span><span class="p">,</span> <span class="s1">&#39;MEG 0131&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Only produced noise&#39;</span><span class="p">,</span> <span class="s1">&#39;Continuously flat&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">(</span><span class="n">bads</span><span class="p">,</span> <span class="n">descriptions</span><span class="p">,</span> <span class="n">bbids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
+<p>Mark multiple channels as bad, and add a description as to why.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;PO10&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;very noisy&#39;</span><span class="p">,</span> <span class="s1">&#39;continuously flat&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">(</span><span class="n">bads</span><span class="p">,</span> <span class="n">descriptions</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">Processing channel C3:</span>
+<span class="go">    status: bad</span>
+<span class="go">    description: very noisy</span>
+<span class="go">Processing channel PO10:</span>
+<span class="go">    status: bad</span>
+<span class="go">    description: continuously flat</span>
 </pre></div>
 </div>
 <p>Mark two channels as bad, and mark all others as good by setting
 <code class="docutils literal notranslate"><span class="pre">overwrite=True</span></code>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MEG 0112&#39;</span><span class="p">,</span> <span class="s1">&#39;MEG 0131&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">(</span><span class="n">bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">(</span><span class="n">bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> 
+<span class="gp">... </span>                  <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Mark all channels as good by passing an empty list of bad channels, and
 setting <code class="docutils literal notranslate"><span class="pre">overwrite=True</span></code>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">([],</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mark_bad_channels</span><span class="p">([],</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">Resetting status and description for all channels.</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -443,7 +454,7 @@ setting <code class="docutils literal notranslate"><span class="pre">overwrite=T
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-13.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-14.<br/>
 </p>
     </div>
     

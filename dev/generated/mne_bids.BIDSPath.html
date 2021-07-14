@@ -424,37 +424,49 @@ BIDS. For example, one can set <code class="docutils literal notranslate"><span 
 pass <code class="docutils literal notranslate"><span class="pre">check=False</span></code> to represent diffusion-weighted imaging and
 functional MRI paths.</p>
 <p class="rubric">Examples</p>
+<p>Generate a BIDSPath object and inspect it</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span>
-<span class="go">                         suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
+<span class="gp">... </span>                     <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.edf&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span>
-<span class="go">BIDSPath(root: None,</span>
+<span class="go">BIDSPath(</span>
+<span class="go">root: None</span>
+<span class="go">datatype: ieeg</span>
 <span class="go">basename: sub-test_ses-two_task-mytask_ieeg.edf)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># copy and update multiple entities at once</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test2&#39;</span><span class="p">,</span>
-<span class="go">                                            session=&#39;one&#39;)</span>
+</pre></div>
+</div>
+<p>Copy and update multiple entities at once</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test2&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                        <span class="n">session</span><span class="o">=</span><span class="s1">&#39;one&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test2_ses-one_task-mytask_ieeg.edf</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># printing the BIDSPath will show relative path when</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># root is not set</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Printing a BIDSPath will show a relative path when <a class="reference internal" href="#mne_bids.BIDSPath.root" title="mne_bids.BIDSPath.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a> is not set</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
 <span class="go">sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># setting suffix without an identifiable datatype will</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># result in a wildcard at the datatype directory level</span>
+</pre></div>
+</div>
+<p>Setting <a class="reference internal" href="#mne_bids.BIDSPath.suffix" title="mne_bids.BIDSPath.suffix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suffix</span></code></a> without an identifiable datatype will make
+BIDSPath try to guess the datatype</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span> <span class="o">=</span> <span class="n">new_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
-<span class="go">sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># set a root for the BIDS dataset</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/bids_dataset&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+<span class="go">sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv</span>
+</pre></div>
+</div>
+<p>You can set a new root for the BIDS dataset. Let’s see what the
+different properties look like for our object:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span> <span class="o">=</span> <span class="n">new_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/bids_dataset&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
 <span class="go">/bids_dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
-<span class="go">sub-test2_ses-one_task-mytask_ieeg.edf</span>
+<span class="go">sub-test2_ses-one_task-mytask_channels.tsv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
-<span class="go">/bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
-<span class="go">/bids_dataset/sub-test2/ses-one/ieeg/</span>
+<span class="go">/bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
+<span class="go">/bids_dataset/sub-test2/ses-one/ieeg</span>
 </pre></div>
 </div>
 <dl class="field-list">
@@ -701,7 +713,7 @@ Otherwise, do nothing (default).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.root">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">root</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[Union[str,</span> <span class="pre">pathlib.Path]]</span></em><a class="headerlink" href="#mne_bids.BIDSPath.root" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">root</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional[pathlib.Path]</span></em><a class="headerlink" href="#mne_bids.BIDSPath.root" title="Permalink to this definition">¶</a></dt>
 <dd><p>The root directory of the BIDS dataset.</p>
 </dd></dl>
 
@@ -795,13 +807,13 @@ or updates for ‘root’ or ‘datatype’.</p>
 <p>If one creates a bids basename using
 <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span>
-<span class="go">                             task=&#39;mytask&#39;, suffix=&#39;channels&#39;,</span>
-<span class="go">                             extension=&#39;.tsv&#39;)</span>
+<span class="gp">... </span>                     <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Then, one can update this `BIDSPath` object in place</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
-<span class="go">                     extension=&#39;.vhdr&#39;, task=None)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                             <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_acq-test_ieeg.vhdr</span>
 </pre></div>
@@ -887,7 +899,7 @@ or updates for ‘root’ or ‘datatype’.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-13.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-07-14.<br/>
 </p>
     </div>
     
