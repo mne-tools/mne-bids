@@ -495,8 +495,11 @@ class BIDSPath(object):
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
+
+        root = self.root.as_posix() if self.root is not None else None
+
         return f'{self.__class__.__name__}(\n' \
-               f'root: {self.root}\n' \
+               f'root: {root}\n' \
                f'datatype: {self.datatype}\n' \
                f'basename: {self.basename})'
 
