@@ -46,6 +46,8 @@ refer to the `iEEG part of the BIDS specification`_.
 #
 # License: BSD (3-clause)
 
+# %%
+
 import os.path as op
 import shutil
 from pprint import pprint
