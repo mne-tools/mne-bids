@@ -3,28 +3,19 @@ channels:
 - defaults
 - conda-forge
 dependencies:
-- python<=3.8
+- python<3.9
 - pip
 - mkl
-- numpy>=1.15.4
-- scipy>=1.1.0
-- scikit-learn>=0.20.2
-- matplotlib
+- numpy>=1.16.0
+- scipy>=1.2.0
+- pandas>=0.24.0
+- scikit-learn>=0.21.0
+- matplotlib<3.4
+- pybv>=0.4.0
 - pip:
   - mne_bids
-  - mne>=0.21.0
-  - nibabel
-  - pybv>=0.2.0
+  - mne>=0.23.0
+  - nibabel>=2.5.0
   - nilearn
-  - flake8
-  - pytest<5.4
-  - pytest-cov
-  - pytest-sugar
-  - check-manifest
-  - pydocstyle
-  - sphinx
-  - pillow
-  - numpydoc
-  - sphinx_bootstrap_theme
-  - sphinx_gallery
+  - openneuro-py
 
