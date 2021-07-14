@@ -454,7 +454,7 @@ class BIDSPath(object):
         self.update(suffix=value)
 
     @property
-    def root(self) -> Optional[Union[str, Path]]:
+    def root(self) -> Optional[Union[None, Path]]:
         """The root directory of the BIDS dataset."""
         return self._root
 
@@ -495,7 +495,6 @@ class BIDSPath(object):
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
-
         root = self.root.as_posix() if self.root is not None else None
 
         return f'{self.__class__.__name__}(\n' \
