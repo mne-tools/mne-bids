@@ -15,9 +15,7 @@ from pathlib import Path
 from datetime import datetime
 import json
 from typing import Optional, Union
-import doctest
 
-import pytest
 import numpy as np
 from mne.utils import warn, logger, _validate_type
 
@@ -145,10 +143,6 @@ def _find_matched_empty_room(bids_path):
     return best_er_bids_path
 
 
-@pytest.mark.xfail(condition="os.name == 'nt'",
-                   reason='doctest fails on Windows due to os.sep difference',
-                   raises=doctest.DocTestFailure,
-                   strict=True)
 class BIDSPath(object):
     """A BIDS path object.
 
@@ -497,7 +491,7 @@ class BIDSPath(object):
 
     def __str__(self):
         """Return the string representation of the path."""
-        return str(self.fpath)
+        return str(self.fpath.as_posix())
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
