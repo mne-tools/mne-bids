@@ -55,7 +55,7 @@ jobs:
   docs-deploy:
     # will only be run on main branch
     docker:
-      - image: node:8
+      - image: cimg/node:lts
     steps:
       - checkout
 
@@ -64,8 +64,10 @@ jobs:
 
       - run:
           name: Install and configure dependencies
+          # do not update gh-pages above 3.0.0
+          # see: https://github.com/tschaub/gh-pages/issues/354
           command: |
-            npm install --global gh-pages@3.0
+            npm install gh-pages@3.0.0
             git config --global user.email "circle@mne.com"
             git config --global user.name "Circle Ci"
 
@@ -76,7 +78,7 @@ jobs:
       - run:
           # push built docs into the `dev` directory on the `gh-pages` branch
           name: Deploy docs to gh-pages branch
-          command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
+          command: node_modules/gh-pages/bin/gh-pages.js --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
 
   link-check:

@@ -12,12 +12,14 @@ installation as shown below.
 ## Running tests
 
 ### (Optional) Install development version of MNE-Python
+
 If you want to run the tests with a development version of MNE-Python,
 you can install it by running
 
     $ pip install -U https://github.com/mne-tools/mne-python/archive/main.zip
 
 ### Install development version of MNE-BIDS
+
 First, you should [fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the `mne-bids` repository. Then, clone the fork and install it in
 "editable" mode.
 
@@ -26,12 +28,14 @@ First, you should [fork](https://help.github.com/en/github/getting-started-with-
 
 
 ### Install Python packages required to run tests
-Install the following packages for testing purposes, plus all optonal MNE-BIDS
-dependencies to ensure you will be able to run all tests.
 
-    $ pip install flake8 pytest pytest-cov scikit-learn nibabel nilearn pybv
+You can install the testing requirements using the `test_requirements.txt` file
+from the root of the mne-bids repository.
+
+    $ pip install -r test_requirements.txt
 
 ### Install the BIDS validator
+
 Finally, it is necessary to install the
 [BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
 of MNE-BIDS are run through the BIDS validator to check if the conversion
@@ -40,6 +44,7 @@ worked properly and produced datasets that conforms to the BIDS specifications.
 You will need the `command line version` of the validator.
 
 #### Global (system-wide) installation
+
 - First, install [Node.js](https://nodejs.org/en/).
 - For installing the **stable** version of `bids-validator`, please follow the
 instructions as detailed in the README of the bids-validator repository.
@@ -59,7 +64,7 @@ Then, retrieve the validator and install all its dependencies via `npm`.
 
     $ git clone git@github.com:bids-standard bids-validator.git
     $ cd bids-validator/bids-validator
-    $ npm i
+    $ npm install
 
 Test your installation by running:
 
@@ -67,10 +72,10 @@ Test your installation by running:
 
 
 ### Invoke pytest
+
 Now you can finally run the tests by running `pytest` in the
 `mne-bids` directory.
 
-    $ cd mne-bids
     $ pytest
 
 If you have installed the `bids-validator`
@@ -80,18 +85,18 @@ on a per-user basis, set the environment variable `VALIDATOR_EXECUTABLE` to poin
 
 ## Building the documentation
 
-The documentation can be built using sphinx. For that, please additionally
-install the following:
+The documentation can be built using sphinx.
+You can install the documentation requirements using the `requirements.txt` file
+in the `doc/` directory of the mne-bids repository.
 
-    $ pip install matplotlib nilearn sphinx numpydoc sphinx-gallery pydata-sphinx-theme pillow
+    $ pip install -r doc/requirements.txt
 
 To build the documentation locally, one can run:
 
-    $ cd doc/
-    $ make html
+    $ make build-doc
 
-or
+or, if you don't want to run the examples to build the documentation:
 
-    $ make html-noplot
+    $ make -C doc/ html-noplot
 
-if you don't want to run the examples to build the documentation. This will result in a faster build but produce no plots in the examples.
+The latter command will result in a faster build but produce no plots in the examples.

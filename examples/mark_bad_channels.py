@@ -16,6 +16,7 @@ segments as "bad".
 """  # noqa:E501
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
+#
 # License: BSD (3-clause)
 
 # %%
