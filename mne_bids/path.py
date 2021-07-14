@@ -14,7 +14,7 @@ from os import path as op
 from pathlib import Path
 from datetime import datetime
 import json
-from typing import Optional, Union
+from typing import Optional
 
 import numpy as np
 from mne.utils import warn, logger, _validate_type
