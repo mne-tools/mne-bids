@@ -454,7 +454,7 @@ class BIDSPath(object):
         self.update(suffix=value)
 
     @property
-    def root(self) -> Optional[Union[None, Path]]:
+    def root(self) -> Optional[Path]:
         """The root directory of the BIDS dataset."""
         return self._root
 
