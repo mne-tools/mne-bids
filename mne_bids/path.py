@@ -261,13 +261,13 @@ class BIDSPath(object):
     different properties look like for our object:
 
     >>> new_bids_path = new_bids_path.update(root='/bids_dataset')
-    >>> print(new_bids_path.root)
+    >>> print(new_bids_path.root.as_posix())
     /bids_dataset
     >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_channels.tsv
     >>> print(new_bids_path)
     /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_channels.tsv
-    >>> print(new_bids_path.directory)
+    >>> print(new_bids_path.directory.as_posix())
     /bids_dataset/sub-test2/ses-one/ieeg
 
     Notes

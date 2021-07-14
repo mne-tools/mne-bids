@@ -1,7 +1,7 @@
 {
     "TaskName": "rest",
     "Manufacturer": "BrainProducts",
-    "PowerLineFrequency": 60,
+    "PowerLineFrequency": 50,
     "SamplingFrequency": 5000.0,
     "SoftwareFilters": "n/a",
     "RecordingDuration": 0.9998,
