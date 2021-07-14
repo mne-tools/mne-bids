@@ -26,9 +26,12 @@ Authors
 * `Alex Rockhill`_
 * `Richard Höchenberger`_
 * `Adam Li`_
+* `Eduard Ort`_
 * `Richard Köhler`_ (new contributor)
 * `Jean-Rémi King`_ (new contributor)
+* `Sin Kim`_ (new contributor)
 * `Alexandre Gramfort`_
+* `Mainak Jas`_
 * `Stefan Appelhoff`_
 
 Detailed list of changes
