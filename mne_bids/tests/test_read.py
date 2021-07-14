@@ -277,8 +277,7 @@ def test_get_head_mri_trans(tmpdir):
     coords['Nasion'] = coords['NAS']
     del coords['LPA'], coords['RPA'], coords['NAS']
 
-    with t1w_json_fpath.open('w', encoding='utf-8') as f:
-        json.dump(t1w_json, f)
+    _write_json(t1w_json_fpath, t1w_json, overwrite=True)
 
     estimated_trans = get_head_mri_trans(
         bids_path=bids_path,
@@ -551,8 +550,7 @@ def test_handle_chpi_reading(tmpdir):
     # cHPI frequency mismatch
     meg_json_data_freq_mismatch = meg_json_data.copy()
     meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
-    with open(meg_json_path, 'w', encoding='utf-8') as f:
-        json.dump(meg_json_data_freq_mismatch, f)
+    _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
     with pytest.raises(ValueError, match='cHPI coil frequencies'):
         raw_read = read_raw_bids(bids_path)
@@ -560,8 +558,7 @@ def test_handle_chpi_reading(tmpdir):
     # cHPI "off" according to sidecar, but present in the data
     meg_json_data_chpi_mismatch = meg_json_data.copy()
     meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
-    with open(meg_json_path, 'w', encoding='utf-8') as f:
-        json.dump(meg_json_data_chpi_mismatch, f)
+    _write_json(meg_json_path, meg_json_data_chpi_mismatch, overwrite=True)
 
     raw_read = read_raw_bids(bids_path)
     assert raw_read.info['hpi_subsystem'] is None

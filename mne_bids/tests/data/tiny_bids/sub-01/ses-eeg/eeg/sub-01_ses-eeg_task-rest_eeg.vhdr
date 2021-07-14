@@ -1,0 +1,251 @@
+Brain Vision Data Exchange Header File Version 1.0
+; Data created by the Vision Recorder
+
+[Common Infos]
+Codepage=UTF-8
+DataFile=sub-01_ses-eeg_task-rest_eeg.eeg
+MarkerFile=sub-01_ses-eeg_task-rest_eeg.vmrk
+DataFormat=BINARY
+; Data orientation: MULTIPLEXED=ch1,pt1, ch2,pt1 ...
+DataOrientation=MULTIPLEXED
+NumberOfChannels=67
+; Sampling interval in microseconds
+SamplingInterval=200
+
+[Binary Infos]
+BinaryFormat=INT_16
+
+[Channel Infos]
+; Each entry: Ch<Channel number>=<Name>,<Reference channel name>,
+; <Resolution in "Unit">,<Unit>, Future extensions..
+; Fields are delimited by commas, some fields might be omitted (empty).
+; Commas in channel names are coded as "\1".
+Ch1=Fp1,,0.1,µV
+Ch2=Fp2,,0.1,µV
+Ch3=F7,,0.1,µV
+Ch4=F3,,0.1,µV
+Ch5=Fz,,0.1,µV
+Ch6=F4,,0.1,µV
+Ch7=F8,,0.1,µV
+Ch8=FC5,,0.1,µV
+Ch9=FC1,,0.1,µV
+Ch10=FC2,,0.1,µV
+Ch11=FC6,,0.1,µV
+Ch12=T7,,0.1,µV
+Ch13=C3,,0.1,µV
+Ch14=Cz,,0.1,µV
+Ch15=C4,,0.1,µV
+Ch16=T8,,0.1,µV
+Ch17=TP9,,0.1,µV
+Ch18=CP5,,0.1,µV
+Ch19=CP1,,0.1,µV
+Ch20=CP2,,0.1,µV
+Ch21=CP6,,0.1,µV
+Ch22=TP10,,0.1,µV
+Ch23=P7,,0.1,µV
+Ch24=P3,,0.1,µV
+Ch25=Pz,,0.1,µV
+Ch26=P4,,0.1,µV
+Ch27=P8,,0.1,µV
+Ch28=PO9,,0.1,µV
+Ch29=O1,,0.1,µV
+Ch30=Oz,,0.1,µV
+Ch31=O2,,0.1,µV
+Ch32=PO10,,0.1,µV
+Ch33=AF7,,0.1,µV
+Ch34=AF3,,0.1,µV
+Ch35=AF4,,0.1,µV
+Ch36=AF8,,0.1,µV
+Ch37=F5,,0.1,µV
+Ch38=F1,,0.1,µV
+Ch39=F2,,0.1,µV
+Ch40=F6,,0.1,µV
+Ch41=FT9,,0.1,µV
+Ch42=FT7,,0.1,µV
+Ch43=FC3,,0.1,µV
+Ch44=FC4,,0.1,µV
+Ch45=FT8,,0.1,µV
+Ch46=FT10,,0.1,µV
+Ch47=C5,,0.1,µV
+Ch48=C1,,0.1,µV
+Ch49=C2,,0.1,µV
+Ch50=C6,,0.1,µV
+Ch51=TP7,,0.1,µV
+Ch52=CP3,,0.1,µV
+Ch53=CPz,,0.1,µV
+Ch54=CP4,,0.1,µV
+Ch55=TP8,,0.1,µV
+Ch56=P5,,0.1,µV
+Ch57=P1,,0.1,µV
+Ch58=P2,,0.1,µV
+Ch59=P6,,0.1,µV
+Ch60=PO7,,0.1,µV
+Ch61=PO3,,0.1,µV
+Ch62=POz,,0.1,µV
+Ch63=PO4,,0.1,µV
+Ch64=PO8,,0.1,µV
+Ch65=ECG,,0.1,µV
+Ch66=HEOG,,0.1,µV
+Ch67=VEOG,,0.1,µV
+
+[Comment]
+
+BrainVision Recorder Professional   -   V. 1.21.0303
+
+
+A m p l i f i e r  S e t u p
+============================
+Number of channels: 67
+Sampling Rate [Hz]: 1000
+Sampling Interval [µS]: 1000
+
+Channels
+--------
+#     Name      Phys. Chn.    Resolution / Unit   Low Cutoff [s]   High Cutoff [Hz]   Notch [Hz]    Series Res. [kOhm] Gradient         Offset
+1     Fp1         1                0.1 µV             10             1000              Off                0
+2     Fp2         2                0.1 µV             10             1000              Off                0
+3     F7          3                0.1 µV             10             1000              Off                0
+4     F3          4                0.1 µV             10             1000              Off                0
+5     Fz          5                0.1 µV             10             1000              Off                0
+6     F4          6                0.1 µV             10             1000              Off                0
+7     F8          7                0.1 µV             10             1000              Off                0
+8     FC5         8                0.1 µV             10             1000              Off                0
+9     FC1         9                0.1 µV             10             1000              Off                0
+10    FC2         10               0.1 µV             10             1000              Off                0
+11    FC6         11               0.1 µV             10             1000              Off                0
+12    T7          12               0.1 µV             10             1000              Off                0
+13    C3          13               0.1 µV             10             1000              Off                0
+14    Cz          14               0.1 µV             10             1000              Off                0
+15    C4          15               0.1 µV             10             1000              Off                0
+16    T8          16               0.1 µV             10             1000              Off                0
+17    TP9         17               0.1 µV             10             1000              Off                0
+18    CP5         18               0.1 µV             10             1000              Off                0
+19    CP1         19               0.1 µV             10             1000              Off                0
+20    CP2         20               0.1 µV             10             1000              Off                0
+21    CP6         21               0.1 µV             10             1000              Off                0
+22    TP10        22               0.1 µV             10             1000              Off                0
+23    P7          23               0.1 µV             10             1000              Off                0
+24    P3          24               0.1 µV             10             1000              Off                0
+25    Pz          25               0.1 µV             10             1000              Off                0
+26    P4          26               0.1 µV             10             1000              Off                0
+27    P8          27               0.1 µV             10             1000              Off                0
+28    PO9         28               0.1 µV             10             1000              Off                0
+29    O1          29               0.1 µV             10             1000              Off                0
+30    Oz          30               0.1 µV             10             1000              Off                0
+31    O2          31               0.1 µV             10             1000              Off                0
+32    PO10        32               0.1 µV             10             1000              Off                0
+33    AF7         33               0.1 µV             10             1000              Off                0
+34    AF3         34               0.1 µV             10             1000              Off                0
+35    AF4         35               0.1 µV             10             1000              Off                0
+36    AF8         36               0.1 µV             10             1000              Off                0
+37    F5          37               0.1 µV             10             1000              Off                0
+38    F1          38               0.1 µV             10             1000              Off                0
+39    F2          39               0.1 µV             10             1000              Off                0
+40    F6          40               0.1 µV             10             1000              Off                0
+41    FT9         41               0.1 µV             10             1000              Off                0
+42    FT7         42               0.1 µV             10             1000              Off                0
+43    FC3         43               0.1 µV             10             1000              Off                0
+44    FC4         44               0.1 µV             10             1000              Off                0
+45    FT8         45               0.1 µV             10             1000              Off                0
+46    FT10        46               0.1 µV             10             1000              Off                0
+47    C5          47               0.1 µV             10             1000              Off                0
+48    C1          48               0.1 µV             10             1000              Off                0
+49    C2          49               0.1 µV             10             1000              Off                0
+50    C6          50               0.1 µV             10             1000              Off                0
+51    TP7         51               0.1 µV             10             1000              Off                0
+52    CP3         52               0.1 µV             10             1000              Off                0
+53    CPz         53               0.1 µV             10             1000              Off                0
+54    CP4         54               0.1 µV             10             1000              Off                0
+55    TP8         55               0.1 µV             10             1000              Off                0
+56    P5          56               0.1 µV             10             1000              Off                0
+57    P1          57               0.1 µV             10             1000              Off                0
+58    P2          58               0.1 µV             10             1000              Off                0
+59    P6          59               0.1 µV             10             1000              Off                0
+60    PO7         60               0.1 µV             10             1000              Off                0
+61    PO3         61               0.1 µV             10             1000              Off                0
+62    POz         62               0.1 µV             10             1000              Off                0
+63    PO4         63               0.1 µV             10             1000              Off                0
+64    PO8         64               0.1 µV             10             1000              Off                0
+65    ECG         65               0.1 µV             10             1000              Off                0
+66    HEOG        66               0.1 µV             10             1000              Off                0
+67    VEOG        67               0.1 µV             10             1000              Off                0
+
+S o f t w a r e  F i l t e r s
+==============================
+Disabled
+
+
+Impedances Imported from actiCAP Control Software:
+Impedance [kOhm] at 11:55:00 :
+Fp1:          5
+Fp2:          2
+F7:           4
+F3:           1
+Fz:           5
+F4:           0
+F8:           0
+FC5:          0
+FC1:          5
+FC2:          4
+FC6:          0
+T7:           7
+C3:           7
+Cz:           7
+C4:           5
+T8:           3
+TP9:          2
+CP5:          2
+CP1:          1
+CP2:          0
+CP6:          0
+TP10:         6
+P7:           2
+P3:           3
+Pz:           3
+P4:           3
+P8:           2
+PO9:          0
+O1:           0
+Oz:           0
+O2:           1
+PO10:         1
+AF7:          0
+AF3:          0
+AF4:          0
+AF8:          0
+F5:           1
+F1:           0
+F2:           1
+F6:           2
+FT9:          4
+FT7:          4
+FC3:          5
+FC4:          0
+FT8:          0
+FT10:         0
+C5:           0
+C1:           2
+C2:           1
+C6:           0
+TP7:          0
+CP3:          0
+CPz:          0
+CP4:          0
+TP8:          0
+P5:           1
+P1:           0
+P2:           0
+P6:           0
+PO7:          0
+PO3:          0
+POz:          2
+PO4:          0
+PO8:          0
+ECG+:        23
+ECG-:        36
+HEOG+:        3
+HEOG-:        9
+VEOG+:        2
+VEOG-:        5
+Ref:          9
+Gnd:          1

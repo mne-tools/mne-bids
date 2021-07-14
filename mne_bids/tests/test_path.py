@@ -601,10 +601,11 @@ def test_make_filenames():
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run=1, processing='six',
                        recording='seven', suffix='ieeg', extension='.json')
-    expected_str = 'sub-one_ses-two_task-three_acq-four_run-01_proc-six_rec-seven_ieeg.json'  # noqa
+    expected_str = ('sub-one_ses-two_task-three_acq-four_run-01_proc-six_'
+                    'rec-seven_ieeg.json')
     assert BIDSPath(**prefix_data).basename == expected_str
-    assert BIDSPath(**prefix_data) == op.join('sub-one', 'ses-two',
-                                              'ieeg', expected_str)
+    assert BIDSPath(**prefix_data) == (
+        Path('sub-one') / 'ses-two' / 'ieeg' / expected_str).as_posix()
 
     # subsets of keys works
     assert (BIDSPath(subject='one', task='three', run=4).basename ==

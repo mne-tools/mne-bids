@@ -1,3 +1,9 @@
+"""Inspect and annotate BIDS raw data."""
+# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
+# License: BSD (3-clause)
+
 from pathlib import Path
 
 import numpy as np
@@ -78,8 +84,12 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
     Disable flat channel & segment detection, and apply a filter with a
     passband of 1–30 Hz.
 
-    >>> inspect_dataset(bids_path=bids_path, find_flat=False,
-                        l_freq=1, h_freq=30)
+    >>> from mne_bids import BIDSPath
+    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
+    >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
+    ...                      suffix='eeg', extension='.vhdr', root=root)
+    >>> inspect_dataset(bids_path=bids_path, find_flat=False,  # doctest: +SKIP
+    ...                 l_freq=1, h_freq=30)
     """
     allowed_extensions = set(ALLOWED_DATATYPE_EXTENSIONS['meg'] +
                              ALLOWED_DATATYPE_EXTENSIONS['eeg'] +

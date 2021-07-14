@@ -1,0 +1,9 @@
+{
+    "Name": "tiny_bids",
+    "BIDSVersion": "1.6.0",
+    "DatasetType": "raw",
+    "Authors": [
+        "MNE-BIDS Developers",
+        "And Friends"
+    ]
+}

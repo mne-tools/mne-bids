@@ -176,7 +176,14 @@ jobs:
       run: |
         export BIDS_VALIDATOR_VERSION=`bids-validator --version`
         echo Using bids-validator $BIDS_VALIDATOR_VERSION
-        python -m pytest . --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
+        python -m pytest . \
+        --doctest-modules \
+        --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ \
+        --cov-report=xml \
+        --cov-config=setup.cfg \
+        --verbose \
+        --ignore mne-python \
+        --ignore examples
       shell: bash
     - name: Upload coverage stats to codecov
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' && matrix.bids-validator == 'main' }}

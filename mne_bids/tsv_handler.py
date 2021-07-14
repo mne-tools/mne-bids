@@ -168,6 +168,7 @@ def _to_tsv(data, fname):
 
     with open(fname, 'w', encoding='utf-8-sig') as f:
         f.write(output)
+        f.write('\n')
 
 
 def _tsv_to_str(data, rows=5):

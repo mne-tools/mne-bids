@@ -1900,30 +1900,40 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     --------
     Mark a single channel as bad.
 
-    >>> mark_bad_channels('MEG 0112', bids_path=bids_path)
+    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
+    >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
+    ...                      datatype='eeg', root=root)
+    >>> mark_bad_channels('C4', bids_path=bids_path, verbose=False)
+    Processing channel C4:
+        status: bad
+        description: n/a
 
-    Mark multiple channels as bad.
+    Mark multiple channels as bad, and add a description as to why.
 
-    >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, bids_path=bids_path)
-
-    Mark channels as bad, and add a description as to why.
-
-    >>> ch_names = ['MEG 0112', 'MEG 0131']
-    >>> descriptions = ['Only produced noise', 'Continuously flat']
-    >>> mark_bad_channels(bads, descriptions, bbids_path=bids_path)
+    >>> bads = ['C3', 'PO10']
+    >>> descriptions = ['very noisy', 'continuously flat']
+    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path,
+    ...                   verbose=False)
+    Processing channel C3:
+        status: bad
+        description: very noisy
+    Processing channel PO10:
+        status: bad
+        description: continuously flat
 
     Mark two channels as bad, and mark all others as good by setting
     ``overwrite=True``.
 
-    >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, bids_path=bids_path, overwrite=True)
+    >>> bads = ['C3', 'C4']
+    >>> mark_bad_channels(bads, bids_path=bids_path, # doctest: +SKIP
+    ...                   overwrite=True, verbose=False)
 
     Mark all channels as good by passing an empty list of bad channels, and
     setting ``overwrite=True``.
 
-    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True)
-
+    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True,
+    ...                   verbose=False)
+    Resetting status and description for all channels.
     """
     if not ch_names and not overwrite:
         raise ValueError('You did not pass a channel name, but set '
@@ -2012,10 +2022,13 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
 
     Examples
     --------
-    >>> calibration = mne.preprocessing.read_fine_calibration('sss_cal.dat')
-    >>> bids_path = BIDSPath(subject='01', session='test', root='/data')
-    >>> write_meg_calibration(calibration, bids_path)
-    """
+    >>> data_path = mne.datasets.testing.data_path(download=False)
+    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat')
+    >>> bids_path = BIDSPath(subject='01', session='test',
+    ...                      root=op.join(data_path, 'mne_bids'))
+    >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +ELLIPSIS
+    Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...
+    """  # noqa: E501
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError('bids_path must have root and subject set.')
     if bids_path.datatype not in (None, 'meg'):
@@ -2066,9 +2079,12 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
 
     Examples
     --------
-    >>> crosstalk_fname = 'ct_sparse.fif'
-    >>> bids_path = BIDSPath(subject='01', session='test', root='/data')
-    >>> write_megcrosstalk(crosstalk_fname, bids_path)
+    >>> data_path = mne.datasets.testing.data_path(download=False)
+    >>> crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif')
+    >>> bids_path = BIDSPath(subject='01', session='test',
+    ...                      root=op.join(data_path, 'mne_bids'))
+    >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +ELLIPSIS
+    Writing crosstalk file to ...sub-01_ses-test_acq-crosstalk_meg.fif
     """
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError('bids_path must have root and subject set.')

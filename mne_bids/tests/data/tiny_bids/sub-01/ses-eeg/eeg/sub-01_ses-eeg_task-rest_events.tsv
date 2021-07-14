@@ -1,0 +1,3 @@
+﻿onset	duration	trial_type	value	sample
+0.0	0.0	start_experiment	1	0
+0.2	0.0	show_stimulus	2	1000
