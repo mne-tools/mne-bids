@@ -10,28 +10,25 @@ What's new?
 .. currentmodule:: mne_bids
 .. _changes_0_8:
 
-Version 0.8 (unreleased)
+Version 0.8 (2021-07-14)
 ------------------------
-
-...
-
-Notable changes
-~~~~~~~~~~~~~~~
-
-- ...
 
 Authors
 ~~~~~~~
 
-* `Alex Rockhill`_
-* `Richard Höchenberger`_
 * `Adam Li`_
-* `Eduard Ort`_
-* `Richard Köhler`_ (new contributor)
-* `Jean-Rémi King`_ (new contributor)
-* `Sin Kim`_ (new contributor)
+* `Alex Rockhill`_
 * `Alexandre Gramfort`_
+* `Clemens Brunner`_
+* `Eduard Ort`_
+* `Eric Larson`_
+* `Jean-Rémi King`_ (new contributor)
+* `Julia Guiomar Niso Galán`_ (new contributor)
 * `Mainak Jas`_
+* `Richard Höchenberger`_
+* `Richard Köhler`_ (new contributor)
+* `Robert Luke`_ (new contributor)
+* `Sin Kim`_ (new contributor)
 * `Stefan Appelhoff`_
 
 Detailed list of changes
@@ -71,6 +68,7 @@ Requirements
 
 - For downloading `OpenNeuro <https://openneuro.org>`_ datasets, ``openneuro-py`` is now required to run the examples and build the documentation, by `Alex Rockhill`_ (:gh:`753`)
 - MNE-BIDS now depends on `setuptools <https://setuptools.readthedocs.io>`_. This package is normally installed by your Python distribution automatically, so we don't expect any users to be affected by this change, by `Richard Höchenberger`_ (:gh:`794`)
+- MNE-BIDS now requires Python 3.7 or higher, because Python 3.6 is soon reaching its end of life.
 
 Bug fixes
 ^^^^^^^^^

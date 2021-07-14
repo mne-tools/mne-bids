@@ -24,4 +24,7 @@
 .. _Tom Donoghue: https://github.com/TomDonoghue
 .. _Richard Köhler: https://github.com/richardkoehler
 .. _Sin Kim: https://github.com/AKSoo
-.. _Jean-Rémi King: https://kingjr.github.io/
+.. _Jean-Rémi King: https://kingjr.github.io
+.. _Julia Guiomar Niso Galán: https://github.com/guiomar
+.. _Eric Larson: https://github.com/rob-luke
+.. _Clemens Brunner: https://github.com/cbrnr

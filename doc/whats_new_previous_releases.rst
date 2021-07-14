@@ -10,8 +10,8 @@ What was new in previous releases?
 .. currentmodule:: mne_bids
 .. _changes_0_7:
 
-Version 0.7
------------
+Version 0.7 (2021-03-22)
+------------------------
 
 This release brings numerous enhancements and bug fixes that enhance reading
 and writing BIDS data, and improve compatibility with the latest BIDS
@@ -93,8 +93,8 @@ Bug fixes
 
 .. _changes_0_6:
 
-Version 0.6 🎄
---------------
+Version 0.6 🎄 (2020-12-16)
+---------------------------
 
 These are challenging days for many of us, and to make your lives
 ever so slightly easier, we've been working hard to deliver this early
@@ -135,7 +135,7 @@ Authors
 * `Alexandre Gramfort`_
 * `Austin Hurst`_
 * `Ethan Knights`_  (new contributor)
-* `Mainak Jas`_ 
+* `Mainak Jas`_
 * `Richard Höchenberger`_
 
 Detailed list of changes
@@ -316,8 +316,8 @@ Further API changes:
 
 .. _changes_0_4:
 
-Version 0.4
------------
+Version 0.4 (2020-04-04)
+------------------------
 
 Changelog
 ~~~~~~~~~
@@ -370,8 +370,8 @@ People who contributed to this release (in alphabetical order):
 
 .. _changes_0_3:
 
-Version 0.3
------------
+Version 0.3 (2019-12-17)
+------------------------
 
 Changelog
 ~~~~~~~~~
@@ -415,8 +415,8 @@ People who contributed to this release (in alphabetical order):
 
 .. _changes_0_2:
 
-Version 0.2
------------
+Version 0.2 (2019-04-26)
+------------------------
 
 Changelog
 ~~~~~~~~~
@@ -472,8 +472,8 @@ People who contributed to this release (in alphabetical order):
 
 .. _changes_0_1:
 
-Version 0.1
------------
+Version 0.1 (2018-11-05)
+------------------------
 
 Changelog
 ~~~~~~~~~

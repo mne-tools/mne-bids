@@ -9,6 +9,7 @@ BIDSPath is MNE-BIDS's working horse when it comes to file and folder
 operations. Learn here how to use it.
 """
 # Author: Richard Höchenberger <richard.hoechenberger@gmail.com>
+#
 # License: BSD (3-clause)
 
 # %%

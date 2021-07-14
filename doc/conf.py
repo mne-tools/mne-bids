@@ -127,12 +127,14 @@ html_theme_options = {
     'use_edit_page_button': False,
     'navigation_with_keys': False,
     'show_toc_level': 1,
+    'navbar_end': ['version-switcher', 'navbar-icon-links'],
 }
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.8 (devel)',
-        'stable': 'v0.7 (stable)',
+        'dev': 'v0.9 (devel)',
+        'stable': 'v0.8 (stable)',
+        'v0.7': 'v0.7',
         'v0.6': 'v0.6',
         'v0.5': 'v0.5',
         'v0.4': 'v0.4',
