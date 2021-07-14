@@ -886,6 +886,25 @@ def test_kit(_bids_validate, tmpdir):
                        events_data=events_fname, event_id=event_id,
                        overwrite=True)
 
+    # check that everything works with MRK markers, and CON files
+    data_path = op.join(testing.data_path(download=False), 'KIT')
+    raw_fname = op.join(data_path, 'data_berlin.con')
+    hpi_fname = op.join(data_path, 'MQKIT_125.mrk')
+    electrode_fname = op.join(data_path, 'MQKIT_125.elp')
+    headshape_fname = op.join(data_path, 'MQKIT_125.hsp')
+    bids_root = tmpdir.mkdir("bids_kit_mrk")
+    kit_bids_path = _bids_path.copy().update(acquisition=None,
+                                             root=bids_root,
+                                             suffix='meg')
+    raw = _read_raw_kit(
+        raw_fname, mrk=hpi_fname, elp=electrode_fname,
+        hsp=headshape_fname)
+    write_raw_bids(raw, kit_bids_path)
+
+    _bids_validate(bids_root)
+    assert op.exists(bids_root / 'participants.tsv')
+    read_raw_bids(bids_path=kit_bids_path)
+
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 def test_ctf(_bids_validate, tmpdir):

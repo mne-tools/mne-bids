@@ -27,6 +27,7 @@ Authors
 * `Richard Höchenberger`_
 * `Adam Li`_
 * `Richard Köhler`_ (new contributor)
+* `Jean-Rémi King`_ (new contributor)
 * `Alexandre Gramfort`_
 * `Stefan Appelhoff`_
 
@@ -35,6 +36,7 @@ Detailed list of changes
 
 Enhancements
 ^^^^^^^^^^^^
+
 - The fields "DigitizedLandmarks" and "DigitizedHeadPoints" in the json sidecar of Neuromag data are now set to True/False depending on whether any landmarks (NAS, RPA, LPA) or extra points are found in raw.info['dig'], by `Eduard Ort`_ (:gh:`772`)
 - Updated the "Read BIDS datasets" example to use data from `OpenNeuro <https://openneuro.org>`_, by `Alex Rockhill`_ (:gh:`753`)
 - :func:`mne_bids.get_head_mri_trans` is now more lenient when looking for the fiducial points (LPA, RPA, and nasion) in the MRI JSON sidecar file, and accepts a larger variety of landmark names (upper- and lowercase letters; ``'nasion'`` instead of only ``'NAS'``), by `Richard Höchenberger`_ (:gh:`769`)
@@ -46,11 +48,11 @@ Enhancements
 - :func:`mne_bids.write_raw_bids` gained a new parameter ``empty_room`` that allows to specify an associated empty-room recording when writing an MEG data file. This information will be stored in the ``AssociatedEmptyRoom`` field of the MEG JSON sidecar file, by `Richard Höchenberger`_ (:gh:`795`)
 - Added support for the new channel type ``'dbs'`` (Deep Brain Stimulation), which was introduced in MNE-Python 0.23, by `Richard Köhler`_ (:gh:`800`)
 - :func:`mne_bids.read_raw_bids` now warns in many situations when it encounters a mismatch between the channels in ``*_channels.tsv`` and the raw data, by `Richard Höchenberger`_ (:gh:`823`)
+- MNE BIDS now accepts ".mrk" head digitization files used in the KIT/Yokogawa/Ricoh MEG system, by `Jean-Rémi King`_ and `Stefan Appelhoff`_ (:gh:`842`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-- MNE-BIDS now writes all TSV data files with a newline character at the end of the file, complying with UNIX/POSIX standards, by `Stefan Appelhoff`_ (:gh:`831`)
 - Writing datasets via :func:`write_raw_bids`, will now never overwrite ``dataset_description.json`` file, by `Adam Li`_ (:gh:`765`)
 - When writing BIDS datasets, MNE-BIDS now tags them as BIDS 1.6.0 (we previously tagged them as BIDS 1.4.0), by `Richard Höchenberger`_ (:gh:`782`)
 - :func:`mne_bids.read_raw_bids` now passes ``allow_maxshield=True`` to the MNE-Python reader function by default when reading FIFF files. Previously, ``extra_params=dict(allow_maxshield=True)`` had to be passed explicitly, by `Richard Höchenberger`_ (:gh:`787`)
@@ -59,6 +61,7 @@ API and behavior changes
 - If :func:`mne_bids.read_raw_bids` encounters raw data with the ``STI 014`` stimulus channel and this channel is not explicitly listed in ``*_channels.tsv``, it is now automatically removed upon reading, by `Richard Höchenberger`_ (:gh:`823`)
 - :func:`mne_bids.get_anat_landmarks` was added to clarify and simplify the process of generating landmarks that now need to be passed to :func:`mne_bids.write_anat`; this deprecates the arguments ``raw``, ``trans`` and ``t1w`` of :func:`mne_bids.write_anat`, by `Alex Rockhill`_ and `Alexandre Gramfort`_ (:gh:`827`)
 - :func:`write_raw_bids` now accepts preloaded raws as input with some caveats if the new parameter ``allow_preload`` is explicitly set to ``True``. This enables some preliminary support for items such as uncommon file formats, generated data, and processed derivatives, by `Sin Kim`_ (:gh:`819`)
+- MNE-BIDS now writes all TSV data files with a newline character at the end of the file, complying with UNIX/POSIX standards, by `Stefan Appelhoff`_ (:gh:`831`)
 
 Requirements
 ^^^^^^^^^^^^
