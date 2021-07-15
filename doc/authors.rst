@@ -26,5 +26,6 @@
 .. _Sin Kim: https://github.com/AKSoo
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
-.. _Eric Larson: https://github.com/rob-luke
+.. _Eric Larson: https://github.com/larsoner
 .. _Clemens Brunner: https://github.com/cbrnr
+.. _Kambiz Tavabi: https://github.com/ktavabi
