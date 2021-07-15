@@ -10,7 +10,7 @@ What's new?
 .. currentmodule:: mne_bids
 .. _changes_0_8:
 
-Version 0.8 (2021-07-14)
+Version 0.8 (2021-07-15)
 ------------------------
 
 This release brings numerous improvements and fixes based on feedback from our
