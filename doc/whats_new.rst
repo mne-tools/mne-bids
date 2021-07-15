@@ -13,6 +13,32 @@ What's new?
 Version 0.8 (2021-07-14)
 ------------------------
 
+This release brings numerous improvements and fixes based on feedback from our
+users, including those working with very large datasets. MNE-BIDS now handles
+previously-overlooked edge cases, offers a much more efficient way to
+store data on macOS and Linux (using symbolic links), and lays the groundwork
+for supporting derivatives, i.e., storing modified data.
+
+Notable changes
+~~~~~~~~~~~~~~~
+
+- You can now write preloaded and potentially modified data with
+  :func:`mne_bids.write_raw_bids` by passing ``allow_preload=True``. This is
+  a first step towards supporting derivative files.
+- `mne_bids.BIDSPath` now has property getters and setters for all BIDS
+  entities. What this means is that you can now do things like
+  ``bids_path.subject = '01'`` instead of ``bids_path.update(subject='01')``.
+- We now support Deep Brain Stimulation (DBS) data.
+- The way we handle anatomical landmarks was greatly revamped to ensure we're
+  always using the correct coordinate systems. A new function,
+  `mne_bids.get_anat_landmarks`, helps with extracting fiducial points from
+  anatomical scans.
+- When creating a BIDS dataset from FIFF files on macOS and Linux, MNE-BIDS
+  can now optionally generate symbolic links to the original files instead of
+  creating copies. Simply pass ``symlink=True`` to
+  :func:`mne_bids.write_raw_bids`. This can massively reduce the storage space
+  requirements.
+
 Authors
 ~~~~~~~
 
@@ -37,7 +63,7 @@ Detailed list of changes
 Enhancements
 ^^^^^^^^^^^^
 
-- The fields "DigitizedLandmarks" and "DigitizedHeadPoints" in the json sidecar of Neuromag data are now set to True/False depending on whether any landmarks (NAS, RPA, LPA) or extra points are found in raw.info['dig'], by `Eduard Ort`_ (:gh:`772`)
+- The fields "DigitizedLandmarks" and "DigitizedHeadPoints" in the json sidecar of Neuromag data are now set to ``true`` or ``false`` depending on whether any landmarks (NAS, RPA, LPA) or extra points are found in ``raw.info['dig']``, by `Eduard Ort`_ (:gh:`772`)
 - Updated the "Read BIDS datasets" example to use data from `OpenNeuro <https://openneuro.org>`_, by `Alex Rockhill`_ (:gh:`753`)
 - :func:`mne_bids.get_head_mri_trans` is now more lenient when looking for the fiducial points (LPA, RPA, and nasion) in the MRI JSON sidecar file, and accepts a larger variety of landmark names (upper- and lowercase letters; ``'nasion'`` instead of only ``'NAS'``), by `Richard Höchenberger`_ (:gh:`769`)
 - :func:`mne_bids.get_head_mri_trans` gained a new keyword argument ``t1_bids_path``, allowing for the MR scan to be stored in a different session or even in a different BIDS dataset than the electrophysiological recording, by `Richard Höchenberger`_ (:gh:`771`)
@@ -48,7 +74,7 @@ Enhancements
 - :func:`mne_bids.write_raw_bids` gained a new parameter ``empty_room`` that allows to specify an associated empty-room recording when writing an MEG data file. This information will be stored in the ``AssociatedEmptyRoom`` field of the MEG JSON sidecar file, by `Richard Höchenberger`_ (:gh:`795`)
 - Added support for the new channel type ``'dbs'`` (Deep Brain Stimulation), which was introduced in MNE-Python 0.23, by `Richard Köhler`_ (:gh:`800`)
 - :func:`mne_bids.read_raw_bids` now warns in many situations when it encounters a mismatch between the channels in ``*_channels.tsv`` and the raw data, by `Richard Höchenberger`_ (:gh:`823`)
-- MNE BIDS now accepts ".mrk" head digitization files used in the KIT/Yokogawa/Ricoh MEG system, by `Jean-Rémi King`_ and `Stefan Appelhoff`_ (:gh:`842`)
+- MNE BIDS now accepts ``.mrk`` head digitization files used in the KIT/Yokogawa/Ricoh MEG system, by `Jean-Rémi King`_ and `Stefan Appelhoff`_ (:gh:`842`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -82,7 +108,7 @@ Bug fixes
 - :func:`mne_bids.read_raw_bids` crashed when the (optional) ``acq_time`` column was missing in ``*_scans.tsv``, by `Alexandre Gramfort`_ (:gh:`814`)
 - :func:`mne_bids.write_raw_bids` doesn't crash anymore if the designated output directory contains the string ``"tsv"``, by `Richard Höchenberger`_ (:gh:`833`)
 - :func:`mne_bids.get_head_mri_trans` gave incorrect results when the T1 image was not in LIA format, now all formats function properly, by `Alex Rockhill`_ and `Alexandre Gramfort`_ (:gh:`827`)
-- :func:`mne_bids.get_head_mri_trans` and :func:`mne_bids.write_anat` used a T1w image but depended specifically on the freesurfer T1w image. Now the freesurfer subject directory is used, by `Alex Rockhill`_ and `Alexandre Gramfort`_ (:gh:`827`)
+- :func:`mne_bids.get_head_mri_trans` and :func:`mne_bids.write_anat` used a T1w image but depended specifically on the freesurfer T1w image. Now the FreeSurfer subjects directory is used, by `Alex Rockhill`_ and `Alexandre Gramfort`_ (:gh:`827`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
