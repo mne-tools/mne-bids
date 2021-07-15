@@ -17,7 +17,7 @@ This release brings numerous improvements and fixes based on feedback from our
 users, including those working with very large datasets. MNE-BIDS now handles
 previously-overlooked edge cases, offers a much more efficient way to
 store data on macOS and Linux (using symbolic links), and lays the groundwork
-for supporting derivatives, i.e., storing modified data.
+for supporting BIDS derivatives, i.e., storing modified data.
 
 Notable changes
 ~~~~~~~~~~~~~~~
