@@ -35,7 +35,7 @@ Notable changes
   anatomical scans.
 - When creating a BIDS dataset from FIFF files on macOS and Linux, MNE-BIDS
   can now optionally generate symbolic links to the original files instead of
-  creating copies. Simply pass ``symlink=True`` to
+  copies. Simply pass ``symlink=True`` to
   :func:`mne_bids.write_raw_bids`. This can massively reduce the storage space
   requirements.
 
