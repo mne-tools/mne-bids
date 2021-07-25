@@ -203,7 +203,8 @@ def copyfile_kit(src, dest, subject_id, session_id,
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]
     datatype = 'meg'
-    if 'mrk' in _init_kwargs:
+
+    if 'mrk' in _init_kwargs and _init_kwargs['mrk'] is not None:
         hpi = _init_kwargs['mrk']
         acq_map = dict()
         if isinstance(hpi, list):
@@ -220,8 +221,9 @@ def copyfile_kit(src, dest, subject_id, session_id,
                 acquisition=key, suffix='markers', extension=marker_ext,
                 datatype=datatype)
             sh.copyfile(value, op.join(data_path, marker_path.basename))
+
     for acq in ['elp', 'hsp']:
-        if acq in _init_kwargs:
+        if acq in _init_kwargs and _init_kwargs[acq] is not None:
             position_file = _init_kwargs[acq]
             task, run, acq = None, None, acq.upper()
             position_ext = '.pos'

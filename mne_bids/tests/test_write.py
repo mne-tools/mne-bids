@@ -905,6 +905,14 @@ def test_kit(_bids_validate, tmpdir):
     assert op.exists(bids_root / 'participants.tsv')
     read_raw_bids(bids_path=kit_bids_path)
 
+    # Check that we can successfully write even when elp, hsp, and mrk are not
+    # supplied
+    raw = _read_raw_kit(raw_fname)
+    bids_root = tmpdir.mkdir('no_elp_hsp_mrk')
+    kit_bids_path = kit_bids_path.update(root=bids_root)
+    write_raw_bids(raw=raw, bids_path=kit_bids_path)
+    _bids_validate(bids_root)
+
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 def test_ctf(_bids_validate, tmpdir):
