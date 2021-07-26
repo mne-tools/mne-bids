@@ -1620,7 +1620,7 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
 
     Parameters
     ----------
-    image : str | pathlib.Path | NibabelImageObject
+    image : str | pathlib.Path | mne_bids.BIDSPath | NibabelImageObject
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
@@ -1674,6 +1674,8 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
     # go to T1 scanner space from T1 voxel space
     landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
+    if isinstance(image, BIDSPath):
+        image = image.fpath
     img_nii = _load_image(image, name='image')
     img_mgh = nib.MGHImage(img_nii.dataobj, img_nii.affine)
     landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)

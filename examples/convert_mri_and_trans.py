@@ -29,7 +29,7 @@ See the documentation pages in the MNE docs for more information on
 
 """
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Alex Rockhill <aprockhill206@gmail.com>
+#          Alex Rockhill <aprockhill@mailbox.org>
 #          Alex Gramfort <alexandre.gramfort@inria.fr>
 #
 # License: BSD (3-clause)
