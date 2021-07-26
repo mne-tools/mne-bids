@@ -909,7 +909,7 @@ def test_kit(_bids_validate, tmpdir):
     # supplied
     raw = _read_raw_kit(raw_fname)
     bids_root = tmpdir.mkdir('no_elp_hsp_mrk')
-    kit_bids_path = kit_bids_path.update(root=bids_root)
+    kit_bids_path = kit_bids_path.copy().update(root=bids_root)
     write_raw_bids(raw=raw, bids_path=kit_bids_path)
     _bids_validate(bids_root)
 
