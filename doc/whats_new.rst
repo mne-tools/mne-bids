@@ -30,7 +30,7 @@ Detailed list of changes
 Enhancements
 ^^^^^^^^^^^^
 
-- ...
+- :func:`mne_bids.get_anat_landmarks` now accepts a :class:`mne_bids.BIDSPath` as ``image`` parameter, by `Alex Rockhill`_ (:gh:`852`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
