@@ -1808,6 +1808,10 @@ def test_write_anat(_bids_validate, tmpdir):
     fvox2 = flash2.get_fdata()
     assert_array_equal(fvox1, fvox2)
 
+    # test that we can now use a BIDSPath to use the landmarks
+    landmarks = get_anat_landmarks(bids_path, raw.info, trans_fname,
+                                   'sample', op.join(data_path, 'subjects'))
+
 
 def test_write_raw_pathlike(tmpdir):
     data_path = testing.data_path()
