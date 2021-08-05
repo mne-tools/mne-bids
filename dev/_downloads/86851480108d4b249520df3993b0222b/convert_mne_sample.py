@@ -19,7 +19,7 @@ In a second step we will read the organized dataset using MNE-BIDS.
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #          Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # First we import some basic Python libraries, followed by MNE-Python and its

@@ -24,7 +24,7 @@ data. Specifically, we will follow these steps:
 
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # We are importing everything we need for this example:

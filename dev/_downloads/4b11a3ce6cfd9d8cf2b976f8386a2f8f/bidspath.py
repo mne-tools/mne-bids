@@ -10,7 +10,7 @@ operations. Learn here how to use it.
 """
 # Author: Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # Obviously, to start exploring BIDSPath, we first need to import it.
