@@ -11,7 +11,7 @@ and how to retrieve them.
 
 # Authors: Mainak Jas <mainakjas@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # We are dealing with MEG data, which is often accompanied by so-called

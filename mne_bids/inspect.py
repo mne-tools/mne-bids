@@ -2,7 +2,7 @@
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 from pathlib import Path
 

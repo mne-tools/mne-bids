@@ -14,7 +14,7 @@ checking out this group conversion example: :ref:`ex-convert-mne-sample`
 #          Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # Let us import ``mne_bids``

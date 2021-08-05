@@ -4,7 +4,7 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #          mne-bids developers
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 import json
 from collections import OrderedDict

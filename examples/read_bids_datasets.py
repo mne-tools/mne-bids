@@ -28,7 +28,7 @@ inspect BIDS-formatted data.
 #          Richard Höchenberger <richard.hoechenberger@gmail.com>
 #          Alex Rockhill <aprockhill@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # Imports

@@ -2,7 +2,7 @@
 
 # Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 
 from mne_bids import BIDSPath, get_datatypes

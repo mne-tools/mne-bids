@@ -1,7 +1,7 @@
 """Test for the tsv handling functions."""
 # Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 
 from collections import OrderedDict as odict

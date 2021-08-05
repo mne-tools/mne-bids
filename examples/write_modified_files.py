@@ -29,7 +29,7 @@ to store such data, despite it being modified before writing.
 """
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # Load the ``sample`` dataset, and create a concatenated raw data object.

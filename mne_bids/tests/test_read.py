@@ -1,7 +1,7 @@
 """Testing utilities for file io."""
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import json
 import os
 import os.path as op

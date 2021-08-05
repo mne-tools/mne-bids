@@ -15,7 +15,7 @@ wish to create these files/folders on your own.
 
 # Authors: Chris Holdgraf <choldgraf@berkeley.edu>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # First we will import the relevant functions

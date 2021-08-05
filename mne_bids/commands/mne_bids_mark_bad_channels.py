@@ -9,7 +9,7 @@ $ mne_bids mark_bad_channels --ch_name="MEG 0112" --description="noisy" \
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 from mne.utils import logger
 

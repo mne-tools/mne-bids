@@ -17,7 +17,7 @@ segments as "bad".
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # We will demonstrate how to mark individual channels as bad on the MNE

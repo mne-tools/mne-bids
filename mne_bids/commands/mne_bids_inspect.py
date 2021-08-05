@@ -7,7 +7,7 @@ $ mne_bids inspect --subject_id=01 --task=experiment --session=test \
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 from mne.utils import logger
 

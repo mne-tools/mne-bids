@@ -1,7 +1,7 @@
 """Test for the MNE BIDS path functions."""
 # Authors: Adam Li <adam2392@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import os
 import os.path as op
 import shutil as sh

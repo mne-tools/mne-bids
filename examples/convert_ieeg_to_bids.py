@@ -44,7 +44,7 @@ refer to the `iEEG part of the BIDS specification`_.
 # Authors: Adam Li <adam2392@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 

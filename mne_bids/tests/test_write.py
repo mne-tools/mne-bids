@@ -9,7 +9,7 @@ For each supported file format, implement a test.
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import sys
 import os
 import os.path as op

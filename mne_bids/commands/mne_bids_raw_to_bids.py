@@ -7,7 +7,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 # Authors: Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import mne_bids
 from mne_bids import write_raw_bids, BIDSPath
 from mne_bids.read import _read_raw

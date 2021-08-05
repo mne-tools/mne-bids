@@ -7,7 +7,7 @@ see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import os
 import glob
 from os import path as op

@@ -32,7 +32,7 @@ See the documentation pages in the MNE docs for more information on
 #          Alex Rockhill <aprockhill@mailbox.org>
 #          Alex Gramfort <alexandre.gramfort@inria.fr>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # Let's import everything we need for this example:

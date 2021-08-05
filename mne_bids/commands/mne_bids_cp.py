@@ -4,7 +4,7 @@ example usage: $ mne_bids cp --input myfile.vhdr --output sub-01_task-test.vhdr
 """
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import mne_bids
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf)
