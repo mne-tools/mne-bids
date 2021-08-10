@@ -327,23 +327,24 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
                         'the MEG JSON sidecar file corresponds to the raw '
                         'data for KIT files.')
         else:
-            hpi_freqs_json = sidecar_json['HeadCoilFrequency']
-            try:
-                hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
-            except ValueError:
-                logger.info(
-                    'Cannot verify that the cHPI frequencies provided in '
-                    'the MEG JSON sidecar file correspond to those in the '
-                    'raw data. (Was it converted from another format?)'
-                )
-            else:
-                if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
-                    raise ValueError(
-                        f'The cHPI coil frequencies in the sidecar file '
-                        f'{sidecar_fname}:\n    {hpi_freqs_json}\ndiffer from'
-                        f' what is stored in the raw data:\n'
-                        f'    {hpi_freqs_raw}\nCannot proceed.'
+            if 'HeadCoilFrequency' in hpi_freqs_json:
+                hpi_freqs_json = sidecar_json['HeadCoilFrequency']
+                try:
+                    hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
+                except ValueError:
+                    logger.info(
+                        'Cannot verify that the cHPI frequencies provided in '
+                        'the MEG JSON sidecar file correspond to those in the '
+                        'raw data. (Was it converted from another format?)'
                     )
+                else:
+                    if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
+                        raise ValueError(
+                            f'The cHPI coil frequencies in the sidecar file '
+                            f'{sidecar_fname}:\n    {hpi_freqs_json}\ndiffer from'
+                            f' what is stored in the raw data:\n'
+                            f'    {hpi_freqs_raw}\nCannot proceed.'
+                        )
     else:
         if raw.info['hpi_subsystem']:
             logger.info('Dropping cHPI information stored in raw data, '
