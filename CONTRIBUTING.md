@@ -12,7 +12,7 @@ installation as shown below.
 
 Before submitting a pull request, we recommend that you run all style checks
 and the test suite, and build the documentation **locally** on your machine.
-Like that, you can fix errors with your changes before submitting something
+That way, you can fix errors with your changes before submitting something
 for review.
 
 **All contributions are expected to follow the**
@@ -25,7 +25,7 @@ To start with, you should install `mne-bids` as described in our
 For a development environment we recommend that you perform the installation in
 a dedicated Python environment,
 for example using `conda`.
-Afterwards a few additional steps need to be performed.
+Afterwards, a few additional steps need to be performed.
 For all of the steps below we assume that you work in your dedicated `mne-bids`
 Python environment.
 
