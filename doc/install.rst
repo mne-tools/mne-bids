@@ -14,8 +14,7 @@ Dependencies
 * ``pandas`` (>=0.24.0, optional, for generating event statistics)
 * ``matplotlib`` (>=3.1.0, optional, for using the interactive data inspector)
 
-We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution,
-and that you install ``mne_bids`` in a dedicated Python environment.
+We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution.
 We require that you use Python 3.7 or higher.
 You may choose to install ``mne-bids``
 `via pip <#Installation via pip>`_ or
@@ -35,7 +34,7 @@ This ``pip`` command will also work if you want to upgrade if a newer version
 of ``mne-bids`` is available.
 
 If you don't require advanced features like interactive visual data inspection,
-you may also install a basic version of MNE-BIDS via
+you may also install a basic version of ``mne-bids`` via
 
 .. code-block:: bash
 
@@ -47,15 +46,15 @@ If you want to install a snapshot of the current development version, run:
 
    pip install --user -U https://api.github.com/repos/mne-tools/mne-bids/zipball/main
 
-To check if everything worked fine, the following command should not give any
-error messages:
+To check if everything worked fine, the following command should
+print a version number and not give any error messages:
 
 .. code-block:: bash
 
-   python -c 'import mne_bids'
+   python -c 'import mne_bids; print(mne_bids.__version__)'
 
-MNE-BIDS works best with the latest stable release of MNE-Python. To ensure
-MNE-Python is up-to-date, run:
+MNE-BIDS works best with the latest stable release of MNE-Python (the ``mne`` package).
+To ensure MNE-Python is up-to-date, run:
 
 .. code-block:: bash
 
@@ -67,7 +66,7 @@ Installation via conda
 If you have followed the
 `MNE-Python installation instructions <https://mne.tools/stable/install/mne_python.html#installing-mne-python>`_,
 all that's left to do is to install ``mne-bids`` without its dependencies, as
-they've already been installed during the ``MNE`` installation process.
+they've already been installed during the MNE-Python installation process.
 
 Activate the correct ``conda`` environment and install ``mne-bids``:
 
@@ -94,4 +93,4 @@ After activating the environment, you should be ready to use ``mne-bids``:
 .. code-block:: bash
 
    conda activate mne
-   python -c 'import mne_bids'
+   python -c 'import mne_bids; print(mne_bids.__version__)'

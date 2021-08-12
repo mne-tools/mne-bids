@@ -20,9 +20,11 @@ for review.
 
 ## Setting up a development environment
 
-To start with, you should have installed `mne-bids` in its own, isolated Python environment,
-for example using `conda`, as recommended in our
+To start with, you should install `mne-bids` as described in our
 [installation documentation](https://mne.tools/mne-bids/dev/install.html).
+For a development environment we recommend that you perform the installation in
+a dedicated Python environment,
+for example using `conda`.
 Afterwards a few additional steps need to be performed.
 For all of the steps below we assume that you work in your dedicated `mne-bids`
 Python environment.
