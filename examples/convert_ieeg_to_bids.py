@@ -8,8 +8,7 @@
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
 
-1. Download some iEEG data from the
-   `MNE-ECoG example <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
+1. Download some iEEG data.
 
 2. Load the data, extract information, and save in a new BIDS directory.
 
@@ -43,6 +42,7 @@ refer to the `iEEG part of the BIDS specification`_.
 
 # Authors: Adam Li <adam2392@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Alex Rockhill <aprockhill@mailbox.org>
 #
 # License: BSD-3-Clause
 
@@ -50,9 +50,6 @@ refer to the `iEEG part of the BIDS specification`_.
 
 import os.path as op
 import shutil
-from pprint import pprint
-
-import numpy as np
 
 import mne
 from mne_bids import (write_raw_bids, BIDSPath,
@@ -70,65 +67,63 @@ misc_path = mne.datasets.misc.data_path(force_update=True)
 
 # The electrode coords data are in the tsv file format
 # which is easily read in using numpy
-fname = misc_path + '/ecog/sample_ecog_electrodes.tsv'
-data = np.loadtxt(fname, dtype=str, delimiter='\t',
-                  comments=None, encoding='utf-8')
-column_names = data[0, :]
-info = data[1:, :]
-electrode_tsv = dict()
-for i, name in enumerate(column_names):
-    electrode_tsv[name] = info[:, i].tolist()
-
-# load in channel names
-ch_names = electrode_tsv['name']
-
-# load in the xyz coordinates as a float
-elec = np.empty(shape=(len(ch_names), 3))
-for ind, axis in enumerate(['x', 'y', 'z']):
-    elec[:, ind] = list(map(float, electrode_tsv[axis]))
-
-# %%
-# Now we make a montage stating that the iEEG contacts are in the MNI
-# coordinate system, which corresponds to the `fsaverage` subject in
-# FreeSurfer. For example, one can look at how MNE-Python deals with iEEG data
-# at `Working with SEEG
-# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
-montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
-                                        coord_frame='mni_tal')
-print(f'Created {len(ch_names)} channel positions')
-print(dict(zip(ch_names, elec)))
-
-# %%
-# We will load a :class:`mne.io.Raw` object and
-# use the montage we created.
-info = mne.create_info(ch_names, 1000., 'ecog')
-raw = mne.io.read_raw_edf(misc_path + '/ecog/sample_ecog.edf')
+raw = mne.io.read_raw_fif(op.join(
+    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
-raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
+subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 
-# set the bad channels
-raw.info['bads'].extend(['BTM1', 'BTM2', 'BTM3', 'BTM4', 'BTM5', 'BTM6',
-                         'BTP1', 'BTP2', 'BTP3', 'BTP4', 'BTP5', 'BTP6',
-                         'EKGL', 'EKGR'])
+# %%
+# Now we make a montage in ACPC space. MNE stores channel locations
+# in the "head" coordinate frame, which has the origin at the center
+# between the left and right auricular points. BIDS requires that iEEG data
+# be in ACPC space so we need to convert from "head" to "mni_tal" which is
+# an `ACPC-aligned coordiante system
+# <https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems>`_.
+# The MNI Talairach coordinate system is very useful for group analysis as
+# shown in `Working with SEEG
+# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
+# The ``fsaverage`` template brain is in MNI space so we can use the Talairach
+# transform to get to this space from "mri" or Freesurfer surface RAS space.
+# So, first we have to use the ``trans`` we found from assigning or estimating
+# fiducial points (see `Locating Intracranial Electrode Contacts
+# <https://mne.tools/dev/auto_tutorials/clinical/10_ieeg_localize.html>`_),
+# and then we can use the Freesurfer Talairach transform to get to MNI space.
 
-# set montage
-# (note that this only works for some channel types: EEG/sEEG/ECoG/DBS/fNIRS)
-raw.set_montage(montage, on_missing='warn')
+# estimate trans
+lpa, nasion, rpa = mne.coreg.get_mni_fiducials('sample_seeg', subjects_dir)
+montage = mne.channels.make_dig_montage(
+    lpa=lpa['r'], nasion=nasion['r'], rpa=rpa['r'],
+    coord_frame='mri')
+trans = mne.channels.compute_native_head_t(montage)
+
+# get Talairach transform
+mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
+
 
 # %%
 # Let us confirm what our channel coordinates look like.
 
-# make a plot of the sensors in 2D plane
-raw.plot_sensors(ch_type='ecog')
+fig_kwargs = dict(size=(800, 600), bgcolor='w', scene=False)
+renderer = mne.viz.backends.renderer.create_3d_figure(**fig_kwargs)
+al_kwargs = dict(
+    show_axes=True, surfaces=dict(pial=0.2), coord_frame='mri',
+    subjects_dir=subjects_dir)
+fig = mne.viz.plot_alignment(raw.info, trans, 'sample_seeg',
+                             fig=renderer.figure, **al_kwargs)
+view_kwargs = dict(azimuth=60, elevation=100, distance=0.3)
+mne.viz.set_3d_view(fig, **view_kwargs)
 
-# Get the first 5 channels and show their locations.
-picks = mne.pick_types(raw.info, ecog=True)
-dig = [raw.info['dig'][pick] for pick in picks]
-chs = [raw.info['chs'][pick] for pick in picks]
-pos = np.array([ch['r'] for ch in dig[:5]])
-ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
-print("The channel coordinates before writing into BIDS: ")
-pprint([x for x in zip(ch_names, pos)])
+# %%
+# Now let's convert the montage to MNI Talairach ("mni_tal").
+montage = raw.get_montage()
+montage.apply_trans(mne.transforms.invert_transform(trans))  # head->mri
+montage.apply_trans(mri_mni_t)
+# a bit of a hack here; MNE will transform the coordinates to "head"
+# when you set the montage if there are fiducials and we don't want
+# that so we have to get rid of them
+montage.dig = montage.dig[3:]
+# warns that identity transformation to "head" is assumed which is what we want
+raw.set_montage(montage, verbose='error')
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -174,8 +169,8 @@ print(write_raw_bids.__doc__)
 # Let us initialize some of the necessary data for the subject.
 
 # There is a subject, and specific task for the dataset.
-subject_id = '001'  # zero padding to account for >100 subjects in this dataset
-task = 'testresteyes'
+subject_id = '1'
+task = 'motor'
 
 # get MNE-Python directory w/ example data
 mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
@@ -202,8 +197,7 @@ if op.exists(bids_root):
 # temporarily save the data to disc before reading it back in.
 
 # Now convert our data to be in a new BIDS dataset.
-bids_path = BIDSPath(subject=subject_id,
-                     task=task, acquisition="ecog", root=bids_root)
+bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
 
 # write `raw` to BIDS and anonymize it into BrainVision format
 write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
@@ -254,21 +248,25 @@ print(text)
 # Now we have written our BIDS directory. We can use
 # :func:`read_raw_bids` to read in the data.
 
-# read in the BIDS dataset and plot the coordinates
+# read in the BIDS dataset to plot the coordinates
 raw = read_raw_bids(bids_path=bids_path)
 
-# get the first 5 channels and show their locations
-# this should match what was printed earlier.
-picks = mne.pick_types(raw.info, ecog=True)
-dig = [raw.info['dig'][pick] for pick in picks]
-chs = [raw.info['chs'][pick] for pick in picks]
-pos = np.array([ch['r'] for ch in dig[:5]])
-ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
+# %%
+# Now we have to go back to "head" coordinates.
+#
+# .. note:: If you were downloading this from ``OpenNeuro``, you would
+#           have to run the Freesurfer ``recon-all`` to get the transforms.
 
-print("The channel montage after writing into BIDS: ")
-pprint(dig[0:5])
-print("The channel coordinates after writing into BIDS: ")
-pprint([x for x in zip(ch_names, pos)])
+montage = raw.get_montage()
+montage.apply_trans(mne.transforms.invert_transform(mri_mni_t))
+montage.apply_trans(trans)
+raw.set_montage(montage)
 
-# make a plot of the sensors in 2D plane
-raw.plot_sensors(ch_type='ecog')
+# %%
+# Finally, we can plot the result to ensure that the data was correctly
+# formatted for the round trip.
+
+renderer = mne.viz.backends.renderer.create_3d_figure(**fig_kwargs)
+fig = mne.viz.plot_alignment(raw.info, trans, 'sample_seeg',
+                             fig=renderer.figure, **al_kwargs)
+mne.viz.set_3d_view(fig, **view_kwargs)
