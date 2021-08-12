@@ -96,7 +96,12 @@ bids-validator --version
 We use [GNU Make](https://www.gnu.org/software/make/) for developing `mne-bids`.
 We recommend that you install GNU Make and make use of our `Makefile` at the root
 of the repository.
-If you can't install GNU Make, it might suffice to inspect the `Makefile` and to
+For most Linux and OSX operating systems, GNU Make will be already installed by default.
+Windows users can download the [Chocolatey package manager](https://chocolatey.org/)
+and install [GNU Make from their repository](https://community.chocolatey.org/packages/make).
+
+If for some reason you can't install GNU Make,
+it might suffice to inspect the `Makefile` and to
 figure out how to run the commands without invoking `make`.
 
 ## Making style checks
