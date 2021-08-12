@@ -83,7 +83,17 @@ You will need the "command line version" of the bids-validator.
 To install the **development** version of `bids-validator`, see the
 [contributor documentation of bids-validator](https://github.com/bids-standard/bids-validator/blob/master/CONTRIBUTING.md#using-the-development-version-of-bids-validator).
 
-We recommend that to get started, you install the **stable** `bids-validator`.
+In brief, the most convenient installation can be done using `conda`.
+In your `conda` development environment for `mne-bids` simply call:
+
+```Shell
+conda install -c conda-forge nodejs
+npm install --global npm@^7
+npm install --global bids-validator
+```
+
+This would install the **stable** `bids-validator` and make it globally available
+on your system.
 
 Check your installation by running:
 
