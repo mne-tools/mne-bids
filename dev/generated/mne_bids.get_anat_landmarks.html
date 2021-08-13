@@ -384,11 +384,11 @@ via the <code class="docutils literal notranslate"><span class="pre">image</span
 readable by nibabel. Can also be a nibabel image object of an
 MRI scan. Will be written as a .nii.gz file.</p>
 </dd>
-<dt><strong>info</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Info</span></code></a></span></dt><dd><p>The measurement information from an electrophysiology recording of
+<dt><strong>info</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Info</span></code></a></span></dt><dd><p>The measurement information from an electrophysiology recording of
 the subject with the anatomical landmarks stored in its
-<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a>.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a>.</p>
 </dd>
-<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
+<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
 also be a string pointing to a <code class="docutils literal notranslate"><span class="pre">.trans</span></code> file containing the
 transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and no <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> parameter is
 passed, no sidecar JSON file will be created.</p>
@@ -397,7 +397,7 @@ passed, no sidecar JSON file will be created.</p>
 the <code class="docutils literal notranslate"><span class="pre">subject</span></code> entity in <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>. Must be provided to write
 the anatomical landmarks if they are not provided in MRI voxel space.
 This is because the head coordinate of a
-<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> is aligned using FreeSurfer surfaces.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> is aligned using FreeSurfer surfaces.</p>
 </dd>
 <dt><strong>fs_subjects_dir</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The FreeSurfer subjects directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to the
 <code class="docutils literal notranslate"><span class="pre">SUBJECTS_DIR</span></code> environment variable. Must be provided to write
@@ -407,7 +407,7 @@ anatomical landmarks if they are not provided in MRI voxel space.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a></span></dt><dd><p>A montage with the landmarks in MRI voxel space.</p>
+<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a></span></dt><dd><p>A montage with the landmarks in MRI voxel space.</p>
 </dd>
 </dl>
 </dd>
@@ -447,7 +447,7 @@ anatomical landmarks if they are not provided in MRI voxel space.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-05.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-13.<br/>
 </p>
     </div>
     

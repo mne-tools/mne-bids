@@ -424,7 +424,7 @@ and supply meta data files to properly <em>bidsify</em> this data.</p>
 <h2>Convert to BIDS<a class="headerlink" href="#convert-to-bids" title="Permalink to this headline">¶</a></h2>
 <p>Let’s start with loading the data and extracting the events.
 We are reading the data using MNE-Python’s <code class="docutils literal notranslate"><span class="pre">io</span></code> module and the
-<a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v0.24.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function.
+<a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function.
 Note that we must use the <code class="docutils literal notranslate"><span class="pre">preload=False</span></code> parameter, which is the default
 in MNE-Python.
 It prevents the data from being loaded and modified when converting to BIDS.</p>
@@ -452,7 +452,7 @@ intended to carry information about digitized (i.e., <em>measured</em>)
 electrode positions on the scalp of the research subject. Do <em>not</em>
 (!) use these files to store “template” or “idealized” electrode
 positions, like those that can be obtained from
-<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="(in MNE v0.24.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.channels.make_standard_montage()</span></code></a>!</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.channels.make_standard_montage()</span></code></a>!</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the electrode coordinates</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">testing_data</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">data_path</span><span class="p">()</span>
@@ -999,7 +999,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.189 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.134 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1039,7 +1039,7 @@ command line tool:</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-05.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-13.<br/>
 </p>
     </div>
     
