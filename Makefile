@@ -1,9 +1,6 @@
-PYTHON ?= python
-PYTESTS ?= pytest
+.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e inplace test check-manifest flake pydocstyle pep build-doc
 
-.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e inplace test test-doc test-coverage trailing-spaces upload-pypi check-manifest flake pydocstyle pep build-doc
-
-all: clean inplace test
+all: clean inplace pep test build-doc
 
 clean-pyc:
 	find . -name "*.pyc" | xargs rm -f
@@ -27,46 +24,36 @@ clean-e:
 clean: clean-build clean-pyc clean-so clean-ctags clean-cache clean-e
 
 inplace:
-	$(PYTHON) setup.py develop
+	python setup.py develop
 
-test: inplace check-manifest
+test:
+	@echo "Running tests"
+	@python -m pytest . \
+	--doctest-modules \
+	--cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ \
+	--cov-report=xml \
+	--cov-config=setup.cfg \
+	--verbose \
+	--ignore mne-python \
+	--ignore examples
 	rm -f .coverage
-	$(PYTESTS) mne_bids
-
-test-doc:
-	$(PYTESTS) --doctest-modules --doctest-ignore-import-errors mne_bids
-
-test-coverage:
-	rm -rf coverage .coverage
-	$(PYTESTS) --cov=mne_bids --cov-report html:coverage
-
-trailing-spaces:
-	find . -name "*.py" | xargs perl -pi -e 's/[ \t]*$$//'
-
-upload-pipy:
-	python setup.py sdist bdist_egg register upload
 
 check-manifest:
-	check-manifest .
+	@echo "Checking MANIFEST.in"
+	@check-manifest .
 
 flake:
-	@if command -v flake8 > /dev/null; then \
-		echo "Running flake8"; \
-		flake8 --count mne_bids examples mne_bids/tests; \
-	else \
-		echo "flake8 not found, please install it!"; \
-		exit 1; \
-	fi;
-	@echo "flake8 passed"
+	@echo "Running flake8"
+	@flake8 --count mne_bids examples
 
 pydocstyle:
 	@echo "Running pydocstyle"
-	@pydocstyle
+	@pydocstyle .
 
-pep:
-	@$(MAKE) -k flake pydocstyle check-manifest
+pep: flake pydocstyle check-manifest
 
 build-doc:
-	cd doc; make clean
-	cd doc; make html
-	cd doc; make view
+	@echo "Building documentation"
+	make -C doc/ clean
+	make -C doc/ html
+	cd doc/ && make view

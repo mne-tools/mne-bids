@@ -114,14 +114,17 @@ jobs:
       FORCE_COLOR: true
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: 12
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Restore cache
       # Restoring cache on Ubuntu 20.04 seems buggy
       # only do it on other operating systems
@@ -131,6 +134,7 @@ jobs:
       with:
         path: ${{ env.pythonLocation }}
         key: test-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+
     - name: Install Python dependencies using pip
       run: |
         python -m pip install --upgrade pip wheel
@@ -141,6 +145,7 @@ jobs:
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.23
         pip install --no-deps -e ./mne-python
+
     - name: Install MNE (main)
       if: "matrix.os == 'ubuntu-latest'"
       run: |
@@ -167,26 +172,19 @@ jobs:
         echo "npm"; npm --version
         echo "node"; node --version
         echo "bids-validator"; bids-validator --version
-        python --version
+        echo "python"; python --version
         which python
         mne sys_info
+
     - name: Install MNE-BIDS
-      run: pip install --no-deps .
+      run: pip install --no-deps -e .
+
     - name: Run pytest
-      run: |
-        export BIDS_VALIDATOR_VERSION=`bids-validator --version`
-        echo Using bids-validator $BIDS_VALIDATOR_VERSION
-        python -m pytest . \
-        --doctest-modules \
-        --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ \
-        --cov-report=xml \
-        --cov-config=setup.cfg \
-        --verbose \
-        --ignore mne-python \
-        --ignore examples
+      run: make test
       shell: bash
+
     - name: Upload coverage stats to codecov
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9' && matrix.bids-validator == 'main' }}
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2
       with:
-        file: ./coverage.xml
+        files: ./coverage.xml
