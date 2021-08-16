@@ -51,10 +51,11 @@ refer to the `iEEG part of the BIDS specification`_.
 import os.path as op
 import shutil
 
+import matplotlib.pyplot as plt
+
 import mne
 from mne_bids import (write_raw_bids, BIDSPath,
                       read_raw_bids, print_dir_tree)
-
 
 # %%
 # Step 1: Download the data
@@ -63,7 +64,7 @@ from mne_bids import (write_raw_bids, BIDSPath,
 # First, we need some data to work with. We will use the
 # data downloaded via MNE-Python's ``datasets`` API:
 # :func:`mne.datasets.misc.data_path`
-misc_path = mne.datasets.misc.data_path(force_update=True)
+misc_path = mne.datasets.misc.data_path()
 
 # The electrode coords data are in the tsv file format
 # which is easily read in using numpy
@@ -99,20 +100,6 @@ trans = mne.channels.compute_native_head_t(montage)
 # get Talairach transform
 mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
 
-
-# %%
-# Let us confirm what our channel coordinates look like.
-
-fig_kwargs = dict(size=(800, 600), bgcolor='w', scene=False)
-renderer = mne.viz.backends.renderer.create_3d_figure(**fig_kwargs)
-al_kwargs = dict(
-    show_axes=True, surfaces=dict(pial=0.2), coord_frame='mri',
-    subjects_dir=subjects_dir)
-fig = mne.viz.plot_alignment(raw.info, trans, 'sample_seeg',
-                             fig=renderer.figure, **al_kwargs)
-view_kwargs = dict(azimuth=60, elevation=100, distance=0.3)
-mne.viz.set_3d_view(fig, **view_kwargs)
-
 # %%
 # Now let's convert the montage to MNI Talairach ("mni_tal").
 montage = raw.get_montage()
@@ -124,6 +111,30 @@ montage.apply_trans(mri_mni_t)
 montage.dig = montage.dig[3:]
 # warns that identity transformation to "head" is assumed which is what we want
 raw.set_montage(montage, verbose='error')
+
+# %%
+# Let's plot to check what our starting channel coordinates look like.
+
+
+def plot_3D_montage(montage):
+    positions = montage.get_positions()
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    cmap = plt.get_cmap('rainbow')
+    colors = dict()
+    for name, pos in positions['ch_pos'].items():
+        name = ''.join([letter for letter in name if
+                        not letter.isdigit() and letter != ' '])
+        if name in colors:
+            color = colors[name]
+        else:
+            color = cmap(len(colors) + 1)
+            colors[name] = color
+        ax.scatter(*pos, color=color, label=name)
+    fig.show()
+
+
+plot_3D_montage(montage)
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -266,7 +277,4 @@ raw.set_montage(montage)
 # Finally, we can plot the result to ensure that the data was correctly
 # formatted for the round trip.
 
-renderer = mne.viz.backends.renderer.create_3d_figure(**fig_kwargs)
-fig = mne.viz.plot_alignment(raw.info, trans, 'sample_seeg',
-                             fig=renderer.figure, **al_kwargs)
-mne.viz.set_3d_view(fig, **view_kwargs)
+plot_3D_montage(montage)
