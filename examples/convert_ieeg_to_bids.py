@@ -77,7 +77,7 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 # in the "head" coordinate frame, which has the origin at the center
 # between the left and right auricular points. BIDS requires that iEEG data
 # be in ACPC space so we need to convert from "head" to "mni_tal" which is
-# an `ACPC-aligned coordiante system
+# an `ACPC-aligned coordinate system
 # <https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems>`_.
 # The MNI Talairach coordinate system is very useful for group analysis as
 # shown in `Working with SEEG
