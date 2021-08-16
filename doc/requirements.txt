@@ -7,3 +7,4 @@ matplotlib
 pillow
 pandas
 setuptools
+pyvista
