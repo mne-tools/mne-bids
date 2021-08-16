@@ -85,12 +85,14 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 # <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
 # The ``fsaverage`` template brain is in MNI space so we can use the Talairach
 # transform to get to this space from "mri" or Freesurfer surface RAS space.
-# So, first we have to use the ``trans`` we found from assigning or estimating
-# fiducial points (see `Locating Intracranial Electrode Contacts
-# <https://mne.tools/dev/auto_tutorials/clinical/10_ieeg_localize.html>`_),
-# and then we can use the Freesurfer Talairach transform to get to MNI space.
+# First we have to assign, or estimate the fiducial points (see
+# `Locating Intracranial Electrode Contacts
+# <https://mne.tools/dev/auto_tutorials/clinical/10_ieeg_localize.html>`_).
+# Second, we create a Transformation object from ``head`` to ``mri``
+# coordinates using the fiducial points. Finally, we can use the
+# Freesurfer Talairach transform to get to MNI space.
 
-# estimate trans
+# estimate the transformation from "head" to "mri" space
 lpa, nasion, rpa = mne.coreg.get_mni_fiducials('sample_seeg', subjects_dir)
 montage = mne.channels.make_dig_montage(
     lpa=lpa['r'], nasion=nasion['r'], rpa=rpa['r'],
@@ -128,7 +130,7 @@ def plot_3D_montage(montage):
         if name in colors:
             color = colors[name]
         else:
-            color = cmap(len(colors) + 1)
+            color = cmap(15 * (len(colors) + 1))
             colors[name] = color
         ax.scatter(*pos, color=color, label=name)
     fig.show()
