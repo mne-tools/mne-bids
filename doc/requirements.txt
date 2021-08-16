@@ -7,4 +7,5 @@ matplotlib
 pillow
 pandas
 setuptools
+pyvista
 pyvistaqt
