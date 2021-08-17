@@ -23,6 +23,7 @@ Authors
 ~~~~~~~
 
 * `Richard Höchenberger`_
+* `Mainak Jas`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,6 +47,8 @@ Bug fixes
 ^^^^^^^^^
 
 - Fix writing Ricoh/KIT data that comes without an associated ``.mrk``, ``.elp``, or ``.hsp`` file using :func:`mne_bids.write_raw_bids`, by `Richard Höchenberger`_ (:gh:`850`)
+
+- Properly support CTF MEG data with 2nd-order gradient compensation, by `Mainak Jas`_ (:gh:`858`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
