@@ -36,7 +36,6 @@ test:
 	--verbose \
 	--ignore mne-python \
 	--ignore examples
-	rm -f .coverage
 
 check-manifest:
 	@echo "Checking MANIFEST.in"
