@@ -93,11 +93,7 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 # Freesurfer Talairach transform to get to MNI space.
 
 # estimate the transformation from "head" to "mri" space
-lpa, nasion, rpa = mne.coreg.get_mni_fiducials('sample_seeg', subjects_dir)
-montage = mne.channels.make_dig_montage(
-    lpa=lpa['r'], nasion=nasion['r'], rpa=rpa['r'],
-    coord_frame='mri')
-trans = mne.channels.compute_native_head_t(montage)
+trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
 
 # get Talairach transform
 mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
@@ -105,7 +101,7 @@ mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
 # %%
 # Now let's convert the montage to MNI Talairach ("mni_tal").
 montage = raw.get_montage()
-montage.apply_trans(mne.transforms.invert_transform(trans))  # head->mri
+montage.apply_trans(trans)  # head->mri
 montage.apply_trans(mri_mni_t)
 # a bit of a hack here; MNE will transform the coordinates to "head"
 # when you set the montage if there are fiducials and we don't want
@@ -265,14 +261,14 @@ print(text)
 raw = read_raw_bids(bids_path=bids_path)
 
 # %%
-# Now we have to go back to "head" coordinates.
+# Now we have to go back to "head" coordinates. We do this with ``fsaverage``
+# fiducials which are in MNI space.
 #
 # .. note:: If you were downloading this from ``OpenNeuro``, you would
 #           have to run the Freesurfer ``recon-all`` to get the transforms.
 
 montage = raw.get_montage()
-montage.apply_trans(mne.transforms.invert_transform(mri_mni_t))
-montage.apply_trans(trans)
+montage.add_mni_fiducials(subjects_dir=subjects_dir)
 raw.set_montage(montage)
 
 # %%
