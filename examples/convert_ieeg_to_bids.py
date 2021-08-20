@@ -185,7 +185,7 @@ task = 'motor'
 mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
 # There is the root directory for where we will write our data.
-bids_root = op.join(mne_data_dir, 'ieegmmidb_bids')
+bids_root = op.join(mne_data_dir, 'ieeg_bids')
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
