@@ -240,7 +240,7 @@ BIDS_TO_MNE_FRAMES = {
     'ElektaNeuromag': 'head',
     'ChietiItab': 'head',
     'CapTrak': 'head',
-    'ACPC': 'ras',
+    'ACPC': 'mri',  # assumes T1 is ACPC-aligned, if not the coordinates are lost  # noqa
     'fsaverage': 'mni_tal',  # XXX: note fsaverage and MNI305 are the same  # noqa
     'MNI305': 'mni_tal',
     'Other': 'unknown'
