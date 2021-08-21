@@ -1403,6 +1403,45 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
         coordsystem_json = json.load(fin)
     assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
 
+    # test writing to ACPC
+    ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                 coord_frame='mri')
+    ieeg_raw.set_montage(ecog_montage)
+
+    bids_root = tmpdir.mkdir('bids4')
+    bids_path.update(root=bids_root, datatype='ieeg')
+    # test works if ACPC-aligned is specified
+    kwargs.update(acpc_aligned=True)
+    if dir_name == 'EDF':
+        write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            write_raw_bids(**kwargs)
+    else:
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "double" format'):
+            write_raw_bids(**kwargs)
+
+    _bids_validate(bids_root)
+
+    bids_fname.update(root=bids_root)
+    electrodes_fname = _find_matching_sidecar(bids_fname,
+                                              suffix='electrodes',
+                                              extension='.tsv')
+    coordsystem_fname = _find_matching_sidecar(bids_fname,
+                                               suffix='coordsystem',
+                                               extension='.json')
+    assert 'space-ACPC' in electrodes_fname
+    assert 'space-ACPC' in coordsystem_fname
+    with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
+        coordsystem_json = json.load(fin)
+    assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
+
+    kwargs.update(acpc_aligned=False)
+    with pytest.raises(RuntimeError, match='`acpc_aligned` is False'):
+        write_raw_bids(**kwargs)
+
     # test anonymize and convert
     if check_version('pybv', '0.4') or dir_name == 'EDF':
         raw = reader(raw_fname)

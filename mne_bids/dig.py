@@ -304,7 +304,8 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
     _write_json(fname, fid_json, overwrite=True, verbose=verbose)
 
 
-def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
+def _write_dig_bids(bids_path, raw, acpc_aligned=False,
+                    overwrite=False, verbose=True):
     """Write BIDS formatted DigMontage from Raw instance.
 
     Handles coordinatesystem.json and electrodes.tsv writing
@@ -319,6 +320,8 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
         data, ``electrodes.tsv`` are not saved.
     raw : mne.io.Raw
         The data as MNE-Python Raw object.
+    acpc_aligned : bool
+        Whether "mri" space is aligned to ACPC.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -340,6 +343,17 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
     coord_frame_int = int(digpoint['coord_frame'])
     mne_coord_frame = MNE_FRAME_TO_STR.get(coord_frame_int, None)
     coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
+
+    if bids_path.datatype == 'ieeg' and mne_coord_frame == 'mri':
+        if acpc_aligned:
+            coord_frame = 'ACPC'
+        else:
+            raise RuntimeError(
+                '`acpc_aligned` is False, if your T1 is not aligned '
+                'to ACPC and the coordinates are in fact in ACPC '
+                'space there will be no way to relate the coordinates '
+                'to the T1. If the T1 is ACPC-aligned, use '
+                '`acpc_aligned=True`')
 
     # create electrodes/coordsystem files using a subset of entities
     # that are specified for these files in the specification

@@ -1054,7 +1054,7 @@ def make_dataset_description(path, name, data_license=None,
 
 def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    anonymize=None, format='auto', symlink=False,
-                   empty_room=None, allow_preload=False,
+                   empty_room=None, allow_preload=False, acpc_aligned=False,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1196,7 +1196,12 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             absolutely necessary: for example, manually converting from file
             formats not supported by MNE or writing preprocessed derivatives.
             Be aware that these use cases are not fully supported.
-
+    acpc_aligned : bool
+        It is difficult to check whether the T1 scan is ACPC aligned which
+        means that "mri" coordinate space is "ACPC" BIDS coordinate space.
+        So, this flag is required to be True when the digitization data
+        is in "mri" for intracranial data to confirm that the T1 is
+        ACPC-aligned.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1483,7 +1488,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(bids_path, raw, overwrite, verbose)
+            _write_dig_bids(bids_path, raw, acpc_aligned, overwrite, verbose)
     else:
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')

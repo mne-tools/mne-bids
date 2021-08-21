@@ -240,7 +240,7 @@ BIDS_TO_MNE_FRAMES = {
     'ElektaNeuromag': 'head',
     'ChietiItab': 'head',
     'CapTrak': 'head',
-    'ACPC': 'ras',  # XXX: there is no ACPC in mne-python and so this is a one-way mapping from BIDS -> MNE  # noqa
+    'ACPC': 'ras',
     'fsaverage': 'mni_tal',  # XXX: note fsaverage and MNI305 are the same  # noqa
     'MNI305': 'mni_tal',
     'Other': 'unknown'
