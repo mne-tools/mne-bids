@@ -304,7 +304,7 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
     _write_json(fname, fid_json, overwrite=True, verbose=verbose)
 
 
-def _write_dig_bids(bids_path, raw, acpc_aligned=False,
+def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
                     overwrite=False, verbose=True):
     """Write BIDS formatted DigMontage from Raw instance.
 
@@ -320,6 +320,9 @@ def _write_dig_bids(bids_path, raw, acpc_aligned=False,
         data, ``electrodes.tsv`` are not saved.
     raw : mne.io.Raw
         The data as MNE-Python Raw object.
+    montage : mne.channels.DigMontage | None
+        The montage to use rather than the one in ``raw`` if it
+        must be transformed from the "head" coordinate frame.
     acpc_aligned : bool
         Whether "mri" space is aligned to ACPC.
     overwrite : bool
@@ -331,10 +334,18 @@ def _write_dig_bids(bids_path, raw, acpc_aligned=False,
     # write electrodes data for iEEG and EEG
     unit = "m"  # defaults to meters
 
+    if montage is None:
+        montage = raw.get_montage()
+    else:
+        # prevent transformation back to "head", only should be used
+        # in this specific circumstance
+        montage.remove_fiducials()
+        raw.set_montage(montage)
+
     # get coordinate frame from digMontage
-    digpoint = raw.info['dig'][0]
+    digpoint = montage.dig[0]
     if any(digpoint['coord_frame'] != _digpoint['coord_frame']
-           for _digpoint in raw.info['dig']):
+           for _digpoint in montage.dig):
         warn("Not all digpoints have the same coordinate frame. "
              "Skipping electrodes.tsv writing...")
         return

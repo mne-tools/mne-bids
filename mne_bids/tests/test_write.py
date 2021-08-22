@@ -1406,12 +1406,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     # test writing to ACPC
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                  coord_frame='mri')
-    ieeg_raw.set_montage(ecog_montage)
-
     bids_root = tmpdir.mkdir('bids4')
     bids_path.update(root=bids_root, datatype='ieeg')
     # test works if ACPC-aligned is specified
-    kwargs.update(acpc_aligned=True)
+    kwargs.update(montage=ecog_montage, acpc_aligned=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':

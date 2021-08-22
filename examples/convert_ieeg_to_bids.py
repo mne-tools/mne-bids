@@ -91,14 +91,6 @@ trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
 montage = raw.get_montage()
 montage.apply_trans(trans)  # head->mri
 
-# careful, this should only be done in this specific circumstance,
-# it prevents MNE from transforming the coordinate system to "head"
-montage.remove_fiducials()
-
-# set our montage in "mri", ignore the warning that we aren't transforming
-# to "head" properly
-raw.set_montage(montage, verbose='error')
-
 # %%
 # BIDS vs MNE-Python Coordinate Systems
 # -------------------------------------
@@ -174,9 +166,11 @@ if op.exists(bids_root):
 # Now convert our data to be in a new BIDS dataset.
 bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
 
-# write `raw` to BIDS and anonymize it into BrainVision format
+# write `raw` to BIDS and anonymize it (converts to BrainVision format)
+# pass the argument `montage` because when `raw.set_montage` is used
+# it converts to the MNE internal coordinate frame "head" and we need "mri"
 write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
-               acpc_aligned=True, overwrite=True)
+               montage=montage, acpc_aligned=True, overwrite=True)
 
 # check our output
 print_dir_tree(bids_root)
@@ -262,13 +256,26 @@ with open(readme, 'r', encoding='utf-8-sig') as fid:
 print(text)
 
 # %%
-# If your T1 is not aligned to ACPC-space or you prefer to store the
-# coordinates in a template space for another reason, you can also do that.
+# Step 5: Store coordinates in a template space
+# ---------------------------------------------
+# Alternatively, if your T1 is not aligned to ACPC-space or you prefer to
+# store the coordinates in a template space (e.g. ``fsaverage``) for another
+# reason, you can also do that.
 #
 # Here we'll use the MNI Talairach transform to get to ``fsaverage`` space.
 # ``fsaverage`` is very useful for group analysis as shown in
 # `Working with SEEG
 # <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
+
+# ensure the output path doesn't contain any leftover files from previous
+# tests and example runs
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+# load our raw data again
+raw = mne.io.read_raw_fif(op.join(
+    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 
 # get Talairach transform
 mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
@@ -279,60 +286,26 @@ montage = raw.get_montage()
 montage.apply_trans(trans)  # head->mri
 montage.apply_trans(mri_mni_t)
 
-# again, careful only to use this in this specific instance of saving to BIDS
-montage.remove_fiducials()
-
-# warns that identity transformation to "head" is assumed which is what we want
-raw.set_montage(montage, verbose='error')
-
-# %%
-# Let's plot to check what our starting channel coordinates look like.
-
-
-def plot_3D_montage(montage):
-    positions = montage.get_positions()
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    cmap = plt.get_cmap('rainbow')
-    colors = dict()
-    for name, pos in positions['ch_pos'].items():
-        name = ''.join([letter for letter in name if
-                        not letter.isdigit() and letter != ' '])
-        if name in colors:
-            color = colors[name]
-        else:
-            color = cmap(15 * (len(colors) + 1))
-            colors[name] = color
-        ax.scatter(*pos, color=color, label=name)
-    fig.show()
-
-
-plot_3D_montage(montage)
-
-# remove previous data
-if op.exists(bids_root):
-    shutil.rmtree(bids_root)
-
-# write to BIDS, overwrite ACPC data
+# write to BIDS, this time with a template coordinate system
 write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
-               overwrite=True)
+               montage=montage, overwrite=True)
 
-# read in the BIDS dataset to plot the coordinates
+# read in the BIDS dataset
 raw = read_raw_bids(bids_path=bids_path)
 
+# check that we can recover the coordinates
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=raw.info['chs'][0]['loc'][:3],
+          saved=montage.dig[0]['r']))
+
 # %%
-# Now we have to go back to "head" coordinates. We do this with ``fsaverage``
-# fiducials which are in MNI space.
-#
-# .. note:: If you were downloading this from ``OpenNeuro``, you would
-#           have to run the Freesurfer ``recon-all`` to get the transforms.
+# Now we should go back to "head" coordinates. We do this with ``fsaverage``
+# fiducials which are in MNI space. In this case, you would not need to run
+# the Freesurfer ``recon-all`` for the subject, you would just need a
+# ``subjects_dir`` with ``fsaverage`` in it, which is accessible using
+# :func:`mne.datasets.fetch_fsaverage`.
 
 montage = raw.get_montage()
 montage.add_mni_fiducials(subjects_dir=subjects_dir)
 raw.set_montage(montage)
-
-# %%
-# Finally, we can plot the result to ensure that the data was correctly
-# formatted for the round trip.
-
-plot_3D_montage(montage)

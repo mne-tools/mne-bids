@@ -1054,7 +1054,8 @@ def make_dataset_description(path, name, data_license=None,
 
 def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    anonymize=None, format='auto', symlink=False,
-                   empty_room=None, allow_preload=False, acpc_aligned=False,
+                   empty_room=None, allow_preload=False,
+                   montage=None, acpc_aligned=False,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
 
@@ -1196,6 +1197,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             absolutely necessary: for example, manually converting from file
             formats not supported by MNE or writing preprocessed derivatives.
             Be aware that these use cases are not fully supported.
+    montage : mne.channels.DigMontage | None
+        The montage with channel positions if channel position data are
+        to be stored in a format other than "head" (the internal MNE
+        coordinate frame that the data in ``raw`` is stored in).
     acpc_aligned : bool
         It is difficult to check whether the T1 scan is ACPC aligned which
         means that "mri" coordinate space is "ACPC" BIDS coordinate space.
@@ -1307,6 +1312,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     _validate_type(item=empty_room, item_name='empty_room',
                    types=(BIDSPath, None))
+    _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
+    _validate_type(acpc_aligned, bool, 'acpc_aligned')
 
     raw = raw.copy()
     convert = False  # flag if converting not copying
@@ -1488,7 +1495,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(bids_path, raw, acpc_aligned, overwrite, verbose)
+            _write_dig_bids(bids_path, raw, montage, acpc_aligned,
+                            overwrite, verbose)
     else:
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')
