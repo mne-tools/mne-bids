@@ -50,8 +50,6 @@ refer to the `iEEG part of the BIDS specification`_.
 import os.path as op
 import shutil
 
-import matplotlib.pyplot as plt
-
 import mne
 from mne_bids import (write_raw_bids, BIDSPath,
                       read_raw_bids, print_dir_tree)
