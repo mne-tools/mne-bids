@@ -279,6 +279,10 @@ MNE_FRAME_TO_STR = {val: key for key, val in MNE_STR_TO_FRAME.items()}
 
 # see BIDS specification for description we copied over from each
 BIDS_COORD_FRAME_DESCRIPTIONS = {
+    'acpc': 'The origin of the coordinate system is at the Anterior '
+            'Commissure and the negative y-axis is passing through the '
+            'Posterior Commissure. The positive z-axis is passing through '
+            'a mid-hemispheric point in the superior direction.',
     'ctf': 'ALS orientation and the origin between the ears',
     'elektaneuromag': 'RAS orientation and the origin between the ears',
     '4dbti': 'ALS orientation and the origin between the ears',

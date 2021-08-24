@@ -2391,8 +2391,8 @@ def test_coordsystem_json_compliance(
     raw = reader(raw_fname)
 
     # clean all events for this test
-    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True,
-                  verbose=False)
+    kwargs = dict(raw=raw, bids_path=bids_path, acpc_aligned=True,
+                  overwrite=True, verbose=False)
 
     if datatype == 'eeg':
         raw.set_channel_types({ch: 'eeg' for ch in raw.ch_names})
@@ -2427,7 +2427,7 @@ def test_coordsystem_json_compliance(
     # writing twice should work as long as the coordsystem
     # contents have not changed
     write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='02'),
-                   overwrite=False, verbose=False)
+                   acpc_aligned=True, overwrite=False, verbose=False)
 
     datatype_ = {'meg': 'MEG', 'eeg': 'EEG', 'ieeg': 'iEEG'}[datatype]
     # if there is a change in the underlying
@@ -2441,7 +2441,7 @@ def test_coordsystem_json_compliance(
                        match='Trying to write coordsystem.json, '
                              'but it already exists'):
         write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='03'),
-                       overwrite=False, verbose=False)
+                       acpc_aligned=True, overwrite=False, verbose=False)
     _write_json(coordsystem_fname, coordsystem_json, overwrite=True)
 
     if datatype != 'meg':
@@ -2461,7 +2461,7 @@ def test_coordsystem_json_compliance(
                                     'but it already exists'):
             write_raw_bids(
                 raw=raw, bids_path=bids_path.copy().update(run='04'),
-                overwrite=False, verbose=False)
+                acpc_aligned=True, overwrite=False, verbose=False)
 
     # perform checks on the coordsystem.json file itself
     if datatype == 'eeg' and coord_frame == 'head':
@@ -2477,6 +2477,11 @@ def test_coordsystem_json_compliance(
         assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
                BIDS_COORD_FRAME_DESCRIPTIONS['fsaverage']
+    elif datatype == 'ieeg' and coord_frame == 'mri':
+        assert 'space-ACPC' in coordsystem_fname
+        assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+               BIDS_COORD_FRAME_DESCRIPTIONS['acpc']
     elif datatype == 'ieeg' and coord_frame == 'unknown':
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
