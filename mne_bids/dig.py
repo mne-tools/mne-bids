@@ -339,7 +339,8 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
     else:
         # prevent transformation back to "head", only should be used
         # in this specific circumstance
-        montage.remove_fiducials()
+        if bids_path.datatype == 'ieeg':
+            montage.remove_fiducials()
         raw.set_montage(montage)
 
     # get coordinate frame from digMontage

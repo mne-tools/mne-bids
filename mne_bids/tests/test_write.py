@@ -2390,23 +2390,18 @@ def test_coordsystem_json_compliance(
 
     raw = reader(raw_fname)
 
-    # clean all events for this test
-    kwargs = dict(raw=raw, bids_path=bids_path, acpc_aligned=True,
-                  overwrite=True, verbose=False)
+    # when passed as a montage, these are ignored so that MNE does
+    # not transform back to "head" as it does for internal consistency
+    landmarks = dict(nasion=[1, 0, 0], lpa=[0, 1, 0], rpa=[0, 0, 1])
 
     if datatype == 'eeg':
         raw.set_channel_types({ch: 'eeg' for ch in raw.ch_names})
-        landmarks = dict(nasion=[1, 0, 0],
-                         lpa=[0, 1, 0],
-                         rpa=[0, 0, 1])
     elif datatype == 'ieeg':
         raw.set_channel_types({ch: 'seeg' for ch in raw.ch_names})
 
-        # XXX: setting landmarks for ieeg montage for some reason
-        # transforms coord_frame -> 'CapTrak'. Possible issue in mne
-        landmarks = dict()
-
-    if datatype != 'meg':
+    if datatype == 'meg':
+        montage = None
+    else:
         # alter some channels manually with electrodes to write
         ch_names = raw.ch_names
         elec_locs = np.random.random((len(ch_names), 3)).tolist()
@@ -2414,8 +2409,13 @@ def test_coordsystem_json_compliance(
         montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame=coord_frame,
                                                 **landmarks)
-        raw.set_montage(montage)
+        if datatype == 'eeg':
+            raw.set_montage(montage)
+            montage = None
 
+    # clean all events for this test
+    kwargs = dict(raw=raw, bids_path=bids_path, acpc_aligned=True,
+                  montage=montage, overwrite=True, verbose=False)
     # write to BIDS and then check the coordsystem files
     bids_output_path = write_raw_bids(**kwargs)
     coordsystem_fname = _find_matching_sidecar(bids_output_path,
@@ -2426,8 +2426,9 @@ def test_coordsystem_json_compliance(
 
     # writing twice should work as long as the coordsystem
     # contents have not changed
-    write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='02'),
-                   acpc_aligned=True, overwrite=False, verbose=False)
+    kwargs.update(bids_path=bids_path.copy().update(run='02'),
+                  overwrite=False)
+    write_raw_bids(**kwargs)
 
     datatype_ = {'meg': 'MEG', 'eeg': 'EEG', 'ieeg': 'iEEG'}[datatype]
     # if there is a change in the underlying
@@ -2437,11 +2438,11 @@ def test_coordsystem_json_compliance(
     new_coordsystem_json = coordsystem_json.copy()
     new_coordsystem_json[f'{datatype_}CoordinateSystem'] = 'blah'
     _write_json(coordsystem_fname, new_coordsystem_json, overwrite=True)
+    kwargs.update(bids_path=bids_path.copy().update(run='03'))
     with pytest.raises(RuntimeError,
                        match='Trying to write coordsystem.json, '
                              'but it already exists'):
-        write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='03'),
-                       acpc_aligned=True, overwrite=False, verbose=False)
+        write_raw_bids(**kwargs)
     _write_json(coordsystem_fname, coordsystem_json, overwrite=True)
 
     if datatype != 'meg':
@@ -2456,12 +2457,11 @@ def test_coordsystem_json_compliance(
         new_elecs_tsv = elecs_tsv.copy()
         new_elecs_tsv['name'][0] = 'blah'
         _to_tsv(new_elecs_tsv, electrodes_fname)
+        kwargs.update(bids_path=bids_path.copy().update(run='04'))
         with pytest.raises(
                 RuntimeError, match='Trying to write electrodes.tsv, '
                                     'but it already exists'):
-            write_raw_bids(
-                raw=raw, bids_path=bids_path.copy().update(run='04'),
-                acpc_aligned=True, overwrite=False, verbose=False)
+            write_raw_bids(**kwargs)
 
     # perform checks on the coordsystem.json file itself
     if datatype == 'eeg' and coord_frame == 'head':
