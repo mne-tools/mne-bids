@@ -305,5 +305,12 @@ print('Recovered coordinate: {recovered}\n'
 # :func:`mne.datasets.fetch_fsaverage`.
 
 montage = raw.get_montage()
-montage.add_mni_fiducials(subjects_dir=subjects_dir)
+# use the MNE sample subjects directory which contains ``fsaverage``
+montage.add_estimated_fiducials(
+    'fsaverage', subjects_dir=op.join(mne.datasets.sample.data_path(),
+                                      'subjects'))
+# Many other templates are included in the Freesurfer installation,
+# so, for those, the fiducials can be estimated with
+# ``montage.add_estimated_fiducials(template, os.environ['FREESURFER_HOME'])``
+# where ``template`` maybe be ``cvs_avg35_inMNI152`` for instance
 raw.set_montage(montage)
