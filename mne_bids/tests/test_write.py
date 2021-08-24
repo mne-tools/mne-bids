@@ -110,9 +110,11 @@ test_eegieeg_data = [
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
 
-test_convertbrainvision_data = [
-    ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
-    ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon)
+test_converteeg_data = [
+    ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+    ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
+    ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+    ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
 ]
 
 
@@ -1110,7 +1112,7 @@ def test_vhdr(_bids_validate, tmpdir):
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
-    """Test write_raw_bids conversion for European Data Format data."""
+    """Test write_raw_bids conversion for EEG/iEEG data formats."""
     bids_root = tmpdir.mkdir('bids1')
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
@@ -2544,10 +2546,10 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
 
 
 @pytest.mark.parametrize(
-    'dir_name, fname, reader', test_convertbrainvision_data)
+    'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_convert_brainvision(dir_name, fname, reader, _bids_validate, tmpdir):
-    """Test conversion of EEG/iEEG manufacturer format to BrainVision.
+def test_convert_eeg_formats(dir_name, format, fname, reader, _bids_validate, tmpdir):
+    """Test conversion of EEG/iEEG manufacturer format to BrainVision and EDF.
 
     BrainVision should correctly store data from pybv>=0.5 that
     has different non-voltage units.
@@ -2560,7 +2562,7 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True)
 
     # alter some channels manually; in NK and Persyst, this will cause
     # channel to not have units
@@ -2587,12 +2589,25 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate, tmpdir):
     channels_tsv = _from_tsv(channels_fname)
     assert channels_tsv['units'][0] == 'n/a'
 
+    if format == 'BrainVision':
+        assert raw2.filenames[0].endswith('.eeg')
+        assert bids_output_path.extension == '.vhdr'
+
+        assert_array_almost_equal(raw.get_data(), raw2.get_data())
+    elif format == 'EDF':
+        assert raw2.filenames[0].endswith('.edf')
+        assert bids_output_path.extension == '.edf'
+
+        # writing to EDF is not 100% lossless, as the resolution is determined
+        # by the physical min/max
+        assert_array_almost_equal(raw.get_data(), raw2.get_data(), decimal=5)
+
 
 @requires_version('mne', '0.22')
 @pytest.mark.parametrize(
-    'dir_name, fname, reader', test_convertbrainvision_data)
+    'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_error_write_meg_as_eeg(dir_name, fname, reader, tmpdir):
+def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmpdir):
     """Test error writing as BrainVision EEG data for MEG."""
     bids_root = tmpdir.mkdir('bids1')
     data_path = op.join(testing.data_path(), dir_name)
@@ -2601,7 +2616,7 @@ def test_error_write_meg_as_eeg(dir_name, fname, reader, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
                                          extension='.vhdr')
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, bids_path=bids_path.update(datatype='meg'))
+    kwargs = dict(raw=raw, format='auto', bids_path=bids_path.update(datatype='meg'))
 
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
@@ -2612,9 +2627,9 @@ def test_error_write_meg_as_eeg(dir_name, fname, reader, tmpdir):
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_convert_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_convert_dataset_format(dir_name, fname, reader, tmpdir):
-    """Test force-converting files to RECOMMENDED formats."""
-    bids_root = tmpdir.mkdir('bids1')
+def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
+    """Test errors when converting raw file formats."""
+    bids_root = tmp_path.mkdir('bids1')
 
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
@@ -2625,34 +2640,6 @@ def test_convert_dataset_format(dir_name, fname, reader, tmpdir):
     # test conversion to BrainVision/FIF
     raw = reader(raw_fname)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        kwargs['format'] = 'BrainVision'
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        kwargs['format'] = 'BrainVision'
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'Persyst':
-        kwargs['format'] = 'BrainVision'
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'CTF':
-        kwargs['format'] = 'FIF'
-        bids_path.update(datatype='meg')
-        bids_output_path = write_raw_bids(**kwargs)
-
-    # write_raw_bids should have converted the dataset to desired format
-    raw = read_raw_bids(bids_output_path)
-    if kwargs['format'] == 'BrainVision':
-        assert raw.filenames[0].endswith('.eeg')
-        assert bids_output_path.extension == '.vhdr'
-    elif kwargs['format'] == 'FIF':
-        assert raw.filenames[0].endswith('.fif')
-        assert bids_output_path.extension == '.fif'
 
     # only accepted keywords will work for the 'format' parameter
     with pytest.raises(ValueError, match='The input "format" .* is '
