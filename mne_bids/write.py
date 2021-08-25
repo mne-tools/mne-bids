@@ -949,6 +949,8 @@ def _write_raw_edf(raw, bids_fname):
         should be saved.
     """
     assert str(bids_fname).endswith('.edf')
+    print(raw.get_channel_types())
+    print(raw.get_data().min(), raw.get_data().max())
     raw.export(bids_fname)
 
 

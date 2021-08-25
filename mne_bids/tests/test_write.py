@@ -117,8 +117,7 @@ test_converteeg_data = [
     ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
     ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
-    # XXX: Idk why this one doesn't work.
-    # ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
+    ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
 ]
 
 
@@ -2568,8 +2567,8 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
-    if 'X1' in raw.ch_names:
-        raw.drop_channels('X1')
+    # drop 'misc' type channels when exporting
+    raw = raw.pick_types(eeg=True)
     kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True,
                   verbose=False)
 
@@ -2613,7 +2612,6 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmpdir):
         assert_array_equal(raw.ch_names, raw2.ch_names)
         # writing to EDF is not 100% lossless, as the resolution is determined
         # by the physical min/max. The precision is to 0.09 uV.
-        # units = dict(eeg='uV', ecog='V')
         assert_array_almost_equal(
             raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
