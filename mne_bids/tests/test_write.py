@@ -2645,7 +2645,8 @@ def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmpdir):
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
-    bids_root = tmp_path.mkdir('bids1')
+    bids_root = (tmp_path / 'bids_1')
+    bids_root.mkdir(exist_ok=True, parents=True)
 
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
