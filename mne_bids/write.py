@@ -1630,7 +1630,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
     _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite, verbose)
     if verbose:
-        logger.info(f'Wrote {scans_path.fpath} entry with {scan_relative_fpath}.')
+        logger.info(f'Wrote {scans_path.fpath} entry with '
+                    f'{scan_relative_fpath}.')
 
     return bids_path
 

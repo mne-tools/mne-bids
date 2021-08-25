@@ -2600,20 +2600,19 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmpdir):
     if format == 'BrainVision':
         assert raw2.filenames[0].endswith('.eeg')
         assert bids_output_path.extension == '.vhdr'
-
-        assert_array_almost_equal(raw.get_data(), raw2.get_data())
-        assert_allclose(raw.times, raw2.times, atol=1e-5, rtol=0)
     elif format == 'EDF':
         assert raw2.filenames[0].endswith('.edf')
         assert bids_output_path.extension == '.edf'
 
-        orig_len = len(raw)
-        assert_allclose(raw.times, raw2.times[:orig_len], atol=1e-5, rtol=0)
-        assert_array_equal(raw.ch_names, raw2.ch_names)
-        # writing to EDF is not 100% lossless, as the resolution is determined
-        # by the physical min/max. The precision is to 0.09 uV.
-        assert_array_almost_equal(
-            raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
+    orig_len = len(raw)
+    assert_allclose(raw.times, raw2.times[:orig_len], atol=1e-5, rtol=0)
+    assert_array_equal(raw.ch_names, raw2.ch_names)
+    assert raw.get_channel_types() == raw2.get_channel_types()
+
+    # writing to EDF is not 100% lossless, as the resolution is determined
+    # by the physical min/max. The precision is to 0.09 uV.
+    assert_array_almost_equal(
+        raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
 
 @requires_version('mne', '0.22')
