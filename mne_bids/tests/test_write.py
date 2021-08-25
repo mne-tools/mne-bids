@@ -2548,6 +2548,7 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
                        raw_read.annotations.description)
 
 
+@requires_version('mne', '0.24.dev0')
 @requires_version('pybv', '0.5')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
