@@ -949,8 +949,6 @@ def _write_raw_edf(raw, bids_fname):
         should be saved.
     """
     assert str(bids_fname).endswith('.edf')
-    print(raw.get_channel_types())
-    print(raw.get_data().min(), raw.get_data().max())
     raw.export(bids_fname)
 
 
@@ -1632,7 +1630,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
     _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite, verbose)
     if verbose:
-        print(f'Wrote {scans_path.fpath} entry with {scan_relative_fpath}.')
+        logger.info(f'Wrote {scans_path.fpath} entry with {scan_relative_fpath}.')
 
     return bids_path
 
