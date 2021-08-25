@@ -71,15 +71,20 @@ raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 
 # %%
-# Now we a montage with an `ACPC-aligned coordinate system
+# When the locations of the channels in this dataset were found
+# in `Locating Intracranial Electrode Contacts
+# <https://mne.tools/dev/auto_tutorials/clinical/10_ieeg_localize.html>`_,
+# the T1 was aligned to ACPC. So, this montage is in an
+# `ACPC-aligned coordinate system
 # <https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems>`_.
-# We can either do this in the subject's anatomical space (from their T1
-# image) or we can transform to a template space such as ``fsaverage``
-# that is also an ACPC space. Automated alignment to ACPC has not been
-# implemented in MNE yet, so for saving in individual anatomical space,
-# the T1 has to be aligned to ACPC before finding the coordinates.
-# Then the ACPC-aligned-T1 can be stored using
-# :func:`mne_bids.write_anat`. Then, we can save the ``raw`` object in BIDS.
+# We can either save the channel positions in the subject's anatomical
+# space (from their T1 image) or we can transform to a template space
+# such as ``fsaverage``. To save them in the individual space, it is
+# required that the T1 have been aligned to ACPC and then the channel positions
+# be in terms of that coordinate system. Automated alignment to ACPC has not
+# been implemented in MNE yet, so if the channel positions are not in
+# an ACPC-aligned coordinate system, using a template (like ``fsaverage``)
+# is the best option.
 
 # estimate the transformation from "head" to "mri" space
 trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
@@ -260,7 +265,8 @@ print(text)
 # store the coordinates in a template space (e.g. ``fsaverage``) for another
 # reason, you can also do that.
 #
-# Here we'll use the MNI Talairach transform to get to ``fsaverage`` space.
+# Here we'll use the MNI Talairach transform to get to ``fsaverage`` space
+# from "mri" aka surface RAS space.
 # ``fsaverage`` is very useful for group analysis as shown in
 # `Working with SEEG
 # <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
