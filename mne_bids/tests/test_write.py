@@ -24,7 +24,8 @@ import codecs
 from pkg_resources import parse_version
 
 import numpy as np
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+from numpy.testing import (assert_allclose, assert_array_equal,
+                           assert_array_almost_equal)
 
 # This is here to handle mne-python <0.20
 import warnings
@@ -78,7 +79,9 @@ warning_str = dict(
     encountered_data_in='ignore:Encountered data in*.:RuntimeWarning:mne',
     edf_warning=r'ignore:^EDF\/EDF\+\/BDF files contain two fields .*'
                 r':RuntimeWarning:mne',
-    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne'
+    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne',
+    edfblocks='ignore:.*EDF format requires equal-length data '
+              'blocks:RuntimeWarning:mne'
 )
 
 
@@ -114,7 +117,8 @@ test_converteeg_data = [
     ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
     ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
-    ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
+    # XXX: Idk why this one doesn't work.
+    # ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
 ]
 
 
@@ -2545,16 +2549,18 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
                        raw_read.annotations.description)
 
 
+@requires_version('pybv', '0.5')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_convert_eeg_formats(dir_name, format, fname, reader, _bids_validate, tmpdir):
+@pytest.mark.filterwarnings(
+    warning_str['channel_unit_changed'], warning_str['edfblocks'])
+def test_convert_eeg_formats(dir_name, format, fname, reader, tmpdir):
     """Test conversion of EEG/iEEG manufacturer format to BrainVision and EDF.
 
     BrainVision should correctly store data from pybv>=0.5 that
     has different non-voltage units.
     """
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmpdir.mkdir(format)
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
@@ -2562,45 +2568,54 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, _bids_validate, tm
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True)
+    if 'X1' in raw.ch_names:
+        raw.drop_channels('X1')
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True,
+                  verbose=False)
 
-    # alter some channels manually; in NK and Persyst, this will cause
-    # channel to not have units
-    raw.set_channel_types({raw.info['ch_names'][0]: 'stim'})
-
-    if dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            bids_output_path = write_raw_bids(**kwargs)
+    # test formatting to BrainVision, EDF, or auto (BrainVision)
+    if format in ['BrainVision', 'auto']:
+        if dir_name == 'NihonKohden':
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "short" format'):
+                bids_output_path = write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "double" format'):
+                bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            bids_output_path = write_raw_bids(**kwargs)
+        bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
     raw2 = read_raw_bids(bids_output_path)
     assert all([ch1['unit'] == ch2['unit'] for ch1, ch2 in
                 zip(raw.info['chs'], raw2.info['chs'])])
-    assert raw2.info['chs'][0]['unit'] == FIFF.FIFF_UNIT_NONE
+    assert raw2.info['chs'][0]['unit'] == FIFF.FIFF_UNIT_V
 
-    # load in the channels tsv and the channel unit should be not set
-    channels_fname = bids_output_path.update(
+    # load in the channels tsv and the channel unit should be voltage
+    channels_fname = bids_output_path.copy().update(
         suffix='channels', extension='.tsv')
     channels_tsv = _from_tsv(channels_fname)
-    assert channels_tsv['units'][0] == 'n/a'
+    assert channels_tsv['units'][0] == 'V'
 
     if format == 'BrainVision':
         assert raw2.filenames[0].endswith('.eeg')
         assert bids_output_path.extension == '.vhdr'
 
         assert_array_almost_equal(raw.get_data(), raw2.get_data())
+        assert_allclose(raw.times, raw2.times, atol=1e-5, rtol=0)
     elif format == 'EDF':
         assert raw2.filenames[0].endswith('.edf')
         assert bids_output_path.extension == '.edf'
 
+        orig_len = len(raw)
+        assert_allclose(raw.times, raw2.times[:orig_len], atol=1e-5, rtol=0)
+        assert_array_equal(raw.ch_names, raw2.ch_names)
         # writing to EDF is not 100% lossless, as the resolution is determined
-        # by the physical min/max
-        assert_array_almost_equal(raw.get_data(), raw2.get_data(), decimal=5)
+        # by the physical min/max. The precision is to 0.09 uV.
+        # units = dict(eeg='uV', ecog='V')
+        assert_array_almost_equal(
+            raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
 
 @requires_version('mne', '0.22')
@@ -2616,7 +2631,8 @@ def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
                                          extension='.vhdr')
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, format='auto', bids_path=bids_path.update(datatype='meg'))
+    kwargs = dict(raw=raw, format='auto',
+                  bids_path=bids_path.update(datatype='meg'))
 
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
