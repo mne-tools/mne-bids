@@ -115,6 +115,13 @@ test_eegieeg_data = [
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
 
+# parametrization for testing converting file formats for MEG
+test_convertmeg_data = [
+    ('CTF', 'FIF', 'testdata_ctf.ds', _read_raw_ctf),
+    ('CTF', 'auto', 'testdata_ctf.ds', _read_raw_ctf),
+]
+
+# parametrization for testing converting file formats for EEG/iEEG
 test_converteeg_data = [
     ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
@@ -2647,6 +2654,41 @@ def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmpdir):
     with pytest.raises(ValueError, match='Got file extension .*'
                                          'for MEG data'):
         write_raw_bids(**kwargs)
+
+
+@pytest.mark.parametrize(
+    'dir_name, format, fname, reader', test_convertmeg_data)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
+    """Test conversion of MEG manufacturer format to FIF."""
+    bids_root = tmp_path / format
+    bids_root.mkdir(exist_ok=True, parents=True)
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True,
+                  verbose=False)
+
+    # test formatting to FIF, or auto (FIF)
+    bids_output_path = write_raw_bids(**kwargs)
+
+    # channel units should stay the same
+    raw2 = read_raw_bids(bids_output_path)
+
+    if format == 'FIF':
+        assert raw2.filenames[0].endswith('.fif')
+        assert bids_output_path.extension == '.fif'
+
+    orig_len = len(raw)
+    assert_allclose(raw.times, raw2.times[:orig_len], atol=1e-5, rtol=0)
+    assert_array_equal(raw.ch_names, raw2.ch_names)
+    assert raw.get_channel_types() == raw2.get_channel_types()
+    assert_array_almost_equal(
+        raw.get_data(), raw2.get_data()[:, :orig_len], decimal=3)
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_convert_data)
