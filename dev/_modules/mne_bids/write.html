@@ -1141,6 +1141,20 @@
                       <span class="n">meas_date</span><span class="o">=</span><span class="n">meas_date</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : mne.io.Raw</span>
+<span class="sd">        Raw data to save.</span>
+<span class="sd">    bids_fname : str</span>
+<span class="sd">        The output filename.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.edf&#39;</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="make_dataset_description"><a class="viewcode-back" href="../../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description">[docs]</a><span class="k">def</span> <span class="nf">make_dataset_description</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_license</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">authors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acknowledgements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">how_to_acknowledge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">funding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1345,14 +1359,14 @@
 <span class="sd">            recording date will be overwritten as well. If True, keep subject</span>
 <span class="sd">            information apart from the recording date.</span>
 
-<span class="sd">    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;FIF&#39;</span>
+<span class="sd">    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;EDF&#39; | &#39;FIF&#39;</span>
 <span class="sd">        Controls the file format of the data after BIDS conversion. If</span>
 <span class="sd">        ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS</span>
 <span class="sd">        without a change of the original file format. A conversion to a</span>
-<span class="sd">        different file format (BrainVision, or FIF) will only take place when</span>
-<span class="sd">        the original file format lacks some necessary features. When a str is</span>
-<span class="sd">        passed, a conversion can be forced to the BrainVision format for EEG,</span>
-<span class="sd">        or the FIF format for MEG data.</span>
+<span class="sd">        different file format (BrainVision, EDF, or FIF) will only take place</span>
+<span class="sd">        when the original file format lacks some necessary features. Conversion</span>
+<span class="sd">        can be forced to BrainVision or EDF for (i)EEG, and to FIF for MEG</span>
+<span class="sd">        data.</span>
 <span class="sd">    symlink : bool</span>
 <span class="sd">        Instead of copying the source files, only create symbolic links to</span>
 <span class="sd">        preserve storage space. This is only allowed when not anonymizing the</span>
@@ -1518,6 +1532,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;BrainVision&#39;</span><span class="p">:</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.vhdr&#39;</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;EDF&#39;</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.edf&#39;</span>
         <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;FIF&#39;</span><span class="p">:</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.fif&#39;</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1745,6 +1761,9 @@
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;BrainVision&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">]:</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;EDF&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">]:</span>
+            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.edf&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;FIF&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
@@ -1765,6 +1784,10 @@
             <span class="n">_write_raw_fif</span><span class="p">(</span>
                 <span class="n">raw</span><span class="p">,</span> <span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
                       <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span> <span class="k">else</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;EDF&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to EDF format&#39;</span><span class="p">)</span>
+            <span class="n">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format&#39;</span><span class="p">)</span>
@@ -1810,7 +1833,8 @@
     <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">scan_relative_fpath</span><span class="p">,</span> <span class="n">scans_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Wrote </span><span class="si">{</span><span class="n">scans_path</span><span class="o">.</span><span class="n">fpath</span><span class="si">}</span><span class="s1"> entry with </span><span class="si">{</span><span class="n">scan_relative_fpath</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Wrote </span><span class="si">{</span><span class="n">scans_path</span><span class="o">.</span><span class="n">fpath</span><span class="si">}</span><span class="s1"> entry with &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scan_relative_fpath</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
@@ -2333,7 +2357,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-24.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-26.<br/>
 </p>
     </div>
     
