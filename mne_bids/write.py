@@ -1161,9 +1161,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
         without a change of the original file format. A conversion to a
         different file format (BrainVision, EDF, or FIF) will only take place
-        when the original file format lacks some necessary features. When a
-        str is passed, a conversion can be forced to the BrainVision format
-        for EEG, EDF for EEG, or the FIF format for MEG data.
+        when the original file format lacks some necessary features. Conversion
+        can be forced to BrainVision or EDF for (i)EEG, and to FIF for MEG
+        data.
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
