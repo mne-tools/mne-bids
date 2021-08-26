@@ -945,8 +945,7 @@ def _write_raw_edf(raw, bids_fname):
     raw : mne.io.Raw
         Raw data to save.
     bids_fname : str
-        The name of the BIDS-specified file where the raw object
-        should be saved.
+        The output filename.
     """
     assert str(bids_fname).endswith('.edf')
     raw.export(bids_fname)
