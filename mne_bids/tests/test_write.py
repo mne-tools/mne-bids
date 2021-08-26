@@ -81,7 +81,9 @@ warning_str = dict(
                 r':RuntimeWarning:mne',
     maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne',
     edfblocks='ignore:.*EDF format requires equal-length data '
-              'blocks:RuntimeWarning:mne'
+              'blocks:RuntimeWarning:mne',
+    brainvision_unit='ignore:Encountered unsupported '
+                     'non-voltage units*.:UserWarning'
 )
 
 
@@ -1113,7 +1115,11 @@ def test_vhdr(_bids_validate, tmpdir):
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
-@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+@pytest.mark.filterwarnings(
+    warning_str['nasion_not_found'],
+    warning_str['brainvision_unit'],
+    warning_str['channel_unit_changed']
+)
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
     bids_root = tmpdir.mkdir('bids1')
@@ -2449,9 +2455,12 @@ def test_coordsystem_json_compliance(
          'sample_audvis_trunc_raw.fif', _read_raw_fif),
     ]
 )
-@pytest.mark.filterwarnings(warning_str['encountered_data_in'])
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-@pytest.mark.filterwarnings(warning_str['edf_warning'])
+@pytest.mark.filterwarnings(
+    warning_str['encountered_data_in'],
+    warning_str['channel_unit_changed'],
+    warning_str['edf_warning'],
+    warning_str['brainvision_unit']
+)
 def test_anonymize(subject, dir_name, fname, reader, tmpdir):
     """Test writing anonymized EDF data."""
     data_path = testing.data_path()
@@ -2554,13 +2563,14 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
     warning_str['channel_unit_changed'], warning_str['edfblocks'])
-def test_convert_eeg_formats(dir_name, format, fname, reader, tmpdir):
+def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer format to BrainVision and EDF.
 
     BrainVision should correctly store data from pybv>=0.5 that
     has different non-voltage units.
     """
-    bids_root = tmpdir.mkdir(format)
+    bids_root = tmp_path / format
+    bids_root.mkdir(exist_ok=True, parents=True)
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
