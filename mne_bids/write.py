@@ -938,12 +938,12 @@ def _write_raw_brainvision(raw, bids_fname, events):
 
 
 def _write_raw_edf(raw, bids_fname):
-    """Save out the raw file in BrainVision format.
+    """Store data as EDF.
 
     Parameters
     ----------
     raw : mne.io.Raw
-        Raw file to save out.
+        Raw data to save.
     bids_fname : str
         The name of the BIDS-specified file where the raw object
         should be saved.

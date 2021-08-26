@@ -115,7 +115,7 @@ test_eegieeg_data = [
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
 
-# parametrization for testing converting file formats for MEG
+# parametrization for testing conversion of file formats for MEG
 test_convertmeg_data = [
     ('CTF', 'FIF', 'testdata_ctf.ds', _read_raw_ctf),
     ('CTF', 'auto', 'testdata_ctf.ds', _read_raw_ctf),
@@ -2609,7 +2609,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
                 zip(raw.info['chs'], raw2.info['chs'])])
     assert raw2.info['chs'][0]['unit'] == FIFF.FIFF_UNIT_V
 
-    # load in the channels tsv and the channel unit should be voltage
+    # load channels.tsv; the unit should be Volts
     channels_fname = bids_output_path.copy().update(
         suffix='channels', extension='.tsv')
     channels_tsv = _from_tsv(channels_fname)
@@ -2695,7 +2695,7 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
-    bids_root = (tmp_path / 'bids_1')
+    bids_root = tmp_path / 'bids_1'
     bids_root.mkdir(exist_ok=True, parents=True)
 
     data_path = op.join(testing.data_path(), dir_name)
