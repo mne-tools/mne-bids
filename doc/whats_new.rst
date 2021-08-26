@@ -24,6 +24,7 @@ Authors
 
 * `Richard Höchenberger`_
 * `Mainak Jas`_
+* `Adam Li`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,6 +33,7 @@ Enhancements
 ^^^^^^^^^^^^
 
 - :func:`mne_bids.get_anat_landmarks` now accepts a :class:`mne_bids.BIDSPath` as ``image`` parameter, by `Alex Rockhill`_ (:gh:`852`)
+- :func:`mne_bids.write_raw_bids` now accepts ``'EDF'`` as a ``'format'`` value to force conversion to EDF files, by `Adam Li`_ (:gh:`866`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^

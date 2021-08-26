@@ -937,6 +937,20 @@ def _write_raw_brainvision(raw, bids_fname, events):
                       meas_date=meas_date)
 
 
+def _write_raw_edf(raw, bids_fname):
+    """Store data as EDF.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Raw data to save.
+    bids_fname : str
+        The output filename.
+    """
+    assert str(bids_fname).endswith('.edf')
+    raw.export(bids_fname)
+
+
 def make_dataset_description(path, name, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
@@ -1141,14 +1155,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             recording date will be overwritten as well. If True, keep subject
             information apart from the recording date.
 
-    format : 'auto' | 'BrainVision' | 'FIF'
+    format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
         ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
         without a change of the original file format. A conversion to a
-        different file format (BrainVision, or FIF) will only take place when
-        the original file format lacks some necessary features. When a str is
-        passed, a conversion can be forced to the BrainVision format for EEG,
-        or the FIF format for MEG data.
+        different file format (BrainVision, EDF, or FIF) will only take place
+        when the original file format lacks some necessary features. Conversion
+        can be forced to BrainVision or EDF for (i)EEG, and to FIF for MEG
+        data.
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
@@ -1314,6 +1328,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     else:
         if format == 'BrainVision':
             ext = '.vhdr'
+        elif format == 'EDF':
+            ext = '.edf'
         elif format == 'FIF':
             ext = '.fif'
         else:
@@ -1541,6 +1557,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         if format == 'BrainVision' and bids_path.datatype in ['ieeg', 'eeg']:
             convert = True
             bids_path.update(extension='.vhdr')
+        elif format == 'EDF' and bids_path.datatype in ['ieeg', 'eeg']:
+            convert = True
+            bids_path.update(extension='.edf')
         elif format == 'FIF' and bids_path.datatype == 'meg':
             convert = True
             bids_path.update(extension='.fif')
@@ -1561,6 +1580,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             _write_raw_fif(
                 raw, (op.join(data_path, bids_path.basename)
                       if ext == '.pdf' else bids_path.fpath))
+        elif bids_path.datatype in ['eeg', 'ieeg'] and format == 'EDF':
+            if verbose:
+                warn('Converting data files to EDF format')
+            _write_raw_edf(raw, bids_path.fpath)
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
@@ -1606,7 +1629,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
     _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite, verbose)
     if verbose:
-        print(f'Wrote {scans_path.fpath} entry with {scan_relative_fpath}.')
+        logger.info(f'Wrote {scans_path.fpath} entry with '
+                    f'{scan_relative_fpath}.')
 
     return bids_path
 
