@@ -19,6 +19,7 @@ def get_coil_types():
                               FIFF.FIFFV_COIL_CTF_GRAD,
                               # Support for gradient-compensated data:
                               int(FIFF.FIFFV_COIL_CTF_GRAD | (3 << 16)),
+                              int(FIFF.FIFFV_COIL_CTF_GRAD | (2 << 16)),
                               FIFF.FIFFV_COIL_AXIAL_GRAD_5CM,
                               FIFF.FIFFV_COIL_BABY_GRAD),
                 megrefgradaxial=(FIFF.FIFFV_COIL_CTF_REF_GRAD,

@@ -24,7 +24,8 @@ import codecs
 from pkg_resources import parse_version
 
 import numpy as np
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+from numpy.testing import (assert_allclose, assert_array_equal,
+                           assert_array_almost_equal)
 
 # This is here to handle mne-python <0.20
 import warnings
@@ -78,7 +79,11 @@ warning_str = dict(
     encountered_data_in='ignore:Encountered data in*.:RuntimeWarning:mne',
     edf_warning=r'ignore:^EDF\/EDF\+\/BDF files contain two fields .*'
                 r':RuntimeWarning:mne',
-    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne'
+    maxshield='ignore:.*Internal Active Shielding:RuntimeWarning:mne',
+    edfblocks='ignore:.*EDF format requires equal-length data '
+              'blocks:RuntimeWarning:mne',
+    brainvision_unit='ignore:Encountered unsupported '
+                     'non-voltage units*.:UserWarning'
 )
 
 
@@ -110,9 +115,18 @@ test_eegieeg_data = [
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
 
-test_convertbrainvision_data = [
-    ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
-    ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon)
+# parametrization for testing conversion of file formats for MEG
+test_convertmeg_data = [
+    ('CTF', 'FIF', 'testdata_ctf.ds', _read_raw_ctf),
+    ('CTF', 'auto', 'testdata_ctf.ds', _read_raw_ctf),
+]
+
+# parametrization for testing converting file formats for EEG/iEEG
+test_converteeg_data = [
+    ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+    ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
+    ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+    ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
 ]
 
 
@@ -1108,9 +1122,13 @@ def test_vhdr(_bids_validate, tmpdir):
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
-@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+@pytest.mark.filterwarnings(
+    warning_str['nasion_not_found'],
+    warning_str['brainvision_unit'],
+    warning_str['channel_unit_changed']
+)
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
-    """Test write_raw_bids conversion for European Data Format data."""
+    """Test write_raw_bids conversion for EEG/iEEG data formats."""
     bids_root = tmpdir.mkdir('bids1')
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
@@ -2444,9 +2462,12 @@ def test_coordsystem_json_compliance(
          'sample_audvis_trunc_raw.fif', _read_raw_fif),
     ]
 )
-@pytest.mark.filterwarnings(warning_str['encountered_data_in'])
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-@pytest.mark.filterwarnings(warning_str['edf_warning'])
+@pytest.mark.filterwarnings(
+    warning_str['encountered_data_in'],
+    warning_str['channel_unit_changed'],
+    warning_str['edf_warning'],
+    warning_str['brainvision_unit']
+)
 def test_anonymize(subject, dir_name, fname, reader, tmpdir):
     """Test writing anonymized EDF data."""
     data_path = testing.data_path()
@@ -2543,16 +2564,20 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
                        raw_read.annotations.description)
 
 
+@requires_version('mne', '0.24.dev0')
+@requires_version('pybv', '0.5')
 @pytest.mark.parametrize(
-    'dir_name, fname, reader', test_convertbrainvision_data)
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_convert_brainvision(dir_name, fname, reader, _bids_validate, tmpdir):
-    """Test conversion of EEG/iEEG manufacturer format to BrainVision.
+    'dir_name, format, fname, reader', test_converteeg_data)
+@pytest.mark.filterwarnings(
+    warning_str['channel_unit_changed'], warning_str['edfblocks'])
+def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
+    """Test conversion of EEG/iEEG manufacturer format to BrainVision and EDF.
 
     BrainVision should correctly store data from pybv>=0.5 that
     has different non-voltage units.
     """
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / format
+    bids_root.mkdir(exist_ok=True, parents=True)
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
@@ -2560,39 +2585,59 @@ def test_convert_brainvision(dir_name, fname, reader, _bids_validate, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
+    # drop 'misc' type channels when exporting
+    raw = raw.pick_types(eeg=True)
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True,
+                  verbose=False)
 
-    # alter some channels manually; in NK and Persyst, this will cause
-    # channel to not have units
-    raw.set_channel_types({raw.info['ch_names'][0]: 'stim'})
-
-    if dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            bids_output_path = write_raw_bids(**kwargs)
+    # test formatting to BrainVision, EDF, or auto (BrainVision)
+    if format in ['BrainVision', 'auto']:
+        if dir_name == 'NihonKohden':
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "short" format'):
+                bids_output_path = write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "double" format'):
+                bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            bids_output_path = write_raw_bids(**kwargs)
+        bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
     raw2 = read_raw_bids(bids_output_path)
     assert all([ch1['unit'] == ch2['unit'] for ch1, ch2 in
                 zip(raw.info['chs'], raw2.info['chs'])])
-    assert raw2.info['chs'][0]['unit'] == FIFF.FIFF_UNIT_NONE
+    assert raw2.info['chs'][0]['unit'] == FIFF.FIFF_UNIT_V
 
-    # load in the channels tsv and the channel unit should be not set
-    channels_fname = bids_output_path.update(
+    # load channels.tsv; the unit should be Volts
+    channels_fname = bids_output_path.copy().update(
         suffix='channels', extension='.tsv')
     channels_tsv = _from_tsv(channels_fname)
-    assert channels_tsv['units'][0] == 'n/a'
+    assert channels_tsv['units'][0] == 'V'
+
+    if format == 'BrainVision':
+        assert raw2.filenames[0].endswith('.eeg')
+        assert bids_output_path.extension == '.vhdr'
+    elif format == 'EDF':
+        assert raw2.filenames[0].endswith('.edf')
+        assert bids_output_path.extension == '.edf'
+
+    orig_len = len(raw)
+    assert_allclose(raw.times, raw2.times[:orig_len], atol=1e-5, rtol=0)
+    assert_array_equal(raw.ch_names, raw2.ch_names)
+    assert raw.get_channel_types() == raw2.get_channel_types()
+
+    # writing to EDF is not 100% lossless, as the resolution is determined
+    # by the physical min/max. The precision is to 0.09 uV.
+    assert_array_almost_equal(
+        raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
 
 @requires_version('mne', '0.22')
 @pytest.mark.parametrize(
-    'dir_name, fname, reader', test_convertbrainvision_data)
+    'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_error_write_meg_as_eeg(dir_name, fname, reader, tmpdir):
+def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmpdir):
     """Test error writing as BrainVision EEG data for MEG."""
     bids_root = tmpdir.mkdir('bids1')
     data_path = op.join(testing.data_path(), dir_name)
@@ -2601,7 +2646,8 @@ def test_error_write_meg_as_eeg(dir_name, fname, reader, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
                                          extension='.vhdr')
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, bids_path=bids_path.update(datatype='meg'))
+    kwargs = dict(raw=raw, format='auto',
+                  bids_path=bids_path.update(datatype='meg'))
 
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
@@ -2610,11 +2656,47 @@ def test_error_write_meg_as_eeg(dir_name, fname, reader, tmpdir):
         write_raw_bids(**kwargs)
 
 
+@pytest.mark.parametrize(
+    'dir_name, format, fname, reader', test_convertmeg_data)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
+    """Test conversion of MEG manufacturer format to FIF."""
+    bids_root = tmp_path / format
+    bids_root.mkdir(exist_ok=True, parents=True)
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+
+    raw = reader(raw_fname)
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True,
+                  verbose=False)
+
+    # test formatting to FIF, or auto (FIF)
+    bids_output_path = write_raw_bids(**kwargs)
+
+    # channel units should stay the same
+    raw2 = read_raw_bids(bids_output_path)
+
+    if format == 'FIF':
+        assert raw2.filenames[0].endswith('.fif')
+        assert bids_output_path.extension == '.fif'
+
+    orig_len = len(raw)
+    assert_allclose(raw.times, raw2.times[:orig_len], atol=1e-5, rtol=0)
+    assert_array_equal(raw.ch_names, raw2.ch_names)
+    assert raw.get_channel_types() == raw2.get_channel_types()
+    assert_array_almost_equal(
+        raw.get_data(), raw2.get_data()[:, :orig_len], decimal=3)
+
+
 @pytest.mark.parametrize('dir_name, fname, reader', test_convert_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_convert_dataset_format(dir_name, fname, reader, tmpdir):
-    """Test force-converting files to RECOMMENDED formats."""
-    bids_root = tmpdir.mkdir('bids1')
+def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
+    """Test errors when converting raw file formats."""
+    bids_root = tmp_path / 'bids_1'
+    bids_root.mkdir(exist_ok=True, parents=True)
 
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
@@ -2625,34 +2707,6 @@ def test_convert_dataset_format(dir_name, fname, reader, tmpdir):
     # test conversion to BrainVision/FIF
     raw = reader(raw_fname)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        kwargs['format'] = 'BrainVision'
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        kwargs['format'] = 'BrainVision'
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'Persyst':
-        kwargs['format'] = 'BrainVision'
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'CTF':
-        kwargs['format'] = 'FIF'
-        bids_path.update(datatype='meg')
-        bids_output_path = write_raw_bids(**kwargs)
-
-    # write_raw_bids should have converted the dataset to desired format
-    raw = read_raw_bids(bids_output_path)
-    if kwargs['format'] == 'BrainVision':
-        assert raw.filenames[0].endswith('.eeg')
-        assert bids_output_path.extension == '.vhdr'
-    elif kwargs['format'] == 'FIF':
-        assert raw.filenames[0].endswith('.fif')
-        assert bids_output_path.extension == '.fif'
 
     # only accepted keywords will work for the 'format' parameter
     with pytest.raises(ValueError, match='The input "format" .* is '
