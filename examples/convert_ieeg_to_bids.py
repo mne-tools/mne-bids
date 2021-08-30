@@ -109,12 +109,12 @@ montage.apply_trans(trans)  # head->mri
 # - `MNE-Python coordinate frames`_
 #
 # Currently, MNE-Python supports the ``mni_tal`` and ``mri`` coordinate frames,
-# corresponding to the ``fsaverage`` and ``ACPC`` BIDS coordinate systems
-# respectively. All other coordinate coordinate frames in MNE-Python if written
-# with :func:`mne_bids.write_raw_bids` are written with coordinate system
-# ``'Other'``. Note, then we suggest using :func:`mne_bids.update_sidecar_json`
-# to update the sidecar ``*_coordsystem.json`` file to add additional
-# information.
+# corresponding to the ``fsaverage`` and ``ACPC`` (for an ACPC-aligned T1) BIDS
+# coordinate systems respectively. All other coordinate coordinate frames in
+# MNE-Python if written with :func:`mne_bids.write_raw_bids` are written with
+# coordinate system ``'Other'``. Note, then we suggest using
+# :func:`mne_bids.update_sidecar_json` to update the sidecar
+# ``*_coordsystem.json`` file to add additional information.
 #
 # Step 2: Formatting as BIDS
 # --------------------------
