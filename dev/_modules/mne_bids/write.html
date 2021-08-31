@@ -1259,6 +1259,7 @@
 <div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">empty_room</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
 
@@ -1400,7 +1401,16 @@
 <span class="sd">            absolutely necessary: for example, manually converting from file</span>
 <span class="sd">            formats not supported by MNE or writing preprocessed derivatives.</span>
 <span class="sd">            Be aware that these use cases are not fully supported.</span>
-
+<span class="sd">    montage : mne.channels.DigMontage | None</span>
+<span class="sd">        The montage with channel positions if channel position data are</span>
+<span class="sd">        to be stored in a format other than &quot;head&quot; (the internal MNE</span>
+<span class="sd">        coordinate frame that the data in ``raw`` is stored in).</span>
+<span class="sd">    acpc_aligned : bool</span>
+<span class="sd">        It is difficult to check whether the T1 scan is ACPC aligned which</span>
+<span class="sd">        means that &quot;mri&quot; coordinate space is &quot;ACPC&quot; BIDS coordinate space.</span>
+<span class="sd">        So, this flag is required to be True when the digitization data</span>
+<span class="sd">        is in &quot;mri&quot; for intracranial data to confirm that the T1 is</span>
+<span class="sd">        ACPC-aligned.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to ``False``.</span>
@@ -1506,6 +1516,8 @@
 
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;empty_room&#39;</span><span class="p">,</span>
                    <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">DigMontage</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;montage&#39;</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">acpc_aligned</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s1">&#39;acpc_aligned&#39;</span><span class="p">)</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">convert</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># flag if converting not copying</span>
@@ -1686,8 +1698,10 @@
     <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
         <span class="c1"># We only write electrodes.tsv and accompanying coordsystem.json</span>
         <span class="c1"># if we have an available DigMontage</span>
-        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]:</span>
-            <span class="n">_write_dig_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> \
+                <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]):</span>
+            <span class="n">_write_dig_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="p">,</span>
+                            <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Writing of electrodes.tsv is not supported &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;for data type &quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&quot;. Skipping ...&#39;</span><span class="p">)</span>
@@ -2357,7 +2371,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-26.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-08-31.<br/>
 </p>
     </div>
     
