@@ -50,8 +50,11 @@ refer to the `iEEG part of the BIDS specification`_.
 import os.path as op
 import shutil
 
+from nilearn.plotting import plot_anat
+
 import mne
-from mne_bids import (write_raw_bids, BIDSPath,
+from mne_bids import (BIDSPath, write_raw_bids, write_anat,
+                      get_anat_landmarks,
                       read_raw_bids, print_dir_tree)
 
 # %%
@@ -169,9 +172,29 @@ if op.exists(bids_root):
 # Now convert our data to be in a new BIDS dataset.
 bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
 
+# plot T1 to show that it is ACPC-aligned
+# note that the origin is centered on the anterior commissure (AC)
+# with the y-axis passing through the posterior commissure (PC)
+T1_fname = op.join(subjects_dir, 'sample_seeg', 'mri', 'T1.mgz')
+fig = plot_anat(T1_fname, cut_coords=(0, 0, 0))
+fig.axes['x'].ax.annotate('AC', (2., -2.), (30., -40.), color='w',
+                          arrowprops=dict(facecolor='w', alpha=0.5))
+fig.axes['x'].ax.annotate('PC', (-31., -2.), (-80., -40.), color='w',
+                          arrowprops=dict(facecolor='w', alpha=0.5))
+
+# write ACPC-aligned T1
+landmarks = get_anat_landmarks(T1_fname, raw.info, trans,
+                               'sample_seeg', subjects_dir)
+T1_bids_path = write_anat(T1_fname, bids_path, deface=True,
+                          landmarks=landmarks)
+
 # write `raw` to BIDS and anonymize it (converts to BrainVision format)
-# pass the argument `montage` because when `raw.set_montage` is used
-# it converts to the MNE internal coordinate frame "head" and we need "mri"
+#
+# we need to pass the `montage` argument for coordinate frames other than
+# "head" which is what MNE uses internally in the `raw` object
+#
+# `acpc_aligned=True` affirms that our MRI is aligned to ACPC
+# if this is not true, convert to `fsaverage` (see below)!
 write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
                montage=montage, acpc_aligned=True, overwrite=True)
 
