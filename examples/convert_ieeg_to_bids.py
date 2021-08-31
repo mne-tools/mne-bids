@@ -8,17 +8,15 @@
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
 
-1. Download some iEEG data from the
-   `MNE-ECoG example <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
+1. Download some iEEG data.
 
 2. Load the data, extract information, and save in a new BIDS directory.
 
 3. Check the result and compare it with the standard.
 
-4. Cite MNE-BIDS
+4. Cite MNE-BIDS.
 
-5. Confirm that written iEEG coordinates are the
-   same before :func:`write_raw_bids` was called.
+5. Repeat the process for the ``fsaverage`` template coordinate frame.
 
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
@@ -43,6 +41,7 @@ refer to the `iEEG part of the BIDS specification`_.
 
 # Authors: Adam Li <adam2392@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Alex Rockhill <aprockhill@mailbox.org>
 #
 # License: BSD-3-Clause
 
@@ -50,14 +49,13 @@ refer to the `iEEG part of the BIDS specification`_.
 
 import os.path as op
 import shutil
-from pprint import pprint
 
-import numpy as np
+from nilearn.plotting import plot_anat
 
 import mne
-from mne_bids import (write_raw_bids, BIDSPath,
+from mne_bids import (BIDSPath, write_raw_bids, write_anat,
+                      get_anat_landmarks,
                       read_raw_bids, print_dir_tree)
-
 
 # %%
 # Step 1: Download the data
@@ -66,69 +64,38 @@ from mne_bids import (write_raw_bids, BIDSPath,
 # First, we need some data to work with. We will use the
 # data downloaded via MNE-Python's ``datasets`` API:
 # :func:`mne.datasets.misc.data_path`
-misc_path = mne.datasets.misc.data_path(force_update=True)
+misc_path = mne.datasets.misc.data_path()
 
 # The electrode coords data are in the tsv file format
 # which is easily read in using numpy
-fname = misc_path + '/ecog/sample_ecog_electrodes.tsv'
-data = np.loadtxt(fname, dtype=str, delimiter='\t',
-                  comments=None, encoding='utf-8')
-column_names = data[0, :]
-info = data[1:, :]
-electrode_tsv = dict()
-for i, name in enumerate(column_names):
-    electrode_tsv[name] = info[:, i].tolist()
-
-# load in channel names
-ch_names = electrode_tsv['name']
-
-# load in the xyz coordinates as a float
-elec = np.empty(shape=(len(ch_names), 3))
-for ind, axis in enumerate(['x', 'y', 'z']):
-    elec[:, ind] = list(map(float, electrode_tsv[axis]))
-
-# %%
-# Now we make a montage stating that the iEEG contacts are in the MNI
-# coordinate system, which corresponds to the `fsaverage` subject in
-# FreeSurfer. For example, one can look at how MNE-Python deals with iEEG data
-# at `Working with SEEG
-# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
-montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
-                                        coord_frame='mni_tal')
-print(f'Created {len(ch_names)} channel positions')
-print(dict(zip(ch_names, elec)))
-
-# %%
-# We will load a :class:`mne.io.Raw` object and
-# use the montage we created.
-info = mne.create_info(ch_names, 1000., 'ecog')
-raw = mne.io.read_raw_edf(misc_path + '/ecog/sample_ecog.edf')
+raw = mne.io.read_raw_fif(op.join(
+    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
-raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
-
-# set the bad channels
-raw.info['bads'].extend(['BTM1', 'BTM2', 'BTM3', 'BTM4', 'BTM5', 'BTM6',
-                         'BTP1', 'BTP2', 'BTP3', 'BTP4', 'BTP5', 'BTP6',
-                         'EKGL', 'EKGR'])
-
-# set montage
-# (note that this only works for some channel types: EEG/sEEG/ECoG/DBS/fNIRS)
-raw.set_montage(montage, on_missing='warn')
+subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 
 # %%
-# Let us confirm what our channel coordinates look like.
+# When the locations of the channels in this dataset were found
+# in `Locating Intracranial Electrode Contacts
+# <https://mne.tools/dev/auto_tutorials/clinical/10_ieeg_localize.html>`_,
+# the T1 was aligned to ACPC. So, this montage is in an
+# `ACPC-aligned coordinate system
+# <https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems>`_.
+# We can either save the channel positions in the subject's anatomical
+# space (from their T1 image) or we can transform to a template space
+# such as ``fsaverage``. To save them in the individual space, it is
+# required that the T1 have been aligned to ACPC and then the channel positions
+# be in terms of that coordinate system. Automated alignment to ACPC has not
+# been implemented in MNE yet, so if the channel positions are not in
+# an ACPC-aligned coordinate system, using a template (like ``fsaverage``)
+# is the best option.
 
-# make a plot of the sensors in 2D plane
-raw.plot_sensors(ch_type='ecog')
+# estimate the transformation from "head" to "mri" space
+trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
 
-# Get the first 5 channels and show their locations.
-picks = mne.pick_types(raw.info, ecog=True)
-dig = [raw.info['dig'][pick] for pick in picks]
-chs = [raw.info['chs'][pick] for pick in picks]
-pos = np.array([ch['r'] for ch in dig[:5]])
-ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
-print("The channel coordinates before writing into BIDS: ")
-pprint([x for x in zip(ch_names, pos)])
+# %%
+# Now let's convert the montage to "mri"
+montage = raw.get_montage()
+montage.apply_trans(trans)  # head->mri
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -144,10 +111,11 @@ pprint([x for x in zip(ch_names, pos)])
 # - `background on FreeSurfer`_
 # - `MNE-Python coordinate frames`_
 #
-# Currently, MNE-Python supports the ``mni_tal`` coordinate frame, which
-# corresponds to the ``fsaverage`` BIDS coordinate system. All other coordinate
-# frames in MNE-Python if written with :func:`mne_bids.write_raw_bids` are
-# written with coordinate system ``'Other'``. Note, then we suggest using
+# Currently, MNE-Python supports the ``mni_tal`` and ``mri`` coordinate frames,
+# corresponding to the ``fsaverage`` and ``ACPC`` (for an ACPC-aligned T1) BIDS
+# coordinate systems respectively. All other coordinate coordinate frames in
+# MNE-Python if written with :func:`mne_bids.write_raw_bids` are written with
+# coordinate system ``'Other'``. Note, then we suggest using
 # :func:`mne_bids.update_sidecar_json` to update the sidecar
 # ``*_coordsystem.json`` file to add additional information.
 #
@@ -174,14 +142,14 @@ print(write_raw_bids.__doc__)
 # Let us initialize some of the necessary data for the subject.
 
 # There is a subject, and specific task for the dataset.
-subject_id = '001'  # zero padding to account for >100 subjects in this dataset
-task = 'testresteyes'
+subject_id = '1'
+task = 'motor'
 
 # get MNE-Python directory w/ example data
 mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
 # There is the root directory for where we will write our data.
-bids_root = op.join(mne_data_dir, 'ieegmmidb_bids')
+bids_root = op.join(mne_data_dir, 'ieeg_bids')
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -194,38 +162,44 @@ if op.exists(bids_root):
     shutil.rmtree(bids_root)
 
 # %%
-# Now we just need to specify a few iEEG details to make things work:
-# We need the basename of the dataset. In addition, :func:`write_raw_bids`
-# requires the ``.filenames`` attribute of the Raw object to be non-empty,
-# so since we
-# initialized the dataset from an array, we need to do a hack where we
-# temporarily save the data to disc before reading it back in.
+# Now we just need make a :class:`mne_bids.BIDSPath` to save the data.
+#
+# .. warning:: By passing ``acpc_aligned=True``, we are affirming that
+#              the T1 in this dataset is aligned to ACPC. This is very
+#              difficult to check with a computer which is why this
+#              step is required.
 
 # Now convert our data to be in a new BIDS dataset.
-bids_path = BIDSPath(subject=subject_id,
-                     task=task, acquisition="ecog", root=bids_root)
+bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
 
-# write `raw` to BIDS and anonymize it into BrainVision format
+# plot T1 to show that it is ACPC-aligned
+# note that the origin is centered on the anterior commissure (AC)
+# with the y-axis passing through the posterior commissure (PC)
+T1_fname = op.join(subjects_dir, 'sample_seeg', 'mri', 'T1.mgz')
+fig = plot_anat(T1_fname, cut_coords=(0, 0, 0))
+fig.axes['x'].ax.annotate('AC', (2., -2.), (30., -40.), color='w',
+                          arrowprops=dict(facecolor='w', alpha=0.5))
+fig.axes['x'].ax.annotate('PC', (-31., -2.), (-80., -40.), color='w',
+                          arrowprops=dict(facecolor='w', alpha=0.5))
+
+# write ACPC-aligned T1
+landmarks = get_anat_landmarks(T1_fname, raw.info, trans,
+                               'sample_seeg', subjects_dir)
+T1_bids_path = write_anat(T1_fname, bids_path, deface=True,
+                          landmarks=landmarks)
+
+# write `raw` to BIDS and anonymize it (converts to BrainVision format)
+#
+# we need to pass the `montage` argument for coordinate frames other than
+# "head" which is what MNE uses internally in the `raw` object
+#
+# `acpc_aligned=True` affirms that our MRI is aligned to ACPC
+# if this is not true, convert to `fsaverage` (see below)!
 write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
-               overwrite=True)
+               montage=montage, acpc_aligned=True, overwrite=True)
 
-# %%
-# Step 3: Check and compare with standard
-# ---------------------------------------
-
-# Now we have written our BIDS directory.
+# check our output
 print_dir_tree(bids_root)
-
-# %%
-# Step 4: Cite mne-bids
-# ---------------------
-# We can see that the appropriate citations are already written in the README.
-# If you are preparing a manuscript, please make sure to also cite MNE-BIDS
-# there.
-readme = op.join(bids_root, 'README')
-with open(readme, 'r', encoding='utf-8-sig') as fid:
-    text = fid.read()
-print(text)
 
 # %%
 # MNE-BIDS has created a suitable directory structure for us, and among other
@@ -248,27 +222,124 @@ print(text)
 # Command line tool: https://www.npmjs.com/package/bids-validator
 
 # %%
-# Step 5: Plot output channels and check that they match!
-# -------------------------------------------------------
+# Step 3: Load channels from BIDS-formatted dataset and compare
+# -------------------------------------------------------------
 #
 # Now we have written our BIDS directory. We can use
 # :func:`read_raw_bids` to read in the data.
 
-# read in the BIDS dataset and plot the coordinates
+# read in the BIDS dataset to plot the coordinates
 raw = read_raw_bids(bids_path=bids_path)
 
-# get the first 5 channels and show their locations
-# this should match what was printed earlier.
-picks = mne.pick_types(raw.info, ecog=True)
-dig = [raw.info['dig'][pick] for pick in picks]
-chs = [raw.info['chs'][pick] for pick in picks]
-pos = np.array([ch['r'] for ch in dig[:5]])
-ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
+# compare with standard
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=raw.info['chs'][0]['loc'][:3],
+          saved=montage.dig[0]['r']))
 
-print("The channel montage after writing into BIDS: ")
-pprint(dig[0:5])
-print("The channel coordinates after writing into BIDS: ")
-pprint([x for x in zip(ch_names, pos)])
+# %%
+# Now we have to go back to "head" coordinates with the head->mri transform.
+#
+# .. note:: If you were downloading this from ``OpenNeuro``, you would
+#           have to run the Freesurfer ``recon-all`` to get the transforms.
 
-# make a plot of the sensors in 2D plane
-raw.plot_sensors(ch_type='ecog')
+montage = raw.get_montage()
+# this uses Freesurfer recon-all subject directory
+montage.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
+# now the montage is properly in "head" and ready for analysis in MNE
+raw.set_montage(montage)
+
+# %%
+# Finally, MNE-BIDS has created a suitable directory structure for us, and
+# among other meta data files, it started an ``events.tsv``` and
+# ``channels.tsv`` file, and created an initial ``dataset_description.json``
+# file on top!
+#
+# Now it's time to manually check the BIDS directory and the meta files to add
+# all the information that MNE-BIDS could not infer. For instance, you must
+# describe ``iEEGReference`` and ``iEEGGround`` yourself.
+# It's easy to find these by searching for ``"n/a"`` in the sidecar files.
+#
+# ``$ grep -i 'n/a' <bids_root>```
+#
+# Remember that there is a convenient JavaScript tool to validate all your BIDS
+# directories called the "BIDS-validator", available as a web version and a
+# command line tool:
+#
+# Web version: https://bids-standard.github.io/bids-validator/
+#
+# Command line tool: https://www.npmjs.com/package/bids-validator
+
+# %%
+# Step 4: Cite mne-bids
+# ---------------------
+# We can see that the appropriate citations are already written in the README.
+# If you are preparing a manuscript, please make sure to also cite MNE-BIDS
+# there.
+readme = op.join(bids_root, 'README')
+with open(readme, 'r', encoding='utf-8-sig') as fid:
+    text = fid.read()
+print(text)
+
+# %%
+# Step 5: Store coordinates in a template space
+# ---------------------------------------------
+# Alternatively, if your T1 is not aligned to ACPC-space or you prefer to
+# store the coordinates in a template space (e.g. ``fsaverage``) for another
+# reason, you can also do that.
+#
+# Here we'll use the MNI Talairach transform to get to ``fsaverage`` space
+# from "mri" aka surface RAS space.
+# ``fsaverage`` is very useful for group analysis as shown in
+# `Working with SEEG
+# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
+
+# ensure the output path doesn't contain any leftover files from previous
+# tests and example runs
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+# load our raw data again
+raw = mne.io.read_raw_fif(op.join(
+    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+
+# get Talairach transform
+mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
+
+# %%
+# Now let's convert the montage to MNI Talairach ("mni_tal").
+montage = raw.get_montage()
+montage.apply_trans(trans)  # head->mri
+montage.apply_trans(mri_mni_t)
+
+# write to BIDS, this time with a template coordinate system
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+               montage=montage, overwrite=True)
+
+# read in the BIDS dataset
+raw = read_raw_bids(bids_path=bids_path)
+
+# check that we can recover the coordinates
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=raw.info['chs'][0]['loc'][:3],
+          saved=montage.dig[0]['r']))
+
+# %%
+# Now we should go back to "head" coordinates. We do this with ``fsaverage``
+# fiducials which are in MNI space. In this case, you would not need to run
+# the Freesurfer ``recon-all`` for the subject, you would just need a
+# ``subjects_dir`` with ``fsaverage`` in it, which is accessible using
+# :func:`mne.datasets.fetch_fsaverage`.
+
+montage = raw.get_montage()
+# add fiducials for "mni_tal" (which is the coordinate frame fsaverage is in)
+# so that it can properly be set to "head"
+montage.add_mni_fiducials(subjects_dir=subjects_dir)
+
+# Many other templates are included in the Freesurfer installation,
+# so, for those, the fiducials can be estimated with
+# ``montage.add_estimated_fiducials(template, os.environ['FREESURFER_HOME'])``
+# where ``template`` maybe be ``cvs_avg35_inMNI152`` for instance
+raw.set_montage(montage)

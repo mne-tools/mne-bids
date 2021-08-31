@@ -22,6 +22,7 @@ Notable changes
 Authors
 ~~~~~~~
 
+* `Alex Rockhill`_
 * `Richard Höchenberger`_
 * `Mainak Jas`_
 * `Adam Li`_
@@ -33,7 +34,10 @@ Enhancements
 ^^^^^^^^^^^^
 
 - :func:`mne_bids.get_anat_landmarks` now accepts a :class:`mne_bids.BIDSPath` as ``image`` parameter, by `Alex Rockhill`_ (:gh:`852`)
+
 - :func:`mne_bids.write_raw_bids` now accepts ``'EDF'`` as a ``'format'`` value to force conversion to EDF files, by `Adam Li`_ (:gh:`866`)
+
+- Modify iEEG tutorial to use MNE ``raw`` object, by `Alex Rockhill`_ (:gh:`859`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
