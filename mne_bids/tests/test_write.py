@@ -2519,7 +2519,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
 
     # capitalize the EDF extension file
     if subject == 'cap':
-        new_raw_fname = tmp_path / (op.basename(raw_fname).split('.edf')[0] + '.EDF')
+        new_basename = (op.basename(raw_fname).split('.edf')[0] + '.EDF')
+        new_raw_fname = tmp_path / new_basename
         sh.copyfile(raw_fname, new_raw_fname)
         raw_fname = new_raw_fname.as_posix()
 
