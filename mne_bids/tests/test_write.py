@@ -2511,7 +2511,7 @@ def test_coordsystem_json_compliance(
     warning_str['edf_warning'],
     warning_str['brainvision_unit']
 )
-def test_anonymize(subject, dir_name, fname, reader, tmpdir):
+def test_anonymize(subject, dir_name, fname, reader, tmp_path):
     """Test writing anonymized EDF data."""
     data_path = testing.data_path()
 
@@ -2519,11 +2519,12 @@ def test_anonymize(subject, dir_name, fname, reader, tmpdir):
 
     # capitalize the EDF extension file
     if subject == 'cap':
-        new_raw_fname = raw_fname.split('.edf')[0] + '.EDF'
-        os.rename(raw_fname, new_raw_fname)
-        raw_fname = new_raw_fname
+        new_raw_fname = tmp_path / (op.basename(raw_fname).split('.edf')[0] + '.EDF')
+        sh.copyfile(raw_fname, new_raw_fname)
+        raw_fname = new_raw_fname.as_posix()
 
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
+    bids_root.mkdir(parents=True)
     raw = reader(raw_fname)
     raw_date = raw.info['meas_date'].strftime('%Y%m%d')
 
