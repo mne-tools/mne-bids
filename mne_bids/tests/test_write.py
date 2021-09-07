@@ -2502,6 +2502,7 @@ def test_coordsystem_json_compliance(
         ('03', 'NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
         ('emptyroom', 'MEG/sample',
          'sample_audvis_trunc_raw.fif', _read_raw_fif),
+        ('cap', 'EDF', 'test_reduced.edf', _read_raw_edf),
     ]
 )
 @pytest.mark.filterwarnings(
@@ -2515,6 +2516,12 @@ def test_anonymize(subject, dir_name, fname, reader, tmpdir):
     data_path = testing.data_path()
 
     raw_fname = op.join(data_path, dir_name, fname)
+
+    # capitalize the EDF extension file
+    if subject == 'cap':
+        new_raw_fname = raw_fname.split('.edf')[0] + '.EDF'
+        os.rename(raw_fname, new_raw_fname)
+        raw_fname = new_raw_fname
 
     bids_root = tmpdir.mkdir('bids1')
     raw = reader(raw_fname)
@@ -2532,8 +2539,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmpdir):
     anonymize = dict(daysback=daysback_min + 1)
     bids_path = \
         write_raw_bids(raw, bids_path, overwrite=True,
-                       anonymize=anonymize)
-
+                       anonymize=anonymize, verbose=False)
     # emptyroom recordings' session should match the recording date
     if subject == 'emptyroom':
         assert (
@@ -2542,8 +2548,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmpdir):
              timedelta(days=anonymize['daysback'])).strftime('%Y%m%d')
         )
 
-    raw2 = read_raw_bids(bids_path)
-    if bids_path.extension == '.edf':
+    raw2 = read_raw_bids(bids_path, verbose=False)
+    if raw_fname.lower().endswith('.edf'):
         _raw = reader(bids_path)
         assert _raw.info['meas_date'].year == 1985
         assert _raw.info['meas_date'].month == 1

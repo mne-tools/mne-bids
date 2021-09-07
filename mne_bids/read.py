@@ -52,7 +52,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     elif ext == '.fif':
         raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf']:
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF']:
         raw = reader[ext](raw_fpath, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented

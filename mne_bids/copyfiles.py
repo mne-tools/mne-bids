@@ -436,7 +436,7 @@ def copyfile_edf(src, dest, anonymize=None):
     if anonymize is not None:
         if ext_src == '.bdf':
             raw = read_raw_bdf(dest, preload=False, verbose=0)
-        elif ext_src == '.edf':
+        elif ext_src in ['.edf', '.EDF']:
             raw = read_raw_edf(dest, preload=False, verbose=0)
         else:
             raise ValueError('Unsupported file type ({0})'.format(ext_src))
