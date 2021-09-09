@@ -18,9 +18,9 @@ from mne.channels import make_standard_montage
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import warn, logger
+from mne.utils import warn, logger, verbose
 
-from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
+from mne_bids.tsv_handler import _to_tsv
 
 
 # This regex matches key-val pairs. Any characters are allowed in the key and
@@ -89,7 +89,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return mapping
 
 
-def _handle_datatype(raw, datatype, verbose=True):
+def _handle_datatype(raw, datatype):
     """Check if datatype exists in raw object or infer datatype if possible.
 
     Parameters
@@ -101,9 +101,6 @@ def _handle_datatype(raw, datatype, verbose=True):
         `mne.utils._handle_datatype()` will attempt to infer the datatype from
         the ``raw`` object. In case of multiple data types in the ``raw``
         object, ``datatype`` must not be ``None``.
-    verbose : bool
-        If ``True``, this will print additional information in the case of
-        combined MEG and iEEG/EEG recordings.
 
     Returns
     -------
@@ -114,14 +111,12 @@ def _handle_datatype(raw, datatype, verbose=True):
         _check_datatype(raw, datatype)
         # MEG data is not supported by BrainVision or EDF files
         if datatype in ['eeg', 'ieeg'] and 'meg' in raw:
-            if verbose:
-                print(os.linesep + f"Both {datatype} and 'meg' data found. "
-                                   f"BrainVision and EDF do not support 'meg' "
-                                   f"data. The data will therefore be stored "
-                                   f"as 'meg' data. If you wish to store your "
-                                   f"{datatype} data in BrainVision or EDF, "
-                                   f"please remove the 'meg' channels from "
-                                   f"your recording." + os.linesep)
+            logger.info(f"{os.linesep}Both {datatype} and 'meg' data found. "
+                        f"BrainVision and EDF do not support 'meg' data. "
+                        f"The data will therefore be stored as 'meg' data. "
+                        f"If you wish to store your {datatype} data in "
+                        f"BrainVision or EDF, please remove the 'meg'"
+                        f"channels from your recording.{os.linesep}")
             datatype = 'meg'
     else:
         datatypes = list()
@@ -184,7 +179,7 @@ def _check_types(variables):
                              f"expected.")
 
 
-def _write_json(fname, dictionary, overwrite=False, verbose=False):
+def _write_json(fname, dictionary, overwrite=False):
     """Write JSON to a file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
@@ -195,24 +190,20 @@ def _write_json(fname, dictionary, overwrite=False, verbose=False):
         fid.write(json_output)
         fid.write('\n')
 
-    if verbose is True:
-        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
-        print(json_output)
+    logger.info(f"Writing '{fname}'...")
 
 
-def _write_tsv(fname, dictionary, overwrite=False, verbose=False):
+def _write_tsv(fname, dictionary, overwrite=False):
     """Write an ordered dictionary to a .tsv file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
                               'Please set overwrite to True.')
     _to_tsv(dictionary, fname)
 
-    if verbose:
-        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
-        print(_tsv_to_str(dictionary))
+    logger.info(f"Writing '{fname}'...")
 
 
-def _write_text(fname, text, overwrite=False, verbose=True):
+def _write_text(fname, text, overwrite=False):
     """Write text to a file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
@@ -221,9 +212,7 @@ def _write_text(fname, text, overwrite=False, verbose=True):
         fid.write(text)
         fid.write('\n')
 
-    if verbose:
-        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
-        print(text)
+    logger.info(f"Writing '{fname}'...")
 
 
 def _check_key_val(key, val):
@@ -367,7 +356,8 @@ def _get_anonymization_daysback(raw):
     return daysback_min, daysback_max
 
 
-def get_anonymization_daysback(raws):
+@verbose
+def get_anonymization_daysback(raws, verbose=None):
     """Get the group min and max number of daysback necessary for BIDS specs.
 
     .. warning:: It is important that you remember the anonymization
@@ -386,6 +376,7 @@ def get_anonymization_daysback(raws):
     ----------
     raw : mne.io.Raw | list of mne.io.Raw
         Subject raw data or list of raw data from several subjects.
+    %(verbose)s
 
     Returns
     -------
@@ -404,14 +395,14 @@ def get_anonymization_daysback(raws):
             daysback_min_list.append(daysback_min)
             daysback_max_list.append(daysback_max)
     if not daysback_min_list or not daysback_max_list:
-        raise ValueError('All measurement dates are None, ' +
+        raise ValueError('All measurement dates are None, '
                          'pass any `daysback` value to anonymize.')
     daysback_min = max(daysback_min_list)
     daysback_max = min(daysback_max_list)
     if daysback_min > daysback_max:
-        raise ValueError('The dataset spans more time than can be ' +
-                         'accomodated by MNE, you may have to ' +
-                         'not follow BIDS recommendations and use' +
+        raise ValueError('The dataset spans more time than can be '
+                         'accomodated by MNE, you may have to '
+                         'not follow BIDS recommendations and use'
                          'anonymized dates after 1925')
     return daysback_min, daysback_max
 

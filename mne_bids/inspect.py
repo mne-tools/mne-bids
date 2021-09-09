@@ -10,7 +10,7 @@ import numpy as np
 
 import mne
 from mne.preprocessing import annotate_flat
-from mne.utils import logger
+from mne.utils import logger, verbose
 
 from mne_bids import read_raw_bids, mark_bad_channels
 from mne_bids.read import _from_tsv, _read_events
@@ -18,6 +18,7 @@ from mne_bids.write import _events_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
+@verbose
 def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
                     show_annotations=True, verbose=None):
     """Inspect and annotate BIDS raw data.
@@ -51,17 +52,17 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
     find_flat : bool
         Whether to auto-detect channels producing "flat" signals, i.e., with
         unusually low variability. Flat **segments** will be added to
-        ``*_events.tsv``, while channels with more than 5% of flat data will be
-        marked as ``bad`` in ``*_channels.tsv``.
+        ``*_events.tsv``, while channels with more than 5 percent of flat data
+        will be marked as ``bad`` in ``*_channels.tsv``.
 
         .. note::
             This function calls :func:`mne.preprocessing.annotate_flat` and
             will only consider segments of at least **50 ms consecutive
             flatness** as "flat" (deviating from MNE-Python's default of 5 ms).
-            If more than 5% of a channel's data has been marked as flat, the
-            entire channel will be added to the list of bad channels. Only flat
-            time segments applying to channels **not** marked as bad will be
-            added to ``*_events.tsv``.
+            If more than 5 percent of a channel's data has been marked as flat,
+            the entire channel will be added to the list of bad channels. Only
+            flat time segments applying to channels **not** marked as bad will
+            be added to ``*_events.tsv``.
 
     l_freq : float | None
         The high-pass filter cutoff frequency to apply when displaying the
@@ -75,9 +76,7 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
         Whether to show annotations (events, bad segments, …) or not. If
         ``False``, toggling annotations mode by pressing ``A`` will be disabled
         as well.
-    verbose : bool | None
-        If a boolean, whether or not to produce verbose output. If ``None``,
-        use the default log level.
+    %(verbose)s
 
     Examples
     --------
@@ -102,8 +101,7 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
 
     for bids_path_ in bids_paths:
         _inspect_raw(bids_path=bids_path_, l_freq=l_freq, h_freq=h_freq,
-                     find_flat=find_flat, show_annotations=show_annotations,
-                     verbose=verbose)
+                     find_flat=find_flat, show_annotations=show_annotations)
 
 
 # XXX This this should probably be refactored into a class attribute someday.
@@ -112,8 +110,7 @@ _global_vars = dict(raw_fig=None,
                     mne_close_key=None)
 
 
-def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations,
-                 verbose=None):
+def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
     """Raw data inspection."""
     # Delay the import
     import matplotlib
@@ -128,8 +125,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations,
 
     if find_flat:
         raw.load_data()  # Speeds up processing dramatically
-        flat_annot, flat_chans = annotate_flat(raw=raw, min_duration=0.05,
-                                               verbose=verbose)
+        flat_annot, flat_chans = annotate_flat(raw=raw, min_duration=0.05)
         new_annot = raw.annotations + flat_annot
         raw.set_annotations(new_annot)
         raw.info['bads'] = list(set(raw.info['bads'] + flat_chans))
@@ -163,8 +159,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations,
                              flat_chans=flat_chans,
                              old_annotations=old_annotations,
                              new_annotations=new_annotations,
-                             bids_path=bids_path,
-                             verbose=verbose)
+                             bids_path=bids_path)
         _global_vars['raw_fig'] = None
 
     def _keypress_callback(event):
@@ -208,7 +203,7 @@ def _annotations_almost_equal(old_annotations, new_annotations):
         return False
 
 
-def _save_annotations(*, annotations, bids_path, verbose):
+def _save_annotations(*, annotations, bids_path):
     # Attach the new Annotations to our raw data so we can easily convert them
     # to events, which will be stored in the *_events.tsv sidecar.
     extra_params = dict()
@@ -219,8 +214,7 @@ def _save_annotations(*, annotations, bids_path, verbose):
                         verbose='warning')
     raw.set_annotations(annotations)
     events, durs, descrs = _read_events(events_data=None, event_id=None,
-                                        task=bids_path.task, raw=raw,
-                                        verbose=False)
+                                        task=bids_path.task, raw=raw)
 
     # Write sidecar – or remove it if no events are left.
     events_tsv_fname = (bids_path.copy()
@@ -231,7 +225,7 @@ def _save_annotations(*, annotations, bids_path, verbose):
     if len(events) > 0:
         _events_tsv(events=events, durations=durs, raw=raw,
                     fname=events_tsv_fname, trial_type=descrs,
-                    overwrite=True, verbose=verbose)
+                    overwrite=True)
     elif events_tsv_fname.exists():
         logger.info(f'No events remaining after interactive inspection, '
                     f'removing {events_tsv_fname.name}')
@@ -240,7 +234,7 @@ def _save_annotations(*, annotations, bids_path, verbose):
 
 def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
                          old_annotations, new_annotations,
-                         bids_path, verbose):
+                         bids_path):
     """Save bad channel selection if it has been changed.
 
     Parameters
@@ -302,11 +296,10 @@ def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
     return _save_raw_dialog_box(bads=bads,
                                 bad_descriptions=bad_descriptions,
                                 annotations=annotations,
-                                bids_path=bids_path, verbose=verbose)
+                                bids_path=bids_path)
 
 
-def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path,
-                         verbose):
+def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path):
     """Display a dialog box asking whether to save the changes."""
     # Delay the imports
     import matplotlib
@@ -374,10 +367,9 @@ def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path,
 
         if bads is not None:
             _save_bads(bads=bads, descriptions=bad_descriptions,
-                       bids_path=bids_path, verbose=verbose)
+                       bids_path=bids_path)
         if annotations is not None:
-            _save_annotations(annotations=annotations, bids_path=bids_path,
-                              verbose=verbose)
+            _save_annotations(annotations=annotations, bids_path=bids_path)
 
     def _dont_save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
@@ -401,7 +393,7 @@ def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path,
     _global_vars['dialog_fig'] = fig
 
 
-def _save_bads(*, bads, descriptions, bids_path, verbose):
+def _save_bads(*, bads, descriptions, bids_path):
     """Update the set of channels marked as bad.
 
     Parameters
@@ -414,4 +406,4 @@ def _save_bads(*, bads, descriptions, bids_path, verbose):
     # We pass overwrite=True, causing all channels not passed as bad here to
     # be marked as good.
     mark_bad_channels(ch_names=bads, descriptions=descriptions,
-                      bids_path=bids_path, overwrite=True, verbose=verbose)
+                      bids_path=bids_path, overwrite=True)

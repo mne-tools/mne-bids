@@ -45,7 +45,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_bad_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      get_anat_landmarks)
+                      get_anat_landmarks, write)
 from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
@@ -259,7 +259,7 @@ def test_write_correct_inputs():
         write_raw_bids(raw, bids_path)
 
 
-def test_make_dataset_description(tmpdir):
+def test_make_dataset_description(tmpdir, monkeypatch):
     """Test making a dataset_description.json."""
     with pytest.raises(ValueError, match='`dataset_type` must be either "raw" '
                                          'or "derivative."'):
@@ -296,12 +296,9 @@ def test_make_dataset_description(tmpdir):
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ['MNE B.', 'MNE P.']
 
+    monkeypatch.setattr(write, 'BIDS_VERSION', 'old')
     with pytest.raises(ValueError, match='Previous BIDS version used'):
-        version = make_dataset_description.__globals__['BIDS_VERSION']
-        make_dataset_description.__globals__['BIDS_VERSION'] = 'old'
         make_dataset_description(path=tmpdir, name='tst')
-        # put version back so that it doesn't cause issues down the road
-        make_dataset_description.__globals__['BIDS_VERSION'] = version
 
 
 def test_stamp_to_dt():
@@ -2651,7 +2648,9 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
                               match='Encountered data in "double" format'):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
-        bids_output_path = write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning,
+                          match='Converting data files to EDF format'):
+            bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
     raw2 = read_raw_bids(bids_output_path)

@@ -83,6 +83,14 @@ write_raw_bids(raw, bids_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
 # %%
+# Let's pause and check that the information that we've written out to the
+# sidecar files that describe our data is correct.
+
+# Get the sidecar ``.json`` file
+print(bids_path.copy().update(extension='.json').fpath.read_text(
+    encoding='utf-8-sig'))
+
+# %%
 # The sample MEG dataset comes with fine-calibration and crosstalk files that
 # are required when processing Elekta/Neuromag/MEGIN data using MaxFilter®.
 # Let's store these data in appropriate places, too.

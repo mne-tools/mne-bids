@@ -42,7 +42,7 @@ def test_get_brainvision_encoding():
         with open(raw_fname, 'r', encoding='ascii') as f:
             f.readlines()
 
-    enc = _get_brainvision_encoding(raw_fname, verbose=True)
+    enc = _get_brainvision_encoding(raw_fname)
     with open(raw_fname, 'r', encoding=enc) as f:
         f.readlines()
 
@@ -90,7 +90,7 @@ def test_copyfile_brainvision(tmpdir):
         copyfile_brainvision(raw_fname, new_name + '.eeg')
 
     # Try to copy the file
-    copyfile_brainvision(raw_fname, new_name, verbose=True)
+    copyfile_brainvision(raw_fname, new_name)
 
     # Have all been copied?
     head, tail = op.split(new_name)
@@ -106,7 +106,7 @@ def test_copyfile_brainvision(tmpdir):
     raw = mne.io.read_raw_brainvision(raw_fname)
     prev_date = raw.info['meas_date']
     anonymize = {'daysback': 32459}
-    copyfile_brainvision(raw_fname, new_name, anonymize, verbose=True)
+    copyfile_brainvision(raw_fname, new_name, anonymize)
     raw = mne.io.read_raw_brainvision(new_name)
     new_date = raw.info['meas_date']
     assert new_date == (prev_date - datetime.timedelta(days=32459))
@@ -230,7 +230,7 @@ def test_copyfile_kit(tmpdir):
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
-    _, ext = _parse_ext(raw_fname, verbose=True)
+    _, ext = _parse_ext(raw_fname)
 
     datatype = 'meg'  # copyfile_kit makes the same assumption
 
@@ -248,7 +248,7 @@ def test_copyfile_kit(tmpdir):
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                  task, run, raw._init_kwargs)
     assert op.exists(bids_fname)
-    _, ext = _parse_ext(hpi_fname, verbose=True)
+    _, ext = _parse_ext(hpi_fname)
     if ext == '.sqd':
         kit_bids_path.update(suffix='markers', extension='.sqd')
         assert op.exists(kit_bids_path)

@@ -32,6 +32,7 @@ mne_bids
    update_anat_landmarks
    get_head_mri_trans
    get_anonymization_daysback
+   search_folder_for_text
    print_dir_tree
    get_entities_from_fname
    get_entity_vals

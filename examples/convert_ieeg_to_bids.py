@@ -54,8 +54,8 @@ from nilearn.plotting import plot_anat
 
 import mne
 from mne_bids import (BIDSPath, write_raw_bids, write_anat,
-                      get_anat_landmarks,
-                      read_raw_bids, print_dir_tree)
+                      get_anat_landmarks, read_raw_bids,
+                      search_folder_for_text, print_dir_tree)
 
 # %%
 # Step 1: Download the data
@@ -210,9 +210,9 @@ print_dir_tree(bids_root)
 # all the information that MNE-BIDS could not infer. For instance, you must
 # describe ``iEEGReference`` and ``iEEGGround`` yourself.
 # It's easy to find these by searching for ``"n/a"`` in the sidecar files.
-#
-# ``$ grep -i 'n/a' <bids_root>```
-#
+
+search_folder_for_text('n/a', bids_root)
+
 # Remember that there is a convenient JavaScript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
 # command line tool:
@@ -248,27 +248,6 @@ montage = raw.get_montage()
 montage.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
 # now the montage is properly in "head" and ready for analysis in MNE
 raw.set_montage(montage)
-
-# %%
-# Finally, MNE-BIDS has created a suitable directory structure for us, and
-# among other meta data files, it started an ``events.tsv``` and
-# ``channels.tsv`` file, and created an initial ``dataset_description.json``
-# file on top!
-#
-# Now it's time to manually check the BIDS directory and the meta files to add
-# all the information that MNE-BIDS could not infer. For instance, you must
-# describe ``iEEGReference`` and ``iEEGGround`` yourself.
-# It's easy to find these by searching for ``"n/a"`` in the sidecar files.
-#
-# ``$ grep -i 'n/a' <bids_root>```
-#
-# Remember that there is a convenient JavaScript tool to validate all your BIDS
-# directories called the "BIDS-validator", available as a web version and a
-# command line tool:
-#
-# Web version: https://bids-standard.github.io/bids-validator/
-#
-# Command line tool: https://www.npmjs.com/package/bids-validator
 
 # %%
 # Step 4: Cite mne-bids

@@ -112,13 +112,14 @@ jobs:
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
+      THIS_OS: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 12
+        node-version: 14
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -159,11 +160,25 @@ jobs:
 
     - name: Install BIDS validator (main)
       if: "matrix.bids-validator == 'main'"
-      run: |
-        pushd ..
-        git clone --depth 1 https://github.com/bids-standard/bids-validator
-        npm install -g bids-validator/bids-validator
-        popd
+        run: |
+          pushd ..
+          # Get npm 7+
+          npm i -g npm@^7
+          git clone --depth 1 https://github.com/bids-standard/bids-validator
+          cd bids-validator
+          # Generate the full development node_modules
+          npm i
+          # Build & bundle the bids-validator CLI package
+          npm --prefix bids-validator run build
+          # Generate a package to install globally
+          npm --prefix bids-validator pack
+          # Install the package globally (different path expansion for Windows)
+          if [ "${THIS_OS}" == 'windows-latest' ]; then
+             npm i -g | dir /b bids-validator-*.tgz
+          else
+             npm i -g bids-validator-*.tgz
+          fi
+          popd
 
     - name: Display versions and environment information
       run: |
