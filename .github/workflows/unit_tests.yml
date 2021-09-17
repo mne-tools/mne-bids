@@ -112,7 +112,6 @@ jobs:
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
-      THIS_OS: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
 
@@ -159,7 +158,21 @@ jobs:
 
     - name: Install BIDS validator (main)
       if: "matrix.bids-validator == 'main'"
-      run: ./tools/install_bids_validator_main.sh
+      run: |
+        pushd ..
+        # Get npm 7+
+        npm install -g npm
+        git clone --depth 1 https://github.com/bids-standard/bids-validator
+        cd bids-validator
+        # Generate the full development node_modules
+        npm install
+        # Build & bundle the bids-validator CLI package
+        npm -w bids-validator run build
+        # Generate a package to install globally
+        npm -w bids-validator pack
+        # Install the package globally (different path expansion for Windows)
+        npm install -g bids-validator-1.8.2.tgz
+        popd
 
     - name: Display versions and environment information
       run: |
