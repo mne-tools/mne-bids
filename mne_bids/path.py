@@ -1089,7 +1089,7 @@ def search_folder_for_text(entry, folder, extensions=('.json', '.tsv'),
                            line_numbers=True, return_str=False):
     """Find any particular string entry in the text files of a folder.
 
-    .. note:: This is a simple search function like `grep
+    .. note:: This is a search function like `grep
               <https://man7.org/linux/man-pages/man1/fgrep.1.html>`_
               that is formatted nicely for BIDS datasets.
 
