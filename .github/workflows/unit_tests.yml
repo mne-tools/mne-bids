@@ -169,9 +169,9 @@ jobs:
         # Generate the full development node_modules
         npm install
         # Build & bundle the bids-validator CLI package
-        npm --prefix bids-validator run build
+        npm -w bids-validator run build
         # Generate a package to install globally
-        npm --prefix bids-validator pack
+        npm -w bids-validator pack
         # Install the package globally (different path expansion for Windows)
         if [ "${THIS_OS}" == 'windows-latest' ]; then
           npm install -g | dir /b bids-validator-*.tgz
