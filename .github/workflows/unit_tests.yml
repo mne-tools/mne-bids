@@ -112,7 +112,6 @@ jobs:
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
-      THIS_OS: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
 
