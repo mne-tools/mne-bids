@@ -212,6 +212,15 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         acq_times = scans_tsv['acq_time']
     else:
         acq_times = ['n/a'] * len(fnames)
+
+    # check if the filename is an EDF file
+    if data_fname.lower().endswith('.edf'):
+        # check first if lower-case is in the filename
+        lower_case_ext = Path(data_fname).with_suffix('.edf').as_posix()
+        if lower_case_ext not in fnames:
+            data_fname = Path(data_fname).with_suffix('.EDF').as_posix()
+        else:
+            data_fname = lower_case_ext
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
