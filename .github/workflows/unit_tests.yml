@@ -171,14 +171,8 @@ jobs:
         npm -w bids-validator run build
         # Generate a package to install globally
         npm -w bids-validator pack
-        # Install the package globally (different path expansion for Windows)
-        bash -c "  # use bash to do logic because Windows uses powershell
-          if [ "${THIS_OS}" == 'windows-latest' ]; then
-            npm install -g | dir /b bids-validator-*.tgz
-          else
-            npm install -g bids-validator-*.tgz
-          fi
-        "
+        # Install the package globally
+        bash -c "npm install -g bids-validator-*.tgz"
         popd
 
     - name: Display versions and environment information
