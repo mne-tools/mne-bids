@@ -163,7 +163,7 @@ jobs:
       run: |
         pushd ..
         # Get npm 7+
-        npm install -g npm@^7
+        npm install -g npm
         git clone --depth 1 https://github.com/bids-standard/bids-validator
         cd bids-validator
         # Generate the full development node_modules
