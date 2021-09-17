@@ -159,7 +159,7 @@ jobs:
         npm install -g bids-validator
 
     - name: Install BIDS validator (main)
-      if: "matrix.bids-validator == 'main'"
+      if: "matrix.bids-validator == 'stable'"
         run: |
           pushd ..
           # Get npm 7+
