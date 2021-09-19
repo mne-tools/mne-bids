@@ -214,13 +214,14 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">DigMontage</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_write_json</span>
 
 
 <span class="c1"># TODO: add support for tsv files</span>
-<div class="viewcode-block" id="update_sidecar_json"><a class="viewcode-back" href="../../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json">[docs]</a><span class="k">def</span> <span class="nf">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="update_sidecar_json"><a class="viewcode-back" href="../../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json">[docs]</a><span class="nd">@verbose</span>
+<span class="k">def</span> <span class="nf">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Update sidecar files using a dictionary or JSON file.</span>
 
 <span class="sd">    Will update metadata fields inside the path defined by</span>
@@ -249,8 +250,7 @@
 <span class="sd">    entries : dict | str | pathlib.Path</span>
 <span class="sd">        A dictionary, or JSON file that defines the</span>
 <span class="sd">        sidecar fields and corresponding values to be updated to.</span>
-<span class="sd">    verbose : bool</span>
-<span class="sd">        The verbosity level.</span>
+<span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -308,9 +308,8 @@
             <span class="n">sidecar_tmp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
                 <span class="n">tmp_f</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">sidecar_tmp</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Updating </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">sidecar_tmp</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Updating </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span>
 
     <span class="c1"># load in sidecar filepath</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
@@ -321,7 +320,7 @@
     <span class="n">sidecar_json</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">sidecar_tmp</span><span class="p">)</span>
 
     <span class="c1"># write back the sidecar JSON</span>
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">sidecar_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">sidecar_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_update_sidecar</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -339,10 +338,11 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
     <span class="n">sidecar_json</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">sidecar_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">sidecar_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="update_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks">[docs]</a><span class="k">def</span> <span class="nf">update_anat_landmarks</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">):</span>
+<div class="viewcode-block" id="update_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks">[docs]</a><span class="nd">@verbose</span>
+<span class="k">def</span> <span class="nf">update_anat_landmarks</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Update the anatomical landmark coordinates of an MRI scan.</span>
 
 <span class="sd">    This will change the ``AnatomicalLandmarkCoordinates`` entry in the</span>
@@ -360,6 +360,7 @@
 <span class="sd">        .. note:: :func:`mne_bids.get_anat_landmarks` provides a convenient and</span>
 <span class="sd">                  reliable way to generate the landmark coordinates in the</span>
 <span class="sd">                  required coordinate system.</span>
+<span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -475,13 +476,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-19.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
 </p>
     </div>
     

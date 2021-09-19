@@ -231,13 +231,13 @@
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
                              <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">,</span>
                              <span class="n">reader</span><span class="p">,</span> <span class="n">_map_options</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
                            <span class="n">_infer_datatype</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_read_raw</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-              <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+              <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read a raw file into MNE, making inferences based on extension.&quot;&quot;&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">)</span>
 
@@ -250,8 +250,7 @@
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">config_fname</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
                               <span class="n">head_shape_fname</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
-                              <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-                              <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                              <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -274,7 +273,7 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<span class="k">def</span> <span class="nf">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve events (for use in *_events.tsv) from FIFF/array &amp; Annotations.</span>
 
 <span class="sd">    Parameters</span>
@@ -290,8 +289,6 @@
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    task : str | None</span>
 <span class="sd">        If task may be resting state, silence warnings.</span>
-<span class="sd">    verbose : bool | str | int | None</span>
-<span class="sd">        If not None, override default verbose level (see :func:`mne.verbose`).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -309,7 +306,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get events from events_data</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">events</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have two dimensions, &#39;</span>
@@ -342,7 +339,7 @@
         <span class="c1"># care of this shift automatically.</span>
         <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">annotations_from_events</span><span class="p">(</span>
             <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span> <span class="n">event_desc</span><span class="o">=</span><span class="n">id_to_desc_map</span><span class="p">,</span>
-            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">)</span>
 
         <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Don&#39;t alter the original.</span>
         <span class="n">annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -357,8 +354,7 @@
     <span class="n">all_events</span><span class="p">,</span> <span class="n">all_desc</span> <span class="o">=</span> <span class="n">events_from_annotations</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
         <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-        <span class="n">regexp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Include `BAD_` and `EDGE_` Annotations, too.</span>
-        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+        <span class="n">regexp</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># Include `BAD_` and `EDGE_` Annotations, too.</span>
     <span class="p">)</span>
     <span class="n">all_dur</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">duration</span>
 
@@ -373,8 +369,7 @@
     <span class="k">return</span> <span class="n">all_events</span><span class="p">,</span> <span class="n">all_dur</span><span class="p">,</span> <span class="n">all_desc</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
-                                 <span class="n">subject</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
     <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">)</span>
     <span class="n">subjects</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span>
     <span class="n">row_ind</span> <span class="o">=</span> <span class="n">subjects</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
@@ -403,7 +398,7 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_scans_reading</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_handle_scans_reading</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read associated scans.tsv and set meas_date.&quot;&quot;&quot;</span>
     <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">)</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
@@ -448,9 +443,8 @@
         <span class="n">acq_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">acq_time</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
         <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s1"> scans file to set &#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s1"> scans file to set &#39;</span>
+                     <span class="sa">f</span><span class="s1">&#39;acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
         <span class="c1"># First set measurement date to None and then call call anonymize() to</span>
         <span class="c1"># remove any traces of the measurement date we wish</span>
         <span class="c1"># to replace – it might lurk out in more places than just</span>
@@ -476,7 +470,7 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read associated sidecar JSON and populate raw.</span>
 
 <span class="sd">    Handle PowerLineFrequency of recording.</span>
@@ -749,7 +743,8 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="nd">@verbose</span>
+<span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
 
 <span class="sd">    Will attempt to read associated events.tsv and channels.tsv files to</span>
@@ -774,8 +769,7 @@
 <span class="sd">        Note that the ``exclude`` parameter, which is supported by some</span>
 <span class="sd">        MNE-Python readers, is not supported; instead, you need to subset</span>
 <span class="sd">        your channels **after** reading.</span>
-<span class="sd">    verbose : bool</span>
-<span class="sd">        The verbosity level.</span>
+<span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -850,7 +844,7 @@
         <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_raw</span><span class="p">(</span><span class="n">bids_fpath</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_params</span><span class="p">)</span>
+                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_params</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated events.tsv to get information about the</span>
     <span class="c1"># events in the recorded data</span>
@@ -888,7 +882,7 @@
                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
             <span class="n">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span>
-                           <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                           <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated sidecar .json to get information about the</span>
     <span class="c1"># recording snapshot</span>
@@ -897,7 +891,7 @@
                                            <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
                                            <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sidecar_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># read in associated scans filename</span>
     <span class="n">scans_fname</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
@@ -907,15 +901,14 @@
     <span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
 
     <span class="k">if</span> <span class="n">scans_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_scans_reading</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span>
-                                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_scans_reading</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># read in associated subject info from participants.tsv</span>
     <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
     <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">):</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
-                                           <span class="n">subject</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                                           <span class="n">subject</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Participants file not found for </span><span class="si">{}</span><span class="s2">... Not reading &quot;</span>
              <span class="s2">&quot;in any particpants.tsv data.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))</span>
@@ -924,8 +917,9 @@
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
-<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1_bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="nd">@verbose</span>
+<span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1_bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
 
 <span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
@@ -961,6 +955,7 @@
 <span class="sd">        ``SUBJECTS_DIR`` environment variable.</span>
 
 <span class="sd">        .. versionadded:: 0.8</span>
+<span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1091,13 +1086,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-19.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
 </p>
     </div>
     

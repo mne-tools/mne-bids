@@ -383,6 +383,13 @@ MNE-Python:</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for EEGBCI...
+Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R02.edf (1.2 MB)
+
+  0%|          | Downloading : 0.00/1.22M [00:00&lt;?,        ?B/s]
+  7%|7         | Downloading : 88.0k/1.22M [00:00&lt;00:00,    3.93MB/s]
+ 30%|###       | Downloading : 376k/1.22M [00:00&lt;00:00,    8.04MB/s]
+100%|##########| Downloading : 1.22M/1.22M [00:00&lt;00:00,    17.9MB/s]
+100%|##########| Downloading : 1.22M/1.22M [00:00&lt;00:00,    17.2MB/s]
 
 [&#39;/home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf&#39;]
 </pre></div>
@@ -403,13 +410,6 @@ of the directory tree.</p>
 |--------- 1.0.0/
 |------------ S001/
 |--------------- S001R02.edf
-|--------------- S001R04.edf
-|--------------- S001R08.edf
-|--------------- S001R12.edf
-|------------ S002/
-|--------------- S002R04.edf
-|--------------- S002R08.edf
-|--------------- S002R12.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a> with
@@ -438,6 +438,8 @@ It prevents the data from being loaded and modified when converting to BIDS.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf...
 EDF file detected
 Setting channel info structure...
+Could not determine channel type of the following channels, they will be set as EEG:
+Fc5., Fc3., Fc1., Fcz., Fc2., Fc4., Fc6., C5.., C3.., C1.., Cz.., C2.., C4.., C6.., Cp5., Cp3., Cp1., Cpz., Cp2., Cp4., Cp6., Fp1., Fpz., Fp2., Af7., Af3., Afz., Af4., Af8., F7.., F5.., F3.., F1.., Fz.., F2.., F4.., F6.., F8.., Ft7., Ft8., T7.., T8.., T9.., T10., Tp7., Tp8., P7.., P5.., P3.., P1.., Pz.., P2.., P4.., P6.., P8.., Po7., Po3., Poz., Po4., Po8., O1.., Oz.., O2.., Iz..
 Creating raw.info structure...
 </pre></div>
 </div>
@@ -475,6 +477,143 @@ positions, like those that can be obtained from
 <img alt="convert eeg to bids" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_eeg_to_bids_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for testing...
+Downloading archive mne-testing-data-0.123.tar.gz to /home/circleci/mne_data
+Downloading https://codeload.github.com/mne-tools/mne-testing-data/tar.gz/0.123 (1005.0 MB)
+
+  0%|          | Downloading : 0.00/0.98G [00:00&lt;?,        ?B/s]
+  0%|          | Downloading : 0.99M/0.98G [00:00&lt;00:20,    50.6MB/s]
+  0%|          | Downloading : 3.99M/0.98G [00:00&lt;00:11,    92.4MB/s]
+  1%|          | Downloading : 9.99M/0.98G [00:00&lt;00:06,     155MB/s]
+  2%|1         | Downloading : 18.0M/0.98G [00:00&lt;00:05,     200MB/s]
+  2%|2         | Downloading : 22.0M/0.98G [00:00&lt;00:05,     204MB/s]
+  3%|2         | Downloading : 30.0M/0.98G [00:00&lt;00:04,     224MB/s]
+  4%|3         | Downloading : 38.0M/0.98G [00:00&lt;00:04,     237MB/s]
+  5%|4         | Downloading : 46.0M/0.98G [00:00&lt;00:04,     245MB/s]
+  5%|4         | Downloading : 50.0M/0.98G [00:00&lt;00:04,     244MB/s]
+  6%|5         | Downloading : 58.0M/0.98G [00:00&lt;00:03,     251MB/s]
+  7%|6         | Downloading : 70.0M/0.98G [00:00&lt;00:03,     262MB/s]
+  8%|7         | Downloading : 78.0M/0.98G [00:00&lt;00:03,     266MB/s]
+  9%|8         | Downloading : 86.0M/0.98G [00:00&lt;00:03,     269MB/s]
+  9%|9         | Downloading : 94.0M/0.98G [00:00&lt;00:03,     265MB/s]
+ 10%|#         | Downloading : 102M/0.98G [00:00&lt;00:03,     269MB/s]
+ 11%|#         | Downloading : 110M/0.98G [00:00&lt;00:03,     271MB/s]
+ 12%|#1        | Downloading : 118M/0.98G [00:00&lt;00:03,     274MB/s]
+ 13%|#2        | Downloading : 126M/0.98G [00:00&lt;00:03,     276MB/s]
+ 13%|#3        | Downloading : 134M/0.98G [00:00&lt;00:03,     278MB/s]
+ 14%|#4        | Downloading : 142M/0.98G [00:00&lt;00:03,     280MB/s]
+ 15%|#4        | Downloading : 150M/0.98G [00:00&lt;00:03,     281MB/s]
+ 16%|#5        | Downloading : 158M/0.98G [00:00&lt;00:03,     284MB/s]
+ 17%|#6        | Downloading : 166M/0.98G [00:00&lt;00:03,     286MB/s]
+ 17%|#7        | Downloading : 174M/0.98G [00:00&lt;00:03,     287MB/s]
+ 18%|#8        | Downloading : 182M/0.98G [00:00&lt;00:03,     286MB/s]
+ 19%|#8        | Downloading : 190M/0.98G [00:00&lt;00:02,     286MB/s]
+ 20%|#9        | Downloading : 198M/0.98G [00:00&lt;00:02,     287MB/s]
+ 20%|##        | Downloading : 206M/0.98G [00:00&lt;00:02,     289MB/s]
+ 21%|##1       | Downloading : 214M/0.98G [00:00&lt;00:02,     283MB/s]
+ 22%|##2       | Downloading : 222M/0.98G [00:00&lt;00:03,     273MB/s]
+ 23%|##2       | Downloading : 230M/0.98G [00:00&lt;00:03,     268MB/s]
+ 24%|##3       | Downloading : 238M/0.98G [00:00&lt;00:03,     260MB/s]
+ 24%|##4       | Downloading : 246M/0.98G [00:00&lt;00:03,     254MB/s]
+ 25%|##5       | Downloading : 254M/0.98G [00:01&lt;00:03,     252MB/s]
+ 26%|##6       | Downloading : 262M/0.98G [00:01&lt;00:03,     246MB/s]
+ 27%|##6       | Downloading : 270M/0.98G [00:01&lt;00:03,     245MB/s]
+ 28%|##7       | Downloading : 278M/0.98G [00:01&lt;00:03,     244MB/s]
+ 28%|##8       | Downloading : 286M/0.98G [00:01&lt;00:03,     243MB/s]
+ 29%|##9       | Downloading : 294M/0.98G [00:01&lt;00:03,     240MB/s]
+ 30%|###       | Downloading : 302M/0.98G [00:01&lt;00:03,     237MB/s]
+ 31%|###       | Downloading : 310M/0.98G [00:01&lt;00:03,     236MB/s]
+ 32%|###1      | Downloading : 318M/0.98G [00:01&lt;00:03,     236MB/s]
+ 32%|###2      | Downloading : 326M/0.98G [00:01&lt;00:03,     234MB/s]
+ 33%|###3      | Downloading : 334M/0.98G [00:01&lt;00:03,     233MB/s]
+ 34%|###4      | Downloading : 342M/0.98G [00:01&lt;00:02,     232MB/s]
+ 35%|###4      | Downloading : 350M/0.98G [00:01&lt;00:02,     229MB/s]
+ 36%|###5      | Downloading : 358M/0.98G [00:01&lt;00:02,     229MB/s]
+ 36%|###6      | Downloading : 366M/0.98G [00:01&lt;00:02,     229MB/s]
+ 37%|###7      | Downloading : 374M/0.98G [00:01&lt;00:02,     228MB/s]
+ 38%|###8      | Downloading : 382M/0.98G [00:01&lt;00:02,     227MB/s]
+ 39%|###8      | Downloading : 390M/0.98G [00:01&lt;00:02,     227MB/s]
+ 40%|###9      | Downloading : 398M/0.98G [00:01&lt;00:02,     226MB/s]
+ 40%|####      | Downloading : 406M/0.98G [00:01&lt;00:02,     226MB/s]
+ 41%|####1     | Downloading : 414M/0.98G [00:01&lt;00:02,     224MB/s]
+ 42%|####1     | Downloading : 422M/0.98G [00:01&lt;00:02,     215MB/s]
+ 43%|####2     | Downloading : 430M/0.98G [00:01&lt;00:02,     215MB/s]
+ 44%|####3     | Downloading : 438M/0.98G [00:01&lt;00:02,     216MB/s]
+ 44%|####4     | Downloading : 446M/0.98G [00:01&lt;00:02,     215MB/s]
+ 45%|####5     | Downloading : 454M/0.98G [00:02&lt;00:02,     216MB/s]
+ 46%|####5     | Downloading : 462M/0.98G [00:02&lt;00:02,     215MB/s]
+ 47%|####6     | Downloading : 470M/0.98G [00:02&lt;00:02,     215MB/s]
+ 48%|####7     | Downloading : 478M/0.98G [00:02&lt;00:02,     213MB/s]
+ 48%|####8     | Downloading : 486M/0.98G [00:02&lt;00:02,     214MB/s]
+ 49%|####9     | Downloading : 494M/0.98G [00:02&lt;00:02,     214MB/s]
+ 50%|####9     | Downloading : 502M/0.98G [00:02&lt;00:02,     215MB/s]
+ 51%|#####     | Downloading : 510M/0.98G [00:02&lt;00:02,     215MB/s]
+ 52%|#####1    | Downloading : 518M/0.98G [00:02&lt;00:02,     216MB/s]
+ 52%|#####2    | Downloading : 526M/0.98G [00:02&lt;00:02,     218MB/s]
+ 53%|#####3    | Downloading : 534M/0.98G [00:02&lt;00:02,     216MB/s]
+ 54%|#####3    | Downloading : 542M/0.98G [00:02&lt;00:02,     217MB/s]
+ 55%|#####4    | Downloading : 550M/0.98G [00:02&lt;00:02,     219MB/s]
+ 56%|#####5    | Downloading : 558M/0.98G [00:02&lt;00:02,     221MB/s]
+ 56%|#####6    | Downloading : 566M/0.98G [00:02&lt;00:02,     224MB/s]
+ 57%|#####7    | Downloading : 574M/0.98G [00:02&lt;00:01,     226MB/s]
+ 58%|#####7    | Downloading : 582M/0.98G [00:02&lt;00:01,     229MB/s]
+ 59%|#####8    | Downloading : 590M/0.98G [00:02&lt;00:01,     231MB/s]
+ 60%|#####9    | Downloading : 598M/0.98G [00:02&lt;00:01,     234MB/s]
+ 60%|######    | Downloading : 606M/0.98G [00:02&lt;00:01,     237MB/s]
+ 61%|######1   | Downloading : 614M/0.98G [00:02&lt;00:01,     240MB/s]
+ 62%|######1   | Downloading : 622M/0.98G [00:02&lt;00:01,     242MB/s]
+ 63%|######2   | Downloading : 630M/0.98G [00:02&lt;00:01,     245MB/s]
+ 63%|######3   | Downloading : 638M/0.98G [00:02&lt;00:01,     247MB/s]
+ 64%|######4   | Downloading : 646M/0.98G [00:02&lt;00:01,     245MB/s]
+ 65%|######5   | Downloading : 654M/0.98G [00:02&lt;00:01,     243MB/s]
+ 66%|######5   | Downloading : 662M/0.98G [00:02&lt;00:01,     239MB/s]
+ 67%|######6   | Downloading : 670M/0.98G [00:02&lt;00:01,     234MB/s]
+ 67%|######7   | Downloading : 678M/0.98G [00:03&lt;00:01,     236MB/s]
+ 68%|######8   | Downloading : 686M/0.98G [00:03&lt;00:01,     238MB/s]
+ 69%|######9   | Downloading : 694M/0.98G [00:03&lt;00:01,     240MB/s]
+ 70%|######9   | Downloading : 702M/0.98G [00:03&lt;00:01,     243MB/s]
+ 71%|#######   | Downloading : 710M/0.98G [00:03&lt;00:01,     246MB/s]
+ 71%|#######1  | Downloading : 718M/0.98G [00:03&lt;00:01,     248MB/s]
+ 72%|#######2  | Downloading : 726M/0.98G [00:03&lt;00:01,     250MB/s]
+ 73%|#######3  | Downloading : 734M/0.98G [00:03&lt;00:01,     252MB/s]
+ 74%|#######3  | Downloading : 742M/0.98G [00:03&lt;00:01,     252MB/s]
+ 75%|#######4  | Downloading : 750M/0.98G [00:03&lt;00:01,     254MB/s]
+ 75%|#######5  | Downloading : 758M/0.98G [00:03&lt;00:01,     248MB/s]
+ 76%|#######6  | Downloading : 766M/0.98G [00:03&lt;00:01,     239MB/s]
+ 77%|#######7  | Downloading : 774M/0.98G [00:03&lt;00:01,     231MB/s]
+ 78%|#######7  | Downloading : 782M/0.98G [00:03&lt;00:01,     227MB/s]
+ 79%|#######8  | Downloading : 790M/0.98G [00:03&lt;00:01,     223MB/s]
+ 79%|#######9  | Downloading : 798M/0.98G [00:03&lt;00:00,     219MB/s]
+ 80%|########  | Downloading : 806M/0.98G [00:03&lt;00:00,     215MB/s]
+ 81%|########  | Downloading : 814M/0.98G [00:03&lt;00:00,     213MB/s]
+ 82%|########1 | Downloading : 822M/0.98G [00:03&lt;00:00,     209MB/s]
+ 83%|########2 | Downloading : 830M/0.98G [00:03&lt;00:00,     201MB/s]
+ 83%|########3 | Downloading : 838M/0.98G [00:03&lt;00:00,     195MB/s]
+ 84%|########4 | Downloading : 846M/0.98G [00:03&lt;00:00,     191MB/s]
+ 85%|########4 | Downloading : 854M/0.98G [00:03&lt;00:00,     188MB/s]
+ 86%|########5 | Downloading : 862M/0.98G [00:04&lt;00:00,     186MB/s]
+ 87%|########6 | Downloading : 870M/0.98G [00:04&lt;00:00,     185MB/s]
+ 87%|########7 | Downloading : 878M/0.98G [00:04&lt;00:00,     183MB/s]
+ 88%|########8 | Downloading : 886M/0.98G [00:04&lt;00:00,     178MB/s]
+ 89%|########8 | Downloading : 894M/0.98G [00:04&lt;00:00,     174MB/s]
+ 90%|########9 | Downloading : 902M/0.98G [00:04&lt;00:00,     172MB/s]
+ 91%|######### | Downloading : 910M/0.98G [00:04&lt;00:00,     172MB/s]
+ 91%|#########1| Downloading : 918M/0.98G [00:04&lt;00:00,     171MB/s]
+ 92%|#########2| Downloading : 926M/0.98G [00:04&lt;00:00,     171MB/s]
+ 93%|#########2| Downloading : 934M/0.98G [00:04&lt;00:00,     170MB/s]
+ 94%|#########3| Downloading : 942M/0.98G [00:04&lt;00:00,     170MB/s]
+ 95%|#########4| Downloading : 950M/0.98G [00:04&lt;00:00,     168MB/s]
+ 95%|#########5| Downloading : 958M/0.98G [00:04&lt;00:00,     167MB/s]
+ 96%|#########6| Downloading : 966M/0.98G [00:04&lt;00:00,     166MB/s]
+ 97%|#########6| Downloading : 974M/0.98G [00:04&lt;00:00,     166MB/s]
+ 98%|#########7| Downloading : 982M/0.98G [00:04&lt;00:00,     166MB/s]
+ 99%|#########8| Downloading : 990M/0.98G [00:04&lt;00:00,     167MB/s]
+ 99%|#########9| Downloading : 998M/0.98G [00:04&lt;00:00,     167MB/s]
+100%|##########| Downloading : 0.98G/0.98G [00:05&lt;00:00,     167MB/s]
+100%|##########| Downloading : 0.98G/0.98G [00:05&lt;00:00,     210MB/s]
+Verifying hash db07710c0b94476f954f60926685b5b7.
+Decompressing the archive: /home/circleci/mne_data/mne-testing-data-0.123.tar.gz
+(please be patient, this can take some time)
+Successfully extracted to: [&#39;/home/circleci/mne_data/MNE-testing-data&#39;]
 
 &lt;Figure size 640x640 with 1 Axes&gt;
 </pre></div>
@@ -659,9 +798,11 @@ which are however optional. The required inputs are:</p>
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
-    verbose : bool
-        If ``True``, this will print a snippet of the sidecar files. Otherwise,
-        no content will be printed.
+
+    verbose : bool | str | int | None
+        If not None, override default verbose level (see :func:`mne.verbose`
+        and :ref:`Logging documentation &lt;python:tut-logging&gt;` for more).
+        If used, it should be passed as a keyword-argument only.
 
     Returns
     -------
@@ -750,138 +891,23 @@ automatically by MNE-BIDS when writing the BIDS data:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf...
 EDF file detected
 Setting channel info structure...
+Could not determine channel type of the following channels, they will be set as EEG:
+Fc5., Fc3., Fc1., Fcz., Fc2., Fc4., Fc6., C5.., C3.., C1.., Cz.., C2.., C4.., C6.., Cp5., Cp3., Cp1., Cpz., Cp2., Cp4., Cp6., Fp1., Fpz., Fp2., Af7., Af3., Afz., Af4., Af8., F7.., F5.., F3.., F1.., Fz.., F2.., F4.., F6.., F8.., Ft7., Ft8., T7.., T8.., T9.., T10., Tp7., Tp8., P7.., P5.., P3.., P1.., Pz.., P2.., P4.., P6.., P8.., Po7., Po3., Poz., Po4., Po8., O1.., Oz.., O2.., Iz..
 Creating raw.info structure...
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-001 n/a     n/a     n/a
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-Writing electrodes file to...  /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_electrodes.tsv
-Writing coordsytem file to...  /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_coordsystem.json
-
+Writing electrodes file to... /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_electrodes.tsv
+Writing coordsytem file to... /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_coordsystem.json
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_electrodes.tsv&#39;...
-
-name    x       y       z
-Fc5.    -0.09731968723468239    -0.0021423686071579805  0.050226741225281264
-Fc3.    -0.08856262271830136    0.03656538257252212     0.08223925927400842
-Fc1.    -0.08409763256980056    0.0651383327975854      0.04885693263757247
-Fcz.    -0.09271418986954857    -0.0008204160816824106  0.08669305289548136
-Fc2.    -0.09514340411749506    0.033122249460160715    0.046783546930167653
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_coordsystem.json&#39;...
-
-{
-    &quot;EEGCoordinateSystem&quot;: &quot;CapTrak&quot;,
-    &quot;EEGCoordinateUnits&quot;: &quot;m&quot;,
-    &quot;EEGCoordinateSystemDescription&quot;: &quot;The X-axis goes from the left preauricular point (LPA) through the right preauricular point (RPA). The Y-axis goes orthogonally to the X-axis through the nasion (NAS). The Z-axis goes orthogonally to the XY-plane through the vertex of the head. This corresponds to a \&quot;RAS\&quot; orientation with the origin of the coordinate system approximately between the ears. See Appendix VIII in the BIDS specification.&quot;,
-    &quot;AnatomicalLandmarkCoordinates&quot;: {
-        &quot;NAS&quot;: [
-            -3.788238398497924e-18,
-            0.11309931478694205,
-            -3.0814879110195774e-33
-        ],
-        &quot;LPA&quot;: [
-            -0.09189697162389295,
-            3.078070254157709e-18,
-            0.0
-        ],
-        &quot;RPA&quot;: [
-            0.09240077493980713,
-            -3.094945043100789e-18,
-            -6.162975822039155e-33
-        ]
-    },
-    &quot;AnatomicalLandmarkCoordinateSystem&quot;: &quot;CapTrak&quot;,
-    &quot;AnatomicalLandmarkCoordinateUnits&quot;: &quot;m&quot;
-}
-
+Used Annotations descriptions: [&#39;T0&#39;]
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-0.0     60.2    T0      1       0
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.6.0&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;[Unspecified]&quot;
-    ]
-}
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_eeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;RestEyesClosed&quot;,
-    &quot;Manufacturer&quot;: &quot;n/a&quot;,
-    &quot;PowerLineFrequency&quot;: 50,
-    &quot;SamplingFrequency&quot;: 160.0,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 60.99375,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;EEGReference&quot;: &quot;n/a&quot;,
-    &quot;EEGGround&quot;: &quot;n/a&quot;,
-    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
-    &quot;EEGChannelCount&quot;: 64,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
 Copying data files to sub-001_task-RestEyesClosed_eeg.edf
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv&#39;...
-
-filename        acq_time
-eeg/sub-001_task-RestEyesClosed_eeg.edf 2009-08-12T16:15:00.000000Z
 Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-RestEyesClosed_eeg.edf.
 
 BIDSPath(
@@ -1008,7 +1034,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.152 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  39.286 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1048,13 +1074,13 @@ command line tool:</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-19.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
 </p>
     </div>
     

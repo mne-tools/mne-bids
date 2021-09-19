@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.get_entities_from_fname &#8212; MNE-BIDS 0.9.dev0 documentation</title>
+    <title>mne_bids.search_folder_for_text &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet" />
   <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
@@ -47,8 +47,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.get_entity_vals" href="mne_bids.get_entity_vals.html" />
-    <link rel="prev" title="mne_bids.print_dir_tree" href="mne_bids.print_dir_tree.html" />
+    <link rel="next" title="mne_bids.print_dir_tree" href="mne_bids.print_dir_tree.html" />
+    <link rel="prev" title="mne_bids.get_anonymization_daysback" href="mne_bids.get_anonymization_daysback.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -248,8 +248,8 @@
    mne_bids.get_anonymization_daysback
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_bids.search_folder_for_text.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_bids.search_folder_for_text
   </a>
  </li>
@@ -258,8 +258,8 @@
    mne_bids.print_dir_tree
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_entities_from_fname.html">
    mne_bids.get_entities_from_fname
   </a>
  </li>
@@ -336,9 +336,24 @@
               
               <div class="toc-item">
                 
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-bids-search-folder-for-text">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_bids.search_folder_for_text
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
 </nav>
               </div>
               
@@ -358,50 +373,52 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-get-entities-from-fname">
-<h1>mne_bids.get_entities_from_fname<a class="headerlink" href="#mne-bids-get-entities-from-fname" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-search-folder-for-text">
+<h1>mne_bids.search_folder_for_text<a class="headerlink" href="#mne-bids-search-folder-for-text" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.get_entities_from_fname">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_entities_from_fname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entities_from_fname"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_entities_from_fname" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve a dictionary of BIDS entities from a filename.</p>
-<p>Entities not present in <code class="docutils literal notranslate"><span class="pre">fname</span></code> will be assigned the value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dt class="sig sig-object py" id="mne_bids.search_folder_for_text">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">search_folder_for_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('.json',</span> <span class="pre">'.tsv')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_numbers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_str</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#search_folder_for_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.search_folder_for_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find any particular string entry in the text files of a folder.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a search function like <a class="reference external" href="https://man7.org/linux/man-pages/man1/fgrep.1.html">grep</a>
+that is formatted nicely for BIDS datasets.</p>
+</div>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>fname</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The path to parse.</p>
+<dt><strong>entry</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The string to search for</p>
 </dd>
-<dt><strong>on_error</strong><span class="classifier">‘raise’ | ‘warn’ | ‘ignore’</span></dt><dd><p>If any unsupported labels in the filename are found and this is set
-to <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. If <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>,
-emit a warning and continue, and if <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code>,
-neither raise an exception nor a warning, and
-return all entities found. For example, currently MNE-BIDS does not
-support derivatives yet, but the <code class="docutils literal notranslate"><span class="pre">desc</span></code> entity label is used to
-differentiate different derivatives and will work with this function
-if <code class="docutils literal notranslate"><span class="pre">on_error='ignore'</span></code>.</p>
+<dt><strong>folder</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>The folder in which to search.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
-If used, it should be passed as a keyword-argument only.</p>
+<dt><strong>extensions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The extensions to search through. Default is <code class="docutils literal notranslate"><span class="pre">json</span></code> and
+<code class="docutils literal notranslate"><span class="pre">tsv</span></code> which are the BIDS sidecar file types.</p>
+</dd>
+<dt><strong>line_numbers</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to include line numbers.</p>
+</dd>
+<dt><strong>return_str</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the fields with “n/a” as a str instead of
+printing them.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl>
-<dt><strong>params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>A dictionary with the keys corresponding to the BIDS entity names, and
-the values to the entity values encoded in the filename.</p>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>If <em class="xref py py-obj">return_str</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the fields are returned as a
+string. Else, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned and the fields are printed.</p>
 </dd>
 </dl>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;sub-01_ses-exp_run-02_meg.fif&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-<span class="go">{&#39;subject&#39;: &#39;01&#39;, &#39;session&#39;: &#39;exp&#39;, &#39;task&#39;: None, &#39;acquisition&#39;: None, &#39;run&#39;: &#39;02&#39;, &#39;processing&#39;: None, &#39;space&#39;: None, &#39;recording&#39;: None, &#39;split&#39;: None, &#39;suffix&#39;: &#39;meg&#39;}</span>
-</pre></div>
-</div>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backreferences-mne-bids-get-entities-from-fname"></span></div>
+<div class="section" id="examples-using-mne-bids-search-folder-for-text">
+<span id="sphx-glr-backreferences-mne-bids-search-folder-for-text"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.search_folder_for_text</span></code><a class="headerlink" href="#examples-using-mne-bids-search-folder-for-text" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id1">
+<img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
+</div>
 
 
               </div>
@@ -409,8 +426,8 @@ the values to the entity values encoded in the filename.</p>
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="mne_bids.print_dir_tree.html" title="previous page">mne_bids.print_dir_tree</a>
-    <a class='right-next' id="next-link" href="mne_bids.get_entity_vals.html" title="next page">mne_bids.get_entity_vals</a>
+    <a class='left-prev' id="prev-link" href="mne_bids.get_anonymization_daysback.html" title="previous page">mne_bids.get_anonymization_daysback</a>
+    <a class='right-next' id="next-link" href="mne_bids.print_dir_tree.html" title="next page">mne_bids.print_dir_tree</a>
 
               </div>
               

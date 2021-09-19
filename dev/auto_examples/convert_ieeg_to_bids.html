@@ -386,8 +386,8 @@ refer to the <a class="reference external" href="https://bids-specification.read
 
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anat_landmarks</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">)</span>
+                      <a href="../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anat_landmarks</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
+                      <a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="section" id="step-1-download-the-data">
@@ -407,6 +407,568 @@ data downloaded via MNE-Python’s <code class="docutils literal notranslate"><s
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
+Downloading archive mne-misc-data-0.19.tar.gz to /home/circleci/mne_data
+Downloading https://codeload.github.com/mne-tools/mne-misc-data/tar.gz/0.19 (0 bytes)
+
+  0%|          | Downloading : 0.00/0.00 [00:00&lt;?,        ?B/s]
+  0%|          | Downloading : 56.0k/0.00 [00:00&lt;00:00,    2.93MB/s]
+  0%|          | Downloading : 152k/0.00 [00:00&lt;00:00,    3.83MB/s]
+  0%|          | Downloading : 216k/0.00 [00:00&lt;00:00,    3.69MB/s]
+  0%|          | Downloading : 280k/0.00 [00:00&lt;00:00,    2.47MB/s]
+  0%|          | Downloading : 728k/0.00 [00:00&lt;00:00,    5.69MB/s]
+  0%|          | Downloading : 1.21M/0.00 [00:00&lt;00:00,    8.28MB/s]
+  0%|          | Downloading : 1.71M/0.00 [00:00&lt;00:00,    10.2MB/s]
+  0%|          | Downloading : 2.21M/0.00 [00:00&lt;00:00,    11.5MB/s]
+  0%|          | Downloading : 2.71M/0.00 [00:00&lt;00:00,    12.7MB/s]
+  0%|          | Downloading : 3.21M/0.00 [00:00&lt;00:00,    8.46MB/s]
+  0%|          | Downloading : 3.34M/0.00 [00:00&lt;00:00,    7.84MB/s]
+  0%|          | Downloading : 3.46M/0.00 [00:00&lt;00:00,    6.99MB/s]
+  0%|          | Downloading : 3.59M/0.00 [00:00&lt;00:00,    6.58MB/s]
+  0%|          | Downloading : 3.71M/0.00 [00:00&lt;00:00,    6.29MB/s]
+  0%|          | Downloading : 3.84M/0.00 [00:00&lt;00:00,    5.75MB/s]
+  0%|          | Downloading : 3.96M/0.00 [00:00&lt;00:00,    5.51MB/s]
+  0%|          | Downloading : 4.09M/0.00 [00:00&lt;00:00,    5.27MB/s]
+  0%|          | Downloading : 4.21M/0.00 [00:00&lt;00:00,    4.96MB/s]
+  0%|          | Downloading : 4.59M/0.00 [00:00&lt;00:00,    5.45MB/s]
+  0%|          | Downloading : 5.09M/0.00 [00:00&lt;00:00,    6.14MB/s]
+  0%|          | Downloading : 5.59M/0.00 [00:00&lt;00:00,    6.78MB/s]
+  0%|          | Downloading : 6.09M/0.00 [00:00&lt;00:00,    7.38MB/s]
+  0%|          | Downloading : 6.59M/0.00 [00:00&lt;00:00,    7.98MB/s]
+  0%|          | Downloading : 7.09M/0.00 [00:00&lt;00:00,    8.55MB/s]
+  0%|          | Downloading : 7.59M/0.00 [00:00&lt;00:00,    9.11MB/s]
+  0%|          | Downloading : 8.09M/0.00 [00:01&lt;00:00,    9.62MB/s]
+  0%|          | Downloading : 8.59M/0.00 [00:01&lt;00:00,    10.1MB/s]
+  0%|          | Downloading : 9.09M/0.00 [00:01&lt;00:00,    10.6MB/s]
+  0%|          | Downloading : 9.34M/0.00 [00:01&lt;00:00,    10.7MB/s]
+  0%|          | Downloading : 9.84M/0.00 [00:01&lt;00:00,    11.2MB/s]
+  0%|          | Downloading : 10.3M/0.00 [00:01&lt;00:00,    11.6MB/s]
+  0%|          | Downloading : 10.8M/0.00 [00:01&lt;00:00,    12.0MB/s]
+  0%|          | Downloading : 11.3M/0.00 [00:01&lt;00:00,    12.4MB/s]
+  0%|          | Downloading : 11.8M/0.00 [00:01&lt;00:00,    12.7MB/s]
+  0%|          | Downloading : 12.3M/0.00 [00:01&lt;00:00,    13.1MB/s]
+  0%|          | Downloading : 12.8M/0.00 [00:01&lt;00:00,    13.4MB/s]
+  0%|          | Downloading : 13.3M/0.00 [00:01&lt;00:00,    13.8MB/s]
+  0%|          | Downloading : 13.6M/0.00 [00:01&lt;00:00,    11.2MB/s]
+  0%|          | Downloading : 13.7M/0.00 [00:01&lt;00:00,    10.7MB/s]
+  0%|          | Downloading : 13.8M/0.00 [00:01&lt;00:00,    9.86MB/s]
+  0%|          | Downloading : 14.0M/0.00 [00:01&lt;00:00,    9.48MB/s]
+  0%|          | Downloading : 14.1M/0.00 [00:01&lt;00:00,    8.89MB/s]
+  0%|          | Downloading : 14.2M/0.00 [00:01&lt;00:00,    8.56MB/s]
+  0%|          | Downloading : 14.3M/0.00 [00:01&lt;00:00,    8.28MB/s]
+  0%|          | Downloading : 14.5M/0.00 [00:01&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 14.6M/0.00 [00:01&lt;00:00,    7.72MB/s]
+  0%|          | Downloading : 15.0M/0.00 [00:01&lt;00:00,    8.06MB/s]
+  0%|          | Downloading : 15.5M/0.00 [00:01&lt;00:00,    8.52MB/s]
+  0%|          | Downloading : 16.0M/0.00 [00:01&lt;00:00,    8.97MB/s]
+  0%|          | Downloading : 16.5M/0.00 [00:01&lt;00:00,    9.39MB/s]
+  0%|          | Downloading : 17.0M/0.00 [00:01&lt;00:00,    9.80MB/s]
+  0%|          | Downloading : 17.5M/0.00 [00:01&lt;00:00,    10.2MB/s]
+  0%|          | Downloading : 18.0M/0.00 [00:01&lt;00:00,    10.6MB/s]
+  0%|          | Downloading : 18.5M/0.00 [00:01&lt;00:00,    11.0MB/s]
+  0%|          | Downloading : 19.0M/0.00 [00:02&lt;00:00,    11.3MB/s]
+  0%|          | Downloading : 19.7M/0.00 [00:02&lt;00:00,    11.8MB/s]
+  0%|          | Downloading : 20.2M/0.00 [00:02&lt;00:00,    12.2MB/s]
+  0%|          | Downloading : 20.7M/0.00 [00:02&lt;00:00,    12.5MB/s]
+  0%|          | Downloading : 21.2M/0.00 [00:02&lt;00:00,    12.8MB/s]
+  0%|          | Downloading : 21.7M/0.00 [00:02&lt;00:00,    13.1MB/s]
+  0%|          | Downloading : 22.2M/0.00 [00:02&lt;00:00,    13.2MB/s]
+  0%|          | Downloading : 22.7M/0.00 [00:02&lt;00:00,    13.7MB/s]
+  0%|          | Downloading : 23.2M/0.00 [00:02&lt;00:00,    14.0MB/s]
+  0%|          | Downloading : 23.7M/0.00 [00:02&lt;00:00,    13.8MB/s]
+  0%|          | Downloading : 24.7M/0.00 [00:02&lt;00:00,    14.7MB/s]
+  0%|          | Downloading : 25.2M/0.00 [00:02&lt;00:00,    15.2MB/s]
+  0%|          | Downloading : 25.7M/0.00 [00:02&lt;00:00,    15.6MB/s]
+  0%|          | Downloading : 26.2M/0.00 [00:02&lt;00:00,    16.0MB/s]
+  0%|          | Downloading : 26.7M/0.00 [00:02&lt;00:00,    16.4MB/s]
+  0%|          | Downloading : 27.2M/0.00 [00:02&lt;00:00,    16.8MB/s]
+  0%|          | Downloading : 27.7M/0.00 [00:02&lt;00:00,    17.1MB/s]
+  0%|          | Downloading : 28.2M/0.00 [00:02&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 28.7M/0.00 [00:02&lt;00:00,    16.5MB/s]
+  0%|          | Downloading : 29.2M/0.00 [00:02&lt;00:00,    16.9MB/s]
+  0%|          | Downloading : 29.7M/0.00 [00:02&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 30.2M/0.00 [00:02&lt;00:00,    17.5MB/s]
+  0%|          | Downloading : 30.7M/0.00 [00:02&lt;00:00,    17.8MB/s]
+  0%|          | Downloading : 31.2M/0.00 [00:02&lt;00:00,    18.1MB/s]
+  0%|          | Downloading : 31.7M/0.00 [00:02&lt;00:00,    18.4MB/s]
+  0%|          | Downloading : 32.2M/0.00 [00:02&lt;00:00,    18.8MB/s]
+  0%|          | Downloading : 32.7M/0.00 [00:02&lt;00:00,    19.1MB/s]
+  0%|          | Downloading : 33.2M/0.00 [00:02&lt;00:00,    19.1MB/s]
+  0%|          | Downloading : 33.7M/0.00 [00:02&lt;00:00,    19.1MB/s]
+  0%|          | Downloading : 34.2M/0.00 [00:02&lt;00:00,    19.2MB/s]
+  0%|          | Downloading : 34.7M/0.00 [00:02&lt;00:00,    19.5MB/s]
+  0%|          | Downloading : 35.2M/0.00 [00:02&lt;00:00,    19.7MB/s]
+  0%|          | Downloading : 35.7M/0.00 [00:02&lt;00:00,    19.9MB/s]
+  0%|          | Downloading : 36.2M/0.00 [00:02&lt;00:00,    19.9MB/s]
+  0%|          | Downloading : 36.7M/0.00 [00:02&lt;00:00,    19.8MB/s]
+  0%|          | Downloading : 37.2M/0.00 [00:02&lt;00:00,    18.4MB/s]
+  0%|          | Downloading : 37.7M/0.00 [00:02&lt;00:00,    18.4MB/s]
+  0%|          | Downloading : 38.2M/0.00 [00:02&lt;00:00,    18.3MB/s]
+  0%|          | Downloading : 38.7M/0.00 [00:03&lt;00:00,    16.5MB/s]
+  0%|          | Downloading : 39.2M/0.00 [00:03&lt;00:00,    14.1MB/s]
+  0%|          | Downloading : 39.5M/0.00 [00:03&lt;00:00,    13.1MB/s]
+  0%|          | Downloading : 39.7M/0.00 [00:03&lt;00:00,    12.2MB/s]
+  0%|          | Downloading : 40.0M/0.00 [00:03&lt;00:00,    11.5MB/s]
+  0%|          | Downloading : 40.2M/0.00 [00:03&lt;00:00,    10.8MB/s]
+  0%|          | Downloading : 40.5M/0.00 [00:03&lt;00:00,    10.3MB/s]
+  0%|          | Downloading : 40.7M/0.00 [00:03&lt;00:00,    9.75MB/s]
+  0%|          | Downloading : 41.0M/0.00 [00:03&lt;00:00,    9.36MB/s]
+  0%|          | Downloading : 41.5M/0.00 [00:03&lt;00:00,    9.61MB/s]
+  0%|          | Downloading : 42.0M/0.00 [00:03&lt;00:00,    9.85MB/s]
+  0%|          | Downloading : 42.5M/0.00 [00:03&lt;00:00,    10.1MB/s]
+  0%|          | Downloading : 42.7M/0.00 [00:03&lt;00:00,    9.95MB/s]
+  0%|          | Downloading : 43.0M/0.00 [00:03&lt;00:00,    9.56MB/s]
+  0%|          | Downloading : 43.2M/0.00 [00:03&lt;00:00,    9.10MB/s]
+  0%|          | Downloading : 43.5M/0.00 [00:04&lt;00:00,    8.68MB/s]
+  0%|          | Downloading : 43.7M/0.00 [00:04&lt;00:00,    8.32MB/s]
+  0%|          | Downloading : 44.0M/0.00 [00:04&lt;00:00,    8.07MB/s]
+  0%|          | Downloading : 44.2M/0.00 [00:04&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 44.5M/0.00 [00:04&lt;00:00,    7.39MB/s]
+  0%|          | Downloading : 44.7M/0.00 [00:04&lt;00:00,    7.22MB/s]
+  0%|          | Downloading : 45.0M/0.00 [00:04&lt;00:00,    6.96MB/s]
+  0%|          | Downloading : 45.2M/0.00 [00:04&lt;00:00,    6.78MB/s]
+  0%|          | Downloading : 45.5M/0.00 [00:04&lt;00:00,    6.91MB/s]
+  0%|          | Downloading : 45.7M/0.00 [00:04&lt;00:00,    7.06MB/s]
+  0%|          | Downloading : 46.0M/0.00 [00:04&lt;00:00,    7.19MB/s]
+  0%|          | Downloading : 46.2M/0.00 [00:04&lt;00:00,    7.34MB/s]
+  0%|          | Downloading : 46.5M/0.00 [00:04&lt;00:00,    7.49MB/s]
+  0%|          | Downloading : 47.0M/0.00 [00:04&lt;00:00,    7.79MB/s]
+  0%|          | Downloading : 47.2M/0.00 [00:04&lt;00:00,    7.90MB/s]
+  0%|          | Downloading : 47.5M/0.00 [00:04&lt;00:00,    8.05MB/s]
+  0%|          | Downloading : 47.7M/0.00 [00:04&lt;00:00,    8.07MB/s]
+  0%|          | Downloading : 48.0M/0.00 [00:04&lt;00:00,    8.11MB/s]
+  0%|          | Downloading : 48.2M/0.00 [00:04&lt;00:00,    8.15MB/s]
+  0%|          | Downloading : 48.5M/0.00 [00:04&lt;00:00,    8.19MB/s]
+  0%|          | Downloading : 48.7M/0.00 [00:04&lt;00:00,    8.21MB/s]
+  0%|          | Downloading : 49.0M/0.00 [00:04&lt;00:00,    7.91MB/s]
+  0%|          | Downloading : 49.5M/0.00 [00:04&lt;00:00,    8.24MB/s]
+  0%|          | Downloading : 50.0M/0.00 [00:04&lt;00:00,    8.58MB/s]
+  0%|          | Downloading : 50.5M/0.00 [00:05&lt;00:00,    8.91MB/s]
+  0%|          | Downloading : 50.7M/0.00 [00:05&lt;00:00,    8.78MB/s]
+  0%|          | Downloading : 51.0M/0.00 [00:05&lt;00:00,    8.40MB/s]
+  0%|          | Downloading : 51.2M/0.00 [00:05&lt;00:00,    7.97MB/s]
+  0%|          | Downloading : 51.5M/0.00 [00:05&lt;00:00,    7.51MB/s]
+  0%|          | Downloading : 51.7M/0.00 [00:05&lt;00:00,    7.39MB/s]
+  0%|          | Downloading : 52.0M/0.00 [00:05&lt;00:00,    7.06MB/s]
+  0%|          | Downloading : 52.2M/0.00 [00:05&lt;00:00,    6.75MB/s]
+  0%|          | Downloading : 52.5M/0.00 [00:05&lt;00:00,    6.60MB/s]
+  0%|          | Downloading : 52.7M/0.00 [00:05&lt;00:00,    6.38MB/s]
+  0%|          | Downloading : 53.0M/0.00 [00:05&lt;00:00,    6.16MB/s]
+  0%|          | Downloading : 53.2M/0.00 [00:05&lt;00:00,    6.06MB/s]
+  0%|          | Downloading : 53.5M/0.00 [00:05&lt;00:00,    6.22MB/s]
+  0%|          | Downloading : 54.0M/0.00 [00:05&lt;00:00,    6.58MB/s]
+  0%|          | Downloading : 54.5M/0.00 [00:05&lt;00:00,    6.92MB/s]
+  0%|          | Downloading : 55.0M/0.00 [00:05&lt;00:00,    6.94MB/s]
+  0%|          | Downloading : 55.2M/0.00 [00:05&lt;00:00,    6.68MB/s]
+  0%|          | Downloading : 55.5M/0.00 [00:06&lt;00:00,    6.55MB/s]
+  0%|          | Downloading : 55.7M/0.00 [00:06&lt;00:00,    6.33MB/s]
+  0%|          | Downloading : 56.0M/0.00 [00:06&lt;00:00,    6.15MB/s]
+  0%|          | Downloading : 56.2M/0.00 [00:06&lt;00:00,    6.02MB/s]
+  0%|          | Downloading : 56.5M/0.00 [00:06&lt;00:00,    5.85MB/s]
+  0%|          | Downloading : 56.7M/0.00 [00:06&lt;00:00,    5.68MB/s]
+  0%|          | Downloading : 57.0M/0.00 [00:06&lt;00:00,    5.58MB/s]
+  0%|          | Downloading : 57.2M/0.00 [00:06&lt;00:00,    5.44MB/s]
+  0%|          | Downloading : 57.7M/0.00 [00:06&lt;00:00,    5.77MB/s]
+  0%|          | Downloading : 58.0M/0.00 [00:06&lt;00:00,    5.92MB/s]
+  0%|          | Downloading : 58.2M/0.00 [00:06&lt;00:00,    6.08MB/s]
+  0%|          | Downloading : 58.5M/0.00 [00:06&lt;00:00,    5.93MB/s]
+  0%|          | Downloading : 58.7M/0.00 [00:06&lt;00:00,    6.05MB/s]
+  0%|          | Downloading : 59.2M/0.00 [00:06&lt;00:00,    6.39MB/s]
+  0%|          | Downloading : 59.7M/0.00 [00:06&lt;00:00,    6.73MB/s]
+  0%|          | Downloading : 60.2M/0.00 [00:06&lt;00:00,    6.77MB/s]
+  0%|          | Downloading : 60.5M/0.00 [00:06&lt;00:00,    6.62MB/s]
+  0%|          | Downloading : 60.7M/0.00 [00:06&lt;00:00,    6.41MB/s]
+  0%|          | Downloading : 61.0M/0.00 [00:07&lt;00:00,    6.21MB/s]
+  0%|          | Downloading : 61.2M/0.00 [00:07&lt;00:00,    6.02MB/s]
+  0%|          | Downloading : 61.5M/0.00 [00:07&lt;00:00,    5.92MB/s]
+  0%|          | Downloading : 61.7M/0.00 [00:07&lt;00:00,    5.76MB/s]
+  0%|          | Downloading : 62.0M/0.00 [00:07&lt;00:00,    5.63MB/s]
+  0%|          | Downloading : 62.2M/0.00 [00:07&lt;00:00,    5.56MB/s]
+  0%|          | Downloading : 62.5M/0.00 [00:07&lt;00:00,    5.44MB/s]
+  0%|          | Downloading : 63.0M/0.00 [00:07&lt;00:00,    5.78MB/s]
+  0%|          | Downloading : 63.2M/0.00 [00:07&lt;00:00,    5.76MB/s]
+  0%|          | Downloading : 63.7M/0.00 [00:07&lt;00:00,    6.09MB/s]
+  0%|          | Downloading : 64.2M/0.00 [00:07&lt;00:00,    6.42MB/s]
+  0%|          | Downloading : 64.7M/0.00 [00:07&lt;00:00,    6.74MB/s]
+  0%|          | Downloading : 65.0M/0.00 [00:07&lt;00:00,    6.67MB/s]
+  0%|          | Downloading : 65.2M/0.00 [00:07&lt;00:00,    6.45MB/s]
+  0%|          | Downloading : 65.5M/0.00 [00:07&lt;00:00,    6.34MB/s]
+  0%|          | Downloading : 65.7M/0.00 [00:07&lt;00:00,    6.16MB/s]
+  0%|          | Downloading : 66.0M/0.00 [00:07&lt;00:00,    6.02MB/s]
+  0%|          | Downloading : 66.2M/0.00 [00:08&lt;00:00,    5.85MB/s]
+  0%|          | Downloading : 66.5M/0.00 [00:08&lt;00:00,    5.74MB/s]
+  0%|          | Downloading : 66.7M/0.00 [00:08&lt;00:00,    5.60MB/s]
+  0%|          | Downloading : 67.0M/0.00 [00:08&lt;00:00,    5.48MB/s]
+  0%|          | Downloading : 67.2M/0.00 [00:08&lt;00:00,    5.40MB/s]
+  0%|          | Downloading : 67.5M/0.00 [00:08&lt;00:00,    5.43MB/s]
+  0%|          | Downloading : 67.7M/0.00 [00:08&lt;00:00,    5.58MB/s]
+  0%|          | Downloading : 68.2M/0.00 [00:08&lt;00:00,    5.93MB/s]
+  0%|          | Downloading : 68.5M/0.00 [00:08&lt;00:00,    6.09MB/s]
+  0%|          | Downloading : 69.0M/0.00 [00:08&lt;00:00,    6.43MB/s]
+  0%|          | Downloading : 69.2M/0.00 [00:08&lt;00:00,    6.22MB/s]
+  0%|          | Downloading : 69.5M/0.00 [00:08&lt;00:00,    6.10MB/s]
+  0%|          | Downloading : 69.7M/0.00 [00:08&lt;00:00,    5.95MB/s]
+  0%|          | Downloading : 70.0M/0.00 [00:08&lt;00:00,    5.79MB/s]
+  0%|          | Downloading : 70.2M/0.00 [00:08&lt;00:00,    5.69MB/s]
+  0%|          | Downloading : 70.5M/0.00 [00:08&lt;00:00,    5.54MB/s]
+  0%|          | Downloading : 70.7M/0.00 [00:08&lt;00:00,    5.41MB/s]
+  0%|          | Downloading : 71.0M/0.00 [00:08&lt;00:00,    5.36MB/s]
+  0%|          | Downloading : 71.2M/0.00 [00:09&lt;00:00,    5.25MB/s]
+  0%|          | Downloading : 71.5M/0.00 [00:09&lt;00:00,    5.20MB/s]
+  0%|          | Downloading : 71.7M/0.00 [00:09&lt;00:00,    5.21MB/s]
+  0%|          | Downloading : 72.2M/0.00 [00:09&lt;00:00,    5.54MB/s]
+  0%|          | Downloading : 72.7M/0.00 [00:09&lt;00:00,    5.87MB/s]
+  0%|          | Downloading : 73.2M/0.00 [00:09&lt;00:00,    6.21MB/s]
+  0%|          | Downloading : 73.5M/0.00 [00:09&lt;00:00,    6.09MB/s]
+  0%|          | Downloading : 73.7M/0.00 [00:09&lt;00:00,    5.92MB/s]
+  0%|          | Downloading : 74.0M/0.00 [00:09&lt;00:00,    5.75MB/s]
+  0%|          | Downloading : 74.2M/0.00 [00:09&lt;00:00,    5.67MB/s]
+  0%|          | Downloading : 74.5M/0.00 [00:09&lt;00:00,    5.50MB/s]
+  0%|          | Downloading : 74.7M/0.00 [00:09&lt;00:00,    5.38MB/s]
+  0%|          | Downloading : 75.0M/0.00 [00:09&lt;00:00,    5.25MB/s]
+  0%|          | Downloading : 75.2M/0.00 [00:09&lt;00:00,    5.21MB/s]
+  0%|          | Downloading : 75.5M/0.00 [00:09&lt;00:00,    5.12MB/s]
+  0%|          | Downloading : 75.7M/0.00 [00:09&lt;00:00,    4.90MB/s]
+  0%|          | Downloading : 76.1M/0.00 [00:09&lt;00:00,    5.14MB/s]
+  0%|          | Downloading : 76.6M/0.00 [00:10&lt;00:00,    5.46MB/s]
+  0%|          | Downloading : 76.8M/0.00 [00:10&lt;00:00,    5.60MB/s]
+  0%|          | Downloading : 77.3M/0.00 [00:10&lt;00:00,    5.94MB/s]
+  0%|          | Downloading : 77.6M/0.00 [00:10&lt;00:00,    5.84MB/s]
+  0%|          | Downloading : 77.8M/0.00 [00:10&lt;00:00,    5.67MB/s]
+  0%|          | Downloading : 78.1M/0.00 [00:10&lt;00:00,    5.59MB/s]
+  0%|          | Downloading : 78.3M/0.00 [00:10&lt;00:00,    5.48MB/s]
+  0%|          | Downloading : 78.6M/0.00 [00:10&lt;00:00,    5.36MB/s]
+  0%|          | Downloading : 78.8M/0.00 [00:10&lt;00:00,    5.30MB/s]
+  0%|          | Downloading : 79.1M/0.00 [00:10&lt;00:00,    5.17MB/s]
+  0%|          | Downloading : 79.3M/0.00 [00:10&lt;00:00,    5.07MB/s]
+  0%|          | Downloading : 79.6M/0.00 [00:10&lt;00:00,    4.95MB/s]
+  0%|          | Downloading : 79.8M/0.00 [00:10&lt;00:00,    4.91MB/s]
+  0%|          | Downloading : 80.3M/0.00 [00:10&lt;00:00,    5.24MB/s]
+  0%|          | Downloading : 80.8M/0.00 [00:10&lt;00:00,    5.55MB/s]
+  0%|          | Downloading : 81.1M/0.00 [00:10&lt;00:00,    5.49MB/s]
+  0%|          | Downloading : 81.6M/0.00 [00:10&lt;00:00,    5.82MB/s]
+  0%|          | Downloading : 82.1M/0.00 [00:10&lt;00:00,    6.13MB/s]
+  0%|          | Downloading : 82.6M/0.00 [00:10&lt;00:00,    6.46MB/s]
+  0%|          | Downloading : 82.8M/0.00 [00:11&lt;00:00,    6.41MB/s]
+  0%|          | Downloading : 83.1M/0.00 [00:11&lt;00:00,    6.19MB/s]
+  0%|          | Downloading : 83.3M/0.00 [00:11&lt;00:00,    6.07MB/s]
+  0%|          | Downloading : 83.6M/0.00 [00:11&lt;00:00,    5.89MB/s]
+  0%|          | Downloading : 83.8M/0.00 [00:11&lt;00:00,    5.73MB/s]
+  0%|          | Downloading : 84.1M/0.00 [00:11&lt;00:00,    5.68MB/s]
+  0%|          | Downloading : 84.3M/0.00 [00:11&lt;00:00,    5.56MB/s]
+  0%|          | Downloading : 84.6M/0.00 [00:11&lt;00:00,    5.43MB/s]
+  0%|          | Downloading : 84.8M/0.00 [00:11&lt;00:00,    5.37MB/s]
+  0%|          | Downloading : 85.1M/0.00 [00:11&lt;00:00,    5.27MB/s]
+  0%|          | Downloading : 85.3M/0.00 [00:12&lt;00:00,    4.05MB/s]
+  0%|          | Downloading : 86.2M/0.00 [00:12&lt;00:00,    4.56MB/s]
+  0%|          | Downloading : 86.7M/0.00 [00:12&lt;00:00,    4.87MB/s]
+  0%|          | Downloading : 87.2M/0.00 [00:12&lt;00:00,    5.18MB/s]
+  0%|          | Downloading : 87.7M/0.00 [00:12&lt;00:00,    5.51MB/s]
+  0%|          | Downloading : 88.2M/0.00 [00:12&lt;00:00,    5.84MB/s]
+  0%|          | Downloading : 88.7M/0.00 [00:12&lt;00:00,    6.16MB/s]
+  0%|          | Downloading : 89.2M/0.00 [00:12&lt;00:00,    6.50MB/s]
+  0%|          | Downloading : 89.7M/0.00 [00:12&lt;00:00,    6.83MB/s]
+  0%|          | Downloading : 90.2M/0.00 [00:12&lt;00:00,    7.18MB/s]
+  0%|          | Downloading : 90.7M/0.00 [00:12&lt;00:00,    7.53MB/s]
+  0%|          | Downloading : 91.2M/0.00 [00:12&lt;00:00,    7.89MB/s]
+  0%|          | Downloading : 91.7M/0.00 [00:12&lt;00:00,    8.24MB/s]
+  0%|          | Downloading : 92.2M/0.00 [00:12&lt;00:00,    8.60MB/s]
+  0%|          | Downloading : 92.7M/0.00 [00:12&lt;00:00,    8.94MB/s]
+  0%|          | Downloading : 93.2M/0.00 [00:12&lt;00:00,    9.35MB/s]
+  0%|          | Downloading : 93.7M/0.00 [00:12&lt;00:00,    9.72MB/s]
+  0%|          | Downloading : 94.2M/0.00 [00:12&lt;00:00,    10.1MB/s]
+  0%|          | Downloading : 94.7M/0.00 [00:12&lt;00:00,    10.5MB/s]
+  0%|          | Downloading : 95.2M/0.00 [00:12&lt;00:00,    10.8MB/s]
+  0%|          | Downloading : 95.7M/0.00 [00:12&lt;00:00,    11.2MB/s]
+  0%|          | Downloading : 96.2M/0.00 [00:12&lt;00:00,    11.6MB/s]
+  0%|          | Downloading : 96.7M/0.00 [00:12&lt;00:00,    12.0MB/s]
+  0%|          | Downloading : 97.2M/0.00 [00:12&lt;00:00,    12.3MB/s]
+  0%|          | Downloading : 97.7M/0.00 [00:12&lt;00:00,    12.7MB/s]
+  0%|          | Downloading : 98.2M/0.00 [00:12&lt;00:00,    13.0MB/s]
+  0%|          | Downloading : 98.7M/0.00 [00:12&lt;00:00,    13.4MB/s]
+  0%|          | Downloading : 99.2M/0.00 [00:12&lt;00:00,    13.8MB/s]
+  0%|          | Downloading : 99.7M/0.00 [00:12&lt;00:00,    14.1MB/s]
+  0%|          | Downloading : 100M/0.00 [00:12&lt;00:00,    14.5MB/s]
+  0%|          | Downloading : 101M/0.00 [00:12&lt;00:00,    14.7MB/s]
+  0%|          | Downloading : 102M/0.00 [00:12&lt;00:00,    15.6MB/s]
+  0%|          | Downloading : 102M/0.00 [00:12&lt;00:00,    15.9MB/s]
+  0%|          | Downloading : 103M/0.00 [00:12&lt;00:00,    16.3MB/s]
+  0%|          | Downloading : 103M/0.00 [00:12&lt;00:00,    16.6MB/s]
+  0%|          | Downloading : 104M/0.00 [00:12&lt;00:00,    17.0MB/s]
+  0%|          | Downloading : 104M/0.00 [00:12&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 105M/0.00 [00:12&lt;00:00,    17.5MB/s]
+  0%|          | Downloading : 105M/0.00 [00:12&lt;00:00,    17.8MB/s]
+  0%|          | Downloading : 106M/0.00 [00:12&lt;00:00,    18.1MB/s]
+  0%|          | Downloading : 106M/0.00 [00:12&lt;00:00,    18.5MB/s]
+  0%|          | Downloading : 107M/0.00 [00:12&lt;00:00,    18.7MB/s]
+  0%|          | Downloading : 107M/0.00 [00:12&lt;00:00,    19.0MB/s]
+  0%|          | Downloading : 108M/0.00 [00:12&lt;00:00,    19.2MB/s]
+  0%|          | Downloading : 108M/0.00 [00:12&lt;00:00,    19.6MB/s]
+  0%|          | Downloading : 109M/0.00 [00:12&lt;00:00,    19.9MB/s]
+  0%|          | Downloading : 109M/0.00 [00:13&lt;00:00,    20.1MB/s]
+  0%|          | Downloading : 110M/0.00 [00:13&lt;00:00,    20.4MB/s]
+  0%|          | Downloading : 110M/0.00 [00:13&lt;00:00,    20.6MB/s]
+  0%|          | Downloading : 111M/0.00 [00:13&lt;00:00,    20.9MB/s]
+  0%|          | Downloading : 111M/0.00 [00:13&lt;00:00,    21.1MB/s]
+  0%|          | Downloading : 112M/0.00 [00:13&lt;00:00,    21.3MB/s]
+  0%|          | Downloading : 112M/0.00 [00:13&lt;00:00,    21.4MB/s]
+  0%|          | Downloading : 113M/0.00 [00:13&lt;00:00,    21.6MB/s]
+  0%|          | Downloading : 113M/0.00 [00:13&lt;00:00,    21.7MB/s]
+  0%|          | Downloading : 114M/0.00 [00:13&lt;00:00,    21.8MB/s]
+  0%|          | Downloading : 114M/0.00 [00:13&lt;00:00,    22.0MB/s]
+  0%|          | Downloading : 115M/0.00 [00:13&lt;00:00,    22.1MB/s]
+  0%|          | Downloading : 115M/0.00 [00:13&lt;00:00,    22.3MB/s]
+  0%|          | Downloading : 116M/0.00 [00:13&lt;00:00,    22.5MB/s]
+  0%|          | Downloading : 116M/0.00 [00:13&lt;00:00,    22.6MB/s]
+  0%|          | Downloading : 117M/0.00 [00:13&lt;00:00,    22.8MB/s]
+  0%|          | Downloading : 117M/0.00 [00:13&lt;00:00,    22.9MB/s]
+  0%|          | Downloading : 118M/0.00 [00:13&lt;00:00,    23.1MB/s]
+  0%|          | Downloading : 118M/0.00 [00:13&lt;00:00,    23.3MB/s]
+  0%|          | Downloading : 119M/0.00 [00:13&lt;00:00,    23.4MB/s]
+  0%|          | Downloading : 119M/0.00 [00:13&lt;00:00,    23.6MB/s]
+  0%|          | Downloading : 120M/0.00 [00:13&lt;00:00,    23.7MB/s]
+  0%|          | Downloading : 120M/0.00 [00:13&lt;00:00,    23.9MB/s]
+  0%|          | Downloading : 121M/0.00 [00:13&lt;00:00,    23.9MB/s]
+  0%|          | Downloading : 121M/0.00 [00:13&lt;00:00,    24.0MB/s]
+  0%|          | Downloading : 122M/0.00 [00:13&lt;00:00,    24.0MB/s]
+  0%|          | Downloading : 122M/0.00 [00:13&lt;00:00,    24.0MB/s]
+  0%|          | Downloading : 123M/0.00 [00:13&lt;00:00,    24.0MB/s]
+  0%|          | Downloading : 123M/0.00 [00:13&lt;00:00,    24.1MB/s]
+  0%|          | Downloading : 124M/0.00 [00:13&lt;00:00,    24.2MB/s]
+  0%|          | Downloading : 124M/0.00 [00:13&lt;00:00,    24.3MB/s]
+  0%|          | Downloading : 125M/0.00 [00:13&lt;00:00,    24.3MB/s]
+  0%|          | Downloading : 125M/0.00 [00:13&lt;00:00,    24.3MB/s]
+  0%|          | Downloading : 126M/0.00 [00:13&lt;00:00,    24.4MB/s]
+  0%|          | Downloading : 126M/0.00 [00:13&lt;00:00,    24.4MB/s]
+  0%|          | Downloading : 127M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 127M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 128M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 128M/0.00 [00:13&lt;00:00,    24.4MB/s]
+  0%|          | Downloading : 129M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 129M/0.00 [00:13&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 130M/0.00 [00:13&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 130M/0.00 [00:13&lt;00:00,    24.7MB/s]
+  0%|          | Downloading : 131M/0.00 [00:13&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 131M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 132M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 132M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 133M/0.00 [00:13&lt;00:00,    24.3MB/s]
+  0%|          | Downloading : 133M/0.00 [00:13&lt;00:00,    24.5MB/s]
+  0%|          | Downloading : 134M/0.00 [00:14&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 134M/0.00 [00:14&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 135M/0.00 [00:14&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 135M/0.00 [00:14&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 136M/0.00 [00:14&lt;00:00,    24.8MB/s]
+  0%|          | Downloading : 136M/0.00 [00:14&lt;00:00,    24.9MB/s]
+  0%|          | Downloading : 137M/0.00 [00:14&lt;00:00,    24.6MB/s]
+  0%|          | Downloading : 137M/0.00 [00:14&lt;00:00,    24.9MB/s]
+  0%|          | Downloading : 138M/0.00 [00:14&lt;00:00,    24.9MB/s]
+  0%|          | Downloading : 138M/0.00 [00:14&lt;00:00,    25.0MB/s]
+  0%|          | Downloading : 139M/0.00 [00:14&lt;00:00,    25.0MB/s]
+  0%|          | Downloading : 139M/0.00 [00:14&lt;00:00,    25.1MB/s]
+  0%|          | Downloading : 140M/0.00 [00:14&lt;00:00,    25.1MB/s]
+  0%|          | Downloading : 140M/0.00 [00:14&lt;00:00,    25.1MB/s]
+  0%|          | Downloading : 141M/0.00 [00:14&lt;00:00,    25.2MB/s]
+  0%|          | Downloading : 141M/0.00 [00:14&lt;00:00,    25.2MB/s]
+  0%|          | Downloading : 142M/0.00 [00:14&lt;00:00,    25.3MB/s]
+  0%|          | Downloading : 142M/0.00 [00:14&lt;00:00,    25.3MB/s]
+  0%|          | Downloading : 143M/0.00 [00:14&lt;00:00,    25.2MB/s]
+  0%|          | Downloading : 144M/0.00 [00:14&lt;00:00,    25.5MB/s]
+  0%|          | Downloading : 144M/0.00 [00:14&lt;00:00,    25.7MB/s]
+  0%|          | Downloading : 145M/0.00 [00:14&lt;00:00,    25.6MB/s]
+  0%|          | Downloading : 145M/0.00 [00:14&lt;00:00,    17.6MB/s]
+  0%|          | Downloading : 145M/0.00 [00:14&lt;00:00,    17.6MB/s]
+  0%|          | Downloading : 146M/0.00 [00:14&lt;00:00,    17.6MB/s]
+  0%|          | Downloading : 146M/0.00 [00:14&lt;00:00,    17.5MB/s]
+  0%|          | Downloading : 147M/0.00 [00:14&lt;00:00,    17.5MB/s]
+  0%|          | Downloading : 147M/0.00 [00:14&lt;00:00,    17.5MB/s]
+  0%|          | Downloading : 147M/0.00 [00:14&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 148M/0.00 [00:14&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 148M/0.00 [00:14&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 149M/0.00 [00:14&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 149M/0.00 [00:14&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 150M/0.00 [00:14&lt;00:00,    17.5MB/s]
+  0%|          | Downloading : 150M/0.00 [00:14&lt;00:00,    17.5MB/s]
+  0%|          | Downloading : 150M/0.00 [00:15&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 151M/0.00 [00:15&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 151M/0.00 [00:15&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 152M/0.00 [00:15&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 152M/0.00 [00:15&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 153M/0.00 [00:15&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 153M/0.00 [00:15&lt;00:00,    17.4MB/s]
+  0%|          | Downloading : 153M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 154M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 154M/0.00 [00:15&lt;00:00,    17.1MB/s]
+  0%|          | Downloading : 155M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 155M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 156M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 156M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 157M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 157M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 158M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 158M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 159M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 159M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 160M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 160M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 161M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 161M/0.00 [00:15&lt;00:00,    17.3MB/s]
+  0%|          | Downloading : 162M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 162M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 163M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 163M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 164M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 164M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 165M/0.00 [00:15&lt;00:00,    17.2MB/s]
+  0%|          | Downloading : 165M/0.00 [00:16&lt;00:00,    9.96MB/s]
+  0%|          | Downloading : 165M/0.00 [00:16&lt;00:00,    9.84MB/s]
+  0%|          | Downloading : 166M/0.00 [00:16&lt;00:00,    9.77MB/s]
+  0%|          | Downloading : 166M/0.00 [00:16&lt;00:00,    9.71MB/s]
+  0%|          | Downloading : 166M/0.00 [00:16&lt;00:00,    9.63MB/s]
+  0%|          | Downloading : 166M/0.00 [00:16&lt;00:00,    9.55MB/s]
+  0%|          | Downloading : 167M/0.00 [00:16&lt;00:00,    9.49MB/s]
+  0%|          | Downloading : 167M/0.00 [00:16&lt;00:00,    9.46MB/s]
+  0%|          | Downloading : 167M/0.00 [00:16&lt;00:00,    9.42MB/s]
+  0%|          | Downloading : 167M/0.00 [00:16&lt;00:00,    9.34MB/s]
+  0%|          | Downloading : 168M/0.00 [00:16&lt;00:00,    9.28MB/s]
+  0%|          | Downloading : 168M/0.00 [00:16&lt;00:00,    9.21MB/s]
+  0%|          | Downloading : 168M/0.00 [00:16&lt;00:00,    9.14MB/s]
+  0%|          | Downloading : 168M/0.00 [00:16&lt;00:00,    9.09MB/s]
+  0%|          | Downloading : 169M/0.00 [00:16&lt;00:00,    9.03MB/s]
+  0%|          | Downloading : 169M/0.00 [00:16&lt;00:00,    8.99MB/s]
+  0%|          | Downloading : 169M/0.00 [00:16&lt;00:00,    8.91MB/s]
+  0%|          | Downloading : 169M/0.00 [00:16&lt;00:00,    8.85MB/s]
+  0%|          | Downloading : 170M/0.00 [00:16&lt;00:00,    8.77MB/s]
+  0%|          | Downloading : 170M/0.00 [00:16&lt;00:00,    8.74MB/s]
+  0%|          | Downloading : 170M/0.00 [00:17&lt;00:00,    8.73MB/s]
+  0%|          | Downloading : 170M/0.00 [00:17&lt;00:00,    8.70MB/s]
+  0%|          | Downloading : 171M/0.00 [00:17&lt;00:00,    8.68MB/s]
+  0%|          | Downloading : 171M/0.00 [00:17&lt;00:00,    8.63MB/s]
+  0%|          | Downloading : 171M/0.00 [00:17&lt;00:00,    8.60MB/s]
+  0%|          | Downloading : 171M/0.00 [00:17&lt;00:00,    8.57MB/s]
+  0%|          | Downloading : 172M/0.00 [00:17&lt;00:00,    8.57MB/s]
+  0%|          | Downloading : 172M/0.00 [00:17&lt;00:00,    8.49MB/s]
+  0%|          | Downloading : 172M/0.00 [00:17&lt;00:00,    8.42MB/s]
+  0%|          | Downloading : 172M/0.00 [00:17&lt;00:00,    8.38MB/s]
+  0%|          | Downloading : 173M/0.00 [00:17&lt;00:00,    8.33MB/s]
+  0%|          | Downloading : 173M/0.00 [00:17&lt;00:00,    8.33MB/s]
+  0%|          | Downloading : 173M/0.00 [00:17&lt;00:00,    8.28MB/s]
+  0%|          | Downloading : 173M/0.00 [00:17&lt;00:00,    8.26MB/s]
+  0%|          | Downloading : 174M/0.00 [00:17&lt;00:00,    8.27MB/s]
+  0%|          | Downloading : 174M/0.00 [00:17&lt;00:00,    8.24MB/s]
+  0%|          | Downloading : 174M/0.00 [00:17&lt;00:00,    8.17MB/s]
+  0%|          | Downloading : 174M/0.00 [00:17&lt;00:00,    8.15MB/s]
+  0%|          | Downloading : 175M/0.00 [00:17&lt;00:00,    8.12MB/s]
+  0%|          | Downloading : 175M/0.00 [00:17&lt;00:00,    8.05MB/s]
+  0%|          | Downloading : 175M/0.00 [00:17&lt;00:00,    8.01MB/s]
+  0%|          | Downloading : 175M/0.00 [00:17&lt;00:00,    8.04MB/s]
+  0%|          | Downloading : 176M/0.00 [00:17&lt;00:00,    8.04MB/s]
+  0%|          | Downloading : 176M/0.00 [00:17&lt;00:00,    8.01MB/s]
+  0%|          | Downloading : 176M/0.00 [00:17&lt;00:00,    8.01MB/s]
+  0%|          | Downloading : 176M/0.00 [00:17&lt;00:00,    7.99MB/s]
+  0%|          | Downloading : 177M/0.00 [00:17&lt;00:00,    7.96MB/s]
+  0%|          | Downloading : 177M/0.00 [00:17&lt;00:00,    7.93MB/s]
+  0%|          | Downloading : 177M/0.00 [00:17&lt;00:00,    7.91MB/s]
+  0%|          | Downloading : 177M/0.00 [00:18&lt;00:00,    7.95MB/s]
+  0%|          | Downloading : 178M/0.00 [00:18&lt;00:00,    7.92MB/s]
+  0%|          | Downloading : 178M/0.00 [00:18&lt;00:00,    7.93MB/s]
+  0%|          | Downloading : 178M/0.00 [00:18&lt;00:00,    7.91MB/s]
+  0%|          | Downloading : 178M/0.00 [00:18&lt;00:00,    7.91MB/s]
+  0%|          | Downloading : 179M/0.00 [00:18&lt;00:00,    7.92MB/s]
+  0%|          | Downloading : 179M/0.00 [00:18&lt;00:00,    7.91MB/s]
+  0%|          | Downloading : 179M/0.00 [00:18&lt;00:00,    7.94MB/s]
+  0%|          | Downloading : 179M/0.00 [00:18&lt;00:00,    7.94MB/s]
+  0%|          | Downloading : 180M/0.00 [00:18&lt;00:00,    7.93MB/s]
+  0%|          | Downloading : 180M/0.00 [00:18&lt;00:00,    7.91MB/s]
+  0%|          | Downloading : 180M/0.00 [00:18&lt;00:00,    7.86MB/s]
+  0%|          | Downloading : 180M/0.00 [00:18&lt;00:00,    7.85MB/s]
+  0%|          | Downloading : 181M/0.00 [00:18&lt;00:00,    7.81MB/s]
+  0%|          | Downloading : 181M/0.00 [00:18&lt;00:00,    7.83MB/s]
+  0%|          | Downloading : 181M/0.00 [00:18&lt;00:00,    7.79MB/s]
+  0%|          | Downloading : 181M/0.00 [00:18&lt;00:00,    7.77MB/s]
+  0%|          | Downloading : 182M/0.00 [00:18&lt;00:00,    7.75MB/s]
+  0%|          | Downloading : 182M/0.00 [00:18&lt;00:00,    7.73MB/s]
+  0%|          | Downloading : 182M/0.00 [00:18&lt;00:00,    7.75MB/s]
+  0%|          | Downloading : 182M/0.00 [00:18&lt;00:00,    7.73MB/s]
+  0%|          | Downloading : 183M/0.00 [00:18&lt;00:00,    7.71MB/s]
+  0%|          | Downloading : 183M/0.00 [00:18&lt;00:00,    7.75MB/s]
+  0%|          | Downloading : 183M/0.00 [00:18&lt;00:00,    7.73MB/s]
+  0%|          | Downloading : 183M/0.00 [00:18&lt;00:00,    7.76MB/s]
+  0%|          | Downloading : 184M/0.00 [00:18&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 184M/0.00 [00:18&lt;00:00,    7.73MB/s]
+  0%|          | Downloading : 184M/0.00 [00:18&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 184M/0.00 [00:18&lt;00:00,    7.73MB/s]
+  0%|          | Downloading : 185M/0.00 [00:18&lt;00:00,    7.77MB/s]
+  0%|          | Downloading : 185M/0.00 [00:19&lt;00:00,    7.78MB/s]
+  0%|          | Downloading : 185M/0.00 [00:19&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 185M/0.00 [00:19&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 186M/0.00 [00:19&lt;00:00,    7.84MB/s]
+  0%|          | Downloading : 186M/0.00 [00:19&lt;00:00,    7.83MB/s]
+  0%|          | Downloading : 186M/0.00 [00:19&lt;00:00,    7.83MB/s]
+  0%|          | Downloading : 186M/0.00 [00:19&lt;00:00,    7.85MB/s]
+  0%|          | Downloading : 187M/0.00 [00:19&lt;00:00,    7.84MB/s]
+  0%|          | Downloading : 187M/0.00 [00:19&lt;00:00,    7.77MB/s]
+  0%|          | Downloading : 187M/0.00 [00:19&lt;00:00,    7.79MB/s]
+  0%|          | Downloading : 187M/0.00 [00:19&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 188M/0.00 [00:19&lt;00:00,    7.72MB/s]
+  0%|          | Downloading : 188M/0.00 [00:19&lt;00:00,    7.71MB/s]
+  0%|          | Downloading : 188M/0.00 [00:19&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 188M/0.00 [00:19&lt;00:00,    7.71MB/s]
+  0%|          | Downloading : 189M/0.00 [00:19&lt;00:00,    7.73MB/s]
+  0%|          | Downloading : 189M/0.00 [00:19&lt;00:00,    7.75MB/s]
+  0%|          | Downloading : 189M/0.00 [00:19&lt;00:00,    7.77MB/s]
+  0%|          | Downloading : 189M/0.00 [00:19&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 190M/0.00 [00:19&lt;00:00,    7.75MB/s]
+  0%|          | Downloading : 190M/0.00 [00:19&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 190M/0.00 [00:19&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 190M/0.00 [00:19&lt;00:00,    7.77MB/s]
+  0%|          | Downloading : 191M/0.00 [00:19&lt;00:00,    7.85MB/s]
+  0%|          | Downloading : 191M/0.00 [00:19&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 191M/0.00 [00:19&lt;00:00,    7.82MB/s]
+  0%|          | Downloading : 191M/0.00 [00:19&lt;00:00,    7.79MB/s]
+  0%|          | Downloading : 192M/0.00 [00:19&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 192M/0.00 [00:19&lt;00:00,    7.79MB/s]
+  0%|          | Downloading : 192M/0.00 [00:20&lt;00:00,    7.76MB/s]
+  0%|          | Downloading : 192M/0.00 [00:20&lt;00:00,    7.81MB/s]
+  0%|          | Downloading : 193M/0.00 [00:20&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 193M/0.00 [00:20&lt;00:00,    7.82MB/s]
+  0%|          | Downloading : 193M/0.00 [00:20&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 193M/0.00 [00:20&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 194M/0.00 [00:20&lt;00:00,    7.82MB/s]
+  0%|          | Downloading : 194M/0.00 [00:20&lt;00:00,    7.85MB/s]
+  0%|          | Downloading : 194M/0.00 [00:20&lt;00:00,    7.86MB/s]
+  0%|          | Downloading : 194M/0.00 [00:20&lt;00:00,    7.85MB/s]
+  0%|          | Downloading : 195M/0.00 [00:20&lt;00:00,    7.83MB/s]
+  0%|          | Downloading : 195M/0.00 [00:20&lt;00:00,    7.83MB/s]
+  0%|          | Downloading : 195M/0.00 [00:20&lt;00:00,    7.81MB/s]
+  0%|          | Downloading : 195M/0.00 [00:20&lt;00:00,    7.85MB/s]
+  0%|          | Downloading : 196M/0.00 [00:20&lt;00:00,    7.82MB/s]
+  0%|          | Downloading : 196M/0.00 [00:20&lt;00:00,    7.79MB/s]
+  0%|          | Downloading : 196M/0.00 [00:20&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 196M/0.00 [00:20&lt;00:00,    7.81MB/s]
+  0%|          | Downloading : 197M/0.00 [00:20&lt;00:00,    7.78MB/s]
+  0%|          | Downloading : 197M/0.00 [00:20&lt;00:00,    7.77MB/s]
+  0%|          | Downloading : 197M/0.00 [00:20&lt;00:00,    7.73MB/s]
+  0%|          | Downloading : 197M/0.00 [00:20&lt;00:00,    7.59MB/s]
+  0%|          | Downloading : 198M/0.00 [00:20&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 198M/0.00 [00:20&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 198M/0.00 [00:20&lt;00:00,    7.76MB/s]
+  0%|          | Downloading : 198M/0.00 [00:20&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 199M/0.00 [00:20&lt;00:00,    7.77MB/s]
+  0%|          | Downloading : 199M/0.00 [00:20&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 199M/0.00 [00:20&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 199M/0.00 [00:20&lt;00:00,    7.72MB/s]
+  0%|          | Downloading : 200M/0.00 [00:21&lt;00:00,    7.70MB/s]
+  0%|          | Downloading : 200M/0.00 [00:21&lt;00:00,    7.74MB/s]
+  0%|          | Downloading : 200M/0.00 [00:21&lt;00:00,    7.75MB/s]
+  0%|          | Downloading : 200M/0.00 [00:21&lt;00:00,    7.80MB/s]
+  0%|          | Downloading : 201M/0.00 [00:21&lt;00:00,    7.72MB/s]
+  0%|          | Downloading : 201M/0.00 [00:21&lt;00:00,    7.78MB/s]
+  0%|          | Downloading : 201M/0.00 [00:21&lt;00:00,    7.70MB/s]
+  0%|          | Downloading : 201M/0.00 [00:21&lt;00:00,    9.94MB/s]
+Verifying hash b5ebe66dbe0f36cba9170a7ce909a66f.
+Decompressing the archive: /home/circleci/mne_data/mne-misc-data-0.19.tar.gz
+(please be patient, this can take some time)
+Successfully extracted to: [&#39;/home/circleci/mne_data/MNE-misc-data&#39;]
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
@@ -635,9 +1197,11 @@ which are however optional. The required inputs are:</p>
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
-    verbose : bool
-        If ``True``, this will print a snippet of the sidecar files. Otherwise,
-        no content will be printed.
+
+    verbose : bool | str | int | None
+        If not None, override default verbose level (see :func:`mne.verbose`
+        and :ref:`Logging documentation &lt;python:tut-logging&gt;` for more).
+        If used, it should be passed as a keyword-argument only.
 
     Returns
     -------
@@ -753,132 +1317,31 @@ step is required.</p>
 </div>
 <img alt="convert ieeg to bids" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_ieeg_to_bids_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/anat/sub-1_T1w.json&#39;...
+Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/mne_bids/utils.py:335: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
+/home/circleci/project/mne_bids/utils.py:324: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
   warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1467: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1450: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D&#39;Ambrosio, S., David, O., … Hermes, D. (2019). iEEG-BIDS, extending the Brain Imaging Data Structure specification to human intracranial electrophysiology. Scientific Data, 6, 102. https://doi.org/10.1038/s41597-019-0105-7
-
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-1   n/a     n/a     n/a
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-/home/circleci/project/mne_bids/dig.py:344: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+/home/circleci/project/mne_bids/dig.py:336: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
   raw.set_montage(montage)
-Writing electrodes file to...  /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_electrodes.tsv
-Writing coordsytem file to...  /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_coordsystem.json
-
+Writing electrodes file to... /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_electrodes.tsv
+Writing coordsytem file to... /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_coordsystem.json
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv&#39;...
-
-name    x       y       z       size
-LENT 1  -0.025068213007290018   0.026752167185930535    -0.058116982605330096   n/a
-LENT 2  -0.02677877583620584    0.027840780835761234    -0.056235709041805845   n/a
-LENT 3  -0.029229191845498024   0.028840780050399722    -0.0545865893585367     n/a
-LENT 4  -0.0321997283192001     0.029840780674275827    -0.05293747002667563    n/a
-LENT 5  -0.03450671891146711    0.031179390767901126    -0.050654145868901566   n/a
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_coordsystem.json&#39;...
-
-{
-    &quot;iEEGCoordinateSystem&quot;: &quot;ACPC&quot;,
-    &quot;iEEGCoordinateSystemDescription&quot;: &quot;The origin of the coordinate system is at the Anterior Commissure and the negative y-axis is passing through the Posterior Commissure. The positive z-axis is passing through a mid-hemispheric point in the superior direction.&quot;,
-    &quot;iEEGCoordinateUnits&quot;: &quot;m&quot;
-}
-
+Used Annotations descriptions: [&#39;Fixation&#39;, &#39;Go Cue&#39;, &#39;ISI Onset&#39;, &#39;Response&#39;]
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-2.0001758846509374      0.0999755859375 Fixation        1       1999
-2.3003523555840446      0.0999755859375 ISI Onset       3       2299
-2.7216000031268384      0.0999755859375 Go Cue  2       2720
-3.0988217682661094      0.0999755859375 Response        4       3097
-8.824187657196907       0.10009765625   Fixation        1       8819
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.6.0&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;[Unspecified]&quot;
-    ]
-}
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;motor&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 60,
-    &quot;SamplingFrequency&quot;: 999.412109375,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 60.000273598345906,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;iEEGReference&quot;: &quot;n/a&quot;,
-    &quot;ECOGChannelCount&quot;: 0,
-    &quot;SEEGChannelCount&quot;: 119,
-    &quot;EEGChannelCount&quot;: 0,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
-LENT 1  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 2  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 3  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 4  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 5  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-/home/circleci/project/mne_bids/write.py:1603: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1581: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
-
-filename        acq_time
-ieeg/sub-1_task-motor_ieeg.vhdr 1937-08-29T11:09:44.000000Z
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
 |ieeg_bids/
 |--- README
@@ -908,12 +1371,52 @@ and created an initial <code class="docutils literal notranslate"><span class="p
 all the information that MNE-BIDS could not infer. For instance, you must
 describe <code class="docutils literal notranslate"><span class="pre">iEEGReference</span></code> and <code class="docutils literal notranslate"><span class="pre">iEEGGround</span></code> yourself.
 It’s easy to find these by searching for <code class="docutils literal notranslate"><span class="pre">&quot;n/a&quot;</span></code> in the sidecar files.</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">grep</span> <span class="pre">-i</span> <span class="pre">'n/a'</span> <span class="pre">&lt;bids_root&gt;`</span></code></p>
-<p>Remember that there is a convenient JavaScript tool to validate all your BIDS
-directories called the “BIDS-validator”, available as a web version and a
-command line tool:</p>
-<p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
-<p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">(</span><span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+
+<span class="c1"># Remember that there is a convenient JavaScript tool to validate all your BIDS</span>
+<span class="c1"># directories called the &quot;BIDS-validator&quot;, available as a web version and a</span>
+<span class="c1"># command line tool:</span>
+<span class="c1">#</span>
+<span class="c1"># Web version: https://bids-standard.github.io/bids-validator/</span>
+<span class="c1">#</span>
+<span class="c1"># Command line tool: https://www.npmjs.com/package/bids-validator</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>sub-1/ieeg/sub-1_task-motor_ieeg.json
+    7        &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    10       &quot;iEEGReference&quot;: &quot;n/a&quot;,
+participants.tsv
+    1    participa age       sex       hand
+    2    sub-1     n/a       n/a       n/a
+sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv
+    1    name      x         y         z         size
+    2    LENT 1    -0.023465 0.0261109 -0.056331 n/a
+    3    LENT 2    -0.026070 0.0269663 -0.054515 n/a
+    4    LENT 3    -0.028928 0.0279257 -0.052440 n/a
+    5    LENT 4    -0.031413 0.0298407 -0.050594 n/a
+    6    LENT 5    -0.033565 0.0311793 -0.048835 n/a
+    7    LENT 6    -0.037002 0.0317920 -0.047026 n/a
+    8    LENT 7    -0.039520 0.0329786 -0.044757 n/a
+    9    LAMY 1    -0.028512 0.0095692 -0.032313 n/a
+    10   LAMY 2    -0.033490 0.0098134 -0.031887 n/a
+    11   LAMY 3    -0.038596 0.0122922 -0.031371 n/a
+    ...
+sub-1/ieeg/sub-1_task-motor_channels.tsv
+    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de
+    2    LENT 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    3    LENT 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    4    LENT 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    5    LENT 4    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    6    LENT 5    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    7    LENT 6    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    8    LENT 7    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    9    LAMY 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    10   LAMY 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    11   LAMY 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    ...
+</pre></div>
+</div>
 </div>
 <div class="section" id="step-3-load-channels-from-bids-formatted-dataset-and-compare">
 <h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Permalink to this headline">¶</a></h2>
@@ -936,12 +1439,65 @@ Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-moto
 Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
 Reading in coordinate system frame ACPC: None.
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv.
-The read in electrodes file is:
- [(&#39;name&#39;, [&#39;LENT 1&#39;, &#39;LENT 2&#39;, &#39;LENT 3&#39;, &#39;LENT 4&#39;, &#39;LENT 5&#39;, &#39;LENT 6&#39;, &#39;LENT 7&#39;, &#39;LAMY 1&#39;, &#39;LAMY 2&#39;, &#39;LAMY 3&#39;, &#39;LAMY 4&#39;, &#39;LAMY 5&#39;, &#39;LAMY 6&#39;, &#39;LAMY 7&#39;, &#39;LPHG 1&#39;, &#39;LPHG 2&#39;, &#39;LPHG 3&#39;, &#39;LPHG 4&#39;, &#39;LPHG 5&#39;, &#39;LPHG 6&#39;, &#39;LPHG 7&#39;, &#39;LPLI 1&#39;, &#39;LPLI 2&#39;, &#39;LPLI 3&#39;, &#39;LPLI 4&#39;, &#39;LPLI 5&#39;, &#39;LPLI 6&#39;, &#39;LPLI 7&#39;, &#39;LPLI 8&#39;, &#39;LPLI 9&#39;, &#39;LSTG 1&#39;, &#39;LSTG 2&#39;, &#39;LSTG 3&#39;, &#39;LSTG 4&#39;, &#39;LPIT 1&#39;, &#39;LPIT 2&#39;, &#39;LPIT 3&#39;, &#39;LPIT 4&#39;, &#39;LPIT 5&#39;, &#39;LPIT 6&#39;, &#39;LPIT 7&#39;, &#39;LTPO 3&#39;, &#39;LTPO 4&#39;, &#39;LTPO 5&#39;, &#39;LTPO 6&#39;, &#39;LTPO 7&#39;, &#39;LTPO 8&#39;, &#39;LBRI 1&#39;, &#39;LBRI 2&#39;, &#39;LBRI 3&#39;, &#39;LBRI 4&#39;, &#39;LBRI 5&#39;, &#39;LBRI 6&#39;, &#39;LBRI 7&#39;, &#39;LBRI 8&#39;, &#39;LACN 1&#39;, &#39;LACN 2&#39;, &#39;LACN 3&#39;, &#39;LACN 4&#39;, &#39;LACN 5&#39;, &#39;LACN 6&#39;, &#39;LACN 7&#39;, &#39;LACN 8&#39;, &#39;LOFC 1&#39;, &#39;LOFC 2&#39;, &#39;LOFC 3&#39;, &#39;LOFC 4&#39;, &#39;LOFC 5&#39;, &#39;LOFC 6&#39;, &#39;LOFC 7&#39;, &#39;LOFC 8&#39;, &#39;LOFC 9&#39;, &#39;LPCN 1&#39;, &#39;LPCN 2&#39;, &#39;LPCN 3&#39;, &#39;LPCN 4&#39;, &#39;LPCN 5&#39;, &#39;LPCN 6&#39;, &#39;LPCN 7&#39;, &#39;LSMA 1&#39;, &#39;LSMA 2&#39;, &#39;LSMA 3&#39;, &#39;LSMA 4&#39;, &#39;LSMA 5&#39;, &#39;LSMA 6&#39;, &#39;LSMA 7&#39;, &#39;LSMA 8&#39;, &#39;LSMA 9&#39;, &#39;LSMA 10&#39;, &#39;LSMA 11&#39;, &#39;LSMA 12&#39;, &#39;LSMA 13&#39;, &#39;LSMA 14&#39;, &#39;LSMA 15&#39;, &#39;LSMA 16&#39;, &#39;LPM 1&#39;, &#39;LPM 2&#39;, &#39;LPM 3&#39;, &#39;LPM 5&#39;, &#39;LPM 6&#39;, &#39;LPM 7&#39;, &#39;LPM 8&#39;, &#39;LPM 9&#39;, &#39;LPM 10&#39;, &#39;RAHP 1&#39;, &#39;RAHP 2&#39;, &#39;RAHP 3&#39;, &#39;RAHP 4&#39;, &#39;RAHP 5&#39;, &#39;RAHP 6&#39;, &#39;RAHP 7&#39;, &#39;RAHP 8&#39;, &#39;RPHP 1&#39;, &#39;RPHP 2&#39;, &#39;RPHP 3&#39;, &#39;RPHP 4&#39;, &#39;RPHP 5&#39;, &#39;RPHP 6&#39;, &#39;RPHP 8&#39;]), (&#39;x&#39;, [&#39;-0.025068213007290018&#39;, &#39;-0.02677877583620584&#39;, &#39;-0.029229191845498024&#39;, &#39;-0.0321997283192001&#39;, &#39;-0.03450671891146711&#39;, &#39;-0.03621511680120535&#39;, &#39;-0.03886885022735231&#39;, &#39;-0.02951229157958093&#39;, &#39;-0.03303321263602283&#39;, &#39;-0.039382511490710974&#39;, &#39;-0.0447976712625631&#39;, &#39;-0.05010137734910962&#39;, &#39;-0.055754353512738906&#39;, &#39;-0.06073860305532816&#39;, &#39;-0.03646657673421234&#39;, &#39;-0.04312963785450014&#39;, &#39;-0.050301281886067355&#39;, &#39;-0.05664838695118712&#39;, &#39;-0.06311112027944053&#39;, &#39;-0.06964799225531344&#39;, &#39;-0.07355984603794963&#39;, &#39;-0.03788623057962859&#39;, &#39;-0.04093071303937211&#39;, &#39;-0.04451469817216645&#39;, &#39;-0.04769405368223891&#39;, &#39;-0.05127803779152493&#39;, &#39;-0.054727148201572345&#39;, &#39;-0.05834030513155993&#39;, &#39;-0.06172458931038076&#39;, &#39;-0.0652233057810197&#39;, &#39;-0.038967807251916925&#39;, &#39;-0.04224889235677191&#39;, &#39;-0.04466326805680917&#39;, &#39;-0.048306520033539996&#39;, &#39;-0.028975283631766435&#39;, &#39;-0.03336737321282197&#39;, &#39;-0.03851317735238121&#39;, &#39;-0.043705210352835436&#39;, &#39;-0.049382064412947596&#39;, &#39;-0.054394112683588576&#39;, &#39;-0.05986997721085216&#39;, &#39;-0.043515304454806766&#39;, &#39;-0.04671418401010692&#39;, &#39;-0.049985032474839965&#39;, &#39;-0.05358651516968152&#39;, &#39;-0.056694910820155923&#39;, &#39;-0.060438256582276625&#39;, &#39;-0.027788785760550473&#39;, &#39;-0.03090860518060247&#39;, &#39;-0.034490050484671055&#39;, &#39;-0.03744886883861189&#39;, &#39;-0.041014027765781697&#39;, &#39;-0.04443357329079789&#39;, &#39;-0.048038615830762&#39;, &#39;-0.05146250302120589&#39;, &#39;-0.008704027328614129&#39;, &#39;-0.014030077995017359&#39;, &#39;-0.021113050253061424&#39;, &#39;-0.027335914825916637&#39;, &#39;-0.034670730430440104&#39;, &#39;-0.04069027672687838&#39;, &#39;-0.04707975409220674&#39;, &#39;-0.054659659244251334&#39;, &#39;-0.01871081647684869&#39;, &#39;-0.02400157695911972&#39;, &#39;-0.029461375673015096&#39;, &#39;-0.03422365776365277&#39;, &#39;-0.03932944973043743&#39;, &#39;-0.04397191643388353&#39;, &#39;-0.04838272195948075&#39;, &#39;-0.05261652371187724&#39;, &#39;-0.05725898957861393&#39;, &#39;-0.014766916619019316&#39;, &#39;-0.020608051607660004&#39;, &#39;-0.02644918684695718&#39;, &#39;-0.03310765328851549&#39;, &#39;-0.038455604517696966&#39;, &#39;-0.04531840353345779&#39;, &#39;-0.05177253810284739&#39;, &#39;-0.034116125516095684&#39;, &#39;-0.03325864984830784&#39;, &#39;-0.032493377257573064&#39;, &#39;-0.03172810415574648&#39;, &#39;-0.030962831565011714&#39;, &#39;-0.030086101447028994&#39;, &#39;-0.02909792031036452&#39;, &#39;-0.027775375478755842&#39;, &#39;-0.021468383887697975&#39;, &#39;-0.02083519296274933&#39;, &#39;-0.020121504288442366&#39;, &#39;-0.019085839513084707&#39;, &#39;-0.01871566346827092&#39;, &#39;-0.01727752383185566&#39;, &#39;-0.01632235207442488&#39;, &#39;-0.0156086648962043&#39;, &#39;-0.031300000501935384&#39;, &#39;-0.032726375230666134&#39;, &#39;-0.03402506094384579&#39;, &#39;-0.037924244440176405&#39;, &#39;-0.03967260129814781&#39;, &#39;-0.041823430347803045&#39;, &#39;-0.04377997806135179&#39;, &#39;-0.04623025768329294&#39;, &#39;-0.04809240345349021&#39;, &#39;0.016588319573975337&#39;, &#39;0.02070578078393477&#39;, &#39;0.026238360176263794&#39;, &#39;0.03104733763094203&#39;, &#39;0.03661562802169977&#39;, &#39;0.04142460776368367&#39;, &#39;0.047525937242301794&#39;, &#39;0.05252204714917217&#39;, &#39;0.013835536582422519&#39;, &#39;0.020461880036023658&#39;, &#39;0.02753802894894397&#39;, &#39;0.03432535345551565&#39;, &#39;0.041768262856337605&#39;, &#39;0.0489937822286162&#39;, &#39;0.06231533320460402&#39;]), (&#39;y&#39;, [&#39;0.026752167185930535&#39;, &#39;0.027840780835761234&#39;, &#39;0.028840780050399722&#39;, &#39;0.029840780674275827&#39;, &#39;0.031179390767901126&#39;, &#39;0.03234869523948405&#39;, &#39;0.03347590693072458&#39;, &#39;0.009569290468432103&#39;, &#39;0.00981343472805564&#39;, &#39;0.012292230233525218&#39;, &#39;0.012980213502185013&#39;, &#39;0.013768559577134458&#39;, &#39;0.0152364112736273&#39;, &#39;0.01593873275096646&#39;, &#39;-0.004629963836362194&#39;, &#39;-0.007040930826445675&#39;, &#39;-0.00864830567212472&#39;, &#39;-0.011484749266902025&#39;, &#39;-0.013598922342221712&#39;, &#39;-0.015173699313148374&#39;, &#39;-0.016209080180565754&#39;, &#39;0.008859933220020821&#39;, &#39;0.008701426268720037&#39;, &#39;0.008379193125565385&#39;, &#39;0.00838440963054506&#39;, &#39;0.007734727096189806&#39;, &#39;0.00790366832740557&#39;, &#39;0.007271333599736255&#39;, &#39;0.006638999315427777&#39;, &#39;0.006423419434466532&#39;, &#39;-0.024006468147703255&#39;, &#39;-0.024006468163178536&#39;, &#39;-0.0230064678122558&#39;, &#39;-0.023006468054212283&#39;, &#39;-0.02106510142926227&#39;, &#39;-0.022523192890809347&#39;, &#39;-0.02352048115544269&#39;, &#39;-0.02455534010706876&#39;, &#39;-0.026597730009850717&#39;, &#39;-0.027382359242837294&#39;, &#39;-0.0287002543614574&#39;, &#39;-0.03823689631215131&#39;, &#39;-0.03906429814357462&#39;, &#39;-0.03969229302703804&#39;, &#39;-0.041163787124341863&#39;, &#39;-0.04243430650236425&#39;, &#39;-0.043004973662576634&#39;, &#39;0.023463598151283994&#39;, &#39;0.024506899295299985&#39;, &#39;0.02448471610024395&#39;, &#39;0.024511777217725912&#39;, &#39;0.024484717252558456&#39;, &#39;0.02479240719275856&#39;, &#39;0.02492894149488429&#39;, &#39;0.025059654669871097&#39;, &#39;0.017999388791047233&#39;, &#39;0.019699783980956648&#39;, &#39;0.021983110572696585&#39;, &#39;0.024330836583849477&#39;, &#39;0.026994867682307&#39;, &#39;0.028927443128883568&#39;, &#39;0.031210766396351175&#39;, &#39;0.03354937312321782&#39;, &#39;0.06808297559888868&#39;, &#39;0.06478064601241118&#39;, &#39;0.06149205625700297&#39;, &#39;0.05640978219931194&#39;, &#39;0.053121192003618596&#39;, &#39;0.047829370307175406&#39;, &#39;0.043739059596693546&#39;, &#39;0.039493955145743165&#39;, &#39;0.036215684439819595&#39;, &#39;-0.038386976539408445&#39;, &#39;-0.041924721331480064&#39;, &#39;-0.044715009161353486&#39;, &#39;-0.04850190781715727&#39;, &#39;-0.05084350273718612&#39;, &#39;-0.0546304004191003&#39;, &#39;-0.058168145891833514&#39;, &#39;0.017701168351430183&#39;, &#39;0.018190647928654075&#39;, &#39;0.018190647985636563&#39;, &#39;0.01819064946078998&#39;, &#39;0.018190649517772464&#39;, &#39;0.01819064945506756&#39;, &#39;0.018190648306182892&#39;, &#39;0.018190648013051966&#39;, &#39;0.018190647360199718&#39;, &#39;0.01819064787091523&#39;, &#39;0.01819064724724646&#39;, &#39;0.01819065095665555&#39;, &#39;0.018190649328653698&#39;, &#39;0.018190649111468647&#39;, &#39;0.018190650433730342&#39;, &#39;0.016928397920538938&#39;, &#39;0.0009700008692169575&#39;, &#39;0.0017356622768108735&#39;, &#39;0.001735663251688056&#39;, &#39;0.0034632896046699006&#39;, &#39;0.003738199581433694&#39;, &#39;0.00430755739964838&#39;, &#39;0.004661073197287211&#39;, &#39;0.005505343391838301&#39;, &#39;0.005986451329805131&#39;, &#39;0.0002915865118025395&#39;, &#39;0.0011794940493076896&#39;, &#39;0.0021794939865668727&#39;, &#39;0.0031794947069987856&#39;, &#39;0.004179494128584423&#39;, &#39;0.005179494545168639&#39;, &#39;0.006179494940135817&#39;, &#39;0.007179494071421454&#39;, &#39;-0.01890121911388319&#39;, &#39;-0.018410464513591837&#39;, &#39;-0.019490124477169822&#39;, &#39;-0.01958827524129262&#39;, &#39;-0.020569784139067286&#39;, &#39;-0.020980878720958183&#39;, &#39;-0.022471633357294667&#39;]), (&#39;z&#39;, [&#39;-0.058116982605330096&#39;, &#39;-0.056235709041805845&#39;, &#39;-0.0545865893585367&#39;, &#39;-0.05293747002667563&#39;, &#39;-0.050654145868901566&#39;, &#39;-0.04989273005579985&#39;, &#39;-0.047820806366880825&#39;, &#39;-0.03331335759581795&#39;, &#39;-0.03200323979383191&#39;, &#39;-0.0334523206399908&#39;, &#39;-0.03307167873192239&#39;, &#39;-0.03307167843726645&#39;, &#39;-0.0326910373479444&#39;, &#39;-0.0325821976352188&#39;, &#39;-0.03623760436988803&#39;, &#39;-0.03585696125362786&#39;, &#39;-0.03585696169988828&#39;, &#39;-0.03365596633920703&#39;, &#39;-0.03118527132455738&#39;, &#39;-0.028627752719192382&#39;, &#39;-0.026966151453928028&#39;, &#39;-0.025712100379703406&#39;, &#39;-0.025712100784935125&#39;, &#39;-0.025712101089286694&#39;, &#39;-0.025712101141503813&#39;, &#39;-0.025712099631086168&#39;, &#39;-0.02571210031028334&#39;, &#39;-0.024712099876881458&#39;, &#39;-0.024712100374612387&#39;, &#39;-0.024712099845658624&#39;, &#39;-0.025097395743334278&#39;, &#39;-0.02361128595382141&#39;, &#39;-0.022715526075347495&#39;, &#39;-0.021738675466960337&#39;, &#39;-0.03628669810587423&#39;, &#39;-0.035204351689541585&#39;, &#39;-0.03509737223175392&#39;, &#39;-0.03499006645753308&#39;, &#39;-0.03402249779939868&#39;, &#39;-0.033847087549442566&#39;, &#39;-0.03394073048880395&#39;, &#39;-0.005213671460400117&#39;, &#39;-0.00521367134334115&#39;, &#39;-0.005213670703590641&#39;, &#39;-0.005376633595978432&#39;, &#39;-0.005376634564028926&#39;, &#39;-0.005376632989023543&#39;, &#39;-0.008117223708554624&#39;, &#39;-0.007871208718945623&#39;, &#39;-0.0075723451341380005&#39;, &#39;-0.006784000663608639&#39;, &#39;-0.005913876016687518&#39;, &#39;-0.005505578862544713&#39;, &#39;-0.004581331919415163&#39;, &#39;-0.004091852316440575&#39;, &#39;0.010296041927183724&#39;, &#39;0.012072368064095326&#39;, &#39;0.013256589678610695&#39;, &#39;0.015244320109951026&#39;, &#39;0.01816184874945409&#39;, &#39;0.018923267106003866&#39;, &#39;0.020107484953466898&#39;, &#39;0.021925909578426522&#39;, &#39;-0.011170096443922577&#39;, &#39;-0.010820631864605627&#39;, &#39;-0.009375330073755045&#39;, &#39;-0.0076808781460766945&#39;, &#39;-0.005836498442941734&#39;, &#39;-0.0019492882205308162&#39;, &#39;0.002187072365493266&#39;, &#39;0.006074284581192184&#39;, &#39;0.00916442393683689&#39;, &#39;-0.010547903663594725&#39;, &#39;-0.01054790330443648&#39;, &#39;-0.010547903743027408&#39;, &#39;-0.01054790264652615&#39;, &#39;-0.01054790401671097&#39;, &#39;-0.01054790308373766&#39;, &#39;-0.0105479041731616&#39;, &#39;-0.024554670082544954&#39;, &#39;-0.021184200791097715&#39;, &#39;-0.018629137831345864&#39;, &#39;-0.014850965020815433&#39;, &#39;-0.012295902061063575&#39;, &#39;-0.008925436143518525&#39;, &#39;-0.005419064019795347&#39;, &#39;-0.0013690886738941185&#39;, &#39;0.025489745420202395&#39;, &#39;0.02870917557841972&#39;, &#39;0.031634161352168635&#39;, &#39;0.03554064691352363&#39;, &#39;0.03911359851462605&#39;, &#39;0.04351084687197371&#39;, &#39;0.04751548517205356&#39;, &#39;0.05100982800279062&#39;, &#39;0.013749999342863306&#39;, &#39;0.017362041912453316&#39;, &#39;0.01891290808782002&#39;, &#39;0.024075817365878438&#39;, &#39;0.026313741417552564&#39;, &#39;0.029336876008050725&#39;, &#39;0.03196740180067972&#39;, &#39;0.035756198186245064&#39;, &#39;0.03807273426073721&#39;, &#39;-0.037439569047801255&#39;, &#39;-0.03802645529335004&#39;, &#39;-0.03879211776016926&#39;, &#39;-0.04058433743100086&#39;, &#39;-0.04130122584788534&#39;, &#39;-0.0420181139515171&#39;, &#39;-0.04244100150190715&#39;, &#39;-0.043184951661958765&#39;, &#39;-0.0334154561366241&#39;, &#39;-0.03234012487917011&#39;, &#39;-0.03137816002653944&#39;, &#39;-0.03054790418534198&#39;, &#39;-0.0301894604277458&#39;, &#39;-0.02913800015203853&#39;, &#39;-0.027321906491786046&#39;]), (&#39;size&#39;, [&#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;])]
-/home/circleci/project/mne_bids/dig.py:547: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
-  raw.set_montage(montage, on_missing=&#39;warn&#39;, verbose=verbose)
-Recovered coordinate: [-0.02506821  0.02675217 -0.05811698]
-Saved coordinate:     [-0.02506821  0.02675217 -0.05811698]
+--- Logging error ---
+Traceback (most recent call last):
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 1085, in emit
+    msg = self.format(record)
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 929, in format
+    return fmt.format(record)
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 668, in format
+    record.message = record.getMessage()
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 373, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;/home/circleci/.local/bin/sphinx-build&quot;, line 8, in &lt;module&gt;
+    sys.exit(main())
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/build.py&quot;, line 292, in main
+    return make_main(argv)
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/build.py&quot;, line 199, in make_main
+    return make_mode.run_make_mode(argv[1:])
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/make_mode.py&quot;, line 167, in run_make_mode
+    return make.run_generic_build(args[0])
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/make_mode.py&quot;, line 155, in run_generic_build
+    return build_main(args + opts)
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/build.py&quot;, line 276, in build_main
+    app = Sphinx(args.sourcedir, args.confdir, args.outputdir,
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/application.py&quot;, line 270, in __init__
+    self._init_builder()
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/application.py&quot;, line 328, in _init_builder
+    self.events.emit(&#39;builder-inited&#39;)
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/events.py&quot;, line 101, in emit
+    results.append(listener.handler(self.app, *args))
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_gallery.py&quot;, line 437, in generate_gallery_rst
+    this_fhindex, this_costs = generate_dir_rst(
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 381, in generate_dir_rst
+    intro, title, cost = generate_file_rst(
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 862, in generate_file_rst
+    output_blocks, time_elapsed = execute_script(script_blocks,
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 784, in execute_script
+    output_blocks.append(execute_code_block(
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 591, in execute_code_block
+    mem_body, _ = gallery_conf[&#39;call_memory&#39;](
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_gallery.py&quot;, line 205, in call_memory
+    return 0., func()
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 516, in __call__
+    exec(self.code, self.fake_main.__dict__)
+  File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 232, in &lt;module&gt;
+    raw = read_raw_bids(bids_path=bids_path)
+  File &quot;&lt;decorator-gen-551&gt;&quot;, line 24, in read_raw_bids
+  File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 680, in read_raw_bids
+    _read_dig_bids(electrodes_fname, coordsystem_fname,
+  File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 516, in _read_dig_bids
+    montage = _handle_electrodes_reading(electrodes_fpath, coord_frame,
+  File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 42, in _handle_electrodes_reading
+    logger.info(&quot;The read in electrodes file is: \n&quot;, summary_str)
+Message: &#39;The read in electrodes file is: \n&#39;
+Arguments: ([(&#39;name&#39;, [&#39;LENT 1&#39;, &#39;LENT 2&#39;, &#39;LENT 3&#39;, &#39;LENT 4&#39;, &#39;LENT 5&#39;, &#39;LENT 6&#39;, &#39;LENT 7&#39;, &#39;LAMY 1&#39;, &#39;LAMY 2&#39;, &#39;LAMY 3&#39;, &#39;LAMY 4&#39;, &#39;LAMY 5&#39;, &#39;LAMY 6&#39;, &#39;LAMY 7&#39;, &#39;LPHG 1&#39;, &#39;LPHG 2&#39;, &#39;LPHG 3&#39;, &#39;LPHG 4&#39;, &#39;LPHG 5&#39;, &#39;LPHG 6&#39;, &#39;LPHG 7&#39;, &#39;LPLI 1&#39;, &#39;LPLI 2&#39;, &#39;LPLI 3&#39;, &#39;LPLI 4&#39;, &#39;LPLI 5&#39;, &#39;LPLI 6&#39;, &#39;LPLI 7&#39;, &#39;LPLI 8&#39;, &#39;LPLI 9&#39;, &#39;LSTG 1&#39;, &#39;LSTG 2&#39;, &#39;LSTG 3&#39;, &#39;LSTG 4&#39;, &#39;LPIT 1&#39;, &#39;LPIT 2&#39;, &#39;LPIT 3&#39;, &#39;LPIT 4&#39;, &#39;LPIT 5&#39;, &#39;LPIT 6&#39;, &#39;LPIT 7&#39;, &#39;LTPO 3&#39;, &#39;LTPO 4&#39;, &#39;LTPO 5&#39;, &#39;LTPO 6&#39;, &#39;LTPO 7&#39;, &#39;LTPO 8&#39;, &#39;LBRI 1&#39;, &#39;LBRI 2&#39;, &#39;LBRI 3&#39;, &#39;LBRI 4&#39;, &#39;LBRI 5&#39;, &#39;LBRI 6&#39;, &#39;LBRI 7&#39;, &#39;LBRI 8&#39;, &#39;LACN 1&#39;, &#39;LACN 2&#39;, &#39;LACN 3&#39;, &#39;LACN 4&#39;, &#39;LACN 5&#39;, &#39;LACN 6&#39;, &#39;LACN 7&#39;, &#39;LACN 8&#39;, &#39;LOFC 1&#39;, &#39;LOFC 2&#39;, &#39;LOFC 3&#39;, &#39;LOFC 4&#39;, &#39;LOFC 5&#39;, &#39;LOFC 6&#39;, &#39;LOFC 7&#39;, &#39;LOFC 8&#39;, &#39;LOFC 9&#39;, &#39;LPCN 1&#39;, &#39;LPCN 2&#39;, &#39;LPCN 3&#39;, &#39;LPCN 4&#39;, &#39;LPCN 5&#39;, &#39;LPCN 6&#39;, &#39;LPCN 7&#39;, &#39;LSMA 1&#39;, &#39;LSMA 2&#39;, &#39;LSMA 3&#39;, &#39;LSMA 4&#39;, &#39;LSMA 5&#39;, &#39;LSMA 6&#39;, &#39;LSMA 7&#39;, &#39;LSMA 8&#39;, &#39;LSMA 9&#39;, &#39;LSMA 10&#39;, &#39;LSMA 11&#39;, &#39;LSMA 12&#39;, &#39;LSMA 13&#39;, &#39;LSMA 14&#39;, &#39;LSMA 15&#39;, &#39;LSMA 16&#39;, &#39;LPM 1&#39;, &#39;LPM 2&#39;, &#39;LPM 3&#39;, &#39;LPM 5&#39;, &#39;LPM 6&#39;, &#39;LPM 7&#39;, &#39;LPM 8&#39;, &#39;LPM 9&#39;, &#39;LPM 10&#39;, &#39;RAHP 1&#39;, &#39;RAHP 2&#39;, &#39;RAHP 3&#39;, &#39;RAHP 4&#39;, &#39;RAHP 5&#39;, &#39;RAHP 6&#39;, &#39;RAHP 7&#39;, &#39;RAHP 8&#39;, &#39;RPHP 1&#39;, &#39;RPHP 2&#39;, &#39;RPHP 3&#39;, &#39;RPHP 4&#39;, &#39;RPHP 5&#39;, &#39;RPHP 6&#39;, &#39;RPHP 8&#39;]), (&#39;x&#39;, [&#39;-0.023465821419840514&#39;, &#39;-0.02607025439948884&#39;, &#39;-0.02892874297293106&#39;, &#39;-0.03141348149688182&#39;, &#39;-0.03356501186500691&#39;, &#39;-0.03700285883009183&#39;, &#39;-0.039520568813913894&#39;, &#39;-0.028512292957617896&#39;, &#39;-0.03349061148016855&#39;, &#39;-0.03859626288920777&#39;, &#39;-0.04377824049401465&#39;, &#39;-0.04939285797416258&#39;, &#39;-0.05473492363487947&#39;, &#39;-0.059719172732527595&#39;, &#39;-0.03575805593071426&#39;, &#39;-0.04212964100418268&#39;, &#39;-0.04930128004911067&#39;, &#39;-0.055648388329786594&#39;, &#39;-0.06197509369198777&#39;, &#39;-0.06864798918785545&#39;, &#39;-0.07255984499528893&#39;, &#39;-0.03688623195766555&#39;, &#39;-0.03993071069212608&#39;, &#39;-0.043572990231248145&#39;, &#39;-0.04669405255879747&#39;, &#39;-0.0502780401642758&#39;, &#39;-0.05372714499017617&#39;, &#39;-0.057340308299942765&#39;, &#39;-0.060724588303397664&#39;, &#39;-0.06422330360301413&#39;, &#39;-0.037967808629953886&#39;, &#39;-0.041248893735371384&#39;, &#39;-0.04366326537939281&#39;, &#39;-0.04730652274930857&#39;, &#39;-0.02797528323682646&#39;, &#39;-0.03236737459142145&#39;, &#39;-0.03792125116858445&#39;, &#39;-0.04270520829083728&#39;, &#39;-0.04838206579098456&#39;, &#39;-0.053394113553718925&#39;, &#39;-0.05886997642778549&#39;, &#39;-0.04245700926425091&#39;, &#39;-0.045889074156213155&#39;, &#39;-0.04892673522039199&#39;, &#39;-0.052528215589422056&#39;, &#39;-0.055558883235340056&#39;, &#39;-0.05930223032495376&#39;, &#39;-0.026788784995103464&#39;, &#39;-0.029908604205167402&#39;, &#39;-0.03349004816553985&#39;, &#39;-0.036448871411286034&#39;, &#39;-0.04001402910289191&#39;, &#39;-0.04343357467645025&#39;, &#39;-0.047038612483984006&#39;, &#39;-0.05046250413439967&#39;, &#39;-0.0077040265019915725&#39;, &#39;-0.01303007716295798&#39;, &#39;-0.020113049598175822&#39;, &#39;-0.02633591483262939&#39;, &#39;-0.03367073124223563&#39;, &#39;-0.039690273885024385&#39;, &#39;-0.04607975426729472&#39;, &#39;-0.053659660997300365&#39;, &#39;-0.017710818171953337&#39;, &#39;-0.02300157729380624&#39;, &#39;-0.028461375595019246&#39;, &#39;-0.03322365675464316&#39;, &#39;-0.03832944581002612&#39;, &#39;-0.042971917150285525&#39;, &#39;-0.04738271840928574&#39;, &#39;-0.05161652149953002&#39;, &#39;-0.056258991981564616&#39;, &#39;-0.013766915863959825&#39;, &#39;-0.019608051123055473&#39;, &#39;-0.02554634579949755&#39;, &#39;-0.032107655323819956&#39;, &#39;-0.03786367356038009&#39;, &#39;-0.04441556327834269&#39;, &#39;-0.05077254105451454&#39;, &#39;-0.034029430689849954&#39;, &#39;-0.03326911279619462&#39;, &#39;-0.032037469539256666&#39;, &#39;-0.03096128520174156&#39;, &#39;-0.02996282744031823&#39;, &#39;-0.02902780682790513&#39;, &#39;-0.028020192147063718&#39;, &#39;-0.02685310375979588&#39;, &#39;-0.02046838320072079&#39;, &#39;-0.019835192485864742&#39;, &#39;-0.0191215064654057&#39;, &#39;-0.018416183030228194&#39;, &#39;-0.01796827963761668&#39;, &#39;-0.016277522836550887&#39;, &#39;-0.01532235104542655&#39;, &#39;-0.014608665887244514&#39;, &#39;-0.029386694954573113&#39;, &#39;-0.031726376635920275&#39;, &#39;-0.0330250579394691&#39;, &#39;-0.03780532596349166&#39;, &#39;-0.038672601383799333&#39;, &#39;-0.040823430426257995&#39;, &#39;-0.04287713547847723&#39;, &#39;-0.04523025537271073&#39;, &#39;-0.047092401969983426&#39;, &#39;0.017588320058579864&#39;, &#39;0.02170578126741427&#39;, &#39;0.02723835879822683&#39;, &#39;0.03204733804660689&#39;, &#39;0.03761563055911745&#39;, &#39;0.04242460495325088&#39;, &#39;0.04852593586499588&#39;, &#39;0.05352204949714925&#39;, &#39;0.014835536135425044&#39;, &#39;0.021286990554788953&#39;, &#39;0.028538029432985983&#39;, &#39;0.03532535185772762&#39;, &#39;0.04276826147801938&#39;, &#39;0.04999378085029798&#39;, &#39;0.06331533182949123&#39;]), (&#39;y&#39;, [&#39;0.02611091360210823&#39;, &#39;0.02696633904701877&#39;, &#39;0.027925714040377726&#39;, &#39;0.02984077847798282&#39;, &#39;0.031179393207538625&#39;, &#39;0.03179202000524962&#39;, &#39;0.03297860409458276&#39;, &#39;0.009569290092546874&#39;, &#39;0.0098134351370077&#39;, &#39;0.012292229742807005&#39;, &#39;0.012980214196434903&#39;, &#39;0.013768559123377811&#39;, &#39;0.015236410936102&#39;, &#39;0.015064291723915008&#39;, &#39;-0.006048499410384184&#39;, &#39;-0.0076044579679713075&#39;, &#39;-0.00967820107783976&#39;, &#39;-0.011484749192674155&#39;, &#39;-0.015203456402388332&#39;, &#39;-0.015970410822567862&#39;, &#39;-0.0177830706331854&#39;, &#39;0.008859932844135589&#39;, &#39;0.008701425895686052&#39;, &#39;0.008379192876748057&#39;, &#39;0.00758769745395842&#39;, &#39;0.007093470937141685&#39;, &#39;0.0064851324261943726&#39;, &#39;0.0060859834628021435&#39;, &#39;0.005764562067975265&#39;, &#39;0.005626708720911942&#39;, &#39;-0.024006468523588485&#39;, &#39;-0.024006468088950666&#39;, &#39;-0.02395863529602112&#39;, &#39;-0.023880907330024993&#39;, &#39;-0.021861812856027937&#39;, &#39;-0.022523192816581473&#39;, &#39;-0.02447010308698663&#39;, &#39;-0.025429779069468618&#39;, &#39;-0.026597730385735947&#39;, &#39;-0.028101342918663366&#39;, &#39;-0.029730148952451296&#39;, &#39;-0.03957946612043538&#39;, &#39;-0.04053784949623557&#39;, &#39;-0.04168977512111638&#39;, &#39;-0.04224438965197821&#39;, &#39;-0.04364589304887209&#39;, &#39;-0.044740490209171056&#39;, &#39;0.022977800322934137&#39;, &#39;0.02277745204481286&#39;, &#39;0.02306618324546316&#39;, &#39;0.02301551422529114&#39;, &#39;0.023221634105401318&#39;, &#39;0.023995698708062&#39;, &#39;0.024209959115680024&#39;, &#39;0.02395202886625533&#39;, &#39;0.016969493646291738&#39;, &#39;0.018592160672148136&#39;, &#39;0.020642303002984475&#39;, &#39;0.02314548400275194&#39;, &#39;0.024876782380487142&#39;, &#39;0.027975275626262&#39;, &#39;0.030025416984901597&#39;, &#39;0.03189765461882377&#39;, &#39;0.06713080679996833&#39;, &#39;0.0639839362356927&#39;, &#39;0.0597626133760979&#39;, &#39;0.05592398681829979&#39;, &#39;0.05146947647418382&#39;, &#39;0.04687719507654825&#39;, &#39;0.04255371018809521&#39;, &#39;0.03799769229604005&#39;, &#39;0.03471942283324325&#39;, &#39;-0.039183688547446416&#39;, &#39;-0.04192472170593967&#39;, &#39;-0.04579561363114753&#39;, &#39;-0.0492986170722797&#39;, &#39;-0.052573978558151005&#39;, &#39;-0.05675886488764188&#39;, &#39;-0.05958667922851498&#39;, &#39;0.016982181699452634&#39;, &#39;0.016979063557471332&#39;, &#39;0.01697906252796552&#39;, &#39;0.016979061357614195&#39;, &#39;0.01697906067874606&#39;, &#39;0.016946314160649834&#39;, &#39;0.017110044760683715&#39;, &#39;0.016848079458778798&#39;, &#39;0.016150289454791508&#39;, &#39;0.016072562769809572&#39;, &#39;0.016072564192373132&#39;, &#39;0.0160916983692348&#39;, &#39;0.015700122694841386&#39;, &#39;0.01591710329788507&#39;, &#39;0.015450736204894247&#39;, &#39;0.015354407149653863&#39;, &#39;-0.0008964982763661877&#39;, &#39;-7.151196996072959e-05&#39;, &#39;0.0003948565916361852&#39;, &#39;0.001832823196880294&#39;, &#39;0.002008747635559761&#39;, &#39;0.0025781109638824042&#39;, &#39;0.002714644483259584&#39;, &#39;0.0036981654382623862&#39;, &#39;0.004101546013143331&#39;, &#39;0.0002915861373429286&#39;, &#39;0.0011794945750742813&#39;, &#39;0.0021794936106816418&#39;, &#39;0.003004606064178886&#39;, &#39;0.004237789963722167&#39;, &#39;0.004849150718276468&#39;, &#39;0.0061794946835757834&#39;, &#39;0.00717949381771266&#39;, &#39;-0.01890121926399906&#39;, &#39;-0.019622051766435698&#39;, &#39;-0.019490124401516328&#39;, &#39;-0.020307258842467372&#39;, &#39;-0.020569784289895966&#39;, &#39;-0.020980878871786866&#39;, &#39;-0.022471633255879114&#39;]), (&#39;z&#39;, [&#39;-0.05633108730332022&#39;, &#39;-0.054515305688293464&#39;, &#39;-0.052440494510419676&#39;, &#39;-0.05059490160296702&#39;, &#39;-0.04883550496859001&#39;, &#39;-0.04702623150305358&#39;, &#39;-0.0447578342043752&#39;, &#39;-0.03231335715361412&#39;, &#39;-0.03188737183906576&#39;, &#39;-0.031371716645648626&#39;, &#39;-0.031122056558645167&#39;, &#39;-0.03086009129332975&#39;, &#39;-0.03061043228481498&#39;, &#39;-0.030206882986053278&#39;, &#39;-0.03399327199693382&#39;, &#39;-0.03416930514120089&#39;, &#39;-0.033907340189152396&#39;, &#39;-0.03265596577767879&#39;, &#39;-0.03018527126174798&#39;, &#39;-0.026809113000579428&#39;, &#39;-0.0250165310272801&#39;, &#39;-0.02471209993749957&#39;, &#39;-0.02471210033592506&#39;, &#39;-0.024024443583309903&#39;, &#39;-0.02415542600557289&#39;, &#39;-0.024155425491042957&#39;, &#39;-0.02350051300236022&#39;, &#39;-0.023155426537530742&#39;, &#39;-0.023155424928419606&#39;, &#39;-0.022762478679670867&#39;, &#39;-0.02409739530113044&#39;, &#39;-0.02261128539229317&#39;, &#39;-0.021420816088012683&#39;, &#39;-0.0201820005645336&#39;, &#39;-0.034075110802208874&#39;, &#39;-0.034204351128013344&#39;, &#39;-0.034097373388956805&#39;, &#39;-0.03304044389677928&#39;, &#39;-0.03302249735719484&#39;, &#39;-0.03307630695289553&#39;, &#39;-0.032384056331277895&#39;, &#39;-0.004213670271444876&#39;, &#39;-0.004213670167090802&#39;, &#39;-0.0042136694648290465&#39;, &#39;-0.004376633332750124&#39;, &#39;-0.004376634875177282&#39;, &#39;-0.004376634081411555&#39;, &#39;-0.006167600445934146&#39;, &#39;-0.005397656776758734&#39;, &#39;-0.005229775782218067&#39;, &#39;-0.004834377992885129&#39;, &#39;-0.004095236212006553&#39;, &#39;-0.0030320283061565437&#39;, &#39;-0.0022387645563348157&#39;, &#39;-0.0022732112230928886&#39;, &#39;0.011983697175812935&#39;, &#39;0.014152972297647642&#39;, &#39;0.015861123176820174&#39;, &#39;0.017979835508931216&#39;, &#39;0.019718524429198747&#39;, &#39;0.020741905893923315&#39;, &#39;0.022319072387133265&#39;, &#39;0.024268482869189548&#39;, &#39;-0.008958508512552053&#39;, &#39;-0.007954132154557043&#39;, &#39;-0.006770793809823136&#39;, &#39;-0.004945361026295059&#39;, &#39;-0.0032319638056184444&#39;, &#39;0.00039328117220218534&#39;, &#39;0.00439865980596587&#39;, &#39;0.00841685101103054&#39;, &#39;0.011637971926568236&#39;, &#39;-0.01017006925903561&#39;, &#39;-0.009547902858829532&#39;, &#39;-0.009547902117862148&#39;, &#39;-0.010170071370675292&#39;, &#39;-0.010563017636566828&#39;, &#39;-0.009547903017648601&#39;, &#39;-0.010170068940984801&#39;, &#39;-0.02335819694657238&#39;, &#39;-0.020675382679189433&#39;, &#39;-0.016024604643660317&#39;, &#39;-0.013032327578518917&#39;, &#39;-0.009953336901012758&#39;, &#39;-0.006844833237884845&#39;, &#39;-0.0029455108890125634&#39;, &#39;0.0009734827804055157&#39;, &#39;0.02848722465956008&#39;, &#39;0.031444697869887156&#39;, &#39;0.03476262018733606&#39;, &#39;0.0360494682821379&#39;, &#39;0.04001536293723386&#39;, &#39;0.045591449231768555&#39;, &#39;0.04894118229023285&#39;, &#39;0.05243552339042307&#39;, &#39;0.014749997295171652&#39;, &#39;0.01852576778352756&#39;, &#39;0.020076632798906646&#39;, &#39;0.02636378578669564&#39;, &#39;0.028394352253736807&#39;, &#39;0.031417480597027786&#39;, &#39;0.03404801274766035&#39;, &#39;0.03691993078863033&#39;, &#39;0.03989137082674794&#39;, &#39;-0.0364395686021943&#39;, &#39;-0.037026454609094275&#39;, &#39;-0.037792117317965425&#39;, &#39;-0.03824176837380895&#39;, &#39;-0.03922062159199295&#39;, &#39;-0.04033045662203645&#39;, &#39;-0.04144100150981596&#39;, &#39;-0.042184951663061354&#39;, &#39;-0.032415455633056506&#39;, &#39;-0.031340123550948736&#39;, &#39;-0.030378159461608083&#39;, &#39;-0.02912221160004712&#39;, &#39;-0.02918945992587976&#39;, &#39;-0.02813799965017249&#39;, &#39;-0.026321907850032807&#39;]), (&#39;size&#39;, [&#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;])],)
+/home/circleci/project/mne_bids/dig.py:536: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+  raw.set_montage(montage, on_missing=&#39;warn&#39;)
+Recovered coordinate: [-0.02346582  0.02611091 -0.05633109]
+Saved coordinate:     [-0.02346582  0.02611091 -0.05633109]
 </pre></div>
 </div>
 <p>Now we have to go back to “head” coordinates with the head-&gt;mri transform.</p>
@@ -981,13 +1537,11 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
     </tr>
     <tr>
         <th>Good channels</th>
-        <td>0 magnetometer, 0 gradiometer,
-            0 EEG channels, and 0 fNIRS channels.</td>
+        <td>119 sEEG</td>
     </tr>
     <tr>
         <th>Bad channels</th>
-        <td></td>
-
+        <td>None</td>
     </tr>
     <tr>
         <th>EOG channels</th>
@@ -1021,21 +1575,7 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
 
 </div>
 <br />
-<br /><p>Finally, MNE-BIDS has created a suitable directory structure for us, and
-among other meta data files, it started an <code class="docutils literal notranslate"><span class="pre">events.tsv`</span></code> and
-<code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> file, and created an initial <code class="docutils literal notranslate"><span class="pre">dataset_description.json</span></code>
-file on top!</p>
-<p>Now it’s time to manually check the BIDS directory and the meta files to add
-all the information that MNE-BIDS could not infer. For instance, you must
-describe <code class="docutils literal notranslate"><span class="pre">iEEGReference</span></code> and <code class="docutils literal notranslate"><span class="pre">iEEGGround</span></code> yourself.
-It’s easy to find these by searching for <code class="docutils literal notranslate"><span class="pre">&quot;n/a&quot;</span></code> in the sidecar files.</p>
-<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">grep</span> <span class="pre">-i</span> <span class="pre">'n/a'</span> <span class="pre">&lt;bids_root&gt;`</span></code></p>
-<p>Remember that there is a convenient JavaScript tool to validate all your BIDS
-directories called the “BIDS-validator”, available as a web version and a
-command line tool:</p>
-<p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
-<p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-</div>
+<br /></div>
 <div class="section" id="step-4-cite-mne-bids">
 <h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this headline">¶</a></h2>
 <p>We can see that the appropriate citations are already written in the README.
@@ -1108,129 +1648,27 @@ Ready.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/mne_bids/utils.py:335: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
+/home/circleci/project/mne_bids/utils.py:324: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
   warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1467: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1450: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D&#39;Ambrosio, S., David, O., … Hermes, D. (2019). iEEG-BIDS, extending the Brain Imaging Data Structure specification to human intracranial electrophysiology. Scientific Data, 6, 102. https://doi.org/10.1038/s41597-019-0105-7
-
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-1   n/a     n/a     n/a
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-/home/circleci/project/mne_bids/dig.py:344: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+/home/circleci/project/mne_bids/dig.py:336: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
   raw.set_montage(montage)
-Writing electrodes file to...  /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_electrodes.tsv
-Writing coordsytem file to...  /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_coordsystem.json
-
+Writing electrodes file to... /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_electrodes.tsv
+Writing coordsytem file to... /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_coordsystem.json
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv&#39;...
-
-name    x       y       z       size
-LENT 1  -0.023963604127516875   0.009901365565682838    -0.05419885296067784    n/a
-LENT 2  -0.025768215663698982   0.011286787840953738    -0.0524553054244671     n/a
-LENT 3  -0.028335545055755095   0.012546800182709006    -0.0509353705039163     n/a
-LENT 4  -0.031441048858761346   0.013805445002684097    -0.04941463267242789    n/a
-LENT 5  -0.033870755690750896   0.015504573242993007    -0.04730187645609818    n/a
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_coordsystem.json&#39;...
-
-{
-    &quot;iEEGCoordinateSystem&quot;: &quot;fsaverage&quot;,
-    &quot;iEEGCoordinateSystemDescription&quot;: &quot;Defined by FreeSurfer, the MRI (surface RAS) origin is at the center of a 256\u00d7256\u00d7256 mm^3 anisotropic volume (may not be in the center of the head).&quot;,
-    &quot;iEEGCoordinateUnits&quot;: &quot;m&quot;
-}
-
+Used Annotations descriptions: [&#39;Fixation&#39;, &#39;Go Cue&#39;, &#39;ISI Onset&#39;, &#39;Response&#39;]
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-2.0001758846509374      0.0999755859375 Fixation        1       1999
-2.3003523555840446      0.0999755859375 ISI Onset       3       2299
-2.7216000031268384      0.0999755859375 Go Cue  2       2720
-3.0988217682661094      0.0999755859375 Response        4       3097
-8.824187657196907       0.10009765625   Fixation        1       8819
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.6.0&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;[Unspecified]&quot;
-    ]
-}
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;motor&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 60,
-    &quot;SamplingFrequency&quot;: 999.412109375,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 60.000273598345906,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;iEEGReference&quot;: &quot;n/a&quot;,
-    &quot;ECOGChannelCount&quot;: 0,
-    &quot;SEEGChannelCount&quot;: 119,
-    &quot;EEGChannelCount&quot;: 0,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
-LENT 1  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 2  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 3  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 4  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-LENT 5  SEEG    V       0.0     499.7060546875  StereoEEG       999.412109375   good    n/a
-/home/circleci/project/mne_bids/write.py:1603: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1581: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
-
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
-
-filename        acq_time
-ieeg/sub-1_task-motor_ieeg.vhdr 1937-08-29T11:09:44.000000Z
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
 Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.vhdr...
 Setting channel info structure...
@@ -1238,12 +1676,65 @@ Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-moto
 Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
 Reading in coordinate system frame fsaverage: None.
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
-The read in electrodes file is:
- [(&#39;name&#39;, [&#39;LENT 1&#39;, &#39;LENT 2&#39;, &#39;LENT 3&#39;, &#39;LENT 4&#39;, &#39;LENT 5&#39;, &#39;LENT 6&#39;, &#39;LENT 7&#39;, &#39;LAMY 1&#39;, &#39;LAMY 2&#39;, &#39;LAMY 3&#39;, &#39;LAMY 4&#39;, &#39;LAMY 5&#39;, &#39;LAMY 6&#39;, &#39;LAMY 7&#39;, &#39;LPHG 1&#39;, &#39;LPHG 2&#39;, &#39;LPHG 3&#39;, &#39;LPHG 4&#39;, &#39;LPHG 5&#39;, &#39;LPHG 6&#39;, &#39;LPHG 7&#39;, &#39;LPLI 1&#39;, &#39;LPLI 2&#39;, &#39;LPLI 3&#39;, &#39;LPLI 4&#39;, &#39;LPLI 5&#39;, &#39;LPLI 6&#39;, &#39;LPLI 7&#39;, &#39;LPLI 8&#39;, &#39;LPLI 9&#39;, &#39;LSTG 1&#39;, &#39;LSTG 2&#39;, &#39;LSTG 3&#39;, &#39;LSTG 4&#39;, &#39;LPIT 1&#39;, &#39;LPIT 2&#39;, &#39;LPIT 3&#39;, &#39;LPIT 4&#39;, &#39;LPIT 5&#39;, &#39;LPIT 6&#39;, &#39;LPIT 7&#39;, &#39;LTPO 3&#39;, &#39;LTPO 4&#39;, &#39;LTPO 5&#39;, &#39;LTPO 6&#39;, &#39;LTPO 7&#39;, &#39;LTPO 8&#39;, &#39;LBRI 1&#39;, &#39;LBRI 2&#39;, &#39;LBRI 3&#39;, &#39;LBRI 4&#39;, &#39;LBRI 5&#39;, &#39;LBRI 6&#39;, &#39;LBRI 7&#39;, &#39;LBRI 8&#39;, &#39;LACN 1&#39;, &#39;LACN 2&#39;, &#39;LACN 3&#39;, &#39;LACN 4&#39;, &#39;LACN 5&#39;, &#39;LACN 6&#39;, &#39;LACN 7&#39;, &#39;LACN 8&#39;, &#39;LOFC 1&#39;, &#39;LOFC 2&#39;, &#39;LOFC 3&#39;, &#39;LOFC 4&#39;, &#39;LOFC 5&#39;, &#39;LOFC 6&#39;, &#39;LOFC 7&#39;, &#39;LOFC 8&#39;, &#39;LOFC 9&#39;, &#39;LPCN 1&#39;, &#39;LPCN 2&#39;, &#39;LPCN 3&#39;, &#39;LPCN 4&#39;, &#39;LPCN 5&#39;, &#39;LPCN 6&#39;, &#39;LPCN 7&#39;, &#39;LSMA 1&#39;, &#39;LSMA 2&#39;, &#39;LSMA 3&#39;, &#39;LSMA 4&#39;, &#39;LSMA 5&#39;, &#39;LSMA 6&#39;, &#39;LSMA 7&#39;, &#39;LSMA 8&#39;, &#39;LSMA 9&#39;, &#39;LSMA 10&#39;, &#39;LSMA 11&#39;, &#39;LSMA 12&#39;, &#39;LSMA 13&#39;, &#39;LSMA 14&#39;, &#39;LSMA 15&#39;, &#39;LSMA 16&#39;, &#39;LPM 1&#39;, &#39;LPM 2&#39;, &#39;LPM 3&#39;, &#39;LPM 5&#39;, &#39;LPM 6&#39;, &#39;LPM 7&#39;, &#39;LPM 8&#39;, &#39;LPM 9&#39;, &#39;LPM 10&#39;, &#39;RAHP 1&#39;, &#39;RAHP 2&#39;, &#39;RAHP 3&#39;, &#39;RAHP 4&#39;, &#39;RAHP 5&#39;, &#39;RAHP 6&#39;, &#39;RAHP 7&#39;, &#39;RAHP 8&#39;, &#39;RPHP 1&#39;, &#39;RPHP 2&#39;, &#39;RPHP 3&#39;, &#39;RPHP 4&#39;, &#39;RPHP 5&#39;, &#39;RPHP 6&#39;, &#39;RPHP 8&#39;]), (&#39;x&#39;, [&#39;-0.023963604127516875&#39;, &#39;-0.025768215663698982&#39;, &#39;-0.028335545055755095&#39;, &#39;-0.031441048858761346&#39;, &#39;-0.033870755690750896&#39;, &#39;-0.03567579418484134&#39;, &#39;-0.03845753455255188&#39;, &#39;-0.02801045410307237&#39;, &#39;-0.03166129768123347&#39;, &#39;-0.03831038042313879&#39;, &#39;-0.04393548095326957&#39;, &#39;-0.0494484984426247&#39;, &#39;-0.05534461352116647&#39;, &#39;-0.06052432601910189&#39;, &#39;-0.03475220566702325&#39;, &#39;-0.04156940662412659&#39;, &#39;-0.04893857531464369&#39;, &#39;-0.055415104455100686&#39;, &#39;-0.062034355764753954&#39;, &#39;-0.06874756450821067&#39;, &#39;-0.07276195908253502&#39;, &#39;-0.03665178752071186&#39;, &#39;-0.03979687732481633&#39;, &#39;-0.04349495986072788&#39;, &#39;-0.04678484082460975&#39;, &#39;-0.05047244916001807&#39;, &#39;-0.05404668505790015&#39;, &#39;-0.057764956684121384&#39;, &#39;-0.06124648817136227&#39;, &#39;-0.06485975348246018&#39;, &#39;-0.036719660487269705&#39;, &#39;-0.040114520906250554&#39;, &#39;-0.042644617038925074&#39;, &#39;-0.04641425470978463&#39;, &#39;-0.026475224629144707&#39;, &#39;-0.030973049093668083&#39;, &#39;-0.03626556373544128&#39;, &#39;-0.041604710202120844&#39;, &#39;-0.047413215242076305&#39;, &#39;-0.052574127632262414&#39;, &#39;-0.05819792054616423&#39;, &#39;-0.04096832880438756&#39;, &#39;-0.044251781047746484&#39;, &#39;-0.04761607814513692&#39;, &#39;-0.051295520186733674&#39;, &#39;-0.05447117506691957&#39;, &#39;-0.05832620388521573&#39;, &#39;-0.026669579108176564&#39;, &#39;-0.029931040580753986&#39;, &#39;-0.0336360689129654&#39;, &#39;-0.036698395631047195&#39;, &#39;-0.040386372304214255&#39;, &#39;-0.04393442339011578&#39;, &#39;-0.04766889630778915&#39;, &#39;-0.05121577308675989&#39;, &#39;-0.006746184532677513&#39;, &#39;-0.012311356406403785&#39;, &#39;-0.01971312444714271&#39;, &#39;-0.026226927485683803&#39;, &#39;-0.03390132359560371&#39;, &#39;-0.04019156722740751&#39;, &#39;-0.046875768368176196&#39;, &#39;-0.05479343758680941&#39;, &#39;-0.018703845672153024&#39;, &#39;-0.024072605123257658&#39;, &#39;-0.02961662536733619&#39;, &#39;-0.03438152910536236&#39;, &#39;-0.03955922393104988&#39;, &#39;-0.04419328235591314&#39;, &#39;-0.04862604835458018&#39;, &#39;-0.052870734863504305&#39;, &#39;-0.05756925521195265&#39;, &#39;-0.011217666248323151&#39;, &#39;-0.017148401644097273&#39;, &#39;-0.023103043962768792&#39;, &#39;-0.029871512266288376&#39;, &#39;-0.035330202658769266&#39;, &#39;-0.04231009615563598&#39;, &#39;-0.04887510893894765&#39;, &#39;-0.03303350728262878&#39;, &#39;-0.03216166376559884&#39;, &#39;-0.0313696310599417&#39;, &#39;-0.030577503691352502&#39;, &#39;-0.029785470985695374&#39;, &#39;-0.028878049160706146&#39;, &#39;-0.027855297241207458&#39;, &#39;-0.026486533698471676&#39;, &#39;-0.01995855197119053&#39;, &#39;-0.019303134476258536&#39;, &#39;-0.0185644477105257&#39;, &#39;-0.017492533294404117&#39;, &#39;-0.017109232899555505&#39;, &#39;-0.015620835403150672&#39;, &#39;-0.014632200363989826&#39;, &#39;-0.013853099441346148&#39;, &#39;-0.029581552632805097&#39;, &#39;-0.031081649041927437&#39;, &#39;-0.03242529404938224&#39;, &#39;-0.03651468096131335&#39;, &#39;-0.03833234543472664&#39;, &#39;-0.04057580947061877&#39;, &#39;-0.042611375210638146&#39;, &#39;-0.04517341788911733&#39;, &#39;-0.047115409984154116&#39;, &#39;0.01998677572930202&#39;, &#39;0.024218714110399886&#39;, &#39;0.029911291912012795&#39;, &#39;0.03485507175916342&#39;, &#39;0.04058460389576666&#39;, &#39;0.04552846891986655&#39;, &#39;0.05180956507104298&#39;, &#39;0.05694705369251337&#39;, &#39;0.017752613439155508&#39;, &#39;0.0245933504057457&#39;, &#39;0.03194972543915112&#39;, &#39;0.038975847950409884&#39;, &#39;0.04670852836019953&#39;, &#39;0.05419808214695772&#39;, &#39;0.06802985761437348&#39;]), (&#39;y&#39;, [&#39;0.009901365565682838&#39;, &#39;0.011286787840953738&#39;, &#39;0.012546800182709006&#39;, &#39;0.013805445002684097&#39;, &#39;0.015504573242993007&#39;, &#39;0.016828534607441027&#39;, &#39;0.018276945954947124&#39;, &#39;-0.004930571069308828&#39;, &#39;-0.004512100679606068&#39;, &#39;-0.002112746970987409&#39;, &#39;-0.0013541729663584384&#39;, &#39;-0.000539538775176136&#39;, &#39;0.0010380922404434178&#39;, &#39;0.0017773675434850107&#39;, &#39;-0.020255011620528583&#39;, &#39;-0.022756882900736377&#39;, &#39;-0.02446519487979394&#39;, &#39;-0.02717565679493926&#39;, &#39;-0.029092050008884658&#39;, &#39;-0.03043036347779715&#39;, &#39;-0.031311859624924596&#39;, &#39;-0.004705299521945279&#39;, &#39;-0.004879911859396639&#39;, &#39;-0.005228029059832987&#39;, &#39;-0.005230914307147748&#39;, &#39;-0.005923197932812817&#39;, &#39;-0.0057547098922364525&#39;, &#39;-0.00629821597718581&#39;, &#39;-0.006971740324683857&#39;, &#39;-0.007207534757966069&#39;, &#39;-0.03917218265419006&#39;, &#39;-0.03898670133963542&#39;, &#39;-0.037824997556553386&#39;, &#39;-0.03770698964674709&#39;, &#39;-0.037515907882401604&#39;, &#39;-0.038918622095864594&#39;, &#39;-0.0399663949110119&#39;, &#39;-0.04105373556001803&#39;, &#39;-0.04308895228869876&#39;, &#39;-0.043903918646705814&#39;, &#39;-0.045315740474634915&#39;, &#39;-0.05154385393079455&#39;, &#39;-0.05242191654361671&#39;, &#39;-0.05309058123945991&#39;, &#39;-0.05466796500333279&#39;, &#39;-0.056011529630961135&#39;, &#39;-0.05662118334202096&#39;, &#39;0.012968763175479613&#39;, &#39;0.014089251332045189&#39;, &#39;0.014095547114602808&#39;, &#39;0.014219176516493024&#39;, &#39;0.014295008112133046&#39;, &#39;0.01466273848559963&#39;, &#39;0.014917480861445122&#39;, &#39;0.015109791980289429&#39;, &#39;0.009680979789573317&#39;, &#39;0.011686192586088736&#39;, &#39;0.014222131678843212&#39;, &#39;0.01693297690315984&#39;, &#39;0.020094800055036346&#39;, &#39;0.022209653057185648&#39;, &#39;0.0247474134424552&#39;, &#39;0.027422987191125237&#39;, &#39;0.05949121762550506&#39;, &#39;0.05605201633787474&#39;, &#39;0.052769950784691405&#39;, &#39;0.04763700806831579&#39;, &#39;0.04440800175410833&#39;, &#39;0.03934154899869469&#39;, &#39;0.03557110197147428&#39;, &#39;0.031605880383604026&#39;, &#39;0.02855166224594336&#39;, &#39;-0.05232269319172353&#39;, &#39;-0.056056424289041284&#39;, &#39;-0.05900453860873224&#39;, &#39;-0.06300229474205886&#39;, &#39;-0.06547751109415006&#39;, &#39;-0.06947580402856258&#39;, &#39;-0.07321114944540354&#39;, &#39;0.00474841480600028&#39;, &#39;0.005705394729355931&#39;, &#39;0.006041153865572106&#39;, &#39;0.006536678325524828&#39;, &#39;0.006872437461741003&#39;, &#39;0.007314998578121007&#39;, &#39;0.007775604096506879&#39;, &#39;0.0083080965560645&#39;, &#39;0.011833023639954829&#39;, &#39;0.012255215921954868&#39;, &#39;0.012639158261789572&#39;, &#39;0.013152157080773613&#39;, &#39;0.01361983218409493&#39;, &#39;0.014197990117030086&#39;, &#39;0.014723595378257496&#39;, &#39;0.013855214067056915&#39;, &#39;-0.007826122703628858&#39;, &#39;-0.006553317589996652&#39;, &#39;-0.006354159015453579&#39;, &#39;-0.003874210432426026&#39;, &#39;-0.0032975472743149653&#39;, &#39;-0.002309898150120197&#39;, &#39;-0.0015998820344875798&#39;, &#39;-0.00022406207698009127&#39;, &#39;0.0005792949554628384&#39;, &#39;-0.015099562703549552&#39;, &#39;-0.014232147332907365&#39;, &#39;-0.013266544246969074&#39;, &#39;-0.01243693478671993&#39;, &#39;-0.011464867336257475&#39;, &#39;-0.010494797304708967&#39;, &#39;-0.009482923185109305&#39;, &#39;-0.008515896850755362&#39;, &#39;-0.03475383030710631&#39;, &#39;-0.034080119832056506&#39;, &#39;-0.03507062244080076&#39;, &#39;-0.03504747100954997&#39;, &#39;-0.03601267886147879&#39;, &#39;-0.036288400695397974&#39;, &#39;-0.0375829805360187&#39;]), (&#39;z&#39;, [&#39;-0.05419885296067784&#39;, &#39;-0.0524553054244671&#39;, &#39;-0.0509353705039163&#39;, &#39;-0.04941463267242789&#39;, &#39;-0.04730187645609818&#39;, &#39;-0.04675278997825574&#39;, &#39;-0.04481579358834676&#39;, &#39;-0.024394610260649187&#39;, &#39;-0.023065255342259276&#39;, &#39;-0.025116389134898415&#39;, &#39;-0.024857295335098277&#39;, &#39;-0.025020201854932825&#39;, &#39;-0.024930002573131015&#39;, &#39;-0.024960344321625236&#39;, &#39;-0.024375404236153184&#39;, &#39;-0.02344179119273084&#39;, &#39;-0.023081850049955013&#39;, &#39;-0.02014323222652343&#39;, &#39;-0.0170777477731986&#39;, &#39;-0.014037968630469204&#39;, &#39;-0.012060903110708765&#39;, &#39;-0.016238968541193007&#39;, &#39;-0.016199863209985503&#39;, &#39;-0.016124389435897835&#39;, &#39;-0.01612060956632154&#39;, &#39;-0.01597406492556709&#39;, &#39;-0.01600540343074478&#39;, &#39;-0.014811602983168649&#39;, &#39;-0.014669134218818389&#39;, &#39;-0.014616939119748944&#39;, &#39;-0.008457999050568906&#39;, &#39;-0.0068910625624703185&#39;, &#39;-0.0061629473983784485&#39;, &#39;-0.005130670999709741&#39;, &#39;-0.02087152527847419&#39;, &#39;-0.019410757055842165&#39;, &#39;-0.01907392438845975&#39;, &#39;-0.018728523079657736&#39;, &#39;-0.017259583714794753&#39;, &#39;-0.016897193602479543&#39;, &#39;-0.016701116646511062&#39;, &#39;0.01553490739627033&#39;, &#39;0.015719427426898004&#39;, &#39;0.015860780313656224&#39;, &#39;0.016014444488557333&#39;, &#39;0.016294996927205735&#39;, &#39;0.01642463851082082&#39;, &#39;-0.0009323086235760482&#39;, &#39;-0.00089536840053271&#39;, &#39;-0.0005709217174789914&#39;, &#39;0.00025630827266533325&#39;, &#39;0.0011821704749750434&#39;, &#39;0.0015497841817395854&#39;, &#39;0.0024970831201485324&#39;, &#39;0.0029884351044804046&#39;, &#39;0.019576065173825062&#39;, &#39;0.02108212146527004&#39;, &#39;0.021842085700349182&#39;, &#39;0.02343121323364441&#39;, &#39;0.02593060503916539&#39;, &#39;0.02632069610853091&#39;, &#39;0.027079585656408865&#39;, &#39;0.02849485254014928&#39;, &#39;-0.013838933557391396&#39;, &#39;-0.012746749088479595&#39;, &#39;-0.010505585815889567&#39;, &#39;-0.007614351489530777&#39;, &#39;-0.004954313354787533&#39;, &#39;0.00028675419154068973&#39;, &#39;0.005528541581677131&#39;, &#39;0.010541802418028554&#39;, &#39;0.01450814973484231&#39;, &#39;0.009916908891210614&#39;, &#39;0.010693758876416758&#39;, &#39;0.011308381459432562&#39;, &#39;0.012140570852940714&#39;, &#39;0.012657047075810291&#39;, &#39;0.01348955177991042&#39;, &#39;0.014267347474771694&#39;, &#39;-0.016947244722550298&#39;, &#39;-0.0135125194864212&#39;, &#39;-0.01082838944069013&#39;, &#39;-0.006858799381903957&#39;, &#39;-0.004174669336172878&#39;, &#39;-0.0006337417119720717&#39;, &#39;0.003049848252997627&#39;, &#39;0.0073042359239625775&#39;, &#39;0.03552250864335941&#39;, &#39;0.038905077301928465&#39;, &#39;0.0419780675618238&#39;, &#39;0.046082093130479326&#39;, &#39;0.04983661151670017&#39;, &#39;0.05445579652495949&#39;, &#39;0.058663103244316256&#39;, &#39;0.06260843130380347&#39;, &#39;0.02693703005101472&#39;, &#39;0.030569229843049245&#39;, &#39;0.03220116078127908&#39;, &#39;0.037258323355708445&#39;, &#39;0.039553365361573466&#39;, &#39;0.04261036103282349&#39;, &#39;0.04530127964331283&#39;, &#39;0.04910376446975606&#39;, &#39;0.0514368489142921&#39;, &#39;-0.026788774726713517&#39;, &#39;-0.027604649826096075&#39;, &#39;-0.02863492929003035&#39;, &#39;-0.030742978969550507&#39;, &#39;-0.03172205309037834&#39;, &#39;-0.0326999539629849&#39;, &#39;-0.03337086369179853&#39;, &#39;-0.034377495000421185&#39;, &#39;-0.018389703414553753&#39;, &#39;-0.017376305093162382&#39;, &#39;-0.016141907569134584&#39;, &#39;-0.015258511746739369&#39;, &#39;-0.01468027016858126&#39;, &#39;-0.013497149883964997&#39;, &#39;-0.011285508608690526&#39;]), (&#39;size&#39;, [&#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;])]
-/home/circleci/project/mne_bids/dig.py:547: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
-  raw.set_montage(montage, on_missing=&#39;warn&#39;, verbose=verbose)
-Recovered coordinate: [-0.0239636   0.00990137 -0.05419885]
-Saved coordinate:     [-0.0239636   0.00990137 -0.05419885]
+--- Logging error ---
+Traceback (most recent call last):
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 1085, in emit
+    msg = self.format(record)
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 929, in format
+    return fmt.format(record)
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 668, in format
+    record.message = record.getMessage()
+  File &quot;/home/circleci/.pyenv/versions/3.8.12/lib/python3.8/logging/__init__.py&quot;, line 373, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;/home/circleci/.local/bin/sphinx-build&quot;, line 8, in &lt;module&gt;
+    sys.exit(main())
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/build.py&quot;, line 292, in main
+    return make_main(argv)
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/build.py&quot;, line 199, in make_main
+    return make_mode.run_make_mode(argv[1:])
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/make_mode.py&quot;, line 167, in run_make_mode
+    return make.run_generic_build(args[0])
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/make_mode.py&quot;, line 155, in run_generic_build
+    return build_main(args + opts)
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/cmd/build.py&quot;, line 276, in build_main
+    app = Sphinx(args.sourcedir, args.confdir, args.outputdir,
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/application.py&quot;, line 270, in __init__
+    self._init_builder()
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/application.py&quot;, line 328, in _init_builder
+    self.events.emit(&#39;builder-inited&#39;)
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx/events.py&quot;, line 101, in emit
+    results.append(listener.handler(self.app, *args))
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_gallery.py&quot;, line 437, in generate_gallery_rst
+    this_fhindex, this_costs = generate_dir_rst(
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 381, in generate_dir_rst
+    intro, title, cost = generate_file_rst(
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 862, in generate_file_rst
+    output_blocks, time_elapsed = execute_script(script_blocks,
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 784, in execute_script
+    output_blocks.append(execute_code_block(
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 591, in execute_code_block
+    mem_body, _ = gallery_conf[&#39;call_memory&#39;](
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_gallery.py&quot;, line 205, in call_memory
+    return 0., func()
+  File &quot;/home/circleci/.local/lib/python3.8/site-packages/sphinx_gallery/gen_rst.py&quot;, line 516, in __call__
+    exec(self.code, self.fake_main.__dict__)
+  File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 300, in &lt;module&gt;
+    raw = read_raw_bids(bids_path=bids_path)
+  File &quot;&lt;decorator-gen-551&gt;&quot;, line 24, in read_raw_bids
+  File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 680, in read_raw_bids
+    _read_dig_bids(electrodes_fname, coordsystem_fname,
+  File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 516, in _read_dig_bids
+    montage = _handle_electrodes_reading(electrodes_fpath, coord_frame,
+  File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 42, in _handle_electrodes_reading
+    logger.info(&quot;The read in electrodes file is: \n&quot;, summary_str)
+Message: &#39;The read in electrodes file is: \n&#39;
+Arguments: ([(&#39;name&#39;, [&#39;LENT 1&#39;, &#39;LENT 2&#39;, &#39;LENT 3&#39;, &#39;LENT 4&#39;, &#39;LENT 5&#39;, &#39;LENT 6&#39;, &#39;LENT 7&#39;, &#39;LAMY 1&#39;, &#39;LAMY 2&#39;, &#39;LAMY 3&#39;, &#39;LAMY 4&#39;, &#39;LAMY 5&#39;, &#39;LAMY 6&#39;, &#39;LAMY 7&#39;, &#39;LPHG 1&#39;, &#39;LPHG 2&#39;, &#39;LPHG 3&#39;, &#39;LPHG 4&#39;, &#39;LPHG 5&#39;, &#39;LPHG 6&#39;, &#39;LPHG 7&#39;, &#39;LPLI 1&#39;, &#39;LPLI 2&#39;, &#39;LPLI 3&#39;, &#39;LPLI 4&#39;, &#39;LPLI 5&#39;, &#39;LPLI 6&#39;, &#39;LPLI 7&#39;, &#39;LPLI 8&#39;, &#39;LPLI 9&#39;, &#39;LSTG 1&#39;, &#39;LSTG 2&#39;, &#39;LSTG 3&#39;, &#39;LSTG 4&#39;, &#39;LPIT 1&#39;, &#39;LPIT 2&#39;, &#39;LPIT 3&#39;, &#39;LPIT 4&#39;, &#39;LPIT 5&#39;, &#39;LPIT 6&#39;, &#39;LPIT 7&#39;, &#39;LTPO 3&#39;, &#39;LTPO 4&#39;, &#39;LTPO 5&#39;, &#39;LTPO 6&#39;, &#39;LTPO 7&#39;, &#39;LTPO 8&#39;, &#39;LBRI 1&#39;, &#39;LBRI 2&#39;, &#39;LBRI 3&#39;, &#39;LBRI 4&#39;, &#39;LBRI 5&#39;, &#39;LBRI 6&#39;, &#39;LBRI 7&#39;, &#39;LBRI 8&#39;, &#39;LACN 1&#39;, &#39;LACN 2&#39;, &#39;LACN 3&#39;, &#39;LACN 4&#39;, &#39;LACN 5&#39;, &#39;LACN 6&#39;, &#39;LACN 7&#39;, &#39;LACN 8&#39;, &#39;LOFC 1&#39;, &#39;LOFC 2&#39;, &#39;LOFC 3&#39;, &#39;LOFC 4&#39;, &#39;LOFC 5&#39;, &#39;LOFC 6&#39;, &#39;LOFC 7&#39;, &#39;LOFC 8&#39;, &#39;LOFC 9&#39;, &#39;LPCN 1&#39;, &#39;LPCN 2&#39;, &#39;LPCN 3&#39;, &#39;LPCN 4&#39;, &#39;LPCN 5&#39;, &#39;LPCN 6&#39;, &#39;LPCN 7&#39;, &#39;LSMA 1&#39;, &#39;LSMA 2&#39;, &#39;LSMA 3&#39;, &#39;LSMA 4&#39;, &#39;LSMA 5&#39;, &#39;LSMA 6&#39;, &#39;LSMA 7&#39;, &#39;LSMA 8&#39;, &#39;LSMA 9&#39;, &#39;LSMA 10&#39;, &#39;LSMA 11&#39;, &#39;LSMA 12&#39;, &#39;LSMA 13&#39;, &#39;LSMA 14&#39;, &#39;LSMA 15&#39;, &#39;LSMA 16&#39;, &#39;LPM 1&#39;, &#39;LPM 2&#39;, &#39;LPM 3&#39;, &#39;LPM 5&#39;, &#39;LPM 6&#39;, &#39;LPM 7&#39;, &#39;LPM 8&#39;, &#39;LPM 9&#39;, &#39;LPM 10&#39;, &#39;RAHP 1&#39;, &#39;RAHP 2&#39;, &#39;RAHP 3&#39;, &#39;RAHP 4&#39;, &#39;RAHP 5&#39;, &#39;RAHP 6&#39;, &#39;RAHP 7&#39;, &#39;RAHP 8&#39;, &#39;RPHP 1&#39;, &#39;RPHP 2&#39;, &#39;RPHP 3&#39;, &#39;RPHP 4&#39;, &#39;RPHP 5&#39;, &#39;RPHP 6&#39;, &#39;RPHP 8&#39;]), (&#39;x&#39;, [&#39;-0.02228494455711218&#39;, &#39;-0.02500700012216274&#39;, &#39;-0.027995234581804612&#39;, &#39;-0.030627330174978713&#39;, &#39;-0.03289622109368106&#39;, &#39;-0.036472854106212184&#39;, &#39;-0.03911573336020393&#39;, &#39;-0.026975667516886015&#39;, &#39;-0.03213456438790573&#39;, &#39;-0.037496680124226106&#39;, &#39;-0.042880514624611586&#39;, &#39;-0.04871521534493084&#39;, &#39;-0.054289637995431385&#39;, &#39;-0.059441359229329374&#39;, &#39;-0.03397354814252272&#39;, &#39;-0.04051654508152253&#39;, &#39;-0.04787077211841168&#39;, &#39;-0.0543803178838836&#39;, &#39;-0.06080750014103892&#39;, &#39;-0.06768722827810253&#39;, &#39;-0.0716767543722731&#39;, &#39;-0.0356170009345255&#39;, &#39;-0.038762086884129354&#39;, &#39;-0.04252043433788622&#39;, &#39;-0.045724526755931125&#39;, &#39;-0.04941711081422972&#39;, &#39;-0.05296642999054615&#39;, &#39;-0.05669221685985512&#39;, &#39;-0.0601836882644939&#39;, &#39;-0.06379940811256174&#39;, &#39;-0.035684873901083346&#39;, &#39;-0.039079734335033464&#39;, &#39;-0.04157934945110314&#39;, &#39;-0.04535145859005516&#39;, &#39;-0.025414860909999913&#39;, &#39;-0.029938262522450992&#39;, &#39;-0.035622641494109354&#39;, &#39;-0.04054187889183809&#39;, &#39;-0.04637842865588994&#39;, &#39;-0.051516362208602305&#39;, &#39;-0.05713014872340806&#39;, &#39;-0.039830281376632616&#39;, &#39;-0.04335082373916013&#39;, &#39;-0.04645708186729741&#39;, &#39;-0.05016584697847963&#39;, &#39;-0.053256886444527606&#39;, &#39;-0.05709515925933277&#39;, &#39;-0.025619179437426958&#39;, &#39;-0.02884082346710147&#39;, &#39;-0.03255580478066743&#39;, &#39;-0.035615680696525744&#39;, &#39;-0.03931112420109326&#39;, &#39;-0.04287404143629814&#39;, &#39;-0.046611005534737716&#39;, &#39;-0.0501454968995267&#39;, &#39;-0.005678402561598056&#39;, &#39;-0.011241058115027878&#39;, &#39;-0.01863532783113634&#39;, &#39;-0.02515409354099002&#39;, &#39;-0.032798748731256724&#39;, &#39;-0.039126259126319396&#39;, &#39;-0.04580297504153347&#39;, &#39;-0.05370571945792058&#39;, &#39;-0.017638511966961062&#39;, &#39;-0.02301219178358524&#39;, &#39;-0.02852639923623783&#39;, &#39;-0.033331068747044494&#39;, &#39;-0.03847147985589666&#39;, &#39;-0.04312793734676254&#39;, &#39;-0.047553251173436825&#39;, &#39;-0.0517879847257643&#39;, &#39;-0.05648649980389221&#39;, &#39;-0.01015744333694055&#39;, &#39;-0.016113613130660603&#39;, &#39;-0.022134225346223762&#39;, &#39;-0.02881129233041621&#39;, &#39;-0.03466237881108396&#39;, &#39;-0.04130776360485866&#39;, &#39;-0.04779500152951682&#39;, &#39;-0.03292071499476091&#39;, &#39;-0.03213369939934719&#39;, &#39;-0.03085894643048121&#39;, &#39;-0.029745176215660085&#39;, &#39;-0.0287118238828849&#39;, &#39;-0.027743061050577483&#39;, &#39;-0.026705407568240004&#39;, &#39;-0.02548912791523304&#39;, &#39;-0.018858350647219673&#39;, &#39;-0.0182004675137306&#39;, &#39;-0.017461753303296232&#39;, &#39;-0.016732460286569727&#39;, &#39;-0.01625618018903903&#39;, &#39;-0.014513246077614509&#39;, &#39;-0.013509745103900739&#39;, &#39;-0.012767937167425521&#39;, &#39;-0.027542059228073672&#39;, &#39;-0.029989049227958545&#39;, &#39;-0.03134760597370279&#39;, &#39;-0.036339309694229265&#39;, &#39;-0.03724215952527999&#39;, &#39;-0.03948562373044208&#39;, &#39;-0.04161477927583705&#39;, &#39;-0.044080814111254946&#39;, &#39;-0.04602027060248963&#39;, &#39;0.021021564242738683&#39;, &#39;0.02525350259389801&#39;, &#39;0.030946078498199154&#39;, &#39;0.03589555720542578&#39;, &#39;0.0416176131937973&#39;, &#39;0.04657387267845452&#39;, &#39;0.052844351654134605&#39;, &#39;0.05798184413010561&#39;, &#39;0.018787400981482384&#39;, &#39;0.02548592974252509&#39;, &#39;0.03298451393761852&#39;, &#39;0.04003366304699008&#39;, &#39;0.04774331493890125&#39;, &#39;0.05523286872565943&#39;, &#39;0.06906464418818088&#39;]), (&#39;y&#39;, [&#39;0.009464866987547652&#39;, &#39;0.010594288810431183&#39;, &#39;0.011866133144265848&#39;, &#39;0.014113500725973322&#39;, &#39;0.015744607073167195&#39;, &#39;0.01661579100291146&#39;, &#39;0.01815262748063058&#39;, &#39;-0.004797318410250012&#39;, &#39;-0.004498169335414061&#39;, &#39;-0.0018389075060941344&#39;, &#39;-0.0010968274969865438&#39;, &#39;-0.0002487947047754048&#39;, &#39;0.0013125457390759949&#39;, &#39;0.0011712327940777614&#39;, &#39;-0.021450945925568662&#39;, &#39;-0.023126104472646958&#39;, &#39;-0.02529037601946825&#39;, &#39;-0.02704240364720293&#39;, &#39;-0.03064488931624256&#39;, &#39;-0.03102756495314854&#39;, &#39;-0.03270891363962837&#39;, &#39;-0.004572046862886466&#39;, &#39;-0.004746659186647033&#39;, &#39;-0.005005107234964494&#39;, &#39;-0.005862334564598334&#39;, &#39;-0.006391225815947318&#39;, &#39;-0.006954154552611566&#39;, &#39;-0.007338115574740673&#39;, &#39;-0.007684853710823036&#39;, &#39;-0.0077876264715247626&#39;, &#39;-0.03903892999513125&#39;, &#39;-0.03885344819189909&#39;, &#39;-0.03865402772656475&#39;, &#39;-0.038420105245625884&#39;, &#39;-0.03806178207140638&#39;, &#39;-0.038785368948128264&#39;, &#39;-0.0408323190924662&#39;, &#39;-0.04171552360082989&#39;, &#39;-0.042955699629639944&#39;, &#39;-0.04455629646612245&#39;, &#39;-0.04619224793699158&#39;, &#39;-0.05282155936725688&#39;, &#39;-0.05383790427070661&#39;, &#39;-0.05505663418670524&#39;, &#39;-0.05567032905293417&#39;, &#39;-0.05715136032146711&#39;, &#39;-0.05831169233644821&#39;, &#39;0.012715457652800416&#39;, &#39;0.012597240441886684&#39;, &#39;0.012913214659407984&#39;, &#39;0.012903818465606775&#39;, &#39;0.013207625327472048&#39;, &#39;0.014151085286212796&#39;, &#39;0.014470412775176978&#39;, &#39;0.014185803271845905&#39;, &#39;0.008821580626399489&#39;, &#39;0.010796424392276438&#39;, &#39;0.01315571063206787&#39;, &#39;0.016047056273652056&#39;, &#39;0.018074546676129954&#39;, &#39;0.021449058971649324&#39;, &#39;0.023793060149214992&#39;, &#39;0.025995564763125083&#39;, &#39;0.05878194957561546&#39;, &#39;0.055591689194670835&#39;, &#39;0.05129505378792383&#39;, &#39;0.04748635936007554&#39;, &#39;0.04301480012092965&#39;, &#39;0.038649383120780936&#39;, &#39;0.03461674869192486&#39;, &#39;0.030341849202089835&#39;, &#39;0.027304741301208607&#39;, &#39;-0.053108094628162635&#39;, &#39;-0.05592317162313707&#39;, &#39;-0.060007313688605055&#39;, &#39;-0.06378769370105707&#39;, &#39;-0.0672967490910622&#39;, &#39;-0.07157993570943254&#39;, &#39;-0.07465011795642922&#39;, &#39;0.004149234426755872&#39;, &#39;0.004498390133387929&#39;, &#39;0.0051091200141538656&#39;, &#39;0.0055028055237547665&#39;, &#39;0.005907613592342974&#39;, &#39;0.006281692097491685&#39;, &#39;0.006965767062221117&#39;, &#39;0.007205402294486395&#39;, &#39;0.010082665079934076&#39;, &#39;0.010388944880671392&#39;, &#39;0.010824215128494434&#39;, &#39;0.011014271958759916&#39;, &#39;0.011121913178934338&#39;, &#39;0.012082775332484032&#39;, &#39;0.012032658294278653&#39;, &#39;0.012389724099965365&#39;, &#39;-0.009652255677362333&#39;, &#39;-0.008298114470281726&#39;, &#39;-0.007608778984526712&#39;, &#39;-0.0052887473252063175&#39;, &#39;-0.004840889462573814&#39;, &#39;-0.0038532353629610544&#39;, &#39;-0.0033715340094687763&#39;, &#39;-0.0019688619642822987&#39;, &#39;-0.001161656301537018&#39;, &#39;-0.014966310037645343&#39;, &#39;-0.014098893689648121&#39;, &#39;-0.013133291587910259&#39;, &#39;-0.01231213130550822&#39;, &#39;-0.01112919270866104&#39;, &#39;-0.010618930694358432&#39;, &#39;-0.009349670459425623&#39;, &#39;-0.008382644111380897&#39;, &#39;-0.03462057740028604&#39;, &#39;-0.035220769384540815&#39;, &#39;-0.03493736928621903&#39;, &#39;-0.03561430349353708&#39;, &#39;-0.03587942595808122&#39;, &#39;-0.0361551477920004&#39;, &#39;-0.03744972761046043&#39;]), (&#39;z&#39;, [&#39;-0.0521852173735344&#39;, &#39;-0.050458508637877354&#39;, &#39;-0.048481734275551774&#39;, &#39;-0.046953861412845334&#39;, &#39;-0.04539198216549226&#39;, &#39;-0.04361812918786372&#39;, &#39;-0.0414877397757463&#39;, &#39;-0.02334517771219269&#39;, &#39;-0.022942774194306938&#39;, &#39;-0.022930936838321488&#39;, &#39;-0.022809862443509916&#39;, &#39;-0.02269696919711152&#39;, &#39;-0.02274490945160392&#39;, &#39;-0.022275731345808736&#39;, &#39;-0.02170988107254971&#39;, &#39;-0.02154734162605198&#39;, &#39;-0.02081086124723886&#39;, &#39;-0.019093799650350497&#39;, &#39;-0.01568028100491454&#39;, &#39;-0.011955248447078353&#39;, &#39;-0.009671826145326851&#39;, &#39;-0.0151895359927365&#39;, &#39;-0.015150430660750195&#39;, &#39;-0.014352155098004768&#39;, &#39;-0.014313207986339975&#39;, &#39;-0.014200404249973516&#39;, &#39;-0.0133747448466602&#39;, &#39;-0.012919854079082796&#39;, &#39;-0.012844863018648229&#39;, &#39;-0.012396560619099188&#39;, &#39;-0.0074085665021124&#39;, &#39;-0.005841629986297383&#39;, &#39;-0.004597125457814421&#39;, &#39;-0.0033063999250422926&#39;, &#39;-0.0183758262347977&#39;, &#39;-0.018361324479669233&#39;, &#39;-0.017817759085828895&#39;, &#39;-0.01649127312928883&#39;, &#39;-0.01621015116633824&#39;, &#39;-0.015932619143084047&#39;, &#39;-0.014843106649426506&#39;, &#39;0.01687563924581589&#39;, &#39;0.017088947506864627&#39;, &#39;0.017343653065042618&#39;, &#39;0.017298318503745868&#39;, &#39;0.017607178758458398&#39;, &#39;0.01785053224241834&#39;, &#39;0.001220592171989816&#39;, &#39;0.0020780885698552173&#39;, &#39;0.0021973953224466193&#39;, &#39;0.0026285177896011556&#39;, &#39;0.0033661111231377567&#39;, &#39;0.00432079994308316&#39;, &#39;0.00511356903214359&#39;, &#39;0.005138636955728719&#39;, &#39;0.021571733405213955&#39;, &#39;0.023507640007247803&#39;, &#39;0.024868851695000267&#39;, &#39;0.026561898554625034&#39;, &#39;0.028024795374026988&#39;, &#39;0.028437155171985445&#39;, &#39;0.029659634048513947&#39;, &#39;0.031313783873020674&#39;, &#39;-0.011309493693644387&#39;, &#39;-0.00956275252567535&#39;, &#39;-0.007394468282965831&#39;, &#39;-0.004635494857188836&#39;, &#39;-0.0018600673262369818&#39;, &#39;0.0029538539530187397&#39;, &#39;0.008108589974561022&#39;, &#39;0.013326986749716569&#39;, &#39;0.017430992410726865&#39;, &#39;0.010485375939844917&#39;, &#39;0.011743191425262662&#39;, &#39;0.012592497510940706&#39;, &#39;0.012709034020198429&#39;, &#39;0.013015827486856561&#39;, &#39;0.015001091632497677&#39;, &#39;0.014970774256466167&#39;, &#39;-0.015533865494059893&#39;, &#39;-0.012714787339614923&#39;, &#39;-0.007828829257558729&#39;, &#39;-0.004685677335258364&#39;, &#39;-0.0014512714198861888&#39;, &#39;0.0018213570664253852&#39;, &#39;0.005882362644024076&#39;, &#39;0.010056188127364592&#39;, &#39;0.03911408057991444&#39;, &#39;0.04223820826668502&#39;, &#39;0.045724165356458554&#39;, &#39;0.04707137053840406&#39;, &#39;0.05132372939581026&#39;, &#39;0.05713436258600041&#39;, &#39;0.06075459862729729&#39;, &#39;0.06444687517567377&#39;, &#39;0.02839015008342629&#39;, &#39;0.03218295945419517&#39;, &#39;0.03371366967820535&#39;, &#39;0.040016614981881006&#39;, &#39;0.04211385128791479&#39;, &#39;0.045170839197579825&#39;, &#39;0.047909007997982284&#39;, &#39;0.05071750195413148&#39;, &#39;0.05375574519435399&#39;, &#39;-0.025739342177867608&#39;, &#39;-0.026555217221817307&#39;, &#39;-0.027585496741573838&#39;, &#39;-0.028244580288911983&#39;, &#39;-0.029549583286720256&#39;, &#39;-0.030856112757976173&#39;, &#39;-0.032321431642299295&#39;, &#39;-0.03332806295014316&#39;, &#39;-0.017340270852044343&#39;, &#39;-0.016063641018801034&#39;, &#39;-0.01509247499257225&#39;, &#39;-0.013605639865223588&#39;, &#39;-0.013630837606266542&#39;, &#39;-0.012447717321650275&#39;, &#39;-0.01023607805606311&#39;]), (&#39;size&#39;, [&#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;])],)
+/home/circleci/project/mne_bids/dig.py:536: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+  raw.set_montage(montage, on_missing=&#39;warn&#39;)
+Recovered coordinate: [-0.02228494  0.00946487 -0.05218522]
+Saved coordinate:     [-0.02228494  0.00946487 -0.05218522]
 </pre></div>
 </div>
 <p>Now we should go back to “head” coordinates. We do this with <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code>
@@ -1287,13 +1778,11 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     </tr>
     <tr>
         <th>Good channels</th>
-        <td>0 magnetometer, 0 gradiometer,
-            0 EEG channels, and 0 fNIRS channels.</td>
+        <td>119 sEEG</td>
     </tr>
     <tr>
         <th>Bad channels</th>
-        <td></td>
-
+        <td>None</td>
     </tr>
     <tr>
         <th>EOG channels</th>
@@ -1327,7 +1816,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.040 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  35.137 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1367,13 +1856,13 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-09.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-19.<br/>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
 </p>
     </div>
     
