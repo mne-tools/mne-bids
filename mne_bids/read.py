@@ -52,6 +52,12 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
         raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF']:
+        raw_fpath = Path(raw_fpath)
+        # handle EDF extension upper/lower casing
+        if ext == '.edf' and not raw_fpath.exists():
+            raw_fpath = raw_fpath.with_suffix('.EDF')
+        elif ext == '.EDF' and not raw_fpath.exists():
+            raw_fpath = raw_fpath.with_suffix('.edf')
         raw = reader[ext](raw_fpath, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
@@ -647,7 +653,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
     if bids_fname.endswith('.fif') and 'allow_maxshield' not in extra_params:
         extra_params['allow_maxshield'] = True
-
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, **extra_params)
 
