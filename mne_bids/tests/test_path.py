@@ -28,7 +28,7 @@ from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
                       write_meg_calibration, write_meg_crosstalk)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
-                           _filter_fnames)
+                           _filter_fnames, search_folder_for_text)
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 
 from test_read import _read_raw_fif, warning_str
@@ -126,6 +126,33 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
                             for val in expected_vals]
 
 
+def test_search_folder_for_text(capsys):
+    """Test finding entries."""
+    with pytest.raises(ValueError, match='is not a directory'):
+        search_folder_for_text('foo', 'i_dont_exist')
+
+    # We check the testing directory
+    test_dir = op.dirname(__file__)
+    search_folder_for_text('n/a', test_dir)
+    captured = capsys.readouterr()
+    assert 'sub-01_ses-eeg_electrodes.tsv' in captured.out
+    assert '    1    name      x         y         z         impedance' in \
+        captured.out.split('\n')
+    assert '    66   ECG       n/a       n/a       n/a       n/a' in \
+        captured.out.split('\n')
+
+    # test if pathlib.Path object
+    search_folder_for_text('n/a', Path(test_dir))
+
+    # test returning a string and without line numbers
+    out = search_folder_for_text(
+        'n/a', test_dir, line_numbers=False, return_str=True)
+    assert 'sub-01_ses-eeg_electrodes.tsv' in out
+    assert '    name      x         y         z         impedance' in \
+        out.split('\n')
+    assert '    ECG       n/a       n/a       n/a       n/a' in out.split('\n')
+
+
 def test_print_dir_tree(capsys):
     """Test printing a dir tree."""
     with pytest.raises(ValueError, match='Directory does not exist'):
@@ -166,10 +193,6 @@ def test_print_dir_tree(capsys):
     assert '|--- test_utils.py' in out.split('\n')
     assert '|--- __pycache__{}'.format(os.sep) in out.split('\n')
     assert '.pyc' not in out
-
-    # errors if return_str not a bool
-    with pytest.raises(ValueError, match='must be either True or False.'):
-        print_dir_tree(test_dir, return_str='yes')
 
 
 def test_make_folders(tmpdir):

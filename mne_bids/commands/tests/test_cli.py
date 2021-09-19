@@ -303,5 +303,4 @@ def test_inspect(tmpdir):
         args = ('--bids_root', bids_root, '--h_freq', h_freq,
                 '--find_flat', 0)
         with ArgvSetter(args):
-            with pytest.warns(RuntimeWarning, match='The unit for chann*'):
-                mne_bids_inspect.run()
+            mne_bids_inspect.run()

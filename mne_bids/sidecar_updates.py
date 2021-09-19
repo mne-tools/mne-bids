@@ -10,13 +10,14 @@ import json
 from collections import OrderedDict
 
 from mne.channels import DigMontage
-from mne.utils import logger, _validate_type
+from mne.utils import logger, _validate_type, verbose
 from mne_bids import BIDSPath
 from mne_bids.utils import _write_json
 
 
 # TODO: add support for tsv files
-def update_sidecar_json(bids_path, entries, verbose=True):
+@verbose
+def update_sidecar_json(bids_path, entries, verbose=None):
     """Update sidecar files using a dictionary or JSON file.
 
     Will update metadata fields inside the path defined by
@@ -45,8 +46,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     entries : dict | str | pathlib.Path
         A dictionary, or JSON file that defines the
         sidecar fields and corresponding values to be updated to.
-    verbose : bool
-        The verbosity level.
+    %(verbose)s
 
     Notes
     -----
@@ -104,9 +104,8 @@ def update_sidecar_json(bids_path, entries, verbose=True):
             sidecar_tmp = json.load(
                 tmp_f, object_pairs_hook=OrderedDict)
 
-    if verbose:
-        logger.debug(sidecar_tmp)
-        logger.debug(f'Updating {fpath}...')
+    logger.debug(sidecar_tmp)
+    logger.debug(f'Updating {fpath}...')
 
     # load in sidecar filepath
     with open(fpath, 'r') as tmp_f:
@@ -117,7 +116,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     sidecar_json.update(**sidecar_tmp)
 
     # write back the sidecar JSON
-    _write_json(fpath, sidecar_json, overwrite=True, verbose=verbose)
+    _write_json(fpath, sidecar_json, overwrite=True)
 
 
 def _update_sidecar(sidecar_fname, key, val):
@@ -135,10 +134,11 @@ def _update_sidecar(sidecar_fname, key, val):
     with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
     sidecar_json[key] = val
-    _write_json(sidecar_fname, sidecar_json, overwrite=True, verbose=False)
+    _write_json(sidecar_fname, sidecar_json, overwrite=True)
 
 
-def update_anat_landmarks(bids_path, landmarks):
+@verbose
+def update_anat_landmarks(bids_path, landmarks, verbose=None):
     """Update the anatomical landmark coordinates of an MRI scan.
 
     This will change the ``AnatomicalLandmarkCoordinates`` entry in the
@@ -156,6 +156,7 @@ def update_anat_landmarks(bids_path, landmarks):
         .. note:: :func:`mne_bids.get_anat_landmarks` provides a convenient and
                   reliable way to generate the landmark coordinates in the
                   required coordinate system.
+    %(verbose)s
 
     Notes
     -----
