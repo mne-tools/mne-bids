@@ -60,6 +60,8 @@ Bug fixes
 
 - Fix writing and reading EDF files with upper-case extension (``.EDF``), by `Adam Li`_ (:gh:`868`)
 
+- Fix reading of EDF files with lower/upper case extension, by `Adam Li`_ (:gh:`875`)
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst

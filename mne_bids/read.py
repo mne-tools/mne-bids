@@ -52,6 +52,12 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
         raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF']:
+        raw_fpath = Path(raw_fpath)
+        # handle EDF extension upper/lower casing
+        if ext == '.edf' and not raw_fpath.exists():
+            raw_fpath = raw_fpath.with_suffix('.EDF')
+        elif ext == '.EDF' and not raw_fpath.exists():
+            raw_fpath = raw_fpath.with_suffix('.edf')
         raw = reader[ext](raw_fpath, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
@@ -212,6 +218,15 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         acq_times = scans_tsv['acq_time']
     else:
         acq_times = ['n/a'] * len(fnames)
+
+    # check if the filename is an EDF file
+    if data_fname.lower().endswith('.edf'):
+        # check first if lower-case is in the filename
+        lower_case_ext = Path(data_fname).with_suffix('.edf').as_posix()
+        if lower_case_ext not in fnames:
+            data_fname = Path(data_fname).with_suffix('.EDF').as_posix()
+        else:
+            data_fname = lower_case_ext
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
@@ -638,7 +653,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
     if bids_fname.endswith('.fif') and 'allow_maxshield' not in extra_params:
         extra_params['allow_maxshield'] = True
-
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, **extra_params)
 
