@@ -213,7 +213,7 @@ def test_get_head_mri_trans(tmp_path):
                    overwrite=False)
 
     # We cannot recover trans if no MRI has yet been written
-    with pytest.raises(RuntimeError, match='Did not find any T1w'):
+    with pytest.raises(FileNotFoundError, match='Did not find'):
         estimated_trans = get_head_mri_trans(
             bids_path=bids_path, fs_subject='sample',
             fs_subjects_dir=subjects_dir)
