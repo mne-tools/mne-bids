@@ -26,6 +26,7 @@ Authors
 * `Richard Höchenberger`_
 * `Mainak Jas`_
 * `Adam Li`_
+* `Stefan Appelhoff`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,7 +50,8 @@ API and behavior changes
 Requirements
 ^^^^^^^^^^^^
 
-- ...
+- Writing BrainVision files now requires ``pybv`` version 0.6, by `Stefan Appelhoff`_ (:gh:`880`)
+
 
 Bug fixes
 ^^^^^^^^^
