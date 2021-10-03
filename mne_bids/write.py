@@ -860,7 +860,7 @@ def _write_raw_fif(raw, bids_fname):
              overwrite=True)
 
 
-def _write_raw_brainvision(raw, bids_fname, events):
+def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     """Save out the raw file in BrainVision format.
 
     Parameters
@@ -872,10 +872,11 @@ def _write_raw_brainvision(raw, bids_fname, events):
         should be saved.
     events : ndarray
         The events as MNE-Python format ndaray.
-
+    overwrite : bool
+        Whether or not to overwrite existing files.
     """
-    if not check_version('pybv', '0.4'):  # pragma: no cover
-        raise ImportError('pybv >=0.4 is required for converting '
+    if not check_version('pybv', '0.6'):  # pragma: no cover
+        raise ImportError('pybv >=0.6 is required for converting '
                           'file to BrainVision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
@@ -913,8 +914,10 @@ def _write_raw_brainvision(raw, bids_fname, events):
     write_brainvision(data=raw.get_data(),
                       sfreq=raw.info['sfreq'],
                       ch_names=raw.ch_names,
+                      ref_ch_names=None,
                       fname_base=op.splitext(op.basename(bids_fname))[0],
                       folder_out=op.dirname(bids_fname),
+                      overwrite=overwrite,
                       events=events,
                       resolution=resolution,
                       unit=unit,
@@ -1581,7 +1584,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             warn('Converting data files to BrainVision format')
             bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
             # XXX Should we write durations here too?
-            _write_raw_brainvision(raw, bids_path.fpath, events=events_array)
+            _write_raw_brainvision(raw, bids_path.fpath, events=events_array,
+                                   overwrite=overwrite)
     elif ext == '.fif':
         if symlink:
             link_target = Path(raw.filenames[0])

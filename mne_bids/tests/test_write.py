@@ -387,7 +387,7 @@ def test_line_freq(line_freq, _bids_validate, tmpdir):
         assert eeg_json['PowerLineFrequency'] == 'n/a'
 
 
-@requires_version('pybv', '0.4')
+@requires_version('pybv', '0.6')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_fif(_bids_validate, tmpdir):
@@ -1052,7 +1052,7 @@ def test_vhdr(_bids_validate, tmpdir):
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # test anonymize and convert
-    if check_version('pybv', '0.4'):
+    if check_version('pybv', '0.6'):
         raw = _read_raw_brainvision(raw_fname)
         output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
         _bids_validate(output_path)
@@ -1295,7 +1295,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     assert len(list(data.values())[0]) == 2
 
     # check that scans list is properly converted to brainvision
-    if check_version('pybv', '0.4') or dir_name == 'EDF':
+    if check_version('pybv', '0.6') or dir_name == 'EDF':
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
 
@@ -1438,7 +1438,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
         write_raw_bids(**kwargs)
 
     # test anonymize and convert
-    if check_version('pybv', '0.4') or dir_name == 'EDF':
+    if check_version('pybv', '0.6') or dir_name == 'EDF':
         raw = reader(raw_fname)
         bids_path.update(root=bids_root, datatype='eeg')
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
@@ -1572,7 +1572,7 @@ def test_set(_bids_validate, tmpdir):
     _bids_validate(bids_root)
 
     # test anonymize and convert
-    if check_version('pybv', '0.4'):
+    if check_version('pybv', '0.6'):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
             output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
@@ -2612,17 +2612,13 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
 
 
 @requires_version('mne', '0.24.dev0')
-@requires_version('pybv', '0.5')
+@requires_version('pybv', '0.6')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
     warning_str['channel_unit_changed'], warning_str['edfblocks'])
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
-    """Test conversion of EEG/iEEG manufacturer format to BrainVision and EDF.
-
-    BrainVision should correctly store data from pybv>=0.5 that
-    has different non-voltage units.
-    """
+    """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
     bids_root = tmp_path / format
     bids_root.mkdir(exist_ok=True, parents=True)
     data_path = op.join(testing.data_path(), dir_name)
