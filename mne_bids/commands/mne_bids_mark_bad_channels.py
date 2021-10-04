@@ -1,7 +1,7 @@
 """Mark channels in an existing BIDS dataset as "bad".
 
 example usage:
-$ mne_bids mark_bad_channels --ch_name="MEG 0112" --description="noisy" \
+$ mne_bids mark_channels --ch_name="MEG 0112" --description="noisy" \
                              --ch_name="MEG 0131" --description="flat" \
                              --subject_id=01 --task=experiment --session=test \
                              --bids_root=bids_root --overwrite
@@ -15,11 +15,11 @@ from mne.utils import logger
 
 import mne_bids
 from mne_bids.config import reader
-from mne_bids import BIDSPath, mark_bad_channels
+from mne_bids import BIDSPath, mark_channels
 
 
 def run():
-    """Run the mark_bad_channels command."""
+    """Run the mark_channels command."""
     from mne.commands.utils import get_optparser
 
     parser = get_optparser(__file__, usage="usage: %prog options args",
@@ -103,7 +103,7 @@ def run():
                 f'{len(bids_paths)} recording(s) …')
     for bids_path in bids_paths:
         logger.info(f'Processing: {bids_path.basename}')
-        mark_bad_channels(ch_names=ch_names, descriptions=opt.descriptions,
+        mark_channels(ch_names=ch_names, descriptions=opt.descriptions,
                           bids_path=bids_path, overwrite=opt.overwrite,
                           verbose=opt.verbose)
 

@@ -43,7 +43,7 @@ from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
-                      mark_bad_channels, write_meg_calibration,
+                      mark_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
                       get_anat_landmarks, write)
 from mne_bids.write import _get_fid_coords
@@ -1993,11 +1993,11 @@ def _ensure_list(x):
          ['Really bad!', 'Even worse.'], None, True)
     ])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_mark_bad_channels(_bids_validate,
-                           ch_names, descriptions,
-                           drop_status_col, drop_description_col,
-                           existing_ch_names, existing_descriptions,
-                           datatype, overwrite, tmpdir):
+def test_mark_channels(_bids_validate,
+                       ch_names, descriptions,
+                       drop_status_col, drop_description_col,
+                       existing_ch_names, existing_descriptions,
+                       datatype, overwrite, tmpdir):
     """Test marking channels of an existing BIDS dataset as "bad"."""
     # Setup: Create a fresh BIDS dataset.
     bids_root = tmpdir.mkdir('bids1')
@@ -2040,33 +2040,33 @@ def test_mark_bad_channels(_bids_validate,
     if (descriptions is not None and
             len(_ensure_list(ch_names)) != len(_ensure_list(descriptions))):
         with pytest.raises(ValueError, match='must match'):
-            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                              bids_path=bids_path, overwrite=overwrite)
+            mark_channels(ch_names=ch_names, descriptions=descriptions,
+                          bids_path=bids_path, overwrite=overwrite)
         return
 
     # Test that we raise if we encounter an unknown channel name.
     if any([ch_name not in raw.ch_names
             for ch_name in _ensure_list(ch_names)]):
         with pytest.raises(ValueError, match='not found in dataset'):
-            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                              bids_path=bids_path, overwrite=overwrite)
+            mark_channels(ch_names=ch_names, descriptions=descriptions,
+                          bids_path=bids_path, overwrite=overwrite)
         return
 
     if not overwrite:
         # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
         # begin our actual tests, which should then add additional channels
         # to the list of bads, retaining the ones we're specifying here.
-        mark_bad_channels(ch_names=existing_ch_names,
-                          descriptions=existing_descriptions,
-                          bids_path=bids_path, overwrite=True)
+        mark_channels(ch_names=existing_ch_names,
+                      descriptions=existing_descriptions,
+                      bids_path=bids_path, overwrite=True)
         _bids_validate(bids_root)
         raw = read_raw_bids(bids_path=bids_path, verbose=False)
         # Order is not preserved
         assert set(existing_ch_names) == set(raw.info['bads'])
         del raw
 
-    mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                      bids_path=bids_path, overwrite=overwrite)
+    mark_channels(ch_names=ch_names, descriptions=descriptions,
+                  bids_path=bids_path, overwrite=overwrite)
     _bids_validate(bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
@@ -2100,7 +2100,36 @@ def test_mark_bad_channels(_bids_validate,
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_mark_bad_channels_files(tmpdir):
+def test_error_mark_channels(tmpdir):
+    # Setup: Create a fresh BIDS dataset.
+    bids_root = tmpdir.mkdir('bids1')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
+                                         suffix='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, events_data=events,
+                   event_id=event_id, verbose=False)
+
+    ch_names = raw.ch_names
+
+    with pytest.raises(ValueError, match='Setting the status'):
+        mark_channels(ch_names=ch_names, descriptions=descriptions,
+                      bids_path=bids_path, status='test')
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_mark_channels_files(tmpdir):
     """Test validity of bad channel writing."""
     # BV
     bids_root = tmpdir.mkdir('bids1')
@@ -2122,7 +2151,7 @@ def test_mark_bad_channels_files(tmpdir):
 
     # mark bad channels that get stored as uV in write_brain_vision
     bads = ['CP5', 'CP6']
-    mark_bad_channels(bads, bids_path=bids_path, overwrite=False)
+    mark_channels(bads, bids_path=bids_path, overwrite=False)
     raw.info['bads'].extend(bads)
 
     # the raw data should match if you drop the bads
@@ -2140,7 +2169,7 @@ def test_mark_bad_channels_files(tmpdir):
     raw_fname = op.join(data_path, fname)
     raw = _read_raw_edf(raw_fname)
     write_raw_bids(raw, bids_path, overwrite=True)
-    mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
+    mark_channels(raw.ch_names[0], bids_path=bids_path)
 
 
 def test_write_meg_calibration(_bids_validate, tmpdir):
@@ -2464,32 +2493,32 @@ def test_coordsystem_json_compliance(
     if datatype == 'eeg' and coord_frame == 'head':
         assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
         assert coordsystem_json['EEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
+            BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
     elif datatype == 'eeg' and coord_frame == 'unknown':
         assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
         assert coordsystem_json['EEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
+            BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
     elif datatype == 'ieeg' and coord_frame == 'mni_tal':
         assert 'space-fsaverage' in coordsystem_fname
         assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['fsaverage']
+            BIDS_COORD_FRAME_DESCRIPTIONS['fsaverage']
     elif datatype == 'ieeg' and coord_frame == 'mri':
         assert 'space-ACPC' in coordsystem_fname
         assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['acpc']
+            BIDS_COORD_FRAME_DESCRIPTIONS['acpc']
     elif datatype == 'ieeg' and coord_frame == 'unknown':
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
     elif datatype == 'meg' and dir_name == 'CTF':
         assert coordsystem_json['MEGCoordinateSystem'] == 'CTF'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['ctf']
+            BIDS_COORD_FRAME_DESCRIPTIONS['ctf']
     elif datatype == 'meg' and dir_name == 'MEG':
         assert coordsystem_json['MEGCoordinateSystem'] == 'ElektaNeuromag'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['elektaneuromag']
+            BIDS_COORD_FRAME_DESCRIPTIONS['elektaneuromag']
 
 
 @pytest.mark.parametrize(

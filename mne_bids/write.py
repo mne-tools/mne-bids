@@ -1888,8 +1888,8 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
 
 
 @verbose
-def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
-                      overwrite=False, verbose=None):
+def mark_channels(ch_names, descriptions=None, *, bids_path,
+                  status='bad', overwrite=False, verbose=None):
     """Update which channels are marked as "bad" in an existing BIDS dataset.
 
     Parameters
@@ -1907,6 +1907,10 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         attribute **may** be set. If ``.datatype`` is not set and only one data
         type (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
+    status : str | list of str
+        The status of the channels ('good', or 'bad'). Default is 'bad'. If it
+        is a list, then must be a list of 'good', or 'bad' that has the same
+        length as ``ch_names``.
     overwrite : bool
         If ``False``, only update the information of the channels passed via
         ``ch_names``, and leave the rest untouched. If ``True``, update the
@@ -1922,26 +1926,26 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
     ...                      datatype='eeg', root=root)
-    >>> mark_bad_channels('C4', bids_path=bids_path, verbose=False)
+    >>> mark_channels('C4', bids_path=bids_path, verbose=False)
 
     Mark multiple channels as bad, and add a description as to why.
 
     >>> bads = ['C3', 'PO10']
     >>> descriptions = ['very noisy', 'continuously flat']
-    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path,
+    >>> mark_channels(bads, descriptions, bids_path=bids_path,
     ...                   verbose=False)
 
     Mark two channels as bad, and mark all others as good by setting
     ``overwrite=True``.
 
     >>> bads = ['C3', 'C4']
-    >>> mark_bad_channels(bads, bids_path=bids_path,
+    >>> mark_channels(bads, bids_path=bids_path,
     ...                   overwrite=True, verbose=False)
 
     Mark all channels as good by passing an empty list of bad channels, and
     setting ``overwrite=True``.
 
-    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True,
+    >>> mark_channels([], bids_path=bids_path, overwrite=True,
     ...                   verbose=False)
 
     """
@@ -1973,6 +1977,19 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
+    if isinstance(status, str):
+        statuses = [status] * len(ch_names)
+    else:
+        statuses = status
+    if len(statuses) != len(ch_names):
+        raise ValueError(f'If status is a list of {len(statuses)} statuses, '
+                         f'then it must have the same length as ch_names '
+                         f'({len(ch_names)}).')
+
+    if not all(status in ['good', 'bad'] for status in statuses):
+        raise ValueError('Setting the status of a channel must only be "good", '
+                         'or "bad".')
+
     # Read sidecar file.
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
                                             extension='.tsv')
@@ -1999,7 +2016,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
 
     # Now actually mark the user-requested channels as bad.
-    for ch_name, description in zip(ch_names, descriptions):
+    for ch_name, status, description in zip(ch_names, statuses, descriptions):
         if ch_name not in tsv_data['name']:
             raise ValueError(f'Channel {ch_name} not found in dataset!')
 
@@ -2007,7 +2024,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         logger.info(f'Processing channel {ch_name}:\n'
                     f'    status: bad\n'
                     f'    description: {description}')
-        tsv_data['status'][idx] = 'bad'
+        tsv_data['status'][idx] = status
         tsv_data['status_description'][idx] = description
 
     _write_tsv(channels_fname, tsv_data, overwrite=True)
