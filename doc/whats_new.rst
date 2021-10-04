@@ -45,7 +45,7 @@ Enhancements
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ``mne_bids.mark_channels`` renamed to :func:`mne_bids.mark_channels`, which allows specifying the status to change channels to by `Adam Li`_ (:gh:``)
+- ``mne_bids.mark_channels`` renamed to :func:`mne_bids.mark_channels`, which allows specifying the status to change channels to by `Adam Li`_ (:gh:`882`)
 
 Requirements
 ^^^^^^^^^^^^

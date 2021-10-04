@@ -2124,7 +2124,7 @@ def test_error_mark_channels(tmpdir):
     ch_names = raw.ch_names
 
     with pytest.raises(ValueError, match='Setting the status'):
-        mark_channels(ch_names=ch_names, descriptions=descriptions,
+        mark_channels(ch_names=ch_names,
                       bids_path=bids_path, status='test')
 
 

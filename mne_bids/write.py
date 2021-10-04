@@ -1987,8 +1987,8 @@ def mark_channels(ch_names, descriptions=None, *, bids_path,
                          f'({len(ch_names)}).')
 
     if not all(status in ['good', 'bad'] for status in statuses):
-        raise ValueError('Setting the status of a channel must only be "good", '
-                         'or "bad".')
+        raise ValueError('Setting the status of a channel must only be '
+                         '"good", or "bad".')
 
     # Read sidecar file.
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',

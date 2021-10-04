@@ -104,8 +104,8 @@ def run():
     for bids_path in bids_paths:
         logger.info(f'Processing: {bids_path.basename}')
         mark_channels(ch_names=ch_names, descriptions=opt.descriptions,
-                          bids_path=bids_path, overwrite=opt.overwrite,
-                          verbose=opt.verbose)
+                      bids_path=bids_path, overwrite=opt.overwrite,
+                      verbose=opt.verbose)
 
 
 if __name__ == '__main__':
