@@ -262,11 +262,9 @@ def test_get_entities_from_fname(fname):
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
-    if 'meg' in fname:
-        assert params['suffix'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'suffix']
+                                   'space', 'recording', 'split']
 
 
 @pytest.mark.parametrize('fname', [
@@ -299,8 +297,6 @@ def test_get_entities_from_fname_errors(fname):
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
-    if 'meg' in fname:
-        assert params['suffix'] == 'meg'
     if 'desc' in fname:
         assert params['desc'] == 'tfr'
         expected_keys.append('desc')

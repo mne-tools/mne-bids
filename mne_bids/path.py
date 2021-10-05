@@ -1279,8 +1279,7 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 'processing': None, \
 'space': None, \
 'recording': None, \
-'split': None, \
-'suffix': 'meg'}
+'split': None}
     """
     if on_error not in ('warn', 'raise', 'ignore'):
         raise ValueError(f'Acceptable values for on_error are: warn, raise, '
@@ -1315,14 +1314,6 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 
         key_short_hand = ALLOWED_PATH_ENTITIES_SHORT.get(key, key)
         params[key_short_hand] = value
-
-    # parse suffix last
-    last_entity = fname.split('-')[-1]
-    if '_' in last_entity:
-        suffix = last_entity.split('_')[-1]
-        suffix, _ = _get_bids_suffix_and_ext(suffix)
-        params['suffix'] = suffix
-
     return params
 
 
