@@ -1889,7 +1889,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
 
 
 @deprecated(extra='mark_bad_channels is deprecated in favor of mark_channels '
-                  'and will be removed in v1.0.')
+                  'and will be removed in v0.10.')
 @verbose
 def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                       overwrite=False, verbose=None):
