@@ -31,7 +31,7 @@ import shutil
 
 import mne
 from mne_bids import (BIDSPath, write_raw_bids, read_raw_bids,
-                      inspect_dataset, mark_bad_channels)
+                      inspect_dataset, mark_channels)
 
 data_path = mne.datasets.sample.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
@@ -106,10 +106,10 @@ print(f'The following channels are currently marked as bad:\n'
 # Let's assume that through visual data inspection, we found that two more
 # MEG channels are problematic, and we would like to mark them as bad as well.
 # To do that, we simply add them to a list, which we then pass to
-# :func:`mne_bids.mark_bad_channels`:
+# :func:`mne_bids.mark_channels`:
 
 bads = ['MEG 0112', 'MEG 0131']
-mark_bad_channels(ch_names=bads, bids_path=bids_path, verbose=False)
+mark_channels(ch_names=bads, bids_path=bids_path, verbose=False)
 
 # %%
 # That's it! Let's verify the result.
@@ -121,9 +121,9 @@ print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
 # %%
 # As you can see, now a total of **four** channels is marked as bad: the ones
 # that were already bad when we started – ``EEG 053`` and ``MEG 2443`` – and
-# the two channels we passed to :func:`mne_bids.mark_bad_channels` –
+# the two channels we passed to :func:`mne_bids.mark_channels` –
 # ``MEG 0112`` and ``MEG 0131``. This shows that marking bad channels via
-# :func:`mne_bids.mark_bad_channels`, by default, is an **additive** procedure,
+# :func:`mne_bids.mark_channels`, by default, is an **additive** procedure,
 # which allows you to mark additional channels as bad while retaining the
 # information about all channels that had *previously* been marked as bad.
 #
@@ -131,7 +131,7 @@ print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
 # entirely, pass the argument ``overwrite=True``:
 
 bads = ['MEG 0112', 'MEG 0131']
-mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+mark_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
                   verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
@@ -144,7 +144,7 @@ print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
 # pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
 bads = []
-mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+mark_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
                   verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
