@@ -28,7 +28,8 @@ from mne.io.pick import channel_type
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
-                       _validate_type, get_subjects_dir, verbose)
+                       _validate_type, get_subjects_dir, verbose,
+                       deprecated)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -1887,9 +1888,11 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
     return bids_path
 
 
+@deprecated(extra='mark_bad_channels is deprecated in favor of mark_channels '
+                  'and will be removed in v1.0.')
 @verbose
-def mark_channels(ch_names, descriptions=None, *, bids_path,
-                  status='bad', overwrite=False, verbose=None):
+def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
+                      overwrite=False, verbose=None):
     """Update which channels are marked as "bad" in an existing BIDS dataset.
 
     Parameters
@@ -1948,6 +1951,78 @@ def mark_channels(ch_names, descriptions=None, *, bids_path,
     >>> mark_channels([], bids_path=bids_path, overwrite=True,
     ...                   verbose=False)
 
+    """
+    mark_channels(ch_names, descriptions=descriptions, bids_path=bids_path,
+                  status='bad', overwrite=overwrite, verbose=verbose)
+
+
+@verbose
+def mark_channels(ch_names, descriptions=None, *, bids_path,
+                  status='bad', overwrite=False, verbose=None):
+    """Update status and description of channels in an existing BIDS dataset.
+
+    Parameters
+    ----------
+    ch_names : str | list of str
+        The names of the channel(s) to mark as bad. Pass an empty list in
+        combination with ``overwrite=True`` to mark all channels as good.
+    descriptions : None | str | list of str
+        Descriptions of the reasons that lead to the exclusion of the
+        channel(s). If a list, it must match the length of ``ch_names``.
+        If ``None``, no descriptions are added.
+    bids_path : mne_bids.BIDSPath
+        The recording to update. The :class:`mne_bids.BIDSPath` instance passed
+        here **must** have the ``.root`` attribute set. The ``.datatype``
+        attribute **may** be set. If ``.datatype`` is not set and only one data
+        type (e.g., only EEG or MEG data) is present in the dataset, it will be
+        selected automatically.
+    status : str | list of str
+        The status of the channels ('good', or 'bad'). Default is 'bad'. If it
+        is a list, then must be a list of 'good', or 'bad' that has the same
+        length as ``ch_names``.
+    overwrite : bool
+        If ``False``, only update the information of the channels passed via
+        ``ch_names``, and leave the rest untouched. If ``True``, update the
+        information of **all** channels: mark the channels passed via
+        ``ch_names`` as bad, and all remaining channels as good, also
+        discarding their descriptions.
+    %(verbose)s
+
+    Examples
+    --------
+    Mark a single channel as bad.
+
+    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
+    >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
+    ...                      datatype='eeg', root=root)
+    >>> mark_channels('C4', bids_path=bids_path, verbose=False)
+
+    Mark multiple channels as bad, and add a description as to why.
+
+    >>> bads = ['C3', 'PO10']
+    >>> descriptions = ['very noisy', 'continuously flat']
+    >>> mark_channels(bads, descriptions, bids_path=bids_path,
+    ...                   verbose=False)
+
+    Mark two channels as bad, and mark all others as good by setting
+    ``overwrite=True``.
+
+    >>> bads = ['C3', 'C4']
+    >>> mark_channels(bads, bids_path=bids_path,
+    ...                   overwrite=True, verbose=False)
+
+    Mark all channels as good by passing an empty list of bad channels, and
+    setting ``overwrite=True``.
+
+    >>> mark_channels([], bids_path=bids_path, overwrite=True,
+    ...                   verbose=False)
+
+    Mark all channels with a new description, while keeping them as a "good"
+    channel.
+
+    >>> descriptions = ['resected', 'resected']
+    >>> mark_channels(['C3', 'C4'], bids_path=bids_path,
+    ...               descriptions=descriptions, status='good')
     """
     if not ch_names and not overwrite:
         raise ValueError('You did not pass a channel name, but set '
