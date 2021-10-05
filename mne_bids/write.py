@@ -1895,6 +1895,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                       overwrite=False, verbose=None):
     """Update which channels are marked as "bad" in an existing BIDS dataset.
 
+    This modifies entries in the ``channels.tsv`` file in a BIDS dataset.
+
     Parameters
     ----------
     ch_names : str | list of str
@@ -2022,7 +2024,7 @@ def mark_channels(ch_names, descriptions=None, *, bids_path,
 
     >>> descriptions = ['resected', 'resected']
     >>> mark_channels(['C3', 'C4'], bids_path=bids_path,
-    ...               descriptions=descriptions, status='good')
+    ...               descriptions=descriptions, status='good', verbose=False)
     """
     if not ch_names and not overwrite:
         raise ValueError('You did not pass a channel name, but set '

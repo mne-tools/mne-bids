@@ -2101,6 +2101,7 @@ def test_mark_channels(_bids_validate,
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_error_mark_channels(tmpdir):
+    """Test errors when marking channels."""
     # Setup: Create a fresh BIDS dataset.
     bids_root = tmpdir.mkdir('bids1')
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
