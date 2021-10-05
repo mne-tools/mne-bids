@@ -313,7 +313,7 @@ Notable changes
   paragraph of your next paper's methods section!
 
 - You can now interactively mark channels as bad using
-  :func:`mne_bids.mark_bad_channels`.
+  ``mne_bids.mark_bad_channels``.
 
 - Elekta/Neuromag/MEGIN fine-calibration and crosstalk files can now be stored
   in your BIDS dataset via :func:`mne_bids.write_meg_calibration` and
@@ -357,7 +357,7 @@ Enhancements
 - :func:`mne_bids.read_raw_bids` and :func:`mne_bids.write_raw_bids` now map respiratory (``RESP``) channel types, by `Richard Höchenberger`_ (:gh:`482`)
 - When impedance values are available from a ``raw.impedances`` attribute, MNE-BIDS will now write an ``impedance`` column to ``*_electrodes.tsv`` files, by `Stefan Appelhoff`_ (:gh:`484`)
 - :func:`mne_bids.write_raw_bids` writes out status_description with ``'n/a'`` values into the channels.tsv sidecar file, by `Adam Li`_ (:gh:`489`)
-- Added a new function :func:`mne_bids.mark_bad_channels` and command line interface ``mark_bad_channels`` which allows updating of the channel status (bad, good) and description of an existing BIDS dataset, by `Richard Höchenberger`_ (:gh:`491`)
+- Added a new function ``mne_bids.mark_bad_channels`` and command line interface ``mark_bad_channels`` which allows updating of the channel status (bad, good) and description of an existing BIDS dataset, by `Richard Höchenberger`_ (:gh:`491`)
 - :func:`mne_bids.read_raw_bids` correctly maps all specified ``handedness`` and ``sex`` options to MNE-Python, instead of only an incomplete subset, by `Richard Höchenberger`_ (:gh:`550`)
 - :func:`mne_bids.write_raw_bids` only writes a ``README`` if it does not already exist, by `Adam Li`_ (:gh:`489`)
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Persyst using ``mne.io.read_raw_persyst`` function, by `Adam Li`_ (:gh:`546`)
