@@ -132,7 +132,7 @@ print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
 
 bads = ['MEG 0112', 'MEG 0131']
 mark_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
-                  verbose=False)
+              verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
@@ -145,7 +145,7 @@ print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
 
 bads = []
 mark_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
-                  verbose=False)
+              verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'After passing `ch_names=[]` and `overwrite=True`, the following '
