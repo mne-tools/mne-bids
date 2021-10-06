@@ -405,5 +405,5 @@ def _save_bads(*, bads, descriptions, bids_path):
     """
     # We pass overwrite=True, causing all channels not passed as bad here to
     # be marked as good.
-    mark_channels(ch_names=bads, descriptions=descriptions,
-                  bids_path=bids_path, overwrite=True)
+    mark_channels(bids_path=bids_path, ch_names=bads, statuses='bad',
+                  descriptions=descriptions, overwrite=True)
