@@ -17,7 +17,7 @@ import json
 from typing import Optional
 
 import numpy as np
-from mne.utils import warn, logger, _validate_type, verbose
+from mne.utils import warn, logger, _validate_type, verbose, deprecated
 
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
@@ -1238,6 +1238,27 @@ def _infer_datatype_from_path(fname):
         datatype = None
 
     return datatype
+
+
+@verbose
+def get_bids_path_from_fname(fname, check=True, verbose=None):
+    """[summary]
+
+    Parameters
+    ----------
+    fname : str
+        The path to parse a `BIDSPath` from.
+    check : bool, optional
+        Whether to apply a check for BIDS compliance in the BIDSPath to
+        make, by default True.
+    %(verbose)s
+
+    Returns
+    -------
+    bids_path : BIDSPath
+        The BIDS path object.
+    """
+    pass
 
 
 @verbose
