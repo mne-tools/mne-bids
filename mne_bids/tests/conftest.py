@@ -31,3 +31,18 @@ def _bids_validate():
         run_subprocess(cmd, shell=shell)
 
     return _validate
+
+
+def pytest_configure(config):
+    """Configure pytest options."""
+    # Warnings
+    # - This list should also be considered alongside reset_warnings in
+    #   doc/conf.py.
+    warning_lines = r"""
+    error::
+    ignore:.*mark_bad_channels.*:DeprecationWarning
+    """  # noqa: E501
+    for warning_line in warning_lines.split('\n'):
+        warning_line = warning_line.strip()
+        if warning_line and not warning_line.startswith('#'):
+            config.addinivalue_line('filterwarnings', warning_line)
