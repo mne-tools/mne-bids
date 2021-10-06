@@ -1959,8 +1959,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
 
 
 @verbose
-def mark_channels(ch_names, descriptions=None, *, bids_path,
-                  status='bad', overwrite=False, verbose=None):
+def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
+                  overwrite=False, verbose=None):
     """Update status and description of channels in an existing BIDS dataset.
 
     Parameters
