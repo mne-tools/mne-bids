@@ -2041,7 +2041,8 @@ def test_mark_channels(_bids_validate,
             len(_ensure_list(ch_names)) != len(_ensure_list(descriptions))):
         with pytest.raises(ValueError, match='must match'):
             mark_channels(ch_names=ch_names, descriptions=descriptions,
-                          bids_path=bids_path, overwrite=overwrite)
+                          bids_path=bids_path, statuses='bad',
+                          overwrite=overwrite)
         return
 
     # Test that we raise if we encounter an unknown channel name.
@@ -2049,7 +2050,8 @@ def test_mark_channels(_bids_validate,
             for ch_name in _ensure_list(ch_names)]):
         with pytest.raises(ValueError, match='not found in dataset'):
             mark_channels(ch_names=ch_names, descriptions=descriptions,
-                          bids_path=bids_path, overwrite=overwrite)
+                          bids_path=bids_path, statuses='bad',
+                          overwrite=overwrite)
         return
 
     if not overwrite:
@@ -2058,7 +2060,7 @@ def test_mark_channels(_bids_validate,
         # to the list of bads, retaining the ones we're specifying here.
         mark_channels(ch_names=existing_ch_names,
                       descriptions=existing_descriptions,
-                      bids_path=bids_path, overwrite=True)
+                      bids_path=bids_path, statuses='bad', overwrite=True)
         _bids_validate(bids_root)
         raw = read_raw_bids(bids_path=bids_path, verbose=False)
         # Order is not preserved
@@ -2066,7 +2068,7 @@ def test_mark_channels(_bids_validate,
         del raw
 
     mark_channels(ch_names=ch_names, descriptions=descriptions,
-                  bids_path=bids_path, overwrite=overwrite)
+                  bids_path=bids_path, statuses='bad', overwrite=overwrite)
     _bids_validate(bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
@@ -2125,8 +2127,8 @@ def test_error_mark_channels(tmpdir):
     ch_names = raw.ch_names
 
     with pytest.raises(ValueError, match='Setting the status'):
-        mark_channels(ch_names=ch_names,
-                      bids_path=bids_path, status='test')
+        mark_channels(ch_names=ch_names, bids_path=bids_path,
+                      statuses='test')
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -2152,7 +2154,8 @@ def test_mark_channels_files(tmpdir):
 
     # mark bad channels that get stored as uV in write_brain_vision
     bads = ['CP5', 'CP6']
-    mark_channels(bads, bids_path=bids_path, overwrite=False)
+    mark_channels(bids_path=bids_path, ch_names=bads, statuses='bad',
+                  overwrite=False)
     raw.info['bads'].extend(bads)
 
     # the raw data should match if you drop the bads
@@ -2170,7 +2173,8 @@ def test_mark_channels_files(tmpdir):
     raw_fname = op.join(data_path, fname)
     raw = _read_raw_edf(raw_fname)
     write_raw_bids(raw, bids_path, overwrite=True)
-    mark_channels(raw.ch_names[0], bids_path=bids_path)
+    mark_channels(bids_path=bids_path, ch_names=raw.ch_names[0],
+                  statuses='bad')
 
 
 def test_write_meg_calibration(_bids_validate, tmpdir):
