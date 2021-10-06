@@ -1931,31 +1931,32 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
     ...                      datatype='eeg', root=root)
-    >>> mark_channels('C4', bids_path=bids_path, verbose=False)
+    >>> mark_bad_channels('C4', bids_path=bids_path, verbose=False)
 
     Mark multiple channels as bad, and add a description as to why.
 
     >>> bads = ['C3', 'PO10']
     >>> descriptions = ['very noisy', 'continuously flat']
-    >>> mark_channels(bads, descriptions, bids_path=bids_path,
+    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path,
     ...                   verbose=False)
 
     Mark two channels as bad, and mark all others as good by setting
     ``overwrite=True``.
 
     >>> bads = ['C3', 'C4']
-    >>> mark_channels(bads, bids_path=bids_path,
+    >>> mark_bad_channels(bads, bids_path=bids_path,
     ...                   overwrite=True, verbose=False)
 
     Mark all channels as good by passing an empty list of bad channels, and
     setting ``overwrite=True``.
 
-    >>> mark_channels([], bids_path=bids_path, overwrite=True,
+    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True,
     ...                   verbose=False)
 
     """
-    mark_channels(ch_names, descriptions=descriptions, bids_path=bids_path,
-                  status='bad', overwrite=overwrite, verbose=verbose)
+    mark_channels(bids_path=bids_path, ch_names=ch_names, statuses='bad',
+                  descriptions=descriptions, overwrite=overwrite,
+                  verbose=verbose)
 
 
 @verbose
@@ -1965,23 +1966,23 @@ def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
 
     Parameters
     ----------
-    ch_names : str | list of str
-        The names of the channel(s) to mark as bad. Pass an empty list in
-        combination with ``overwrite=True`` to mark all channels as good.
-    descriptions : None | str | list of str
-        Descriptions of the reasons that lead to the exclusion of the
-        channel(s). If a list, it must match the length of ``ch_names``.
-        If ``None``, no descriptions are added.
     bids_path : mne_bids.BIDSPath
         The recording to update. The :class:`mne_bids.BIDSPath` instance passed
         here **must** have the ``.root`` attribute set. The ``.datatype``
         attribute **may** be set. If ``.datatype`` is not set and only one data
         type (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
-    status : str | list of str
+    ch_names : str | list of str
+        The names of the channel(s) to mark as bad. Pass an empty list in
+        combination with ``overwrite=True`` to mark all channels as good.
+    statuses : 'good' | 'bad' | list of str
         The status of the channels ('good', or 'bad'). Default is 'bad'. If it
         is a list, then must be a list of 'good', or 'bad' that has the same
         length as ``ch_names``.
+    descriptions : None | str | list of str
+        Descriptions of the reasons that lead to the exclusion of the
+        channel(s). If a list, it must match the length of ``ch_names``.
+        If ``None``, no descriptions are added.
     overwrite : bool
         If ``False``, only update the information of the channels passed via
         ``ch_names``, and leave the rest untouched. If ``True``, update the
@@ -1997,34 +1998,23 @@ def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
     >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
     ...                      datatype='eeg', root=root)
-    >>> mark_channels('C4', bids_path=bids_path, verbose=False)
+    >>> mark_channels('C4', statuses='bad', bids_path=bids_path,
+    ...               verbose=False)
 
     Mark multiple channels as bad, and add a description as to why.
 
     >>> bads = ['C3', 'PO10']
     >>> descriptions = ['very noisy', 'continuously flat']
-    >>> mark_channels(bads, descriptions, bids_path=bids_path,
-    ...                   verbose=False)
-
-    Mark two channels as bad, and mark all others as good by setting
-    ``overwrite=True``.
-
-    >>> bads = ['C3', 'C4']
-    >>> mark_channels(bads, bids_path=bids_path,
-    ...                   overwrite=True, verbose=False)
-
-    Mark all channels as good by passing an empty list of bad channels, and
-    setting ``overwrite=True``.
-
-    >>> mark_channels([], bids_path=bids_path, overwrite=True,
-    ...                   verbose=False)
+    >>> mark_channels(bids_path, bads, statuses='bad',
+    ...               descriptions=descriptions, verbose=False)
 
     Mark all channels with a new description, while keeping them as a "good"
     channel.
 
     >>> descriptions = ['resected', 'resected']
     >>> mark_channels(['C3', 'C4'], bids_path=bids_path,
-    ...               descriptions=descriptions, status='good', verbose=False)
+    ...               descriptions=descriptions, statuses='good',
+    ...               verbose=False)
     """
     if not ch_names and not overwrite:
         raise ValueError('You did not pass a channel name, but set '
@@ -2054,10 +2044,10 @@ def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    if isinstance(status, str):
-        statuses = [status] * len(ch_names)
-    else:
-        statuses = status
+    # make sure statuses is a list of strings
+    if isinstance(statuses, str):
+        statuses = [statuses] * len(ch_names)
+
     if len(statuses) != len(ch_names):
         raise ValueError(f'If status is a list of {len(statuses)} statuses, '
                          f'then it must have the same length as ch_names '
