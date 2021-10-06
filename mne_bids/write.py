@@ -1959,6 +1959,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                   verbose=verbose)
 
 
+@deprecated(extra='The overwrite keyword argument is deprecated and will '
+            'be removed in v0.10.')
 @verbose
 def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
                   overwrite=False, verbose=None):
