@@ -28,7 +28,8 @@ from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
                       write_meg_calibration, write_meg_crosstalk)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
-                           _filter_fnames, search_folder_for_text)
+                           _filter_fnames, search_folder_for_text,
+                           get_bids_path_from_fname)
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 
 from test_read import _read_raw_fif, warning_str
@@ -248,6 +249,22 @@ def test_parse_ext():
 
 @pytest.mark.parametrize('fname', [
     'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
+    'sub-01_ses-02_task-test_run-3_split-01',
+    ('/bids_root/sub-01/ses-02/meg/' +
+     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
+    ('sub-01/ses-02/meg/' +
+     'sub-01_ses-02_task-test_run-3_split-01_meg.fif')
+])
+def test_get_bids_path_from_fname(fname):
+    bids_path = get_bids_path_from_fname(fname)
+    assert bids_path.basename == Path(fname).name
+
+    if '/bids_root/' in fname:
+        assert bids_path.root.as_posix() == '/bids_root'
+
+
+@pytest.mark.parametrize('fname', [
+    'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
     'sub-01_ses-02_task-test_run-3_split-01.fif',
     'sub-01_ses-02_task-test_run-3_split-01',
     ('/bids_root/sub-01/ses-02/meg/' +
@@ -256,7 +273,6 @@ def test_parse_ext():
 def test_get_entities_from_fname(fname):
     """Test parsing entities from a bids filename."""
     params = get_entities_from_fname(fname)
-    print(params)
     assert params['subject'] == '01'
     assert params['session'] == '02'
     assert params['run'] == '3'
@@ -1056,11 +1072,11 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
         root=return_bids_test_dir, suffix='dataset_description',
         extension='.json', check=False)
     assert bids_path.fpath.as_posix() == \
-           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+        Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
 
     # setting it via update should work
     bids_path = BIDSPath(root=return_bids_test_dir,
                          extension='.json', check=True)
     bids_path.update(suffix='dataset_description', check=False)
     assert bids_path.fpath.as_posix() == \
-           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+        Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()

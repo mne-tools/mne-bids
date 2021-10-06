@@ -17,7 +17,7 @@ import json
 from typing import Optional
 
 import numpy as np
-from mne.utils import warn, logger, _validate_type, verbose, deprecated
+from mne.utils import warn, logger, _validate_type, verbose
 
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
@@ -1242,7 +1242,7 @@ def _infer_datatype_from_path(fname):
 
 @verbose
 def get_bids_path_from_fname(fname, check=True, verbose=None):
-    """[summary]
+    """Retrieve a BIDSPath object from a filename.
 
     Parameters
     ----------
@@ -1258,7 +1258,50 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     bids_path : BIDSPath
         The BIDS path object.
     """
-    pass
+    # convert to pathlib
+    fpath = Path(fname)
+    fname = fpath.name
+
+    # parse BIDS entities from the filename
+    entities = get_entities_from_fname(fname)
+
+    # parse suffix and extension
+    last_entity = fname.split('-')[-1]
+    if '_' in last_entity:
+        suffix = last_entity.split('_')[-1]
+        suffix, extension = _get_bids_suffix_and_ext(suffix)
+    else:
+        suffix = None
+        extension = Path(fname).suffix
+        if extension == '':
+            extension = None
+    datatype = None
+
+    # find root and datatype if it exists
+    if not fpath.is_absolute():
+        root = None
+    else:
+        root_level = 0
+        # determine root if it's there
+        if entities['subject'] is not None:
+            root_level += 1
+        if entities['session'] is not None:
+            root_level += 1
+        if suffix != 'scans':
+            root_level += 1
+            datatype = fpath.parent.name
+
+        if root_level:
+            root = fpath.parent
+            for _ in range(root_level):
+                root = root.parent
+
+    # form the BIDS Path
+    bids_path = BIDSPath(root=root, datatype=datatype, suffix=suffix,
+                         extension=extension, **entities, check=check)
+    if verbose:
+        logger.info(f'From {fpath}, formed a BIDSPath: {bids_path}.')
+    return bids_path
 
 
 @verbose
