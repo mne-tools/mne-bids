@@ -40,7 +40,7 @@ def pytest_configure(config):
     #   doc/conf.py.
     warning_lines = r"""
     error::
-    ignore:.*mark_bad_channels.*:DeprecationWarning
+    ignore:.*overwrite keyword.*:DeprecationWarning
     """  # noqa: E501
     for warning_line in warning_lines.split('\n'):
         warning_line = warning_line.strip()
