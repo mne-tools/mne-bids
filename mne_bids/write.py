@@ -1923,36 +1923,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         ``ch_names`` as bad, and all remaining channels as good, also
         discarding their descriptions.
     %(verbose)s
-
-    Examples
-    --------
-    Mark a single channel as bad.
-
-    >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
-    >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
-    ...                      datatype='eeg', root=root)
-    >>> mark_bad_channels('C4', bids_path=bids_path, verbose=False)
-
-    Mark multiple channels as bad, and add a description as to why.
-
-    >>> bads = ['C3', 'PO10']
-    >>> descriptions = ['very noisy', 'continuously flat']
-    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path,
-    ...                   verbose=False)
-
-    Mark two channels as bad, and mark all others as good by setting
-    ``overwrite=True``.
-
-    >>> bads = ['C3', 'C4']
-    >>> mark_bad_channels(bads, bids_path=bids_path,
-    ...                   overwrite=True, verbose=False)
-
-    Mark all channels as good by passing an empty list of bad channels, and
-    setting ``overwrite=True``.
-
-    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True,
-    ...                   verbose=False)
-
     """
     mark_channels(bids_path=bids_path, ch_names=ch_names, statuses='bad',
                   descriptions=descriptions, overwrite=overwrite,
@@ -2000,7 +1970,7 @@ def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
     >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
     ...                      datatype='eeg', root=root)
-    >>> mark_channels('C4', statuses='bad', bids_path=bids_path,
+    >>> mark_channels(bids_path=bids_path, ch_names='C4', statuses='bad',
     ...               verbose=False)
 
     Mark multiple channels as bad, and add a description as to why.
@@ -2014,7 +1984,7 @@ def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
     channel.
 
     >>> descriptions = ['resected', 'resected']
-    >>> mark_channels(['C3', 'C4'], bids_path=bids_path,
+    >>> mark_channels(bids_path=bids_path, ch_names=['C3', 'C4'],
     ...               descriptions=descriptions, statuses='good',
     ...               verbose=False)
     """
