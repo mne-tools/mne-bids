@@ -103,8 +103,9 @@ def run():
                 f'{len(bids_paths)} recording(s) …')
     for bids_path in bids_paths:
         logger.info(f'Processing: {bids_path.basename}')
-        mark_channels(ch_names=ch_names, descriptions=opt.descriptions,
-                      bids_path=bids_path, overwrite=opt.overwrite,
+        mark_channels(bids_path=bids_path, ch_names=ch_names,
+                      statuses='bad', descriptions=opt.descriptions,
+                      overwrite=opt.overwrite,
                       verbose=opt.verbose)
 
 
