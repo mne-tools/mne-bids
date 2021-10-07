@@ -1977,7 +1977,7 @@ def mark_channels(bids_path, *, ch_names, statuses, descriptions=None,
 
     >>> bads = ['C3', 'PO10']
     >>> descriptions = ['very noisy', 'continuously flat']
-    >>> mark_channels(bids_path, bads, statuses='bad',
+    >>> mark_channels(bids_path, ch_names=bads, statuses='bad',
     ...               descriptions=descriptions, verbose=False)
 
     Mark all channels with a new description, while keeping them as a "good"
