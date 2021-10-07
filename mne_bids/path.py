@@ -1247,7 +1247,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     ----------
     fname : str
         The path to parse a `BIDSPath` from.
-    check : bool, optional
+    check : bool
         Whether to apply a check for BIDS compliance in the BIDSPath to
         make, by default True.
     %(verbose)s
