@@ -13,7 +13,8 @@ from mne.utils import warn, logger, verbose
 
 from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (get_bids_path_from_fname, get_datatypes, get_entity_vals, BIDSPath,
+from mne_bids.path import (get_bids_path_from_fname, get_datatypes,
+                           get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar,
                            get_entities_from_fname)
 

@@ -100,7 +100,8 @@ def _find_matched_empty_room(bids_path):
         # Try to extract date from filename.
         if er_bids_path.session is not None:
             try:
-                er_meas_date = datetime.strptime(er_bids_path.session, '%Y%m%d')
+                er_meas_date = datetime.strptime(
+                    er_bids_path.session, '%Y%m%d')
             except (ValueError, TypeError):
                 # There is a session in the filename, but it doesn't encode a
                 # valid date.
@@ -905,7 +906,7 @@ class BIDSPath(object):
             emptytoom_path = sidecar_json['AssociatedEmptyRoom']
             # emptyroom_entities = get_entities_from_fname(emptytoom_path)
             # er_bids_path = BIDSPath(root=self.root, datatype='meg',
-                                    # **emptyroom_entities)
+            # **emptyroom_entities)
             er_bids_path = get_bids_path_from_fname(emptytoom_path)
             er_bids_path.root = self.root
             er_bids_path.datatype = 'meg'
