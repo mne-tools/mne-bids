@@ -1114,8 +1114,7 @@ def test_vhdr(_bids_validate, tmpdir):
     entities = get_entities_from_fname(electrodes_fpath)
     assert all([entity is None for key, entity in entities.items()
                 if key not in ['subject', 'session',
-                               'acquisition', 'space',
-                               'suffix']])
+                               'acquisition', 'space']])
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)

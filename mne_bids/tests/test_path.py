@@ -306,7 +306,7 @@ def test_get_entities_from_fname_errors(fname):
 
     expected_keys = ['subject', 'session', 'task',
                      'acquisition', 'run', 'processing',
-                     'space', 'recording', 'split', 'suffix']
+                     'space', 'recording', 'split']
 
     assert params['subject'] == '01'
     assert params['session'] == '02'
@@ -811,7 +811,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          root=bids_root, suffix='meg')
-    write_raw_bids(raw, bids_path, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
@@ -835,7 +835,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     er_bids_path = BIDSPath(subject='emptyroom', task='noise',
                             session=er_date, suffix='meg',
                             root=bids_root)
-    write_raw_bids(er_raw, er_bids_path, overwrite=True)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True, verbose=False)
 
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
@@ -848,7 +848,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
         er_meas_date = datetime.strptime(date, '%Y%m%d')
         er_meas_date = er_meas_date.replace(tzinfo=timezone.utc)
         er_raw.set_meas_date(er_meas_date)
-        write_raw_bids(er_raw, er_bids_path)
+        write_raw_bids(er_raw, er_bids_path, verbose=False)
 
     best_er_basename = bids_path.find_empty_room()
     assert best_er_basename.session == '20021204'

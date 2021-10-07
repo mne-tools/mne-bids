@@ -91,16 +91,16 @@ def _find_matched_empty_room(bids_path):
 
     failed_to_get_er_date_count = 0
     for er_fname in candidate_er_fnames:
-        params = get_entities_from_fname(er_fname)
+        # get entities from filenamme
+        er_bids_path = get_bids_path_from_fname(er_fname, check=False)
+        er_bids_path.subject = 'emptyroom'  # er subject entity is different
+        er_bids_path.root = bids_root
         er_meas_date = None
-        params.pop('subject')  # er subject entity is different
-        er_bids_path = BIDSPath(subject='emptyroom', **params, datatype='meg',
-                                root=bids_root, check=False)
 
         # Try to extract date from filename.
-        if params['session'] is not None:
+        if er_bids_path.session is not None:
             try:
-                er_meas_date = datetime.strptime(params['session'], '%Y%m%d')
+                er_meas_date = datetime.strptime(er_bids_path.session, '%Y%m%d')
             except (ValueError, TypeError):
                 # There is a session in the filename, but it doesn't encode a
                 # valid date.
@@ -788,24 +788,19 @@ class BIDSPath(object):
 
         bids_paths = []
         for fname in fnames:
-            # get all BIDS entities from the filename
-            entities = get_entities_from_fname(fname)
-
-            # extension is not an entity, so get it explicitly
-            _, extension = _parse_ext(fname)
-
             # get datatype
             fpath = list(self.root.rglob(f'*{fname}*'))[0]
             datatype = _infer_datatype_from_path(fpath)
+
+            # form the BIDSPath object
+            bids_path = get_bids_path_from_fname(fname, check=False)
+            bids_path.root = self.root
+            bids_path.datatype = datatype
 
             # to check whether the BIDSPath is conforming to BIDS if
             # check=True, we first instantiate without checking and then run
             # the check manually, allowing us to be more specific about the
             # exception to catch
-            bids_path = BIDSPath(root=self.root, datatype=datatype,
-                                 extension=extension, check=False,
-                                 **entities)
-
             bids_path.check = True
 
             try:
@@ -908,9 +903,12 @@ class BIDSPath(object):
             logger.info('Using "AssociatedEmptyRoom" entry from MEG sidecar '
                         'file to retrieve empty-room path.')
             emptytoom_path = sidecar_json['AssociatedEmptyRoom']
-            emptyroom_entities = get_entities_from_fname(emptytoom_path)
-            er_bids_path = BIDSPath(root=self.root, datatype='meg',
-                                    **emptyroom_entities)
+            # emptyroom_entities = get_entities_from_fname(emptytoom_path)
+            # er_bids_path = BIDSPath(root=self.root, datatype='meg',
+                                    # **emptyroom_entities)
+            er_bids_path = get_bids_path_from_fname(emptytoom_path)
+            er_bids_path.root = self.root
+            er_bids_path.datatype = 'meg'
         else:
             logger.info(
                 'The MEG sidecar file does not contain an '
@@ -1275,7 +1273,9 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
         extension = Path(fname).suffix
         if extension == '':
             extension = None
-    datatype = None
+
+    # infer datatype
+    datatype = _infer_datatype_from_path(fpath)
 
     # find root and datatype if it exists
     if not fpath.is_absolute():
@@ -1289,7 +1289,6 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
             root_level += 1
         if suffix != 'scans':
             root_level += 1
-            datatype = fpath.parent.name
 
         if root_level:
             root = fpath.parent

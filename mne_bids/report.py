@@ -13,7 +13,7 @@ from mne.utils import warn, logger, verbose
 
 from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (get_datatypes, get_entity_vals, BIDSPath,
+from mne_bids.path import (get_bids_path_from_fname, get_datatypes, get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar,
                            get_entities_from_fname)
 
@@ -325,8 +325,8 @@ def _summarize_sidecar_json(root, scans_fpaths):
             n_scans += 1
 
             # convert to BIDS Path
-            params = get_entities_from_fname(bids_path)
-            bids_path = BIDSPath(root=root, **params)
+            if not isinstance(bids_path, BIDSPath):
+                bids_path = get_bids_path_from_fname(bids_path)
 
             # XXX: improve to allow emptyroom
             if bids_path.subject == 'emptyroom':
