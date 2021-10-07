@@ -260,7 +260,7 @@ def test_get_bids_path_from_fname(fname):
     assert bids_path.basename == Path(fname).name
 
     if '/bids_root/' in fname:
-        assert bids_path.root.as_posix() == '/bids_root'
+        assert str(bids_path.root) == '/bids_root'
 
 
 @pytest.mark.parametrize('fname', [
