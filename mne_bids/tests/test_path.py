@@ -261,6 +261,13 @@ def test_get_bids_path_from_fname(fname):
 
     if '/bids_root/' in fname:
         assert str(bids_path.root) == '/bids_root'
+    else:
+        if 'meg' in fname:
+            # directory should match
+            assert str(bids_path.directory) == 'sub-01/ses-02/meg'
+
+        # root should be default '.'
+        assert str(bids_path.root) == '.'
 
 
 @pytest.mark.parametrize('fname', [

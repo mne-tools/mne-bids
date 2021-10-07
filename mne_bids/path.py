@@ -1279,7 +1279,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     datatype = _infer_datatype_from_path(fpath)
 
     # find root and datatype if it exists
-    if not fpath.is_absolute():
+    if fpath.parent == '':
         root = None
     else:
         root_level = 0

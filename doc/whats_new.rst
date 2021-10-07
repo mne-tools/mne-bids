@@ -47,7 +47,7 @@ Enhancements
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-- :func:`mne_bids.get_entities_from_fname` does not return ``suffix`` anymore as that is not considered a BIDS entity, by `Adam Li`_ (:gh:``)
+- :func:`mne_bids.get_entities_from_fname` does not return ``suffix`` anymore as that is not considered a BIDS entity, by `Adam Li`_ (:gh:`883`)
 
 Requirements
 ^^^^^^^^^^^^
