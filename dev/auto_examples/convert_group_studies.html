@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>05. BIDS conversion for group studies &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -313,7 +317,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-group-studies-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="bids-conversion-for-group-studies">
+<section class="sphx-glr-example-title" id="bids-conversion-for-group-studies">
 <span id="sphx-glr-auto-examples-convert-group-studies-py"></span><h1>05. BIDS conversion for group studies<a class="headerlink" href="#bids-conversion-for-group-studies" title="Permalink to this headline">¶</a></h1>
 <p>Here, we show how to do BIDS conversion for group studies.
 We will use the
@@ -466,7 +470,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 Copying data files to sub-001_ses-01_task-MotorImagery_run-01_eeg.edf
-/home/circleci/project/mne_bids/write.py:1600: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/mne_bids/write.py:1604: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   warn(&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.edf.
@@ -484,7 +488,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 Copying data files to sub-001_ses-01_task-MotorImagery_run-02_eeg.edf
-/home/circleci/project/mne_bids/write.py:1600: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/mne_bids/write.py:1604: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   warn(&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.edf.
@@ -502,7 +506,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 Copying data files to sub-001_ses-01_task-MotorImagery_run-03_eeg.edf
-/home/circleci/project/mne_bids/write.py:1600: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/mne_bids/write.py:1604: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   warn(&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.edf.
@@ -520,7 +524,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 Copying data files to sub-002_ses-01_task-MotorImagery_run-01_eeg.edf
-/home/circleci/project/mne_bids/write.py:1600: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/mne_bids/write.py:1604: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   warn(&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.edf.
@@ -538,7 +542,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 Copying data files to sub-002_ses-01_task-MotorImagery_run-02_eeg.edf
-/home/circleci/project/mne_bids/write.py:1600: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/mne_bids/write.py:1604: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   warn(&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.edf.
@@ -556,7 +560,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 Copying data files to sub-002_ses-01_task-MotorImagery_run-03_eeg.edf
-/home/circleci/project/mne_bids/write.py:1600: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/mne_bids/write.py:1604: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   warn(&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.edf.
@@ -723,7 +727,7 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
 0.0 were removed from analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.519 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.930 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -736,18 +740,29 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="convert_eeg_to_bids.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">04. Convert EEG data to BIDS format</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="rename_brainvision_files.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">06. Rename BrainVision EEG data files</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
-
-
-              </div>
-              
-              
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="convert_eeg_to_bids.html" title="previous page">04. Convert EEG data to BIDS format</a>
-    <a class='right-next' id="next-link" href="rename_brainvision_files.html" title="next page">06. Rename BrainVision EEG data files</a>
-
-              </div>
               
           </main>
           
@@ -755,20 +770,19 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

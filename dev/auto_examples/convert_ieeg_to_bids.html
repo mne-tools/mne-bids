@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -348,7 +352,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="convert-ieeg-data-to-bids-format">
+<section class="sphx-glr-example-title" id="convert-ieeg-data-to-bids-format">
 <span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
 <p>In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:</p>
@@ -390,7 +394,7 @@ refer to the <a class="reference external" href="https://bids-specification.read
                       <a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="step-1-download-the-data">
+<section id="step-1-download-the-data">
 <h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this headline">¶</a></h2>
 <p>First, we need some data to work with. We will use the
 data downloaded via MNE-Python’s <code class="docutils literal notranslate"><span class="pre">datasets</span></code> API:
@@ -407,209 +411,6 @@ data downloaded via MNE-Python’s <code class="docutils literal notranslate"><s
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
-Dataset misc version 0.19 out of date, latest version is 0.22
-
-0.00B [00:00, ?B/s]
-283kB [00:00, 2.59MB/s]
-1.76MB [00:00, 9.51MB/s]
-3.85MB [00:00, 14.6MB/s]
-5.86MB [00:00, 16.7MB/s]
-8.15MB [00:00, 18.9MB/s]
-10.0MB [00:00, 12.9MB/s]
-11.6MB [00:01, 9.08MB/s]
-12.8MB [00:01, 6.85MB/s]
-13.7MB [00:01, 6.73MB/s]
-14.9MB [00:01, 7.64MB/s]
-15.9MB [00:01, 7.68MB/s]
-17.3MB [00:01, 8.95MB/s]
-18.3MB [00:02, 5.86MB/s]
-19.5MB [00:02, 6.88MB/s]
-20.5MB [00:02, 5.09MB/s]
-21.9MB [00:02, 6.59MB/s]
-22.8MB [00:02, 6.50MB/s]
-23.6MB [00:03, 5.32MB/s]
-24.9MB [00:03, 6.55MB/s]
-25.7MB [00:03, 5.19MB/s]
-26.4MB [00:03, 5.32MB/s]
-27.3MB [00:03, 6.05MB/s]
-28.0MB [00:03, 4.59MB/s]
-29.3MB [00:04, 6.17MB/s]
-30.1MB [00:04, 4.63MB/s]
-31.4MB [00:04, 5.97MB/s]
-32.2MB [00:04, 4.74MB/s]
-33.1MB [00:04, 5.60MB/s]
-34.4MB [00:04, 6.93MB/s]
-35.3MB [00:05, 3.84MB/s]
-37.7MB [00:05, 6.77MB/s]
-40.2MB [00:05, 9.81MB/s]
-42.8MB [00:05, 12.8MB/s]
-45.3MB [00:05, 15.4MB/s]
-47.7MB [00:05, 17.5MB/s]
-50.0MB [00:06, 18.8MB/s]
-52.2MB [00:06, 19.1MB/s]
-54.6MB [00:06, 20.6MB/s]
-57.1MB [00:06, 21.7MB/s]
-59.5MB [00:06, 22.2MB/s]
-61.9MB [00:06, 22.8MB/s]
-64.3MB [00:06, 23.1MB/s]
-66.7MB [00:06, 23.5MB/s]
-69.2MB [00:06, 23.9MB/s]
-71.7MB [00:06, 24.1MB/s]
-74.1MB [00:07, 24.1MB/s]
-76.6MB [00:07, 24.0MB/s]
-79.0MB [00:07, 9.51MB/s]
-80.9MB [00:07, 10.9MB/s]
-82.8MB [00:07, 12.2MB/s]
-84.8MB [00:08, 13.7MB/s]
-86.7MB [00:08, 14.9MB/s]
-88.6MB [00:08, 9.04MB/s]
-90.1MB [00:08, 8.33MB/s]
-92.1MB [00:08, 10.3MB/s]
-94.2MB [00:09, 12.3MB/s]
-96.3MB [00:09, 14.1MB/s]
-98.4MB [00:09, 15.6MB/s]
-101MB [00:09, 17.9MB/s]
-104MB [00:09, 20.9MB/s]
-106MB [00:09, 20.4MB/s]
-109MB [00:09, 21.9MB/s]
-111MB [00:09, 21.7MB/s]
-113MB [00:09, 19.2MB/s]
-115MB [00:10, 13.7MB/s]
-117MB [00:10, 8.16MB/s]
-118MB [00:10, 8.35MB/s]
-119MB [00:10, 8.31MB/s]
-120MB [00:11, 6.43MB/s]
-121MB [00:11, 5.43MB/s]
-122MB [00:11, 5.39MB/s]
-124MB [00:11, 7.20MB/s]
-125MB [00:11, 8.06MB/s]
-126MB [00:11, 7.86MB/s]
-127MB [00:12, 9.94MB/s]
-129MB [00:12, 6.95MB/s]
-130MB [00:12, 5.66MB/s]
-130MB [00:12, 5.06MB/s]
-132MB [00:12, 6.99MB/s]
-133MB [00:13, 5.83MB/s]
-134MB [00:13, 5.16MB/s]
-134MB [00:13, 4.74MB/s]
-135MB [00:13, 5.68MB/s]
-136MB [00:13, 6.50MB/s]
-138MB [00:13, 8.15MB/s]
-139MB [00:14, 6.42MB/s]
-139MB [00:14, 5.33MB/s]
-140MB [00:14, 4.94MB/s]
-141MB [00:14, 5.81MB/s]
-143MB [00:14, 8.09MB/s]
-144MB [00:14, 6.20MB/s]
-144MB [00:15, 5.31MB/s]
-145MB [00:15, 4.79MB/s]
-146MB [00:15, 5.50MB/s]
-147MB [00:15, 6.84MB/s]
-148MB [00:15, 5.55MB/s]
-149MB [00:15, 4.97MB/s]
-149MB [00:16, 4.55MB/s]
-150MB [00:16, 4.14MB/s]
-151MB [00:16, 6.68MB/s]
-152MB [00:16, 5.80MB/s]
-153MB [00:16, 5.11MB/s]
-153MB [00:16, 4.67MB/s]
-154MB [00:17, 4.45MB/s]
-154MB [00:17, 4.53MB/s]
-156MB [00:17, 6.95MB/s]
-157MB [00:17, 5.67MB/s]
-157MB [00:17, 4.81MB/s]
-158MB [00:17, 4.42MB/s]
-158MB [00:17, 4.16MB/s]
-160MB [00:18, 5.71MB/s]
-162MB [00:18, 8.56MB/s]
-163MB [00:18, 6.26MB/s]
-163MB [00:18, 5.28MB/s]
-164MB [00:18, 4.84MB/s]
-165MB [00:19, 3.20MB/s]
-167MB [00:19, 6.13MB/s]
-169MB [00:19, 9.23MB/s]
-172MB [00:19, 12.3MB/s]
-174MB [00:19, 14.9MB/s]
-177MB [00:19, 17.1MB/s]
-179MB [00:19, 19.2MB/s]
-182MB [00:19, 21.0MB/s]
-184MB [00:20, 22.6MB/s]
-187MB [00:20, 23.5MB/s]
-190MB [00:20, 24.1MB/s]
-192MB [00:20, 24.8MB/s]
-195MB [00:20, 25.0MB/s]
-197MB [00:20, 25.4MB/s]
-200MB [00:20, 25.2MB/s]
-203MB [00:20, 25.3MB/s]
-205MB [00:20, 25.2MB/s]
-208MB [00:20, 25.0MB/s]
-210MB [00:21, 25.5MB/s]
-213MB [00:21, 25.5MB/s]
-216MB [00:21, 25.9MB/s]
-218MB [00:21, 25.8MB/s]
-221MB [00:21, 26.2MB/s]
-224MB [00:21, 26.2MB/s]
-226MB [00:21, 26.2MB/s]
-229MB [00:22, 15.3MB/s]
-231MB [00:22, 15.8MB/s]
-233MB [00:22, 16.1MB/s]
-235MB [00:22, 16.3MB/s]
-237MB [00:22, 16.4MB/s]
-238MB [00:22, 16.8MB/s]
-240MB [00:22, 16.8MB/s]
-242MB [00:22, 16.8MB/s]
-244MB [00:22, 16.9MB/s]
-245MB [00:22, 16.9MB/s]
-247MB [00:23, 17.0MB/s]
-249MB [00:23, 16.9MB/s]
-251MB [00:23, 6.94MB/s]
-252MB [00:23, 7.06MB/s]
-253MB [00:24, 7.10MB/s]
-254MB [00:24, 7.17MB/s]
-255MB [00:24, 7.36MB/s]
-256MB [00:24, 7.44MB/s]
-257MB [00:24, 7.49MB/s]
-257MB [00:24, 7.48MB/s]
-258MB [00:24, 7.59MB/s]
-259MB [00:24, 7.57MB/s]
-260MB [00:24, 7.63MB/s]
-261MB [00:25, 7.60MB/s]
-261MB [00:25, 7.63MB/s]
-262MB [00:25, 7.46MB/s]
-263MB [00:25, 7.44MB/s]
-264MB [00:25, 7.45MB/s]
-264MB [00:25, 7.47MB/s]
-265MB [00:25, 7.58MB/s]
-266MB [00:25, 7.55MB/s]
-267MB [00:25, 7.61MB/s]
-268MB [00:26, 7.57MB/s]
-268MB [00:26, 7.58MB/s]
-269MB [00:26, 7.64MB/s]
-270MB [00:26, 7.63MB/s]
-271MB [00:26, 7.75MB/s]
-271MB [00:26, 7.75MB/s]
-272MB [00:26, 7.83MB/s]
-273MB [00:26, 7.76MB/s]
-274MB [00:26, 7.67MB/s]
-275MB [00:26, 7.59MB/s]
-275MB [00:27, 7.65MB/s]
-276MB [00:27, 7.61MB/s]
-277MB [00:27, 7.63MB/s]
-278MB [00:27, 7.59MB/s]
-279MB [00:27, 7.66MB/s]
-279MB [00:27, 7.59MB/s]
-280MB [00:27, 7.81MB/s]
-281MB [00:27, 7.89MB/s]
-282MB [00:27, 7.91MB/s]
-283MB [00:27, 7.74MB/s]
-283MB [00:28, 7.56MB/s]
-284MB [00:28, 7.48MB/s]
-285MB [00:28, 7.45MB/s]
-286MB [00:28, 7.59MB/s]
-286MB [00:28, 7.47MB/s]
-287MB [00:28, 7.50MB/s]
-0.00B [00:00, ?B/s]
-0.00B [00:00, ?B/s]
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
@@ -636,8 +437,8 @@ is the best option.</p>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">)</span>  <span class="c1"># head-&gt;mri</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="bids-vs-mne-python-coordinate-systems">
+</section>
+<section id="bids-vs-mne-python-coordinate-systems">
 <h2>BIDS vs MNE-Python Coordinate Systems<a class="headerlink" href="#bids-vs-mne-python-coordinate-systems" title="Permalink to this headline">¶</a></h2>
 <p>BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
 <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html">appendix VIII</a> of the BIDS specification.
@@ -655,8 +456,8 @@ MNE-Python if written with <a class="reference internal" href="../generated/mne_
 coordinate system <code class="docutils literal notranslate"><span class="pre">'Other'</span></code>. Note, then we suggest using
 <a class="reference internal" href="../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_sidecar_json()</span></code></a> to update the sidecar
 <code class="docutils literal notranslate"><span class="pre">*_coordsystem.json</span></code> file to add additional information.</p>
-</div>
-<div class="section" id="step-2-formatting-as-bids">
+</section>
+<section id="step-2-formatting-as-bids">
 <h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Permalink to this headline">¶</a></h2>
 <p>Now, let us format the <em class="xref py py-obj">Raw</em> object into BIDS.</p>
 <p>With this step, we have everything to start a new BIDS directory using
@@ -963,7 +764,7 @@ Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_iee
 Ready.
 /home/circleci/project/mne_bids/utils.py:324: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
   warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1450: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1453: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -979,7 +780,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1581: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1584: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -1057,8 +858,8 @@ sub-1/ieeg/sub-1_task-motor_channels.tsv
     ...
 </pre></div>
 </div>
-</div>
-<div class="section" id="step-3-load-channels-from-bids-formatted-dataset-and-compare">
+</section>
+<section id="step-3-load-channels-from-bids-formatted-dataset-and-compare">
 <h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Permalink to this headline">¶</a></h2>
 <p>Now we have written our BIDS directory. We can use
 <a class="reference internal" href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> to read in the data.</p>
@@ -1127,7 +928,7 @@ Call stack:
     exec(self.code, self.fake_main.__dict__)
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 232, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
-  File &quot;&lt;decorator-gen-550&gt;&quot;, line 24, in read_raw_bids
+  File &quot;&lt;decorator-gen-568&gt;&quot;, line 24, in read_raw_bids
   File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 694, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 516, in _read_dig_bids
@@ -1158,7 +959,7 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
 <div class="output_subarea output_html rendered_html output_result">
 
 
-<table class="table table-hover">
+<table class="table table-hover table-striped table-sm table-responsive small">
     <tr>
         <th>Measurement date</th>
         <td>August 29, 1937  11:09:44 GMT</td>
@@ -1217,8 +1018,8 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
 
 </div>
 <br />
-<br /></div>
-<div class="section" id="step-4-cite-mne-bids">
+<br /></section>
+<section id="step-4-cite-mne-bids">
 <h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this headline">¶</a></h2>
 <p>We can see that the appropriate citations are already written in the README.
 If you are preparing a manuscript, please make sure to also cite MNE-BIDS
@@ -1237,8 +1038,8 @@ Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., 
 Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D&#39;Ambrosio, S., David, O., … Hermes, D. (2019). iEEG-BIDS, extending the Brain Imaging Data Structure specification to human intracranial electrophysiology. Scientific Data, 6, 102. https://doi.org/10.1038/s41597-019-0105-7
 </pre></div>
 </div>
-</div>
-<div class="section" id="step-5-store-coordinates-in-a-template-space">
+</section>
+<section id="step-5-store-coordinates-in-a-template-space">
 <h2>Step 5: Store coordinates in a template space<a class="headerlink" href="#step-5-store-coordinates-in-a-template-space" title="Permalink to this headline">¶</a></h2>
 <p>Alternatively, if your T1 is not aligned to ACPC-space or you prefer to
 store the coordinates in a template space (e.g. <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code>) for another
@@ -1292,7 +1093,7 @@ Ready.
 Ready.
 /home/circleci/project/mne_bids/utils.py:324: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
   warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1450: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1453: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1308,7 +1109,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1581: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1584: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -1366,7 +1167,7 @@ Call stack:
     exec(self.code, self.fake_main.__dict__)
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 300, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
-  File &quot;&lt;decorator-gen-550&gt;&quot;, line 24, in read_raw_bids
+  File &quot;&lt;decorator-gen-568&gt;&quot;, line 24, in read_raw_bids
   File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 694, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 516, in _read_dig_bids
@@ -1401,7 +1202,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 <div class="output_subarea output_html rendered_html output_result">
 
 
-<table class="table table-hover">
+<table class="table table-hover table-striped table-sm table-responsive small">
     <tr>
         <th>Measurement date</th>
         <td>August 29, 1937  11:09:44 GMT</td>
@@ -1460,7 +1261,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  38.133 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.760 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1473,19 +1274,30 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="convert_mri_and_trans.html" title="previous page">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</a>
-    <a class='right-next' id="next-link" href="convert_empty_room.html" title="next page">09. Storing empty room data in BIDS format</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="convert_mri_and_trans.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="convert_empty_room.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">09. Storing empty room data in BIDS format</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -1493,20 +1305,19 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

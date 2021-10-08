@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>MNE-BIDS Command Line Interface (CLI) &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -374,15 +378,15 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-command-line-interface-cli">
+  <section id="mne-bids-command-line-interface-cli">
 <span id="python-cli"></span><h1>MNE-BIDS Command Line Interface (CLI)<a class="headerlink" href="#mne-bids-command-line-interface-cli" title="Permalink to this headline">¶</a></h1>
 <p>Here we list the MNE-BIDS tools that you can use from the command line.</p>
-<div class="section" id="mne-bids-calibration-to-bids">
+<section id="mne-bids-calibration-to-bids">
 <span id="gen-mne-bids-calibration-to-bids"></span><h2>mne_bids calibration_to_bids<a class="headerlink" href="#mne-bids-calibration-to-bids" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="write-elekta-neuromag-megin-fine-calibration-data-to-bids">
+<section class="callout" id="write-elekta-neuromag-megin-fine-calibration-data-to-bids">
 <h3>Write Elekta/Neuromag/MEGIN fine-calibration data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-fine-calibration-data-to-bids" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">calibration_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
-<div class="section" id="options">
+<section id="options">
 <h4>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -410,15 +414,15 @@
 <p>example usage:
 $ mne_bids calibration_to_bids –subject_id=01 –session=test
 –bids_root=bids_root –file=sss_cal.dat</p>
-</div>
-</div>
-</div>
-<div class="section" id="mne-bids-count-events">
+</section>
+</section>
+</section>
+<section id="mne-bids-count-events">
 <span id="gen-mne-bids-count-events"></span><h2>mne_bids count_events<a class="headerlink" href="#mne-bids-count-events" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="count-events-in-bids-dataset">
+<section class="callout" id="count-events-in-bids-dataset">
 <h3>Count events in BIDS dataset.<a class="headerlink" href="#count-events-in-bids-dataset" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">count_events</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
-<div class="section" id="id1">
+<section id="id1">
 <h4>Options<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -439,15 +443,15 @@ etc.).</p>
 </dd>
 </dl>
 <p>example usage:  $ mne_bids count_events –bids_root bids_root_path</p>
-</div>
-</div>
-</div>
-<div class="section" id="mne-bids-cp">
+</section>
+</section>
+</section>
+<section id="mne-bids-cp">
 <span id="gen-mne-bids-cp"></span><h2>mne_bids cp<a class="headerlink" href="#mne-bids-cp" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="rename-files-making-a-copy-and-update-their-internal-pointers">
+<section class="callout" id="rename-files-making-a-copy-and-update-their-internal-pointers">
 <h3>Rename files (making a copy) and update their internal pointers.<a class="headerlink" href="#rename-files-making-a-copy-and-update-their-internal-pointers" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">cp</span> <span class="pre">-i</span> <span class="pre">INPUT</span> <span class="pre">-o</span> <span class="pre">OUTPUT</span></code></p>
-<div class="section" id="id2">
+<section id="id2">
 <h4>Options<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -469,15 +473,15 @@ file)</p>
 </dd>
 </dl>
 <p>example usage: $ mne_bids cp –input myfile.vhdr –output sub-01_task-test.vhdr</p>
-</div>
-</div>
-</div>
-<div class="section" id="mne-bids-crosstalk-to-bids">
+</section>
+</section>
+</section>
+<section id="mne-bids-crosstalk-to-bids">
 <span id="gen-mne-bids-crosstalk-to-bids"></span><h2>mne_bids crosstalk_to_bids<a class="headerlink" href="#mne-bids-crosstalk-to-bids" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="write-elekta-neuromag-megin-crosstalk-data-to-bids">
+<section class="callout" id="write-elekta-neuromag-megin-crosstalk-data-to-bids">
 <h3>Write Elekta/Neuromag/MEGIN crosstalk data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-crosstalk-data-to-bids" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">crosstalk_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
-<div class="section" id="id3">
+<section id="id3">
 <h4>Options<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -505,15 +509,15 @@ file)</p>
 <p>example usage:
 $ mne_bids crosstalk_to_bids –subject_id=01 –session=test
 –bids_root=bids_root –file=ct_sparse.fif</p>
-</div>
-</div>
-</div>
-<div class="section" id="mne-bids-inspect">
+</section>
+</section>
+</section>
+<section id="mne-bids-inspect">
 <span id="gen-mne-bids-inspect"></span><h2>mne_bids inspect<a class="headerlink" href="#mne-bids-inspect" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad">
+<section class="callout" id="inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad">
 <h3>Inspect MEG and EEG raw data, and interactively mark channels as bad.<a class="headerlink" href="#inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">inspect</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
-<div class="section" id="id4">
+<section id="id4">
 <h4>Options<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -572,15 +576,15 @@ e.g. .fif</p>
 </dl>
 <p>example usage:
 $ mne_bids inspect –subject_id=01 –task=experiment –session=test –datatype=meg –suffix=meg –bids_root=bids_root</p>
-</div>
-</div>
-</div>
-<div class="section" id="mne-bids-mark-bad-channels">
+</section>
+</section>
+</section>
+<section id="mne-bids-mark-bad-channels">
 <span id="gen-mne-bids-mark-bad-channels"></span><h2>mne_bids mark_bad_channels<a class="headerlink" href="#mne-bids-mark-bad-channels" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="mark-channels-in-an-existing-bids-dataset-as-bad">
+<section class="callout" id="mark-channels-in-an-existing-bids-dataset-as-bad">
 <h3>Mark channels in an existing BIDS dataset as “bad”.<a class="headerlink" href="#mark-channels-in-an-existing-bids-dataset-as-bad" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">mark_bad_channels</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
-<div class="section" id="id5">
+<section id="id5">
 <h4>Options<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -643,15 +647,15 @@ e.g. .fif</p>
 </dl>
 <p>example usage:
 $ mne_bids mark_bad_channels –ch_name=”MEG 0112” –description=”noisy”                              –ch_name=”MEG 0131” –description=”flat”                              –subject_id=01 –task=experiment –session=test                              –bids_root=bids_root –overwrite</p>
-</div>
-</div>
-</div>
-<div class="section" id="mne-bids-raw-to-bids">
+</section>
+</section>
+</section>
+<section id="mne-bids-raw-to-bids">
 <span id="gen-mne-bids-raw-to-bids"></span><h2>mne_bids raw_to_bids<a class="headerlink" href="#mne-bids-raw-to-bids" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="write-raw-files-to-bids-format">
+<section class="callout" id="write-raw-files-to-bids-format">
 <h3>Write raw files to BIDS format.<a class="headerlink" href="#write-raw-files-to-bids-format" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">raw_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
-<div class="section" id="id6">
+<section id="id6">
 <h4>Options<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -709,15 +713,15 @@ If unknown, pass None</p>
 </dl>
 <p>example usage:  $ mne_bids raw_to_bids –subject_id sub01 –task rest
 –raw data.edf –bids_root new_path</p>
-</div>
-</div>
-</div>
-<div class="section" id="mne-bids-report">
+</section>
+</section>
+</section>
+<section id="mne-bids-report">
 <span id="gen-mne-bids-report"></span><h2>mne_bids report<a class="headerlink" href="#mne-bids-report" title="Permalink to this headline">¶</a></h2>
-<div class="callout section" id="id7">
+<section class="callout" id="id7">
 <h3>Write raw files to BIDS format.<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">report</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
-<div class="section" id="id8">
+<section id="id8">
 <h4>Options<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
@@ -731,21 +735,32 @@ If unknown, pass None</p>
 </dd>
 </dl>
 <p>example usage:  $ mne_bids report –bids_root bids_root_path</p>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="mne_bids.copyfiles.copyfile_kit.html" title="previous page">mne_bids.copyfiles.copyfile_kit</a>
-    <a class='right-next' id="next-link" href="../contribute.html" title="next page">Contributing to MNE-BIDS</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="mne_bids.copyfiles.copyfile_kit.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mne_bids.copyfiles.copyfile_kit</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="../contribute.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contributing to MNE-BIDS</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -753,20 +768,19 @@ If unknown, pass None</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

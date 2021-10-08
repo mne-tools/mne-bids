@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>01. Read BIDS datasets &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -343,7 +347,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-read-bids-datasets-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="read-bids-datasets">
+<section class="sphx-glr-example-title" id="read-bids-datasets">
 <span id="read-bids-datasets-example"></span><span id="sphx-glr-auto-examples-read-bids-datasets-py"></span><h1>01. Read BIDS datasets<a class="headerlink" href="#read-bids-datasets" title="Permalink to this headline">¶</a></h1>
 <p>When working with electrophysiological data in the BIDS format, an important
 resource is the <a class="reference external" href="https://openneuro.org/">OpenNeuro</a> database. OpenNeuro
@@ -368,7 +372,7 @@ inspect BIDS-formatted data.</p>
 <span class="c1"># License: BSD-3-Clause</span>
 </pre></div>
 </div>
-<div class="section" id="imports">
+<section id="imports">
 <h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
 <p>We are importing everything we need for this example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -379,8 +383,8 @@ inspect BIDS-formatted data.</p>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a>
 </pre></div>
 </div>
-</div>
-<div class="section" id="download-a-subject-s-data-from-an-openneuro-bids-dataset">
+</section>
+<section id="download-a-subject-s-data-from-an-openneuro-bids-dataset">
 <h2>Download a subject’s data from an OpenNeuro BIDS dataset<a class="headerlink" href="#download-a-subject-s-data-from-an-openneuro-bids-dataset" title="Permalink to this headline">¶</a></h2>
 <p>Download the data, storing each in a <code class="docutils literal notranslate"><span class="pre">target_dir</span></code> target directory, which,
 in <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> terminology, is the <em class="xref py py-obj">root</em> of each BIDS dataset. This example
@@ -408,7 +412,7 @@ resting-state recordings of patients with Parkinson’s disease.</p>
 Attempting to create new mne-python configuration file:
 /home/circleci/.mne/mne-python.json
 
-Hello! This is openneuro-py 2021.8. Great to see you!
+Hello! This is openneuro-py 2021.10.1. Great to see you!
 
       Please report problems and bugs at
       https://github.com/hoechenberger/openneuro-py/issues
@@ -431,57 +435,55 @@ Skipping dataset_description.json: already downloaded.: 100%|##########| 350/350
 Skipping participants.json: already downloaded.: 100%|##########| 1.24k/1.24k [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|##########| 66.0/66.0 [00:00&lt;?, ?B/s]
-
-
 Skipping sub-pd6_ses-off_task-rest_beh.json: already downloaded.: 100%|##########| 436/436 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|##########| 433/433 [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|##########| 66.0/66.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|##########| 75.0/75.0 [00:00&lt;?, ?B/s]
 
 
+Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|##########| 433/433 [00:00&lt;?, ?B/s]
+
+
 Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|##########| 2.22k/2.22k [00:00&lt;?, ?B/s]
+
+
+Re-downloading sub-pd6_ses-off_task-rest_channels.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
+
+
+Re-downloading sub-pd6_ses-off_task-rest_eeg.json: file size mismatch.: 0.00B [00:00, ?B/s]
+
+Re-downloading sub-pd6_ses-off_task-rest_beh.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
+
+
+
+Re-downloading sub-pd6_ses-on_task-rest_beh.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
+
+Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|##########| 51.0/51.0 [00:00&lt;?, ?B/s]
+
+
 
 
 Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|##########| 74.0/74.0 [00:00&lt;?, ?B/s]
 
 
-Re-downloading sub-pd6_ses-off_task-rest_channels.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
-
-Re-downloading sub-pd6_ses-off_task-rest_eeg.json: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
 Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|##########| 471/471 [00:00&lt;?, ?B/s]
-
-
-
-
-
-
-Re-downloading sub-pd6_ses-off_task-rest_beh.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
-Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|##########| 51.0/51.0 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|##########| 17.4M/17.4M [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|##########| 11.5M/11.5M [00:00&lt;?, ?B/s]
 
 
-Re-downloading sub-pd6_ses-on_task-rest_beh.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
+Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|##########| 17.4M/17.4M [00:00&lt;?, ?B/s]
 
 Finished downloading ds002778.
 
 Please enjoy your brains.
 </pre></div>
 </div>
-</div>
-<div class="section" id="explore-the-dataset-contents">
+</section>
+<section id="explore-the-dataset-contents">
 <h2>Explore the dataset contents<a class="headerlink" href="#explore-the-dataset-contents" title="Permalink to this headline">¶</a></h2>
 <p>We can use MNE-BIDS to print a tree of all
 included files and folders. We pass the <code class="docutils literal notranslate"><span class="pre">max_depth</span></code> parameter to
@@ -582,8 +584,8 @@ basename: sub-pd6_ses-off_task-rest_events.tsv)]
 The first two are so-called sidecar files that contain information on the
 recording channels and experimental events, and the third one is the actual
 data file.</p>
-</div>
-<div class="section" id="prepare-reading-the-data">
+</section>
+<section id="prepare-reading-the-data">
 <h2>Prepare reading the data<a class="headerlink" href="#prepare-reading-the-data" title="Permalink to this headline">¶</a></h2>
 <p>There is only one subject and one experimental task (<code class="docutils literal notranslate"><span class="pre">rest</span></code>).
 Let’s use this knowledge to create a new <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> with
@@ -644,8 +646,8 @@ employs some heuristics to auto-detect some missing filename components.
 Omitting the filename extension in your script can make your code
 more portable. Note that, however, you <strong>can</strong> explicitly specify an
 extension too, by passing e.g. <code class="docutils literal notranslate"><span class="pre">extension='.bdf'</span></code> to <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>.</p>
-</div>
-<div class="section" id="read-the-data">
+</section>
+<section id="read-the-data">
 <h2>Read the data<a class="headerlink" href="#read-the-data" title="Permalink to this headline">¶</a></h2>
 <p>Let’s read the data! It’s just a single line of code.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -695,7 +697,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.825 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.395 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -708,19 +710,30 @@ metadata.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="../use.html" title="previous page">Using MNE-BIDS</a>
-    <a class='right-next' id="next-link" href="convert_mne_sample.html" title="next page">02. Convert MNE sample data to BIDS format</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="../use.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">Using MNE-BIDS</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="convert_mne_sample.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">02. Convert MNE sample data to BIDS format</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -728,20 +741,19 @@ metadata.</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

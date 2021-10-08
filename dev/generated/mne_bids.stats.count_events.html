@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>mne_bids.stats.count_events &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -373,7 +377,7 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-stats-count-events">
+  <section id="mne-bids-stats-count-events">
 <h1>mne_bids.stats.count_events<a class="headerlink" href="#mne-bids-stats-count-events" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.stats.count_events">
@@ -382,12 +386,12 @@
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>root_or_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>If str or Path it is the root folder of the BIDS dataset.
+<dt><strong>root_or_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>If str or Path it is the root folder of the BIDS dataset.
 If a BIDSPath is passed it allows to limit the count
 to a subject, a session or a run by only considering
 the event files that match this BIDSPath.</p>
 </dd>
-<dt><strong>datatype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Type of the data recording. Can be <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>,
+<dt><strong>datatype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Type of the data recording. Can be <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>,
 <code class="docutils literal notranslate"><span class="pre">ieeg</span></code> or <code class="docutils literal notranslate"><span class="pre">auto</span></code>. If <code class="docutils literal notranslate"><span class="pre">auto</span></code> and a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>
 isinstance is passed as <code class="docutils literal notranslate"><span class="pre">root_or_path</span></code> which has a <code class="docutils literal notranslate"><span class="pre">datatype</span></code>
 attribute set, then this data type will be used. Otherwise, only
@@ -398,7 +402,7 @@ ambiguity.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>counts</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/dev/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.4.0.dev0+774.g6b75ed602e)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></span></dt><dd><p>The pandas dataframe containing all the counts of trial_type
+<dt><strong>counts</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/pandas-docs/dev/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.4.0.dev0+850.g0b671ad37c)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></span></dt><dd><p>The pandas dataframe containing all the counts of trial_type
 in all matching events.tsv files.</p>
 </dd>
 </dl>
@@ -406,33 +410,50 @@ in all matching events.tsv files.</p>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-stats-count-events">
+<section id="examples-using-mne-bids-stats-count-events">
 <span id="sphx-glr-backreferences-mne-bids-stats-count-events"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.stats.count_events</span></code><a class="headerlink" href="#examples-using-mne-bids-stats-count-events" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><figure class="align-default" id="id1">
 <img alt="02. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id2">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><figure class="align-default" id="id2">
 <img alt="04. Convert EEG data to BIDS format" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><div class="figure align-default" id="id3">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><figure class="align-default" id="id3">
 <img alt="05. BIDS conversion for group studies" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-clear"></div></div>
-</div>
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-clear"></div></section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="mne_bids.update_sidecar_json.html" title="previous page">mne_bids.update_sidecar_json</a>
-    <a class='right-next' id="next-link" href="mne_bids.copyfiles.copyfile_brainvision.html" title="next page">mne_bids.copyfiles.copyfile_brainvision</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="mne_bids.update_sidecar_json.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mne_bids.update_sidecar_json</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_bids.copyfiles.copyfile_brainvision.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_bids.copyfiles.copyfile_brainvision</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -440,20 +461,19 @@ in all matching events.tsv files.</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -343,7 +347,7 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids">
+<section class="sphx-glr-example-title" id="save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids">
 <span id="sphx-glr-auto-examples-convert-mri-and-trans-py"></span><h1>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS<a class="headerlink" href="#save-and-load-t1-weighted-mri-scan-along-with-anatomical-landmarks-in-bids" title="Permalink to this headline">¶</a></h1>
 <p>When working with MEEG data in the domain of source localization, we usually
 have to deal with aligning several coordinate systems, such as the coordinate
@@ -491,7 +495,7 @@ basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 </pre></div>
 </div>
-<div class="section" id="writing-t1-image">
+<section id="writing-t1-image">
 <h2>Writing T1 image<a class="headerlink" href="#writing-t1-image" title="Permalink to this headline">¶</a></h2>
 <p>Now let’s assume that we have also collected some T1 weighted MRI data for
 our subject. And furthermore, that we have already aligned our coordinate
@@ -637,8 +641,8 @@ transformation matrix <code class="code docutils literal notranslate"><span clas
 <a href="https://matplotlib.org/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../_images/sphx_glr_convert_mri_and_trans_001.png" srcset="../_images/sphx_glr_convert_mri_and_trans_001.png" alt="convert mri and trans" class = "sphx-glr-single-img"/></div>
-<div class="section" id="writing-flash-mri-image">
+<img src="../_images/sphx_glr_convert_mri_and_trans_001.png" srcset="../_images/sphx_glr_convert_mri_and_trans_001.png" alt="convert mri and trans" class = "sphx-glr-single-img"/></section>
+<section id="writing-flash-mri-image">
 <h2>Writing FLASH MRI image<a class="headerlink" href="#writing-flash-mri-image" title="Permalink to this headline">¶</a></h2>
 <p>We can write another types of MRI data such as FLASH images for BEM models</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">flash_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fs_subjects_dir</span></a><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;flash&#39;</span><span class="p">,</span> <span class="s1">&#39;mef05.mgz&#39;</span><span class="p">)</span>
@@ -660,8 +664,8 @@ datatype: anat
 basename: sub-01_ses-01_FLASH.nii.gz)
 </pre></div>
 </div>
-</div>
-<div class="section" id="writing-defaced-and-anonymized-t1-image">
+</section>
+<section id="writing-defaced-and-anonymized-t1-image">
 <h2>Writing defaced and anonymized T1 image<a class="headerlink" href="#writing-defaced-and-anonymized-t1-image" title="Permalink to this headline">¶</a></h2>
 <p>We can deface the MRI for anonymization by passing <code class="docutils literal notranslate"><span class="pre">deface=True</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1w_bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">(</span>
@@ -687,8 +691,8 @@ basename: sub-01_ses-01_FLASH.nii.gz)
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_T1w.json&#39;...
 </pre></div>
 </div>
-</div>
-<div class="section" id="writing-defaced-and-anonymized-flash-mri-image">
+</section>
+<section id="writing-defaced-and-anonymized-flash-mri-image">
 <h2>Writing defaced and anonymized FLASH MRI image<a class="headerlink" href="#writing-defaced-and-anonymized-flash-mri-image" title="Permalink to this headline">¶</a></h2>
 <p>Defacing the FLASH works just like the T1 as long as they are aligned.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># use ``trans`` to transform landmarks from the ``raw`` file to</span>
@@ -723,8 +727,8 @@ basename: sub-01_ses-01_FLASH.nii.gz)
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_FLASH.json&#39;...
 </pre></div>
 </div>
-</div>
-<div class="section" id="using-manual-landmark-coordinates-in-scanner-ras">
+</section>
+<section id="using-manual-landmark-coordinates-in-scanner-ras">
 <h2>Using manual landmark coordinates in scanner RAS<a class="headerlink" href="#using-manual-landmark-coordinates-in-scanner-ras" title="Permalink to this headline">¶</a></h2>
 <p>You can also find landmarks with a 3D image viewer (e.g. FreeView) if you
 have not aligned the channel locations (including fiducials) using the
@@ -766,7 +770,7 @@ are integers and so not as precise as the “RAS” decimal numbers.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_FLASH.json&#39;...
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  42.360 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  20.135 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -779,19 +783,30 @@ are integers and so not as precise as the “RAS” decimal numbers.</p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
-</div>
+</section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="rename_brainvision_files.html" title="previous page">06. Rename BrainVision EEG data files</a>
-    <a class='right-next' id="next-link" href="convert_ieeg_to_bids.html" title="next page">08. Convert iEEG data to BIDS format</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="rename_brainvision_files.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">06. Rename BrainVision EEG data files</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="convert_ieeg_to_bids.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">08. Convert iEEG data to BIDS format</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -799,20 +814,19 @@ are integers and so not as precise as the “RAS” decimal numbers.</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

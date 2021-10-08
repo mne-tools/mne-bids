@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -373,7 +377,7 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-bidspath">
+  <section id="mne-bids-bidspath">
 <h1>mne_bids.BIDSPath<a class="headerlink" href="#mne-bids-bidspath" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath">
@@ -385,37 +389,37 @@ will generate the <em>prefix</em> for a BIDS filename that can be used with many
 subsequent files, or you may also give a suffix that will then complete
 the file name.</p>
 <p>BIDSPath allows dynamic updating of its entities in place, and operates
-similar to <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>. In addition, it can query multiple paths
+similar to <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>. In addition, it can query multiple paths
 with matching BIDS entities via the <code class="docutils literal notranslate"><span class="pre">match</span></code> method.</p>
 <p>Note that not all parameters are applicable to each suffix of data. For
 example, electrode location TSV files do not need a “task” field.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>subject</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The subject ID. Corresponds to “sub”.</p>
+<dt><strong>subject</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The subject ID. Corresponds to “sub”.</p>
 </dd>
-<dt><strong>session</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The acquisition session. Corresponds to “ses”.</p>
+<dt><strong>session</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The acquisition session. Corresponds to “ses”.</p>
 </dd>
-<dt><strong>task</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The experimental task. Corresponds to “task”.</p>
+<dt><strong>task</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The experimental task. Corresponds to “task”.</p>
 </dd>
 <dt><strong>acquisition: str | None</strong></dt><dd><p>The acquisition parameters. Corresponds to “acq”.</p>
 </dd>
-<dt><strong>run</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The run number. Corresponds to “run”.</p>
+<dt><strong>run</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The run number. Corresponds to “run”.</p>
 </dd>
-<dt><strong>processing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The processing label. Corresponds to “proc”.</p>
+<dt><strong>processing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The processing label. Corresponds to “proc”.</p>
 </dd>
-<dt><strong>recording</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The recording name. Corresponds to “rec”.</p>
+<dt><strong>recording</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The recording name. Corresponds to “rec”.</p>
 </dd>
-<dt><strong>space</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The coordinate space for anatomical and sensor location
+<dt><strong>space</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The coordinate space for anatomical and sensor location
 files (e.g., <code class="docutils literal notranslate"><span class="pre">*_electrodes.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">*_markers.mrk</span></code>).
 Corresponds to “space”.
 Note that valid values for <code class="docutils literal notranslate"><span class="pre">space</span></code> must come from a list
 of BIDS keywords as described in the BIDS specification.</p>
 </dd>
-<dt><strong>split</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.
+<dt><strong>split</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.
 Corresponds to “split”.</p>
 </dd>
-<dt><strong>suffix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The filename suffix. This is the entity after the
+<dt><strong>suffix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The filename suffix. This is the entity after the
 last <code class="docutils literal notranslate"><span class="pre">_</span></code> before the extension. E.g., <code class="docutils literal notranslate"><span class="pre">'channels'</span></code>.
 The following filename suffix’s are accepted:
 ‘meg’, ‘markers’, ‘eeg’, ‘ieeg’, ‘T1w’,
@@ -423,14 +427,14 @@ The following filename suffix’s are accepted:
 ‘channels’, ‘events’, ‘headshape’, ‘digitizer’,
 ‘beh’, ‘physio’, ‘stim’</p>
 </dd>
-<dt><strong>extension</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
+<dt><strong>extension</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
 </dd>
-<dt><strong>datatype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The BIDS data type, e.g., <code class="docutils literal notranslate"><span class="pre">'anat'</span></code>, <code class="docutils literal notranslate"><span class="pre">'func'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>,
+<dt><strong>datatype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The BIDS data type, e.g., <code class="docutils literal notranslate"><span class="pre">'anat'</span></code>, <code class="docutils literal notranslate"><span class="pre">'func'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>,
 <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>.</p>
 </dd>
-<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
+<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
 </dd>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces BIDS conformity. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces BIDS conformity. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -497,19 +501,19 @@ different properties look like for our object:</p>
 <dl class="field-list">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entities</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Return dictionary of the BIDS entities.</p>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entities</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Return dictionary of the BIDS entities.</p>
 </dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.datatype" title="mne_bids.BIDSPath.datatype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datatype</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The BIDS data type, e.g.</p>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.datatype" title="mne_bids.BIDSPath.datatype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datatype</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The BIDS data type, e.g.</p>
 </dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.basename" title="mne_bids.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Path basename.</p>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.basename" title="mne_bids.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Path basename.</p>
 </dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.root" title="mne_bids.BIDSPath.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.root" title="mne_bids.BIDSPath.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
 </dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directory</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Get the BIDS parent directory.</p>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directory</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Get the BIDS parent directory.</p>
 </dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Full filepath for this BIDS file.</p>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Full filepath for this BIDS file.</p>
 </dd>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to enforce BIDS conformity.</p>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to enforce BIDS conformity.</p>
 </dd>
 </dl>
 </dd>
@@ -545,7 +549,7 @@ different properties look like for our object:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.acquisition">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">acquisition</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.acquisition" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">acquisition</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.acquisition" title="Permalink to this definition">¶</a></dt>
 <dd><p>The acquisition parameters.</p>
 </dd></dl>
 
@@ -571,7 +575,7 @@ different properties look like for our object:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.datatype">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">datatype</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.datatype" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">datatype</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.datatype" title="Permalink to this definition">¶</a></dt>
 <dd><p>The BIDS data type, e.g. <code class="docutils literal notranslate"><span class="pre">'anat'</span></code>, <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>.</p>
 </dd></dl>
 
@@ -589,7 +593,7 @@ directory would be:</p>
 <dl class="field-list">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl>
-<dt><strong>data_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>The path of the BIDS directory.</p>
+<dt><strong>data_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>The path of the BIDS directory.</p>
 </dd>
 </dl>
 </dd>
@@ -604,7 +608,7 @@ directory would be:</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.extension">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">extension</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.extension" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">extension</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.extension" title="Permalink to this definition">¶</a></dt>
 <dd><p>The extension of the filename, including a leading period.</p>
 </dd></dl>
 
@@ -624,7 +628,7 @@ empty-room recording based on measurement date.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The path corresponding to the best-matching empty-room measurement.
+<dt><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The path corresponding to the best-matching empty-room measurement.
 Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if none was found.</p>
 </dd>
 </dl>
@@ -642,7 +646,7 @@ path.</p>
 <dl class="field-list">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_fpath</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Either the relative, or full path to the dataset.</p>
+<dt><strong>bids_fpath</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Either the relative, or full path to the dataset.</p>
 </dd>
 </dl>
 </dd>
@@ -658,7 +662,7 @@ path.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only returns paths that conform to BIDS. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only returns paths that conform to BIDS. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
 (default), the <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute of the returned
 <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> object will be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> for paths that
 do conform to BIDS, and to <code class="docutils literal notranslate"><span class="pre">False</span></code> for those that don’t.</p>
@@ -667,7 +671,7 @@ do conform to BIDS, and to <code class="docutils literal notranslate"><span clas
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>bids_paths</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The matching paths.</p>
+<dt><strong>bids_paths</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The matching paths.</p>
 </dd>
 </dl>
 </dd>
@@ -683,7 +687,7 @@ do conform to BIDS, and to <code class="docutils literal notranslate"><span clas
 <dl class="field-list">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl>
-<dt><strong>path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The path of the fine-calibration file, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it couldn’t
+<dt><strong>path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The path of the fine-calibration file, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it couldn’t
 be found.</p>
 </dd>
 </dl>
@@ -700,7 +704,7 @@ be found.</p>
 <dl class="field-list">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl>
-<dt><strong>path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The path of the crosstalk file, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it couldn’t be
+<dt><strong>path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The path of the crosstalk file, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it couldn’t be
 found.</p>
 </dd>
 </dl>
@@ -715,7 +719,7 @@ found.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>exist_ok</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, raise an exception if the directory already exists.
+<dt><strong>exist_ok</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, raise an exception if the directory already exists.
 Otherwise, do nothing (default).</p>
 </dd>
 </dl>
@@ -731,61 +735,61 @@ Otherwise, do nothing (default).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.processing">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">processing</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.processing" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">processing</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.processing" title="Permalink to this definition">¶</a></dt>
 <dd><p>The processing label.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.recording">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">recording</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.recording" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">recording</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.recording" title="Permalink to this definition">¶</a></dt>
 <dd><p>The recording name.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.root">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">root</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.root" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">root</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.root" title="Permalink to this definition">¶</a></dt>
 <dd><p>The root directory of the BIDS dataset.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.run">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">run</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.run" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">run</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>The run number.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.session">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">session</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.session" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">session</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.session" title="Permalink to this definition">¶</a></dt>
 <dd><p>The acquisition session.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.space">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.space" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">space</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.space" title="Permalink to this definition">¶</a></dt>
 <dd><p>The coordinate space for an anatomical or sensor position file.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.split">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">split</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.split" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">split</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.split" title="Permalink to this definition">¶</a></dt>
 <dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.subject">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.subject" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.subject" title="Permalink to this definition">¶</a></dt>
 <dd><p>The subject ID.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.suffix">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.suffix" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">suffix</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.suffix" title="Permalink to this definition">¶</a></dt>
 <dd><p>The filename suffix.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.task">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">task</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.task" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">task</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#mne_bids.BIDSPath.task" title="Permalink to this definition">¶</a></dt>
 <dd><p>The experimental task.</p>
 </dd></dl>
 
@@ -814,12 +818,12 @@ in the BIDS specification.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If a boolean, controls whether to enforce BIDS conformity. This
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If a boolean, controls whether to enforce BIDS conformity. This
 will set the <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute accordingly. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, rely on
 the existing <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute instead, which is set upon
 <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instantiation. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
-<dt><strong>**kwargs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>It can contain updates for valid BIDS path entities:
+<dt><strong>**kwargs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>It can contain updates for valid BIDS path entities:
 ‘subject’, ‘session’, ‘task’, ‘acquisition’, ‘processing’, ‘run’,
 ‘recording’, ‘space’, ‘suffix’, ‘split’, ‘extension’,
 or updates for ‘root’ or ‘datatype’.</p>
@@ -852,69 +856,104 @@ or updates for ‘root’ or ‘datatype’.</p>
 
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-bidspath">
+<section id="examples-using-mne-bids-bidspath">
 <span id="sphx-glr-backreferences-mne-bids-bidspath"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code><a class="headerlink" href="#examples-using-mne-bids-bidspath" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the `O..."><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the `O..."><figure class="align-default" id="id1">
 <img alt="01. Read BIDS datasets" src="../_images/sphx_glr_read_bids_datasets_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">01. Read BIDS datasets</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id2">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">01. Read BIDS datasets</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><figure class="align-default" id="id2">
 <img alt="02. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><div class="figure align-default" id="id3">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><figure class="align-default" id="id3">
 <img alt="03. Interactive data inspection and bad channel selection" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id4">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><figure class="align-default" id="id4">
 <img alt="04. Convert EEG data to BIDS format" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><div class="figure align-default" id="id5">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><figure class="align-default" id="id5">
 <img alt="05. BIDS conversion for group studies" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id6">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><figure class="align-default" id="id6">
 <img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id7">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><figure class="align-default" id="id7">
 <img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><div class="figure align-default" id="id8">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><figure class="align-default" id="id8">
 <img alt="09. Storing empty room data in BIDS format" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here ho..."><div class="figure align-default" id="id9">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here ho..."><figure class="align-default" id="id9">
 <img alt="10. An introduction to BIDSPath" src="../_images/sphx_glr_bidspath_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">10. An introduction to BIDSPath</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier..."><div class="figure align-default" id="id10">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">10. An introduction to BIDSPath</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier..."><figure class="align-default" id="id10">
 <img alt="11. Creating BIDS-compatible folder names and filenames" src="../_images/sphx_glr_create_bids_folder_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">11. Creating BIDS-compatible folder names and filenames</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the ..."><div class="figure align-default" id="id11">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">11. Creating BIDS-compatible folder names and filenames</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the ..."><figure class="align-default" id="id11">
 <img alt="12. Update BIDS datasets" src="../_images/sphx_glr_update_bids_datasets_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">12. Update BIDS datasets</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="MNE-BIDS is designed such that it enforces good practices when working with BIDS data. One of t..."><div class="figure align-default" id="id12">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">12. Update BIDS datasets</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="MNE-BIDS is designed such that it enforces good practices when working with BIDS data. One of t..."><figure class="align-default" id="id12">
 <img alt="13. Writing modified files with MNE-BIDS" src="../_images/sphx_glr_write_modified_files_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/write_modified_files.html#sphx-glr-auto-examples-write-modified-files-py"><span class="std std-ref">13. Writing modified files with MNE-BIDS</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-clear"></div></div>
-</div>
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/write_modified_files.html#sphx-glr-auto-examples-write-modified-files-py"><span class="std std-ref">13. Writing modified files with MNE-BIDS</span></a></span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-clear"></div></section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="mne_bids.write_meg_crosstalk.html" title="previous page">mne_bids.write_meg_crosstalk</a>
-    <a class='right-next' id="next-link" href="mne_bids.make_dataset_description.html" title="next page">mne_bids.make_dataset_description</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="mne_bids.write_meg_crosstalk.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mne_bids.write_meg_crosstalk</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_bids.make_dataset_description.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_bids.make_dataset_description</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -922,20 +961,19 @@ or updates for ‘root’ or ‘datatype’.</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

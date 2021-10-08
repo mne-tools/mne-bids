@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>mne_bids.write_anat &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -373,7 +377,7 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-write-anat">
+  <section id="mne-bids-write-anat">
 <h1>mne_bids.write_anat<a class="headerlink" href="#mne-bids-write-anat" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.write_anat">
@@ -393,7 +397,7 @@ may be useful for getting the <code class="docutils literal notranslate"><span c
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.1+100.g9fdf5e3e)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a></span></dt><dd><p>Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
+<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.1+100.g9fdf5e3e)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a></span></dt><dd><p>Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
 readable by nibabel. Can also be a nibabel image object of an
 MRI scan. Will be written as a .nii.gz file.</p>
 </dd>
@@ -402,13 +406,13 @@ MRI scan. Will be written as a .nii.gz file.</p>
 The suffix is assumed to be <code class="docutils literal notranslate"><span class="pre">'T1w'</span></code> if not present. It can
 also be <code class="docutils literal notranslate"><span class="pre">'FLASH'</span></code>, for example, to indicate FLASH MRI.</p>
 </dd>
-<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
+<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
 passed to provide information for defacing. Landmarks can be determined
 from the head model using <em class="xref py py-obj">mne coreg</em> GUI, or they can be determined
 from the MRI using freeview.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> and no <code class="docutils literal notranslate"><span class="pre">trans</span></code> parameter
 is passed, no sidecar JSON file will be created.</p>
 </dd>
-<dt><strong>deface</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>If False, no defacing is performed.
+<dt><strong>deface</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>If False, no defacing is performed.
 If True, deface with default parameters.
 <em class="xref py py-obj">trans</em> and <em class="xref py py-obj">raw</em> must not be <em class="xref py py-obj">None</em> if True.
 If dict, accepts the following keys:</p>
@@ -419,24 +423,24 @@ relative to the nasion (default 5)</p></li>
 to vertical (default 15).</p></li>
 </ul>
 </dd>
-<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The raw data of <code class="docutils literal notranslate"><span class="pre">subject</span></code> corresponding to the MR scan in <code class="docutils literal notranslate"><span class="pre">image</span></code>.
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The raw data of <code class="docutils literal notranslate"><span class="pre">subject</span></code> corresponding to the MR scan in <code class="docutils literal notranslate"><span class="pre">image</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">trans</span></code> has to be <code class="docutils literal notranslate"><span class="pre">None</span></code> as well.</p>
 <p>Deprecated in v0.8, use <a class="reference internal" href="mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks()</span></code></a> instead.</p>
 </dd>
-<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
+<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
 also be a string pointing to a <code class="docutils literal notranslate"><span class="pre">.trans</span></code> file containing the
 transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and no <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> parameter is
 passed, no sidecar JSON file will be created.</p>
 <p>Deprecated in v0.8, use <a class="reference internal" href="mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks()</span></code></a> instead.</p>
 </dd>
-<dt><strong>t1w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.1+100.g9fdf5e3e)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>This parameter is useful if image written is not already a T1 image.
+<dt><strong>t1w</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.1+100.g9fdf5e3e)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>This parameter is useful if image written is not already a T1 image.
 If the image written is to have a sidecar or be defaced,
 this can be done using <em class="xref py py-obj">raw</em>, <em class="xref py py-obj">trans</em> and <em class="xref py py-obj">t1w</em>. The T1 must be
 passed here because the coregistration uses freesurfer surfaces which
 are in T1 space.</p>
 <p>Deprecated in v0.8, use <a class="reference internal" href="mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks()</span></code></a> instead.</p>
 </dd>
-<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
+<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to False.
 If overwrite is True, any existing files with the same BIDS parameters
 will be overwritten with the exception of the <em class="xref py py-obj">participants.tsv</em> and
@@ -445,8 +449,8 @@ match the current data will be replaced.
 If overwrite is False, no existing data will be overwritten or
 replaced.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">Logging documentation</span></a> for more).
 If used, it should be passed as a keyword-argument only.</p>
 </dd>
 </dl>
@@ -460,29 +464,44 @@ If used, it should be passed as a keyword-argument only.</p>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-write-anat">
+<section id="examples-using-mne-bids-write-anat">
 <span id="sphx-glr-backreferences-mne-bids-write-anat"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_anat</span></code><a class="headerlink" href="#examples-using-mne-bids-write-anat" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><figure class="align-default" id="id1">
 <img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id2">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><figure class="align-default" id="id2">
 <img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-clear"></div></div>
-</div>
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-clear"></div></section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="mne_bids.make_report.html" title="previous page">mne_bids.make_report</a>
-    <a class='right-next' id="next-link" href="mne_bids.mark_bad_channels.html" title="next page">mne_bids.mark_bad_channels</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="mne_bids.make_report.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mne_bids.make_report</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_bids.mark_bad_channels.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_bids.mark_bad_channels</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -490,20 +509,19 @@ If used, it should be passed as a keyword-argument only.</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

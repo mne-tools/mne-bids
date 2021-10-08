@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>What’s new? &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="_static/css/theme.css" rel="stylesheet" />
-  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="_static/css/theme.css" rel="stylesheet">
+  <link href="_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
     
-  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -266,29 +270,30 @@
               
               <div>
                 
-  <div class="section" id="what-s-new">
+  <section id="what-s-new">
 <span id="whats-new"></span><h1>What’s new?<a class="headerlink" href="#what-s-new" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-9-unreleased">
+<section id="version-0-9-unreleased">
 <span id="changes-0-9"></span><h2>Version 0.9 (unreleased)<a class="headerlink" href="#version-0-9-unreleased" title="Permalink to this headline">¶</a></h2>
 <p>…</p>
-<div class="section" id="notable-changes">
+<section id="notable-changes">
 <h3>Notable changes<a class="headerlink" href="#notable-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>…</p></li>
 </ul>
-</div>
-<div class="section" id="authors">
+</section>
+<section id="authors">
 <h3>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a></p></li>
 <li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
 <li><p><a class="reference external" href="https://jasmainak.github.io/">Mainak Jas</a></p></li>
 <li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
+<li><p><a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
 </ul>
-</div>
-<div class="section" id="detailed-list-of-changes">
+</section>
+<section id="detailed-list-of-changes">
 <h3>Detailed list of changes<a class="headerlink" href="#detailed-list-of-changes" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="enhancements">
+<section id="enhancements">
 <h4>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p><a class="reference internal" href="generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks()</span></code></a> now accepts a <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> as <code class="docutils literal notranslate"><span class="pre">image</span></code> parameter, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/852">#852</a>)</p></li>
@@ -296,43 +301,55 @@
 <li><p>Modify iEEG tutorial to use MNE <code class="docutils literal notranslate"><span class="pre">raw</span></code> object, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/859">#859</a>)</p></li>
 <li><p>Add <a class="reference internal" href="generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.search_folder_for_text()</span></code></a> to find specific metadata entries (e.g. all <code class="docutils literal notranslate"><span class="pre">&quot;n/a&quot;</span></code> sidecar data fields, or to check that “60 Hz” was written properly as the power line frequency), by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (:gh: <em class="xref py py-obj">870</em>)</p></li>
 </ul>
-</div>
-<div class="section" id="api-and-behavior-changes">
+</section>
+<section id="api-and-behavior-changes">
 <h4>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>…</p></li>
 </ul>
-</div>
-<div class="section" id="requirements">
+</section>
+<section id="requirements">
 <h4>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>Writing BrainVision files now requires <code class="docutils literal notranslate"><span class="pre">pybv</span></code> version 0.6, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/880">#880</a>)</p></li>
 </ul>
-</div>
-<div class="section" id="bug-fixes">
+</section>
+<section id="bug-fixes">
 <h4>Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Fix writing Ricoh/KIT data that comes without an associated <code class="docutils literal notranslate"><span class="pre">.mrk</span></code>, <code class="docutils literal notranslate"><span class="pre">.elp</span></code>, or <code class="docutils literal notranslate"><span class="pre">.hsp</span></code> file using <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/850">#850</a>)</p></li>
 <li><p>Properly support CTF MEG data with 2nd-order gradient compensation, by <a class="reference external" href="https://jasmainak.github.io/">Mainak Jas</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/858">#858</a>)</p></li>
 <li><p>Fix writing and reading EDF files with upper-case extension (<code class="docutils literal notranslate"><span class="pre">.EDF</span></code>), by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/868">#868</a>)</p></li>
 <li><p>Fix reading of EDF files with lower/upper case extension, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/875">#875</a>)</p></li>
+<li><p>Fix reading of TSV files with only a single column, by <a class="reference external" href="https://github.com/wmvanvliet">Marijn van Vliet</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/886">#886</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="index.html" title="previous page">MNE-BIDS</a>
-    <a class='right-next' id="next-link" href="install.html" title="next page">Installation</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">MNE-BIDS</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="install.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Installation</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -340,20 +357,19 @@
       </div>
     </div>
   
-  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

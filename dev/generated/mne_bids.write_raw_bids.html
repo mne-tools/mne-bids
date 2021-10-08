@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -373,7 +377,7 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-write-raw-bids">
+  <section id="mne-bids-write-raw-bids">
 <h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.write_raw_bids">
@@ -431,7 +435,7 @@ Example:</p>
 <p>Note that the extension is automatically inferred from the raw
 object.</p>
 </dd>
-<dt><strong>events_data</strong><span class="classifier">path-like | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
+<dt><strong>events_data</strong><span class="classifier">path-like | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
 sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
 are always written).
 If a path, specifies the location of an MNE events file.
@@ -457,13 +461,13 @@ call <code class="docutils literal notranslate"><span class="pre">raw.set_annota
 parameter.</p>
 </div>
 </dd>
-<dt><strong>event_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Descriptions of all event IDs, if you passed <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.
+<dt><strong>event_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Descriptions of all event IDs, if you passed <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.
 The descriptions will be written to the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> column in
 <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. The dictionary keys correspond to the event
 descriptions and the values to the event IDs. You must specify a
 description for all event IDs in <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
+<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
 If a dictionary, data will be anonymized depending on the dictionary
 keys: <code class="docutils literal notranslate"><span class="pre">daysback</span></code> is a required key, <code class="docutils literal notranslate"><span class="pre">keep_his</span></code> is optional.</p>
 <dl class="simple">
@@ -488,7 +492,7 @@ when the original file format lacks some necessary features. Conversion
 can be forced to BrainVision or EDF for (i)EEG, and to FIF for MEG
 data.</p>
 </dd>
-<dt><strong>symlink</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Instead of copying the source files, only create symbolic links to
+<dt><strong>symlink</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Instead of copying the source files, only create symbolic links to
 preserve storage space. This is only allowed when not anonymizing the
 data (i.e., <code class="docutils literal notranslate"><span class="pre">anonymize</span></code> must be <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 <div class="admonition note">
@@ -504,13 +508,13 @@ data again.</p>
 add support for Windows 10 at a later time.</p>
 </div>
 </dd>
-<dt><strong>empty_room</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
+<dt><strong>empty_room</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
 only supported for MEG data, and only if the <code class="docutils literal notranslate"><span class="pre">root</span></code> attributes of
 <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> and <code class="docutils literal notranslate"><span class="pre">empty_room</span></code> are the same. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code>
 (default) if you do not wish to specify an associated empty-room
 recording.</p>
 </dd>
-<dt><strong>allow_preload</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allow writing of preloaded raw objects (i.e.,
+<dt><strong>allow_preload</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allow writing of preloaded raw objects (i.e.,
 <code class="docutils literal notranslate"><span class="pre">raw.preload</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>). Because the original file is ignored, you
 must specify what <code class="docutils literal notranslate"><span class="pre">format</span></code> to write (not <code class="docutils literal notranslate"><span class="pre">auto</span></code>).</p>
 <div class="admonition warning">
@@ -523,17 +527,17 @@ formats not supported by MNE or writing preprocessed derivatives.
 Be aware that these use cases are not fully supported.</p>
 </div>
 </dd>
-<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
+<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
 to be stored in a format other than “head” (the internal MNE
 coordinate frame that the data in <code class="docutils literal notranslate"><span class="pre">raw</span></code> is stored in).</p>
 </dd>
-<dt><strong>acpc_aligned</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>It is difficult to check whether the T1 scan is ACPC aligned which
+<dt><strong>acpc_aligned</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>It is difficult to check whether the T1 scan is ACPC aligned which
 means that “mri” coordinate space is “ACPC” BIDS coordinate space.
 So, this flag is required to be True when the digitization data
 is in “mri” for intracranial data to confirm that the T1 is
 ACPC-aligned.</p>
 </dd>
-<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
+<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any existing files with the same BIDS parameters
 will be overwritten with the exception of the <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>
@@ -545,8 +549,8 @@ and <code class="docutils literal notranslate"><span class="pre">participants.ts
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no existing data will be overwritten or
 replaced.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">Logging documentation</span></a> for more).
 If used, it should be passed as a keyword-argument only.</p>
 </dd>
 </dl>
@@ -594,53 +598,80 @@ If you need to add more data there, or overwrite it, then you should
 call <a class="reference internal" href="mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_dataset_description()</span></code></a> directly.</p>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-write-raw-bids">
+<section id="examples-using-mne-bids-write-raw-bids">
 <span id="sphx-glr-backreferences-mne-bids-write-raw-bids"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids</span></code><a class="headerlink" href="#examples-using-mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id1">
+<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><figure class="align-default" id="id1">
 <img alt="02. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><div class="figure align-default" id="id2">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><figure class="align-default" id="id2">
 <img alt="03. Interactive data inspection and bad channel selection" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id3">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><figure class="align-default" id="id3">
 <img alt="04. Convert EEG data to BIDS format" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><div class="figure align-default" id="id4">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><figure class="align-default" id="id4">
 <img alt="05. BIDS conversion for group studies" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id5">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><figure class="align-default" id="id5">
 <img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id6">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><figure class="align-default" id="id6">
 <img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><div class="figure align-default" id="id7">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><figure class="align-default" id="id7">
 <img alt="09. Storing empty room data in BIDS format" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="MNE-BIDS is designed such that it enforces good practices when working with BIDS data. One of t..."><div class="figure align-default" id="id8">
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="MNE-BIDS is designed such that it enforces good practices when working with BIDS data. One of t..."><figure class="align-default" id="id8">
 <img alt="13. Writing modified files with MNE-BIDS" src="../_images/sphx_glr_write_modified_files_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/write_modified_files.html#sphx-glr-auto-examples-write-modified-files-py"><span class="std std-ref">13. Writing modified files with MNE-BIDS</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-clear"></div></div>
-</div>
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/write_modified_files.html#sphx-glr-auto-examples-write-modified-files-py"><span class="std std-ref">13. Writing modified files with MNE-BIDS</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-clear"></div></section>
+</section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="../api.html" title="previous page">API Documentation</a>
-    <a class='right-next' id="next-link" href="mne_bids.read_raw_bids.html" title="next page">mne_bids.read_raw_bids</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="../api.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">API Documentation</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_bids.read_raw_bids.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_bids.read_raw_bids</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -648,20 +679,19 @@ call <a class="reference internal" href="mne_bids.make_dataset_description.html#
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     

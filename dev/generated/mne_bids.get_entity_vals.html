@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>mne_bids.get_entity_vals &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
 
     
   <link rel="stylesheet"
@@ -29,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/basic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -37,7 +38,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -54,7 +55,10 @@
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
     
 
   </head>
@@ -358,7 +362,7 @@
               
               <div>
                 
-  <div class="section" id="mne-bids-get-entity-vals">
+  <section id="mne-bids-get-entity-vals">
 <h1>mne_bids.get_entity_vals<a class="headerlink" href="#mne-bids-get-entity-vals" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.get_entity_vals">
@@ -370,7 +374,7 @@ key.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Path to the “root” directory from which to start traversing to gather
+<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Path to the “root” directory from which to start traversing to gather
 BIDS entities from file- and folder names. This will commonly be the
 BIDS root, but it may also be a subdirectory inside of a BIDS dataset,
 e.g., the <code class="docutils literal notranslate"><span class="pre">sub-X</span></code> directory of a hypothetical subject <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
@@ -386,44 +390,44 @@ subdirectory in the dataset, e.g., to a single subject or
 session only.</p>
 </div>
 </dd>
-<dt><strong>entity_key</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The name of the entity key to search for.</p>
+<dt><strong>entity_key</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The name of the entity key to search for.</p>
 </dd>
-<dt><strong>ignore_subjects</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Subject(s) to ignore. By default, entities from the <code class="docutils literal notranslate"><span class="pre">emptyroom</span></code>
+<dt><strong>ignore_subjects</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Subject(s) to ignore. By default, entities from the <code class="docutils literal notranslate"><span class="pre">emptyroom</span></code>
 mock-subject are not returned. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all subjects.</p>
 </dd>
-<dt><strong>ignore_sessions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Session(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all sessions.</p>
+<dt><strong>ignore_sessions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Session(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all sessions.</p>
 </dd>
-<dt><strong>ignore_tasks</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Task(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all tasks.</p>
+<dt><strong>ignore_tasks</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Task(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all tasks.</p>
 </dd>
-<dt><strong>ignore_runs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Run(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all runs.</p>
+<dt><strong>ignore_runs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Run(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all runs.</p>
 </dd>
-<dt><strong>ignore_processings</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Processing(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all processings.</p>
+<dt><strong>ignore_processings</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Processing(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all processings.</p>
 </dd>
-<dt><strong>ignore_spaces</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Space(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all spaces.</p>
+<dt><strong>ignore_spaces</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Space(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all spaces.</p>
 </dd>
-<dt><strong>ignore_acquisitions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Acquisition(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all acquisitions.</p>
+<dt><strong>ignore_acquisitions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Acquisition(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all acquisitions.</p>
 </dd>
-<dt><strong>ignore_splits</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Split(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all splits.</p>
+<dt><strong>ignore_splits</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Split(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all splits.</p>
 </dd>
-<dt><strong>ignore_modalities</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Modalities(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all modalities.</p>
+<dt><strong>ignore_modalities</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Modalities(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all modalities.</p>
 </dd>
-<dt><strong>ignore_datatypes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.9)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Datatype(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all datatypes (i.e.
+<dt><strong>ignore_datatypes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/glossary.html#term-iterable" title="(in Python v3.10)"><span>iterable</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Datatype(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all datatypes (i.e.
 <code class="docutils literal notranslate"><span class="pre">anat</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">func</span></code>, etc.)</p>
 </dd>
-<dt><strong>with_key</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the full entity with the key and the value. This
+<dt><strong>with_key</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the full entity with the key and the value. This
 will for example look like <code class="docutils literal notranslate"><span class="pre">['sub-001',</span> <span class="pre">'sub-002']</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), just returns the entity values. This
 will for example look like <code class="docutils literal notranslate"><span class="pre">['001',</span> <span class="pre">'002']</span></code>.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.9)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.9)"><span class="xref std std-ref">Logging documentation</span></a> for more).
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">Logging documentation</span></a> for more).
 If used, it should be passed as a keyword-argument only.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>entity_vals</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>List of the values associated with an <em class="xref py py-obj">entity_key</em> in the BIDS dataset
+<dt><strong>entity_vals</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>List of the values associated with an <em class="xref py py-obj">entity_key</em> in the BIDS dataset
 pointed to by <em class="xref py py-obj">root</em>.</p>
 </dd>
 </dl>
@@ -449,18 +453,29 @@ pointed to by <em class="xref py py-obj">root</em>.</p>
 </div>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backreferences-mne-bids-get-entity-vals"></span></div>
+<span class="target" id="sphx-glr-backreferences-mne-bids-get-entity-vals"></span></section>
 
 
               </div>
               
               
-              <div class='prev-next-bottom'>
-                
-    <a class='left-prev' id="prev-link" href="mne_bids.get_entities_from_fname.html" title="previous page">mne_bids.get_entities_from_fname</a>
-    <a class='right-next' id="next-link" href="mne_bids.get_datatypes.html" title="next page">mne_bids.get_datatypes</a>
-
-              </div>
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="mne_bids.get_entities_from_fname.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mne_bids.get_entities_from_fname</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_bids.get_datatypes.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_bids.get_datatypes</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
               
           </main>
           
@@ -468,20 +483,19 @@ pointed to by <em class="xref py py-obj">root</em>.</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  <footer class="footer mt-5 mt-md-0">
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-09-28.<br/>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br/>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
 </p>
     </div>
     
