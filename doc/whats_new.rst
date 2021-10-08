@@ -64,6 +64,8 @@ Bug fixes
 
 - Fix reading of EDF files with lower/upper case extension, by `Adam Li`_ (:gh:`875`)
 
+- Fix reading of TSV files with only a single column, by `Marijn van Vliet`_ (:gh:`886`)
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst

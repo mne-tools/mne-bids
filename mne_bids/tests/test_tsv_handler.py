@@ -65,6 +65,11 @@ def test_tsv_handler(tmpdir):
     assert d['b'] == ['three', 'four', 'n/a']
     assert _contains_row(d, {'a': 5})
 
+    # test reading a single column
+    _to_tsv(odict(a=[1, 2, 3, 4]), d_path)
+    d = _from_tsv(d_path)
+    assert d['a'] == [1, 2, 3, 4]
+
 
 def test_contains_row_different_types():
     """Test that _contains_row() can handle different dtypes without warning.
@@ -92,3 +97,4 @@ def test_drop_different_types():
     result = _drop(data, values=values_to_drop, column=column)
     for value in values_to_drop:
         assert value not in result
+
