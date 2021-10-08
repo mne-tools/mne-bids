@@ -97,4 +97,3 @@ def test_drop_different_types():
     result = _drop(data, values=values_to_drop, column=column)
     for value in values_to_drop:
         assert value not in result
-
