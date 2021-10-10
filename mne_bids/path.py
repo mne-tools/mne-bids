@@ -904,9 +904,6 @@ class BIDSPath(object):
             logger.info('Using "AssociatedEmptyRoom" entry from MEG sidecar '
                         'file to retrieve empty-room path.')
             emptytoom_path = sidecar_json['AssociatedEmptyRoom']
-            # emptyroom_entities = get_entities_from_fname(emptytoom_path)
-            # er_bids_path = BIDSPath(root=self.root, datatype='meg',
-            # **emptyroom_entities)
             er_bids_path = get_bids_path_from_fname(emptytoom_path)
             er_bids_path.root = self.root
             er_bids_path.datatype = 'meg'
@@ -1248,8 +1245,9 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     fname : str
         The path to parse a `BIDSPath` from.
     check : bool
-        Whether to apply a check for BIDS compliance in the BIDSPath to
-        make, by default True.
+        Whether to check if the generated `BIDSPath` complies with the BIDS
+        specification, i.e., whether all included entities and the suffix are
+        valid.
     %(verbose)s
 
     Returns
@@ -1257,11 +1255,9 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     bids_path : BIDSPath
         The BIDS path object.
     """
-    # convert to pathlib
     fpath = Path(fname)
     fname = fpath.name
 
-    # parse BIDS entities from the filename
     entities = get_entities_from_fname(fname)
 
     # parse suffix and extension
@@ -1275,7 +1271,6 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
         if extension == '':
             extension = None
 
-    # infer datatype
     datatype = _infer_datatype_from_path(fpath)
 
     # find root and datatype if it exists
@@ -1296,7 +1291,6 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
             for _ in range(root_level):
                 root = root.parent
 
-    # form the BIDS Path
     bids_path = BIDSPath(root=root, datatype=datatype, suffix=suffix,
                          extension=extension, **entities, check=check)
     if verbose:
