@@ -1912,10 +1912,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         attribute **may** be set. If ``.datatype`` is not set and only one data
         type (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
-    status : str | list of str
-        The status of the channels ('good', or 'bad'). Default is 'bad'. If it
-        is a list, then must be a list of 'good', or 'bad' that has the same
-        length as ``ch_names``.
     overwrite : bool
         If ``False``, only update the information of the channels passed via
         ``ch_names``, and leave the rest untouched. If ``True``, update the
