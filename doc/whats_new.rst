@@ -45,7 +45,7 @@ Enhancements
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ``mne_bids.mark_channels`` deprecated in favor of :func:`mne_bids.mark_channels`, which allows specifying the status to change channels to by `Adam Li`_ (:gh:`882`)
+- ``mne_bids.mark_bad_channels `` deprecated in favor of :func:`mne_bids.mark_channels`, which allows specifying the status to change channels to by `Adam Li`_ (:gh:`882`)
 
 Requirements
 ^^^^^^^^^^^^
