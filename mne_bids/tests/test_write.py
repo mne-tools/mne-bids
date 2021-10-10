@@ -1968,36 +1968,29 @@ def _ensure_list(x):
 
 @pytest.mark.parametrize(
     'ch_names, descriptions, drop_status_col, drop_description_col, '
-    'existing_ch_names, existing_descriptions, datatype, overwrite',
+    'existing_ch_names, existing_descriptions',
     [
         # Only mark channels, do not set descriptions.
-        (['MEG 0112', 'MEG 0131', 'EEG 053'], None, False, False, [], [], None,
-         False),
-        ('MEG 0112', None, False, False, [], [], None, False),
-        ('nonsense', None, False, False, [], [], None, False),
+        (['MEG 0112', 'MEG 0131', 'EEG 053'], None, False, False, [], []),
+        ('MEG 0112', None, False, False, [], []),
+        ('nonsense', None, False, False, [], []),
         # Now also set descriptions.
         (['MEG 0112', 'MEG 0131'], ['Really bad!', 'Even worse.'], False,
-         False, [], [], None, False),
-        ('MEG 0112', 'Really bad!', False, False, [], [], None, False),
-        (['MEG 0112', 'MEG 0131'], ['Really bad!'], False, False, [], [], None,
-         False),  # Should raise.
+         False, [], []),
+        ('MEG 0112', 'Really bad!', False, False, [], []),
+        # Should raise.
+        (['MEG 0112', 'MEG 0131'], ['Really bad!'], False, False, [], []),
         # `datatype='meg`
-        (['MEG 0112'], ['Really bad!'], False, False, [], [], 'meg', False),
+        (['MEG 0112'], ['Really bad!'], False, False, [], []),
         # Enure we create missing columns.
-        ('MEG 0112', 'Really bad!', True, True, [], [], None, False),
-        # Ensure existing entries are left untouched if `overwrite=False`
-        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
-         ['Really bad!', 'Even worse.'], None, False),
-        # Ensure existing entries are discarded if `overwrite=True`.
-        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
-         ['Really bad!', 'Even worse.'], None, True)
+        ('MEG 0112', 'Really bad!', True, True, [], []),
     ])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_mark_channels(_bids_validate,
                        ch_names, descriptions,
                        drop_status_col, drop_description_col,
                        existing_ch_names, existing_descriptions,
-                       datatype, overwrite, tmpdir):
+                       tmpdir):
     """Test marking channels of an existing BIDS dataset as "bad"."""
     # Setup: Create a fresh BIDS dataset.
     bids_root = tmpdir.mkdir('bids1')
@@ -2041,8 +2034,8 @@ def test_mark_channels(_bids_validate,
             len(_ensure_list(ch_names)) != len(_ensure_list(descriptions))):
         with pytest.raises(ValueError, match='must match'):
             mark_channels(ch_names=ch_names, descriptions=descriptions,
-                          bids_path=bids_path, statuses='bad',
-                          overwrite=overwrite)
+                          bids_path=bids_path, status='bad',
+                          verbose=False)
         return
 
     # Test that we raise if we encounter an unknown channel name.
@@ -2050,43 +2043,31 @@ def test_mark_channels(_bids_validate,
             for ch_name in _ensure_list(ch_names)]):
         with pytest.raises(ValueError, match='not found in dataset'):
             mark_channels(ch_names=ch_names, descriptions=descriptions,
-                          bids_path=bids_path, statuses='bad',
-                          overwrite=overwrite)
+                          bids_path=bids_path, status='bad', verbose=False)
         return
 
-    if not overwrite:
-        # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
-        # begin our actual tests, which should then add additional channels
-        # to the list of bads, retaining the ones we're specifying here.
-        mark_channels(ch_names=existing_ch_names,
-                      descriptions=existing_descriptions,
-                      bids_path=bids_path, statuses='bad', overwrite=True)
-        _bids_validate(bids_root)
-        raw = read_raw_bids(bids_path=bids_path, verbose=False)
-        # Order is not preserved
-        assert set(existing_ch_names) == set(raw.info['bads'])
-        del raw
+    # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
+    # begin our actual tests, which should then add additional channels
+    # to the list of bads, retaining the ones we're specifying here.
+    mark_channels(ch_names=[],
+                  bids_path=bids_path, status='good',
+                  verbose=False)
+    _bids_validate(bids_root)
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    # Order is not preserved
+    assert set(existing_ch_names) == set(raw.info['bads'])
+    del raw
 
     mark_channels(ch_names=ch_names, descriptions=descriptions,
-                  bids_path=bids_path, statuses='bad', overwrite=overwrite)
+                  bids_path=bids_path, status='bad', verbose=False)
     _bids_validate(bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
-    if drop_status_col or overwrite:
-        # Existing column values should have been discarded, so only the new
-        # ones should be present.
-        expected_bads = _ensure_list(ch_names)
-    else:
-        expected_bads = (_ensure_list(ch_names) +
-                         _ensure_list(existing_ch_names))
-
-    if drop_description_col or overwrite:
-        # Existing column values should have been discarded, so only the new
-        # ones should be present.
-        expected_descriptions = _ensure_list(descriptions)
-    else:
-        expected_descriptions = (_ensure_list(descriptions) +
-                                 _ensure_list(existing_descriptions))
+    # expected bad channels and descriptions just get appended
+    expected_bads = (_ensure_list(ch_names) +
+                     _ensure_list(existing_ch_names))
+    expected_descriptions = (_ensure_list(descriptions) +
+                             _ensure_list(existing_descriptions))
 
     # Order is not preserved
     assert len(expected_bads) == len(raw.info['bads'])
@@ -2099,6 +2080,52 @@ def test_mark_channels(_bids_validate,
     assert 'status_description' in tsv_data
     for description in expected_descriptions:
         assert description in tsv_data['status_description']
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_mark_channel_roundtrip(tmpdir):
+    """Test marking channels fulfills roundtrip."""
+    # Setup: Create a fresh BIDS dataset.
+    bids_root = tmpdir.mkdir('bids1')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
+                                         suffix='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, events_data=events,
+                   event_id=event_id, verbose=False)
+    channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
+                                            extension='.tsv')
+
+    ch_names = raw.ch_names
+    # first mark all channels as good
+    mark_channels(bids_path, ch_names=[], status='good', verbose=False)
+    tsv_data = _from_tsv(channels_fname)
+    assert all(status == 'good' for status in tsv_data['status'])
+
+    # now mark some bad channels
+    mark_channels(bids_path, ch_names=ch_names[:5], status='bad',
+                  verbose=False)
+    tsv_data = _from_tsv(channels_fname)
+    status = tsv_data['status']
+    assert all(status_ == 'bad' for status_ in status[:5])
+    assert all(status_ == 'good' for status_ in status[5:])
+
+    # now mark them good again
+    mark_channels(bids_path, ch_names=ch_names[:5], status='good',
+                  verbose=False)
+    tsv_data = _from_tsv(channels_fname)
+    assert all(status == 'good' for status in tsv_data['status'])
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -2128,7 +2155,7 @@ def test_error_mark_channels(tmpdir):
 
     with pytest.raises(ValueError, match='Setting the status'):
         mark_channels(ch_names=ch_names, bids_path=bids_path,
-                      statuses='test')
+                      status='test')
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -2154,8 +2181,7 @@ def test_mark_channels_files(tmpdir):
 
     # mark bad channels that get stored as uV in write_brain_vision
     bads = ['CP5', 'CP6']
-    mark_channels(bids_path=bids_path, ch_names=bads, statuses='bad',
-                  overwrite=False)
+    mark_channels(bids_path=bids_path, ch_names=bads, status='bad')
     raw.info['bads'].extend(bads)
 
     # the raw data should match if you drop the bads
@@ -2174,7 +2200,7 @@ def test_mark_channels_files(tmpdir):
     raw = _read_raw_edf(raw_fname)
     write_raw_bids(raw, bids_path, overwrite=True)
     mark_channels(bids_path=bids_path, ch_names=raw.ch_names[0],
-                  statuses='bad')
+                  status='bad')
 
 
 def test_write_meg_calibration(_bids_validate, tmpdir):
