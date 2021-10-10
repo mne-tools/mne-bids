@@ -132,8 +132,7 @@ print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
 # entirely, pass the argument ``overwrite=True``:
 
 bads = ['MEG 0112', 'MEG 0131']
-mark_channels(bids_path=bids_path, ch_names=bads, status='bad',
-              overwrite=True, verbose=False)
+mark_channels(bids_path=bids_path, ch_names=bads, status='bad', verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
@@ -145,8 +144,7 @@ print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
 # pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
 bads = []
-mark_channels(bids_path=bids_path, ch_names=bads, status='bad',
-              overwrite=True, verbose=False)
+mark_channels(bids_path=bids_path, ch_names=bads, status='bad', verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'After passing `ch_names=[]` and `overwrite=True`, the following '
