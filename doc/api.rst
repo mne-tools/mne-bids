@@ -34,6 +34,7 @@ mne_bids
    get_anonymization_daysback
    search_folder_for_text
    print_dir_tree
+   get_bids_path_from_fname
    get_entities_from_fname
    get_entity_vals
    get_datatypes

@@ -28,7 +28,8 @@ from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
                       write_meg_calibration, write_meg_crosstalk)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
-                           _filter_fnames, search_folder_for_text)
+                           _filter_fnames, search_folder_for_text,
+                           get_bids_path_from_fname)
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 
 from test_read import _read_raw_fif, warning_str
@@ -248,6 +249,29 @@ def test_parse_ext():
 
 @pytest.mark.parametrize('fname', [
     'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
+    'sub-01_ses-02_task-test_run-3_split-01',
+    ('/bids_root/sub-01/ses-02/meg/' +
+     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
+    ('sub-01/ses-02/meg/' +
+     'sub-01_ses-02_task-test_run-3_split-01_meg.fif')
+])
+def test_get_bids_path_from_fname(fname):
+    bids_path = get_bids_path_from_fname(fname)
+    assert bids_path.basename == Path(fname).name
+
+    if '/bids_root/' in fname:
+        assert Path(bids_path.root) == Path('/bids_root')
+    else:
+        if 'meg' in fname:
+            # directory should match
+            assert Path(bids_path.directory) == Path('sub-01/ses-02/meg')
+
+        # root should be default '.'
+        assert str(bids_path.root) == '.'
+
+
+@pytest.mark.parametrize('fname', [
+    'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
     'sub-01_ses-02_task-test_run-3_split-01.fif',
     'sub-01_ses-02_task-test_run-3_split-01',
     ('/bids_root/sub-01/ses-02/meg/' +
@@ -256,17 +280,14 @@ def test_parse_ext():
 def test_get_entities_from_fname(fname):
     """Test parsing entities from a bids filename."""
     params = get_entities_from_fname(fname)
-    print(params)
     assert params['subject'] == '01'
     assert params['session'] == '02'
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
-    if 'meg' in fname:
-        assert params['suffix'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'suffix']
+                                   'space', 'recording', 'split']
 
 
 @pytest.mark.parametrize('fname', [
@@ -292,15 +313,13 @@ def test_get_entities_from_fname_errors(fname):
 
     expected_keys = ['subject', 'session', 'task',
                      'acquisition', 'run', 'processing',
-                     'space', 'recording', 'split', 'suffix']
+                     'space', 'recording', 'split']
 
     assert params['subject'] == '01'
     assert params['session'] == '02'
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
-    if 'meg' in fname:
-        assert params['suffix'] == 'meg'
     if 'desc' in fname:
         assert params['desc'] == 'tfr'
         expected_keys.append('desc')
@@ -799,7 +818,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          root=bids_root, suffix='meg')
-    write_raw_bids(raw, bids_path, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
@@ -823,7 +842,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     er_bids_path = BIDSPath(subject='emptyroom', task='noise',
                             session=er_date, suffix='meg',
                             root=bids_root)
-    write_raw_bids(er_raw, er_bids_path, overwrite=True)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True, verbose=False)
 
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
@@ -836,7 +855,7 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
         er_meas_date = datetime.strptime(date, '%Y%m%d')
         er_meas_date = er_meas_date.replace(tzinfo=timezone.utc)
         er_raw.set_meas_date(er_meas_date)
-        write_raw_bids(er_raw, er_bids_path)
+        write_raw_bids(er_raw, er_bids_path, verbose=False)
 
     best_er_basename = bids_path.find_empty_room()
     assert best_er_basename.session == '20021204'
@@ -1060,11 +1079,11 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
         root=return_bids_test_dir, suffix='dataset_description',
         extension='.json', check=False)
     assert bids_path.fpath.as_posix() == \
-           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+        Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
 
     # setting it via update should work
     bids_path = BIDSPath(root=return_bids_test_dir,
                          extension='.json', check=True)
     bids_path.update(suffix='dataset_description', check=False)
     assert bids_path.fpath.as_posix() == \
-           Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+        Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()

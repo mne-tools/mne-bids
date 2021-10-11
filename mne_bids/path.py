@@ -91,16 +91,17 @@ def _find_matched_empty_room(bids_path):
 
     failed_to_get_er_date_count = 0
     for er_fname in candidate_er_fnames:
-        params = get_entities_from_fname(er_fname)
+        # get entities from filenamme
+        er_bids_path = get_bids_path_from_fname(er_fname, check=False)
+        er_bids_path.subject = 'emptyroom'  # er subject entity is different
+        er_bids_path.root = bids_root
         er_meas_date = None
-        params.pop('subject')  # er subject entity is different
-        er_bids_path = BIDSPath(subject='emptyroom', **params, datatype='meg',
-                                root=bids_root, check=False)
 
         # Try to extract date from filename.
-        if params['session'] is not None:
+        if er_bids_path.session is not None:
             try:
-                er_meas_date = datetime.strptime(params['session'], '%Y%m%d')
+                er_meas_date = datetime.strptime(
+                    er_bids_path.session, '%Y%m%d')
             except (ValueError, TypeError):
                 # There is a session in the filename, but it doesn't encode a
                 # valid date.
@@ -788,24 +789,19 @@ class BIDSPath(object):
 
         bids_paths = []
         for fname in fnames:
-            # get all BIDS entities from the filename
-            entities = get_entities_from_fname(fname)
-
-            # extension is not an entity, so get it explicitly
-            _, extension = _parse_ext(fname)
-
             # get datatype
             fpath = list(self.root.rglob(f'*{fname}*'))[0]
             datatype = _infer_datatype_from_path(fpath)
+
+            # form the BIDSPath object
+            bids_path = get_bids_path_from_fname(fname, check=False)
+            bids_path.root = self.root
+            bids_path.datatype = datatype
 
             # to check whether the BIDSPath is conforming to BIDS if
             # check=True, we first instantiate without checking and then run
             # the check manually, allowing us to be more specific about the
             # exception to catch
-            bids_path = BIDSPath(root=self.root, datatype=datatype,
-                                 extension=extension, check=False,
-                                 **entities)
-
             bids_path.check = True
 
             try:
@@ -908,9 +904,9 @@ class BIDSPath(object):
             logger.info('Using "AssociatedEmptyRoom" entry from MEG sidecar '
                         'file to retrieve empty-room path.')
             emptytoom_path = sidecar_json['AssociatedEmptyRoom']
-            emptyroom_entities = get_entities_from_fname(emptytoom_path)
-            er_bids_path = BIDSPath(root=self.root, datatype='meg',
-                                    **emptyroom_entities)
+            er_bids_path = get_bids_path_from_fname(emptytoom_path)
+            er_bids_path.root = self.root
+            er_bids_path.datatype = 'meg'
         else:
             logger.info(
                 'The MEG sidecar file does not contain an '
@@ -1241,6 +1237,68 @@ def _infer_datatype_from_path(fname):
 
 
 @verbose
+def get_bids_path_from_fname(fname, check=True, verbose=None):
+    """Retrieve a BIDSPath object from a filename.
+
+    Parameters
+    ----------
+    fname : str
+        The path to parse a `BIDSPath` from.
+    check : bool
+        Whether to check if the generated `BIDSPath` complies with the BIDS
+        specification, i.e., whether all included entities and the suffix are
+        valid.
+    %(verbose)s
+
+    Returns
+    -------
+    bids_path : BIDSPath
+        The BIDS path object.
+    """
+    fpath = Path(fname)
+    fname = fpath.name
+
+    entities = get_entities_from_fname(fname)
+
+    # parse suffix and extension
+    last_entity = fname.split('-')[-1]
+    if '_' in last_entity:
+        suffix = last_entity.split('_')[-1]
+        suffix, extension = _get_bids_suffix_and_ext(suffix)
+    else:
+        suffix = None
+        extension = Path(fname).suffix
+        if extension == '':
+            extension = None
+
+    datatype = _infer_datatype_from_path(fpath)
+
+    # find root and datatype if it exists
+    if fpath.parent == '':
+        root = None
+    else:
+        root_level = 0
+        # determine root if it's there
+        if entities['subject'] is not None:
+            root_level += 1
+        if entities['session'] is not None:
+            root_level += 1
+        if suffix != 'scans':
+            root_level += 1
+
+        if root_level:
+            root = fpath.parent
+            for _ in range(root_level):
+                root = root.parent
+
+    bids_path = BIDSPath(root=root, datatype=datatype, suffix=suffix,
+                         extension=extension, **entities, check=check)
+    if verbose:
+        logger.info(f'From {fpath}, formed a BIDSPath: {bids_path}.')
+    return bids_path
+
+
+@verbose
 def get_entities_from_fname(fname, on_error='raise', verbose=None):
     """Retrieve a dictionary of BIDS entities from a filename.
 
@@ -1279,8 +1337,7 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 'processing': None, \
 'space': None, \
 'recording': None, \
-'split': None, \
-'suffix': 'meg'}
+'split': None}
     """
     if on_error not in ('warn', 'raise', 'ignore'):
         raise ValueError(f'Acceptable values for on_error are: warn, raise, '
@@ -1315,14 +1372,6 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 
         key_short_hand = ALLOWED_PATH_ENTITIES_SHORT.get(key, key)
         params[key_short_hand] = value
-
-    # parse suffix last
-    last_entity = fname.split('-')[-1]
-    if '_' in last_entity:
-        suffix = last_entity.split('_')[-1]
-        suffix, _ = _get_bids_suffix_and_ext(suffix)
-        params['suffix'] = suffix
-
     return params
 
 

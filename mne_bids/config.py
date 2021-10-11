@@ -144,7 +144,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
                                'space': 'space', 'rec': 'recording',
-                               'split': 'split', 'suffix': 'suffix'}
+                               'split': 'split'}
 
 # Annotations to never remove during reading or writing
 ANNOTATIONS_TO_KEEP = ('BAD_ACQ_SKIP',)
