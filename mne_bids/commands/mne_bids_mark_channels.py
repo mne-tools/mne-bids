@@ -2,9 +2,9 @@
 
 example usage:
 $ mne_bids mark_channels --ch_name="MEG 0112" --description="noisy" \
-                             --ch_name="MEG 0131" --description="flat" \
-                             --subject_id=01 --task=experiment --session=test \
-                             --bids_root=bids_root
+                         --ch_name="MEG 0131" --description="flat" \
+                         --subject_id=01 --task=experiment --session=test \
+                         --bids_root=bids_root
 
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
