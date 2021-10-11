@@ -47,6 +47,8 @@ Enhancements
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+- ``mne_bids.mark_bad_channels`` deprecated in favor of :func:`mne_bids.mark_channels`, which allows specifying the status to change channels to by `Adam Li`_ (:gh:`882`)
+
 - :func:`mne_bids.get_entities_from_fname` does not return ``suffix`` anymore as that is not considered a BIDS entity, by `Adam Li`_ (:gh:`883`)
 
 Requirements
@@ -65,6 +67,8 @@ Bug fixes
 - Fix writing and reading EDF files with upper-case extension (``.EDF``), by `Adam Li`_ (:gh:`868`)
 
 - Fix reading of EDF files with lower/upper case extension, by `Adam Li`_ (:gh:`875`)
+
+- Fix reading of TSV files with only a single column, by `Marijn van Vliet`_ (:gh:`886`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

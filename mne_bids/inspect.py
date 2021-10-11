@@ -12,7 +12,7 @@ import mne
 from mne.preprocessing import annotate_flat
 from mne.utils import logger, verbose
 
-from mne_bids import read_raw_bids, mark_bad_channels
+from mne_bids import read_raw_bids, mark_channels
 from mne_bids.read import _from_tsv, _read_events
 from mne_bids.write import _events_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
@@ -403,7 +403,7 @@ def _save_bads(*, bads, descriptions, bids_path):
     descriptions : list
         The values to be written to the `status_description` column.
     """
-    # We pass overwrite=True, causing all channels not passed as bad here to
-    # be marked as good.
-    mark_bad_channels(ch_names=bads, descriptions=descriptions,
-                      bids_path=bids_path, overwrite=True)
+    # We first make all channels not passed as bad here to be marked as good.
+    mark_channels(bids_path=bids_path, ch_names=[], status='good')
+    mark_channels(bids_path=bids_path, ch_names=bads, status='bad',
+                  descriptions=descriptions)

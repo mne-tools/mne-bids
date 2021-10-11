@@ -135,7 +135,7 @@ def _from_tsv(fname, dtypes=None):
         Keys are the column names, and values are the column data.
 
     """
-    data = np.loadtxt(fname, dtype=str, delimiter='\t',
+    data = np.loadtxt(fname, dtype=str, delimiter='\t', ndmin=2,
                       comments=None, encoding='utf-8-sig')
     column_names = data[0, :]
     info = data[1:, :]

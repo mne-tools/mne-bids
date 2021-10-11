@@ -27,7 +27,7 @@ mne_bids
    make_dataset_description
    make_report
    write_anat
-   mark_bad_channels
+   mark_channels
    get_anat_landmarks
    update_anat_landmarks
    get_head_mri_trans

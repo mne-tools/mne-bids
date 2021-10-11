@@ -1,10 +1,10 @@
 """Mark channels in an existing BIDS dataset as "bad".
 
 example usage:
-$ mne_bids mark_bad_channels --ch_name="MEG 0112" --description="noisy" \
-                             --ch_name="MEG 0131" --description="flat" \
-                             --subject_id=01 --task=experiment --session=test \
-                             --bids_root=bids_root --overwrite
+$ mne_bids mark_channels --ch_name="MEG 0112" --description="noisy" \
+                         --ch_name="MEG 0131" --description="flat" \
+                         --subject_id=01 --task=experiment --session=test \
+                         --bids_root=bids_root
 
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
@@ -15,11 +15,11 @@ from mne.utils import logger
 
 import mne_bids
 from mne_bids.config import reader
-from mne_bids import BIDSPath, mark_bad_channels
+from mne_bids import BIDSPath, mark_channels
 
 
 def run():
-    """Run the mark_bad_channels command."""
+    """Run the mark_channels command."""
     from mne.commands.utils import get_optparser
 
     parser = get_optparser(__file__, usage="usage: %prog options args",
@@ -31,6 +31,9 @@ def run():
                       help='The names of the bad channels. If multiple '
                            'channels are bad, pass the --ch_name parameter '
                            'multiple times.')
+    parser.add_option('--status',
+                      default='bad',
+                      help='Status of the channels (Either "good", or "bad").')
     parser.add_option('--description', dest='descriptions', action='append',
                       default=[],
                       help='Descriptions as to why the channels are bad. '
@@ -62,8 +65,6 @@ def run():
     parser.add_option('--ext', dest='extension',
                       help='The filename extension, including the leading '
                            'period, e.g. .fif')
-    parser.add_option('--overwrite', dest='overwrite', action='store_true',
-                      help='Replace existing channel status entries')
     parser.add_option('--verbose', dest='verbose', action='store_true',
                       help='Whether do generate additional diagnostic output')
 
@@ -80,6 +81,7 @@ def run():
         parser.print_help()
         parser.error('You must specify some --ch_name parameters.')
 
+    status = opt.status
     ch_names = [] if opt.ch_names == [''] else opt.ch_names
     bids_path = BIDSPath(subject=opt.subject, session=opt.session,
                          task=opt.task, acquisition=opt.acquisition,
@@ -103,9 +105,9 @@ def run():
                 f'{len(bids_paths)} recording(s) …')
     for bids_path in bids_paths:
         logger.info(f'Processing: {bids_path.basename}')
-        mark_bad_channels(ch_names=ch_names, descriptions=opt.descriptions,
-                          bids_path=bids_path, overwrite=opt.overwrite,
-                          verbose=opt.verbose)
+        mark_channels(bids_path=bids_path, ch_names=ch_names,
+                      status=status, descriptions=opt.descriptions,
+                      verbose=opt.verbose)
 
 
 if __name__ == '__main__':
