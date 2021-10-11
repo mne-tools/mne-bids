@@ -219,7 +219,7 @@
 <span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_flat</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">mark_bad_channels</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">mark_channels</span>
 <span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_read_events</span>
 <span class="kn">from</span> <span class="nn">mne_bids.write</span> <span class="kn">import</span> <span class="n">_events_tsv</span>
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span>
@@ -610,10 +610,10 @@
 <span class="sd">    descriptions : list</span>
 <span class="sd">        The values to be written to the `status_description` column.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># We pass overwrite=True, causing all channels not passed as bad here to</span>
-    <span class="c1"># be marked as good.</span>
-    <span class="n">mark_bad_channels</span><span class="p">(</span><span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span>
-                      <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># We first make all channels not passed as bad here to be marked as good.</span>
+    <span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="p">[],</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;good&#39;</span><span class="p">)</span>
+    <span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span>
+                  <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">)</span>
 </pre></div>
 
               </div>
@@ -635,7 +635,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-11.<br>
 </p>
     </div>
     

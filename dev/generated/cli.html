@@ -301,8 +301,8 @@
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#mne-bids-mark-bad-channels">
-   mne_bids mark_bad_channels
+  <a class="reference internal nav-link" href="#mne-bids-mark-channels">
+   mne_bids mark_channels
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -579,11 +579,11 @@ $ mne_bids inspect –subject_id=01 –task=experiment –session=test –dataty
 </section>
 </section>
 </section>
-<section id="mne-bids-mark-bad-channels">
-<span id="gen-mne-bids-mark-bad-channels"></span><h2>mne_bids mark_bad_channels<a class="headerlink" href="#mne-bids-mark-bad-channels" title="Permalink to this headline">¶</a></h2>
+<section id="mne-bids-mark-channels">
+<span id="gen-mne-bids-mark-channels"></span><h2>mne_bids mark_channels<a class="headerlink" href="#mne-bids-mark-channels" title="Permalink to this headline">¶</a></h2>
 <section class="callout" id="mark-channels-in-an-existing-bids-dataset-as-bad">
 <h3>Mark channels in an existing BIDS dataset as “bad”.<a class="headerlink" href="#mark-channels-in-an-existing-bids-dataset-as-bad" title="Permalink to this headline">¶</a></h3>
-<p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">mark_bad_channels</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
+<p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">mark_channels</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id5">
 <h4>Options<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <dl class="field-list cmd-list option-list">
@@ -596,6 +596,9 @@ $ mne_bids inspect –subject_id=01 –task=experiment –session=test –dataty
 <dt><kbd><span class="option">--ch_name=<var>CH_NAMES</var></span></kbd></dt>
 <dd><p>The names of the bad channels. If multiple channels
 are bad, pass the –ch_name parameter multiple times.</p>
+</dd>
+<dt><kbd><span class="option">--status=<var>STATUS</var></span></kbd></dt>
+<dd><p>Status of the channels (Either “good”, or “bad”).</p>
 </dd>
 <dt><kbd><span class="option">--description=<var>DESCRIPTIONS</var></span></kbd></dt>
 <dd><p>Descriptions as to why the channels are bad. Must
@@ -638,15 +641,12 @@ extension</p>
 <dd><p>The filename extension, including the leading period,
 e.g. .fif</p>
 </dd>
-<dt><kbd><span class="option">--overwrite</span></kbd></dt>
-<dd><p>Replace existing channel status entries</p>
-</dd>
 <dt><kbd><span class="option">--verbose</span></kbd></dt>
 <dd><p>Whether do generate additional diagnostic output</p>
 </dd>
 </dl>
 <p>example usage:
-$ mne_bids mark_bad_channels –ch_name=”MEG 0112” –description=”noisy”                              –ch_name=”MEG 0131” –description=”flat”                              –subject_id=01 –task=experiment –session=test                              –bids_root=bids_root –overwrite</p>
+$ mne_bids mark_channels –ch_name=”MEG 0112” –description=”noisy”                          –ch_name=”MEG 0131” –description=”flat”                          –subject_id=01 –task=experiment –session=test                          –bids_root=bids_root</p>
 </section>
 </section>
 </section>
@@ -774,7 +774,7 @@ If unknown, pass None</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-08.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-11.<br>
 </p>
     </div>
     
