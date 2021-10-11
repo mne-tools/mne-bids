@@ -28,7 +28,8 @@ from mne.io.pick import channel_type
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
-                       _validate_type, get_subjects_dir, verbose)
+                       _validate_type, get_subjects_dir, verbose,
+                       deprecated)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -1887,10 +1888,14 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
     return bids_path
 
 
+@deprecated(extra='mark_bad_channels is deprecated in favor of mark_channels '
+                  'and will be removed in v0.10.')
 @verbose
 def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                       overwrite=False, verbose=None):
     """Update which channels are marked as "bad" in an existing BIDS dataset.
+
+    This modifies entries in the ``channels.tsv`` file in a BIDS dataset.
 
     Parameters
     ----------
@@ -1914,6 +1919,43 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         ``ch_names`` as bad, and all remaining channels as good, also
         discarding their descriptions.
     %(verbose)s
+    """
+    # if overwrite, first mark all channels as good and overwrite
+    # their descriptions
+    if overwrite:
+        mark_channels(bids_path=bids_path, ch_names=[], status='good',
+                      descriptions='n/a', verbose=verbose)
+
+    # now mark the channels that we want as bad
+    mark_channels(bids_path=bids_path, ch_names=ch_names, status='bad',
+                  descriptions=descriptions, verbose=verbose)
+
+
+@verbose
+def mark_channels(bids_path, *, ch_names, status, descriptions=None,
+                  verbose=None):
+    """Update status and description of channels in an existing BIDS dataset.
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        The recording to update. The :class:`mne_bids.BIDSPath` instance passed
+        here **must** have the ``.root`` attribute set. The ``.datatype``
+        attribute **may** be set. If ``.datatype`` is not set and only one data
+        type (e.g., only EEG or MEG data) is present in the dataset, it will be
+        selected automatically.
+    ch_names : str | list of str
+        The names of the channel(s) to mark with a ``status`` and possibly a
+        ``description``. Can be an empty list to indicate all channel names.
+    status : 'good' | 'bad' | list of str
+        The status of the channels ('good', or 'bad'). Default is 'bad'. If it
+        is a list, then must be a list of 'good', or 'bad' that has the same
+        length as ``ch_names``.
+    descriptions : None | str | list of str
+        Descriptions of the reasons that lead to the exclusion of the
+        channel(s). If a list, it must match the length of ``ch_names``.
+        If ``None``, no descriptions are added.
+    %(verbose)s
 
     Examples
     --------
@@ -1922,48 +1964,24 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
     ...                      datatype='eeg', root=root)
-    >>> mark_bad_channels('C4', bids_path=bids_path, verbose=False)
+    >>> mark_channels(bids_path=bids_path, ch_names='C4', status='bad',
+    ...               verbose=False)
 
     Mark multiple channels as bad, and add a description as to why.
 
     >>> bads = ['C3', 'PO10']
     >>> descriptions = ['very noisy', 'continuously flat']
-    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path,
-    ...                   verbose=False)
+    >>> mark_channels(bids_path, ch_names=bads, status='bad',
+    ...               descriptions=descriptions, verbose=False)
 
-    Mark two channels as bad, and mark all others as good by setting
-    ``overwrite=True``.
+    Mark all channels with a new description, while keeping them as a "good"
+    channel.
 
-    >>> bads = ['C3', 'C4']
-    >>> mark_bad_channels(bads, bids_path=bids_path,
-    ...                   overwrite=True, verbose=False)
-
-    Mark all channels as good by passing an empty list of bad channels, and
-    setting ``overwrite=True``.
-
-    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True,
-    ...                   verbose=False)
-
+    >>> descriptions = ['resected', 'resected']
+    >>> mark_channels(bids_path=bids_path, ch_names=['C3', 'C4'],
+    ...               descriptions=descriptions, status='good',
+    ...               verbose=False)
     """
-    if not ch_names and not overwrite:
-        raise ValueError('You did not pass a channel name, but set '
-                         'overwrite=False. If you wish to mark all channels '
-                         'as good, please pass overwrite=True')
-
-    if descriptions and not ch_names:
-        raise ValueError('You passed descriptions, but no channels.')
-
-    if not ch_names:
-        descriptions = []
-    if isinstance(ch_names, str):
-        ch_names = [ch_names]
-    if isinstance(descriptions, str):
-        descriptions = [descriptions]
-    elif not descriptions:
-        descriptions = ['n/a'] * len(ch_names)
-    if len(ch_names) != len(descriptions):
-        raise ValueError('Number of channels and descriptions must match.')
-
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
@@ -1973,10 +1991,39 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # Read sidecar file.
+    # Read sidecar file
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
                                             extension='.tsv')
     tsv_data = _from_tsv(channels_fname)
+
+    # if an empty list is passed in, then these are the entire list
+    # of channels
+    if ch_names == []:
+        ch_names = tsv_data['name']
+    elif isinstance(ch_names, str):
+        ch_names = [ch_names]
+
+    # set descriptions based on how it's passed in
+    if isinstance(descriptions, str):
+        descriptions = [descriptions] * len(ch_names)
+    elif not descriptions:
+        descriptions = [None] * len(ch_names)
+
+    # make sure statuses is a list of strings
+    if isinstance(status, str):
+        status = [status] * len(ch_names)
+
+    if len(ch_names) != len(descriptions):
+        raise ValueError('Number of channels and descriptions must match.')
+
+    if len(status) != len(ch_names):
+        raise ValueError(f'If status is a list of {len(status)} statuses, '
+                         f'then it must have the same length as ch_names '
+                         f'({len(ch_names)}).')
+
+    if not all(status in ['good', 'bad'] for status in status):
+        raise ValueError('Setting the status of a channel must only be '
+                         '"good", or "bad".')
 
     # Read sidecar and create required columns if they do not exist.
     if 'status' not in tsv_data:
@@ -1988,18 +2035,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                     'Creating.')
         tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
 
-    # Update the sidecar data.
-    if overwrite:
-        # In cases where the "status" and / or "status_description"
-        # columns were just created by us, we overwrite them again
-        # here. This is not optimal in terms of performance, but
-        # probably doesn't hurt anyone.
-        logger.info('Resetting status and description for all channels.')
-        tsv_data['status'] = ['good'] * len(tsv_data['name'])
-        tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
-
     # Now actually mark the user-requested channels as bad.
-    for ch_name, description in zip(ch_names, descriptions):
+    for ch_name, status_, description in zip(ch_names, status, descriptions):
         if ch_name not in tsv_data['name']:
             raise ValueError(f'Channel {ch_name} not found in dataset!')
 
@@ -2007,8 +2044,11 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         logger.info(f'Processing channel {ch_name}:\n'
                     f'    status: bad\n'
                     f'    description: {description}')
-        tsv_data['status'][idx] = 'bad'
-        tsv_data['status_description'][idx] = description
+        tsv_data['status'][idx] = status_
+
+        # only write if the description was passed in
+        if description is not None:
+            tsv_data['status_description'][idx] = description
 
     _write_tsv(channels_fname, tsv_data, overwrite=True)
 

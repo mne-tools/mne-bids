@@ -16,7 +16,7 @@ from mne_bids import BIDSPath, inspect_dataset
 
 
 def run():
-    """Run the mark_bad_channels command."""
+    """Run the mark_channels command."""
     from mne.commands.utils import get_optparser
 
     parser = get_optparser(__file__, usage="usage: %prog options args",
