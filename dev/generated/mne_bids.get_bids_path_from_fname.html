@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>mne_bids.get_anat_landmarks &#8212; MNE-BIDS 0.9.dev0 documentation</title>
+    <title>mne_bids.get_bids_path_from_fname &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet">
   <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -48,8 +48,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.update_anat_landmarks" href="mne_bids.update_anat_landmarks.html" />
-    <link rel="prev" title="mne_bids.mark_channels" href="mne_bids.mark_channels.html" />
+    <link rel="next" title="mne_bids.get_entities_from_fname" href="mne_bids.get_entities_from_fname.html" />
+    <link rel="prev" title="mne_bids.print_dir_tree" href="mne_bids.print_dir_tree.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -232,8 +232,8 @@
    mne_bids.mark_channels
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_anat_landmarks.html">
    mne_bids.get_anat_landmarks
   </a>
  </li>
@@ -262,8 +262,8 @@
    mne_bids.print_dir_tree
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_bids.get_bids_path_from_fname.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_bids.get_bids_path_from_fname
   </a>
  </li>
@@ -345,24 +345,9 @@
               
               <div class="toc-item">
                 
-<div class="tocsection onthispage pt-5 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
 
 <nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#examples-using-mne-bids-get-anat-landmarks">
-   Examples using
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     mne_bids.get_anat_landmarks
-    </span>
-   </code>
-  </a>
- </li>
-</ul>
-
+    
 </nav>
               </div>
               
@@ -382,68 +367,37 @@
               
               <div>
                 
-  <section id="mne-bids-get-anat-landmarks">
-<h1>mne_bids.get_anat_landmarks<a class="headerlink" href="#mne-bids-get-anat-landmarks" title="Permalink to this headline">¶</a></h1>
+  <section id="mne-bids-get-bids-path-from-fname">
+<h1>mne_bids.get_bids_path_from_fname<a class="headerlink" href="#mne-bids-get-bids-path-from-fname" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.get_anat_landmarks">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_anat_landmarks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trans</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_subjects_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#get_anat_landmarks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_anat_landmarks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get anatomical landmarks in MRI voxel coordinates.</p>
-<p>This function transforms the fiducial points from “head” to MRI “voxel”
-coordinate space. The landmarks obtained are defined w.r.t. the MRI passed
-via the <code class="docutils literal notranslate"><span class="pre">image</span></code> parameter.</p>
+<dt class="sig sig-object py" id="mne_bids.get_bids_path_from_fname">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_bids_path_from_fname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_bids_path_from_fname"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_bids_path_from_fname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a BIDSPath object from a filename.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> | <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.spatialimages.html#nibabel.spatialimages.SpatialImage" title="(in NiBabel v3.2.1+100.g9fdf5e3e)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NibabelImageObject</span></code></a></span></dt><dd><p>Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
-readable by nibabel. Can also be a nibabel image object of an
-MRI scan. Will be written as a .nii.gz file.</p>
+<dt><strong>fname</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The path to parse a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> from.</p>
 </dd>
-<dt><strong>info</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Info</span></code></a></span></dt><dd><p>The measurement information from an electrophysiology recording of
-the subject with the anatomical landmarks stored in its
-<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a>.</p>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to check if the generated <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> complies with the BIDS
+specification, i.e., whether all included entities and the suffix are
+valid.</p>
 </dd>
-<dt><strong>trans</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.transforms.Transform</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The transformation matrix from head to MRI coordinates. Can
-also be a string pointing to a <code class="docutils literal notranslate"><span class="pre">.trans</span></code> file containing the
-transformation matrix. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and no <code class="docutils literal notranslate"><span class="pre">landmarks</span></code> parameter is
-passed, no sidecar JSON file will be created.</p>
-</dd>
-<dt><strong>fs_subject</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The subject identifier used for FreeSurfer. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to
-the <code class="docutils literal notranslate"><span class="pre">subject</span></code> entity in <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>. Must be provided to write
-the anatomical landmarks if they are not provided in MRI voxel space.
-This is because the head coordinate of a
-<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> is aligned using FreeSurfer surfaces.</p>
-</dd>
-<dt><strong>fs_subjects_dir</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The FreeSurfer subjects directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to the
-<code class="docutils literal notranslate"><span class="pre">SUBJECTS_DIR</span></code> environment variable. Must be provided to write
-anatomical landmarks if they are not provided in MRI voxel space.</p>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">Logging documentation</span></a> for more).
+If used, it should be passed as a keyword-argument only.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>landmarks</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a></span></dt><dd><p>A montage with the landmarks in MRI voxel space.</p>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The BIDS path object.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<section id="examples-using-mne-bids-get-anat-landmarks">
-<span id="sphx-glr-backreferences-mne-bids-get-anat-landmarks"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks</span></code><a class="headerlink" href="#examples-using-mne-bids-get-anat-landmarks" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><figure class="align-default" id="id1">
-<img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><figure class="align-default" id="id2">
-<img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<figcaption>
-<p><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-</div><div class="sphx-glr-clear"></div></section>
-</section>
+<span class="target" id="sphx-glr-backreferences-mne-bids-get-bids-path-from-fname"></span></section>
 
 
               </div>
@@ -451,17 +405,17 @@ anatomical landmarks if they are not provided in MRI voxel space.</p>
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="mne_bids.mark_channels.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="mne_bids.print_dir_tree.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">mne_bids.mark_channels</p>
+            <p class="prev-next-title">mne_bids.print_dir_tree</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="mne_bids.update_anat_landmarks.html" title="next page">
+    <a class='right-next' id="next-link" href="mne_bids.get_entities_from_fname.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_bids.update_anat_landmarks</p>
+        <p class="prev-next-title">mne_bids.get_entities_from_fname</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

@@ -298,16 +298,17 @@
 
     <span class="n">failed_to_get_er_date_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">er_fname</span> <span class="ow">in</span> <span class="n">candidate_er_fnames</span><span class="p">:</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
+        <span class="c1"># get entities from filenamme</span>
+        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">er_fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">er_bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="s1">&#39;emptyroom&#39;</span>  <span class="c1"># er subject entity is different</span>
+        <span class="n">er_bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">bids_root</span>
         <span class="n">er_meas_date</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>  <span class="c1"># er subject entity is different</span>
-        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
-                                <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Try to extract date from filename.</span>
-        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span>
+                    <span class="n">er_bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
                 <span class="c1"># There is a session in the filename, but it doesn&#39;t encode a</span>
                 <span class="c1"># valid date.</span>
@@ -995,24 +996,19 @@
 
         <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
-            <span class="c1"># get all BIDS entities from the filename</span>
-            <span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-
-            <span class="c1"># extension is not an entity, so get it explicitly</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-
             <span class="c1"># get datatype</span>
             <span class="n">fpath</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+
+            <span class="c1"># form the BIDSPath object</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">datatype</span>
 
             <span class="c1"># to check whether the BIDSPath is conforming to BIDS if</span>
             <span class="c1"># check=True, we first instantiate without checking and then run</span>
             <span class="c1"># the check manually, allowing us to be more specific about the</span>
             <span class="c1"># exception to catch</span>
-            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
-                                 <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                 <span class="o">**</span><span class="n">entities</span><span class="p">)</span>
-
             <span class="n">bids_path</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">try</span><span class="p">:</span>
@@ -1115,9 +1111,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using &quot;AssociatedEmptyRoom&quot; entry from MEG sidecar &#39;</span>
                         <span class="s1">&#39;file to retrieve empty-room path.&#39;</span><span class="p">)</span>
             <span class="n">emptytoom_path</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="p">[</span><span class="s1">&#39;AssociatedEmptyRoom&#39;</span><span class="p">]</span>
-            <span class="n">emptyroom_entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">emptytoom_path</span><span class="p">)</span>
-            <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
-                                    <span class="o">**</span><span class="n">emptyroom_entities</span><span class="p">)</span>
+            <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">emptytoom_path</span><span class="p">)</span>
+            <span class="n">er_bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+            <span class="n">er_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s1">&#39;The MEG sidecar file does not contain an &#39;</span>
@@ -1447,6 +1443,68 @@
     <span class="k">return</span> <span class="n">datatype</span>
 
 
+<div class="viewcode-block" id="get_bids_path_from_fname"><a class="viewcode-back" href="../../generated/mne_bids.get_bids_path_from_fname.html#mne_bids.get_bids_path_from_fname">[docs]</a><span class="nd">@verbose</span>
+<span class="k">def</span> <span class="nf">get_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve a BIDSPath object from a filename.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        The path to parse a `BIDSPath` from.</span>
+<span class="sd">    check : bool</span>
+<span class="sd">        Whether to check if the generated `BIDSPath` complies with the BIDS</span>
+<span class="sd">        specification, i.e., whether all included entities and the suffix are</span>
+<span class="sd">        valid.</span>
+<span class="sd">    %(verbose)s</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        The BIDS path object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="c1"># parse suffix and extension</span>
+    <span class="n">last_entity</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;_&#39;</span> <span class="ow">in</span> <span class="n">last_entity</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="n">last_entity</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">suffix</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">_get_bids_suffix_and_ext</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
+        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+
+    <span class="c1"># find root and datatype if it exists</span>
+    <span class="k">if</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">root_level</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># determine root if it&#39;s there</span>
+        <span class="k">if</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">root_level</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">root_level</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;scans&#39;</span><span class="p">:</span>
+            <span class="n">root_level</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">root_level</span><span class="p">:</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">parent</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">root_level</span><span class="p">):</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
+                         <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="n">check</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;From </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s1">, formed a BIDSPath: </span><span class="si">{</span><span class="n">bids_path</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bids_path</span></div>
+
+
 <div class="viewcode-block" id="get_entities_from_fname"><a class="viewcode-back" href="../../generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve a dictionary of BIDS entities from a filename.</span>
@@ -1486,8 +1544,7 @@
 <span class="sd">&#39;processing&#39;: None, \</span>
 <span class="sd">&#39;space&#39;: None, \</span>
 <span class="sd">&#39;recording&#39;: None, \</span>
-<span class="sd">&#39;split&#39;: None, \</span>
-<span class="sd">&#39;suffix&#39;: &#39;meg&#39;}</span>
+<span class="sd">&#39;split&#39;: None}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Acceptable values for on_error are: warn, raise, &#39;</span>
@@ -1522,14 +1579,6 @@
 
         <span class="n">key_short_hand</span> <span class="o">=</span> <span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
         <span class="n">params</span><span class="p">[</span><span class="n">key_short_hand</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="c1"># parse suffix last</span>
-    <span class="n">last_entity</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s1">&#39;_&#39;</span> <span class="ow">in</span> <span class="n">last_entity</span><span class="p">:</span>
-        <span class="n">suffix</span> <span class="o">=</span> <span class="n">last_entity</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">suffix</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_bids_suffix_and_ext</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
-        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;suffix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">suffix</span>
-
     <span class="k">return</span> <span class="n">params</span></div>
 
 

@@ -263,6 +263,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="generated/mne_bids.get_bids_path_from_fname.html">
+   mne_bids.get_bids_path_from_fname
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="generated/mne_bids.get_entities_from_fname.html">
    mne_bids.get_entities_from_fname
   </a>
@@ -439,19 +444,22 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder[, max_depth, return_str])</p></td>
 <td><p>Recursively print a directory tree.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname" title="mne_bids.get_entities_from_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entities_from_fname</span></code></a>(fname[, on_error, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_bids_path_from_fname.html#mne_bids.get_bids_path_from_fname" title="mne_bids.get_bids_path_from_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bids_path_from_fname</span></code></a>(fname[, check, verbose])</p></td>
+<td><p>Retrieve a BIDSPath object from a filename.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname" title="mne_bids.get_entities_from_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entities_from_fname</span></code></a>(fname[, on_error, ...])</p></td>
 <td><p>Retrieve a dictionary of BIDS entities from a filename.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(root, entity_key, *[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(root, entity_key, *[, ...])</p></td>
 <td><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datatypes</span></code></a>(root[, verbose])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datatypes</span></code></a>(root[, verbose])</p></td>
 <td><p>Get list of data types (&quot;modalities&quot;) present in a BIDS dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspect_dataset</span></code></a>(bids_path[, find_flat, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspect_dataset</span></code></a>(bids_path[, find_flat, ...])</p></td>
 <td><p>Inspect and annotate BIDS raw data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sidecar_json</span></code></a>(bids_path, entries[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_sidecar_json</span></code></a>(bids_path, entries[, ...])</p></td>
 <td><p>Update sidecar files using a dictionary or JSON file.</p></td>
 </tr>
 </tbody>

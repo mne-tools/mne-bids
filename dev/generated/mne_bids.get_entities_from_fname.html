@@ -49,7 +49,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mne_bids.get_entity_vals" href="mne_bids.get_entity_vals.html" />
-    <link rel="prev" title="mne_bids.print_dir_tree" href="mne_bids.print_dir_tree.html" />
+    <link rel="prev" title="mne_bids.get_bids_path_from_fname" href="mne_bids.get_bids_path_from_fname.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -262,6 +262,11 @@
    mne_bids.print_dir_tree
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_bids_path_from_fname.html">
+   mne_bids.get_bids_path_from_fname
+  </a>
+ </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    mne_bids.get_entities_from_fname
@@ -400,7 +405,7 @@ the values to the entity values encoded in the filename.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;sub-01_ses-exp_run-02_meg.fif&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-<span class="go">{&#39;subject&#39;: &#39;01&#39;, &#39;session&#39;: &#39;exp&#39;, &#39;task&#39;: None, &#39;acquisition&#39;: None, &#39;run&#39;: &#39;02&#39;, &#39;processing&#39;: None, &#39;space&#39;: None, &#39;recording&#39;: None, &#39;split&#39;: None, &#39;suffix&#39;: &#39;meg&#39;}</span>
+<span class="go">{&#39;subject&#39;: &#39;01&#39;, &#39;session&#39;: &#39;exp&#39;, &#39;task&#39;: None, &#39;acquisition&#39;: None, &#39;run&#39;: &#39;02&#39;, &#39;processing&#39;: None, &#39;space&#39;: None, &#39;recording&#39;: None, &#39;split&#39;: None}</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -413,11 +418,11 @@ the values to the entity values encoded in the filename.</p>
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="mne_bids.print_dir_tree.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="mne_bids.get_bids_path_from_fname.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">mne_bids.print_dir_tree</p>
+            <p class="prev-next-title">mne_bids.get_bids_path_from_fname</p>
         </div>
     </a>
     <a class='right-next' id="next-link" href="mne_bids.get_entity_vals.html" title="next page">

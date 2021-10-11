@@ -220,9 +220,9 @@
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">DOI</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPES</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_datatypes</span><span class="p">,</span> <span class="n">get_entity_vals</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span>
-                           <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
-                           <span class="n">get_entities_from_fname</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_bids_path_from_fname</span><span class="p">,</span> <span class="n">get_datatypes</span><span class="p">,</span>
+                           <span class="n">get_entity_vals</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span>
+                           <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">)</span>
 
 <span class="c1"># functions to be used inside Template strings</span>
 <span class="n">FUNCTION_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{{py:</span>
@@ -532,8 +532,9 @@
             <span class="n">n_scans</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="c1"># convert to BIDS Path</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
-            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+                <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
 
             <span class="c1"># XXX: improve to allow emptyroom</span>
             <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
@@ -617,8 +618,9 @@
                 <span class="k">continue</span>
 
             <span class="c1"># convert to BIDS Path</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
-            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+                <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
 
             <span class="c1"># XXX: improve to allow emptyroom</span>
             <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
