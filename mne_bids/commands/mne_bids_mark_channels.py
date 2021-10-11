@@ -4,7 +4,7 @@ example usage:
 $ mne_bids mark_channels --ch_name="MEG 0112" --description="noisy" \
                              --ch_name="MEG 0131" --description="flat" \
                              --subject_id=01 --task=experiment --session=test \
-                             --bids_root=bids_root --overwrite
+                             --bids_root=bids_root
 
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
@@ -31,6 +31,9 @@ def run():
                       help='The names of the bad channels. If multiple '
                            'channels are bad, pass the --ch_name parameter '
                            'multiple times.')
+    parser.add_option('--status',
+                      default='bad',
+                      help='Status of the channels (Either "good", or "bad").')
     parser.add_option('--description', dest='descriptions', action='append',
                       default=[],
                       help='Descriptions as to why the channels are bad. '
@@ -62,8 +65,6 @@ def run():
     parser.add_option('--ext', dest='extension',
                       help='The filename extension, including the leading '
                            'period, e.g. .fif')
-    parser.add_option('--overwrite', dest='overwrite', action='store_true',
-                      help='Replace existing channel status entries')
     parser.add_option('--verbose', dest='verbose', action='store_true',
                       help='Whether do generate additional diagnostic output')
 
@@ -80,6 +81,7 @@ def run():
         parser.print_help()
         parser.error('You must specify some --ch_name parameters.')
 
+    status = opt.statusƒ
     ch_names = [] if opt.ch_names == [''] else opt.ch_names
     bids_path = BIDSPath(subject=opt.subject, session=opt.session,
                          task=opt.task, acquisition=opt.acquisition,
@@ -104,8 +106,7 @@ def run():
     for bids_path in bids_paths:
         logger.info(f'Processing: {bids_path.basename}')
         mark_channels(bids_path=bids_path, ch_names=ch_names,
-                      statuses='bad', descriptions=opt.descriptions,
-                      overwrite=opt.overwrite,
+                      status=status, descriptions=opt.descriptions,
                       verbose=opt.verbose)
 
 

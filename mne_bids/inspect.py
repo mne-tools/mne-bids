@@ -403,7 +403,8 @@ def _save_bads(*, bads, descriptions, bids_path):
     descriptions : list
         The values to be written to the `status_description` column.
     """
-    # We pass overwrite=True, causing all channels not passed as bad here to
-    # be marked as good.
-    mark_channels(bids_path=bids_path, ch_names=bads, statuses='bad',
+    # We first make all channels not passed as bad here to be marked as good.
+    mark_channels(bids_path=bids_path, ch_names=[], status='good',
+                  descriptions=descriptions)
+    mark_channels(bids_path=bids_path, ch_names=bads, status='bad',
                   descriptions=descriptions, overwrite=True)
