@@ -81,7 +81,7 @@ def run():
         parser.print_help()
         parser.error('You must specify some --ch_name parameters.')
 
-    status = opt.statusƒ
+    status = opt.status
     ch_names = [] if opt.ch_names == [''] else opt.ch_names
     bids_path = BIDSPath(subject=opt.subject, session=opt.session,
                          task=opt.task, acquisition=opt.acquisition,
