@@ -327,6 +327,9 @@ def _handle_info_reading(sidecar_fname, raw):
         from mne.io.ctf import RawCTF
         from mne.io.kit.kit import RawKIT
 
+        msg = ('Cannot verify that the cHPI frequencies from '
+               'the MEG JSON sidecar file correspond to the raw data{}')
+
         if isinstance(raw, RawCTF):
             # Pick channels corresponding to the cHPI positions
             hpi_picks = pick_channels_regexp(raw.info['ch_names'],
@@ -336,32 +339,33 @@ def _handle_info_reading(sidecar_fname, raw):
                     f'Could not find all cHPI channels that we expected for '
                     f'CTF data. Expected: 9, found: {len(hpi_picks)}'
                 )
-            logger.info('Cannot verify that the cHPI frequencies provided in '
-                        'the MEG JSON sidecar file correspond to the raw data '
-                        'for CTF files.')
+            logger.info(msg.format(" for CTF files."))
+
         elif isinstance(raw, RawKIT):
-            logger.info('Cannot verify that the cHPI information provided in '
-                        'the MEG JSON sidecar file corresponds to the raw '
-                        'data for KIT files.')
-        else:
-            if 'HeadCoilFrequency' in sidecar_json:
-                hpi_freqs_json = sidecar_json['HeadCoilFrequency']
-                try:
-                    hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
-                except ValueError:
-                    logger.info(
-                        'Cannot verify that the cHPI frequencies provided in '
-                        'the MEG JSON sidecar file correspond to those in the '
-                        'raw data.'
+            logger.info(msg.format(" for KIT files."))
+
+        elif 'HeadCoilFrequency' in sidecar_json:
+            hpi_freqs_json = sidecar_json['HeadCoilFrequency']
+            try:
+                hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
+            except ValueError:
+                logger.info(msg.format("."))
+            else:
+                # XXX: Do not raise an error here.
+                #      Simply warn, and set chpi info in mne.Raw to
+                #      what we found in the sidecar
+                if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
+                    raise ValueError(
+                        f'The cHPI coil frequencies in the sidecar file '
+                        f'{sidecar_fname}:\n    {hpi_freqs_json}\n '
+                        f'differ from what is stored in the raw data:\n'
+                        f'    {hpi_freqs_raw}\nCannot proceed.'
                     )
-                else:
-                    if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
-                        raise ValueError(
-                            f'The cHPI coil frequencies in the sidecar file '
-                            f'{sidecar_fname}:\n    {hpi_freqs_json}\n '
-                            f'differ from what is stored in the raw data:\n'
-                            f'    {hpi_freqs_raw}\nCannot proceed.'
-                        )
+        else:
+            addmsg = (".\n(Because no 'HeadCoilFrequency' data "
+                      "was found in the sidecar.)")
+            logger.info(msg.format(addmsg))
+
     else:
         if raw.info['hpi_subsystem']:
             logger.info('Dropping cHPI information stored in raw data, '
