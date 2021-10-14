@@ -522,7 +522,7 @@ def test_handle_info_reading(tmpdir):
 
     # 3. assert that we get an error when sidecar json doesn't match
     _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
-    with pytest.warns(UserWarning, match="Defaulting to .* sidecar JSON"):
+    with pytest.warns(RuntimeWarning, match="Defaulting to .* sidecar JSON"):
         raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['line_freq'] == 55
 
@@ -552,7 +552,7 @@ def test_handle_chpi_reading(tmpdir):
     meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
     _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
-    with pytest.raises(ValueError, match='cHPI coil frequencies'):
+    with pytest.warns(RuntimeWarning, match='Defaulting to .* mne.Raw object'):
         raw_read = read_raw_bids(bids_path)
 
     # cHPI "off" according to sidecar, but present in the data
