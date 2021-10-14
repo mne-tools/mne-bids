@@ -522,7 +522,7 @@ def test_handle_info_reading(tmpdir):
 
     # 3. assert that we get an error when sidecar json doesn't match
     _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
-    with pytest.warns(UserWarning(), match="Defaulting to .* sidecar JSON"):
+    with pytest.warns(UserWarning, match="Defaulting to .* sidecar JSON"):
         raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['line_freq'] == 55
 
