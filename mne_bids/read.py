@@ -327,7 +327,7 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
                         'the MEG JSON sidecar file corresponds to the raw '
                         'data for KIT files.')
         else:
-            if 'HeadCoilFrequency' in hpi_freqs_json:
+            if 'HeadCoilFrequency' in sidecar_json:
                 hpi_freqs_json = sidecar_json['HeadCoilFrequency']
                 try:
                     hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
