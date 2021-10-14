@@ -4,7 +4,7 @@ mne>=0.21.2
 matplotlib>=3.1
 pandas>=0.24.0
 nibabel>=2.5
-pybv>=0.5
+pybv>=0.6
 openneuro-py>=2021.8
 EDFlib-Python>=1.0.2
 pytest
@@ -13,3 +13,4 @@ pytest-sugar
 check-manifest
 pydocstyle
 flake8
+pooch

@@ -28,7 +28,8 @@ from mne.io.pick import channel_type
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
-                       _validate_type, get_subjects_dir)
+                       _validate_type, get_subjects_dir, verbose,
+                       deprecated)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -56,7 +57,7 @@ def _is_numeric(n):
     return isinstance(n, (np.integer, np.floating, int, float))
 
 
-def _channels_tsv(raw, fname, overwrite=False, verbose=True):
+def _channels_tsv(raw, fname, overwrite=False):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -68,8 +69,6 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
-    verbose : bool
-        Set verbose output to True or False.
 
     """
     # Get channel type mappings between BIDS and MNE nomenclatures
@@ -96,7 +95,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
-    _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+    _, ext = _parse_ext(raw.filenames[0])
     manufacturer = MANUFACTURERS[ext]
 
     ignored_channels = IGNORED_CHANNELS.get(manufacturer, list())
@@ -136,7 +135,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     ])
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
-    _write_tsv(fname, ch_data, overwrite, verbose)
+    _write_tsv(fname, ch_data, overwrite)
 
 
 _cardinal_ident_mapping = {
@@ -188,8 +187,7 @@ def _get_fid_coords(dig, raise_error=True):
     return fid_coords, coord_frame
 
 
-def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
-                verbose=True):
+def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False):
     """Create an events.tsv file and save it.
 
     This function will write the mandatory 'onset', and 'duration' columns as
@@ -216,8 +214,7 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
-    verbose : bool
-        Set verbose output to True or False.
+
     """
     # Start by filling all data that we know into an ordered dictionary
     first_samp = raw.first_samp
@@ -240,10 +237,10 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
     else:
         del data['trial_type']
 
-    _write_tsv(fname, data, overwrite, verbose)
+    _write_tsv(fname, data, overwrite)
 
 
-def _readme(datatype, fname, overwrite=False, verbose=True):
+def _readme(datatype, fname, overwrite=False):
     """Create a README file and save it.
 
     This will write a README file containing an MNE-BIDS citation.
@@ -262,8 +259,6 @@ def _readme(datatype, fname, overwrite=False, verbose=True):
         MNE-BIDS citation. If overwrite is False, append an
         MNE-BIDS citation to the existing README, unless it
         already contains that citation.
-    verbose : bool
-        Set verbose output to True or False.
     """
     if os.path.isfile(fname) and not overwrite:
         with open(fname, 'r', encoding='utf-8-sig') as fid:
@@ -280,11 +275,10 @@ def _readme(datatype, fname, overwrite=False, verbose=True):
         text = 'References\n----------\n{}{}'.format(
             REFERENCES['mne-bids'] + '\n\n', REFERENCES[datatype] + '\n')
 
-    _write_text(fname, text, overwrite=True, verbose=verbose)
+    _write_text(fname, text, overwrite=True)
 
 
-def _participants_tsv(raw, subject_id, fname, overwrite=False,
-                      verbose=True):
+def _participants_tsv(raw, subject_id, fname, overwrite=False):
     """Create a participants.tsv file and save it.
 
     This will append any new participant data to the current list if it
@@ -303,8 +297,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         Defaults to False.
         If there is already data for the given `subject_id` and overwrite is
         False, an error will be raised.
-    verbose : bool
-        Set verbose output to True or False.
 
     """
     subject_id = 'sub-' + subject_id
@@ -390,10 +382,10 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
-    _write_tsv(fname, data, True, verbose)
+    _write_tsv(fname, data, True)
 
 
-def _participants_json(fname, overwrite=False, verbose=True):
+def _participants_json(fname, overwrite=False):
     """Create participants.json for non-default columns in accompanying TSV.
 
     Parameters
@@ -405,8 +397,6 @@ def _participants_json(fname, overwrite=False, verbose=True):
         Whether to overwrite the existing data in the file.
         If there is already data for the given `fname` and overwrite is False,
         an error will be raised.
-    verbose : bool
-        Set verbose output to True or False.
 
     """
     cols = OrderedDict()
@@ -428,10 +418,10 @@ def _participants_json(fname, overwrite=False, verbose=True):
             if key not in cols:
                 cols[key] = val
 
-    _write_json(fname, cols, overwrite, verbose)
+    _write_json(fname, cols, overwrite)
 
 
-def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
+def _scans_tsv(raw, raw_fname, fname, overwrite=False):
     """Create a scans.tsv file and save it.
 
     Parameters
@@ -447,8 +437,6 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         Whether to overwrite the existing data in the file.
         If there is already data for the given `fname` and overwrite is False,
         an error will be raised.
-    verbose : bool
-        Set verbose output to True or False.
 
     """
     # get measurement date in UTC from the data info
@@ -498,7 +486,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
-    _write_tsv(fname, data, True, verbose)
+    _write_tsv(fname, data, True)
 
 
 def _load_image(image, name='image'):
@@ -612,7 +600,7 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
 
 
 def _sidecar_json(raw, task, manufacturer, fname, datatype,
-                  emptyroom_fname=None, overwrite=False, verbose=True):
+                  emptyroom_fname=None, overwrite=False):
     """Create a sidecar json file depending on the suffix and save it.
 
     The sidecar json file provides meta data about the data
@@ -637,8 +625,6 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
-    verbose : bool
-        Set verbose output to True or False. Defaults to True.
 
     """
     sfreq = raw.info['sfreq']
@@ -794,7 +780,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
-    _write_json(fname, ch_info_json, overwrite, verbose)
+    _write_json(fname, ch_info_json, overwrite)
 
     return fname
 
@@ -875,7 +861,7 @@ def _write_raw_fif(raw, bids_fname):
              overwrite=True)
 
 
-def _write_raw_brainvision(raw, bids_fname, events):
+def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     """Save out the raw file in BrainVision format.
 
     Parameters
@@ -887,10 +873,11 @@ def _write_raw_brainvision(raw, bids_fname, events):
         should be saved.
     events : ndarray
         The events as MNE-Python format ndaray.
-
+    overwrite : bool
+        Whether or not to overwrite existing files.
     """
-    if not check_version('pybv', '0.4'):  # pragma: no cover
-        raise ImportError('pybv >=0.4 is required for converting '
+    if not check_version('pybv', '0.6'):  # pragma: no cover
+        raise ImportError('pybv >=0.6 is required for converting '
                           'file to BrainVision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
@@ -928,8 +915,10 @@ def _write_raw_brainvision(raw, bids_fname, events):
     write_brainvision(data=raw.get_data(),
                       sfreq=raw.info['sfreq'],
                       ch_names=raw.ch_names,
+                      ref_ch_names=None,
                       fname_base=op.splitext(op.basename(bids_fname))[0],
                       folder_out=op.dirname(bids_fname),
+                      overwrite=overwrite,
                       events=events,
                       resolution=resolution,
                       unit=unit,
@@ -951,12 +940,13 @@ def _write_raw_edf(raw, bids_fname):
     raw.export(bids_fname)
 
 
+@verbose
 def make_dataset_description(path, name, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
                              references_and_links=None, doi=None,
                              dataset_type='raw',
-                             overwrite=False, verbose=False):
+                             overwrite=False, verbose=None):
     """Create json for a dataset description.
 
     BIDS datasets may have one or more fields, this function allows you to
@@ -999,8 +989,7 @@ def make_dataset_description(path, name, data_license=None,
         If overwrite is True, provided fields will overwrite previous data.
         If overwrite is False, no existing data will be overwritten or
         replaced.
-    verbose : bool
-        Set verbose output to True or False.
+    %(verbose)s
 
     Notes
     -----
@@ -1019,16 +1008,17 @@ def make_dataset_description(path, name, data_license=None,
                          '"derivative."')
 
     fname = op.join(path, 'dataset_description.json')
-    description = OrderedDict([('Name', name),
-                               ('BIDSVersion', BIDS_VERSION),
-                               ('DatasetType', dataset_type),
-                               ('License', data_license),
-                               ('Authors', authors),
-                               ('Acknowledgements', acknowledgements),
-                               ('HowToAcknowledge', how_to_acknowledge),
-                               ('Funding', funding),
-                               ('ReferencesAndLinks', references_and_links),
-                               ('DatasetDOI', doi)])
+    description = OrderedDict([
+        ('Name', name),
+        ('BIDSVersion', BIDS_VERSION),
+        ('DatasetType', dataset_type),
+        ('License', data_license),
+        ('Authors', authors),
+        ('Acknowledgements', acknowledgements),
+        ('HowToAcknowledge', how_to_acknowledge),
+        ('Funding', funding),
+        ('ReferencesAndLinks', references_and_links),
+        ('DatasetDOI', doi)])
     if op.isfile(fname):
         with open(fname, 'r', encoding='utf-8-sig') as fin:
             orig_cols = json.load(fin)
@@ -1037,7 +1027,7 @@ def make_dataset_description(path, name, data_license=None,
             raise ValueError('Previous BIDS version used, please redo the '
                              'conversion to BIDS in a new directory '
                              'after ensuring all software is updated')
-        for key, val in description.items():
+        for key in description:
             if description[key] is None or not overwrite:
                 description[key] = orig_cols.get(key, None)
     # default author to make dataset description BIDS compliant
@@ -1049,13 +1039,15 @@ def make_dataset_description(path, name, data_license=None,
     pop_keys = [key for key, val in description.items() if val is None]
     for key in pop_keys:
         description.pop(key)
-    _write_json(fname, description, overwrite=True, verbose=verbose)
+    _write_json(fname, description, overwrite=True)
 
 
+@verbose
 def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    anonymize=None, format='auto', symlink=False,
                    empty_room=None, allow_preload=False,
-                   overwrite=False, verbose=True):
+                   montage=None, acpc_aligned=False,
+                   overwrite=False, verbose=None):
     """Save raw data to a BIDS-compliant folder structure.
 
     .. warning:: * The original file is simply copied over if the original
@@ -1196,7 +1188,16 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             absolutely necessary: for example, manually converting from file
             formats not supported by MNE or writing preprocessed derivatives.
             Be aware that these use cases are not fully supported.
-
+    montage : mne.channels.DigMontage | None
+        The montage with channel positions if channel position data are
+        to be stored in a format other than "head" (the internal MNE
+        coordinate frame that the data in ``raw`` is stored in).
+    acpc_aligned : bool
+        It is difficult to check whether the T1 scan is ACPC aligned which
+        means that "mri" coordinate space is "ACPC" BIDS coordinate space.
+        So, this flag is required to be True when the digitization data
+        is in "mri" for intracranial data to confirm that the T1 is
+        ACPC-aligned.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1210,9 +1211,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
-    verbose : bool
-        If ``True``, this will print a snippet of the sidecar files. Otherwise,
-        no content will be printed.
+    %(verbose)s
 
     Returns
     -------
@@ -1302,6 +1301,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     _validate_type(item=empty_room, item_name='empty_room',
                    types=(BIDSPath, None))
+    _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
+    _validate_type(acpc_aligned, bool, 'acpc_aligned')
 
     raw = raw.copy()
     convert = False  # flag if converting not copying
@@ -1315,7 +1316,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raw_fname = raw_fname.replace('.eeg', '.vhdr')
         raw_fname = raw_fname.replace('.fdt', '.set')
         raw_fname = raw_fname.replace('.dat', '.lay')
-        _, ext = _parse_ext(raw_fname, verbose=verbose)
+        _, ext = _parse_ext(raw_fname)
 
         if ext not in ALLOWED_INPUT_EXTENSIONS:
             raise ValueError(f'Unrecognized file format {ext}')
@@ -1357,7 +1358,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raise ValueError(msg)
 
     # Initialize BIDS path
-    datatype = _handle_datatype(raw, bids_path.datatype, verbose)
+    datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = (bids_path.copy()
                  .update(datatype=datatype, suffix=datatype, extension=ext))
 
@@ -1442,18 +1443,16 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # Anonymize
     if anonymize is not None:
         daysback, keep_his = _check_anonymize(anonymize, raw, ext)
-        raw.anonymize(daysback=daysback, keep_his=keep_his, verbose=verbose)
+        raw.anonymize(daysback=daysback, keep_his=keep_his)
 
         if bids_path.datatype == 'meg' and ext != '.fif':
-            if verbose:
-                warn('Converting to FIF for anonymization')
+            warn('Converting to FIF for anonymization')
             convert = True
             bids_path.update(extension='.fif')
         elif bids_path.datatype in ['eeg', 'ieeg']:
-            if ext not in ['.vhdr', '.edf', '.bdf']:
-                if verbose:
-                    warn('Converting data files to BrainVision format '
-                         'for anonymization')
+            if ext not in ['.vhdr', '.edf', '.bdf', '.EDF']:
+                warn('Converting data files to BrainVision format '
+                     'for anonymization')
                 convert = True
                 bids_path.update(extension='.vhdr')
 
@@ -1465,12 +1464,12 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # save readme file unless it already exists
     # XXX: can include README overwrite in future if using a template API
     # XXX: see https://github.com/mne-tools/mne-bids/issues/551
-    _readme(bids_path.datatype, readme_fname, False, verbose)
+    _readme(bids_path.datatype, readme_fname, False)
 
     # save all participants meta data
     _participants_tsv(raw, bids_path.subject, participants_tsv_fname,
-                      overwrite, verbose)
-    _participants_json(participants_json_fname, True, verbose)
+                      overwrite)
+    _participants_json(participants_json_fname, True)
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not data_is_emptyroom:
@@ -1478,12 +1477,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                                 sensor_coord_system=orient,
                                 fname=coordsystem_path.fpath,
                                 datatype=bids_path.datatype,
-                                overwrite=overwrite, verbose=verbose)
+                                overwrite=overwrite)
     elif bids_path.datatype in ['eeg', 'ieeg']:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
-        if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(bids_path, raw, overwrite, verbose)
+        if montage is not None or \
+                (raw.info['dig'] is not None and raw.info['dig']):
+            _write_dig_bids(bids_path, raw, montage, acpc_aligned,
+                            overwrite)
     else:
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')
@@ -1491,12 +1492,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events_data, event_id, raw, task=bids_path.task, verbose=False
-        )
+            events_data, event_id, raw, task=bids_path.task)
         if events_array.size != 0:
             _events_tsv(events=events_array, durations=event_dur, raw=raw,
                         fname=events_path.fpath, trial_type=event_desc_id_map,
-                        overwrite=overwrite, verbose=verbose)
+                        overwrite=overwrite)
         # Kepp events_array around for BrainVision writing below.
         del event_desc_id_map, events_data, event_id, event_dur
 
@@ -1504,14 +1504,12 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # already exist. Always set overwrite to False here. If users
     # want to edit their dataset_description, they can directly call
     # this function.
-    make_dataset_description(bids_path.root, name=" ", overwrite=False,
-                             verbose=verbose)
+    make_dataset_description(bids_path.root, name=" ", overwrite=False)
 
     _sidecar_json(raw, task=bids_path.task, manufacturer=manufacturer,
                   fname=sidecar_path.fpath, datatype=bids_path.datatype,
-                  emptyroom_fname=associated_er_path,
-                  overwrite=overwrite, verbose=verbose)
-    _channels_tsv(raw, channels_path.fpath, overwrite, verbose)
+                  emptyroom_fname=associated_er_path, overwrite=overwrite)
+    _channels_tsv(raw, channels_path.fpath, overwrite)
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
@@ -1549,7 +1547,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             f"expected one of "
             f"{', '.join(sorted(ALLOWED_DATATYPE_EXTENSIONS['meg']))}")
 
-    if not convert and verbose:
+    if not convert:
         logger.info(f'Copying data files to {bids_path.fpath.name}')
 
     # If users desire a certain format, will handle auto-conversion
@@ -1581,15 +1579,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 raw, (op.join(data_path, bids_path.basename)
                       if ext == '.pdf' else bids_path.fpath))
         elif bids_path.datatype in ['eeg', 'ieeg'] and format == 'EDF':
-            if verbose:
-                warn('Converting data files to EDF format')
+            warn('Converting data files to EDF format')
             _write_raw_edf(raw, bids_path.fpath)
         else:
-            if verbose:
-                warn('Converting data files to BrainVision format')
+            warn('Converting data files to BrainVision format')
             bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
             # XXX Should we write durations here too?
-            _write_raw_brainvision(raw, bids_path.fpath, events=events_array)
+            _write_raw_brainvision(raw, bids_path.fpath, events=events_array,
+                                   overwrite=overwrite)
     elif ext == '.fif':
         if symlink:
             link_target = Path(raw.filenames[0])
@@ -1603,7 +1600,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
-    elif ext in ['.edf', '.bdf']:
+    elif ext in ['.edf', '.EDF', '.bdf']:
         if anonymize is not None:
             warn("EDF/EDF+/BDF files contain two fields for recording dates."
                  "Due to file format limitations, one of these fields only "
@@ -1627,10 +1624,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # write to the scans.tsv file the output file written
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
-    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite, verbose)
-    if verbose:
-        logger.info(f'Wrote {scans_path.fpath} entry with '
-                    f'{scan_relative_fpath}.')
+    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite)
+    logger.info(f'Wrote {scans_path.fpath} entry with '
+                f'{scan_relative_fpath}.')
 
     return bids_path
 
@@ -1709,8 +1705,9 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     return landmarks
 
 
+@verbose
 def write_anat(image, bids_path, landmarks=None, deface=False,
-               raw=None, trans=None, t1w=None, overwrite=False, verbose=False):
+               raw=None, trans=None, t1w=None, overwrite=False, verbose=None):
     """Put anatomical MRI data into a BIDS format.
 
     Given an MRI scan, format and store the MR data according to BIDS in the
@@ -1784,10 +1781,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         match the current data will be replaced.
         If overwrite is False, no existing data will be overwritten or
         replaced.
-
-    verbose : bool
-        If ``True``, this will print a snippet of the sidecar files. If
-        ``False``, no content will be printed.
+    %(verbose)s
 
     Returns
     -------
@@ -1876,7 +1870,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'
                           .format(fname))
-        _write_json(fname, img_json, overwrite, verbose)
+        _write_json(fname, img_json, overwrite)
 
         if deface:
             image_nii = _deface(image_nii, landmarks, deface)
@@ -1894,9 +1888,14 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
     return bids_path
 
 
+@deprecated(extra='mark_bad_channels is deprecated in favor of mark_channels '
+                  'and will be removed in v0.10.')
+@verbose
 def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
-                      overwrite=False, verbose=True):
+                      overwrite=False, verbose=None):
     """Update which channels are marked as "bad" in an existing BIDS dataset.
+
+    This modifies entries in the ``channels.tsv`` file in a BIDS dataset.
 
     Parameters
     ----------
@@ -1919,8 +1918,44 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         information of **all** channels: mark the channels passed via
         ``ch_names`` as bad, and all remaining channels as good, also
         discarding their descriptions.
-    verbose : bool
-        The verbosity level.
+    %(verbose)s
+    """
+    # if overwrite, first mark all channels as good and overwrite
+    # their descriptions
+    if overwrite:
+        mark_channels(bids_path=bids_path, ch_names=[], status='good',
+                      descriptions='n/a', verbose=verbose)
+
+    # now mark the channels that we want as bad
+    mark_channels(bids_path=bids_path, ch_names=ch_names, status='bad',
+                  descriptions=descriptions, verbose=verbose)
+
+
+@verbose
+def mark_channels(bids_path, *, ch_names, status, descriptions=None,
+                  verbose=None):
+    """Update status and description of channels in an existing BIDS dataset.
+
+    Parameters
+    ----------
+    bids_path : mne_bids.BIDSPath
+        The recording to update. The :class:`mne_bids.BIDSPath` instance passed
+        here **must** have the ``.root`` attribute set. The ``.datatype``
+        attribute **may** be set. If ``.datatype`` is not set and only one data
+        type (e.g., only EEG or MEG data) is present in the dataset, it will be
+        selected automatically.
+    ch_names : str | list of str
+        The names of the channel(s) to mark with a ``status`` and possibly a
+        ``description``. Can be an empty list to indicate all channel names.
+    status : 'good' | 'bad' | list of str
+        The status of the channels ('good', or 'bad'). Default is 'bad'. If it
+        is a list, then must be a list of 'good', or 'bad' that has the same
+        length as ``ch_names``.
+    descriptions : None | str | list of str
+        Descriptions of the reasons that lead to the exclusion of the
+        channel(s). If a list, it must match the length of ``ch_names``.
+        If ``None``, no descriptions are added.
+    %(verbose)s
 
     Examples
     --------
@@ -1929,57 +1964,24 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
     ...                      datatype='eeg', root=root)
-    >>> mark_bad_channels('C4', bids_path=bids_path, verbose=False)
-    Processing channel C4:
-        status: bad
-        description: n/a
+    >>> mark_channels(bids_path=bids_path, ch_names='C4', status='bad',
+    ...               verbose=False)
 
     Mark multiple channels as bad, and add a description as to why.
 
     >>> bads = ['C3', 'PO10']
     >>> descriptions = ['very noisy', 'continuously flat']
-    >>> mark_bad_channels(bads, descriptions, bids_path=bids_path,
-    ...                   verbose=False)
-    Processing channel C3:
-        status: bad
-        description: very noisy
-    Processing channel PO10:
-        status: bad
-        description: continuously flat
+    >>> mark_channels(bids_path, ch_names=bads, status='bad',
+    ...               descriptions=descriptions, verbose=False)
 
-    Mark two channels as bad, and mark all others as good by setting
-    ``overwrite=True``.
+    Mark all channels with a new description, while keeping them as a "good"
+    channel.
 
-    >>> bads = ['C3', 'C4']
-    >>> mark_bad_channels(bads, bids_path=bids_path, # doctest: +SKIP
-    ...                   overwrite=True, verbose=False)
-
-    Mark all channels as good by passing an empty list of bad channels, and
-    setting ``overwrite=True``.
-
-    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True,
-    ...                   verbose=False)
-    Resetting status and description for all channels.
+    >>> descriptions = ['resected', 'resected']
+    >>> mark_channels(bids_path=bids_path, ch_names=['C3', 'C4'],
+    ...               descriptions=descriptions, status='good',
+    ...               verbose=False)
     """
-    if not ch_names and not overwrite:
-        raise ValueError('You did not pass a channel name, but set '
-                         'overwrite=False. If you wish to mark all channels '
-                         'as good, please pass overwrite=True')
-
-    if descriptions and not ch_names:
-        raise ValueError('You passed descriptions, but no channels.')
-
-    if not ch_names:
-        descriptions = []
-    if isinstance(ch_names, str):
-        ch_names = [ch_names]
-    if isinstance(descriptions, str):
-        descriptions = [descriptions]
-    elif not descriptions:
-        descriptions = ['n/a'] * len(ch_names)
-    if len(ch_names) != len(descriptions):
-        raise ValueError('Number of channels and descriptions must match.')
-
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
@@ -1989,10 +1991,39 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # Read sidecar file.
+    # Read sidecar file
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
                                             extension='.tsv')
     tsv_data = _from_tsv(channels_fname)
+
+    # if an empty list is passed in, then these are the entire list
+    # of channels
+    if ch_names == []:
+        ch_names = tsv_data['name']
+    elif isinstance(ch_names, str):
+        ch_names = [ch_names]
+
+    # set descriptions based on how it's passed in
+    if isinstance(descriptions, str):
+        descriptions = [descriptions] * len(ch_names)
+    elif not descriptions:
+        descriptions = [None] * len(ch_names)
+
+    # make sure statuses is a list of strings
+    if isinstance(status, str):
+        status = [status] * len(ch_names)
+
+    if len(ch_names) != len(descriptions):
+        raise ValueError('Number of channels and descriptions must match.')
+
+    if len(status) != len(ch_names):
+        raise ValueError(f'If status is a list of {len(status)} statuses, '
+                         f'then it must have the same length as ch_names '
+                         f'({len(ch_names)}).')
+
+    if not all(status in ['good', 'bad'] for status in status):
+        raise ValueError('Setting the status of a channel must only be '
+                         '"good", or "bad".')
 
     # Read sidecar and create required columns if they do not exist.
     if 'status' not in tsv_data:
@@ -2004,18 +2035,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                     'Creating.')
         tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
 
-    # Update the sidecar data.
-    if overwrite:
-        # In cases where the "status" and / or "status_description"
-        # columns were just created by us, we overwrite them again
-        # here. This is not optimal in terms of performance, but
-        # probably doesn't hurt anyone.
-        logger.info('Resetting status and description for all channels.')
-        tsv_data['status'] = ['good'] * len(tsv_data['name'])
-        tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
-
     # Now actually mark the user-requested channels as bad.
-    for ch_name, description in zip(ch_names, descriptions):
+    for ch_name, status_, description in zip(ch_names, status, descriptions):
         if ch_name not in tsv_data['name']:
             raise ValueError(f'Channel {ch_name} not found in dataset!')
 
@@ -2023,12 +2044,16 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         logger.info(f'Processing channel {ch_name}:\n'
                     f'    status: bad\n'
                     f'    description: {description}')
-        tsv_data['status'][idx] = 'bad'
-        tsv_data['status_description'][idx] = description
+        tsv_data['status'][idx] = status_
 
-    _write_tsv(channels_fname, tsv_data, overwrite=True, verbose=verbose)
+        # only write if the description was passed in
+        if description is not None:
+            tsv_data['status_description'][idx] = description
+
+    _write_tsv(channels_fname, tsv_data, overwrite=True)
 
 
+@verbose
 def write_meg_calibration(calibration, bids_path, verbose=None):
     """Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.
 
@@ -2042,9 +2067,7 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
         A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
         ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
         ``None``.
-    verbose : bool | None
-         If a boolean, whether or not to produce verbose output. If ``None``,
-         use the default log level.
+    %(verbose)s
 
     Examples
     --------
@@ -2088,6 +2111,7 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
                                              calibration=calibration)
 
 
+@verbose
 def write_meg_crosstalk(fname, bids_path, verbose=None):
     """Write the Elekta/Neuromag/MEGIN crosstalk information to disk.
 
@@ -2099,9 +2123,7 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
         A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
         ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
         ``None``.
-    verbose : bool | None
-         If a boolean, whether or not to produce verbose output. If ``None``,
-         use the default log level.
+    %(verbose)s
 
     Examples
     --------

@@ -17,6 +17,9 @@ recursive-exclude doc/_build *
 recursive-exclude doc/generated *
 recursive-exclude doc/auto_examples *
 
+recursive-exclude tools *
+exclude tools
+
 prune .circleci
 prune paper
 

@@ -27,13 +27,13 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              ANNOTATIONS_TO_KEEP,
                              reader, _map_options)
-from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
+from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping, verbose
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype)
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
-              allow_maxshield=False, config=None, verbose=None, **kwargs):
+              allow_maxshield=False, config=None, **kwargs):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
 
@@ -46,13 +46,18 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     elif ext == '.pdf':
         raw = io.read_raw_bti(raw_fpath, config_fname=config,
                               head_shape_fname=hsp,
-                              preload=False, verbose=verbose,
-                              **kwargs)
+                              preload=False, **kwargs)
 
     elif ext == '.fif':
         raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf']:
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF']:
+        raw_fpath = Path(raw_fpath)
+        # handle EDF extension upper/lower casing
+        if ext == '.edf' and not raw_fpath.exists():
+            raw_fpath = raw_fpath.with_suffix('.EDF')
+        elif ext == '.EDF' and not raw_fpath.exists():
+            raw_fpath = raw_fpath.with_suffix('.edf')
         raw = reader[ext](raw_fpath, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
@@ -70,7 +75,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     return raw
 
 
-def _read_events(events_data, event_id, raw, task=None, verbose=None):
+def _read_events(events_data, event_id, raw, task=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
@@ -86,8 +91,6 @@ def _read_events(events_data, event_id, raw, task=None, verbose=None):
         The data as MNE-Python Raw object.
     task : str | None
         If task may be resting state, silence warnings.
-    verbose : bool | str | int | None
-        If not None, override default verbose level (see :func:`mne.verbose`).
 
     Returns
     -------
@@ -105,7 +108,7 @@ def _read_events(events_data, event_id, raw, task=None, verbose=None):
     """
     # get events from events_data
     if isinstance(events_data, str):
-        events = read_events(events_data, verbose=verbose).astype(int)
+        events = read_events(events_data).astype(int)
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
             raise ValueError('Events must have two dimensions, '
@@ -138,7 +141,7 @@ def _read_events(events_data, event_id, raw, task=None, verbose=None):
         # care of this shift automatically.
         new_annotations = mne.annotations_from_events(
             events=events, sfreq=raw.info['sfreq'], event_desc=id_to_desc_map,
-            orig_time=raw.annotations.orig_time, verbose=verbose)
+            orig_time=raw.annotations.orig_time)
 
         raw = raw.copy()  # Don't alter the original.
         annotations = raw.annotations.copy()
@@ -153,8 +156,7 @@ def _read_events(events_data, event_id, raw, task=None, verbose=None):
     all_events, all_desc = events_from_annotations(
         raw,
         event_id=event_id,
-        regexp=None,  # Include `BAD_` and `EDGE_` Annotations, too.
-        verbose=verbose
+        regexp=None  # Include `BAD_` and `EDGE_` Annotations, too.
     )
     all_dur = raw.annotations.duration
 
@@ -169,8 +171,7 @@ def _read_events(events_data, event_id, raw, task=None, verbose=None):
     return all_events, all_dur, all_desc
 
 
-def _handle_participants_reading(participants_fname, raw,
-                                 subject, verbose=None):
+def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
     row_ind = subjects.index(subject)
@@ -199,7 +200,7 @@ def _handle_participants_reading(participants_fname, raw,
     return raw
 
 
-def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
+def _handle_scans_reading(scans_fname, raw, bids_path):
     """Read associated scans.tsv and set meas_date."""
     scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
@@ -217,6 +218,15 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         acq_times = scans_tsv['acq_time']
     else:
         acq_times = ['n/a'] * len(fnames)
+
+    # check if the filename is an EDF file
+    if data_fname.lower().endswith('.edf'):
+        # check first if lower-case is in the filename
+        lower_case_ext = Path(data_fname).with_suffix('.edf').as_posix()
+        if lower_case_ext not in fnames:
+            data_fname = Path(data_fname).with_suffix('.EDF').as_posix()
+        else:
+            data_fname = lower_case_ext
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
@@ -244,9 +254,8 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         acq_time = datetime.strptime(acq_time, '%Y-%m-%dT%H:%M:%S.%fZ')
         acq_time = acq_time.replace(tzinfo=timezone.utc)
 
-        if verbose:
-            logger.debug(f'Loaded {scans_fname} scans file to set '
-                         f'acq_time as {acq_time}.')
+        logger.debug(f'Loaded {scans_fname} scans file to set '
+                     f'acq_time as {acq_time}.')
         # First set measurement date to None and then call call anonymize() to
         # remove any traces of the measurement date we wish
         # to replace – it might lurk out in more places than just
@@ -272,7 +281,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     return raw
 
 
-def _handle_info_reading(sidecar_fname, raw, verbose=None):
+def _handle_info_reading(sidecar_fname, raw):
     """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
@@ -546,7 +555,8 @@ def _handle_channels_reading(channels_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_path, extra_params=None, verbose=True):
+@verbose
+def read_raw_bids(bids_path, extra_params=None, verbose=None):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -571,8 +581,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         Note that the ``exclude`` parameter, which is supported by some
         MNE-Python readers, is not supported; instead, you need to subset
         your channels **after** reading.
-    verbose : bool
-        The verbosity level.
+    %(verbose)s
 
     Returns
     -------
@@ -645,9 +654,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     if bids_fname.endswith('.fif') and 'allow_maxshield' not in extra_params:
         extra_params['allow_maxshield'] = True
-
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, verbose=None, **extra_params)
+                    config=config, **extra_params)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
@@ -685,7 +693,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                f"{bids_path.basename}")
         if datatype in ['meg', 'eeg', 'ieeg']:
             _read_dig_bids(electrodes_fname, coordsystem_fname,
-                           raw=raw, datatype=datatype, verbose=verbose)
+                           raw=raw, datatype=datatype)
 
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot
@@ -694,7 +702,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                            extension='.json',
                                            on_error='warn')
     if sidecar_fname is not None:
-        raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
+        raw = _handle_info_reading(sidecar_fname, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(
@@ -704,15 +712,14 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     ).fpath
 
     if scans_fname.exists():
-        raw = _handle_scans_reading(scans_fname, raw, bids_path,
-                                    verbose=verbose)
+        raw = _handle_scans_reading(scans_fname, raw, bids_path)
 
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
     subject = f"sub-{bids_path.subject}"
     if op.exists(participants_tsv_fpath):
         raw = _handle_participants_reading(participants_tsv_fpath, raw,
-                                           subject, verbose=verbose)
+                                           subject)
     else:
         warn("Participants file not found for {}... Not reading "
              "in any particpants.tsv data.".format(bids_fname))
@@ -721,8 +728,9 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     return raw
 
 
+@verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None):
+                       fs_subject=None, fs_subjects_dir=None, verbose=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -758,6 +766,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
+    %(verbose)s
 
     Returns
     -------

@@ -43,9 +43,9 @@ from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
-                      mark_bad_channels, write_meg_calibration,
+                      mark_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      get_anat_landmarks)
+                      get_anat_landmarks, write)
 from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
@@ -259,7 +259,7 @@ def test_write_correct_inputs():
         write_raw_bids(raw, bids_path)
 
 
-def test_make_dataset_description(tmpdir):
+def test_make_dataset_description(tmpdir, monkeypatch):
     """Test making a dataset_description.json."""
     with pytest.raises(ValueError, match='`dataset_type` must be either "raw" '
                                          'or "derivative."'):
@@ -296,12 +296,9 @@ def test_make_dataset_description(tmpdir):
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ['MNE B.', 'MNE P.']
 
+    monkeypatch.setattr(write, 'BIDS_VERSION', 'old')
     with pytest.raises(ValueError, match='Previous BIDS version used'):
-        version = make_dataset_description.__globals__['BIDS_VERSION']
-        make_dataset_description.__globals__['BIDS_VERSION'] = 'old'
         make_dataset_description(path=tmpdir, name='tst')
-        # put version back so that it doesn't cause issues down the road
-        make_dataset_description.__globals__['BIDS_VERSION'] = version
 
 
 def test_stamp_to_dt():
@@ -390,7 +387,7 @@ def test_line_freq(line_freq, _bids_validate, tmpdir):
         assert eeg_json['PowerLineFrequency'] == 'n/a'
 
 
-@requires_version('pybv', '0.4')
+@requires_version('pybv', '0.6')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_fif(_bids_validate, tmpdir):
@@ -1055,7 +1052,7 @@ def test_vhdr(_bids_validate, tmpdir):
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # test anonymize and convert
-    if check_version('pybv', '0.4'):
+    if check_version('pybv', '0.6'):
         raw = _read_raw_brainvision(raw_fname)
         output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
         _bids_validate(output_path)
@@ -1117,8 +1114,7 @@ def test_vhdr(_bids_validate, tmpdir):
     entities = get_entities_from_fname(electrodes_fpath)
     assert all([entity is None for key, entity in entities.items()
                 if key not in ['subject', 'session',
-                               'acquisition', 'space',
-                               'suffix']])
+                               'acquisition', 'space']])
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
@@ -1298,7 +1294,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     assert len(list(data.values())[0]) == 2
 
     # check that scans list is properly converted to brainvision
-    if check_version('pybv', '0.4') or dir_name == 'EDF':
+    if check_version('pybv', '0.6') or dir_name == 'EDF':
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
 
@@ -1403,8 +1399,45 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
         coordsystem_json = json.load(fin)
     assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
 
+    # test writing to ACPC
+    ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                 coord_frame='mri')
+    bids_root = tmpdir.mkdir('bids4')
+    bids_path.update(root=bids_root, datatype='ieeg')
+    # test works if ACPC-aligned is specified
+    kwargs.update(montage=ecog_montage, acpc_aligned=True)
+    if dir_name == 'EDF':
+        write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            write_raw_bids(**kwargs)
+    else:
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "double" format'):
+            write_raw_bids(**kwargs)
+
+    _bids_validate(bids_root)
+
+    bids_fname.update(root=bids_root)
+    electrodes_fname = _find_matching_sidecar(bids_fname,
+                                              suffix='electrodes',
+                                              extension='.tsv')
+    coordsystem_fname = _find_matching_sidecar(bids_fname,
+                                               suffix='coordsystem',
+                                               extension='.json')
+    assert 'space-ACPC' in electrodes_fname
+    assert 'space-ACPC' in coordsystem_fname
+    with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
+        coordsystem_json = json.load(fin)
+    assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
+
+    kwargs.update(acpc_aligned=False)
+    with pytest.raises(RuntimeError, match='`acpc_aligned` is False'):
+        write_raw_bids(**kwargs)
+
     # test anonymize and convert
-    if check_version('pybv', '0.4') or dir_name == 'EDF':
+    if check_version('pybv', '0.6') or dir_name == 'EDF':
         raw = reader(raw_fname)
         bids_path.update(root=bids_root, datatype='eeg')
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
@@ -1538,7 +1571,7 @@ def test_set(_bids_validate, tmpdir):
     _bids_validate(bids_root)
 
     # test anonymize and convert
-    if check_version('pybv', '0.4'):
+    if check_version('pybv', '0.6'):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
             output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
@@ -1934,36 +1967,29 @@ def _ensure_list(x):
 
 @pytest.mark.parametrize(
     'ch_names, descriptions, drop_status_col, drop_description_col, '
-    'existing_ch_names, existing_descriptions, datatype, overwrite',
+    'existing_ch_names, existing_descriptions',
     [
         # Only mark channels, do not set descriptions.
-        (['MEG 0112', 'MEG 0131', 'EEG 053'], None, False, False, [], [], None,
-         False),
-        ('MEG 0112', None, False, False, [], [], None, False),
-        ('nonsense', None, False, False, [], [], None, False),
+        (['MEG 0112', 'MEG 0131', 'EEG 053'], None, False, False, [], []),
+        ('MEG 0112', None, False, False, [], []),
+        ('nonsense', None, False, False, [], []),
         # Now also set descriptions.
         (['MEG 0112', 'MEG 0131'], ['Really bad!', 'Even worse.'], False,
-         False, [], [], None, False),
-        ('MEG 0112', 'Really bad!', False, False, [], [], None, False),
-        (['MEG 0112', 'MEG 0131'], ['Really bad!'], False, False, [], [], None,
-         False),  # Should raise.
+         False, [], []),
+        ('MEG 0112', 'Really bad!', False, False, [], []),
+        # Should raise.
+        (['MEG 0112', 'MEG 0131'], ['Really bad!'], False, False, [], []),
         # `datatype='meg`
-        (['MEG 0112'], ['Really bad!'], False, False, [], [], 'meg', False),
+        (['MEG 0112'], ['Really bad!'], False, False, [], []),
         # Enure we create missing columns.
-        ('MEG 0112', 'Really bad!', True, True, [], [], None, False),
-        # Ensure existing entries are left untouched if `overwrite=False`
-        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
-         ['Really bad!', 'Even worse.'], None, False),
-        # Ensure existing entries are discarded if `overwrite=True`.
-        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
-         ['Really bad!', 'Even worse.'], None, True)
+        ('MEG 0112', 'Really bad!', True, True, [], []),
     ])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_mark_bad_channels(_bids_validate,
-                           ch_names, descriptions,
-                           drop_status_col, drop_description_col,
-                           existing_ch_names, existing_descriptions,
-                           datatype, overwrite, tmpdir):
+def test_mark_channels(_bids_validate,
+                       ch_names, descriptions,
+                       drop_status_col, drop_description_col,
+                       existing_ch_names, existing_descriptions,
+                       tmpdir):
     """Test marking channels of an existing BIDS dataset as "bad"."""
     # Setup: Create a fresh BIDS dataset.
     bids_root = tmpdir.mkdir('bids1')
@@ -2006,51 +2032,41 @@ def test_mark_bad_channels(_bids_validate,
     if (descriptions is not None and
             len(_ensure_list(ch_names)) != len(_ensure_list(descriptions))):
         with pytest.raises(ValueError, match='must match'):
-            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                              bids_path=bids_path, overwrite=overwrite)
+            mark_channels(ch_names=ch_names, descriptions=descriptions,
+                          bids_path=bids_path, status='bad',
+                          verbose=False)
         return
 
     # Test that we raise if we encounter an unknown channel name.
     if any([ch_name not in raw.ch_names
             for ch_name in _ensure_list(ch_names)]):
         with pytest.raises(ValueError, match='not found in dataset'):
-            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                              bids_path=bids_path, overwrite=overwrite)
+            mark_channels(ch_names=ch_names, descriptions=descriptions,
+                          bids_path=bids_path, status='bad', verbose=False)
         return
 
-    if not overwrite:
-        # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
-        # begin our actual tests, which should then add additional channels
-        # to the list of bads, retaining the ones we're specifying here.
-        mark_bad_channels(ch_names=existing_ch_names,
-                          descriptions=existing_descriptions,
-                          bids_path=bids_path, overwrite=True)
-        _bids_validate(bids_root)
-        raw = read_raw_bids(bids_path=bids_path, verbose=False)
-        # Order is not preserved
-        assert set(existing_ch_names) == set(raw.info['bads'])
-        del raw
+    # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
+    # begin our actual tests, which should then add additional channels
+    # to the list of bads, retaining the ones we're specifying here.
+    mark_channels(ch_names=[],
+                  bids_path=bids_path, status='good',
+                  verbose=False)
+    _bids_validate(bids_root)
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    # Order is not preserved
+    assert set(existing_ch_names) == set(raw.info['bads'])
+    del raw
 
-    mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                      bids_path=bids_path, overwrite=overwrite)
+    mark_channels(ch_names=ch_names, descriptions=descriptions,
+                  bids_path=bids_path, status='bad', verbose=False)
     _bids_validate(bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
-    if drop_status_col or overwrite:
-        # Existing column values should have been discarded, so only the new
-        # ones should be present.
-        expected_bads = _ensure_list(ch_names)
-    else:
-        expected_bads = (_ensure_list(ch_names) +
-                         _ensure_list(existing_ch_names))
-
-    if drop_description_col or overwrite:
-        # Existing column values should have been discarded, so only the new
-        # ones should be present.
-        expected_descriptions = _ensure_list(descriptions)
-    else:
-        expected_descriptions = (_ensure_list(descriptions) +
-                                 _ensure_list(existing_descriptions))
+    # expected bad channels and descriptions just get appended
+    expected_bads = (_ensure_list(ch_names) +
+                     _ensure_list(existing_ch_names))
+    expected_descriptions = (_ensure_list(descriptions) +
+                             _ensure_list(existing_descriptions))
 
     # Order is not preserved
     assert len(expected_bads) == len(raw.info['bads'])
@@ -2066,7 +2082,83 @@ def test_mark_bad_channels(_bids_validate,
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_mark_bad_channels_files(tmpdir):
+def test_mark_channel_roundtrip(tmpdir):
+    """Test marking channels fulfills roundtrip."""
+    # Setup: Create a fresh BIDS dataset.
+    bids_root = tmpdir.mkdir('bids1')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
+                                         suffix='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, events_data=events,
+                   event_id=event_id, verbose=False)
+    channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
+                                            extension='.tsv')
+
+    ch_names = raw.ch_names
+    # first mark all channels as good
+    mark_channels(bids_path, ch_names=[], status='good', verbose=False)
+    tsv_data = _from_tsv(channels_fname)
+    assert all(status == 'good' for status in tsv_data['status'])
+
+    # now mark some bad channels
+    mark_channels(bids_path, ch_names=ch_names[:5], status='bad',
+                  verbose=False)
+    tsv_data = _from_tsv(channels_fname)
+    status = tsv_data['status']
+    assert all(status_ == 'bad' for status_ in status[:5])
+    assert all(status_ == 'good' for status_ in status[5:])
+
+    # now mark them good again
+    mark_channels(bids_path, ch_names=ch_names[:5], status='good',
+                  verbose=False)
+    tsv_data = _from_tsv(channels_fname)
+    assert all(status == 'good' for status in tsv_data['status'])
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_error_mark_channels(tmpdir):
+    """Test errors when marking channels."""
+    # Setup: Create a fresh BIDS dataset.
+    bids_root = tmpdir.mkdir('bids1')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
+                                         suffix='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, events_data=events,
+                   event_id=event_id, verbose=False)
+
+    ch_names = raw.ch_names
+
+    with pytest.raises(ValueError, match='Setting the status'):
+        mark_channels(ch_names=ch_names, bids_path=bids_path,
+                      status='test')
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_mark_channels_files(tmpdir):
     """Test validity of bad channel writing."""
     # BV
     bids_root = tmpdir.mkdir('bids1')
@@ -2088,7 +2180,7 @@ def test_mark_bad_channels_files(tmpdir):
 
     # mark bad channels that get stored as uV in write_brain_vision
     bads = ['CP5', 'CP6']
-    mark_bad_channels(bads, bids_path=bids_path, overwrite=False)
+    mark_channels(bids_path=bids_path, ch_names=bads, status='bad')
     raw.info['bads'].extend(bads)
 
     # the raw data should match if you drop the bads
@@ -2106,7 +2198,8 @@ def test_mark_bad_channels_files(tmpdir):
     raw_fname = op.join(data_path, fname)
     raw = _read_raw_edf(raw_fname)
     write_raw_bids(raw, bids_path, overwrite=True)
-    mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
+    mark_channels(bids_path=bids_path, ch_names=raw.ch_names[0],
+                  status='bad')
 
 
 def test_write_meg_calibration(_bids_validate, tmpdir):
@@ -2353,23 +2446,18 @@ def test_coordsystem_json_compliance(
 
     raw = reader(raw_fname)
 
-    # clean all events for this test
-    kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True,
-                  verbose=False)
+    # when passed as a montage, these are ignored so that MNE does
+    # not transform back to "head" as it does for internal consistency
+    landmarks = dict(nasion=[1, 0, 0], lpa=[0, 1, 0], rpa=[0, 0, 1])
 
     if datatype == 'eeg':
         raw.set_channel_types({ch: 'eeg' for ch in raw.ch_names})
-        landmarks = dict(nasion=[1, 0, 0],
-                         lpa=[0, 1, 0],
-                         rpa=[0, 0, 1])
     elif datatype == 'ieeg':
         raw.set_channel_types({ch: 'seeg' for ch in raw.ch_names})
 
-        # XXX: setting landmarks for ieeg montage for some reason
-        # transforms coord_frame -> 'CapTrak'. Possible issue in mne
-        landmarks = dict()
-
-    if datatype != 'meg':
+    if datatype == 'meg':
+        montage = None
+    else:
         # alter some channels manually with electrodes to write
         ch_names = raw.ch_names
         elec_locs = np.random.random((len(ch_names), 3)).tolist()
@@ -2377,8 +2465,13 @@ def test_coordsystem_json_compliance(
         montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame=coord_frame,
                                                 **landmarks)
-        raw.set_montage(montage)
+        if datatype == 'eeg':
+            raw.set_montage(montage)
+            montage = None
 
+    # clean all events for this test
+    kwargs = dict(raw=raw, bids_path=bids_path, acpc_aligned=True,
+                  montage=montage, overwrite=True, verbose=False)
     # write to BIDS and then check the coordsystem files
     bids_output_path = write_raw_bids(**kwargs)
     coordsystem_fname = _find_matching_sidecar(bids_output_path,
@@ -2389,8 +2482,9 @@ def test_coordsystem_json_compliance(
 
     # writing twice should work as long as the coordsystem
     # contents have not changed
-    write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='02'),
-                   overwrite=False, verbose=False)
+    kwargs.update(bids_path=bids_path.copy().update(run='02'),
+                  overwrite=False)
+    write_raw_bids(**kwargs)
 
     datatype_ = {'meg': 'MEG', 'eeg': 'EEG', 'ieeg': 'iEEG'}[datatype]
     # if there is a change in the underlying
@@ -2400,11 +2494,11 @@ def test_coordsystem_json_compliance(
     new_coordsystem_json = coordsystem_json.copy()
     new_coordsystem_json[f'{datatype_}CoordinateSystem'] = 'blah'
     _write_json(coordsystem_fname, new_coordsystem_json, overwrite=True)
+    kwargs.update(bids_path=bids_path.copy().update(run='03'))
     with pytest.raises(RuntimeError,
                        match='Trying to write coordsystem.json, '
                              'but it already exists'):
-        write_raw_bids(raw=raw, bids_path=bids_path.copy().update(run='03'),
-                       overwrite=False, verbose=False)
+        write_raw_bids(**kwargs)
     _write_json(coordsystem_fname, coordsystem_json, overwrite=True)
 
     if datatype != 'meg':
@@ -2419,38 +2513,42 @@ def test_coordsystem_json_compliance(
         new_elecs_tsv = elecs_tsv.copy()
         new_elecs_tsv['name'][0] = 'blah'
         _to_tsv(new_elecs_tsv, electrodes_fname)
+        kwargs.update(bids_path=bids_path.copy().update(run='04'))
         with pytest.raises(
                 RuntimeError, match='Trying to write electrodes.tsv, '
                                     'but it already exists'):
-            write_raw_bids(
-                raw=raw, bids_path=bids_path.copy().update(run='04'),
-                overwrite=False, verbose=False)
+            write_raw_bids(**kwargs)
 
     # perform checks on the coordsystem.json file itself
     if datatype == 'eeg' and coord_frame == 'head':
         assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
         assert coordsystem_json['EEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
+            BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
     elif datatype == 'eeg' and coord_frame == 'unknown':
         assert coordsystem_json['EEGCoordinateSystem'] == 'CapTrak'
         assert coordsystem_json['EEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
+            BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
     elif datatype == 'ieeg' and coord_frame == 'mni_tal':
         assert 'space-fsaverage' in coordsystem_fname
         assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['fsaverage']
+            BIDS_COORD_FRAME_DESCRIPTIONS['fsaverage']
+    elif datatype == 'ieeg' and coord_frame == 'mri':
+        assert 'space-ACPC' in coordsystem_fname
+        assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
+        assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
+            BIDS_COORD_FRAME_DESCRIPTIONS['acpc']
     elif datatype == 'ieeg' and coord_frame == 'unknown':
         assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == 'n/a'
     elif datatype == 'meg' and dir_name == 'CTF':
         assert coordsystem_json['MEGCoordinateSystem'] == 'CTF'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['ctf']
+            BIDS_COORD_FRAME_DESCRIPTIONS['ctf']
     elif datatype == 'meg' and dir_name == 'MEG':
         assert coordsystem_json['MEGCoordinateSystem'] == 'ElektaNeuromag'
         assert coordsystem_json['MEGCoordinateSystemDescription'] == \
-               BIDS_COORD_FRAME_DESCRIPTIONS['elektaneuromag']
+            BIDS_COORD_FRAME_DESCRIPTIONS['elektaneuromag']
 
 
 @pytest.mark.parametrize(
@@ -2460,6 +2558,7 @@ def test_coordsystem_json_compliance(
         ('03', 'NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
         ('emptyroom', 'MEG/sample',
          'sample_audvis_trunc_raw.fif', _read_raw_fif),
+        ('cap', 'EDF', 'test_reduced.edf', _read_raw_edf),
     ]
 )
 @pytest.mark.filterwarnings(
@@ -2468,13 +2567,21 @@ def test_coordsystem_json_compliance(
     warning_str['edf_warning'],
     warning_str['brainvision_unit']
 )
-def test_anonymize(subject, dir_name, fname, reader, tmpdir):
+def test_anonymize(subject, dir_name, fname, reader, tmp_path):
     """Test writing anonymized EDF data."""
     data_path = testing.data_path()
 
     raw_fname = op.join(data_path, dir_name, fname)
 
-    bids_root = tmpdir.mkdir('bids1')
+    # capitalize the EDF extension file
+    if subject == 'cap':
+        new_basename = (op.basename(raw_fname).split('.edf')[0] + '.EDF')
+        new_raw_fname = tmp_path / new_basename
+        sh.copyfile(raw_fname, new_raw_fname)
+        raw_fname = new_raw_fname.as_posix()
+
+    bids_root = tmp_path / 'bids1'
+    bids_root.mkdir(parents=True)
     raw = reader(raw_fname)
     raw_date = raw.info['meas_date'].strftime('%Y%m%d')
 
@@ -2490,8 +2597,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmpdir):
     anonymize = dict(daysback=daysback_min + 1)
     bids_path = \
         write_raw_bids(raw, bids_path, overwrite=True,
-                       anonymize=anonymize)
-
+                       anonymize=anonymize, verbose=False)
     # emptyroom recordings' session should match the recording date
     if subject == 'emptyroom':
         assert (
@@ -2500,8 +2606,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmpdir):
              timedelta(days=anonymize['daysback'])).strftime('%Y%m%d')
         )
 
-    raw2 = read_raw_bids(bids_path)
-    if bids_path.extension == '.edf':
+    raw2 = read_raw_bids(bids_path, verbose=False)
+    if raw_fname.lower().endswith('.edf'):
         _raw = reader(bids_path)
         assert _raw.info['meas_date'].year == 1985
         assert _raw.info['meas_date'].month == 1
@@ -2565,17 +2671,13 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
 
 
 @requires_version('mne', '0.24.dev0')
-@requires_version('pybv', '0.5')
+@requires_version('pybv', '0.6')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
     warning_str['channel_unit_changed'], warning_str['edfblocks'])
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
-    """Test conversion of EEG/iEEG manufacturer format to BrainVision and EDF.
-
-    BrainVision should correctly store data from pybv>=0.5 that
-    has different non-voltage units.
-    """
+    """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
     bids_root = tmp_path / format
     bids_root.mkdir(exist_ok=True, parents=True)
     data_path = op.join(testing.data_path(), dir_name)
@@ -2601,7 +2703,9 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
                               match='Encountered data in "double" format'):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
-        bids_output_path = write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning,
+                          match='Converting data files to EDF format'):
+            bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
     raw2 = read_raw_bids(bids_output_path)

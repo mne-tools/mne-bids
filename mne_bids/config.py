@@ -144,7 +144,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
                                'space': 'space', 'rec': 'recording',
-                               'split': 'split', 'suffix': 'suffix'}
+                               'split': 'split'}
 
 # Annotations to never remove during reading or writing
 ANNOTATIONS_TO_KEEP = ('BAD_ACQ_SKIP',)
@@ -240,7 +240,7 @@ BIDS_TO_MNE_FRAMES = {
     'ElektaNeuromag': 'head',
     'ChietiItab': 'head',
     'CapTrak': 'head',
-    'ACPC': 'ras',  # XXX: there is no ACPC in mne-python and so this is a one-way mapping from BIDS -> MNE  # noqa
+    'ACPC': 'mri',  # assumes T1 is ACPC-aligned, if not the coordinates are lost  # noqa
     'fsaverage': 'mni_tal',  # XXX: note fsaverage and MNI305 are the same  # noqa
     'MNI305': 'mni_tal',
     'Other': 'unknown'
@@ -279,6 +279,10 @@ MNE_FRAME_TO_STR = {val: key for key, val in MNE_STR_TO_FRAME.items()}
 
 # see BIDS specification for description we copied over from each
 BIDS_COORD_FRAME_DESCRIPTIONS = {
+    'acpc': 'The origin of the coordinate system is at the Anterior '
+            'Commissure and the negative y-axis is passing through the '
+            'Posterior Commissure. The positive z-axis is passing through '
+            'a mid-hemispheric point in the superior direction.',
     'ctf': 'ALS orientation and the origin between the ears',
     'elektaneuromag': 'RAS orientation and the origin between the ears',
     '4dbti': 'ALS orientation and the origin between the ears',

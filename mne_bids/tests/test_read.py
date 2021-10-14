@@ -764,7 +764,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmpdir):
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'ACPC')
     raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
-    coord_frame_int = MNE_STR_TO_FRAME['ras']
+    coord_frame_int = MNE_STR_TO_FRAME['mri']
     for digpoint in raw_test.info['dig']:
         assert digpoint['coord_frame'] == coord_frame_int
 
@@ -1051,3 +1051,21 @@ def test_channels_tsv_raw_mismatch(tmpdir):
               f'they are missing in the raw data: {ch_name_orig}'
     ):
         read_raw_bids(bids_path)
+
+
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_read_edf_extension_casing(tmp_path):
+    """Test that EDF reading can occur with upper/lower-case extensions."""
+    bids_path = BIDSPath(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task, root=tmp_path, extension='.EDF')
+
+    data_path = op.join(testing.data_path(), 'EDF')
+    raw_fname = op.join(data_path, 'test_reduced.edf')
+    raw = _read_raw_edf(raw_fname)
+
+    write_raw_bids(raw, bids_path, overwrite=True)
+
+    # obtain the sensor positions and assert ch_coords are same
+    read_raw_bids(bids_path, verbose=True)

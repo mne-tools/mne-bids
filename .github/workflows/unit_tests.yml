@@ -118,7 +118,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 12
+        node-version: 14
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -154,15 +154,24 @@ jobs:
 
     - name: Install BIDS validator (stable)
       if: "matrix.bids-validator == 'stable'"
-      run: |
-        npm install -g bids-validator
+      run: npm install -g bids-validator
 
     - name: Install BIDS validator (main)
       if: "matrix.bids-validator == 'main'"
       run: |
         pushd ..
+        # Get npm 7+
+        npm install -g npm
         git clone --depth 1 https://github.com/bids-standard/bids-validator
-        npm install -g bids-validator/bids-validator
+        cd bids-validator
+        # Generate the full development node_modules
+        npm install
+        # Build & bundle the bids-validator CLI package
+        npm -w bids-validator run build
+        # Generate a package to install globally
+        npm -w bids-validator pack
+        # Install the package globally
+        bash -c "npm install -g bids-validator-*.tgz"
         popd
 
     - name: Display versions and environment information

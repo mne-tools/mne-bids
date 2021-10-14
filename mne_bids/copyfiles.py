@@ -24,6 +24,7 @@ from scipy.io import loadmat, savemat
 import mne
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
+from mne.utils import logger, verbose
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -40,15 +41,13 @@ def _copytree(src, dst, **kwargs):
             raise
 
 
-def _get_brainvision_encoding(vhdr_file, verbose=False):
+def _get_brainvision_encoding(vhdr_file):
     """Get the encoding of .vhdr and .vmrk files.
 
     Parameters
     ----------
     vhdr_file : str
         Path to the header file.
-    verbose : Bool
-        Determine whether results should be logged (default False).
 
     Returns
     -------
@@ -68,8 +67,7 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
         else:
             enc = 'UTF-8'
             src = '(default)'
-        if verbose is True:
-            print(f'Detected file encoding: {enc} {src}.')
+        logger.debug(f'Detected file encoding: {enc} {src}.')
     return enc
 
 
@@ -263,7 +261,8 @@ def _anonymize_brainvision(vhdr_file, date):
     _replace_file(vhdr_file, pattern, replace)
 
 
-def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
+@verbose
+def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     """Copy a BrainVision file triplet to a new location and repair links.
 
     The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
@@ -295,8 +294,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
             date will be overwritten as well. If True, keep subject information
             apart from the recording date.
 
-    verbose : bool
-        Determine whether results should be logged. Defaults to False.
+    %(verbose)s
 
     See Also
     --------
@@ -318,7 +316,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
     # extract encoding from brainvision header file, or default to utf-8
-    enc = _get_brainvision_encoding(vhdr_src, verbose)
+    enc = _get_brainvision_encoding(vhdr_src)
 
     # Copy data .eeg ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
@@ -355,13 +353,12 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
         _anonymize_brainvision(fname_dest + '.vhdr',
                                date=raw.info['meas_date'])
 
-    if verbose:
-        for ext in ['.eeg', '.vhdr', '.vmrk']:
-            _, fname = os.path.split(fname_dest + ext)
-            dirname = op.dirname(op.realpath(vhdr_dest))
-            print(f'Created "{fname}" in "{dirname}".')
-        if anonymize:
-            print('Anonymized all dates in VHDR and VMRK.')
+    for ext in ['.eeg', '.vhdr', '.vmrk']:
+        _, fname = os.path.split(fname_dest + ext)
+        dirname = op.dirname(op.realpath(vhdr_dest))
+        logger.info(f'Created "{fname}" in "{dirname}".')
+    if anonymize:
+        logger.info('Anonymized all dates in VHDR and VMRK.')
 
 
 def copyfile_edf(src, dest, anonymize=None):
@@ -436,7 +433,7 @@ def copyfile_edf(src, dest, anonymize=None):
     if anonymize is not None:
         if ext_src == '.bdf':
             raw = read_raw_bdf(dest, preload=False, verbose=0)
-        elif ext_src == '.edf':
+        elif ext_src in ['.edf', '.EDF']:
             raw = read_raw_edf(dest, preload=False, verbose=0)
         else:
             raise ValueError('Unsupported file type ({0})'.format(ext_src))

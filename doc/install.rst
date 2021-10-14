@@ -10,7 +10,7 @@ Dependencies
 * ``numpy`` (>=1.16.0)
 * ``scipy`` (>=1.2.0, or >=1.5.0 for certain operations with EEGLAB data)
 * ``nibabel`` (>=2.2, optional, for processing MRI data)
-* ``pybv`` (>=0.5, optional, for writing BrainVision data)
+* ``pybv`` (>=0.6, optional, for writing BrainVision data)
 * ``pandas`` (>=0.24.0, optional, for generating event statistics)
 * ``matplotlib`` (>=3.1.0, optional, for using the interactive data inspector)
 
