@@ -335,7 +335,7 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
                     logger.info(
                         'Cannot verify that the cHPI frequencies provided in '
                         'the MEG JSON sidecar file correspond to those in the '
-                        'raw data. (Was it converted from another format?)'
+                        'raw data.'
                     )
                 else:
                     if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
