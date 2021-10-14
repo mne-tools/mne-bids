@@ -289,26 +289,34 @@ def _handle_info_reading(sidecar_fname, raw):
     with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
 
-    # read in the sidecar JSON's line frequency
-    line_freq = sidecar_json.get("PowerLineFrequency")
-    if line_freq == "n/a":
-        line_freq = None
+    # read in the sidecar JSON's and raw object's line frequency
+    json_linefreq = sidecar_json.get("PowerLineFrequency")
+    raw_linefreq = raw.info["line_freq"]
 
-    if raw.info["line_freq"] is not None and line_freq is None:
-        line_freq = raw.info["line_freq"]  # take from file is present
+    # If both are defined, warn if there is a conflict, else all is fine
+    if (json_linefreq is not None) and (raw_linefreq is not None):
+        if json_linefreq != raw_linefreq:
 
-    if raw.info["line_freq"] is not None and line_freq is not None:
-        # if both have a set Power Line Frequency, then
-        # check that they are the same, else there is a
-        # discrepancy in the metadata of the dataset.
-        if raw.info["line_freq"] != line_freq:
-            raise ValueError("Line frequency in sidecar json does "
-                             "not match the info datastructure of "
-                             "the mne.Raw. "
-                             "Raw is -> {} ".format(raw.info["line_freq"]),
-                             "Sidecar JSON is -> {} ".format(line_freq))
+            msg = (
+                f"Line frequency in sidecar JSON does not match the info "
+                f"data structure of the mne.Raw object:\n"
+                f"Sidecar JSON is -> {json_linefreq}\n"
+                f"Raw is -> {raw_linefreq}\n\n")
 
-    raw.info["line_freq"] = line_freq
+            if json_linefreq == "n/a":
+                msg += "Defaulting to the info from mne.Raw object."
+                raw.info["line_freq"] = raw_linefreq
+            else:
+                msg += "Defaulting to the info from sidecar JSON."
+                raw.info["line_freq"] = json_linefreq
+
+            warn(msg)
+
+    # Else, try to use JSON, fall back on mne.Raw
+    elif (json_linefreq is not None) and (json_linefreq != "n/a"):
+        raw.info["line_freq"] = json_linefreq
+    else:
+        pass  # line freq is either defined or None in mne.Raw
 
     # get cHPI info
     chpi = sidecar_json.get('ContinuousHeadLocalization')
