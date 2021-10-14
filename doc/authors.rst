@@ -29,3 +29,4 @@
 .. _Eric Larson: https://github.com/larsoner
 .. _Clemens Brunner: https://github.com/cbrnr
 .. _Kambiz Tavabi: https://github.com/ktavabi
+.. _Franziska von Albedyll: https://github.com/fravona2211
