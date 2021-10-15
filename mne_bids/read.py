@@ -357,7 +357,7 @@ def _handle_info_reading(sidecar_fname, raw):
                         f'The cHPI coil frequencies in the sidecar file '
                         f'{sidecar_fname}:\n    {hpi_freqs_json}\n '
                         f'differ from what is stored in the raw data:\n'
-                        f'    {hpi_freqs_raw}\n.'
+                        f'    {hpi_freqs_raw}.\n'
                         f'Defaulting to the info from mne.Raw object.'
                     )
         else:
