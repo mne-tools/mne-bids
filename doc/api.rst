@@ -27,13 +27,14 @@ mne_bids
    make_dataset_description
    make_report
    write_anat
-   mark_bad_channels
+   mark_channels
    get_anat_landmarks
    update_anat_landmarks
    get_head_mri_trans
    get_anonymization_daysback
    search_folder_for_text
    print_dir_tree
+   get_bids_path_from_fname
    get_entities_from_fname
    get_entity_vals
    get_datatypes

@@ -23,7 +23,7 @@ from mne.utils._testing import requires_module
 
 from mne_bids.commands import (mne_bids_raw_to_bids,
                                mne_bids_cp,
-                               mne_bids_mark_bad_channels,
+                               mne_bids_mark_channels,
                                mne_bids_calibration_to_bids,
                                mne_bids_crosstalk_to_bids,
                                mne_bids_count_events,
@@ -108,10 +108,10 @@ def test_cp(tmpdir):
 
 
 def test_mark_bad_chanels_single_file(tmpdir):
-    """Test mne_bids mark_bad_channels."""
+    """Test mne_bids mark_channels."""
 
     # Check that help is printed
-    check_usage(mne_bids_mark_bad_channels)
+    check_usage(mne_bids_mark_channels)
 
     # Create test dataset.
     output_path = str(tmpdir)
@@ -139,19 +139,20 @@ def test_mark_bad_chanels_single_file(tmpdir):
 
     args = tuple(args)
     with ArgvSetter(args):
-        mne_bids_mark_bad_channels.run()
+        mne_bids_mark_channels.run()
 
     # Check the data was properly written
     with pytest.warns(RuntimeWarning, match='The unit for chann*'):
-        raw = read_raw_bids(bids_path=bids_path)
+        raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert set(old_bads + ch_names) == set(raw.info['bads'])
 
-    # Test resettig bad channels.
+    # Test resetting bad channels.
     args = ('--subject_id', subject_id, '--task', task,
             '--bids_root', output_path, '--type', datatype,
-            '--ch_name', '', '--overwrite')
+            '--status', 'good', '--ch_name', '')
     with ArgvSetter(args):
-        mne_bids_mark_bad_channels.run()
+        mne_bids_mark_channels.run()
+    print('Finished running the reset...')
 
     # Check the data was properly written
     with pytest.warns(RuntimeWarning, match='The unit for chann*'):
@@ -160,10 +161,10 @@ def test_mark_bad_chanels_single_file(tmpdir):
 
 
 def test_mark_bad_chanels_multiple_files(tmpdir):
-    """Test mne_bids mark_bad_channels."""
+    """Test mne_bids mark_channels."""
 
     # Check that help is printed
-    check_usage(mne_bids_mark_bad_channels)
+    check_usage(mne_bids_mark_channels)
 
     # Create test dataset.
     output_path = str(tmpdir)
@@ -191,7 +192,7 @@ def test_mark_bad_chanels_multiple_files(tmpdir):
 
     args = tuple(args)
     with ArgvSetter(args):
-        mne_bids_mark_bad_channels.run()
+        mne_bids_mark_channels.run()
 
     # Check the data was properly written
     for subject in subjects:

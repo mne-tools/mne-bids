@@ -289,26 +289,34 @@ def _handle_info_reading(sidecar_fname, raw):
     with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
 
-    # read in the sidecar JSON's line frequency
-    line_freq = sidecar_json.get("PowerLineFrequency")
-    if line_freq == "n/a":
-        line_freq = None
+    # read in the sidecar JSON's and raw object's line frequency
+    json_linefreq = sidecar_json.get("PowerLineFrequency")
+    raw_linefreq = raw.info["line_freq"]
 
-    if raw.info["line_freq"] is not None and line_freq is None:
-        line_freq = raw.info["line_freq"]  # take from file is present
+    # If both are defined, warn if there is a conflict, else all is fine
+    if (json_linefreq is not None) and (raw_linefreq is not None):
+        if json_linefreq != raw_linefreq:
 
-    if raw.info["line_freq"] is not None and line_freq is not None:
-        # if both have a set Power Line Frequency, then
-        # check that they are the same, else there is a
-        # discrepancy in the metadata of the dataset.
-        if raw.info["line_freq"] != line_freq:
-            raise ValueError("Line frequency in sidecar json does "
-                             "not match the info datastructure of "
-                             "the mne.Raw. "
-                             "Raw is -> {} ".format(raw.info["line_freq"]),
-                             "Sidecar JSON is -> {} ".format(line_freq))
+            msg = (
+                f"Line frequency in sidecar JSON does not match the info "
+                f"data structure of the mne.Raw object:\n"
+                f"Sidecar JSON is -> {json_linefreq}\n"
+                f"Raw is -> {raw_linefreq}\n\n")
 
-    raw.info["line_freq"] = line_freq
+            if json_linefreq == "n/a":
+                msg += "Defaulting to the info from mne.Raw object."
+                raw.info["line_freq"] = raw_linefreq
+            else:
+                msg += "Defaulting to the info from sidecar JSON."
+                raw.info["line_freq"] = json_linefreq
+
+            warn(msg)
+
+    # Else, try to use JSON, fall back on mne.Raw
+    elif (json_linefreq is not None) and (json_linefreq != "n/a"):
+        raw.info["line_freq"] = json_linefreq
+    else:
+        pass  # line freq is either defined or None in mne.Raw
 
     # get cHPI info
     chpi = sidecar_json.get('ContinuousHeadLocalization')
@@ -319,6 +327,9 @@ def _handle_info_reading(sidecar_fname, raw):
         from mne.io.ctf import RawCTF
         from mne.io.kit.kit import RawKIT
 
+        msg = ('Cannot verify that the cHPI frequencies from '
+               'the MEG JSON sidecar file correspond to the raw data{}')
+
         if isinstance(raw, RawCTF):
             # Pick channels corresponding to the cHPI positions
             hpi_picks = pick_channels_regexp(raw.info['ch_names'],
@@ -328,31 +339,32 @@ def _handle_info_reading(sidecar_fname, raw):
                     f'Could not find all cHPI channels that we expected for '
                     f'CTF data. Expected: 9, found: {len(hpi_picks)}'
                 )
-            logger.info('Cannot verify that the cHPI frequencies provided in '
-                        'the MEG JSON sidecar file correspond to the raw data '
-                        'for CTF files.')
+            logger.info(msg.format(" for CTF files."))
+
         elif isinstance(raw, RawKIT):
-            logger.info('Cannot verify that the cHPI information provided in '
-                        'the MEG JSON sidecar file corresponds to the raw '
-                        'data for KIT files.')
-        else:
+            logger.info(msg.format(" for KIT files."))
+
+        elif 'HeadCoilFrequency' in sidecar_json:
             hpi_freqs_json = sidecar_json['HeadCoilFrequency']
             try:
                 hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
             except ValueError:
-                logger.info(
-                    'Cannot verify that the cHPI frequencies provided in '
-                    'the MEG JSON sidecar file correspond to those in the '
-                    'raw data. (Was it converted from another format?)'
-                )
+                logger.info(msg.format("."))
             else:
+                # XXX: Set chpi info in mne.Raw to what is in the sidecar
                 if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
-                    raise ValueError(
+                    warn(
                         f'The cHPI coil frequencies in the sidecar file '
-                        f'{sidecar_fname}:\n    {hpi_freqs_json}\ndiffer from'
-                        f' what is stored in the raw data:\n'
-                        f'    {hpi_freqs_raw}\nCannot proceed.'
+                        f'{sidecar_fname}:\n    {hpi_freqs_json}\n '
+                        f'differ from what is stored in the raw data:\n'
+                        f'    {hpi_freqs_raw}.\n'
+                        f'Defaulting to the info from mne.Raw object.'
                     )
+        else:
+            addmsg = (".\n(Because no 'HeadCoilFrequency' data "
+                      "was found in the sidecar.)")
+            logger.info(msg.format(addmsg))
+
     else:
         if raw.info['hpi_subsystem']:
             logger.info('Dropping cHPI information stored in raw data, '
