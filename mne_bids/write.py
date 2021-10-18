@@ -692,7 +692,12 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
             elif dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA and \
                     raw.filenames[0].endswith('.fif'):
                 digitized_head_points = True
-    comp_grade = raw.compensation_grade
+    comp_grade = raw.compensation_grade   
+    software_filters = {
+        'SpatialCompensation': {
+            'GradientOrder': raw.compensation_grade
+        }
+    }
     
     # Compile cHPI information, if any.
     from mne.io.ctf import RawCTF
@@ -741,7 +746,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan),
-        ('SoftwareFilters','{"SpatialCompensation": { "GradientOrder" : %d}' % comp_grade)]
+        ('SoftwareFilters', software_filters)]
 
     if chpi is not None:
         ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
