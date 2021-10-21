@@ -347,7 +347,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
 
     if anonymize is not None:
         raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
-        daysback, keep_his = _check_anonymize(anonymize, raw, '.vhdr')
+        daysback, keep_his, _ = _check_anonymize(anonymize, raw, '.vhdr')
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
         _anonymize_brainvision(fname_dest + '.vhdr',
@@ -453,7 +453,7 @@ def copyfile_edf(src, dest, anonymize=None):
         start_date, admin_code, tech, equip = rec_info.split(' ')[1:5]
 
         # Try to anonymize the recording date
-        daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
+        daysback, keep_his, _ = _check_anonymize(anonymize, raw, '.edf')
         anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         start_date = '01-JAN-1985'
         meas_date = '01.01.85'

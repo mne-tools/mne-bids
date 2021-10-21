@@ -2595,6 +2595,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         bids_path.update(suffix='eeg', datatype='eeg')
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
+    orig_bids_path = bids_path.copy()
     bids_path = \
         write_raw_bids(raw, bids_path, overwrite=True,
                        anonymize=anonymize, verbose=False)
@@ -2613,6 +2614,22 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         assert _raw.info['meas_date'].month == 1
         assert _raw.info['meas_date'].day == 1
     assert raw2.info['meas_date'].year < 1925
+
+    # get the sidecar JSON
+    sidecar_fname = bids_path.copy().update(extension='.json')
+    with open(sidecar_fname, 'r') as fin:
+        sidecar_json = json.load(fin)
+    assert sidecar_json['Sources'] == list(raw.filenames)
+
+    # write again and this time without Sources
+    anonymize['keep_source'] = False
+    bids_path = \
+        write_raw_bids(raw, orig_bids_path, overwrite=True,
+                       anonymize=anonymize, verbose=False)
+    sidecar_fname = bids_path.copy().update(extension='.json')
+    with open(sidecar_fname, 'r') as fin:
+        sidecar_json = json.load(fin)
+    assert 'Sources' not in sidecar_json
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

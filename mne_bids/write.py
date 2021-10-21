@@ -600,7 +600,7 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
 
 
 def _sidecar_json(raw, task, manufacturer, fname, datatype,
-                  emptyroom_fname=None, overwrite=False):
+                  keep_source, emptyroom_fname=None, overwrite=False):
     """Create a sidecar json file depending on the suffix and save it.
 
     The sidecar json file provides meta data about the data
@@ -619,6 +619,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         Filename to save the sidecar json to.
     datatype : str
         Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
+    keep_source : bool
+        Whether to keep the filenames of the source, ``raw``.
     emptyroom_fname : str | mne_bids.BIDSPath
         For MEG recordings, the path to an empty-room data file to be
         associated with ``raw``. Only supported for MEG.
@@ -779,6 +781,10 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     ch_info_json += append_datatype_json
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
+
+    if keep_source:
+        # add source filename
+        ch_info_json['Sources'] = raw.filenames
 
     _write_json(fname, ch_info_json, overwrite)
 
@@ -1147,6 +1153,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             recording date will be overwritten as well. If True, keep subject
             information apart from the recording date.
 
+        ``keep_source`` : bool
+            If ``True`` (default), the filename of the raw source fill will
+            be stored in the sidecar JSON ``Sources`` key.
+
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
         ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
@@ -1441,8 +1451,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         suffix='channels', extension='.tsv')
 
     # Anonymize
+    keep_src = True
     if anonymize is not None:
-        daysback, keep_his = _check_anonymize(anonymize, raw, ext)
+        daysback, keep_his, keep_src = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his)
 
         if bids_path.datatype == 'meg' and ext != '.fif':
@@ -1508,6 +1519,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     _sidecar_json(raw, task=bids_path.task, manufacturer=manufacturer,
                   fname=sidecar_path.fpath, datatype=bids_path.datatype,
+                  keep_source=keep_src,
                   emptyroom_fname=associated_er_path, overwrite=overwrite)
     _channels_tsv(raw, channels_path.fpath, overwrite)
 
