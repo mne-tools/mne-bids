@@ -6,6 +6,9 @@ example usage:  $ mne_bids count_events --bids_root bids_root_path
 # Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
 #
 # License: BSD-3-Clause
+from pathlib import Path
+import pandas as pd
+
 import mne_bids
 from mne_bids.stats import count_events
 
@@ -28,6 +31,15 @@ def run():
                       help=('If set print the descriptive statistics '
                             '(min, max, etc.).'))
 
+    parser.add_option('--output', dest='output', default=None,
+                      help='Path to the CSV file where to store the results.')
+
+    parser.add_option('--overwrite', dest='overwrite', action='store_true',
+                      help='If set, overwrite an existing output file.')
+
+    parser.add_option('--silent', dest='silent', action='store_true',
+                      help='Whether to print the event counts on the screen.')
+
     opt, args = parser.parse_args()
 
     if len(args) > 0:
@@ -40,12 +52,24 @@ def run():
         parser.error('Arguments missing. You need to specify the '
                      '--bids_root parameter.')
 
+    if opt.output and Path(opt.output).exists() and not opt.overwrite:
+        parser.error('Output file exists. To overwrite, pass --overwrite')
+
     counts = count_events(opt.bids_root, datatype=opt.datatype)
 
     if opt.describe:
         counts = counts.describe()
 
-    print(counts)
+    if not opt.silent:
+        with pd.option_context(
+            'display.max_rows', 1000,
+            'display.max_columns', 50
+        ):
+            print(counts)
+
+    if opt.output:
+        counts.to_csv(opt.output)
+        print(f'\nOutput stored in {opt.output}')
 
 
 if __name__ == '__main__':
