@@ -10,7 +10,7 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.utils import _check_ch_locs, logger, warn
+from mne.utils import logger, warn
 
 from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
                              BIDS_MEG_COORDINATE_FRAMES,
@@ -138,14 +138,17 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
     # create list of channel coordinates and names
     x, y, z, names = list(), list(), list(), list()
     for ch in raw.info['chs']:
-        if _check_ch_locs([ch]):
-            x.append(ch['loc'][0])
-            y.append(ch['loc'][1])
-            z.append(ch['loc'][2])
-        else:
+        if (
+            np.isnan(ch['loc'][:3]).any() or
+            np.allclose(ch['loc'][:3], 0)
+        ):
             x.append('n/a')
             y.append('n/a')
             z.append('n/a')
+        else:
+            x.append(ch['loc'][0])
+            y.append(ch['loc'][1])
+            z.append(ch['loc'][2])
         names.append(ch['ch_name'])
 
     # create OrderedDict to write to tsv file
