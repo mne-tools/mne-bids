@@ -7,7 +7,6 @@ example usage:  $ mne_bids count_events --bids_root bids_root_path
 #
 # License: BSD-3-Clause
 from pathlib import Path
-import pandas as pd
 
 import mne_bids
 from mne_bids.stats import count_events
@@ -15,6 +14,7 @@ from mne_bids.stats import count_events
 
 def run():
     """Run the raw_to_bids command."""
+    import pandas as pd
     from mne.commands.utils import get_optparser
 
     parser = get_optparser(__file__, usage="usage: %prog options args",
