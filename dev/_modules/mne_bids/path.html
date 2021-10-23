@@ -986,29 +986,25 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">search_str</span> <span class="o">=</span> <span class="s1">&#39;*.*&#39;</span>
 
-        <span class="n">fnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
         <span class="c1"># Only keep files (not directories), and omit the JSON sidecars.</span>
-        <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span>
-                  <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">]</span>
-        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
+                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">]</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span>
                                 <span class="n">extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span>
                                 <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
 
         <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
-            <span class="c1"># get datatype</span>
-            <span class="n">fpath</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
-
-            <span class="c1"># form the BIDSPath object</span>
-            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">datatype</span>
-
-            <span class="c1"># to check whether the BIDSPath is conforming to BIDS if</span>
+            <span class="c1"># Form the BIDSPath object.</span>
+            <span class="c1"># To check whether the BIDSPath is conforming to BIDS if</span>
             <span class="c1"># check=True, we first instantiate without checking and then run</span>
             <span class="c1"># the check manually, allowing us to be more specific about the</span>
             <span class="c1"># exception to catch</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">datatype</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">try</span><span class="p">:</span>
@@ -1980,7 +1976,7 @@
 <span class="k">def</span> <span class="nf">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Filter a list of BIDS filenames based on BIDS entity values.</span>
+    <span class="sd">&quot;&quot;&quot;Filter a list of BIDS filenames / paths based on BIDS entity values.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1991,6 +1987,7 @@
 <span class="sd">    list of pathlib.Path</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">leading_path_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;.*\/?&#39;</span>  <span class="c1"># nothing or something ending with a `/`</span>
     <span class="n">sub_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">subject</span> <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;sub-([^_]+)&#39;</span>
     <span class="n">ses_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;_ses-</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">session</span> <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;(|_ses-([^_]+))&#39;</span>
     <span class="n">task_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;_task-</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;(|_task-([^_]+))&#39;</span>
@@ -2004,8 +2001,11 @@
                   <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;_(&#39;</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
     <span class="n">ext_str</span> <span class="o">=</span> <span class="n">extension</span> <span class="k">if</span> <span class="n">extension</span> <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;.([^_]+)&#39;</span>
 
-    <span class="n">regexp</span> <span class="o">=</span> <span class="p">(</span><span class="n">sub_str</span> <span class="o">+</span> <span class="n">ses_str</span> <span class="o">+</span> <span class="n">task_str</span> <span class="o">+</span> <span class="n">acq_str</span> <span class="o">+</span> <span class="n">run_str</span> <span class="o">+</span> <span class="n">proc_str</span> <span class="o">+</span>
-              <span class="n">rec_str</span> <span class="o">+</span> <span class="n">space_str</span> <span class="o">+</span> <span class="n">split_str</span> <span class="o">+</span> <span class="n">suffix_str</span> <span class="o">+</span> <span class="n">ext_str</span><span class="p">)</span>
+    <span class="n">regexp</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">leading_path_str</span> <span class="o">+</span>
+        <span class="n">sub_str</span> <span class="o">+</span> <span class="n">ses_str</span> <span class="o">+</span> <span class="n">task_str</span> <span class="o">+</span> <span class="n">acq_str</span> <span class="o">+</span> <span class="n">run_str</span> <span class="o">+</span> <span class="n">proc_str</span> <span class="o">+</span>
+        <span class="n">rec_str</span> <span class="o">+</span> <span class="n">space_str</span> <span class="o">+</span> <span class="n">split_str</span> <span class="o">+</span> <span class="n">suffix_str</span> <span class="o">+</span> <span class="n">ext_str</span>
+    <span class="p">)</span>
 
     <span class="c1"># Convert to str so we can apply the regexp ...</span>
     <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">]</span>
@@ -2037,7 +2037,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-22.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-23.<br>
 </p>
     </div>
     
