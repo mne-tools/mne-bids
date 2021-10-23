@@ -779,29 +779,25 @@ class BIDSPath(object):
         else:
             search_str = '*.*'
 
-        fnames = self.root.rglob(search_str)
+        paths = self.root.rglob(search_str)
         # Only keep files (not directories), and omit the JSON sidecars.
-        fnames = [f.name for f in fnames
-                  if f.is_file() and f.suffix != '.json']
-        fnames = _filter_fnames(fnames, suffix=self.suffix,
+        paths = [p for p in paths
+                 if p.is_file() and p.suffix != '.json']
+        fnames = _filter_fnames(paths, suffix=self.suffix,
                                 extension=self.extension,
                                 **self.entities)
 
         bids_paths = []
         for fname in fnames:
-            # get datatype
-            fpath = list(self.root.rglob(f'*{fname}*'))[0]
-            datatype = _infer_datatype_from_path(fpath)
-
-            # form the BIDSPath object
-            bids_path = get_bids_path_from_fname(fname, check=False)
-            bids_path.root = self.root
-            bids_path.datatype = datatype
-
-            # to check whether the BIDSPath is conforming to BIDS if
+            # Form the BIDSPath object.
+            # To check whether the BIDSPath is conforming to BIDS if
             # check=True, we first instantiate without checking and then run
             # the check manually, allowing us to be more specific about the
             # exception to catch
+            datatype = _infer_datatype_from_path(fname)
+            bids_path = get_bids_path_from_fname(fname, check=False)
+            bids_path.root = self.root
+            bids_path.datatype = datatype
             bids_path.check = True
 
             try:
@@ -1773,7 +1769,7 @@ def _path_to_str(var):
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
                    space=None, split=None, suffix=None, extension=None):
-    """Filter a list of BIDS filenames based on BIDS entity values.
+    """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
     Parameters
     ----------
@@ -1784,6 +1780,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     list of pathlib.Path
 
     """
+    leading_path_str = r'.*\/?'  # nothing or something ending with a `/`
     sub_str = f'sub-{subject}' if subject else r'sub-([^_]+)'
     ses_str = f'_ses-{session}' if session else r'(|_ses-([^_]+))'
     task_str = f'_task-{task}' if task else r'(|_task-([^_]+))'
@@ -1797,8 +1794,11 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                   else r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'
 
-    regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-              rec_str + space_str + split_str + suffix_str + ext_str)
+    regexp = (
+        leading_path_str +
+        sub_str + ses_str + task_str + acq_str + run_str + proc_str +
+        rec_str + space_str + split_str + suffix_str + ext_str
+    )
 
     # Convert to str so we can apply the regexp ...
     fnames = [str(f) for f in fnames]

@@ -271,6 +271,20 @@ def test_count_events(tmpdir):
     with ArgvSetter(('--bids_root', output_path, '--describe')):
         mne_bids_count_events.run()
 
+    with ArgvSetter(('--bids_root', output_path, '--silent')):
+        mne_bids_count_events.run()
+
+    with ArgvSetter(('--bids_root', output_path,
+                     '--output', str(Path(output_path) / 'counts.csv'))):
+        mne_bids_count_events.run()
+
+    with ArgvSetter(
+        ('--bids_root', output_path,
+         '--output', str(Path(output_path) / 'counts.csv'),
+         '--overwrite')
+    ):
+        mne_bids_count_events.run()
+
 
 @requires_matplotlib
 @requires_version('mne', '0.22')
