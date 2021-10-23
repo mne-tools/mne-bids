@@ -63,7 +63,8 @@ def run():
     if not opt.silent:
         with pd.option_context(
             'display.max_rows', 1000,
-            'display.max_columns', 50
+            'display.max_columns', 80,
+            'display.width', 1000
         ):
             print(counts)
 
