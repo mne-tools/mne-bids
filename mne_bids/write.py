@@ -2201,6 +2201,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         If ``None``, try to anonymize the entire input dataset.
     %(verbose)s
     """
+    from mne_bids import update_sidecar_json  # avoid circular import
+
     bids_root_in = Path(bids_root_in).expanduser()
     bids_root_out = Path(bids_root_out).expanduser()
     rng = np.random.default_rng()
@@ -2324,7 +2326,6 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     logger.info('')
 
     for f in ProgressBar(iterable=valid_matches, mesg='Anonymizing'):
-        entities = get_entities_from_fname(fname=f)
         # stem will contain `.nii` for `.nii.gz` files
         if f.name.endswith('.nii.gz'):
             suffix = f.name.split('_')[-1].replace('.nii.gz', '')
@@ -2333,6 +2334,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             suffix = f.stem.split('_')[-1]
             extension = f.suffix
 
+        entities = get_entities_from_fname(fname=f)
         datatype = f.parent.name
         bp_in = BIDSPath(
             root=bids_root_in, **entities, suffix=suffix, extension=extension,
@@ -2349,10 +2351,14 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
 
         bp_er_in = bp_er_out = None
 
+        # Handle empty-room anonymization: we need to change the session to
+        # match the new date
         if bp_in.datatype == 'meg' and 'emptyroom' in subject_mapping:
             if bp_in.subject == 'emptyroom':
                 er_session_in = bp_in.session
             else:
+                # An experimental recording, so we need to find the associated
+                # empty-room
                 bp_er_in = bp_in.find_empty_room(
                     use_sidecar_only=True, verbose='error'
                 )
@@ -2361,6 +2367,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 else:
                     er_session_in = bp_er_in.session
 
+            # Update the session entity
             if er_session_in is not None:
                 date_fmt = '%Y%m%d'
                 er_session_out = (
@@ -2409,3 +2416,35 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 empty_room=bp_er_out,
                 verbose='error'
             )
+
+        # Enrich sidecars
+        bp_in_json = bp_in.copy().update(extension='.json')
+        bp_out_json = bp_out.copy().update(extension='.json')
+
+        json_in = json.loads(
+            bp_in_json.fpath.read_text(encoding='utf-8')
+        )
+        json_out = json.loads(
+            bp_out_json.fpath.read_text(encoding='utf-8')
+        )
+        exclude_keys = (
+            'PatientName',
+            'PatientID',
+            'PatientBirthDate',
+            'PatientSex',
+            'PatientWeight',
+            'AcquisitionTime',
+            'AcquisitionDateTime'
+        )
+
+        updates = dict()
+        for key, value in json_in.items():
+            if key not in json_out and key not in exclude_keys:
+                updates[key] = value
+        del json_in, json_out
+
+        update_sidecar_json(
+            bids_path=bp_out_json,
+            entries=updates,
+            verbose=False
+        )
