@@ -51,11 +51,10 @@ This report was generated with MNE-BIDS (https://doi.org/10.21105/joss.01896).
 The dataset consists of 1 participants (sex were all unknown; handedness were
 all unknown; ages all unknown) and 1 recording sessions: 01. Data was recorded
 using a MEG system (Elekta manufacturer) sampled at 300.31 Hz with line noise at
-60 Hz. There was 1 scan in total. Recording durations ranged from 20.0 to 20.0
+60.0 Hz. There was 1 scan in total. Recording durations ranged from 20.0 to 20.0
 seconds (mean = 20.0, std = 0.0), for a total of 20.0 seconds of data recorded
 over all scans. For each dataset, there were on average 376.0 (std = 0.0)
 recording channels per scan, out of which 374.0 (std = 0.0) were used in
 analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
 
-    print(report)
     assert report == expected_report
