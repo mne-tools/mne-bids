@@ -323,15 +323,19 @@ def test_get_anonymization_daysback():
     # max_val off by 1 on Windows for some reason
     assert abs(daysback_min - 28461) < 2 and abs(daysback_max - 36880) < 2
     raw2 = raw.copy()
-    raw2.info['meas_date'] = (np.int32(1158942080), np.int32(720100))
+    with raw2.info._unlock():
+        raw2.info['meas_date'] = (np.int32(1158942080), np.int32(720100))
     raw3 = raw.copy()
-    raw3.info['meas_date'] = (np.int32(914992080), np.int32(720100))
+    with raw3.info._unlock():
+        raw3.info['meas_date'] = (np.int32(914992080), np.int32(720100))
     daysback_min, daysback_max = get_anonymization_daysback([raw, raw2, raw3])
     assert abs(daysback_min - 29850) < 2 and abs(daysback_max - 35446) < 2
     raw4 = raw.copy()
-    raw4.info['meas_date'] = (np.int32(4992080), np.int32(720100))
+    with raw4.info._unlock():
+        raw4.info['meas_date'] = (np.int32(4992080), np.int32(720100))
     raw5 = raw.copy()
-    raw5.info['meas_date'] = None
+    with raw5.info._unlock():
+        raw5.info['meas_date'] = None
     daysback_min2, daysback_max2 = get_anonymization_daysback([raw, raw2,
                                                                raw3, raw5])
     assert daysback_min2 == daysback_min and daysback_max2 == daysback_max
@@ -627,7 +631,9 @@ def test_fif(_bids_validate, tmpdir):
     for dig_point in raw_no_extra_points.info['dig']:
         if dig_point['kind'] != FIFF.FIFFV_POINT_EXTRA:
             new_dig.append(dig_point)
-    raw_no_extra_points.info['dig'] = new_dig
+
+    with raw_no_extra_points.info._unlock():
+        raw_no_extra_points.info['dig'] = new_dig
 
     write_raw_bids(raw_no_extra_points, bids_path, events_data=events,
                    event_id=event_id, overwrite=True)
@@ -1516,8 +1522,11 @@ def test_bdf(_bids_validate, tmpdir):
         write_raw_bids(mne.concatenate_raws([raw.copy(), raw]), bids_path,
                        overwrite=True)
 
-    if parse_version(mne.__version__) >= parse_version('0.23'):
-        raw.info['sfreq'] -= 10  # changes raw.times, but retains its dimension
+    if hasattr(raw.info, '_unlock'):
+        with raw.info._unlock():
+            raw.info['sfreq'] -= 10  # change raw.times, but retain shape
+    elif parse_version(mne.__version__) >= parse_version('0.23'):
+        raw.info['sfreq'] -= 10
     else:
         raw._times = raw._times / 5
 
@@ -1895,7 +1904,8 @@ def test_write_raw_no_dig(tmpdir):
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
     assert bids_path_.root == bids_root
-    raw.info['dig'] = None
+    with raw.info._unlock():
+        raw.info['dig'] = None
     raw.save(str(bids_root / 'tmp_raw.fif'))
     raw = _read_raw_fif(bids_root / 'tmp_raw.fif')
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
