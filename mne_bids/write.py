@@ -2289,21 +2289,20 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             valid_matches.append(f)
 
     # Ensure we convert empty-room recordings first, as we'll want to pass
-    # their path when writing associated MEG recordings
+    # their anonymized path when writing the associated experimental recordings
     if 'meg' in requested_datatypes:
-        valid_matches_er_first = []
         # TODO this heuristic is not great
-        valid_matches_er = [
+        valid_matches_er_only = [
             f for f in matches
             if f.name.startswith('sub-emptyroom')
         ]
-        valid_matches_er_first = valid_matches_er.copy()
+        valid_matches_er_first = valid_matches_er_only.copy()
         for f in valid_matches:
-            if f not in valid_matches_er:
+            if f not in valid_matches_er_only:
                 valid_matches_er_first.append(f)
 
         valid_matches = valid_matches_er_first
-        del valid_matches_er_first, valid_matches_er
+        del valid_matches_er_first, valid_matches_er_only
 
     if daysback == 'auto':
         entities = get_entities_from_fname(fname=valid_matches[0])
