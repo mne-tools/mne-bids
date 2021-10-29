@@ -647,6 +647,13 @@ def test_fif(_bids_validate, tmpdir):
         # DigitizedHeadPoints should be false
         assert meg_json_data['DigitizedHeadPoints'] is False
 
+    assert 'SoftwareFilters' in meg_json_data
+    software_filters = meg_json_data['SoftwareFilters']
+    assert 'SpatialCompensation' in software_filters
+    assert 'GradientOrder' in software_filters['SpatialCompensation']
+    assert (software_filters['SpatialCompensation']['GradientOrder'] ==
+            raw.compensation_grade)
+
 
 @pytest.mark.parametrize('format', ('fif_no_chpi', 'fif', 'ctf', 'kit'))
 @pytest.mark.filterwarnings(warning_str['maxshield'])
