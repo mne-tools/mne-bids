@@ -2158,7 +2158,11 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
     shutil.copyfile(src=fname, dst=str(out_path))
 
 
-def _get_daysback(bids_path: BIDSPath) -> int:
+def _get_daysback(
+    *,
+    bids_path: BIDSPath,
+    rng: np.random.Generator
+) -> int:
     """Try to find a suitable "daysback" for anonymization."""
     raw = read_raw_bids(bids_path=bids_path)
     daysback_min, daysback_max = get_anonymization_daysback([raw])
@@ -2168,7 +2172,6 @@ def _get_daysback(bids_path: BIDSPath) -> int:
     daysback_max -= 365
 
     # Pick one randomly
-    rng = np.random.default_rng()
     daysback = int(rng.choice(list(range(daysback_min, daysback_max + 1))))
 
     return daysback
@@ -2176,7 +2179,8 @@ def _get_daysback(bids_path: BIDSPath) -> int:
 
 @verbose
 def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
-                      subject_mapping='auto', datatypes=None, verbose=None):
+                      subject_mapping='auto', datatypes=None, rng_seed=None,
+                      verbose=None):
     """Anonymize a BIDS dataset.
 
     Parameters
@@ -2199,13 +2203,19 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         Which data type to anonymize. If can be ``meg``, ``eeg``, ``ieeg``, or
         ``anat``. Multiple data types may be passed as a collection of strings.
         If ``None``, try to anonymize the entire input dataset.
+    rng_seed : int | None
+        A seed for the random number generator (RNG) used to construct
+        ``daysback`` and ``subject_mapping`` if they are ``None``. By default,
+        the RNG is not seeded, meaning it will most likely produce different
+        output every time this function is run. To achieve reproducible
+        results, pass an integer to seed the RNG.
     %(verbose)s
     """
     from mne_bids import update_sidecar_json  # avoid circular import
 
     bids_root_in = Path(bids_root_in).expanduser()
     bids_root_out = Path(bids_root_out).expanduser()
-    rng = np.random.default_rng()
+    rng = np.random.default_rng(seed=rng_seed)
 
     if not bids_root_in.is_dir():
         raise ValueError(
@@ -2308,7 +2318,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     if daysback == 'auto':
         entities = get_entities_from_fname(fname=valid_matches[0])
         bids_path = BIDSPath(root=bids_root_in, **entities)
-        daysback = _get_daysback(bids_path=bids_path)
+        daysback = _get_daysback(bids_path=bids_path, rng=rng)
 
     logger.info(
         f'Anonymizing BIDS dataset\n'
