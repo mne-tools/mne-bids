@@ -2195,7 +2195,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         with original IDs as keys and anonymized IDs as values. If ``'auto'``,
         automatically produces a mapping and prints it on the screen. If
         ``None``, subject IDs are not changed.
-    datatypes : collection of str | 'str' | None
+    datatypes : collection of str | str | None
         Which data type to anonymize. If can be ``meg``, ``eeg``, ``ieeg``, or
         ``anat``. Multiple data types may be passed as a collection of strings.
         If ``None``, try to anonymize the entire input dataset.
