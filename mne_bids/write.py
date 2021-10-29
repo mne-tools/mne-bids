@@ -2177,7 +2177,7 @@ def _get_daysback(bids_path: BIDSPath) -> int:
 @verbose
 def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                       subject_mapping='auto', datatypes=None, verbose=None):
-    """Anonymize an existing BIDS dataset.
+    """Anonymize a BIDS dataset.
 
     Parameters
     ----------
