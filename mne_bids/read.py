@@ -369,8 +369,9 @@ def _handle_info_reading(sidecar_fname, raw):
         if raw.info['hpi_subsystem']:
             logger.info('Dropping cHPI information stored in raw data, '
                         'following specification in sidecar file')
-        raw.info['hpi_subsystem'] = None
-        raw.info['hpi_meas'] = []
+        with raw.info._unlock():
+            raw.info['hpi_subsystem'] = None
+            raw.info['hpi_meas'] = []
 
     return raw
 
