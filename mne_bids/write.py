@@ -2243,6 +2243,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                     f'recommended to do this!'
                 )
         elif subject_mapping is None:
+            # identity mapping
             subject_mapping = dict(zip(participants_in, participants_in))
 
     # Find suitable input files
@@ -2266,6 +2267,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             raise ValueError(f'Unsupported data type: {datatype}')
     del datatype, datatypes
 
+    # Assemble list of candidate files for conversion
     matches = bids_root_in.glob('sub-*/**/sub-*.*')
     valid_matches = []
     for f in matches:
@@ -2274,8 +2276,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             f.suffix in allowed_extensions and
             (
                 (
-                    # Electrophysiological recordings have to have a `task`
-                    # entity
+                    # Electrophysiological recordings ust have a `task` entity
                     f.stem.endswith(allowed_suffixes_electrophys) and
                     'task-' in f.name
                 ) or
@@ -2287,7 +2288,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         ):
             valid_matches.append(f)
 
-    # Ensure we convert empty-room recordings first
+    # Ensure we convert empty-room recordings first, as we'll want to pass
+    # their path when writing associated MEG recordings
     if 'meg' in requested_datatypes:
         valid_matches_er_first = []
         # TODO this heuristic is not great
