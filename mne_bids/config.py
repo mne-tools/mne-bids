@@ -122,8 +122,9 @@ ALLOWED_FILENAME_SUFFIX = [
 
 # converts suffix to known path modalities
 SUFFIX_TO_DATATYPE = {
-    'meg': 'meg', 'eeg': 'eeg', 'ieeg': 'ieeg', 'T1w': 'anat',
-    'headshape': 'meg', 'digitizer': 'meg', 'markers': 'meg'
+    'meg': 'meg', 'headshape': 'meg', 'digitizer': 'meg', 'markers': 'meg',
+    'eeg': 'eeg', 'ieeg': 'ieeg',
+    'T1w': 'anat', 'FLASH': 'anat'
 }
 
 # allowed BIDS extensions (extension in the BIDS filename)
