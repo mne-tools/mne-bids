@@ -693,13 +693,12 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
             elif dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA and \
                     raw.filenames[0].endswith('.fif'):
                 digitized_head_points = True
-    comp_grade = raw.compensation_grade   
     software_filters = {
         'SpatialCompensation': {
             'GradientOrder': raw.compensation_grade
         }
     }
-    
+
     # Compile cHPI information, if any.
     from mne.io.ctf import RawCTF
     from mne.io.kit.kit import RawKIT
