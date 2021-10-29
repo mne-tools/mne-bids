@@ -2248,7 +2248,6 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             # identity mapping
             subject_mapping = dict(zip(participants_in, participants_in))
 
-    # Find suitable input files
     allowed_datatypes = ('meg', 'eeg', 'ieeg', 'anat')
     allowed_suffixes_electrophys = ('meg', 'eeg', 'ieeg')
     allowed_suffixes_anat = ('T1w', 'FLASH')

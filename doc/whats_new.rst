@@ -83,7 +83,7 @@ Bug fixes
 
 - Fix reading of TSV files with only a single column, by `Marijn van Vliet`_ (:gh:`886`)
 
-- Fix erroneous measurement date check in :func:`mne_bids.write_raw_bids` when requestion to anonymize empty-room data, by `Richard Höchenberger`_ (:gh:`893`)
+- Fix erroneous measurement date check in :func:`mne_bids.write_raw_bids` when requesting to anonymize empty-room data, by `Richard Höchenberger`_ (:gh:`893`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
