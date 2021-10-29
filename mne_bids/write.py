@@ -2427,6 +2427,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         json_out = json.loads(
             bp_out_json.fpath.read_text(encoding='utf-8')
         )
+        # Exclude keys that might contain personal identifying info
         exclude_keys = (
             'PatientName',
             'PatientID',
