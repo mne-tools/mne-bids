@@ -2227,6 +2227,10 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         raise ValueError(
             f'The specified input directory does not exist: {bids_root_in}'
         )
+
+    if bids_root_in == bids_root_out:
+        raise ValueError('Input and output directory must differ')
+
     if bids_root_out.exists():
         raise FileExistsError(
             f'The specified output directory already exists. Please remove '
