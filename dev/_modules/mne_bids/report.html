@@ -321,10 +321,16 @@
     <span class="sd">&quot;&quot;&quot;Data was recorded using a {{_pretty_str(system)}} system</span>
 <span class="sd">{{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}</span>
 <span class="sd">sampled at {{_pretty_str(sfreq)}} Hz</span>
-<span class="sd">with line noise at {{_pretty_str(powerlinefreq)}} Hz{{if _summarize_software_filters(software_filters)}} using</span>
-<span class="sd">{{_summarize_software_filters(software_filters)}}.{{else}}.{{endif}}</span>
-<span class="sd">{{if n_scans &gt; 1}}There were {{n_scans}} scans in total.</span>
-<span class="sd">{{else}}There was {{n_scans}} scan in total.{{endif}}{{_length_recording_str(length_recordings)}}</span>
+<span class="sd">with line noise at {{_pretty_str(powerlinefreq)}} Hz.</span>
+<span class="sd">{{if _summarize_software_filters(software_filters)}}</span>
+<span class="sd">The following software filters were applied during recording: </span>
+<span class="sd">{{_summarize_software_filters(software_filters)}}.</span>
+<span class="sd">{{endif}}</span>
+<span class="sd">{{if n_scans &gt; 1}}</span>
+<span class="sd">There were {{n_scans}} scans in total.</span>
+<span class="sd">{{else}}There was {{n_scans}} scan in total.</span>
+<span class="sd">{{endif}}</span>
+<span class="sd">{{_length_recording_str(length_recordings)}}</span>
 <span class="sd">For each dataset, there were on average {{mean_chs}} (std = {{std_chs}}) recording channels per scan,</span>
 <span class="sd">out of which {{mean_good_chs}} (std = {{std_good_chs}}) were used in analysis</span>
 <span class="sd">({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis). &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>

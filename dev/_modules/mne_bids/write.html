@@ -900,6 +900,11 @@
             <span class="k">elif</span> <span class="n">dig_point</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_EXTRA</span> <span class="ow">and</span> \
                     <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.fif&#39;</span><span class="p">):</span>
                 <span class="n">digitized_head_points</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">software_filters</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;SpatialCompensation&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;GradientOrder&#39;</span><span class="p">:</span> <span class="n">raw</span><span class="o">.</span><span class="n">compensation_grade</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
     <span class="c1"># Compile cHPI information, if any.</span>
     <span class="kn">from</span> <span class="nn">mne.io.ctf</span> <span class="kn">import</span> <span class="n">RawCTF</span>
@@ -947,7 +952,8 @@
         <span class="p">(</span><span class="s1">&#39;DigitizedLandmarks&#39;</span><span class="p">,</span> <span class="n">digitized_landmark</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;DigitizedHeadPoints&#39;</span><span class="p">,</span> <span class="n">digitized_head_points</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;MEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_megchan</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;MEGREFChannelCount&#39;</span><span class="p">,</span> <span class="n">n_megrefchan</span><span class="p">)]</span>
+        <span class="p">(</span><span class="s1">&#39;MEGREFChannelCount&#39;</span><span class="p">,</span> <span class="n">n_megrefchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;SoftwareFilters&#39;</span><span class="p">,</span> <span class="n">software_filters</span><span class="p">)]</span>
 
     <span class="k">if</span> <span class="n">chpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ch_info_json_meg</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;ContinuousHeadLocalization&#39;</span><span class="p">,</span> <span class="n">chpi</span><span class="p">))</span>
