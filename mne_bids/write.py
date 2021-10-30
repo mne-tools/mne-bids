@@ -2399,12 +2399,14 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
 
         # Handle empty-room anonymization: we need to change the session to
         # match the new date
-        if bp_in.datatype == 'meg' and 'emptyroom' in subject_mapping:
+        if (
+            bp_in.datatype == 'meg' and
+            'emptyroom' in subject_mapping and
+            not (_check_finecal_path(bids_path=bp_in) or
+                  _check_crosstalk_path(bids_path=bp_in))
+        ):
             if bp_in.subject == 'emptyroom':
                 er_session_in = bp_in.session
-            elif (_check_finecal_path(bids_path=bp_in) or
-                  _check_crosstalk_path(bids_path=bp_in)):
-                pass  # no-op
             else:
                 # An experimental recording, so we need to find the associated
                 # empty-room
