@@ -2170,7 +2170,7 @@ def _get_daysback(
     rng: np.random.Generator
 ) -> int:
     """Try to find a suitable "daysback" for anonymization."""
-    raw = read_raw_bids(bids_path=bids_path)
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
     daysback_min, daysback_max = get_anonymization_daysback([raw])
     # We only estimated the range based on one file, so let's add a little
     # slack here …
@@ -2181,6 +2181,24 @@ def _get_daysback(
     daysback = int(rng.choice(list(range(daysback_min, daysback_max + 1))))
 
     return daysback
+
+
+def _check_crosstalk_path(bids_path: BIDSPath) -> bool:
+    is_crosstalk_path = (
+        bids_path.datatype == 'meg' and
+        bids_path.suffix == 'meg' and
+        bids_path.acquisition == 'crosstalk' and
+        bids_path.extension == '.fif')
+    return is_crosstalk_path
+
+
+def _check_finecal_path(bids_path: BIDSPath) -> bool:
+    is_finecal_path = (
+        bids_path.datatype == 'meg' and
+        bids_path.suffix == 'meg' and
+        bids_path.acquisition == 'calibration' and
+        bids_path.extension == '.dat')
+    return is_finecal_path
 
 
 @verbose
@@ -2293,18 +2311,27 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     valid_matches = []
     for f in matches:
         if (
-            f.parent.name in requested_datatypes and
-            f.suffix in allowed_extensions and
             (
+                f.parent.name in requested_datatypes and
+                f.suffix in allowed_extensions and
                 (
-                    # Electrophysiological recordings ust have a `task` entity
-                    f.stem.endswith(allowed_suffixes_electrophys) and
-                    'task-' in f.name
-                ) or
-                (
-                    # stem will contain `.nii` for `.nii.gz` files
-                    any(suffix in f.stem for suffix in allowed_suffixes_anat)
+                    (
+                        # Electrophysiological recordings ust have a `task`
+                        # entity
+                        f.stem.endswith(allowed_suffixes_electrophys) and
+                        'task-' in f.name
+                    ) or
+                    (
+                        # stem will contain `.nii` for `.nii.gz` files
+                        any(suffix in f.stem
+                            for suffix in allowed_suffixes_anat)
+                    )
                 )
+            ) or
+            (
+                # MEG crosstalk & fine-calibration
+                f.name.endswith('acq-crosstalk_meg.fif') or
+                f.name.endswith('acq-calibration_meg.dat')
             )
         ):
             valid_matches.append(f)
@@ -2375,6 +2402,9 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         if bp_in.datatype == 'meg' and 'emptyroom' in subject_mapping:
             if bp_in.subject == 'emptyroom':
                 er_session_in = bp_in.session
+            elif (_check_finecal_path(bids_path=bp_in) or
+                  _check_crosstalk_path(bids_path=bp_in)):
+                pass  # no-op
             else:
                 # An experimental recording, so we need to find the associated
                 # empty-room
@@ -2423,6 +2453,18 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 deface=True,
                 verbose='error'
             )
+        elif _check_crosstalk_path(bids_path=bp_in):
+            write_meg_crosstalk(
+                fname=bp_in.fpath,
+                bids_path=bp_out,
+                verbose='error'
+            )
+        elif _check_finecal_path(bids_path=bp_in):
+            write_meg_calibration(
+                calibration=bp_in.fpath,
+                bids_path=bp_out,
+                verbose='error'
+            )
         else:
             raw = read_raw_bids(bids_path=bp_in, verbose='error')
             write_raw_bids(
@@ -2440,12 +2482,20 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         bp_in_json = bp_in.copy().update(extension='.json')
         bp_out_json = bp_out.copy().update(extension='.json')
 
-        json_in = json.loads(
-            bp_in_json.fpath.read_text(encoding='utf-8')
-        )
-        json_out = json.loads(
-            bp_out_json.fpath.read_text(encoding='utf-8')
-        )
+        if bp_in_json.fpath.exists():
+            json_in = json.loads(
+                bp_in_json.fpath.read_text(encoding='utf-8')
+            )
+        else:
+            json_in = dict()
+
+        if bp_out_json.fpath.exists():
+            json_out = json.loads(
+                bp_out_json.fpath.read_text(encoding='utf-8')
+            )
+        else:
+            json_out = dict()
+
         # Exclude keys that might contain personal identifying info
         exclude_keys = (
             'PatientName',
@@ -2463,8 +2513,11 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 updates[key] = value
         del json_in, json_out
 
-        update_sidecar_json(
-            bids_path=bp_out_json,
-            entries=updates,
-            verbose=False
-        )
+        if updates:
+            if not bp_out_json.fpath.exists():
+                bp_out_json.fpath.touch()
+            update_sidecar_json(
+                bids_path=bp_out_json,
+                entries=updates,
+                verbose=False
+            )
