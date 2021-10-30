@@ -45,7 +45,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      get_anat_landmarks, write)
+                      get_anat_landmarks, write, anonymize_dataset)
 from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
@@ -3019,3 +3019,49 @@ def test_write_raw_special_paths(tmpdir, dir_name):
     root = Path(tmpdir) / dir_name
     bids_path = _bids_path.copy().update(root=root)
     write_raw_bids(raw=raw, bids_path=bids_path)
+
+
+@requires_nibabel()
+def test_anonymize_dataset(_bids_validate, tmpdir):
+    """Test creating an anonymized copy of a dataset."""
+    # Create a non-anonymized dataset
+    bids_root = tmpdir.mkdir('bids')
+    bids_path = _bids_path.copy().update(root=bids_root)
+
+    data_path = Path(testing.data_path())
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    fine_cal_path = data_path / 'SSS' / 'sss_cal_mgh.dat'
+    crosstalk_path = data_path / 'SSS' / 'ct_sparse_mgh.fif'
+    t1w_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
+    mri_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        nasion=[41.87363, 32.24694, 74.55314],
+        rpa=[17.23812, 53.08294, 47.01789],
+        coord_frame='mri_voxel'
+    )
+    raw = _read_raw_fif(raw_path, verbose=False)
+
+    bids_path.datatype = 'meg'
+    write_raw_bids(raw, bids_path=bids_path, verbose=False)
+    write_meg_crosstalk(
+        fname=crosstalk_path, bids_path=bids_path, verbose=False
+    )
+    write_meg_calibration(
+        calibration=fine_cal_path, bids_path=bids_path, verbose=False
+    )
+
+    bids_path.datatype = 'anat'
+    write_anat(
+        image=t1w_path, bids_path=bids_path, landmarks=mri_landmarks,
+        verbose=False
+    )
+    _bids_validate(bids_root)
+
+    # Now run the actual anonymization
+    bids_root_anon = tmpdir / 'bids-anonymized'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        # daysback=10
+    )
+    _bids_validate(bids_root)

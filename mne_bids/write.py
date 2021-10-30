@@ -15,7 +15,6 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import shutil
 from collections import defaultdict, OrderedDict
-from typing import Union
 
 from pkg_resources import parse_version
 
@@ -39,8 +38,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _get_ch_type_mapping, _check_anonymize,
                             _stamp_to_dt, _handle_datatype)
-from mne_bids import (BIDSPath, get_entities_from_fname, read_raw_bids,
-                      get_anonymization_daysback)
+from mne_bids import (BIDSPath, read_raw_bids, get_anonymization_daysback,
+                      get_bids_path_from_fname)
 from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit,
@@ -2185,31 +2184,23 @@ def _get_daysback(
     return daysback
 
 
-def _check_crosstalk_path(path: Union[BIDSPath, Path]) -> bool:
-    if isinstance(path, BIDSPath):
-        is_crosstalk_path = (
-            path.datatype == 'meg' and
-            path.suffix == 'meg' and
-            path.acquisition == 'crosstalk' and
-            path.extension == '.fif'
-        )
-    else:
-        is_crosstalk_path = path.name.endswith('_acq-crosstalk_meg.fif')
-
+def _check_crosstalk_path(bids_path: BIDSPath) -> bool:
+    is_crosstalk_path = (
+        bids_path.datatype == 'meg' and
+        bids_path.suffix == 'meg' and
+        bids_path.acquisition == 'crosstalk' and
+        bids_path.extension == '.fif'
+    )
     return is_crosstalk_path
 
 
-def _check_finecal_path(path: Union[BIDSPath, Path]) -> bool:
-    if isinstance(path, BIDSPath):
-        is_finecal_path = (
-            path.datatype == 'meg' and
-            path.suffix == 'meg' and
-            path.acquisition == 'calibration' and
-            path.extension == '.dat'
-        )
-    else:
-        is_finecal_path = path.name.endswith('_acq-calibration_meg.dat')
-
+def _check_finecal_path(bids_path: BIDSPath) -> bool:
+    is_finecal_path = (
+        bids_path.datatype == 'meg' and
+        bids_path.suffix == 'meg' and
+        bids_path.acquisition == 'calibration' and
+        bids_path.extension == '.dat'
+    )
     return is_finecal_path
 
 
@@ -2299,12 +2290,11 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             subject_mapping = dict(zip(participants_in, participants_in))
 
     allowed_datatypes = ('meg', 'eeg', 'ieeg', 'anat')
-    allowed_suffixes_electrophys = ('meg', 'eeg', 'ieeg')
-    allowed_suffixes_anat = ('T1w', 'FLASH')
+    allowed_suffixes = ('meg', 'eeg', 'ieeg', 'T1w', 'FLASH')
     allowed_extensions = []
     for v in ALLOWED_DATATYPE_EXTENSIONS.values():
         allowed_extensions.extend(v)
-    allowed_extensions.extend(['.nii', '.gz'])
+    allowed_extensions.extend(['.nii', '.nii.gz'])
 
     if isinstance(datatypes, str):
         requested_datatypes = [datatypes]
@@ -2320,83 +2310,69 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
 
     # Assemble list of candidate files for conversion
     matches = bids_root_in.glob('sub-*/**/sub-*.*')
-    valid_matches = []
+    bids_paths_in = []
     for f in matches:
+        bids_path = get_bids_path_from_fname(f, verbose='error')
         if (
             (
-                f.parent.name in requested_datatypes and
-                f.suffix in allowed_extensions and
-                (
-                    (
-                        # Electrophysiological recordings ust have a `task`
-                        # entity
-                        f.stem.endswith(allowed_suffixes_electrophys) and
-                        'task-' in f.name
-                    ) or
-                    (
-                        # stem will contain `.nii` for `.nii.gz` files
-                        any(suffix in f.stem
-                            for suffix in allowed_suffixes_anat)
-                    )
-                )
+                bids_path.suffix in allowed_suffixes and
+                bids_path.extension in allowed_extensions
             ) or
-            (
-                _check_finecal_path(f) or
-                _check_crosstalk_path(f)
-            )
+            _check_finecal_path(bids_path) or
+            _check_crosstalk_path(bids_path)
         ):
-            valid_matches.append(f)
+            bids_paths_in.append(bids_path)
 
     # Ensure we convert empty-room recordings first, as we'll want to pass
     # their anonymized path when writing the associated experimental recordings
     if 'meg' in requested_datatypes:
         # TODO this heuristic is not great
-        valid_matches_er_only = [
-            f for f in matches
-            if f.name.startswith('sub-emptyroom')
+        bids_paths_in_er_only = [
+            bp for bp in bids_paths_in
+            if bp.subject == 'emptyroom' and bp.task == 'noise'
         ]
-        valid_matches_er_first = valid_matches_er_only.copy()
-        for f in valid_matches:
-            if f not in valid_matches_er_only:
-                valid_matches_er_first.append(f)
+        bids_paths_in_er_first = bids_paths_in_er_only.copy()
+        for bp in bids_paths_in:
+            if bp not in bids_paths_in_er_only:
+                bids_paths_in_er_first.append(bp)
 
-        valid_matches = valid_matches_er_first
-        del valid_matches_er_first, valid_matches_er_only
+        bids_paths_in = bids_paths_in_er_first
+        del bids_paths_in_er_first, bids_paths_in_er_only
 
     if daysback == 'auto':
-        entities = get_entities_from_fname(fname=valid_matches[0])
-        bids_path = BIDSPath(root=bids_root_in, **entities)
-        daysback = _get_daysback(bids_path=bids_path, rng=rng)
+        # Find a recording that can be read with MNE-Python to extract the
+        # recording date
+        bids_paths = [bp for bp in bids_paths_in
+                      if bp.datatype != 'anat']
+        if bids_paths:
+            daysback = _get_daysback(bids_path=bids_paths[0], rng=rng)
+        else:
+            daysback = None
+        del bids_paths
 
-    logger.info(
+    # Produce some logging output
+    msg = (
         f'Anonymizing BIDS dataset\n'
         f'\n'
         f'    Input:  {bids_root_in}\n'
         f'    Output: {bids_root_out}\n'
         f'\n'
-        f'Shifting recoding dates by {daysback} days '
-        f'({round(daysback / 365, 1)} years).\n'
-        f'Using the following subject ID anonymization mapping:\n'
     )
-    for orig_sub, anon_sub in subject_mapping.items():
-        logger.info(f'    sub-{orig_sub} → sub-{anon_sub}')
-    logger.info('')
-
-    for f in ProgressBar(iterable=valid_matches, mesg='Anonymizing'):
-        # stem will contain `.nii` for `.nii.gz` files
-        if f.name.endswith('.nii.gz'):
-            suffix = f.name.split('_')[-1].replace('.nii.gz', '')
-            extension = '.nii.gz'
-        else:
-            suffix = f.stem.split('_')[-1]
-            extension = f.suffix
-
-        entities = get_entities_from_fname(fname=f)
-        datatype = f.parent.name
-        bp_in = BIDSPath(
-            root=bids_root_in, **entities, suffix=suffix, extension=extension,
-            datatype=datatype
+    if daysback is None:
+        msg += 'Not shifting recording date (found anatomical scans only)'
+    else:
+        msg += (
+            f'Shifting recoding dates by {daysback} days '
+            f'({round(daysback / 365, 1)} years).\n'
         )
+    msg += 'Using the following subject ID anonymization mapping:\n\n'
+    for orig_sub, anon_sub in subject_mapping.items():
+        msg += f'    sub-{orig_sub} → sub-{anon_sub}\n'
+    logger.info(msg)
+    del msg
+
+    # Actual processing starts here
+    for bp_in in ProgressBar(iterable=bids_paths_in, mesg='Anonymizing'):
         bp_out = (
             bp_in
             .copy()
