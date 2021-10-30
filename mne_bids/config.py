@@ -390,11 +390,11 @@ ANONYMIZED_JSON_KEY_WHITELIST = [
     'InstitutionName',
     'InstitutionalDepartmentName',
     'InstitutionAddress',
+    'DeviceSerialNumber',
     # MRI
     'Modality',
     'MagneticFieldStrength',
     'ImagingFrequency',
-    'DeviceSerialNumber',
     'StationName',
     'SeriesInstanceUID',
     'StudyInstanceUID',
@@ -463,6 +463,5 @@ ANONYMIZED_JSON_KEY_WHITELIST = [
     'MEGChannelCount',
     'MEGREFChannelCount',
     'ContinuousHeadLocalization',
-    'HeadCoilFrequency',
-    'AssociatedEmptyRoom'
+    'HeadCoilFrequency'
 ]
