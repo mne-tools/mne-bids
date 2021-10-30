@@ -52,7 +52,8 @@ from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
-                             ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS)
+                             ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
+                             ANONYMIZED_JSON_KEY_WHITELIST)
 
 
 def _is_numeric(n):
@@ -2507,20 +2508,11 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         else:
             json_out = dict()
 
-        # Exclude keys that might contain personal identifying info
-        exclude_keys = (
-            'PatientName',
-            'PatientID',
-            'PatientBirthDate',
-            'PatientSex',
-            'PatientWeight',
-            'AcquisitionTime',
-            'AcquisitionDateTime'
-        )
-
+        # Only transfer data that we believe doesn't contain any personal
+        # identifiable information
         updates = dict()
         for key, value in json_in.items():
-            if key not in json_out and key not in exclude_keys:
+            if key in ANONYMIZED_JSON_KEY_WHITELIST and key not in json_out:
                 updates[key] = value
         del json_in, json_out
 
