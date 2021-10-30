@@ -15,6 +15,7 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import shutil
 from collections import defaultdict, OrderedDict
+from typing import Union
 
 from pkg_resources import parse_version
 
@@ -2183,21 +2184,31 @@ def _get_daysback(
     return daysback
 
 
-def _check_crosstalk_path(bids_path: BIDSPath) -> bool:
-    is_crosstalk_path = (
-        bids_path.datatype == 'meg' and
-        bids_path.suffix == 'meg' and
-        bids_path.acquisition == 'crosstalk' and
-        bids_path.extension == '.fif')
+def _check_crosstalk_path(path: Union[BIDSPath, Path]) -> bool:
+    if isinstance(path, BIDSPath):
+        is_crosstalk_path = (
+            path.datatype == 'meg' and
+            path.suffix == 'meg' and
+            path.acquisition == 'crosstalk' and
+            path.extension == '.fif'
+        )
+    else:
+        is_crosstalk_path = path.name.endswith('_acq-crosstalk_meg.fif')
+
     return is_crosstalk_path
 
 
-def _check_finecal_path(bids_path: BIDSPath) -> bool:
-    is_finecal_path = (
-        bids_path.datatype == 'meg' and
-        bids_path.suffix == 'meg' and
-        bids_path.acquisition == 'calibration' and
-        bids_path.extension == '.dat')
+def _check_finecal_path(path: Union[BIDSPath, Path]) -> bool:
+    if isinstance(path, BIDSPath):
+        is_finecal_path = (
+            path.datatype == 'meg' and
+            path.suffix == 'meg' and
+            path.acquisition == 'calibration' and
+            path.extension == '.dat'
+        )
+    else:
+        is_finecal_path = path.name.endswith('_acq-calibration_meg.dat')
+
     return is_finecal_path
 
 
@@ -2329,9 +2340,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 )
             ) or
             (
-                # MEG crosstalk & fine-calibration
-                f.name.endswith('acq-crosstalk_meg.fif') or
-                f.name.endswith('acq-calibration_meg.dat')
+                _check_finecal_path(f) or
+                _check_crosstalk_path(f)
             )
         ):
             valid_matches.append(f)
@@ -2402,8 +2412,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         if (
             bp_in.datatype == 'meg' and
             'emptyroom' in subject_mapping and
-            not (_check_finecal_path(bids_path=bp_in) or
-                  _check_crosstalk_path(bids_path=bp_in))
+            not (_check_finecal_path(bp_in) or _check_crosstalk_path(bp_in))
         ):
             if bp_in.subject == 'emptyroom':
                 er_session_in = bp_in.session
@@ -2455,13 +2464,13 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 deface=True,
                 verbose='error'
             )
-        elif _check_crosstalk_path(bids_path=bp_in):
+        elif _check_crosstalk_path(bp_in):
             write_meg_crosstalk(
                 fname=bp_in.fpath,
                 bids_path=bp_out,
                 verbose='error'
             )
-        elif _check_finecal_path(bids_path=bp_in):
+        elif _check_finecal_path(bp_in):
             write_meg_calibration(
                 calibration=bp_in.fpath,
                 bids_path=bp_out,
