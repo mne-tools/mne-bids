@@ -2342,8 +2342,14 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     if daysback == 'auto':
         # Find a recording that can be read with MNE-Python to extract the
         # recording date
-        bids_paths = [bp for bp in bids_paths_in
-                      if bp.datatype != 'anat']
+        bids_paths = [
+            bp for bp in bids_paths_in
+            if (
+                bp.datatype != 'anat' and
+                not _check_crosstalk_path(bp) and
+                not _check_finecal_path(bp)
+            )
+        ]
         if bids_paths:
             daysback = _get_daysback(bids_path=bids_paths[0], rng=rng)
         else:
