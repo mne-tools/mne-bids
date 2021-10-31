@@ -2526,8 +2526,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         del json_in, json_out
 
         if updates:
-            if not bp_out_json.fpath.exists():
-                bp_out_json.fpath.touch()
+            bp_out_json.fpath.touch(exist_ok=True)
             update_sidecar_json(
                 bids_path=bp_out_json,
                 entries=updates,
