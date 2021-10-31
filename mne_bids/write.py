@@ -2326,7 +2326,6 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     # Ensure we convert empty-room recordings first, as we'll want to pass
     # their anonymized path when writing the associated experimental recordings
     if 'meg' in requested_datatypes:
-        # TODO this heuristic is not great
         bids_paths_in_er_only = [
             bp for bp in bids_paths_in
             if bp.subject == 'emptyroom' and bp.task == 'noise'
