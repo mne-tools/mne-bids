@@ -2289,6 +2289,11 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             # identity mapping
             subject_mapping = dict(zip(participants_in, participants_in))
 
+    if subject_mapping != 'auto':
+        # Make sure we're mapping to strings
+        for k, v in subject_mapping.items():
+            subject_mapping[k] = str(v)
+
     allowed_datatypes = ('meg', 'eeg', 'ieeg', 'anat')
     allowed_suffixes = ('meg', 'eeg', 'ieeg', 'T1w', 'FLASH')
     allowed_extensions = []
@@ -2354,6 +2359,29 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         else:
             daysback = None
         del bids_paths
+
+    # Check subject_mapping
+    subjects_in_dataset = set([bp.subject for bp in bids_paths_in])
+    subjects_missing_mapping_keys = [
+        s for s in subjects_in_dataset
+        if s not in subject_mapping
+    ]
+    if subjects_missing_mapping_keys:
+        raise IndexError(
+            f'The subject_mapping dictionary does not contain an entry for '
+            f'subject ID: {", ".join(subjects_missing_mapping_keys)}'
+        )
+
+    _, unique_vals_idx, counts = np.unique(
+        list(subject_mapping.values()), return_index=True, return_counts=True
+    )
+    non_unique_vals_idx = unique_vals_idx[counts > 1]
+    if non_unique_vals_idx.size > 0:
+        keys = np.array(list(subject_mapping.values()))[non_unique_vals_idx]
+        raise ValueError(
+            f'The subject_mapping dictionary contains duplicated anonymized '
+            f'subjet IDs: {", ".join(keys)}'
+        )
 
     # Produce some logging output
     msg = (

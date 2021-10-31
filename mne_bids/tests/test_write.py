@@ -3061,7 +3061,37 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     bids_root_anon = tmpdir / 'bids-anonymized'
     anonymize_dataset(
         bids_root_in=bids_root,
-        bids_root_out=bids_root_anon,
-        # daysback=10
+        bids_root_out=bids_root_anon
     )
     _bids_validate(bids_root)
+
+    bids_root_anon = tmpdir / 'bids-anonymized-2'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        daysback=10,
+        datatypes='meg',
+        subject_mapping={'01': '123'}
+    )
+    _bids_validate(bids_root)
+
+    # Unknown subject in subject_mapping
+    bids_root_anon = tmpdir / 'bids-anonymized-3'
+    with pytest.raises(IndexError, match='does not contain an entry for'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            subject_mapping={'foobar': '123'}
+        )
+
+    # Duplicated entries in subject_mapping
+    bids_root_anon = tmpdir / 'bids-anonymized-4'
+    with pytest.raises(ValueError, match='dictionary contains duplicated'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            subject_mapping={
+                '01': '123',
+                'foobar': '123'
+            }
+        )
