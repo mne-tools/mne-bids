@@ -2245,7 +2245,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     rng = np.random.default_rng(seed=rng_seed)
 
     if not bids_root_in.is_dir():
-        raise ValueError(
+        raise FileNotFoundError(
             f'The specified input directory does not exist: {bids_root_in}'
         )
 

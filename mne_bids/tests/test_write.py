@@ -3095,3 +3095,36 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
                 'foobar': '123'
             }
         )
+
+    # bids_root_in does not exist
+    bids_root_anon = tmpdir / 'bids-anonymized-5'
+    with pytest.raises(FileNotFoundError, match='directory does not exist'):
+        anonymize_dataset(
+            bids_root_in='/foobar',
+            bids_root_out=bids_root_anon
+        )
+
+    # input dir == output dir
+    with pytest.raises(ValueError, match='directory must differ'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root
+        )
+
+    # bids_root_out exists
+    bids_root_anon = tmpdir / 'bids-anonymized-6'
+    bids_root_anon.mkdir()
+    with pytest.raises(FileExistsError, match='directory already exists'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon
+        )
+
+    # Unsupported data type
+    bids_root_anon = tmpdir / 'bids-anonymized-7'
+    with pytest.raises(ValueError, match='Unsupported data type'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            datatypes='func'
+        )
