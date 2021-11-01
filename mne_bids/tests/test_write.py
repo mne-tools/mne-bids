@@ -3190,3 +3190,12 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
             }
         )
     _bids_validate(bids_root)
+
+    # Only anat data
+    bids_root_anon = tmpdir / 'bids-anonymized-11'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='anat'
+    )
+    _bids_validate(bids_root)

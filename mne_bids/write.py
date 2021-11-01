@@ -2320,12 +2320,16 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     for f in matches:
         bids_path = get_bids_path_from_fname(f, verbose='error')
         if (
+            bids_path.datatype in requested_datatypes and
             (
-                bids_path.suffix in allowed_suffixes and
-                bids_path.extension in allowed_extensions
-            ) or
-            _check_finecal_path(bids_path) or
-            _check_crosstalk_path(bids_path)
+                (
+                    bids_path.suffix in allowed_suffixes and
+                    bids_path.extension in allowed_extensions
+                ) or (
+                    _check_finecal_path(bids_path) or
+                    _check_crosstalk_path(bids_path)
+                )
+            )
         ):
             bids_paths_in.append(bids_path)
 
