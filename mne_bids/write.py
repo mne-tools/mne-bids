@@ -1738,7 +1738,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
     bids_path : mne_bids.BIDSPath
-        The file to write. The `mne_bids.BIDSPath` instance passed here
+        The file to write. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
@@ -2206,8 +2206,8 @@ def _check_finecal_path(bids_path: BIDSPath) -> bool:
 
 @verbose
 def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
-                      subject_mapping='auto', datatypes=None, rng_seed=None,
-                      verbose=None):
+                      subject_mapping='auto', datatypes=None,
+                      random_state=None, verbose=None):
     """Anonymize a BIDS dataset.
 
     Parameters
@@ -2224,25 +2224,22 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         (keys) to the anonymized IDs (values). If a function, must be one that
         accepts the original IDs as a list of strings and returns a dictionary
         with original IDs as keys and anonymized IDs as values. If ``'auto'``,
-        automatically produces a mapping and prints it on the screen. If
-        ``None``, subject IDs are not changed.
+        automatically produces a mapping (unique, randomly picked 3-digit IDs)
+        and prints it on the screen. If ``None``, subject IDs are not changed.
     datatypes : list of str | str | None
         Which data type to anonymize. If can be ``meg``, ``eeg``, ``ieeg``, or
         ``anat``. Multiple data types may be passed as a collection of strings.
         If ``None``, try to anonymize the entire input dataset.
-    rng_seed : int | None
-        A seed for the random number generator (RNG) used to construct
-        ``daysback`` and ``subject_mapping`` if they are ``None``. By default,
-        the RNG is not seeded, meaning it will most likely produce different
-        output every time this function is run. To achieve reproducible
-        results, pass an integer to seed the RNG.
+    %(random_state)s
+        The RNG will be used to derive ``daysback`` and ``subject_mapping`` if
+        they are ``None``.
     %(verbose)s
     """
     from mne_bids import update_sidecar_json  # avoid circular import
 
     bids_root_in = Path(bids_root_in).expanduser()
     bids_root_out = Path(bids_root_out).expanduser()
-    rng = np.random.default_rng(seed=rng_seed)
+    rng = np.random.default_rng(seed=random_state)
 
     if not bids_root_in.is_dir():
         raise FileNotFoundError(
