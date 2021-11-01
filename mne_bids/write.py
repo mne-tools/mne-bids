@@ -2278,21 +2278,22 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 subject_mapping['emptyroom'] = 'emptyroom'
         elif callable(subject_mapping):
             subject_mapping = subject_mapping(participants_in)
-            if ('emptyroom' in subject_mapping and
-                    subject_mapping['emptyroom'] != 'emptyroom'):
-                warn(
-                    f'You requested to change the "emptyroom" subject ID '
-                    f'(to {subject_mapping["emptyroom"]}). It is not '
-                    f'recommended to do this!'
-                )
         elif subject_mapping is None:
             # identity mapping
             subject_mapping = dict(zip(participants_in, participants_in))
 
-    if subject_mapping != 'auto':
+    if subject_mapping not in ('auto', None):
         # Make sure we're mapping to strings
         for k, v in subject_mapping.items():
             subject_mapping[k] = str(v)
+
+    if ('emptyroom' in subject_mapping and
+            subject_mapping['emptyroom'] != 'emptyroom'):
+        warn(
+            f'You requested to change the "emptyroom" subject ID '
+            f'(to {subject_mapping["emptyroom"]}). It is not '
+            f'recommended to do this!'
+        )
 
     allowed_datatypes = ('meg', 'eeg', 'ieeg', 'anat')
     allowed_suffixes = ('meg', 'eeg', 'ieeg', 'T1w', 'FLASH')
@@ -2450,9 +2451,10 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                     bp_out.session = er_session_out
                     assert bp_er_out is None
                 else:
-                    bp_er_out = bp_er_in.update(
+                    bp_er_out = bp_er_in.copy().update(
                         subject=subject_mapping['emptyroom'],
-                        session=er_session_out
+                        session=er_session_out,
+                        root=bp_out.root
                     )
 
         if bp_in.datatype == 'anat':

@@ -3027,9 +3027,13 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     # Create a non-anonymized dataset
     bids_root = tmpdir.mkdir('bids')
     bids_path = _bids_path.copy().update(root=bids_root)
+    bids_path_er = (bids_path.copy()
+                    .update(subject='emptyroom', task='noise',
+                            session='20021203', datatype='meg'))
 
     data_path = Path(testing.data_path())
     raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw_er_path = data_path / 'MEG' / 'sample' / 'ernoise_raw.fif'
     fine_cal_path = data_path / 'SSS' / 'sss_cal_mgh.dat'
     crosstalk_path = data_path / 'SSS' / 'ct_sparse_mgh.fif'
     t1w_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
@@ -3040,9 +3044,13 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         coord_frame='mri_voxel'
     )
     raw = _read_raw_fif(raw_path, verbose=False)
+    raw_er = _read_raw_fif(raw_er_path, verbose=False)
 
     bids_path.datatype = 'meg'
-    write_raw_bids(raw, bids_path=bids_path, verbose=False)
+    write_raw_bids(raw_er, bids_path=bids_path_er)
+    write_raw_bids(
+        raw, bids_path=bids_path, empty_room=bids_path_er, verbose=False
+    )
     write_meg_crosstalk(
         fname=crosstalk_path, bids_path=bids_path, verbose=False
     )
@@ -3081,7 +3089,10 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         bids_root_out=bids_root_anon,
         daysback=10,
         datatypes='meg',
-        subject_mapping={'01': '123'}
+        subject_mapping={
+            '01': '123',
+            'emptyroom': 'emptyroom'
+        }
     )
     _bids_validate(bids_root)
 
@@ -3091,7 +3102,10 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         anonymize_dataset(
             bids_root_in=bids_root,
             bids_root_out=bids_root_anon,
-            subject_mapping={'foobar': '123'}
+            subject_mapping={
+                'foobar': '123',
+                'emptyroom': 'emptyroom'
+            }
         )
 
     # Duplicated entries in subject_mapping
@@ -3102,7 +3116,8 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
             bids_root_out=bids_root_anon,
             subject_mapping={
                 '01': '123',
-                'foobar': '123'
+                'foobar': '123',
+                'emptyroom': 'emptyroom'
             }
         )
 
@@ -3138,3 +3153,40 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
             bids_root_out=bids_root_anon,
             datatypes='func'
         )
+
+    # subject_mapping None
+    bids_root_anon = tmpdir / 'bids-anonymized-8'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='meg',
+        subject_mapping=None
+    )
+    _bids_validate(bids_root)
+
+    # subject_mapping callable
+    bids_root_anon = tmpdir / 'bids-anonymized-9'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='meg',
+        subject_mapping=lambda x: {'01': '123', 'emptyroom': 'emptyroom'}
+    )
+    _bids_validate(bids_root)
+
+    # Rename emptyroom
+    bids_root_anon = tmpdir / 'bids-anonymized-10'
+    with pytest.warns(
+        RuntimeWarning,
+        match='requested to change the "emptyroom" subject ID'
+    ):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            datatypes='meg',
+            subject_mapping={
+                '01': '01',
+                'emptyroom': 'emptiestroom'
+            }
+        )
+    _bids_validate(bids_root)
