@@ -2397,7 +2397,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         f'\n'
     )
     if daysback is None:
-        msg += 'Not shifting recording dates (found anatomical scans only).'
+        msg += 'Not shifting recording dates (found anatomical scans only).\n'
     else:
         msg += (
             f'Shifting recoding dates by {daysback} days '
