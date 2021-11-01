@@ -392,6 +392,7 @@ ANONYMIZED_JSON_KEY_WHITELIST = [
     'InstitutionAddress',
     'DeviceSerialNumber',
     # MRI
+    # Many of these are not standardized, but produced by dcm2niix.
     'Modality',
     'MagneticFieldStrength',
     'ImagingFrequency',
