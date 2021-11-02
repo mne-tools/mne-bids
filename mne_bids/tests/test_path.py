@@ -217,7 +217,8 @@ def test_make_folders(tmp_path):
     assert op.isdir(tmp_path / 'sub-03' / 'ses-foo' / 'eeg')
 
     # Check if bids_root=None creates folders in the current working directory
-    bids_root = tmp_path.mkdir("tmp")
+    bids_root = tmp_path / "tmp"
+    bids_root.mkdir()
     curr_dir = os.getcwd()
     os.chdir(bids_root)
     bids_path = BIDSPath(subject='04', session='foo',
@@ -811,8 +812,10 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
-    bids_root = tmp_path.mkdir("bids")
-    tmp_dir = tmp_path.mkdir("tmp")
+    bids_root = tmp_path / "bids"
+    bids_root.mkdir()
+    tmp_dir = tmp_path / "tmp"
+    tmp_dir.mkdir()
 
     raw = _read_raw_fif(raw_fname)
     bids_path = BIDSPath(subject='01', session='01',
@@ -875,7 +878,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # test that the `AssociatedEmptyRoom` key in MEG sidecar is respected
 
-    bids_root = tmp_path.mkdir('associated-empty-room')
+    bids_root = tmp_path / 'associated-empty-room'
+    bids_root.mkdir()
     raw = _read_raw_fif(raw_fname)
     meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
     er_date = datetime(year=2010, month=1, day=1, tzinfo=timezone.utc)

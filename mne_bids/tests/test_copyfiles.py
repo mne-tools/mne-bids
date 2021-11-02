@@ -114,7 +114,8 @@ def test_copyfile_brainvision(tmp_path):
 
 def test_copyfile_edf(tmp_path):
     """Test the anonymization of EDF/BDF files."""
-    bids_root = str(tmp_path.mkdir("bids1"))
+    bids_root = tmp_path / "bids1"
+    bids_root.mkdir()
     data_path = op.join(base_path, 'edf', 'tests', 'data')
 
     # Test regular copying
