@@ -3029,7 +3029,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_er = (bids_path.copy()
                     .update(subject='emptyroom', task='noise',
-                            session='20021203', datatype='meg'))
+                            session='20021203', run=None, datatype='meg'))
 
     data_path = Path(testing.data_path())
     raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
@@ -3069,18 +3069,32 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     bids_root_anon = tmpdir / 'bids-anonymized'
     anonymize_dataset(
         bids_root_in=bids_root,
-        bids_root_out=bids_root_anon
+        bids_root_out=bids_root_anon,
+        random_state=42
     )
     _bids_validate(bids_root_anon)
+    meg_dir = bids_root_anon / 'sub-180' / 'ses-01' / 'meg'
+    assert (meg_dir /
+            'sub-180_ses-01_task-testing_acq-01_run-01_meg.fif').exists()
+    assert (meg_dir / 'sub-180_ses-01_acq-crosstalk_meg.fif').exists()
+    assert (meg_dir / 'sub-180_ses-01_acq-calibration_meg.dat').exists()
+    assert (bids_root_anon / 'sub-180' / 'ses-01' / 'anat' /
+            'sub-180_ses-01_acq-01_T1w.nii.gz').exists()
+    assert (bids_root_anon / 'sub-emptyroom' / 'ses-19141011' / 'meg' /
+            'sub-emptyroom_ses-19141011_task-noise_acq-01_meg.fif').exists()
 
     # Explicitly specify multiple data types
     bids_root_anon = tmpdir / 'bids-anonymized-1'
     anonymize_dataset(
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon,
-        datatypes=['meg', 'anat']
+        datatypes=['meg', 'anat'],
+        random_state=42
     )
     _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-180' / 'ses-01' / 'meg').exists()
+    assert (bids_root_anon / 'sub-180' / 'ses-01' / 'anat').exists()
+    assert (bids_root_anon / 'sub-emptyroom').exists()
 
     # One data type, daysback, subject mapping
     bids_root_anon = tmpdir / 'bids-anonymized-2'
@@ -3095,6 +3109,9 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         }
     )
     _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-123' / 'ses-01' / 'meg').exists()
+    assert not (bids_root_anon / 'sub-123' / 'ses-01' / 'anat').exists()
+    assert (bids_root_anon / 'sub-emptyroom' / 'ses-20021123').exists()
 
     # Unknown subject in subject_mapping
     bids_root_anon = tmpdir / 'bids-anonymized-3'
@@ -3160,9 +3177,12 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon,
         datatypes='meg',
-        subject_mapping=None
+        subject_mapping=None,
+        random_state=42
     )
     _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-01').exists()
+    assert (bids_root_anon / 'sub-emptyroom').exists()
 
     # subject_mapping callable
     bids_root_anon = tmpdir / 'bids-anonymized-9'
@@ -3170,9 +3190,12 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon,
         datatypes='meg',
-        subject_mapping=lambda x: {'01': '123', 'emptyroom': 'emptyroom'}
+        subject_mapping=lambda x: {'01': '123', 'emptyroom': 'emptyroom'},
+        random_state=42
     )
     _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-123').exists()
+    assert (bids_root_anon / 'sub-emptyroom').exists()
 
     # Rename emptyroom
     bids_root_anon = tmpdir / 'bids-anonymized-10'
@@ -3190,12 +3213,17 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
             }
         )
     _bids_validate(bids_root)
+    assert (bids_root_anon / 'sub-01').exists()
+    assert (bids_root_anon / 'sub-emptiestroom').exists()
 
     # Only anat data
     bids_root_anon = tmpdir / 'bids-anonymized-11'
     anonymize_dataset(
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon,
-        datatypes='anat'
+        datatypes='anat',
+        random_state=42
     )
     _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-180' / 'ses-01' / 'anat').exists()
+    assert not (bids_root_anon / 'sub-180' / 'ses-01' / 'meg').exists()
