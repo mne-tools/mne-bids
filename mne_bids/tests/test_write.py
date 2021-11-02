@@ -1590,7 +1590,8 @@ def test_set(_bids_validate, tmp_path):
     if check_version('pybv', '0.6'):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
-            output_path = _test_anonymize(tmp_path.mkdir('tmp'), raw, bids_path)
+            output_path = _test_anonymize(tmp_path.mkdir('tmp'), raw,
+                                          bids_path)
         _bids_validate(output_path)
 
 
