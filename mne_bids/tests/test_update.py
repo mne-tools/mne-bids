@@ -33,9 +33,9 @@ bids_path = BIDSPath(
 
 
 @pytest.fixture(scope='session')
-def _get_bids_test_dir(tmpdir_factory):
+def _get_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
-    bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
+    bids_root = str(tmp_path_factory.mktemp('mnebids_utils_test_bids_ds'))
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -138,7 +138,7 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
 
 
 @requires_nibabel()
-def test_update_anat_landmarks(tmpdir):
+def test_update_anat_landmarks(tmp_path):
     """Test updating the anatomical landmarks of an MRI scan."""
     data_path = Path(testing.data_path())
     raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
@@ -146,7 +146,7 @@ def test_update_anat_landmarks(tmpdir):
     t1_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     fs_subject = 'sample'
     fs_subjects_dir = data_path / 'subjects'
-    bids_root = Path(tmpdir)
+    bids_root = Path(tmp_path)
     bids_path_mri = BIDSPath(subject=subject_id, session=session_id,
                              acquisition=acq, root=bids_root, datatype='anat',
                              suffix='T1w')

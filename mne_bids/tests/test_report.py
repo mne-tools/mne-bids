@@ -35,9 +35,9 @@ warning_str = dict(
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_report(tmpdir):
+def test_report(tmp_path):
     """Test that report generated works as intended."""
-    bids_root = str(tmpdir)
+    bids_root = str(tmp_path)
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
     bids_path.update(root=bids_root)
