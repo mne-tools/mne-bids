@@ -2232,7 +2232,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         If ``None``, try to anonymize the entire input dataset.
     %(random_state)s
         The RNG will be used to derive ``daysback`` and ``subject_mapping`` if
-        they are ``None``.
+        they are ``'auto'``.
     %(verbose)s
     """
     from mne_bids import update_sidecar_json  # avoid circular import
