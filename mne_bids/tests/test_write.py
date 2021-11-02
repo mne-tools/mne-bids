@@ -1885,7 +1885,8 @@ def test_write_raw_pathlike(tmpdir):
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32,
+                'unknown': 0}
     raw = _read_raw_fif(raw_fname)
 
     bids_root = Path(tmpdir)
