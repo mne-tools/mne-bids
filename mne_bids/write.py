@@ -1497,13 +1497,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             _write_dig_bids(bids_path, raw, montage, acpc_aligned,
                             overwrite)
     else:
-        logger.warning(f'Writing of electrodes.tsv is not supported '
-                       f'for data type "{bids_path.datatype}". Skipping ...')
+        logger.info(f'Writing of electrodes.tsv is not supported '
+                    f'for data type "{bids_path.datatype}". Skipping ...')
 
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events_data, event_id, raw, task=bids_path.task)
+            events_data, event_id, raw, bids_path=bids_path)
         if events_array.size != 0:
             _events_tsv(events=events_array, durations=event_dur, raw=raw,
                         fname=events_path.fpath, trial_type=event_desc_id_map,
