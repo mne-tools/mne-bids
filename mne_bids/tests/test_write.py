@@ -3071,7 +3071,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon
     )
-    _bids_validate(bids_root)
+    _bids_validate(bids_root_anon)
 
     # Explicitly specify multiple data types
     bids_root_anon = tmpdir / 'bids-anonymized-1'
@@ -3080,7 +3080,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         bids_root_out=bids_root_anon,
         datatypes=['meg', 'anat']
     )
-    _bids_validate(bids_root)
+    _bids_validate(bids_root_anon)
 
     # One data type, daysback, subject mapping
     bids_root_anon = tmpdir / 'bids-anonymized-2'
@@ -3094,7 +3094,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
             'emptyroom': 'emptyroom'
         }
     )
-    _bids_validate(bids_root)
+    _bids_validate(bids_root_anon)
 
     # Unknown subject in subject_mapping
     bids_root_anon = tmpdir / 'bids-anonymized-3'
@@ -3162,7 +3162,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         datatypes='meg',
         subject_mapping=None
     )
-    _bids_validate(bids_root)
+    _bids_validate(bids_root_anon)
 
     # subject_mapping callable
     bids_root_anon = tmpdir / 'bids-anonymized-9'
@@ -3172,7 +3172,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         datatypes='meg',
         subject_mapping=lambda x: {'01': '123', 'emptyroom': 'emptyroom'}
     )
-    _bids_validate(bids_root)
+    _bids_validate(bids_root_anon)
 
     # Rename emptyroom
     bids_root_anon = tmpdir / 'bids-anonymized-10'
@@ -3198,4 +3198,4 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         bids_root_out=bids_root_anon,
         datatypes='anat'
     )
-    _bids_validate(bids_root)
+    _bids_validate(bids_root_anon)

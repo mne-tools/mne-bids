@@ -2535,3 +2535,15 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 entries=updates,
                 verbose=False
             )
+
+    # Copy some additional files
+    additional_files = (
+        'README',
+        'dataset_description.json',
+        'participants.json',
+        'CHANGES'
+    )
+    for fname in additional_files:
+        in_path = bids_root_in / fname
+        if in_path.exists():
+            shutil.copy(src=in_path, dst=bids_root_out)
