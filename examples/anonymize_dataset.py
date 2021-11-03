@@ -110,7 +110,7 @@ print_dir_tree(bids_root_anon)
 # %%
 # You can see that the subject ID was changed to a number (in this case, the
 # digit ``1```), and the recording dates have been shifted backward in time (as
-# indicated by the ``emptyroom`` session name). Anonymous subject IDs are
+# indicated by the ``emptyroom`` session name). Anonymized subject IDs are
 # simply a permutation of the set :math:`\{1, 2, \ldots, N\}``, where :math:`N`
 # is the total number of participants (excluding the ``emptyroom``
 # pseudo-subject). Zero-padding will be added to the subject IDs as needed to
