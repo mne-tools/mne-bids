@@ -183,8 +183,13 @@ print_dir_tree(bids_root_anon)
 # above), as they are determined randomly.
 #
 # To ensure results are reproducible across runs, you can pass the
-# ``random_state`` parameter, which will ensure that you'll get the same
-# results every time you execute the function.
+# ``random_state`` parameter, causing the random number generator to produce
+# the same results every time you execute the function.
+#
+# (Note that throughout this example, we only had a single subject in our
+# dataset, meaning it will always be assigned the anonymized ID ``1``. Only
+# in a dataset with multiple subjects will the effects of randomly-picked IDs
+# become apparent.)
 
 for i in range(2):
     print(f'Run {i+1}\n')
