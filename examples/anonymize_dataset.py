@@ -58,7 +58,7 @@ if bids_root_anon.exists():
 
 # %%
 bids_path = BIDSPath(
-    subject='123', task='audiovisual', root=bids_root, datatype='meg'
+    subject='ABC123', task='audiovisual', root=bids_root, datatype='meg'
 )
 bids_path_er = bids_path.copy().update(
     subject='emptyroom', task='noise', session='20021206'
@@ -96,6 +96,8 @@ write_anat(
 )
 
 # %%
+# Basic anonymization
+# -------------------
 # Now we're ready to anonymize the dataset!
 
 anonymize_dataset(bids_root_in=bids_root, bids_root_out=bids_root_anon)
@@ -106,9 +108,13 @@ anonymize_dataset(bids_root_in=bids_root, bids_root_out=bids_root_anon)
 print_dir_tree(bids_root_anon)
 
 # %%
-# You can see that the subject name was changed (to a randomly picked 3-digit
-# number) and the recording dates have been shifted backward in time (as
-# indicated by the ``emptyroom`` session name).
+# You can see that the subject ID was changed to a number (in this case, the
+# digit ``1```), and the recording dates have been shifted backward in time (as
+# indicated by the ``emptyroom`` session name). Anonymous subject IDs are
+# simply a permutation of the set :math:`\{1, 2, \ldots, N\}``, where :math:`N`
+# is the total number of participants (excluding the ``emptyroom``
+# pseudo-subject). Zero-padding will be added to the subject IDs as needed to
+# allow for convenient sorting.
 #
 # Limiting to specific data types
 # -------------------------------
@@ -157,7 +163,7 @@ print_dir_tree(bids_root_anon / 'sub-emptyroom')  # Easy to see effects here
 shutil.rmtree(bids_root_anon)
 
 subject_mapping = {
-    '123': 'anonymous',
+    'ABC123': 'anonymous',
     'emptyroom': 'emptyroom'
 }
 

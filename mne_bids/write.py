@@ -2224,8 +2224,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         (keys) to the anonymized IDs (values). If a function, must be one that
         accepts the original IDs as a list of strings and returns a dictionary
         with original IDs as keys and anonymized IDs as values. If ``'auto'``,
-        automatically produces a mapping (unique, randomly picked 3-digit IDs)
-        and prints it on the screen. If ``None``, subject IDs are not changed.
+        automatically produces a mapping (zero-padded numerical IDs) and prints
+        it on the screen. If ``None``, subject IDs are not changed.
     datatypes : list of str | str | None
         Which data type to anonymize. If can be ``meg``, ``eeg``, ``ieeg``, or
         ``anat``. Multiple data types may be passed as a collection of strings.
@@ -2263,16 +2263,29 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         ]
 
         if subject_mapping == 'auto':
-            participants_out = rng.choice(
-                a=range(100, 1000),
-                replace=False,
-                size=len(participants_in)
+            # Don't change `emptyroom` subject ID
+            if 'emptyroom' in participants_in:
+                n_participants = len(participants_in) - 1
+            else:
+                n_participants = len(participants_in)
+
+            participants_out = rng.permutation(
+                np.arange(start=1, stop=n_participants + 1, dtype=int)
             )
-            participants_out = [str(p) for p in participants_out]
+
+            # Zero-pad anonymized IDs
+            id_len = len(str(len(participants_out)))
+
+            participants_out = [str(p).zfill(id_len) for p in participants_out]
+
+            if 'emptyroom' in participants_in:
+                # Append empty-room at the end
+                participants_in.remove('emptyroom')
+                participants_in.append('emptyroom')
+                participants_out.append('emptyroom')
+
+            assert len(participants_in) == len(participants_out)
             subject_mapping = dict(zip(participants_in, participants_out))
-            # Do not anonymize emptyroom subject ID
-            if 'emptyroom' in subject_mapping:
-                subject_mapping['emptyroom'] = 'emptyroom'
         elif callable(subject_mapping):
             subject_mapping = subject_mapping(participants_in)
         elif subject_mapping is None:
