@@ -47,6 +47,7 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
 from mne_bids.read import _find_matching_sidecar, _read_events
+from mne_bids.sidecar_updates import update_sidecar_json
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
@@ -2235,8 +2236,6 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         they are ``'auto'``.
     %(verbose)s
     """
-    from mne_bids import update_sidecar_json  # avoid circular import
-
     bids_root_in = Path(bids_root_in).expanduser()
     bids_root_out = Path(bids_root_out).expanduser()
     rng = np.random.default_rng(seed=random_state)
