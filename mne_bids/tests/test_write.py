@@ -3028,12 +3028,16 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     # Create a non-anonymized dataset
     bids_root = tmpdir.mkdir('bids')
     bids_path = _bids_path.copy().update(
-        root=bids_root, subject='testparticipant'
+        root=bids_root, subject='testparticipant', extension='.fif',
+        datatype='meg'
     )
-    bids_path_er = (bids_path.copy()
-                    .update(subject='emptyroom', task='noise',
-                            session='20021203', run=None, acquisition=None,
-                            datatype='meg'))
+    bids_path_er = bids_path.copy().update(
+        subject='emptyroom', task='noise', session='20021203', run=None,
+        acquisition=None
+    )
+    bids_path_anat = bids_path.copy().update(
+        datatype='anat', suffix='T1w', extension='.nii.gz'
+    )
 
     data_path = Path(testing.data_path())
     raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
@@ -3058,7 +3062,6 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     raw = _read_raw_fif(raw_path, verbose=False)
     raw_er = _read_raw_fif(raw_er_path, verbose=False)
 
-    bids_path.datatype = 'meg'
     write_raw_bids(raw_er, bids_path=bids_path_er)
     write_raw_bids(
         raw, bids_path=bids_path, empty_room=bids_path_er,
@@ -3070,10 +3073,8 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     write_meg_calibration(
         calibration=fine_cal_path, bids_path=bids_path, verbose=False
     )
-
-    bids_path.datatype = 'anat'
     write_anat(
-        image=t1w_path, bids_path=bids_path, landmarks=mri_landmarks,
+        image=t1w_path, bids_path=bids_path_anat, landmarks=mri_landmarks,
         verbose=False
     )
     _bids_validate(bids_root)
@@ -3239,6 +3240,33 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     _bids_validate(bids_root_anon)
     assert (bids_root_anon / 'sub-1' / 'ses-01' / 'anat').exists()
     assert not (bids_root_anon / 'sub-1' / 'ses-01' / 'meg').exists()
+
+    # Ensure that additional JSON sidecar fields are transferred if they are
+    # "safe", and are omitted if they are not whitelisted
+    bids_path.datatype = 'meg'
+    meg_json_path = bids_path.copy().update(extension='.json')
+    meg_json = json.loads(meg_json_path.fpath.read_text(encoding='utf-8'))
+    assert 'Instructions' not in meg_json  # ensure following test makes sense
+    meg_json['Instructions'] = 'Foo'
+    meg_json['UnknownKey'] = 'Bar'
+    meg_json_path.fpath.write_text(
+        data=json.dumps(meg_json),
+        encoding='utf-8'
+    )
+
+    # After anonymization, "Instructions" should be there and "UnknownKey"
+    # should be gone.
+    bids_root_anon = tmpdir / 'bids-anonymized-12'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='meg'
+    )
+    path = (bids_root_anon / 'sub-1' / 'ses-01' / 'meg' /
+            'sub-1_ses-01_task-testing_acq-01_run-01_meg.json')
+    meg_json = json.loads(path.read_text(encoding='utf=8'))
+    assert 'Instructions' in meg_json
+    assert 'UnknownKey' not in meg_json
 
 
 def test_anonymize_dataset_daysback(tmpdir):
