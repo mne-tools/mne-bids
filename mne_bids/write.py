@@ -7,6 +7,7 @@
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD-3-Clause
+from typing import List
 import json
 import sys
 import os
@@ -2168,20 +2169,82 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
 
 def _get_daysback(
     *,
-    bids_path: BIDSPath,
-    rng: np.random.Generator
+    bids_paths: List[BIDSPath],
+    rng: np.random.Generator,
+    show_progress_thresh: int
 ) -> int:
-    """Try to find a suitable "daysback" for anonymization."""
-    raw = read_raw_bids(bids_path=bids_path, verbose='error')
-    daysback_min, daysback_max = get_anonymization_daysback([raw])
-    # We only estimated the range based on one file, so let's add a little
-    # slack here …
-    daysback_min += 356
-    daysback_max -= 365
+    """Try to find a suitable "daysback" for anonymization.
+
+    Parameters
+    ----------
+    bids_paths
+        The BIDSPath instances to consider. Will be filtered down in this
+        function to reduce run time (only one file run per session).
+    rng
+        The RNG to use for selecting a `daysback` from the valid range.
+    show_progress_thresh
+        After narrowing down the files to query for their measurement date,
+        show a progress bar if >= this number of files remain.
+    """
+    bids_paths_for_daysback = dict()
+
+    # Only consider the first run in each session to reduce the amount of files
+    # we need to access.
+    for bp in bids_paths:
+        subject = bp.subject
+        session = bp.session
+        run = bp.run
+
+        if subject not in bids_paths_for_daysback:
+            bids_paths_for_daysback[subject] = [bp]
+            continue
+        elif session is None:
+            assert len(bids_paths_for_daysback[subject]) == 1
+
+            if run is None:
+                bids_paths_for_daysback[subject] = [bp]
+            else:
+                assert bids_paths_for_daysback[subject].run is not None
+                if run < bids_paths_for_daysback[subject][0].run:
+                    bids_paths_for_daysback[subject] = [bp]
+        elif session is not None:
+            assert bids_paths_for_daysback[subject].session is not None
+            if all(
+                [session != p.session
+                 for p in bids_paths_for_daysback[subject]]
+            ):
+                bids_paths_for_daysback[subject].append(bp)
+        else:
+            raise RuntimeError(
+                'This should never happen, please contact the '
+                'MNE-BIDS developers'
+            )
+
+    bids_paths_to_consider = []
+    for bp in bids_paths_for_daysback.values():
+        bids_paths_to_consider.extend(bp)
+
+    if len(bids_paths_to_consider) >= show_progress_thresh:
+        raws = []
+        logger.info('\n')
+        for bp in ProgressBar(
+            iterable=bids_paths_to_consider, mesg='Determining daysback'
+        ):
+            raw = read_raw_bids(bids_path=bp, verbose='error')
+            raws.append(raw)
+    else:
+        raws = [read_raw_bids(bids_path=bp, verbose='error')
+                for bp in bids_paths_to_consider]
+
+    daysback_min, daysback_max = get_anonymization_daysback(
+        raws=raws, verbose=False
+    )
 
     # Pick one randomly
-    daysback = int(rng.choice(list(range(daysback_min, daysback_max + 1))))
-
+    daysback = rng.choice(
+        np.arange(daysback_min, daysback_max + 1, dtype=int)
+    )
+    daysback = int(daysback)
     return daysback
 
 
@@ -2357,6 +2420,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         bids_paths_in = bids_paths_in_er_first
         del bids_paths_in_er_first, bids_paths_in_er_only
 
+    logger.info('\nAnonymizing BIDS dataset')
     if daysback == 'auto':
         # Find a recording that can be read with MNE-Python to extract the
         # recording date
@@ -2369,7 +2433,11 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             )
         ]
         if bids_paths:
-            daysback = _get_daysback(bids_path=bids_paths[0], rng=rng)
+            logger.info('Determining "daysback" for anonymization.')
+
+            daysback = _get_daysback(
+                bids_paths=bids_paths, rng=rng, show_progress_thresh=20
+            )
         else:
             daysback = None
         del bids_paths
@@ -2399,7 +2467,6 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
 
     # Produce some logging output
     msg = (
-        f'Anonymizing BIDS dataset\n'
         f'\n'
         f'    Input:  {bids_root_in}\n'
         f'    Output: {bids_root_out}\n'

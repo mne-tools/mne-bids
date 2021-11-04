@@ -3093,8 +3093,8 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     assert (meg_dir / 'sub-1_ses-01_acq-calibration_meg.dat').exists()
     assert (bids_root_anon / 'sub-1' / 'ses-01' / 'anat' /
             'sub-1_ses-01_acq-01_T1w.nii.gz').exists()
-    assert (bids_root_anon / 'sub-emptyroom' / 'ses-19220222' / 'meg' /
-            'sub-emptyroom_ses-19220222_task-noise_meg.fif').exists()
+    assert (bids_root_anon / 'sub-emptyroom' / 'ses-19221211' / 'meg' /
+            'sub-emptyroom_ses-19221211_task-noise_meg.fif').exists()
 
     # Explicitly specify multiple data types
     bids_root_anon = tmpdir / 'bids-anonymized-1'
@@ -3239,3 +3239,13 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     _bids_validate(bids_root_anon)
     assert (bids_root_anon / 'sub-1' / 'ses-01' / 'anat').exists()
     assert not (bids_root_anon / 'sub-1' / 'ses-01' / 'meg').exists()
+
+    # Check progress bar output for _get_daysback
+    # (no public API to control this)
+    from mne_bids.write import _get_daysback
+    bids_path.datatype = 'meg'
+    _get_daysback(
+        bids_paths=[bids_path],
+        rng=np.random.default_rng(),
+        show_progress_thresh=1
+    )
