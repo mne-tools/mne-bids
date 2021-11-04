@@ -3240,12 +3240,50 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     assert (bids_root_anon / 'sub-1' / 'ses-01' / 'anat').exists()
     assert not (bids_root_anon / 'sub-1' / 'ses-01' / 'meg').exists()
 
-    # Check progress bar output for _get_daysback
-    # (no public API to control this)
+
+def test_anonymize_dataset_daysback(tmpdir):
+    """Test some bits of _get_daysback, which doesn't have a public API."""
+    # Check progress bar output
     from mne_bids.write import _get_daysback
-    bids_path.datatype = 'meg'
+
+    bids_root = tmpdir.mkdir('bids')
+    bids_path = _bids_path.copy().update(
+        root=bids_root, subject='testparticipant', datatype='meg'
+    )
+    data_path = Path(testing.data_path())
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw = _read_raw_fif(raw_path, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path)
+
     _get_daysback(
         bids_paths=[bids_path],
         rng=np.random.default_rng(),
         show_progress_thresh=1
+    )
+
+    # Multiple runs
+    _get_daysback(
+        bids_paths=[
+            bids_path.copy().update(run='01'),
+            bids_path.copy().update(run='02')
+        ],
+        rng=np.random.default_rng(),
+        show_progress_thresh=20
+    )
+
+    # Multiple sessions
+    bids_root = tmpdir.mkdir('bids-multisession')
+    bids_path = _bids_path.copy().update(
+        root=bids_root, subject='testparticipant', datatype='meg'
+    )
+    write_raw_bids(raw, bids_path=bids_path.copy().update(session='01'))
+    write_raw_bids(raw, bids_path=bids_path.copy().update(session='02'))
+
+    _get_daysback(
+        bids_paths=[
+            bids_path.copy().update(session='01'),
+            bids_path.copy().update(session='02')
+        ],
+        rng=np.random.default_rng(),
+        show_progress_thresh=20
     )

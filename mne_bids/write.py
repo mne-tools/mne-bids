@@ -2188,7 +2188,7 @@ def _get_daysback(
     """
     bids_paths_for_daysback = dict()
 
-    # Only consider the first run in each session to reduce the amount of files
+    # Only consider the one run in each session to reduce the amount of files
     # we need to access.
     for bp in bids_paths:
         subject = bp.subject
@@ -2204,17 +2204,19 @@ def _get_daysback(
             if run is None:
                 bids_paths_for_daysback[subject] = [bp]
             else:
-                assert bids_paths_for_daysback[subject].run is not None
+                assert bids_paths_for_daysback[subject][0].run is not None
                 if run < bids_paths_for_daysback[subject][0].run:
+                    # We onoy keep the earliest run
                     bids_paths_for_daysback[subject] = [bp]
         elif session is not None:
-            assert bids_paths_for_daysback[subject].session is not None
             if all(
                 [session != p.session
                  for p in bids_paths_for_daysback[subject]]
             ):
+                # Note that we keep ANY run, not necessarily the first, in
+                # a session
                 bids_paths_for_daysback[subject].append(bp)
-        else:
+        else:  # pragma: no cover
             raise RuntimeError(
                 'This should never happen, please contact the '
                 'MNE-BIDS developers'
