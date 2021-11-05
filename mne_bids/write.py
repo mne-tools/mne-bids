@@ -2193,7 +2193,6 @@ def _get_daysback(
     for bids_path in bids_paths:
         subject = bids_path.subject
         session = bids_path.session
-        run = bids_path.run
         datatype = bids_path.datatype
 
         if subject not in bids_paths_for_daysback:
@@ -2201,7 +2200,7 @@ def _get_daysback(
             continue
         elif session is None:
             # Keep any one run for each data type
-            if not datatype in [p.datatype 
+            if datatype not in [p.datatype
                                 for p in bids_paths_for_daysback[subject]]:
                 bids_paths_for_daysback[subject].append(bids_path)
         elif session is not None:
@@ -2612,9 +2611,9 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     # Copy some additional files
     additional_files = (
         'README',
+        'CHANGES',
         'dataset_description.json',
-        'participants.json',
-        'CHANGES'
+        'participants.json'
     )
     for fname in additional_files:
         in_path = bids_root_in / fname
