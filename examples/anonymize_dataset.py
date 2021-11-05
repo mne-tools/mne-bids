@@ -153,12 +153,12 @@ print_dir_tree(bids_root_anon / 'sub-emptyroom')  # Easy to see effects here
 # %%
 # Specifying subject IDs
 # ----------------------
-# Anonymized subject IDs are automatically generated as unique 3-digit numbers.
-# You can control this behavior via the ``subject_mapping`` parameter. Set it
-# to ``None`` to avoid changing the subject IDs, e.g., in case they're already
-# anonymized. You can pass a dictionary that maps original subject IDs to the
-# anonymize IDs. Lastly, you can also pass a function that accepts a list of
-# original IDs and returns such a dictionary.
+# Anonymized subject IDs are automatically generated as unique numbers in
+# ascending order. You can control this behavior via the ``subject_mapping``
+# parameter. Set it to ``None`` to avoid changing the subject IDs, e.g., in
+# case they're already anonymized. You can pass a dictionary that maps original
+# subject IDs to the anonymize IDs. Lastly, you can also pass a function that
+# accepts a list of original IDs and returns such a dictionary.
 
 shutil.rmtree(bids_root_anon)
 
