@@ -8,6 +8,16 @@ jobs:
     steps:
         - checkout
 
+        # restore cache from last build. Unless __init__.py has changed since then
+        - restore_cache:
+            keys:
+              - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+
+        # Also restore pip cache to speed up installations
+        - restore_cache:
+            keys:
+              - pip-cache-0-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+
         - run:
             name: Get Python running
             command: |
@@ -29,6 +39,12 @@ jobs:
         - store_artifacts:
             path: doc/_build/html/
             destination: dev
+
+        # Store the data cache
+        - save_cache:
+            key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+            paths:
+              - ~/mne_data
 
         # Store pip cache
         - save_cache:
