@@ -2190,49 +2190,40 @@ def _get_daysback(
 
     # Only consider the one run in each session to reduce the amount of files
     # we need to access.
-    for bp in bids_paths:
-        subject = bp.subject
-        session = bp.session
-        run = bp.run
+    for bids_path in bids_paths:
+        subject = bids_path.subject
+        session = bids_path.session
+        run = bids_path.run
+        datatype = bids_path.datatype
 
         if subject not in bids_paths_for_daysback:
-            bids_paths_for_daysback[subject] = [bp]
+            bids_paths_for_daysback[subject] = [bids_path]
             continue
         elif session is None:
-            assert len(bids_paths_for_daysback[subject]) == 1
-
-            if run is None:
-                bids_paths_for_daysback[subject] = [bp]
-            else:
-                assert bids_paths_for_daysback[subject][0].run is not None
-                if run < bids_paths_for_daysback[subject][0].run:
-                    # We onoy keep the earliest run
-                    bids_paths_for_daysback[subject] = [bp]
+            # Keep any one run for each data type
+            if not datatype in [p.datatype 
+                                for p in bids_paths_for_daysback[subject]]:
+                bids_paths_for_daysback[subject].append(bids_path)
         elif session is not None:
+            # Keep any one run for each data type and session
             if all(
                 [session != p.session
-                 for p in bids_paths_for_daysback[subject]]
+                 for p in bids_paths_for_daysback[subject]
+                 if datatype == p.datatype]
             ):
-                # Note that we keep ANY run, not necessarily the first, in
-                # a session
-                bids_paths_for_daysback[subject].append(bp)
-        else:  # pragma: no cover
-            raise RuntimeError(
-                'This should never happen, please contact the '
-                'MNE-BIDS developers'
-            )
+                bids_paths_for_daysback[subject].append(bids_path)
 
     bids_paths_to_consider = []
-    for bp in bids_paths_for_daysback.values():
-        bids_paths_to_consider.extend(bp)
+    for bids_path in bids_paths_for_daysback.values():
+        bids_paths_to_consider.extend(bids_path)
 
     if len(bids_paths_to_consider) >= show_progress_thresh:
         raws = []
         logger.info('\n')
-        for bp in ProgressBar(
+        for bids_path in ProgressBar(
             iterable=bids_paths_to_consider, mesg='Determining daysback'
         ):
-            raw = read_raw_bids(bids_path=bp, verbose='error')
+            raw = read_raw_bids(bids_path=bids_path, verbose='error')
             raws.append(raw)
     else:
         raws = [read_raw_bids(bids_path=bp, verbose='error')
