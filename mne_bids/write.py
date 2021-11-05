@@ -2188,7 +2188,7 @@ def _get_daysback(
     """
     bids_paths_for_daysback = dict()
 
-    # Only consider the one run in each session to reduce the amount of files
+    # Only consider one run in each session to reduce the amount of files
     # we need to access.
     for bids_path in bids_paths:
         subject = bids_path.subject
@@ -2266,6 +2266,9 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                       subject_mapping='auto', datatypes=None,
                       random_state=None, verbose=None):
     """Anonymize a BIDS dataset.
+
+    This function creates a copy of a BIDS dataset, and tries to remove all
+    personally identifiable information from the copy.
 
     Parameters
     ----------
@@ -2415,8 +2418,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
 
     logger.info('\nAnonymizing BIDS dataset')
     if daysback == 'auto':
-        # Find a recording that can be read with MNE-Python to extract the
-        # recording date
+        # Find recordings that can be read with MNE-Python to extract the
+        # recording dates
         bids_paths = [
             bp for bp in bids_paths_in
             if (
@@ -2481,9 +2484,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
     # Actual processing starts here
     for bp_in in ProgressBar(iterable=bids_paths_in, mesg='Anonymizing'):
         bp_out = (
-            bp_in
-            .copy()
-            .update(
+            bp_in.copy().update(
                 subject=subject_mapping[bp_in.subject],
                 root=bids_root_out
             )
@@ -2592,7 +2593,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         else:
             json_out = dict()
 
-        # Only transfer data that we believe doesn't contain any personal
+        # Only transfer data that we believe doesn't contain any personally
         # identifiable information
         updates = dict()
         for key, value in json_in.items():

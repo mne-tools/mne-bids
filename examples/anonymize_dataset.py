@@ -7,7 +7,7 @@ Consider the following scenario:
 
 - You've created a BIDS dataset.
 - Now you want to make this dataset available to the public.
-- Therefore, all personal identifying information must be removed.
+- Therefore, all personally identifying information must be removed.
 
 While :func:`mne_bids.write_raw_bids` and :func:`mne_bids.write_anat` can be
 used to store anonymized copies of data (by passing the ``anonymize`` and
