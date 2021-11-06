@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>mne_bids.get_datatypes &#8212; MNE-BIDS 0.9.dev0 documentation</title>
+    <title>mne_bids.anonymize_dataset &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet">
   <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -48,8 +48,8 @@
     <script src="../_static/copybutton.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.inspect_dataset" href="mne_bids.inspect_dataset.html" />
-    <link rel="prev" title="mne_bids.get_entity_vals" href="mne_bids.get_entity_vals.html" />
+    <link rel="next" title="mne_bids.stats.count_events" href="mne_bids.stats.count_events.html" />
+    <link rel="prev" title="mne_bids.update_sidecar_json" href="mne_bids.update_sidecar_json.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -277,8 +277,8 @@
    mne_bids.get_entity_vals
   </a>
  </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_datatypes.html">
    mne_bids.get_datatypes
   </a>
  </li>
@@ -292,8 +292,8 @@
    mne_bids.update_sidecar_json
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mne_bids.anonymize_dataset.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    mne_bids.anonymize_dataset
   </a>
  </li>
@@ -350,9 +350,24 @@
               
               <div class="toc-item">
                 
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
 
 <nav id="bd-toc-nav">
-    
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-bids-anonymize-dataset">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_bids.anonymize_dataset
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
 </nav>
               </div>
               
@@ -372,16 +387,43 @@
               
               <div>
                 
-  <section id="mne-bids-get-datatypes">
-<h1>mne_bids.get_datatypes<a class="headerlink" href="#mne-bids-get-datatypes" title="Permalink to this headline">¶</a></h1>
+  <section id="mne-bids-anonymize-dataset">
+<h1>mne_bids.anonymize_dataset<a class="headerlink" href="#mne-bids-anonymize-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.get_datatypes">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">get_datatypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_datatypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.get_datatypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get list of data types (“modalities”) present in a BIDS dataset.</p>
+<dt class="sig sig-object py" id="mne_bids.anonymize_dataset">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">anonymize_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_root_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_root_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daysback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#anonymize_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.anonymize_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Anonymize a BIDS dataset.</p>
+<p>This function creates a copy of a BIDS dataset, and tries to remove all
+personally identifiable information from the copy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Path to the root of the BIDS directory.</p>
+<dt><strong>bids_root_in</strong><span class="classifier">path-like</span></dt><dd><p>The root directory of the input BIDS dataset.</p>
+</dd>
+<dt><strong>bids_root_out</strong><span class="classifier">path-like</span></dt><dd><p>The directory to place the anonymized dataset into.</p>
+</dd>
+<dt><strong>daysback</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | ‘auto’</span></dt><dd><p>Number of days by which to move back the recording date in time. If
+<code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, tries to randomly pick a suitable number.</p>
+</dd>
+<dt><strong>subject_mapping</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#callable" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a> | ‘auto’ | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>How to anonymize subject IDs. If a dictionary, maps the original IDs
+(keys) to the anonymized IDs (values). If a function, must be one that
+accepts the original IDs as a list of strings and returns a dictionary
+with original IDs as keys and anonymized IDs as values. If <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>,
+automatically produces a mapping (zero-padded numerical IDs) and prints
+it on the screen. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, subject IDs are not changed.</p>
+</dd>
+<dt><strong>datatypes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Which data type to anonymize. If can be <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">anat</span></code>. Multiple data types may be passed as a collection of strings.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, try to anonymize the entire input dataset.</p>
+</dd>
+<dt><strong>random_state</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | instance of <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></span></dt><dd><p>A seed for the NumPy random number generator (RNG). If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+the seed will be  obtained from the operating system
+(see  <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> for details), meaning it will most
+likely produce different output every time this function or method is run.
+To achieve reproducible results, pass a value here to explicitly initialize
+the RNG with a defined state.
+The RNG will be used to derive <code class="docutils literal notranslate"><span class="pre">daysback</span></code> and <code class="docutils literal notranslate"><span class="pre">subject_mapping</span></code> if
+they are <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">logging documentation</span></a> and
@@ -390,17 +432,19 @@ argument.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl>
-<dt><strong>modalities</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>List of the data types present in the BIDS dataset pointed to by
-<em class="xref py py-obj">root</em>.</p>
-</dd>
-</dl>
-</dd>
 </dl>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backreferences-mne-bids-get-datatypes"></span></section>
+<section id="examples-using-mne-bids-anonymize-dataset">
+<span id="sphx-glr-backreferences-mne-bids-anonymize-dataset"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.anonymize_dataset</span></code><a class="headerlink" href="#examples-using-mne-bids-anonymize-dataset" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><figure class="align-default" id="id1">
+<img alt="14. Anonymizing a BIDS dataset" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">14. Anonymizing a BIDS dataset</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-clear"></div></section>
+</section>
 
 
               </div>
@@ -408,17 +452,17 @@ argument.</p>
               
               <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="mne_bids.get_entity_vals.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="mne_bids.update_sidecar_json.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">mne_bids.get_entity_vals</p>
+            <p class="prev-next-title">mne_bids.update_sidecar_json</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="mne_bids.inspect_dataset.html" title="next page">
+    <a class='right-next' id="next-link" href="mne_bids.stats.count_events.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_bids.inspect_dataset</p>
+        <p class="prev-next-title">mne_bids.stats.count_events</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

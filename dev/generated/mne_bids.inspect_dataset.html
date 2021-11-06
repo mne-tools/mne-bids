@@ -292,6 +292,11 @@
    mne_bids.update_sidecar_json
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.anonymize_dataset.html">
+   mne_bids.anonymize_dataset
+  </a>
+ </li>
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
@@ -423,7 +428,7 @@ unusually low variability. Flat <strong>segments</strong> will be added to
 will be marked as <code class="docutils literal notranslate"><span class="pre">bad</span></code> in <code class="docutils literal notranslate"><span class="pre">*_channels.tsv</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This function calls <a class="reference external" href="https://mne.tools/dev/generated/mne.preprocessing.annotate_flat.html#mne.preprocessing.annotate_flat" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.preprocessing.annotate_flat()</span></code></a> and
+<p>This function calls <a class="reference external" href="https://mne.tools/dev/generated/mne.preprocessing.annotate_flat.html#mne.preprocessing.annotate_flat" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.preprocessing.annotate_flat()</span></code></a> and
 will only consider segments of at least <strong>50 ms consecutive
 flatness</strong> as “flat” (deviating from MNE-Python’s default of 5 ms).
 If more than 5 percent of a channel’s data has been marked as flat,
@@ -444,9 +449,10 @@ artifacts. If <code class="docutils literal notranslate"><span class="pre">None<
 <code class="docutils literal notranslate"><span class="pre">False</span></code>, toggling annotations mode by pressing <code class="docutils literal notranslate"><span class="pre">A</span></code> will be disabled
 as well.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">Logging documentation</span></a> for more).
-If used, it should be passed as a keyword-argument only.</p>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">logging documentation</span></a> and
+<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+argument.</p>
 </dd>
 </dl>
 </dd>
@@ -509,7 +515,7 @@ passband of 1–30 Hz.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-29.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-06.<br>
 </p>
     </div>
     

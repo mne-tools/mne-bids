@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>12. Update BIDS datasets &#8212; MNE-BIDS 0.9.dev0 documentation</title>
+    <title>12. Updating BIDS datasets &#8212; MNE-BIDS 0.9.dev0 documentation</title>
     
   <link href="../_static/css/theme.css" rel="stylesheet">
   <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -266,7 +266,7 @@
 <ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   12. Update BIDS datasets
+   12. Updating BIDS datasets
   </a>
  </li>
 </ul>
@@ -274,6 +274,13 @@
  <li class="toctree-l1">
   <a class="reference internal" href="write_modified_files.html">
    13. Writing modified files with MNE-BIDS
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="anonymize_dataset.html">
+   14. Anonymizing a BIDS dataset
   </a>
  </li>
 </ul>
@@ -353,8 +360,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-update-bids-datasets-py"><span class="std std-ref">here</span></a>
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<section class="sphx-glr-example-title" id="update-bids-datasets">
-<span id="sphx-glr-auto-examples-update-bids-datasets-py"></span><h1>12. Update BIDS datasets<a class="headerlink" href="#update-bids-datasets" title="Permalink to this headline">¶</a></h1>
+<section class="sphx-glr-example-title" id="updating-bids-datasets">
+<span id="sphx-glr-auto-examples-update-bids-datasets-py"></span><h1>12. Updating BIDS datasets<a class="headerlink" href="#updating-bids-datasets" title="Permalink to this headline">¶</a></h1>
 <p>When working with electrophysiological data in the BIDS format, we usually
 do not have all the metadata stored in the <code class="docutils literal notranslate"><span class="pre">Raw</span></code> mne-python object.
 We can update the BIDS sidecar files via the <code class="docutils literal notranslate"><span class="pre">update_sidecar_json</span></code> function.</p>
@@ -390,6 +397,125 @@ BIDS dataset.</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for somato...
+
+  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+  1%|▏                                     | 3.96M/611M [00:00&lt;00:16, 36.3MB/s]
+  1%|▌                                     | 8.21M/611M [00:00&lt;00:15, 39.8MB/s]
+  2%|▊                                     | 12.6M/611M [00:00&lt;00:14, 41.7MB/s]
+  3%|█                                     | 17.1M/611M [00:00&lt;00:14, 40.9MB/s]
+  4%|█▎                                    | 22.1M/611M [00:00&lt;00:13, 44.0MB/s]
+  4%|█▋                                    | 27.3M/611M [00:00&lt;00:12, 46.6MB/s]
+  5%|██                                    | 32.5M/611M [00:00&lt;00:11, 48.5MB/s]
+  6%|██▎                                   | 37.8M/611M [00:00&lt;00:11, 50.0MB/s]
+  7%|██▋                                   | 43.2M/611M [00:00&lt;00:11, 51.1MB/s]
+  8%|███                                   | 48.5M/611M [00:01&lt;00:10, 51.9MB/s]
+  9%|███▎                                  | 54.1M/611M [00:01&lt;00:10, 53.1MB/s]
+ 10%|███▋                                  | 59.5M/611M [00:01&lt;00:10, 53.4MB/s]
+ 11%|████                                  | 64.9M/611M [00:01&lt;00:10, 52.9MB/s]
+ 11%|████▎                                 | 70.2M/611M [00:01&lt;00:10, 52.6MB/s]
+ 12%|████▋                                 | 75.6M/611M [00:01&lt;00:10, 53.0MB/s]
+ 13%|█████                                 | 80.9M/611M [00:01&lt;00:10, 52.7MB/s]
+ 14%|█████▍                                | 86.4M/611M [00:01&lt;00:09, 53.5MB/s]
+ 15%|█████▋                                | 91.8M/611M [00:01&lt;00:09, 53.5MB/s]
+ 16%|██████                                | 97.5M/611M [00:01&lt;00:09, 54.5MB/s]
+ 17%|██████▌                                | 103M/611M [00:02&lt;00:09, 52.0MB/s]
+ 18%|██████▉                                | 108M/611M [00:02&lt;00:09, 52.5MB/s]
+ 19%|███████▎                               | 114M/611M [00:02&lt;00:09, 52.8MB/s]
+ 20%|███████▌                               | 119M/611M [00:02&lt;00:09, 53.6MB/s]
+ 20%|███████▉                               | 125M/611M [00:02&lt;00:09, 53.7MB/s]
+ 21%|████████▎                              | 130M/611M [00:02&lt;00:09, 52.6MB/s]
+ 22%|████████▋                              | 135M/611M [00:02&lt;00:09, 52.6MB/s]
+ 23%|████████▉                              | 141M/611M [00:02&lt;00:08, 52.7MB/s]
+ 24%|█████████▎                             | 146M/611M [00:02&lt;00:08, 52.4MB/s]
+ 25%|█████████▋                             | 151M/611M [00:02&lt;00:08, 53.4MB/s]
+ 26%|██████████                             | 157M/611M [00:03&lt;00:08, 53.5MB/s]
+ 27%|██████████▎                            | 162M/611M [00:03&lt;00:08, 53.2MB/s]
+ 27%|██████████▋                            | 167M/611M [00:03&lt;00:08, 53.1MB/s]
+ 28%|███████████                            | 173M/611M [00:03&lt;00:08, 53.1MB/s]
+ 29%|███████████▎                           | 178M/611M [00:03&lt;00:08, 53.0MB/s]
+ 30%|███████████▋                           | 183M/611M [00:03&lt;00:08, 52.5MB/s]
+ 31%|████████████                           | 189M/611M [00:03&lt;00:08, 52.3MB/s]
+ 32%|████████████▍                          | 194M/611M [00:03&lt;00:07, 52.3MB/s]
+ 33%|████████████▋                          | 199M/611M [00:03&lt;00:07, 52.7MB/s]
+ 33%|█████████████                          | 204M/611M [00:03&lt;00:07, 52.8MB/s]
+ 34%|█████████████▍                         | 210M/611M [00:04&lt;00:07, 52.7MB/s]
+ 35%|█████████████▊                         | 215M/611M [00:04&lt;00:07, 53.4MB/s]
+ 36%|██████████████                         | 221M/611M [00:04&lt;00:07, 53.4MB/s]
+ 37%|██████████████▍                        | 226M/611M [00:04&lt;00:07, 54.2MB/s]
+ 38%|██████████████▊                        | 232M/611M [00:04&lt;00:07, 53.8MB/s]
+ 39%|███████████████▏                       | 237M/611M [00:04&lt;00:06, 53.8MB/s]
+ 40%|███████████████▍                       | 242M/611M [00:04&lt;00:06, 53.9MB/s]
+ 41%|███████████████▊                       | 248M/611M [00:04&lt;00:06, 54.1MB/s]
+ 42%|████████████████▏                      | 253M/611M [00:04&lt;00:06, 54.4MB/s]
+ 42%|████████████████▌                      | 259M/611M [00:04&lt;00:06, 54.4MB/s]
+ 43%|████████████████▉                      | 264M/611M [00:05&lt;00:06, 54.1MB/s]
+ 44%|█████████████████▏                     | 270M/611M [00:05&lt;00:06, 53.5MB/s]
+ 45%|█████████████████▌                     | 275M/611M [00:05&lt;00:06, 51.3MB/s]
+ 46%|█████████████████▉                     | 280M/611M [00:05&lt;00:06, 48.9MB/s]
+ 47%|██████████████████▏                    | 285M/611M [00:05&lt;00:06, 49.0MB/s]
+ 48%|██████████████████▌                    | 291M/611M [00:05&lt;00:06, 50.9MB/s]
+ 48%|██████████████████▉                    | 296M/611M [00:05&lt;00:06, 51.7MB/s]
+ 49%|███████████████████▎                   | 301M/611M [00:05&lt;00:05, 52.1MB/s]
+ 50%|███████████████████▌                   | 307M/611M [00:05&lt;00:05, 52.2MB/s]
+ 51%|███████████████████▉                   | 312M/611M [00:06&lt;00:05, 52.6MB/s]
+ 52%|████████████████████▎                  | 317M/611M [00:06&lt;00:05, 52.6MB/s]
+ 53%|████████████████████▌                  | 322M/611M [00:06&lt;00:05, 52.1MB/s]
+ 54%|████████████████████▉                  | 328M/611M [00:06&lt;00:05, 52.2MB/s]
+ 55%|█████████████████████▎                 | 333M/611M [00:06&lt;00:05, 53.0MB/s]
+ 55%|█████████████████████▋                 | 339M/611M [00:06&lt;00:05, 53.4MB/s]
+ 56%|█████████████████████▉                 | 344M/611M [00:06&lt;00:04, 53.4MB/s]
+ 57%|██████████████████████▎                | 349M/611M [00:06&lt;00:04, 53.4MB/s]
+ 58%|██████████████████████▋                | 355M/611M [00:06&lt;00:04, 52.6MB/s]
+ 59%|██████████████████████▉                | 360M/611M [00:06&lt;00:05, 50.0MB/s]
+ 60%|███████████████████████▎               | 365M/611M [00:07&lt;00:04, 51.2MB/s]
+ 61%|███████████████████████▋               | 371M/611M [00:07&lt;00:04, 52.1MB/s]
+ 62%|████████████████████████               | 376M/611M [00:07&lt;00:04, 52.1MB/s]
+ 62%|████████████████████████▎              | 381M/611M [00:07&lt;00:04, 52.5MB/s]
+ 63%|████████████████████████▋              | 387M/611M [00:07&lt;00:04, 52.5MB/s]
+ 64%|█████████████████████████              | 392M/611M [00:07&lt;00:04, 52.5MB/s]
+ 65%|█████████████████████████▍             | 397M/611M [00:07&lt;00:04, 52.8MB/s]
+ 66%|█████████████████████████▋             | 403M/611M [00:07&lt;00:03, 53.0MB/s]
+ 67%|██████████████████████████             | 408M/611M [00:07&lt;00:03, 52.3MB/s]
+ 68%|██████████████████████████▍            | 414M/611M [00:07&lt;00:03, 53.4MB/s]
+ 69%|██████████████████████████▊            | 419M/611M [00:08&lt;00:03, 53.5MB/s]
+ 69%|███████████████████████████            | 424M/611M [00:08&lt;00:03, 52.5MB/s]
+ 70%|███████████████████████████▍           | 430M/611M [00:08&lt;00:03, 52.0MB/s]
+ 71%|███████████████████████████▊           | 435M/611M [00:08&lt;00:03, 52.9MB/s]
+ 72%|████████████████████████████▏          | 440M/611M [00:08&lt;00:03, 52.8MB/s]
+ 73%|████████████████████████████▍          | 446M/611M [00:08&lt;00:03, 53.3MB/s]
+ 74%|████████████████████████████▊          | 451M/611M [00:08&lt;00:02, 53.4MB/s]
+ 75%|█████████████████████████████▏         | 456M/611M [00:08&lt;00:02, 53.2MB/s]
+ 76%|█████████████████████████████▌         | 462M/611M [00:08&lt;00:02, 53.3MB/s]
+ 77%|█████████████████████████████▊         | 467M/611M [00:08&lt;00:02, 53.5MB/s]
+ 77%|██████████████████████████████▏        | 473M/611M [00:09&lt;00:02, 53.4MB/s]
+ 78%|██████████████████████████████▌        | 478M/611M [00:09&lt;00:02, 53.4MB/s]
+ 79%|██████████████████████████████▊        | 483M/611M [00:09&lt;00:02, 52.8MB/s]
+ 80%|███████████████████████████████▏       | 489M/611M [00:09&lt;00:02, 52.6MB/s]
+ 81%|███████████████████████████████▌       | 494M/611M [00:09&lt;00:02, 52.2MB/s]
+ 82%|███████████████████████████████▉       | 499M/611M [00:09&lt;00:02, 52.6MB/s]
+ 83%|████████████████████████████████▏      | 504M/611M [00:09&lt;00:02, 52.8MB/s]
+ 84%|████████████████████████████████▌      | 510M/611M [00:09&lt;00:01, 53.4MB/s]
+ 84%|████████████████████████████████▉      | 515M/611M [00:09&lt;00:01, 53.2MB/s]
+ 85%|█████████████████████████████████▎     | 521M/611M [00:09&lt;00:01, 53.0MB/s]
+ 86%|█████████████████████████████████▌     | 526M/611M [00:10&lt;00:01, 53.6MB/s]
+ 87%|█████████████████████████████████▉     | 532M/611M [00:10&lt;00:01, 53.6MB/s]
+ 88%|██████████████████████████████████▎    | 537M/611M [00:10&lt;00:01, 53.5MB/s]
+ 89%|██████████████████████████████████▋    | 542M/611M [00:10&lt;00:01, 53.2MB/s]
+ 90%|██████████████████████████████████▉    | 548M/611M [00:10&lt;00:01, 49.9MB/s]
+ 91%|███████████████████████████████████▎   | 553M/611M [00:10&lt;00:01, 48.9MB/s]
+ 91%|███████████████████████████████████▌   | 557M/611M [00:10&lt;00:01, 48.9MB/s]
+ 92%|███████████████████████████████████▉   | 562M/611M [00:10&lt;00:00, 49.2MB/s]
+ 93%|████████████████████████████████████▎  | 568M/611M [00:10&lt;00:00, 50.7MB/s]
+ 94%|████████████████████████████████████▌  | 573M/611M [00:10&lt;00:00, 50.8MB/s]
+ 95%|████████████████████████████████████▉  | 578M/611M [00:11&lt;00:00, 50.7MB/s]
+ 96%|█████████████████████████████████████▎ | 583M/611M [00:11&lt;00:00, 49.3MB/s]
+ 96%|█████████████████████████████████████▌ | 588M/611M [00:11&lt;00:00, 49.8MB/s]
+ 97%|█████████████████████████████████████▉ | 594M/611M [00:11&lt;00:00, 50.6MB/s]
+ 98%|██████████████████████████████████████▎| 599M/611M [00:11&lt;00:00, 51.1MB/s]
+ 99%|██████████████████████████████████████▌| 604M/611M [00:11&lt;00:00, 51.5MB/s]
+100%|██████████████████████████████████████▉| 609M/611M [00:11&lt;00:00, 52.1MB/s]
+  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+100%|████████████████████████████████████████| 611M/611M [00:00&lt;00:00, 995GB/s]
 </pre></div>
 </div>
 </section>
@@ -509,7 +635,7 @@ Writing &#39;/home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-soma
 Ready.
 Reading events from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_channels.tsv.
-/home/circleci/project/mne_bids/read.py:551: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:563: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(ch_type_map_avail)
 Not fully anonymizing info - keeping his_id, sex, and hand info
 60.0
@@ -565,7 +691,7 @@ from analysis).
 Ready.
 Reading events from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_channels.tsv.
-/home/circleci/project/mne_bids/read.py:551: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:563: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(ch_type_map_avail)
 Not fully anonymizing info - keeping his_id, sex, and hand info
 50.0
@@ -586,7 +712,7 @@ out of which 316.0 (std = 0.0) were used in analysis (0.0 +/- 0.0 were removed
 from analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.186 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  20.847 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-update-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/update_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -636,7 +762,7 @@ from analysis).
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-29.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-06.<br>
 </p>
     </div>
     

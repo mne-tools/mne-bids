@@ -292,6 +292,11 @@
    mne_bids.update_sidecar_json
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.anonymize_dataset.html">
+   mne_bids.anonymize_dataset
+  </a>
+ </li>
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
@@ -406,7 +411,7 @@ in the sidecars manually.</p></li>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> that is not
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> that is not
 already loaded from disk unless <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> is explicitly set
 to <code class="docutils literal notranslate"><span class="pre">True</span></code>. See warning for the <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> parameter.</p>
 </dd>
@@ -441,7 +446,7 @@ Example:</p>
 object.</p>
 </dd>
 <dt><strong>events_data</strong><span class="classifier">path-like | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
-sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
+sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
 are always written).
 If a path, specifies the location of an MNE events file.
 If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
@@ -451,7 +456,7 @@ Corresponding descriptions for all event IDs (listed in the third
 column of the MNE events array) must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
 parameter; otherwise, an exception is raised.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will only be inferred from the the raw object’s
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">None</span></code>, writes the union of <code class="docutils literal notranslate"><span class="pre">events_data</span></code> and
@@ -532,7 +537,7 @@ formats not supported by MNE or writing preprocessed derivatives.
 Be aware that these use cases are not fully supported.</p>
 </div>
 </dd>
-<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
+<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
 to be stored in a format other than “head” (the internal MNE
 coordinate frame that the data in <code class="docutils literal notranslate"><span class="pre">raw</span></code> is stored in).</p>
 </dd>
@@ -554,9 +559,10 @@ and <code class="docutils literal notranslate"><span class="pre">participants.ts
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no existing data will be overwritten or
 replaced.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If not None, override default verbose level (see <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a>
-and <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">Logging documentation</span></a> for more).
-If used, it should be passed as a keyword-argument only.</p>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">logging documentation</span></a> and
+<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+argument.</p>
 </dd>
 </dl>
 </dd>
@@ -570,10 +576,10 @@ If used, it should be passed as a keyword-argument only.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
@@ -581,14 +587,14 @@ If used, it should be passed as a keyword-argument only.</p>
 <code class="docutils literal notranslate"><span class="pre">raw.info['meas_date']</span></code> are set to proper (not-<code class="docutils literal notranslate"><span class="pre">None</span></code>) values to allow
 for the correct computation of each participant’s age when creating
 <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>.</p>
-<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
+<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
 <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> to events. Additionally, any events supplied via
 <code class="docutils literal notranslate"><span class="pre">events_data</span></code> will be written too. To avoid writing of annotations,
 remove them from the raw file via <code class="docutils literal notranslate"><span class="pre">raw.set_annotations(None)</span></code> before
 invoking <code class="docutils literal notranslate"><span class="pre">write_raw_bids</span></code>.</p>
 <p>To write events encoded in a <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channel, you first need to create the
 events array manually and pass it to this function:</p>
-<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.24)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.find_events()</span></code></a> for more information on
+<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.find_events()</span></code></a> for more information on
 event extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
 <p>When anonymizing <code class="docutils literal notranslate"><span class="pre">.edf</span></code> files, then the file format for EDF limits
 how far back we can set the recording date. Therefore, all anonymized
@@ -653,6 +659,12 @@ call <a class="reference internal" href="mne_bids.make_dataset_description.html#
 <p><span class="caption-text"><a class="reference internal" href="../auto_examples/write_modified_files.html#sphx-glr-auto-examples-write-modified-files-py"><span class="std std-ref">13. Writing modified files with MNE-BIDS</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><figure class="align-default" id="id9">
+<img alt="14. Anonymizing a BIDS dataset" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">14. Anonymizing a BIDS dataset</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 </div><div class="sphx-glr-clear"></div></section>
 </section>
 
@@ -690,7 +702,7 @@ call <a class="reference internal" href="mne_bids.make_dataset_description.html#
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-29.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-06.<br>
 </p>
     </div>
     

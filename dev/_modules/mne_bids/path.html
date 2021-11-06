@@ -1073,22 +1073,27 @@
                                  <span class="sa">f</span><span class="s1">&#39;Use one of these suffixes &#39;</span>
                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BIDSPath.find_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_empty_room">[docs]</a>    <span class="k">def</span> <span class="nf">find_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.find_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_empty_room">[docs]</a>    <span class="nd">@verbose</span>
+    <span class="k">def</span> <span class="nf">find_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_sidecar_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the corresponding empty-room file of an MEG recording.</span>
 
 <span class="sd">        This will only work if the ``.root`` attribute of the</span>
 <span class="sd">        :class:`mne_bids.BIDSPath` instance has been set.</span>
 
-<span class="sd">        .. note:: If the sidecar JSON file contains an ``AssociatedEmptyRoom``</span>
-<span class="sd">                  entry, the empty-room recording specified there will be used.</span>
-<span class="sd">                  Otherwise, this method will try to find the best-matching</span>
-<span class="sd">                  empty-room recording based on measurement date.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        use_sidecar_only : bool</span>
+<span class="sd">            Whether to only check the ``AssociatedEmptyRoom`` entry in the</span>
+<span class="sd">            sidecar JSON file or not. If ``False``, first look for the entry,</span>
+<span class="sd">            and if unsuccessful, try to find the best-matching empty-room</span>
+<span class="sd">            recording in the dataset based on the measurement date.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        BIDSPath | None</span>
 <span class="sd">            The path corresponding to the best-matching empty-room measurement.</span>
 <span class="sd">            Returns ``None`` if none was found.</span>
+<span class="sd">        %(verbose)s</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Empty-room data is only supported for MEG &#39;</span>
@@ -1110,6 +1115,13 @@
             <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">emptytoom_path</span><span class="p">)</span>
             <span class="n">er_bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
             <span class="n">er_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+        <span class="k">elif</span> <span class="n">use_sidecar_only</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;The MEG sidecar file does not contain an &#39;</span>
+                <span class="s1">&#39;&quot;AssociatedEmptyRoom&quot; entry. Aborting search for an &#39;</span>
+                <span class="s1">&#39;empty-room recording, as you passed use_sidecar_only=True&#39;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s1">&#39;The MEG sidecar file does not contain an &#39;</span>
@@ -2037,7 +2049,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-10-29.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-06.<br>
 </p>
     </div>
     
