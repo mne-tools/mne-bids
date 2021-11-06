@@ -117,7 +117,7 @@ print_dir_tree(bids_root_anon)
 # Limiting to specific data types
 # -------------------------------
 # By default, :func:`mne_bids.anonymize_dataset` will anonymize
-# electrophysiological data and anatomical MR scans (T1-weightes and FLASH).
+# electrophysiological data and anatomical MR scans (T1-weighted and FLASH).
 # You can limit which data types to convert using the ``datatypes`` keyword
 # argument. The parameter can be a string (e.g., ``'meg'``, ``'eeg'``,
 # ``'anat'``) or a list of such strings.
