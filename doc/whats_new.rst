@@ -51,6 +51,12 @@ Enhancements
 
 - The command ``mne_bids count_events`` gained new parameters: ``--output`` to direct the output into a CSV file; ``--overwrite`` to overwrite an existing file; and  ``--silent`` to suppress output of the event counts to the console, by `Richard Höchenberger`_ (:gh:`888`)
 
+- The new function :func:`mne_bids.anonymize_dataset` can be used to anonymize an entire BIDS dataset, by `Richard Höchenberger`_ (:gh:`893`)
+
+- :meth:`mne_bids.BIDSPath.find_empty_room` gained a new parameter ``use_sidecar_only`` to limit empty-room search to the metadata stored in the sidecar files, by `Richard Höchenberger`_ (:gh:`893`)
+
+- :meth:`mne_bids.BIDSPath.find_empty_room` gained a new parameter ``verbose`` to limit verbosity of the output, by `Richard Höchenberger`_ (:gh:`893`)
+
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -78,6 +84,8 @@ Bug fixes
 - Fix reading of EDF files with lower/upper case extension, by `Adam Li`_ (:gh:`875`)
 
 - Fix reading of TSV files with only a single column, by `Marijn van Vliet`_ (:gh:`886`)
+
+- Fix erroneous measurement date check in :func:`mne_bids.write_raw_bids` when requesting to anonymize empty-room data, by `Richard Höchenberger`_ (:gh:`893`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

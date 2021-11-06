@@ -122,8 +122,9 @@ ALLOWED_FILENAME_SUFFIX = [
 
 # converts suffix to known path modalities
 SUFFIX_TO_DATATYPE = {
-    'meg': 'meg', 'eeg': 'eeg', 'ieeg': 'ieeg', 'T1w': 'anat',
-    'headshape': 'meg', 'digitizer': 'meg', 'markers': 'meg'
+    'meg': 'meg', 'headshape': 'meg', 'digitizer': 'meg', 'markers': 'meg',
+    'eeg': 'eeg', 'ieeg': 'ieeg',
+    'T1w': 'anat', 'FLASH': 'anat'
 }
 
 # allowed BIDS extensions (extension in the BIDS filename)
@@ -377,3 +378,91 @@ def _map_options(what, key, fro, to):
                            "accepted. Use 'mne', or 'bids'.".format(fro, to))
 
     return mapped_option
+
+
+# Which JSON data can safely be transferred from a non-anonymized to an
+# anonymized dataset without accidentally exposing personal identifiable
+# information
+ANONYMIZED_JSON_KEY_WHITELIST = [
+    # Common
+    'Manufacturer',
+    'ManufacturersModelName',
+    'InstitutionName',
+    'InstitutionalDepartmentName',
+    'InstitutionAddress',
+    'DeviceSerialNumber',
+    # MRI
+    # Many of these are not standardized, but produced by dcm2niix.
+    'Modality',
+    'MagneticFieldStrength',
+    'ImagingFrequency',
+    'StationName',
+    'SeriesInstanceUID',
+    'StudyInstanceUID',
+    'StudyID',
+    'BodyPartExamined',
+    'PatientPosition',
+    'ProcedureStepDescription',
+    'SoftwareVersions',
+    'MRAcquisitionType',
+    'SeriesDescription',
+    'ProtocolName',
+    'ScanningSequence',
+    'SequenceVariant',
+    'ScanOptions',
+    'SequenceName',
+    'ImageType',
+    'SeriesNumber',
+    'AcquisitionNumber',
+    'SliceThickness',
+    'SAR',
+    'EchoTime',
+    'RepetitionTime',
+    'InversionTime',
+    'FlipAngle',
+    'PartialFourier',
+    'BaseResolution',
+    'ShimSetting',
+    'TxRefAmp',
+    'PhaseResolution',
+    'ReceiveCoilName',
+    'ReceiveCoilActiveElements',
+    'PulseSequenceDetails',
+    'ConsistencyInfo',
+    'PercentPhaseFOV',
+    'PercentSampling',
+    'PhaseEncodingSteps',
+    'AcquisitionMatrixPE',
+    'PixelBandwidth',
+    'DwellTime',
+    'ImageOrientationPatientDICOM',
+    'InPlanePhaseEncodingDirectionDICOM',
+    'ConversionSoftware',
+    'ConversionSoftwareVersion',
+    # Electrophys common
+    'TaskName',
+    'TaskDescription',
+    'Instructions',
+    'PowerLineFrequency',
+    'SamplingFrequency',
+    'SoftwareFilters',
+    'RecordingType',
+    'EEGChannelCount',
+    'EOGChannelCount',
+    'ECGChannelCount',
+    'EMGChannelCount',
+    'MiscChannelCount',
+    'TriggerChannelCount',
+    'RecordingDuration',
+    # EEG
+    'EEGReference',
+    'EEGPlacementScheme',
+    # MEG
+    'DewarPosition',
+    'DigitizedLandmarks',
+    'DigitizedHeadPoints',
+    'MEGChannelCount',
+    'MEGREFChannelCount',
+    'ContinuousHeadLocalization',
+    'HeadCoilFrequency'
+]

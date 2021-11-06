@@ -918,6 +918,10 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
     assert bids_path.find_empty_room() == er_matching_date_bids_path
 
+    # If we enforce searching only via `AssociatedEmptyRoom`, we should get no
+    # result
+    assert bids_path.find_empty_room(use_sidecar_only=True) is None
+
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_find_emptyroom_ties(tmpdir):
