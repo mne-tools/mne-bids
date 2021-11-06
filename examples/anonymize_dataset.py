@@ -182,12 +182,23 @@ print_dir_tree(bids_root_anon)
 #
 # To ensure results are reproducible across runs, you can pass the
 # ``random_state`` parameter, causing the random number generator to produce
-# the same results every time you execute the function.
+# the same results every time you execute the function. This may come in handy
+# e.g. in situations where you discover a problem with the data while working
+# with the anonymized dataset, fix the issue in the original dataset, and
+# run anonymization again.
 #
 # (Note that throughout this example, we only had a single subject in our
 # dataset, meaning it will always be assigned the anonymized ID ``1``. Only
 # in a dataset with multiple subjects will the effects of randomly-picked IDs
 # become apparent.)
+#
+# .. note::
+#    Passing ``random_state`` merely guarantees that subject IDs and time shift
+#    remain the same across anonymization runs if the original dataset
+#    remained unchanged. It does **not** allow you to incrementally data
+#    (e.g., a new participant) to an anonymized dataset: If the original
+#    dataset changes and you want the changes anonymized, you will need to
+#    anonymize the entire dataset again.
 
 for i in range(2):
     print(f'\n\nRun {i+1}\n')
