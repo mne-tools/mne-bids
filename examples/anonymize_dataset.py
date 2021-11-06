@@ -195,7 +195,7 @@ print_dir_tree(bids_root_anon)
 # .. note::
 #    Passing ``random_state`` merely guarantees that subject IDs and time shift
 #    remain the same across anonymization runs if the original dataset
-#    remained unchanged. It does **not** allow you to incrementally data
+#    remained unchanged. It does **not** allow you to incrementally add data
 #    (e.g., a new participant) to an anonymized dataset: If the original
 #    dataset changes and you want the changes anonymized, you will need to
 #    anonymize the entire dataset again.
