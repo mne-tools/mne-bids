@@ -2471,7 +2471,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         msg += 'Not shifting recording dates (found anatomical scans only).\n'
     else:
         msg += (
-            f'Shifting recoding dates by {daysback} days '
+            f'Shifting recording dates by {daysback} days '
             f'({round(daysback / 365, 1)} years).\n'
         )
     msg += 'Using the following subject ID anonymization mapping:\n\n'
