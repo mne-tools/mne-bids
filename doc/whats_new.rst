@@ -87,6 +87,8 @@ Bug fixes
 
 - Fix erroneous measurement date check in :func:`mne_bids.write_raw_bids` when requesting to anonymize empty-room data, by `Richard Höchenberger`_ (:gh:`893`)
 
+- Ensure that :func:`mne_bids.get_entity_vals` only includes files found in ``sub-*`` folders in the BIDS root, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`899`)
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst
