@@ -1625,8 +1625,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     filenames = (Path(root)
                  .rglob(f'*{entity_long_abbr_map[entity_key]}-*_*'))
     for filename in filenames:
-        # Ignore `derivatives` folder.
-        if str(filename).startswith(op.join(root, 'derivatives')):
+        # Ignore `derivatives` and `sourcedata` folder.
+        if str(filename).startswith(op.join(root, 'derivatives')) or \
+                str(filename).startswith(op.join(root, 'sourcedata')):
             continue
 
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
