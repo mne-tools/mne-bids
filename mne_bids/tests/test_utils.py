@@ -5,19 +5,13 @@
 #
 # License: BSD-3-Clause
 import os.path as op
-# This is here to handle mne-python <0.20
-import warnings
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 from numpy.random import random, RandomState
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
+import mne
 
 from mne_bids import BIDSPath
 from mne_bids.utils import (_check_types, _age_on_date, _handle_datatype,

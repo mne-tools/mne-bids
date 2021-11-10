@@ -27,14 +27,7 @@ import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
                            assert_array_almost_equal)
 
-# This is here to handle mne-python <0.20
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
-
+import mne
 from mne.datasets import testing
 from mne.utils import check_version, requires_nibabel, requires_version
 from mne.io import anonymize_info
@@ -2688,7 +2681,7 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
                        raw_read.annotations.description)
 
 
-@requires_version('mne', '0.24.dev0')
+@requires_version('mne', '0.24')
 @requires_version('pybv', '0.6')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)

@@ -11,7 +11,7 @@ jobs:
         # restore cache from last build. Unless __init__.py has changed since then
         - restore_cache:
             keys:
-              - data-cache-1-{{ checksum "./mne_bids/__init__.py" }}
+              - data-cache-2-{{ checksum "./mne_bids/__init__.py" }}
 
         # Also restore pip cache to speed up installations
         - restore_cache:
@@ -42,7 +42,7 @@ jobs:
 
         # Store the data cache
         - save_cache:
-            key: data-cache-1-{{ checksum "./mne_bids/__init__.py" }}
+            key: data-cache-2-{{ checksum "./mne_bids/__init__.py" }}
             paths:
               - ~/mne_data
 
