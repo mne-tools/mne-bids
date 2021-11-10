@@ -145,7 +145,7 @@ def _test_anonymize(root, raw, bids_path, events_fname=None, event_id=None):
     return root
 
 
-def test_write_participants(_bids_validate, tmpdir):
+def test_write_participants(_bids_validate, tmp_path):
     """Test participants.tsv/.json file writing.
 
     Test that user modifications of the participants
@@ -164,11 +164,11 @@ def test_write_participants(_bids_validate, tmpdir):
                                 'birthday': (1993, 1, 26),
                                 'sex': 1, 'hand': 2}
 
-    bids_path = _bids_path.copy().update(root=tmpdir)
+    bids_path = _bids_path.copy().update(root=tmp_path)
     write_raw_bids(raw, bids_path)
 
     # assert age of participant is correct
-    participants_tsv = tmpdir / 'participants.tsv'
+    participants_tsv = tmp_path / 'participants.tsv'
     data = _from_tsv(participants_tsv)
     assert data['age'][data['participant_id'].index('sub-01')] == '1'
 
@@ -199,7 +199,7 @@ def test_write_participants(_bids_validate, tmpdir):
     orig_key_order = list(data.keys())
     _to_tsv(data, participants_tsv)
     # create corresponding json entry
-    participants_json_fpath = tmpdir / 'participants.json'
+    participants_json_fpath = tmp_path / 'participants.json'
     json_field = {
         'Description': 'trial-outcome',
         'Levels': {
@@ -209,7 +209,7 @@ def test_write_participants(_bids_validate, tmpdir):
     }
     _update_sidecar(participants_json_fpath, 'subject_test_col1', json_field)
     # bids root should still be valid because json reflects changes in tsv
-    _bids_validate(tmpdir)
+    _bids_validate(tmp_path)
     write_raw_bids(raw, bids_path, overwrite=True)
     data = _from_tsv(participants_tsv)
     with open(participants_json_fpath, 'r', encoding='utf-8') as fin:
@@ -252,46 +252,46 @@ def test_write_correct_inputs():
         write_raw_bids(raw, bids_path)
 
 
-def test_make_dataset_description(tmpdir, monkeypatch):
+def test_make_dataset_description(tmp_path, monkeypatch):
     """Test making a dataset_description.json."""
     with pytest.raises(ValueError, match='`dataset_type` must be either "raw" '
                                          'or "derivative."'):
-        make_dataset_description(path=tmpdir, name='tst', dataset_type='src')
+        make_dataset_description(path=tmp_path, name='tst', dataset_type='src')
 
-    make_dataset_description(path=tmpdir, name='tst')
+    make_dataset_description(path=tmp_path, name='tst')
 
-    with open(op.join(tmpdir, 'dataset_description.json'), 'r',
+    with open(op.join(tmp_path, 'dataset_description.json'), 'r',
               encoding='utf-8') as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
     make_dataset_description(
-        path=tmpdir, name='tst', authors='MNE B., MNE P.',
+        path=tmp_path, name='tst', authors='MNE B., MNE P.',
         funding='GSOC2019, GSOC2021',
         references_and_links='https://doi.org/10.21105/joss.01896',
         dataset_type='derivative', overwrite=False, verbose=True
     )
 
-    with open(op.join(tmpdir, 'dataset_description.json'), 'r',
+    with open(op.join(tmp_path, 'dataset_description.json'), 'r',
               encoding='utf-8') as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
     make_dataset_description(
-        path=tmpdir, name='tst2', authors='MNE B., MNE P.',
+        path=tmp_path, name='tst2', authors='MNE B., MNE P.',
         funding='GSOC2019, GSOC2021',
         references_and_links='https://doi.org/10.21105/joss.01896',
         dataset_type='derivative', overwrite=True, verbose=True
     )
 
-    with open(op.join(tmpdir, 'dataset_description.json'), 'r',
+    with open(op.join(tmp_path, 'dataset_description.json'), 'r',
               encoding='utf-8') as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ['MNE B.', 'MNE P.']
 
     monkeypatch.setattr(write, 'BIDS_VERSION', 'old')
     with pytest.raises(ValueError, match='Previous BIDS version used'):
-        make_dataset_description(path=tmpdir, name='tst')
+        make_dataset_description(path=tmp_path, name='tst')
 
 
 def test_stamp_to_dt():
@@ -337,10 +337,12 @@ def test_get_anonymization_daysback():
             get_anonymization_daysback([raw, raw2, raw4])
 
 
-def test_create_fif(_bids_validate, tmpdir):
+def test_create_fif(_bids_validate, tmp_path):
     """Test functionality for very short raw file created from data."""
-    out_dir = tmpdir.mkdir('out')
-    bids_root = tmpdir.mkdir('bids')
+    out_dir = tmp_path / 'out'
+    bids_root = tmp_path / 'bids'
+    out_dir.mkdir()
+
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq, n_points = 1024., int(1e6)
     info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
@@ -355,10 +357,11 @@ def test_create_fif(_bids_validate, tmpdir):
 
 
 @pytest.mark.parametrize('line_freq', [60, None])
-def test_line_freq(line_freq, _bids_validate, tmpdir):
+def test_line_freq(line_freq, _bids_validate, tmp_path):
     """Test the power line frequency is written correctly."""
-    out_dir = tmpdir.mkdir('out')
-    bids_root = tmpdir.mkdir('bids')
+    out_dir = tmp_path / 'out'
+    out_dir.mkdir()
+    bids_root = tmp_path / 'bids'
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq, n_points = 1024., int(1e6)
     info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
@@ -387,9 +390,9 @@ def test_line_freq(line_freq, _bids_validate, tmpdir):
 @requires_version('pybv', '0.6')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
-def test_fif(_bids_validate, tmpdir):
+def test_fif(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for fif."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -424,7 +427,7 @@ def test_fif(_bids_validate, tmpdir):
     raw.set_channel_types({raw.ch_names[i]: 'misc'
                            for i in
                            mne.pick_types(raw.info, stim=True, meg=False)})
-    bids_root = tmpdir.mkdir('bids2')
+    bids_root = tmp_path / 'bids2'
     bids_path.update(root=bids_root)
     with pytest.warns(RuntimeWarning, match='No events found or provided.'):
         write_raw_bids(raw, bids_path, overwrite=False)
@@ -432,12 +435,13 @@ def test_fif(_bids_validate, tmpdir):
     _bids_validate(bids_root)
 
     # try with eeg data only (conversion to bv)
-    bids_root = tmpdir.mkdir('bids3')
+    bids_root = tmp_path / 'bids3'
+    bids_root.mkdir()
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     raw.load_data()
     raw2 = raw.pick_types(meg=False, eeg=True, stim=True, eog=True, ecg=True)
-    raw2.save(op.join(bids_root, 'test-raw.fif'), overwrite=True)
+    raw2.save(bids_root / 'test-raw.fif', overwrite=True)
     raw2 = mne.io.Raw(op.join(bids_root, 'test-raw.fif'), preload=False)
     events = mne.find_events(raw2)
     event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
@@ -525,8 +529,8 @@ def test_fif(_bids_validate, tmpdir):
     raw = _read_raw_fif(raw_fname)
     raw.anonymize()
 
-    data_path2 = tmpdir.mkdir('tmp_anon')
-    raw_fname2 = data_path2 / 'sample_audvis_raw.fif'
+    raw_fname2 = tmp_path / 'tmp_anon' / 'sample_audvis_raw.fif'
+    raw_fname2.parent.mkdir()
     raw.save(raw_fname2)
 
     # add some readme text
@@ -586,8 +590,8 @@ def test_fif(_bids_validate, tmpdir):
 
     # check that split files have split key
     raw = _read_raw_fif(raw_fname)
-    data_path3 = tmpdir.mkdir('test-split-key')
-    raw_fname3 = data_path3 / 'sample_audvis_raw.fif'
+    raw_fname3 = tmp_path / 'test-split-key' / 'sample_audvis_raw.fif'
+    raw_fname3.parent.mkdir()
     raw.save(raw_fname3, buffer_size_sec=1.0, split_size='10MB',
              split_naming='neuromag', overwrite=True)
     raw = _read_raw_fif(raw_fname3)
@@ -650,7 +654,7 @@ def test_fif(_bids_validate, tmpdir):
 
 @pytest.mark.parametrize('format', ('fif_no_chpi', 'fif', 'ctf', 'kit'))
 @pytest.mark.filterwarnings(warning_str['maxshield'])
-def test_chpi(_bids_validate, tmpdir, format):
+def test_chpi(_bids_validate, tmp_path, format):
     """Test writing of cHPI information."""
     data_path = testing.data_path()
     kit_data_path = op.join(base_path, 'kit', 'tests', 'data')
@@ -673,15 +677,14 @@ def test_chpi(_bids_validate, tmpdir, format):
         raw = _read_raw_kit(kit_raw_fname, mrk=kit_hpi_fname,
                             elp=kit_electrode_fname, hsp=kit_headshape_fname)
 
-    bids_root = tmpdir.mkdir('bids')
+    bids_root = tmp_path / 'bids'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
 
     write_raw_bids(raw, bids_path)
     _bids_validate(bids_path.root)
 
     meg_json = bids_path.copy().update(suffix='meg', extension='.json')
-    with open(meg_json, 'r') as f:
-        meg_json_data = json.load(f)
+    meg_json_data = json.loads(meg_json.fpath.read_text(encoding='utf-8'))
 
     if parse_version(mne.__version__) <= parse_version('0.23'):
         assert 'ContinuousHeadLocalization' not in meg_json_data
@@ -701,9 +704,9 @@ def test_chpi(_bids_validate, tmpdir, format):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_fif_dtype(_bids_validate, tmpdir):
+def test_fif_dtype(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for fif."""
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -721,9 +724,9 @@ def test_fif_dtype(_bids_validate, tmpdir):
     assert raw.orig_format == desired_fmt
 
 
-def test_fif_anonymize(_bids_validate, tmpdir):
+def test_fif_anonymize(_bids_validate, tmp_path):
     """Test write_raw_bids() with anonymization fif."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root)
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -744,21 +747,21 @@ def test_fif_anonymize(_bids_validate, tmpdir):
         write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                        anonymize=dict(), overwrite=True)
 
-    bids_root = tmpdir.mkdir('bids2')
+    bids_root = tmp_path / 'bids2'
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     with pytest.warns(RuntimeWarning, match='daysback` is too small'):
         write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                        anonymize=dict(daysback=400), overwrite=False)
 
-    bids_root = tmpdir.mkdir('bids3')
+    bids_root = tmp_path / 'bids3'
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     with pytest.raises(ValueError, match='`daysback` exceeds maximum value'):
         write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                        anonymize=dict(daysback=40000), overwrite=False)
 
-    bids_root = tmpdir.mkdir('bids4')
+    bids_root = tmp_path / 'bids4'
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
@@ -779,7 +782,7 @@ def test_fif_anonymize(_bids_validate, tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_fif_ias(tmpdir):
+def test_fif_ias(tmp_path):
     """Test writing FIF files with internal active shielding."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -788,7 +791,7 @@ def test_fif_ias(tmpdir):
 
     raw.set_channel_types({raw.ch_names[0]: 'ias'})
 
-    data_path = BIDSPath(subject='sample', root=tmpdir)
+    data_path = BIDSPath(subject='sample', root=tmp_path)
 
     write_raw_bids(raw, data_path)
     raw = read_raw_bids(data_path)
@@ -796,7 +799,7 @@ def test_fif_ias(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_fif_exci(tmpdir):
+def test_fif_exci(tmp_path):
     """Test writing FIF files with excitation channel."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -804,16 +807,16 @@ def test_fif_exci(tmpdir):
     raw = _read_raw_fif(raw_fname)
 
     raw.set_channel_types({raw.ch_names[0]: 'exci'})
-    data_path = BIDSPath(subject='sample', root=tmpdir)
+    data_path = BIDSPath(subject='sample', root=tmp_path)
 
     write_raw_bids(raw, data_path)
     raw = read_raw_bids(data_path)
     assert raw.info['chs'][0]['kind'] == FIFF.FIFFV_EXCI_CH
 
 
-def test_kit(_bids_validate, tmpdir):
+def test_kit(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for KIT data."""
-    bids_root = tmpdir.mkdir("bids")
+    bids_root = tmp_path / 'bids'
     data_path = op.join(base_path, 'kit', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.sqd')
     events_fname = op.join(data_path, 'test-eve.txt')
@@ -847,8 +850,9 @@ def test_kit(_bids_validate, tmpdir):
     assert op.exists(marker_fname)
 
     # test anonymize
-    output_path = _test_anonymize(tmpdir.mkdir('tmp1'), raw, kit_bids_path,
-                                  events_fname, event_id)
+    output_path = _test_anonymize(
+        tmp_path / 'tmp1', raw, kit_bids_path, events_fname, event_id
+    )
     _bids_validate(output_path)
 
     # ensure the channels file has no STI 014 channel:
@@ -865,7 +869,7 @@ def test_kit(_bids_validate, tmpdir):
     event_data = np.loadtxt(events_fname)
     # make the data the wrong number of dimensions
     event_data_3d = np.atleast_3d(event_data)
-    other_output_path = tmpdir.mkdir('tmp2')
+    other_output_path = tmp_path / 'tmp2'
     bids_path = _bids_path.copy().update(root=other_output_path)
     with pytest.raises(ValueError, match='two dimensions'):
         write_raw_bids(raw, bids_path, events_data=event_data_3d,
@@ -909,7 +913,7 @@ def test_kit(_bids_validate, tmpdir):
     hpi_fname = op.join(data_path, 'MQKIT_125.mrk')
     electrode_fname = op.join(data_path, 'MQKIT_125.elp')
     headshape_fname = op.join(data_path, 'MQKIT_125.hsp')
-    bids_root = tmpdir.mkdir("bids_kit_mrk")
+    bids_root = tmp_path / 'bids_kit_mrk'
     kit_bids_path = _bids_path.copy().update(acquisition=None,
                                              root=bids_root,
                                              suffix='meg')
@@ -925,25 +929,25 @@ def test_kit(_bids_validate, tmpdir):
     # Check that we can successfully write even when elp, hsp, and mrk are not
     # supplied
     raw = _read_raw_kit(raw_fname)
-    bids_root = tmpdir.mkdir('no_elp_hsp_mrk')
+    bids_root = tmp_path / 'no_elp_hsp_mrk'
     kit_bids_path = kit_bids_path.copy().update(root=bids_root)
     write_raw_bids(raw=raw, bids_path=kit_bids_path)
     _bids_validate(bids_root)
 
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
-def test_ctf(_bids_validate, tmpdir):
+def test_ctf(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for CTF data."""
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
 
     raw = _read_raw_ctf(raw_fname)
     raw.info['line_freq'] = 60
     write_raw_bids(raw, bids_path)
     write_raw_bids(raw, bids_path, overwrite=True)  # test overwrite
 
-    _bids_validate(tmpdir)
+    _bids_validate(tmp_path)
     with pytest.warns(RuntimeWarning, match='Did not find any events'):
         raw = read_raw_bids(bids_path=bids_path,
                             extra_params=dict(clean_names=False))
@@ -952,13 +956,13 @@ def test_ctf(_bids_validate, tmpdir):
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_path)
 
-    assert op.exists(tmpdir / 'participants.tsv')
+    assert op.exists(tmp_path / 'participants.tsv')
 
     # test anonymize
     raw = _read_raw_ctf(raw_fname)
     with pytest.warns(RuntimeWarning,
                       match='Converting to FIF for anonymization'):
-        output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
+        output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
     _bids_validate(output_path)
 
     raw.set_meas_date(None)
@@ -968,7 +972,7 @@ def test_ctf(_bids_validate, tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_bti(_bids_validate, tmpdir):
+def test_bti(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for BTi data."""
     data_path = op.join(base_path, 'bti', 'tests', 'data')
     raw_fname = op.join(data_path, 'test_pdf_linux')
@@ -978,14 +982,14 @@ def test_bti(_bids_validate, tmpdir):
     raw = _read_raw_bti(raw_fname, config_fname=config_fname,
                         head_shape_fname=headshape_fname)
 
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
 
     # write the BIDS dataset description, then write BIDS files
-    make_dataset_description(tmpdir, name="BTi data")
+    make_dataset_description(tmp_path, name="BTi data")
     write_raw_bids(raw, bids_path, verbose=True)
 
-    assert op.exists(tmpdir / 'participants.tsv')
-    _bids_validate(tmpdir)
+    assert op.exists(tmp_path / 'participants.tsv')
+    _bids_validate(tmp_path)
 
     raw = read_raw_bids(bids_path=bids_path)
 
@@ -997,15 +1001,15 @@ def test_bti(_bids_validate, tmpdir):
                         head_shape_fname=headshape_fname)
     with pytest.warns(RuntimeWarning,
                       match='Converting to FIF for anonymization'):
-        output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
+        output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
     _bids_validate(output_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'],
                             warning_str['unraisable_exception'])
-def test_vhdr(_bids_validate, tmpdir):
+def test_vhdr(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for BrainVision data."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
 
@@ -1051,16 +1055,10 @@ def test_vhdr(_bids_validate, tmpdir):
     events_tsv_fname = channels_tsv_name.update(suffix='events')
     assert op.exists(events_tsv_fname)
 
-    # create another bids folder with the overwrite command and check
-    # no files are in the folder
-    data_path = BIDSPath(subject=subject_id, datatype='eeg',
-                         root=bids_root).mkdir().directory
-    assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
-
     # test anonymize and convert
     if check_version('pybv', '0.6'):
         raw = _read_raw_brainvision(raw_fname)
-        output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
+        output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
         _bids_validate(output_path)
 
     # Also cover iEEG
@@ -1068,7 +1066,7 @@ def test_vhdr(_bids_validate, tmpdir):
     raw = _read_raw_brainvision(raw_fname)
     raw.set_channel_types({raw.ch_names[i]: 'ecog'
                            for i in mne.pick_types(raw.info, eeg=True)})
-    bids_root = tmpdir.mkdir('bids2')
+    bids_root = tmp_path / 'bids2'
     bids_path.update(root=bids_root, datatype='ieeg')
     write_raw_bids(raw, bids_path, overwrite=False)
     _bids_validate(bids_root)
@@ -1077,7 +1075,7 @@ def test_vhdr(_bids_validate, tmpdir):
     raw = _read_raw_brainvision(raw_fname)
     raw.set_channel_types({raw.ch_names[i]: 'dbs'
                            for i in mne.pick_types(raw.info, eeg=True)})
-    bids_root = tmpdir.mkdir('bids_dbs')
+    bids_root = tmp_path / 'bids_dbs'
     bids_path.update(root=bids_root)
     write_raw_bids(raw, bids_path, overwrite=False)
     _bids_validate(bids_root)
@@ -1093,7 +1091,7 @@ def test_vhdr(_bids_validate, tmpdir):
     raw.set_montage(montage)
 
     # convert to BIDS
-    bids_root = tmpdir.mkdir('bids3')
+    bids_root = tmp_path / 'bids3'
     bids_path.update(root=bids_root, datatype='eeg')
     write_raw_bids(raw, bids_path)
 
@@ -1129,9 +1127,9 @@ def test_vhdr(_bids_validate, tmpdir):
     warning_str['brainvision_unit'],
     warning_str['channel_unit_changed']
 )
-def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
+def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
@@ -1337,7 +1335,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     eeg_picks = mne.pick_types(ieeg_raw.info, eeg=True)
     ieeg_raw.set_channel_types({raw.ch_names[i]: 'ecog'
                                 for i in eeg_picks})
-    bids_root = tmpdir.mkdir('bids2')
+    bids_root = tmp_path / 'bids2'
     bids_path.update(root=bids_root, datatype='ieeg')
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
@@ -1374,7 +1372,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                  coord_frame='mni_tal')
     ieeg_raw.set_montage(ecog_montage)
-    bids_root = tmpdir.mkdir('bids3')
+    bids_root = tmp_path / 'bids3'
     bids_path.update(root=bids_root, datatype='ieeg')
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
@@ -1408,7 +1406,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
     # test writing to ACPC
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                  coord_frame='mri')
-    bids_root = tmpdir.mkdir('bids4')
+    bids_root = tmp_path / 'bids4'
     bids_path.update(root=bids_root, datatype='ieeg')
     # test works if ACPC-aligned is specified
     kwargs.update(montage=ecog_montage, acpc_aligned=True)
@@ -1451,37 +1449,34 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmpdir):
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "short" format'):
                 write_raw_bids(**kwargs)
-                output_path = _test_anonymize(tmpdir.mkdir('a'), raw,
-                                              bids_path)
+                output_path = _test_anonymize(tmp_path / 'a', raw, bids_path)
         elif dir_name == 'EDF':
             match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
             with pytest.warns(RuntimeWarning, match=match):
                 write_raw_bids(**kwargs)  # Just copies.
-                output_path = _test_anonymize(tmpdir.mkdir('b'), raw,
-                                              bids_path)
+                output_path = _test_anonymize(tmp_path / 'b', raw, bids_path)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
                 write_raw_bids(**kwargs)  # Converts.
-                output_path = _test_anonymize(tmpdir.mkdir('c'), raw,
-                                              bids_path)
+                output_path = _test_anonymize(tmp_path / 'c', raw, bids_path)
         _bids_validate(output_path)
 
 
-def test_bdf(_bids_validate, tmpdir):
+def test_bdf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for Biosemi data."""
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='eeg')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='eeg')
 
     raw = _read_raw_bdf(raw_fname)
     raw.info['line_freq'] = 60
     write_raw_bids(raw, bids_path, overwrite=False)
-    _bids_validate(tmpdir)
+    _bids_validate(tmp_path)
 
     # assert README has references in it
-    readme = op.join(tmpdir, 'README')
+    readme = op.join(tmp_path, 'README')
     with open(readme, 'r', encoding='utf-8-sig') as fid:
         text = fid.read()
         assert REFERENCES['eeg'] in text
@@ -1537,15 +1532,15 @@ def test_bdf(_bids_validate, tmpdir):
     raw = _read_raw_bdf(raw_fname)
     match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
     with pytest.warns(RuntimeWarning, match=match):
-        output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
+        output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
     _bids_validate(output_path)
 
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
-def test_set(_bids_validate, tmpdir):
+def test_set(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEGLAB data."""
     # standalone .set file with associated .fdt
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
     raw = _read_raw_eeglab(raw_fname)
@@ -1574,7 +1569,7 @@ def test_set(_bids_validate, tmpdir):
     # We use the same data and pretend that eeg channels are ecog
     raw.set_channel_types({raw.ch_names[i]: 'ecog'
                            for i in mne.pick_types(raw.info, eeg=True)})
-    bids_root = tmpdir.mkdir('bids2')
+    bids_root = tmp_path / 'bids2'
     bids_path.update(root=bids_root, datatype='ieeg')
     write_raw_bids(raw, bids_path)
     _bids_validate(bids_root)
@@ -1583,7 +1578,7 @@ def test_set(_bids_validate, tmpdir):
     if check_version('pybv', '0.6'):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
-            output_path = _test_anonymize(tmpdir.mkdir('tmp'), raw, bids_path)
+            output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
         _bids_validate(output_path)
 
 
@@ -1697,11 +1692,11 @@ def test_get_anat_landmarks():
 
 
 @requires_nibabel()
-def test_write_anat(_bids_validate, tmpdir):
+def test_write_anat(_bids_validate, tmp_path):
     """Test writing anatomical data."""
     # Get the MNE testing sample data
     import nibabel as nib
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = testing.data_path()
 
     # Get the T1 weighted MRI data file
@@ -1873,8 +1868,8 @@ def test_write_anat(_bids_validate, tmpdir):
                                    'sample', op.join(data_path, 'subjects'))
 
 
-def test_write_raw_pathlike(tmpdir):
-    data_path = testing.data_path()
+def test_write_raw_pathlike(tmp_path):
+    data_path = Path(testing.data_path())
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
@@ -1882,9 +1877,9 @@ def test_write_raw_pathlike(tmpdir):
                 'unknown': 0}
     raw = _read_raw_fif(raw_fname)
 
-    bids_root = Path(tmpdir)
-    events_fname = \
-        Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw-eve.fif'
+    bids_root = tmp_path
+    events_fname = (data_path / 'MEG' / 'sample' /
+                    'sample_audvis_trunc_raw-eve.fif')
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 events_data=events_fname,
@@ -1895,12 +1890,12 @@ def test_write_raw_pathlike(tmpdir):
     assert bids_path_.root == bids_root
 
 
-def test_write_raw_no_dig(tmpdir):
+def test_write_raw_no_dig(tmp_path):
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_fname)
-    bids_root = Path(tmpdir)
+    bids_root = tmp_path
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
@@ -1917,7 +1912,7 @@ def test_write_raw_no_dig(tmpdir):
 
 
 @requires_nibabel()
-def test_write_anat_pathlike(tmpdir):
+def test_write_anat_pathlike(tmp_path):
     """Test writing anatomical data with pathlib.Paths."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -1926,7 +1921,7 @@ def test_write_anat_pathlike(tmpdir):
     raw = _read_raw_fif(raw_fname)
     trans = mne.read_trans(trans_fname)
 
-    bids_root = Path(tmpdir)
+    bids_root = tmp_path
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
@@ -1941,7 +1936,7 @@ def test_write_anat_pathlike(tmpdir):
     assert isinstance(bids_path, BIDSPath)
 
 
-def test_write_does_not_alter_events_inplace(tmpdir):
+def test_write_does_not_alter_events_inplace(tmp_path):
     """Test that writing does not modify the passed events array."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -1959,7 +1954,7 @@ def test_write_does_not_alter_events_inplace(tmpdir):
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
-    bids_path = _bids_path.copy().update(root=tmpdir)
+    bids_path = _bids_path.copy().update(root=tmp_path)
     write_raw_bids(raw=raw, bids_path=bids_path,
                    events_data=events, event_id=event_id, overwrite=True)
 
@@ -2000,10 +1995,10 @@ def test_mark_channels(_bids_validate,
                        ch_names, descriptions,
                        drop_status_col, drop_description_col,
                        existing_ch_names, existing_descriptions,
-                       tmpdir):
+                       tmp_path):
     """Test marking channels of an existing BIDS dataset as "bad"."""
     # Setup: Create a fresh BIDS dataset.
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
                                          suffix='meg')
     data_path = testing.data_path()
@@ -2093,10 +2088,10 @@ def test_mark_channels(_bids_validate,
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_mark_channel_roundtrip(tmpdir):
+def test_mark_channel_roundtrip(tmp_path):
     """Test marking channels fulfills roundtrip."""
     # Setup: Create a fresh BIDS dataset.
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
                                          suffix='meg')
     data_path = testing.data_path()
@@ -2139,10 +2134,10 @@ def test_mark_channel_roundtrip(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_error_mark_channels(tmpdir):
+def test_error_mark_channels(tmp_path):
     """Test errors when marking channels."""
     # Setup: Create a fresh BIDS dataset.
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
                                          suffix='meg')
     data_path = testing.data_path()
@@ -2169,10 +2164,10 @@ def test_error_mark_channels(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_mark_channels_files(tmpdir):
+def test_mark_channels_files(tmp_path):
     """Test validity of bad channel writing."""
     # BV
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = op.join(testing.data_path(), 'montage')
     raw_fname = op.join(data_path, 'bv_dig_test.vhdr')
 
@@ -2203,7 +2198,7 @@ def test_mark_channels_files(tmpdir):
     # test EDF too
     dir_name = 'EDF'
     fname = 'test_reduced.edf'
-    bids_root = tmpdir.mkdir('bids2')
+    bids_root = tmp_path / 'bids2'
     bids_path = _bids_path.copy().update(root=bids_root)
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
@@ -2213,9 +2208,9 @@ def test_mark_channels_files(tmpdir):
                   status='bad')
 
 
-def test_write_meg_calibration(_bids_validate, tmpdir):
+def test_write_meg_calibration(_bids_validate, tmp_path):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root)
 
     data_path = Path(testing.data_path())
@@ -2262,9 +2257,9 @@ def test_write_meg_calibration(_bids_validate, tmpdir):
         write_meg_calibration(fine_cal_fname, bids_path)
 
 
-def test_write_meg_crosstalk(_bids_validate, tmpdir):
+def test_write_meg_crosstalk(_bids_validate, tmp_path):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root)
     data_path = Path(testing.data_path())
 
@@ -2300,9 +2295,9 @@ def test_write_meg_crosstalk(_bids_validate, tmpdir):
     [False, 'add', 'only']
 )
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_annotations(_bids_validate, bad_segments, tmpdir):
+def test_annotations(_bids_validate, bad_segments, tmp_path):
     """Test that Annotations are stored as events."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -2355,9 +2350,9 @@ def test_annotations(_bids_validate, bad_segments, tmpdir):
     [True, False]
 )
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_undescribed_events(_bids_validate, drop_undescribed_events, tmpdir):
+def test_undescribed_events(_bids_validate, drop_undescribed_events, tmp_path):
     """Test we're behaving correctly if event descriptions are missing."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -2398,9 +2393,9 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events, tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_event_storage(tmpdir):
+def test_event_storage(tmp_path):
     """Test we're retaining the original event IDs when storing events."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -2442,12 +2437,12 @@ def test_event_storage(tmpdir):
 @pytest.mark.filterwarnings(warning_str['encountered_data_in'])
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_coordsystem_json_compliance(
-        dir_name, fname, reader, datatype, coord_frame, tmpdir):
+        dir_name, fname, reader, datatype, coord_frame, tmp_path):
     """Tests that coordsystem.json contents are written correctly.
 
     Tests multiple manufacturer data formats and MEG, EEG, and iEEG.
     """
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
@@ -2592,7 +2587,6 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         raw_fname = new_raw_fname.as_posix()
 
     bids_root = tmp_path / 'bids1'
-    bids_root.mkdir(parents=True)
     raw = reader(raw_fname)
     raw_date = raw.info['meas_date'].strftime('%Y%m%d')
 
@@ -2627,9 +2621,9 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_sidecar_encoding(_bids_validate, tmpdir):
+def test_sidecar_encoding(_bids_validate, tmp_path):
     """Test we're properly encoding text as UTF8."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -2690,7 +2684,6 @@ def test_sidecar_encoding(_bids_validate, tmpdir):
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
     bids_root = tmp_path / format
-    bids_root.mkdir(exist_ok=True, parents=True)
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
@@ -2752,9 +2745,9 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmpdir):
+def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmp_path):
     """Test error writing as BrainVision EEG data for MEG."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
@@ -2777,7 +2770,6 @@ def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmpdir):
 def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of MEG manufacturer format to FIF."""
     bids_root = tmp_path / format
-    bids_root.mkdir(exist_ok=True, parents=True)
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
@@ -2811,7 +2803,6 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
     bids_root = tmp_path / 'bids_1'
-    bids_root.mkdir(exist_ok=True, parents=True)
 
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
@@ -2843,25 +2834,25 @@ def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
         write_raw_bids(**kwargs)
 
 
-def test_write_fif_triux(tmpdir):
+def test_write_fif_triux(tmp_path):
     """Test writing Triux files."""
     data_path = testing.data_path()
     triux_path = op.join(data_path, 'SSS', 'TRIUX')
     tri_fname = op.join(triux_path, 'triux_bmlhus_erm_raw.fif')
     raw = mne.io.read_raw_fif(tri_fname)
     bids_path = BIDSPath(
-        subject="01", session="01", run="01", datatype="meg", root=tmpdir
+        subject="01", session="01", run="01", datatype="meg", root=tmp_path
     )
     write_raw_bids(raw, bids_path=bids_path, overwrite=True)
 
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.parametrize('datatype', ['eeg', 'ieeg'])
-def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
+def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
     """Test writing files is case insensitive."""
     dir_name, fname, reader = 'EDF', 'test_reduced.edf', _read_raw_edf
 
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     source_path = Path(bids_root) / 'sourcedata'
     data_path = op.join(testing.data_path(), dir_name)
     sh.copytree(data_path, source_path)
@@ -2887,13 +2878,13 @@ def test_write_extension_case_insensitive(_bids_validate, tmpdir, datatype):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_symlink(tmpdir):
+def test_symlink(tmp_path):
     """Test creation of symbolic links."""
     testing_data_path = Path(testing.data_path())
     raw_trunc_path = (testing_data_path / 'MEG' / 'sample' /
                       'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_trunc_path)
-    root = tmpdir.mkdir('symlink')
+    root = tmp_path / 'symlink'
     bids_path = _bids_path.copy().update(root=root, datatype='meg')
     kwargs = dict(raw=raw, bids_path=bids_path, symlink=True)
 
@@ -2926,13 +2917,14 @@ def test_symlink(tmpdir):
     raw_path = sample_data_path / 'MEG' / 'sample' / 'sample_audvis_raw.fif'
     raw = _read_raw_fif(raw_path).crop(0, 10)
 
-    split_raw_path = tmpdir.mkdir('raw') / 'sample_audivis_raw.fif'
+    split_raw_path = tmp_path / 'raw' / 'sample_audivis_raw.fif'
+    split_raw_path.parent.mkdir()
     raw.save(split_raw_path, split_size='10MB', split_naming='neuromag')
     raw = _read_raw_fif(split_raw_path)
     assert len(raw.filenames) == 2
 
     # now actually test the I/O roundtrip
-    root = tmpdir.mkdir('symlink-split')
+    root = tmp_path / 'symlink-split'
     bids_path = _bids_path.copy().update(root=root, datatype='meg')
     p = write_raw_bids(raw=raw, bids_path=bids_path, symlink=True)
     raw = read_raw_bids(p)
@@ -2940,9 +2932,9 @@ def test_symlink(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_write_associated_emptyroom(_bids_validate, tmpdir):
+def test_write_associated_emptyroom(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for fif."""
-    bids_root = tmpdir.mkdir('bids1')
+    bids_root = tmp_path / 'bids1'
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -2974,9 +2966,9 @@ def test_write_associated_emptyroom(_bids_validate, tmpdir):
     assert meg_json_data['AssociatedEmptyRoom'].startswith('/')
 
 
-def test_preload(_bids_validate, tmpdir):
+def test_preload(_bids_validate, tmp_path):
     """Test writing custom preloaded raw objects"""
-    bids_root = tmpdir.mkdir('bids')
+    bids_root = tmp_path / 'bids'
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq, n_points = 1024., int(1e6)
     info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
@@ -3003,14 +2995,14 @@ def test_preload(_bids_validate, tmpdir):
 @pytest.mark.parametrize(
     'dir_name', ('tsv_test', 'json_test')
 )
-def test_write_raw_special_paths(tmpdir, dir_name):
+def test_write_raw_special_paths(tmp_path, dir_name):
     """Test writing to locations containing strings with special meaning."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_fname)
 
-    root = Path(tmpdir) / dir_name
+    root = tmp_path / dir_name
     bids_path = _bids_path.copy().update(root=root)
     write_raw_bids(raw=raw, bids_path=bids_path)
 
@@ -3019,7 +3011,7 @@ def test_write_raw_special_paths(tmpdir, dir_name):
 def test_anonymize_dataset(_bids_validate, tmpdir):
     """Test creating an anonymized copy of a dataset."""
     # Create a non-anonymized dataset
-    bids_root = tmpdir.mkdir('bids')
+    bids_root = tmpdir / 'bids'
     bids_path = _bids_path.copy().update(
         root=bids_root, subject='testparticipant', extension='.fif',
         datatype='meg'
@@ -3267,7 +3259,7 @@ def test_anonymize_dataset_daysback(tmpdir):
     # Check progress bar output
     from mne_bids.write import _get_daysback
 
-    bids_root = tmpdir.mkdir('bids')
+    bids_root = tmpdir / 'bids'
     bids_path = _bids_path.copy().update(
         root=bids_root, subject='testparticipant', datatype='meg'
     )
@@ -3293,7 +3285,7 @@ def test_anonymize_dataset_daysback(tmpdir):
     )
 
     # Multiple sessions
-    bids_root = tmpdir.mkdir('bids-multisession')
+    bids_root = tmpdir / 'bids-multisession'
     bids_path = _bids_path.copy().update(
         root=bids_root, subject='testparticipant', datatype='meg'
     )

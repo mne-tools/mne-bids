@@ -85,10 +85,10 @@ def test_read_raw():
         _read_raw(f)
 
 
-def test_not_implemented(tmpdir):
+def test_not_implemented(tmp_path):
     """Test the not yet implemented data formats raise an adequate error."""
     for not_implemented_ext in ['.mef', '.nwb']:
-        raw_fname = tmpdir / 'test' + not_implemented_ext
+        raw_fname = tmp_path / f'test{not_implemented_ext}'
         with open(raw_fname, 'w', encoding='utf-8'):
             pass
         with pytest.raises(ValueError, match=('there is no IO support for '
@@ -109,9 +109,9 @@ def test_read_correct_inputs():
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_read_participants_data(tmpdir):
+def test_read_participants_data(tmp_path):
     """Test reading information from a BIDS sidecar.json file."""
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
 
     # if subject info was set, we don't roundtrip birthday
@@ -131,7 +131,7 @@ def test_read_participants_data(tmpdir):
     assert 'participant_id' not in raw.info['subject_info']
 
     # if modifying participants tsv, then read_raw_bids reflects that
-    participants_tsv_fpath = tmpdir / 'participants.tsv'
+    participants_tsv_fpath = tmp_path / 'participants.tsv'
     participants_tsv = _from_tsv(participants_tsv_fpath)
     participants_tsv['hand'][0] = 'n/a'
     _to_tsv(participants_tsv, participants_tsv_fpath)
@@ -170,10 +170,10 @@ def test_read_participants_data(tmpdir):
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
                                                       sex_bids, sex_mne,
-                                                      tmpdir):
+                                                      tmp_path):
     """Test we're correctly mapping handedness and sex between BIDS and MNE."""
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
-    participants_tsv_fpath = tmpdir / 'participants.tsv'
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
+    participants_tsv_fpath = tmp_path / 'participants.tsv'
     raw = _read_raw_fif(raw_fname, verbose=False)
 
     # Avoid that we end up with subject information stored in the raw data.
@@ -192,7 +192,7 @@ def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
 
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_get_head_mri_trans(tmpdir):
+def test_get_head_mri_trans(tmp_path):
     """Test getting a trans object from BIDS data."""
     import nibabel as nib
 
@@ -208,7 +208,7 @@ def test_get_head_mri_trans(tmpdir):
 
     # Write it to BIDS
     raw = _read_raw_fif(raw_fname)
-    bids_path = _bids_path.copy().update(root=tmpdir)
+    bids_path = _bids_path.copy().update(root=tmp_path)
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=False)
 
@@ -280,8 +280,8 @@ def test_get_head_mri_trans(tmpdir):
     # Test t1_bids_path parameter
     #
     # Case 1: different BIDS roots
-    meg_bids_path = _bids_path.copy().update(root=tmpdir / 'meg_root')
-    t1_bids_path = _bids_path.copy().update(root=tmpdir / 'mri_root')
+    meg_bids_path = _bids_path.copy().update(root=tmp_path / 'meg_root')
+    t1_bids_path = _bids_path.copy().update(root=tmp_path / 'mri_root')
     raw = _read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path=meg_bids_path)
@@ -296,7 +296,7 @@ def test_get_head_mri_trans(tmpdir):
 
     # Case 2: different sessions
     raw = _read_raw_fif(raw_fname)
-    meg_bids_path = _bids_path.copy().update(root=tmpdir / 'session_test',
+    meg_bids_path = _bids_path.copy().update(root=tmp_path / 'session_test',
                                              session='01')
     t1_bids_path = meg_bids_path.copy().update(session='02')
 
@@ -314,7 +314,7 @@ def test_get_head_mri_trans(tmpdir):
             fs_subjects_dir=subjects_dir)
 
 
-def test_handle_events_reading(tmpdir):
+def test_handle_events_reading(tmp_path):
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
     raw = _read_raw_fif(raw_fname)
@@ -324,7 +324,8 @@ def test_handle_events_reading(tmpdir):
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a'],
               'trial_type': ["rec start", "trial #1", "trial #2!"]}
-    events_fname = tmpdir.mkdir('bids1') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids1' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     raw = _handle_events_reading(events_fname, raw)
@@ -334,7 +335,8 @@ def test_handle_events_reading(tmpdir):
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a'],
               'stim_type': ["rec start", "trial #1", "trial #2!"]}
-    events_fname = tmpdir.mkdir('bids2') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids2' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     with pytest.warns(RuntimeWarning, match='This column should be renamed'):
@@ -346,7 +348,8 @@ def test_handle_events_reading(tmpdir):
               'duration': ['n/a', 'n/a', 'n/a'],
               'trial_type': ["event1", "event1", "event2"],
               'value': [1, 2, 3]}
-    events_fname = tmpdir.mkdir('bids3') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids3' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     raw = _handle_events_reading(events_fname, raw)
@@ -361,7 +364,8 @@ def test_handle_events_reading(tmpdir):
     # Test without any kind of event description.
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a']}
-    events_fname = tmpdir.mkdir('bids4') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids4' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     raw = _handle_events_reading(events_fname, raw)
@@ -372,7 +376,7 @@ def test_handle_events_reading(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_keep_essential_annotations(tmpdir):
+def test_keep_essential_annotations(tmp_path):
     """Test that essential Annotations are not omitted during I/O roundtrip."""
     raw = _read_raw_fif(raw_fname)
     annotations = mne.Annotations(onset=[raw.times[0]], duration=[1],
@@ -381,7 +385,7 @@ def test_keep_essential_annotations(tmpdir):
 
     # Write data, remove events.tsv, then try to read again
     bids_path = BIDSPath(subject='01', task='task', datatype='meg',
-                         root=tmpdir)
+                         root=tmp_path)
     with pytest.warns(RuntimeWarning, match='Acquisition skips detected'):
         write_raw_bids(raw, bids_path, overwrite=True)
 
@@ -394,7 +398,7 @@ def test_keep_essential_annotations(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_handle_scans_reading(tmpdir):
+def test_handle_scans_reading(tmp_path):
     """Test reading data from a BIDS scans.tsv file."""
     raw = _read_raw_fif(raw_fname)
     suffix = "meg"
@@ -404,7 +408,7 @@ def test_handle_scans_reading(tmpdir):
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          datatype=suffix,
-                         root=tmpdir)
+                         root=tmp_path)
     bids_path = write_raw_bids(raw, bids_path, overwrite=True)
     raw_01 = read_raw_bids(bids_path)
 
@@ -412,7 +416,7 @@ def test_handle_scans_reading(tmpdir):
     # acquisition time to not have the optional microseconds
     scans_path = BIDSPath(subject=bids_path.subject,
                           session=bids_path.session,
-                          root=tmpdir,
+                          root=tmp_path,
                           suffix='scans', extension='.tsv')
     scans_tsv = _from_tsv(scans_path)
     acq_time_str = scans_tsv['acq_time'][0]
@@ -435,7 +439,7 @@ def test_handle_scans_reading(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_handle_info_reading(tmpdir):
+def test_handle_info_reading(tmp_path):
     """Test reading information from a BIDS sidecar JSON file."""
     # read in USA dataset, so it should find 50 Hz
     raw = _read_raw_fif(raw_fname)
@@ -444,7 +448,7 @@ def test_handle_info_reading(tmpdir):
     # bids basename and fname
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
-                         root=tmpdir)
+                         root=tmp_path)
     suffix = "meg"
     bids_fname = bids_path.copy().update(suffix=suffix,
                                          extension='.fif')
@@ -454,6 +458,7 @@ def test_handle_info_reading(tmpdir):
     bids_fname.update(datatype=suffix)
     sidecar_fname = _find_matching_sidecar(bids_fname, suffix=suffix,
                                            extension='.json')
+    sidecar_fname = pathlib.Path(sidecar_fname)
 
     # assert that we get the same line frequency set
     raw = read_raw_bids(bids_path=bids_path)
@@ -465,8 +470,7 @@ def test_handle_info_reading(tmpdir):
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['line_freq'] is None
 
-    with open(sidecar_fname, 'r', encoding='utf-8') as fin:
-        sidecar_json = json.load(fin)
+    sidecar_json = json.loads(sidecar_fname.read_text(encoding='utf-8'))
     assert sidecar_json["PowerLineFrequency"] == 'n/a'
 
     # 2. if line frequency is not set in raw file, then ValueError
@@ -504,11 +508,11 @@ def test_handle_info_reading(tmpdir):
     # in `read_raw_bids`
     raw.info['line_freq'] = 60
     write_raw_bids(raw, bids_path, overwrite=True)
-    deriv_dir = tmpdir.mkdir("derivatives")
+    deriv_dir = tmp_path / 'derivatives'
+    deriv_dir.mkdir()
     sidecar_copy = deriv_dir / op.basename(sidecar_fname)
-    with open(sidecar_fname, "r", encoding='utf-8') as fin:
-        sidecar_json = json.load(fin)
-        sidecar_json["PowerLineFrequency"] = 45
+    sidecar_json = json.loads(sidecar_fname.read_text(encoding='utf-8'))
+    sidecar_json["PowerLineFrequency"] = 45
     _write_json(sidecar_copy, sidecar_json)
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['line_freq'] == 60
@@ -523,10 +527,11 @@ def test_handle_info_reading(tmpdir):
 @requires_version('mne', '0.24')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
-def test_handle_chpi_reading(tmpdir):
+def test_handle_chpi_reading(tmp_path):
     """Test reading of cHPI information."""
     raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
-    root = tmpdir.mkdir('chpi')
+    root = tmp_path / 'chpi'
+    root.mkdir()
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          root=root, datatype='meg')
@@ -560,11 +565,11 @@ def test_handle_chpi_reading(tmpdir):
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_handle_eeg_coords_reading(tmpdir):
+def test_handle_eeg_coords_reading(tmp_path):
     """Test reading iEEG coordinates from BIDS files."""
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task, root=tmpdir)
+        task=task, root=tmp_path)
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
@@ -587,7 +592,7 @@ def test_handle_eeg_coords_reading(tmpdir):
     with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
         write_raw_bids(raw, bids_path, overwrite=True)
 
-    bids_path.update(root=tmpdir)
+    bids_path.update(root=tmp_path)
     coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
                                                extension='.json',
@@ -635,14 +640,14 @@ def test_handle_eeg_coords_reading(tmpdir):
                          [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_handle_ieeg_coords_reading(bids_path, tmpdir):
+def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     """Test reading iEEG coordinates from BIDS files."""
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
     bids_fname = bids_path.copy().update(datatype='ieeg',
                                          suffix='ieeg',
                                          extension='.edf',
-                                         root=tmpdir)
+                                         root=tmp_path)
     raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'ecog'/'ieeg' data
@@ -657,7 +662,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmpdir):
     coordinate_frames = ['mni_tal']
     for coord_frame in coordinate_frames:
         # XXX: mne-bids doesn't support multiple electrodes.tsv files
-        sh.rmtree(tmpdir)
+        sh.rmtree(tmp_path)
         montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame=coord_frame)
         raw.set_montage(montage)
@@ -671,7 +676,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmpdir):
             assert digpoint['coord_frame'] == coord_frame_int
 
     # start w/ new bids root
-    sh.rmtree(tmpdir)
+    sh.rmtree(tmp_path)
     write_raw_bids(raw, bids_fname, overwrite=True, verbose=False)
 
     # obtain the sensor positions and assert ch_coords are same
@@ -684,7 +689,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmpdir):
     # read in the data and assert montage is the same
     # regardless of 'm', 'cm', 'mm', or 'pixel'
     scalings = {'m': 1, 'cm': 100, 'mm': 1000}
-    bids_fname.update(root=tmpdir)
+    bids_fname.update(root=tmp_path)
     coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                suffix='coordsystem',
                                                extension='.json')
@@ -768,7 +773,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmpdir):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes is not a subset of Raw
-    bids_path.update(root=tmpdir)
+    bids_path.update(root=tmp_path)
     write_raw_bids(raw, bids_path, overwrite=True)
     electrodes_dict = _from_tsv(electrodes_fname)
     # pop off 5 channels
@@ -810,14 +815,14 @@ def test_handle_ieeg_coords_reading(bids_path, tmpdir):
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.parametrize('fname', ['testdata_ctf.ds', 'catch-alp-good-f.ds'])
-def test_get_head_mri_trans_ctf(fname, tmpdir):
+def test_get_head_mri_trans_ctf(fname, tmp_path):
     """Test getting a trans object from BIDS data in CTF."""
     import nibabel as nib
 
     ctf_data_path = op.join(testing.data_path(), 'CTF')
     raw_ctf_fname = op.join(ctf_data_path, fname)
     raw_ctf = _read_raw_ctf(raw_ctf_fname, clean_names=True)
-    bids_path = _bids_path.copy().update(root=tmpdir)
+    bids_path = _bids_path.copy().update(root=tmp_path)
     write_raw_bids(raw_ctf, bids_path, overwrite=False)
 
     # Take a fake trans
@@ -829,7 +834,7 @@ def test_get_head_mri_trans_ctf(fname, tmpdir):
     t1w_mgh = nib.load(t1w_mgh)
 
     t1w_bids_path = BIDSPath(subject=subject_id, session=session_id,
-                             acquisition=acq, root=tmpdir)
+                             acquisition=acq, root=tmp_path)
     landmarks = get_anat_landmarks(
         t1w_mgh, raw_ctf.info, trans, fs_subject='sample',
         fs_subjects_dir=op.join(data_path, 'subjects'))
@@ -844,18 +849,18 @@ def test_get_head_mri_trans_ctf(fname, tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_read_raw_bids_pathlike(tmpdir):
+def test_read_raw_bids_pathlike(tmp_path):
     """Test that read_raw_bids() can handle a Path-like bids_root."""
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_read_raw_datatype(tmpdir):
+def test_read_raw_datatype(tmp_path):
     """Test that read_raw_bids() can infer the str_suffix if need be."""
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
@@ -872,15 +877,15 @@ def test_read_raw_datatype(tmpdir):
     assert raw_1 == raw_3
 
 
-def test_handle_channel_type_casing(tmpdir):
+def test_handle_channel_type_casing(tmp_path):
     """Test that non-uppercase entries in the `type` column are accepted."""
-    bids_path = _bids_path.copy().update(root=tmpdir)
+    bids_path = _bids_path.copy().update(root=tmp_path)
     raw = _read_raw_fif(raw_fname, verbose=False)
 
     write_raw_bids(raw, bids_path, overwrite=True,
                    verbose=False)
 
-    ch_path = bids_path.copy().update(root=tmpdir,
+    ch_path = bids_path.copy().update(root=tmp_path,
                                       datatype='meg',
                                       suffix='channels',
                                       extension='.tsv')
@@ -896,8 +901,8 @@ def test_handle_channel_type_casing(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_bads_reading(tmpdir):
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg')
+def test_bads_reading(tmp_path):
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
     bads_raw = ['MEG 0112', 'MEG 0113']
     bads_sidecar = ['EEG 053', 'MEG 2443']
 
@@ -918,11 +923,13 @@ def test_bads_reading(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_write_read_fif_split_file(tmpdir):
+def test_write_read_fif_split_file(tmp_path):
     """Test split files are read correctly."""
     # load raw test file, extend it to be larger than 2gb, and save it
-    bids_root = tmpdir.mkdir('bids')
-    tmp_dir = tmpdir.mkdir('tmp')
+    bids_root = tmp_path / 'bids'
+    tmp_dir = tmp_path / 'tmp'
+    tmp_dir.mkdir()
+
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     bids_path.update(acquisition=None)
@@ -977,9 +984,9 @@ def test_write_read_fif_split_file(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_ignore_exclude_param(tmpdir):
+def test_ignore_exclude_param(tmp_path):
     """Test that extra_params=dict(exclude=...) is being ignored."""
-    bids_path = _bids_path.copy().update(root=tmpdir)
+    bids_path = _bids_path.copy().update(root=tmp_path)
     ch_name = 'EEG 001'
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
@@ -990,9 +997,9 @@ def test_ignore_exclude_param(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_channels_tsv_raw_mismatch(tmpdir):
+def test_channels_tsv_raw_mismatch(tmp_path):
     """Test behavior when channels.tsv contains channels not found in raw."""
-    bids_path = _bids_path.copy().update(root=tmpdir, datatype='meg',
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg',
                                          task='rest')
 
     # Remove one channel from the raw data without updating channels.tsv

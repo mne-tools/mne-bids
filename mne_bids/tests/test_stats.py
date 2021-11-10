@@ -85,9 +85,9 @@ def _check_counts(counts, events, event_id, subjects,
     ]
 )
 @requires_pandas
-def test_count_events(tmpdir, subjects, tasks, runs, sessions):
+def test_count_events(tmp_path, subjects, tasks, runs, sessions):
     """Test the event counts."""
-    root, events, event_id = _make_dataset(tmpdir, subjects, tasks, runs,
+    root, events, event_id = _make_dataset(tmp_path, subjects, tasks, runs,
                                            sessions)
 
     counts = count_events(root)
@@ -96,10 +96,10 @@ def test_count_events(tmpdir, subjects, tasks, runs, sessions):
 
 
 @requires_pandas
-def test_count_events_bids_path(tmpdir):
+def test_count_events_bids_path(tmp_path):
     """Test the event counts passing a BIDSPath."""
     root, events, event_id = \
-        _make_dataset(tmpdir, subjects=['01', '02'], tasks=['task1'])
+        _make_dataset(tmp_path, subjects=['01', '02'], tasks=['task1'])
 
     with pytest.raises(ValueError, match='datatype .*anat.* is not supported'):
         bids_path = BIDSPath(root=root, subject='01', datatype='anat')
@@ -112,14 +112,14 @@ def test_count_events_bids_path(tmpdir):
 
 
 @requires_pandas
-def test_count_no_events_file(tmpdir):
+def test_count_no_events_file(tmp_path):
     """Test count_events with no event present."""
     data_path = testing.data_path()
     raw_fname = \
         Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     raw = mne.io.read_raw(raw_fname)
     raw.info['line_freq'] = 60.
-    root = str(tmpdir)
+    root = str(tmp_path)
 
     bids_path = BIDSPath(
         subject='01', task='task1', root=root,
@@ -131,10 +131,10 @@ def test_count_no_events_file(tmpdir):
 
 
 @requires_pandas
-def test_count_no_events_column(tmpdir):
+def test_count_no_events_column(tmp_path):
     """Test case where events.tsv doesn't contain [stim,trial]_type column."""
     subject, task, run, session, datatype = '01', 'task1', '01', '01', 'meg'
-    root, events, event_id = _make_dataset(tmpdir, [subject], [task], [run],
+    root, events, event_id = _make_dataset(tmp_path, [subject], [task], [run],
                                            [session])
 
     # Delete the `stim_type` column.
