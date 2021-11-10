@@ -6,22 +6,14 @@
 # License: BSD-3-Clause
 import os.path as op
 import datetime
-from distutils.version import LooseVersion
 
 import pytest
 
-# This is here to handle mne-python <0.20
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
-
+import mne
+from mne.fixes import _compare_version
 from mne.datasets import testing
 from mne_bids import BIDSPath
 from mne_bids.path import _parse_ext
-
 from mne_bids.copyfiles import (_get_brainvision_encoding,
                                 _get_brainvision_paths,
                                 copyfile_brainvision,
@@ -187,8 +179,10 @@ def test_copyfile_edf(tmpdir):
                           'test_raw_2021.set'))
 def test_copyfile_eeglab(tmpdir, fname):
     """Test the copying of EEGlab set and fdt files."""
-    if (fname == 'test_raw_chanloc.set' and
-            LooseVersion(testing.get_version()) < LooseVersion('0.112')):
+    if (
+        fname == 'test_raw_chanloc.set' and
+        _compare_version(testing.get_version(), '<', '0.112')
+    ):
         return
 
     bids_root = str(tmpdir)

@@ -6,17 +6,10 @@
 
 from collections import OrderedDict as odict
 
-# This is here to handle mne-python <0.20
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne  # noqa: F401
+import pytest
 
 from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine_rows, _drop,
                                   _contains_row, _tsv_to_str)
-import pytest
 
 
 def test_tsv_handler(tmpdir):

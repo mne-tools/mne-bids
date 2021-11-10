@@ -5,21 +5,13 @@
 import os
 import os.path as op
 import shutil as sh
-
-# This is here to handle mne-python <0.20
-import warnings
 from pathlib import Path
 import shutil
 from datetime import datetime, timezone
 
 import pytest
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
-
+import mne
 from mne.datasets import testing
 from mne.io import anonymize_info
 
