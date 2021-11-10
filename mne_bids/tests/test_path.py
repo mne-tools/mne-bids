@@ -98,6 +98,13 @@ def test_get_keys(return_bids_test_dir):
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
+    # Add some derivative data that should be ignored by get_entity_vals()
+    deriv_path = Path(bids_root) / 'derivatives'
+    deriv_meg_dir = deriv_path / 'pipeline' / 'sub-deriv' / 'ses-deriv' / 'meg'
+    deriv_meg_dir.mkdir(parents=True)
+    (deriv_meg_dir / 'sub-deriv_ses-deriv_task-deriv_meg.fif').touch()
+    (deriv_meg_dir / 'sub-deriv_ses-deriv_task-deriv_meg.json').touch()
+
     if kwargs is None:
         kwargs = dict()
 
@@ -117,6 +124,9 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         }
         assert entities == [f'{entity_long_to_short[entity]}-{val}'
                             for val in expected_vals]
+
+    # Clean up
+    shutil.rmtree(deriv_path)
 
 
 def test_search_folder_for_text(capsys):
