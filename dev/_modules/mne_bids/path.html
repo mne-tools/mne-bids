@@ -224,7 +224,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">_check_fname</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">,</span> <span class="n">ALLOWED_FILENAME_EXTENSIONS</span><span class="p">,</span>
@@ -1736,7 +1736,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">    root : path-like</span>
 <span class="sd">        Path to the &quot;root&quot; directory from which to start traversing to gather</span>
 <span class="sd">        BIDS entities from file- and folder names. This will commonly be the</span>
 <span class="sd">        BIDS root, but it may also be a subdirectory inside of a BIDS dataset,</span>
@@ -1807,6 +1807,15 @@
 <span class="sd">    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">_check_fname</span><span class="p">(</span>
+        <span class="n">fname</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="s1">&#39;read&#39;</span><span class="p">,</span>
+        <span class="n">must_exist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">need_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Root directory&#39;</span>
+    <span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
     <span class="n">entities</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;processing&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;acquisition&#39;</span><span class="p">,</span> <span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="s1">&#39;suffix&#39;</span><span class="p">)</span>
     <span class="n">entities_abbr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">,</span> <span class="s1">&#39;acq&#39;</span><span class="p">,</span>
@@ -1829,13 +1838,9 @@
 
     <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-(.*?)_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]))</span>
     <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">filenames</span> <span class="o">=</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-                 <span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span><span class="si">}</span><span class="s1">-*_*&#39;</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-        <span class="c1"># Ignore `derivatives` folder.</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;derivatives&#39;</span><span class="p">)):</span>
-            <span class="k">continue</span>
+    <span class="n">filenames</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-*/**/*</span><span class="si">{</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span><span class="si">}</span><span class="s1">-*_*&#39;</span><span class="p">)</span>
 
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ignore_datatypes</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">ignore_datatypes</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="n">ignore_subjects</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)</span>
