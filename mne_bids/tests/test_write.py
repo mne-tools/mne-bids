@@ -1878,8 +1878,8 @@ def test_write_raw_pathlike(tmp_path):
     raw = _read_raw_fif(raw_fname)
 
     bids_root = tmp_path
-    events_fname =  (data_path / 'MEG' / 'sample' /
-                     'sample_audvis_trunc_raw-eve.fif')
+    events_fname = (data_path / 'MEG' / 'sample' /
+                    'sample_audvis_trunc_raw-eve.fif')
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 events_data=events_fname,
