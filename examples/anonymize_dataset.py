@@ -1,6 +1,6 @@
 """
 ==============================
-14. Anonymizing a BIDS dataset
+13. Anonymizing a BIDS dataset
 ==============================
 
 Consider the following scenario:
