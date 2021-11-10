@@ -27,14 +27,7 @@ import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
                            assert_array_almost_equal)
 
-# This is here to handle mne-python <0.20
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
-
+import mne
 from mne.datasets import testing
 from mne.utils import check_version, requires_nibabel, requires_version
 from mne.io import anonymize_info
@@ -45,7 +38,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      get_anat_landmarks, write)
+                      get_anat_landmarks, write, anonymize_dataset)
 from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
@@ -1886,7 +1879,8 @@ def test_write_raw_pathlike(tmp_path):
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32,
+                'unknown': 0}
     raw = _read_raw_fif(raw_fname)
 
     bids_root = Path(tmp_path)
@@ -2688,7 +2682,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
                        raw_read.annotations.description)
 
 
-@requires_version('mne', '0.24.dev0')
+@requires_version('mne', '0.24')
 @requires_version('pybv', '0.6')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
@@ -3020,3 +3014,298 @@ def test_write_raw_special_paths(tmp_path, dir_name):
     root = Path(tmp_path) / dir_name
     bids_path = _bids_path.copy().update(root=root)
     write_raw_bids(raw=raw, bids_path=bids_path)
+
+
+@requires_nibabel()
+def test_anonymize_dataset(_bids_validate, tmpdir):
+    """Test creating an anonymized copy of a dataset."""
+    # Create a non-anonymized dataset
+    bids_root = tmpdir.mkdir('bids')
+    bids_path = _bids_path.copy().update(
+        root=bids_root, subject='testparticipant', extension='.fif',
+        datatype='meg'
+    )
+    bids_path_er = bids_path.copy().update(
+        subject='emptyroom', task='noise', session='20021203', run=None,
+        acquisition=None
+    )
+    bids_path_anat = bids_path.copy().update(
+        datatype='anat', suffix='T1w', extension='.nii.gz'
+    )
+
+    data_path = Path(testing.data_path())
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw_er_path = data_path / 'MEG' / 'sample' / 'ernoise_raw.fif'
+    fine_cal_path = data_path / 'SSS' / 'sss_cal_mgh.dat'
+    crosstalk_path = data_path / 'SSS' / 'ct_sparse_mgh.fif'
+    t1w_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
+    mri_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        nasion=[41.87363, 32.24694, 74.55314],
+        rpa=[17.23812, 53.08294, 47.01789],
+        coord_frame='mri_voxel'
+    )
+    events_path = (data_path / 'MEG' / 'sample' /
+                   'sample_audvis_trunc_raw-eve.fif')
+    event_id = {
+        'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+        'Visual/Right': 4, 'Smiley': 5, 'Button': 32,
+        'unknown': 0
+    }
+
+    raw = _read_raw_fif(raw_path, verbose=False)
+    raw_er = _read_raw_fif(raw_er_path, verbose=False)
+
+    write_raw_bids(raw_er, bids_path=bids_path_er)
+    write_raw_bids(
+        raw, bids_path=bids_path, empty_room=bids_path_er,
+        events_data=events_path, event_id=event_id, verbose=False
+    )
+    write_meg_crosstalk(
+        fname=crosstalk_path, bids_path=bids_path, verbose=False
+    )
+    write_meg_calibration(
+        calibration=fine_cal_path, bids_path=bids_path, verbose=False
+    )
+    write_anat(
+        image=t1w_path, bids_path=bids_path_anat, landmarks=mri_landmarks,
+        verbose=False
+    )
+    _bids_validate(bids_root)
+
+    # Now run the actual anonymization
+    bids_root_anon = tmpdir / 'bids-anonymized'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        random_state=42
+    )
+    _bids_validate(bids_root_anon)
+    meg_dir = bids_root_anon / 'sub-1' / 'ses-01' / 'meg'
+    assert (meg_dir /
+            'sub-1_ses-01_task-testing_acq-01_run-01_meg.fif').exists()
+    assert (meg_dir / 'sub-1_ses-01_acq-crosstalk_meg.fif').exists()
+    assert (meg_dir / 'sub-1_ses-01_acq-calibration_meg.dat').exists()
+    assert (bids_root_anon / 'sub-1' / 'ses-01' / 'anat' /
+            'sub-1_ses-01_acq-01_T1w.nii.gz').exists()
+    assert (bids_root_anon / 'sub-emptyroom' / 'ses-19221211' / 'meg' /
+            'sub-emptyroom_ses-19221211_task-noise_meg.fif').exists()
+
+    # Explicitly specify multiple data types
+    bids_root_anon = tmpdir / 'bids-anonymized-1'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes=['meg', 'anat'],
+        random_state=42
+    )
+    _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-1' / 'ses-01' / 'meg').exists()
+    assert (bids_root_anon / 'sub-1' / 'ses-01' / 'anat').exists()
+    assert (bids_root_anon / 'sub-emptyroom').exists()
+
+    # One data type, daysback, subject mapping
+    bids_root_anon = tmpdir / 'bids-anonymized-2'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        daysback=10,
+        datatypes='meg',
+        subject_mapping={
+            'testparticipant': '123',
+            'emptyroom': 'emptyroom'
+        }
+    )
+    _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-123' / 'ses-01' / 'meg').exists()
+    assert not (bids_root_anon / 'sub-123' / 'ses-01' / 'anat').exists()
+    assert (bids_root_anon / 'sub-emptyroom' / 'ses-20021123').exists()
+
+    # Unknown subject in subject_mapping
+    bids_root_anon = tmpdir / 'bids-anonymized-3'
+    with pytest.raises(IndexError, match='does not contain an entry for'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            subject_mapping={
+                'foobar': '123',
+                'emptyroom': 'emptyroom'
+            }
+        )
+
+    # Duplicated entries in subject_mapping
+    bids_root_anon = tmpdir / 'bids-anonymized-4'
+    with pytest.raises(ValueError, match='dictionary contains duplicated'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            subject_mapping={
+                'testparticipant': '123',
+                'foobar': '123',
+                'emptyroom': 'emptyroom'
+            }
+        )
+
+    # bids_root_in does not exist
+    bids_root_anon = tmpdir / 'bids-anonymized-5'
+    with pytest.raises(FileNotFoundError, match='directory does not exist'):
+        anonymize_dataset(
+            bids_root_in='/foobar',
+            bids_root_out=bids_root_anon
+        )
+
+    # input dir == output dir
+    with pytest.raises(ValueError, match='directory must differ'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root
+        )
+
+    # bids_root_out exists
+    bids_root_anon = tmpdir / 'bids-anonymized-6'
+    bids_root_anon.mkdir()
+    with pytest.raises(FileExistsError, match='directory already exists'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon
+        )
+
+    # Unsupported data type
+    bids_root_anon = tmpdir / 'bids-anonymized-7'
+    with pytest.raises(ValueError, match='Unsupported data type'):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            datatypes='func'
+        )
+
+    # subject_mapping None
+    bids_root_anon = tmpdir / 'bids-anonymized-8'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='meg',
+        subject_mapping=None
+    )
+    _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-testparticipant').exists()
+    assert (bids_root_anon / 'sub-emptyroom').exists()
+
+    # subject_mapping callable
+    bids_root_anon = tmpdir / 'bids-anonymized-9'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='meg',
+        subject_mapping=lambda x: {
+            'testparticipant': '123', 'emptyroom': 'emptyroom'
+        }
+    )
+    _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-123').exists()
+    assert (bids_root_anon / 'sub-emptyroom').exists()
+
+    # Rename emptyroom
+    bids_root_anon = tmpdir / 'bids-anonymized-10'
+    with pytest.warns(
+        RuntimeWarning,
+        match='requested to change the "emptyroom" subject ID'
+    ):
+        anonymize_dataset(
+            bids_root_in=bids_root,
+            bids_root_out=bids_root_anon,
+            datatypes='meg',
+            subject_mapping={
+                'testparticipant': 'testparticipant',
+                'emptyroom': 'emptiestroom'
+            }
+        )
+    _bids_validate(bids_root)
+    assert (bids_root_anon / 'sub-testparticipant').exists()
+    assert (bids_root_anon / 'sub-emptiestroom').exists()
+
+    # Only anat data
+    bids_root_anon = tmpdir / 'bids-anonymized-11'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='anat'
+    )
+    _bids_validate(bids_root_anon)
+    assert (bids_root_anon / 'sub-1' / 'ses-01' / 'anat').exists()
+    assert not (bids_root_anon / 'sub-1' / 'ses-01' / 'meg').exists()
+
+    # Ensure that additional JSON sidecar fields are transferred if they are
+    # "safe", and are omitted if they are not whitelisted
+    bids_path.datatype = 'meg'
+    meg_json_path = bids_path.copy().update(extension='.json')
+    meg_json = json.loads(meg_json_path.fpath.read_text(encoding='utf-8'))
+    assert 'Instructions' not in meg_json  # ensure following test makes sense
+    meg_json['Instructions'] = 'Foo'
+    meg_json['UnknownKey'] = 'Bar'
+    meg_json_path.fpath.write_text(
+        data=json.dumps(meg_json),
+        encoding='utf-8'
+    )
+
+    # After anonymization, "Instructions" should be there and "UnknownKey"
+    # should be gone.
+    bids_root_anon = tmpdir / 'bids-anonymized-12'
+    anonymize_dataset(
+        bids_root_in=bids_root,
+        bids_root_out=bids_root_anon,
+        datatypes='meg'
+    )
+    path = (bids_root_anon / 'sub-1' / 'ses-01' / 'meg' /
+            'sub-1_ses-01_task-testing_acq-01_run-01_meg.json')
+    meg_json = json.loads(path.read_text(encoding='utf=8'))
+    assert 'Instructions' in meg_json
+    assert 'UnknownKey' not in meg_json
+
+
+def test_anonymize_dataset_daysback(tmpdir):
+    """Test some bits of _get_daysback, which doesn't have a public API."""
+    # Check progress bar output
+    from mne_bids.write import _get_daysback
+
+    bids_root = tmpdir.mkdir('bids')
+    bids_path = _bids_path.copy().update(
+        root=bids_root, subject='testparticipant', datatype='meg'
+    )
+    data_path = Path(testing.data_path())
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw = _read_raw_fif(raw_path, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path)
+
+    _get_daysback(
+        bids_paths=[bids_path],
+        rng=np.random.default_rng(),
+        show_progress_thresh=1
+    )
+
+    # Multiple runs
+    _get_daysback(
+        bids_paths=[
+            bids_path.copy().update(run='01'),
+            bids_path.copy().update(run='02')
+        ],
+        rng=np.random.default_rng(),
+        show_progress_thresh=20
+    )
+
+    # Multiple sessions
+    bids_root = tmpdir.mkdir('bids-multisession')
+    bids_path = _bids_path.copy().update(
+        root=bids_root, subject='testparticipant', datatype='meg'
+    )
+    write_raw_bids(raw, bids_path=bids_path.copy().update(session='01'))
+    write_raw_bids(raw, bids_path=bids_path.copy().update(session='02'))
+
+    _get_daysback(
+        bids_paths=[
+            bids_path.copy().update(session='01'),
+            bids_path.copy().update(session='02')
+        ],
+        rng=np.random.default_rng(),
+        show_progress_thresh=20
+    )

@@ -40,6 +40,7 @@ mne_bids
    get_datatypes
    inspect_dataset
    update_sidecar_json
+   anonymize_dataset
 
 mne_bids.stats
 --------------

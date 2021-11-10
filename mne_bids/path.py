@@ -17,7 +17,7 @@ import json
 from typing import Optional
 
 import numpy as np
-from mne.utils import warn, logger, _validate_type, verbose
+from mne.utils import warn, logger, _validate_type, verbose, _check_fname
 
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
@@ -866,22 +866,27 @@ class BIDSPath(object):
                                  f'Use one of these suffixes '
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
 
-    def find_empty_room(self):
+    @verbose
+    def find_empty_room(self, use_sidecar_only=False, verbose=None):
         """Find the corresponding empty-room file of an MEG recording.
 
         This will only work if the ``.root`` attribute of the
         :class:`mne_bids.BIDSPath` instance has been set.
 
-        .. note:: If the sidecar JSON file contains an ``AssociatedEmptyRoom``
-                  entry, the empty-room recording specified there will be used.
-                  Otherwise, this method will try to find the best-matching
-                  empty-room recording based on measurement date.
+        Parameters
+        ----------
+        use_sidecar_only : bool
+            Whether to only check the ``AssociatedEmptyRoom`` entry in the
+            sidecar JSON file or not. If ``False``, first look for the entry,
+            and if unsuccessful, try to find the best-matching empty-room
+            recording in the dataset based on the measurement date.
 
         Returns
         -------
         BIDSPath | None
             The path corresponding to the best-matching empty-room measurement.
             Returns ``None`` if none was found.
+        %(verbose)s
         """
         if self.datatype not in ('meg', None):
             raise ValueError('Empty-room data is only supported for MEG '
@@ -903,6 +908,13 @@ class BIDSPath(object):
             er_bids_path = get_bids_path_from_fname(emptytoom_path)
             er_bids_path.root = self.root
             er_bids_path.datatype = 'meg'
+        elif use_sidecar_only:
+            logger.info(
+                'The MEG sidecar file does not contain an '
+                '"AssociatedEmptyRoom" entry. Aborting search for an '
+                'empty-room recording, as you passed use_sidecar_only=True'
+            )
+            return None
         else:
             logger.info(
                 'The MEG sidecar file does not contain an '
@@ -1517,7 +1529,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         Path to the "root" directory from which to start traversing to gather
         BIDS entities from file- and folder names. This will commonly be the
         BIDS root, but it may also be a subdirectory inside of a BIDS dataset,
@@ -1588,6 +1600,15 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
 
     """
+    root = _check_fname(
+        fname=root,
+        overwrite='read',
+        must_exist=True,
+        need_dir=True,
+        name='Root directory'
+    )
+    root = Path(root)
+
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
                 'acquisition', 'split', 'suffix')
     entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
@@ -1610,13 +1631,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     p = re.compile(r'{}-(.*?)_'.format(entity_long_abbr_map[entity_key]))
     values = list()
-    filenames = (Path(root)
-                 .rglob(f'*{entity_long_abbr_map[entity_key]}-*_*'))
-    for filename in filenames:
-        # Ignore `derivatives` folder.
-        if str(filename).startswith(op.join(root, 'derivatives')):
-            continue
+    filenames = root.glob(f'sub-*/**/*{entity_long_abbr_map[entity_key]}-*_*')
 
+    for filename in filenames:
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any([filename.stem.startswith(f'sub-{s}_')

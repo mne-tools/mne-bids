@@ -10,17 +10,10 @@ from datetime import datetime, timezone
 
 import pytest
 import shutil as sh
-
 import numpy as np
 from numpy.testing import assert_almost_equal
 
-# This is here to handle mne-python <0.20
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
+import mne
 from mne.io.constants import FIFF
 from mne.utils import requires_nibabel, object_diff, requires_version
 from mne.utils import assert_dig_allclose
@@ -527,7 +520,7 @@ def test_handle_info_reading(tmp_path):
         assert raw.info['line_freq'] == 55
 
 
-@requires_version('mne', '0.24.dev0')
+@requires_version('mne', '0.24')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_handle_chpi_reading(tmp_path):

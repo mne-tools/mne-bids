@@ -5,21 +5,13 @@
 import os
 import os.path as op
 import shutil as sh
-
-# This is here to handle mne-python <0.20
-import warnings
 from pathlib import Path
 import shutil
 from datetime import datetime, timezone
 
 import pytest
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
-
+import mne
 from mne.datasets import testing
 from mne.io import anonymize_info
 
@@ -106,6 +98,13 @@ def test_get_keys(return_bids_test_dir):
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
+    # Add some derivative data that should be ignored by get_entity_vals()
+    deriv_path = Path(bids_root) / 'derivatives'
+    deriv_meg_dir = deriv_path / 'pipeline' / 'sub-deriv' / 'ses-deriv' / 'meg'
+    deriv_meg_dir.mkdir(parents=True)
+    (deriv_meg_dir / 'sub-deriv_ses-deriv_task-deriv_meg.fif').touch()
+    (deriv_meg_dir / 'sub-deriv_ses-deriv_task-deriv_meg.json').touch()
+
     if kwargs is None:
         kwargs = dict()
 
@@ -125,6 +124,9 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         }
         assert entities == [f'{entity_long_to_short[entity]}-{val}'
                             for val in expected_vals]
+
+    # Clean up
+    shutil.rmtree(deriv_path)
 
 
 def test_search_folder_for_text(capsys):
@@ -921,6 +923,10 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     # retrieve the empty-room recording closer in time
     write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
     assert bids_path.find_empty_room() == er_matching_date_bids_path
+
+    # If we enforce searching only via `AssociatedEmptyRoom`, we should get no
+    # result
+    assert bids_path.find_empty_room(use_sidecar_only=True) is None
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

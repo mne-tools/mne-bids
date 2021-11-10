@@ -75,12 +75,12 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     return raw
 
 
-def _read_events(events_data, event_id, raw, task=None):
+def _read_events(events_data, event_id, raw, bids_path=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
     ----------
-    events_data : str | np.ndarray | None
+    events_data : path-like | np.ndarray | None
         If a string, a path to an events file. If an array, an MNE events array
         (shape n_events, 3). If None, events will be generated from
         ``raw.annotations``.
@@ -89,8 +89,10 @@ def _read_events(events_data, event_id, raw, task=None):
         mapping a description key to an integer-valued event code.
     raw : mne.io.Raw
         The data as MNE-Python Raw object.
-    task : str | None
-        If task may be resting state, silence warnings.
+    bids_path : BIDSPath | None
+        Can be used to determine if the data is a resting-state or empty-room
+        recording, and will suppress a warning about missing events in this
+        case.
 
     Returns
     -------
@@ -107,9 +109,7 @@ def _read_events(events_data, event_id, raw, task=None):
 
     """
     # get events from events_data
-    if isinstance(events_data, str):
-        events = read_events(events_data).astype(int)
-    elif isinstance(events_data, np.ndarray):
+    if isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
             raise ValueError('Events must have two dimensions, '
                              f'found {events_data.ndim}')
@@ -117,8 +117,10 @@ def _read_events(events_data, event_id, raw, task=None):
             raise ValueError('Events must have second dimension of length 3, '
                              f'found {events_data.shape[1]}')
         events = events_data
-    else:
+    elif events_data is None:
         events = np.empty(shape=(0, 3), dtype=int)
+    else:
+        events = read_events(events_data).astype(int)
 
     if events.size > 0:
         # Only keep events for which we have an ID <> description mapping.
@@ -160,9 +162,19 @@ def _read_events(events_data, event_id, raw, task=None):
     )
     all_dur = raw.annotations.duration
 
-    # warn no events if not rest
-    if (all_events.size == 0 and task is not None and
-            not task.startswith('rest')):
+    # Warn about missing events if not rest or empty-room data
+    if (
+        (
+            all_events.size == 0 and
+            bids_path.task is not None
+        ) and (
+            not bids_path.task.startswith('rest') or
+            not (
+                bids_path.subject == 'emptyroom' and
+                bids_path.task == 'noise'
+            )
+        )
+    ):
         warn('No events found or provided. Please add annotations to the raw '
              'data, or provide the events_data and event_id parameters. For '
              'resting state data, BIDS recommends naming the task using '
