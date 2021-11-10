@@ -1869,7 +1869,7 @@ def test_write_anat(_bids_validate, tmp_path):
 
 
 def test_write_raw_pathlike(tmp_path):
-    data_path = testing.data_path()
+    data_path = Path(testing.data_path())
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
@@ -1877,9 +1877,9 @@ def test_write_raw_pathlike(tmp_path):
                 'unknown': 0}
     raw = _read_raw_fif(raw_fname)
 
-    bids_root = Path(tmp_path)
-    events_fname = \
-        Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw-eve.fif'
+    bids_root = tmp_path
+    events_fname =  (data_path / 'MEG' / 'sample' /
+                     'sample_audvis_trunc_raw-eve.fif')
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 events_data=events_fname,
@@ -1895,7 +1895,7 @@ def test_write_raw_no_dig(tmp_path):
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_fname)
-    bids_root = Path(tmp_path)
+    bids_root = tmp_path
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
@@ -1921,7 +1921,7 @@ def test_write_anat_pathlike(tmp_path):
     raw = _read_raw_fif(raw_fname)
     trans = mne.read_trans(trans_fname)
 
-    bids_root = Path(tmp_path)
+    bids_root = tmp_path
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
@@ -3002,7 +3002,7 @@ def test_write_raw_special_paths(tmp_path, dir_name):
                         'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_fname)
 
-    root = Path(tmp_path) / dir_name
+    root = tmp_path / dir_name
     bids_path = _bids_path.copy().update(root=root)
     write_raw_bids(raw=raw, bids_path=bids_path)
 

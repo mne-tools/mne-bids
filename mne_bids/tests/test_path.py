@@ -214,7 +214,7 @@ def test_make_folders(tmp_path):
 
     # Check if a pathlib.Path bids_root works.
     bids_path = BIDSPath(subject='03', session='foo',
-                         datatype='eeg', root=Path(tmp_path))
+                         datatype='eeg', root=tmp_path)
     bids_path.mkdir().directory
     assert op.isdir(tmp_path / 'sub-03' / 'ses-foo' / 'eeg')
 

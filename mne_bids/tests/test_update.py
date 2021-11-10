@@ -146,7 +146,7 @@ def test_update_anat_landmarks(tmp_path):
     t1_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     fs_subject = 'sample'
     fs_subjects_dir = data_path / 'subjects'
-    bids_root = Path(tmp_path)
+    bids_root = tmp_path
     bids_path_mri = BIDSPath(subject=subject_id, session=session_id,
                              acquisition=acq, root=bids_root, datatype='anat',
                              suffix='T1w')
