@@ -17,7 +17,7 @@ import json
 from typing import Optional
 
 import numpy as np
-from mne.utils import warn, logger, _validate_type, verbose
+from mne.utils import warn, logger, _validate_type, verbose, _check_fname
 
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
@@ -1529,7 +1529,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         Path to the "root" directory from which to start traversing to gather
         BIDS entities from file- and folder names. This will commonly be the
         BIDS root, but it may also be a subdirectory inside of a BIDS dataset,
@@ -1600,6 +1600,15 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
 
     """
+    root = _check_fname(
+        fname=root,
+        overwrite='read',
+        must_exist=True,
+        need_dir=True,
+        name='Root directory'
+    )
+    root = Path(root)
+
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
                 'acquisition', 'split', 'suffix')
     entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
@@ -1622,14 +1631,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     p = re.compile(r'{}-(.*?)_'.format(entity_long_abbr_map[entity_key]))
     values = list()
-    filenames = (Path(root)
-                 .rglob(f'*{entity_long_abbr_map[entity_key]}-*_*'))
-    for filename in filenames:
-        # Ignore `derivatives` and `sourcedata` folder.
-        if str(filename).startswith(op.join(root, 'derivatives')) or \
-                str(filename).startswith(op.join(root, 'sourcedata')):
-            continue
+    filenames = root.glob(f'sub-*/**/*{entity_long_abbr_map[entity_key]}-*_*')
 
+    for filename in filenames:
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any([filename.stem.startswith(f'sub-{s}_')
