@@ -141,7 +141,8 @@ def test_copyfile_edf(tmp_path):
         startdate = rec_info.split(' ')[1]
         return datetime.datetime.strptime(startdate, "%d-%b-%Y")
 
-    bids_root2 = tmp_path.mkdir("bids2")
+    bids_root2 = tmp_path / 'bids2'
+    bids_root2.mkdir()
     infile = op.join(bids_root, 'test_copy.edf')
     outfile = op.join(bids_root2, 'test_copy_anon.edf')
     anonymize = {'daysback': 33459, 'keep_his': False}

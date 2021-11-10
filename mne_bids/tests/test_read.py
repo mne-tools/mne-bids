@@ -88,7 +88,7 @@ def test_read_raw():
 def test_not_implemented(tmp_path):
     """Test the not yet implemented data formats raise an adequate error."""
     for not_implemented_ext in ['.mef', '.nwb']:
-        raw_fname = tmp_path / 'test' + not_implemented_ext
+        raw_fname = tmp_path / f'test{not_implemented_ext}'
         with open(raw_fname, 'w', encoding='utf-8'):
             pass
         with pytest.raises(ValueError, match=('there is no IO support for '
@@ -324,7 +324,8 @@ def test_handle_events_reading(tmp_path):
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a'],
               'trial_type': ["rec start", "trial #1", "trial #2!"]}
-    events_fname = tmp_path.mkdir('bids1') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids1' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     raw = _handle_events_reading(events_fname, raw)
@@ -334,7 +335,8 @@ def test_handle_events_reading(tmp_path):
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a'],
               'stim_type': ["rec start", "trial #1", "trial #2!"]}
-    events_fname = tmp_path.mkdir('bids2') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids2' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     with pytest.warns(RuntimeWarning, match='This column should be renamed'):
@@ -346,7 +348,8 @@ def test_handle_events_reading(tmp_path):
               'duration': ['n/a', 'n/a', 'n/a'],
               'trial_type': ["event1", "event1", "event2"],
               'value': [1, 2, 3]}
-    events_fname = tmp_path.mkdir('bids3') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids3' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     raw = _handle_events_reading(events_fname, raw)
@@ -361,7 +364,8 @@ def test_handle_events_reading(tmp_path):
     # Test without any kind of event description.
     events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a']}
-    events_fname = tmp_path.mkdir('bids4') / 'sub-01_task-test_events.json'
+    events_fname = tmp_path / 'bids4' / 'sub-01_task-test_events.json'
+    events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
     raw = _handle_events_reading(events_fname, raw)
@@ -454,6 +458,7 @@ def test_handle_info_reading(tmp_path):
     bids_fname.update(datatype=suffix)
     sidecar_fname = _find_matching_sidecar(bids_fname, suffix=suffix,
                                            extension='.json')
+    sidecar_fname = pathlib.Path(sidecar_fname)
 
     # assert that we get the same line frequency set
     raw = read_raw_bids(bids_path=bids_path)
@@ -465,8 +470,7 @@ def test_handle_info_reading(tmp_path):
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['line_freq'] is None
 
-    with open(sidecar_fname, 'r', encoding='utf-8') as fin:
-        sidecar_json = json.load(fin)
+    sidecar_json = json.loads(sidecar_fname.read_text(encoding='utf-8'))
     assert sidecar_json["PowerLineFrequency"] == 'n/a'
 
     # 2. if line frequency is not set in raw file, then ValueError
@@ -504,11 +508,11 @@ def test_handle_info_reading(tmp_path):
     # in `read_raw_bids`
     raw.info['line_freq'] = 60
     write_raw_bids(raw, bids_path, overwrite=True)
-    deriv_dir = tmp_path.mkdir("derivatives")
+    deriv_dir = tmp_path / 'derivatives'
+    deriv_dir.mkdir()
     sidecar_copy = deriv_dir / op.basename(sidecar_fname)
-    with open(sidecar_fname, "r", encoding='utf-8') as fin:
-        sidecar_json = json.load(fin)
-        sidecar_json["PowerLineFrequency"] = 45
+    sidecar_json = json.loads(sidecar_fname.read_text(encoding='utf-8'))
+    sidecar_json["PowerLineFrequency"] = 45
     _write_json(sidecar_copy, sidecar_json)
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['line_freq'] == 60
@@ -526,7 +530,8 @@ def test_handle_info_reading(tmp_path):
 def test_handle_chpi_reading(tmp_path):
     """Test reading of cHPI information."""
     raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
-    root = tmp_path.mkdir('chpi')
+    root = tmp_path / 'chpi'
+    root.mkdir()
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          root=root, datatype='meg')
@@ -921,8 +926,10 @@ def test_bads_reading(tmp_path):
 def test_write_read_fif_split_file(tmp_path):
     """Test split files are read correctly."""
     # load raw test file, extend it to be larger than 2gb, and save it
-    bids_root = tmp_path.mkdir('bids')
-    tmp_dir = tmp_path.mkdir('tmp')
+    bids_root = tmp_path / 'bids'
+    tmp_dir = tmp_path / 'tmp'
+    tmp_dir.mkdir()
+
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     bids_path.update(acquisition=None)
