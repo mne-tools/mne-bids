@@ -599,14 +599,6 @@ class BIDSPath(object):
 
                 # found no matching paths
                 if not matching_paths:
-                    msg = (f'Could not locate a data file of a supported '
-                           f'format. This is likely a problem with your '
-                           f'BIDS dataset. Please run the BIDS validator '
-                           f'on your data. (root={self.root}, '
-                           f'basename={self.basename}). '
-                           f'{matching_paths}')
-                    warn(msg)
-
                     bids_fpath = op.join(data_path, self.basename)
                 # if paths still cannot be resolved, then there is an error
                 elif len(matching_paths) > 1:

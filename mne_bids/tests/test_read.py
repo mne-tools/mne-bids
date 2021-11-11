@@ -154,7 +154,7 @@ def test_read_participants_data(tmp_path):
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     os.remove(participants_tsv_fpath)
-    with pytest.warns(RuntimeWarning, match='Participants file not found'):
+    with pytest.warns(RuntimeWarning, match='participants.tsv file not found'):
         raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['subject_info'] is None
 
@@ -1069,3 +1069,20 @@ def test_read_edf_extension_casing(tmp_path):
 
     # obtain the sensor positions and assert ch_coords are same
     read_raw_bids(bids_path, verbose=True)
+
+
+def test_file_not_found(tmp_path):
+    """Check behavior if the requested file cannot be found."""
+    # First a path with a filename extension.
+    bp = BIDSPath(
+        root=tmp_path, subject='foo', task='bar', datatype='eeg', suffix='eeg',
+        extension='.fif'
+    )
+    bp.fpath.parent.mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match='File does not exist'):
+        read_raw_bids(bids_path=bp)
+
+    # Now without an extension
+    bp.extension = None
+    with pytest.raises(FileNotFoundError, match='File does not exist'):
+        read_raw_bids(bids_path=bp)
