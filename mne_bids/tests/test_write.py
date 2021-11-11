@@ -2952,7 +2952,7 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path):
     # recording
     bids_path = bids_path_er.copy().update(subject='01', session=None,
                                            task='task')
-    write_raw_bids(raw, bids_path=bids_path, empty_room=bids_path_er)
+    write_raw_bids(raw, bids_path=bids_path, er_bids_path=bids_path_er)
     _bids_validate(bids_path.root)
 
     meg_json_path = bids_path.copy().update(extension='.json')
@@ -2964,6 +2964,11 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path):
             .as_posix()  # make test work on Windows, too
             .endswith(meg_json_data['AssociatedEmptyRoom']))
     assert meg_json_data['AssociatedEmptyRoom'].startswith('/')
+
+    # Test deprecation warning
+    with pytest.warns(DeprecationWarning, match='deprecated'):
+        write_raw_bids(raw, bids_path=bids_path, empty_room=bids_path_er,
+                       overwrite=True)
 
 
 def test_preload(_bids_validate, tmp_path):
@@ -3049,7 +3054,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
 
     write_raw_bids(raw_er, bids_path=bids_path_er)
     write_raw_bids(
-        raw, bids_path=bids_path, empty_room=bids_path_er,
+        raw, bids_path=bids_path, er_bids_path=bids_path_er,
         events_data=events_path, event_id=event_id, verbose=False
     )
     write_meg_crosstalk(

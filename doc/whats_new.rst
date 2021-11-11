@@ -66,6 +66,8 @@ API and behavior changes
 
 - Reading BIDS data with ``"HeadCoilFrequency"`` and ``"PowerLineFrequency"`` data specified in JSON sidecars will only "warn" in case of mismatches between Raw and JSON data, by `Franziska von Albedyll`_ (:gh:`885`)
 
+- The ``empty_room`` parameter of :func:`mne_bids.write_raw_bids` has been deprecated in favor of the new paraemter ``er_bids_path``. Just renaming the parameter in your code should yield the same results as before, by `Richard Höchenberger`_ (:gh:`xxx`)
+
 Requirements
 ^^^^^^^^^^^^
 

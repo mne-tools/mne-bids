@@ -910,7 +910,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     bids_path = (er_matching_date_bids_path.copy()
                  .update(subject='01', session=None, task='task'))
     write_raw_bids(raw, bids_path=bids_path,
-                   empty_room=er_associated_bids_path)
+                   er_bids_path=er_associated_bids_path)
 
     # Retrieve empty-room BIDSPath
     assert bids_path.find_empty_room() == er_associated_bids_path
@@ -921,7 +921,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Don't create `AssociatedEmptyRoom` entry in sidecar – we should now
     # retrieve the empty-room recording closer in time
-    write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
+    write_raw_bids(raw, bids_path=bids_path, er_bids_path=None, overwrite=True)
     assert bids_path.find_empty_room() == er_matching_date_bids_path
 
     # If we enforce searching only via `AssociatedEmptyRoom`, we should get no

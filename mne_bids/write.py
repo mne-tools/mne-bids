@@ -1055,7 +1055,8 @@ def make_dataset_description(path, name, data_license=None,
 @verbose
 def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    anonymize=None, format='auto', symlink=False,
-                   empty_room=None, allow_preload=False,
+                   empty_room=None,
+                   er_bids_path=None, allow_preload=False,
                    montage=None, acpc_aligned=False,
                    overwrite=False, verbose=None):
     """Save raw data to a BIDS-compliant folder structure.
@@ -1181,6 +1182,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
            add support for Windows 10 at a later time.
 
     empty_room : mne_bids.BIDSPath | None
+
+        .. deprecated::
+           This parameter has been deprecated in favor of ``er_bids_path`` and
+           will be removed in a future version of MNE-Python.
+    er_bids_path : mne_bids.BIDSPath | None
         The empty-room recording to be associated with this file. This is
         only supported for MEG data, and only if the ``root`` attributes of
         ``bids_path`` and ``empty_room`` are the same. Pass ``None``
@@ -1309,7 +1315,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raise RuntimeError('You passed event_id, but no events_data NumPy '
                            'array. You need to pass both, or neither.')
 
-    _validate_type(item=empty_room, item_name='empty_room',
+    if empty_room is not None:
+        warn('The "empty_room" parameter has been deprecated. Please use '
+             '"er_bids_path" instead',
+             DeprecationWarning)
+        er_bids_path = empty_room
+        del empty_room
+
+    _validate_type(item=er_bids_path, item_name='er_bids_path or empty_room',
                    types=(BIDSPath, None))
     _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
     _validate_type(acpc_aligned, bool, 'acpc_aligned')
@@ -1400,25 +1413,29 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 )
 
     associated_er_path = None
-    if empty_room is not None:
+    if er_bids_path is not None:
         if bids_path.datatype != 'meg':
-            raise ValueError('"empty_room" is only supported for '
-                             'MEG data.')
+            raise ValueError(
+                '"empty_room" and "er_bids_path" are only supported for MEG '
+                'data.'
+            )
         if data_is_emptyroom:
-            raise ValueError('You cannot write empty-room data and pass '
-                             '"empty_room" at the same time.')
-        if bids_path.root != empty_room.root:
+            raise ValueError(
+                'You cannot write empty-room data and pass "empty_room" or '
+                '"er_bids_path" at the same time.'
+            )
+        if bids_path.root != er_bids_path.root:
             raise ValueError('The MEG data and its associated empty-room '
                              'recording must share the same BIDS root.')
 
-        associated_er_path = empty_room.fpath
+        associated_er_path = er_bids_path.fpath
         if not associated_er_path.exists():
             raise FileNotFoundError(f'Empty-room data file not found: '
                                     f'{associated_er_path}')
 
         # Turn it into a path relative to the BIDS root
         associated_er_path = Path(str(associated_er_path)
-                                  .replace(str(empty_room.root), ''))
+                                  .replace(str(er_bids_path.root), ''))
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 
@@ -2570,7 +2587,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                     'daysback': daysback,
                     'keep_his': False
                 },
-                empty_room=bp_er_out,
+                er_bids_path=bp_er_out,
                 verbose='error'
             )
 

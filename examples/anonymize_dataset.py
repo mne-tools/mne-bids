@@ -76,7 +76,7 @@ write_raw_bids(raw=raw_er, bids_path=bids_path_er, verbose=False)
 # Write experimental MEG data, fine-calibration and crosstalk files
 write_raw_bids(
     raw=raw, bids_path=bids_path, events_data=events_path, event_id=event_id,
-    empty_room=bids_path_er, verbose=False
+    er_bids_path=bids_path_er, verbose=False
 )
 write_meg_calibration(cal_path, bids_path=bids_path, verbose=False)
 write_meg_crosstalk(ct_path, bids_path=bids_path, verbose=False)
