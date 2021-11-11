@@ -56,11 +56,6 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF']:
         raw_path = Path(raw_path)
-        # handle EDF extension upper/lower casing
-        if ext == '.edf' and not raw_path.exists():
-            raw_path = raw_path.with_suffix('.EDF')
-        elif ext == '.EDF' and not raw_path.exists():
-            raw_path = raw_path.with_suffix('.edf')
         raw = reader[ext](raw_path, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
@@ -675,9 +670,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
     # Special-handle EDF filenames: we accept upper- and lower-case extensions
     if raw_path.suffix.lower() == '.edf':
-        stem = raw_path.stem
         for extension in ('.edf', '.EDF'):
-            candidate_path = raw_path.parent / f'{stem}{extension}'
+            candidate_path = raw_path.with_suffix(extension)
             if candidate_path.exists():
                 raw_path = candidate_path
                 break
