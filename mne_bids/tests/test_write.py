@@ -245,11 +245,24 @@ def test_write_correct_inputs():
                                            'BIDSPath object'):
         write_raw_bids(raw, bids_path_str)
 
-    bids_path = _bids_path.copy().update(root=None)
+    bids_path = _bids_path.copy()
+    assert bids_path.root is None
     with pytest.raises(
             ValueError,
             match='The root of the "bids_path" must be set'):
-        write_raw_bids(raw, bids_path)
+        write_raw_bids(raw=raw, bids_path=bids_path)
+
+    bids_path = _bids_path.copy().update(root='/foo', subject=None)
+    with pytest.raises(
+            ValueError,
+            match='The subject of the "bids_path" must be set'):
+        write_raw_bids(raw=raw, bids_path=bids_path)
+
+    bids_path = _bids_path.copy().update(root='/foo', task=None)
+    with pytest.raises(
+            ValueError,
+            match='The task of the "bids_path" must be set'):
+        write_raw_bids(raw=raw, bids_path=bids_path)
 
 
 def test_make_dataset_description(tmp_path, monkeypatch):
@@ -791,7 +804,7 @@ def test_fif_ias(tmp_path):
 
     raw.set_channel_types({raw.ch_names[0]: 'ias'})
 
-    data_path = BIDSPath(subject='sample', root=tmp_path)
+    data_path = BIDSPath(subject='sample', task='task', root=tmp_path)
 
     write_raw_bids(raw, data_path)
     raw = read_raw_bids(data_path)
@@ -807,7 +820,7 @@ def test_fif_exci(tmp_path):
     raw = _read_raw_fif(raw_fname)
 
     raw.set_channel_types({raw.ch_names[0]: 'exci'})
-    data_path = BIDSPath(subject='sample', root=tmp_path)
+    data_path = BIDSPath(subject='sample', task='task', root=tmp_path)
 
     write_raw_bids(raw, data_path)
     raw = read_raw_bids(data_path)
@@ -2597,7 +2610,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         bids_path.update(task='noise', session=raw_date,
                          suffix='meg', datatype='meg')
     else:
-        bids_path.update(suffix='eeg', datatype='eeg')
+        bids_path.update(task='task', suffix='eeg', datatype='eeg')
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
     bids_path = \
@@ -2841,7 +2854,8 @@ def test_write_fif_triux(tmp_path):
     tri_fname = op.join(triux_path, 'triux_bmlhus_erm_raw.fif')
     raw = mne.io.read_raw_fif(tri_fname)
     bids_path = BIDSPath(
-        subject="01", session="01", run="01", datatype="meg", root=tmp_path
+        subject="01", task="task", session="01", run="01", datatype="meg",
+        root=tmp_path
     )
     write_raw_bids(raw, bids_path=bids_path, overwrite=True)
 

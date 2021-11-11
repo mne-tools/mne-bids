@@ -89,6 +89,8 @@ Bug fixes
 
 - Ensure that :func:`mne_bids.get_entity_vals` only includes files found in ``sub-*`` folders in the BIDS root, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`899`)
 
+- :func:`mne_bids.write_raw_bids` now raises an exception if the provided :class:`mne_bids.BIDSPath` doesn't contain ``subject`` and ``task`` entities, which are required for neurophysiological data, by `Richard Höchenberger`_ (:gh:`903`)
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst
