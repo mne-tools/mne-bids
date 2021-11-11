@@ -1185,7 +1185,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         .. deprecated::
            This parameter has been deprecated in favor of ``er_bids_path`` and
-           will be removed in a future version of MNE-Python.
+           will be removed in a future version of MNE-BIDS.
     er_bids_path : mne_bids.BIDSPath | None
         The empty-room recording to be associated with this file. This is
         only supported for MEG data, and only if the ``root`` attributes of
