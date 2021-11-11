@@ -673,6 +673,15 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
             raw_path = target_path
         config_path = None
 
+    # Special-handle EDF filenames: we accept upper- and lower-case extensions
+    if raw_path.suffix.lower() == '.edf':
+        stem = raw_path.stem
+        for extension in ('.edf', '.EDF'):
+            candidate_path = raw_path.parent / f'{stem}{extension}'
+            if candidate_path.exists():
+                raw_path = candidate_path
+                break
+
     if not raw_path.exists():
         raise FileNotFoundError(f'File does not exist: {raw_path}')
     if config_path is not None and not config_path.exists():
