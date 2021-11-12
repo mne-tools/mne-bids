@@ -1539,33 +1539,33 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     entity_key : str
         The name of the entity key to search for.
-    ignore_subjects : str | collection of str | None
+    ignore_subjects : str | array-like of str | None
         Subject(s) to ignore. By default, entities from the ``emptyroom``
         mock-subject are not returned. If ``None``, include all subjects.
-    ignore_sessions : str | collection of str | None
+    ignore_sessions : str | array-like of str | None
         Session(s) to ignore. If ``None``, include all sessions.
-    ignore_tasks : str | collection of str | None
+    ignore_tasks : str | array-like of str | None
         Task(s) to ignore. If ``None``, include all tasks.
-    ignore_runs : str | collection of str | None
+    ignore_runs : str | array-like of str | None
         Run(s) to ignore. If ``None``, include all runs.
-    ignore_processings : str | collection of str | None
+    ignore_processings : str | array-like of str | None
         Processing(s) to ignore. If ``None``, include all processings.
-    ignore_spaces : str | collection of str | None
+    ignore_spaces : str | array-like of str | None
         Space(s) to ignore. If ``None``, include all spaces.
-    ignore_acquisitions : str | collection of str | None
+    ignore_acquisitions : str | array-like of str | None
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
-    ignore_splits : str | collection of str | None
+    ignore_splits : str | array-like of str | None
         Split(s) to ignore. If ``None``, include all splits.
-    ignore_modalities : str | collection of str | None
+    ignore_modalities : str | array-like of str | None
         Modalities(s) to ignore. If ``None``, include all modalities.
-    ignore_datatypes : str | collection of str | None
+    ignore_datatypes : str | array-like of str | None
         Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
         ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
-    ignore_dirs : str | collection of str | None
+    ignore_dirs : str | array-like of str | None
         Directories nested directly within ``root`` to ignore. If ``None``,
         include all directories in the search.
 
-        .. versionaded:: 0.9
+        .. versionadded:: 0.9
     with_key : bool
         If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
