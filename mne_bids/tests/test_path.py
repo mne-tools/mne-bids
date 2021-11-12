@@ -125,6 +125,13 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         assert entities == [f'{entity_long_to_short[entity]}-{val}'
                             for val in expected_vals]
 
+        # Test without ignoring the derivatives dir
+        entities = get_entity_vals(
+            root=bids_root, entity_key=entity, **kwargs, ignore_dirs=None
+        )
+        if entity not in ('acquisition', 'run'):
+            assert 'deriv' in entities
+
     # Clean up
     shutil.rmtree(deriv_path)
 
