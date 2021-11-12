@@ -78,27 +78,23 @@ def test_get_keys(return_bids_test_dir):
     assert modalities == ['meg']
 
 
-@pytest.mark.parametrize(
-    'entity, expected_vals, kwargs',
-    [
-        ('bogus', None, None),
-        ('subject', [subject_id], None),
-        ('session', [session_id], None),
-        ('run', [run, '02'], None),
-        ('acquisition', ['calibration', 'crosstalk'], None),
-        ('task', [task], None),
-        ('subject', [], dict(ignore_subjects=[subject_id])),
-        ('subject', [], dict(ignore_subjects=subject_id)),
-        ('session', [], dict(ignore_sessions=[session_id])),
-        ('session', [], dict(ignore_sessions=session_id)),
-        ('run', [run], dict(ignore_runs=['02'])),
-        ('run', [run], dict(ignore_runs='02')),
-        ('task', [], dict(ignore_tasks=[task])),
-        ('task', [], dict(ignore_tasks=task)),
-        ('run', [run, '02'], dict(ignore_runs=['bogus'])),
-        ('run', [], dict(ignore_datatypes=['meg']))
-    ]
-)
+@pytest.mark.parametrize('entity, expected_vals, kwargs',
+                         [('bogus', None, None),
+                          ('subject', [subject_id], None),
+                          ('session', [session_id], None),
+                          ('run', [run, '02'], None),
+                          ('acquisition', ['calibration', 'crosstalk'], None),
+                          ('task', [task], None),
+                          ('subject', [], dict(ignore_subjects=[subject_id])),
+                          ('subject', [], dict(ignore_subjects=subject_id)),
+                          ('session', [], dict(ignore_sessions=[session_id])),
+                          ('session', [], dict(ignore_sessions=session_id)),
+                          ('run', [run], dict(ignore_runs=['02'])),
+                          ('run', [run], dict(ignore_runs='02')),
+                          ('task', [], dict(ignore_tasks=[task])),
+                          ('task', [], dict(ignore_tasks=task)),
+                          ('run', [run, '02'], dict(ignore_runs=['bogus'])),
+                          ('run', [], dict(ignore_datatypes=['meg']))])
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
