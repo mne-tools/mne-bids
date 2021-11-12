@@ -1080,10 +1080,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
-        **must** have the ``.root`` attribute set. If the ``.datatype``
-        attribute is not set, it will be inferred from the recording data type
-        found in ``raw``. In case of multiple data types, the ``.datatype``
-        attribute must be set.
+        **must** have the ``subject``, ``task``, and ``root`` attributes set.
+        If the ``datatype`` attribute is not set, it will be inferred from the
+        recording data type found in ``raw``. In case of multiple data types,
+        the ``.datatype`` attribute must be set.
         Example::
 
             bids_path = BIDSPath(subject='01', session='01', task='testing',
@@ -1295,11 +1295,23 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     if symlink and anonymize is not None:
         raise ValueError('Cannot create symlinks when anonymizing data.')
 
-    # Check if the root is available
     if bids_path.root is None:
-        raise ValueError('The root of the "bids_path" must be set. '
-                         'Please use `bids_path.update(root="<root>")` '
-                         'to set the root of the BIDS folder to read.')
+        raise ValueError(
+            'The root of the "bids_path" must be set. Please call '
+            '"bids_path.root = <root>" to set the root of the BIDS dataset.'
+        )
+
+    if bids_path.subject is None:
+        raise ValueError(
+            'The subject of the "bids_path" must be set. Please call '
+            '"bids_path.subject = <subject>"'
+        )
+
+    if bids_path.task is None:
+        raise ValueError(
+            'The task of the "bids_path" must be set. Please call '
+            '"bids_path.task = <task>"'
+        )
 
     if events_data is not None and event_id is None:
         raise RuntimeError('You passed events_data, but no event_id '
