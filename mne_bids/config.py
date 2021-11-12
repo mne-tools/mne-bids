@@ -85,13 +85,13 @@ IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
                     'Biosemi': ['STI 014']}
 
 allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
-allowed_extensions_eeg = ['.vhdr', # BrainVision, accompanied by .vmrk, .eeg
+allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
                           '.set',  # EEGLAB, potentially accompanied by .fdt
                           ]
 
-allowed_extensions_ieeg = ['.vhdr', # BrainVision, accompanied by .vmrk, .eeg
+allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.edf',  # European Data Format
                            '.set',  # EEGLAB, potentially accompanied by .fdt
                            '.mef',  # MEF: Multiscale Electrophysiology File

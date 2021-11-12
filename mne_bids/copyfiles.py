@@ -422,7 +422,7 @@ def copyfile_edf(src, dest, anonymize=None):
     # Ensure source & destination extensions are the same
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
-    if ext_src != ext_dest:
+    if ext_src != ext_dest and ext_src != '.EDF':
         raise ValueError(f'Need to move data with same extension, '
                          f' but got "{ext_src}" and "{ext_dest}"')
 
