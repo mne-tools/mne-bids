@@ -54,7 +54,7 @@ numpydoc_xref_aliases = {
 }
 numpydoc_xref_ignore = {
     # words
-    'of',
+    'instance', 'instances', 'of'
 }
 
 

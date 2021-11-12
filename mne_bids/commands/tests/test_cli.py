@@ -52,9 +52,9 @@ def check_usage(module, force_help=False):
         assert 'Usage: ' in out.stdout.getvalue()
 
 
-def test_raw_to_bids(tmpdir):
+def test_raw_to_bids(tmp_path):
     """Test mne_bids raw_to_bids."""
-    output_path = str(tmpdir)
+    output_path = str(tmp_path)
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -87,9 +87,9 @@ def test_raw_to_bids(tmpdir):
             mne_bids_cp.run()
 
 
-def test_cp(tmpdir):
+def test_cp(tmp_path):
     """Test mne_bids cp."""
-    output_path = str(tmpdir)
+    output_path = str(tmp_path)
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
     outname = op.join(output_path, 'test2.vhdr')
@@ -107,14 +107,14 @@ def test_cp(tmpdir):
             mne_bids_cp.run()
 
 
-def test_mark_bad_chanels_single_file(tmpdir):
+def test_mark_bad_chanels_single_file(tmp_path):
     """Test mne_bids mark_channels."""
 
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
 
     # Create test dataset.
-    output_path = str(tmpdir)
+    output_path = str(tmp_path)
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -160,14 +160,14 @@ def test_mark_bad_chanels_single_file(tmpdir):
     assert raw.info['bads'] == []
 
 
-def test_mark_bad_chanels_multiple_files(tmpdir):
+def test_mark_bad_chanels_multiple_files(tmp_path):
     """Test mne_bids mark_channels."""
 
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
 
     # Create test dataset.
-    output_path = str(tmpdir)
+    output_path = str(tmp_path)
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -202,13 +202,13 @@ def test_mark_bad_chanels_multiple_files(tmpdir):
         assert set(old_bads + ch_names) == set(raw.info['bads'])
 
 
-def test_calibration_to_bids(tmpdir):
+def test_calibration_to_bids(tmp_path):
     """Test mne_bids calibration_to_bids."""
 
     # Check that help is printed
     check_usage(mne_bids_calibration_to_bids)
 
-    output_path = str(tmpdir)
+    output_path = str(tmp_path)
     data_path = Path(testing.data_path())
     fine_cal_fname = data_path / 'SSS' / 'sss_cal_mgh.dat'
     bids_path = BIDSPath(subject=subject_id, root=output_path)
@@ -222,13 +222,13 @@ def test_calibration_to_bids(tmpdir):
     assert bids_path.meg_calibration_fpath.exists()
 
 
-def test_crosstalk_to_bids(tmpdir):
+def test_crosstalk_to_bids(tmp_path):
     """Test mne_bids crosstalk_to_bids."""
 
     # Check that help is printed
     check_usage(mne_bids_crosstalk_to_bids)
 
-    output_path = str(tmpdir)
+    output_path = str(tmp_path)
     data_path = Path(testing.data_path())
     crosstalk_fname = data_path / 'SSS' / 'ct_sparse.fif'
     bids_path = BIDSPath(subject=subject_id, root=output_path)
@@ -243,14 +243,14 @@ def test_crosstalk_to_bids(tmpdir):
 
 
 @requires_pandas
-def test_count_events(tmpdir):
+def test_count_events(tmp_path):
     """Test mne_bids count_events."""
 
     # Check that help is printed
     check_usage(mne_bids_count_events)
 
     # Create test dataset.
-    output_path = str(tmpdir)
+    output_path = str(tmp_path)
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -271,17 +271,31 @@ def test_count_events(tmpdir):
     with ArgvSetter(('--bids_root', output_path, '--describe')):
         mne_bids_count_events.run()
 
+    with ArgvSetter(('--bids_root', output_path, '--silent')):
+        mne_bids_count_events.run()
+
+    with ArgvSetter(('--bids_root', output_path,
+                     '--output', str(Path(output_path) / 'counts.csv'))):
+        mne_bids_count_events.run()
+
+    with ArgvSetter(
+        ('--bids_root', output_path,
+         '--output', str(Path(output_path) / 'counts.csv'),
+         '--overwrite')
+    ):
+        mne_bids_count_events.run()
+
 
 @requires_matplotlib
 @requires_version('mne', '0.22')
-def test_inspect(tmpdir):
+def test_inspect(tmp_path):
     """Test mne_bids inspect."""
 
     # Check that help is printed
     check_usage(mne_bids_inspect)
 
     # Create test dataset.
-    bids_root = str(tmpdir)
+    bids_root = str(tmp_path)
     data_path = testing.data_path()
     subject = '01'
     task = 'test'

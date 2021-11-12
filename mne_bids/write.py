@@ -7,6 +7,7 @@
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD-3-Clause
+from typing import List
 import json
 import sys
 import os
@@ -29,7 +30,7 @@ from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
-                       deprecated)
+                       deprecated, ProgressBar)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -38,7 +39,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _get_ch_type_mapping, _check_anonymize,
                             _stamp_to_dt, _handle_datatype)
-from mne_bids import BIDSPath
+from mne_bids import (BIDSPath, read_raw_bids, get_anonymization_daysback,
+                      get_bids_path_from_fname)
 from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit,
@@ -46,11 +48,13 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
 from mne_bids.read import _find_matching_sidecar, _read_events
+from mne_bids.sidecar_updates import update_sidecar_json
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
-                             ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS)
+                             ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
+                             ANONYMIZED_JSON_KEY_WHITELIST)
 
 
 def _is_numeric(n):
@@ -695,6 +699,11 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
             elif dig_point['kind'] == FIFF.FIFFV_POINT_EXTRA and \
                     raw.filenames[0].endswith('.fif'):
                 digitized_head_points = True
+    software_filters = {
+        'SpatialCompensation': {
+            'GradientOrder': raw.compensation_grade
+        }
+    }
 
     # Compile cHPI information, if any.
     from mne.io.ctf import RawCTF
@@ -742,7 +751,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('DigitizedLandmarks', digitized_landmark),
         ('DigitizedHeadPoints', digitized_head_points),
         ('MEGChannelCount', n_megchan),
-        ('MEGREFChannelCount', n_megrefchan)]
+        ('MEGREFChannelCount', n_megrefchan),
+        ('SoftwareFilters', software_filters)]
 
     if chpi is not None:
         ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
@@ -1383,7 +1393,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             if not isinstance(meas_date, datetime):
                 meas_date = datetime.fromtimestamp(meas_date[0],
                                                    tz=timezone.utc)
-            er_date = meas_date.strftime('%Y%m%d')
+
+            if anonymize is not None and 'daysback' in anonymize:
+                meas_date = meas_date - timedelta(anonymize['daysback'])
+                er_date = meas_date.strftime('%Y%m%d')
+                bids_path = bids_path.copy().update(session=er_date)
+            else:
+                er_date = meas_date.strftime('%Y%m%d')
+
             if er_date != bids_path.session:
                 raise ValueError(
                     f"The date provided for the empty-room session "
@@ -1391,10 +1408,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                     f"recording date found in the data's info structure "
                     f"({er_date})."
                 )
-            if anonymize is not None and 'daysback' in anonymize:
-                meas_date = meas_date - timedelta(anonymize['daysback'])
-                session = meas_date.strftime('%Y%m%d')
-                bids_path = bids_path.copy().update(session=session)
 
     associated_er_path = None
     if empty_room is not None:
@@ -1497,13 +1510,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             _write_dig_bids(bids_path, raw, montage, acpc_aligned,
                             overwrite)
     else:
-        logger.warning(f'Writing of electrodes.tsv is not supported '
-                       f'for data type "{bids_path.datatype}". Skipping ...')
+        logger.info(f'Writing of electrodes.tsv is not supported '
+                    f'for data type "{bids_path.datatype}". Skipping ...')
 
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events_data, event_id, raw, task=bids_path.task)
+            events_data, event_id, raw, bids_path=bids_path)
         if events_array.size != 0:
             _events_tsv(events=events_array, durations=event_dur, raw=raw,
                         fname=events_path.fpath, trial_type=event_desc_id_map,
@@ -1739,12 +1752,12 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
     bids_path : mne_bids.BIDSPath
-        The file to write. The `mne_bids.BIDSPath` instance passed here
+        The file to write. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
     landmarks : mne.channels.DigMontage | str | None
-        The DigMontage or filepath to a DigMontage with landmarks that can be
+        The montage or path to a montage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
         from the MRI using freeview.  If ``None`` and no ``trans`` parameter
@@ -2164,3 +2177,457 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
     logger.info(f'Writing crosstalk file to {out_path}')
     out_path.mkdir()
     shutil.copyfile(src=fname, dst=str(out_path))
+
+
+def _get_daysback(
+    *,
+    bids_paths: List[BIDSPath],
+    rng: np.random.Generator,
+    show_progress_thresh: int
+) -> int:
+    """Try to find a suitable "daysback" for anonymization.
+
+    Parameters
+    ----------
+    bids_paths
+        The BIDSPath instances to consider. Will be filtered down in this
+        function to reduce run time (only one file run per session).
+    rng
+        The RNG to use for selecting a `daysback` from the valid range.
+    show_progress_thresh
+        After narrowing down the files to query for their measurement date,
+        show a progress bar if >= this number of files remain.
+    """
+    bids_paths_for_daysback = dict()
+
+    # Only consider one run in each session to reduce the amount of files
+    # we need to access.
+    for bids_path in bids_paths:
+        subject = bids_path.subject
+        session = bids_path.session
+        datatype = bids_path.datatype
+
+        if subject not in bids_paths_for_daysback:
+            bids_paths_for_daysback[subject] = [bids_path]
+            continue
+        elif session is None:
+            # Keep any one run for each data type
+            if datatype not in [p.datatype
+                                for p in bids_paths_for_daysback[subject]]:
+                bids_paths_for_daysback[subject].append(bids_path)
+        elif session is not None:
+            # Keep any one run for each data type and session
+            if all(
+                [session != p.session
+                 for p in bids_paths_for_daysback[subject]
+                 if datatype == p.datatype]
+            ):
+                bids_paths_for_daysback[subject].append(bids_path)
+
+    bids_paths_to_consider = []
+    for bids_path in bids_paths_for_daysback.values():
+        bids_paths_to_consider.extend(bids_path)
+
+    if len(bids_paths_to_consider) >= show_progress_thresh:
+        raws = []
+        logger.info('\n')
+        for bids_path in ProgressBar(
+            iterable=bids_paths_to_consider, mesg='Determining daysback'
+        ):
+            raw = read_raw_bids(bids_path=bids_path, verbose='error')
+            raws.append(raw)
+    else:
+        raws = [read_raw_bids(bids_path=bp, verbose='error')
+                for bp in bids_paths_to_consider]
+
+    daysback_min, daysback_max = get_anonymization_daysback(
+        raws=raws, verbose=False
+    )
+
+    # Pick one randomly
+    daysback = rng.choice(
+        np.arange(daysback_min, daysback_max + 1, dtype=int)
+    )
+    daysback = int(daysback)
+    return daysback
+
+
+def _check_crosstalk_path(bids_path: BIDSPath) -> bool:
+    is_crosstalk_path = (
+        bids_path.datatype == 'meg' and
+        bids_path.suffix == 'meg' and
+        bids_path.acquisition == 'crosstalk' and
+        bids_path.extension == '.fif'
+    )
+    return is_crosstalk_path
+
+
+def _check_finecal_path(bids_path: BIDSPath) -> bool:
+    is_finecal_path = (
+        bids_path.datatype == 'meg' and
+        bids_path.suffix == 'meg' and
+        bids_path.acquisition == 'calibration' and
+        bids_path.extension == '.dat'
+    )
+    return is_finecal_path
+
+
+@verbose
+def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
+                      subject_mapping='auto', datatypes=None,
+                      random_state=None, verbose=None):
+    """Anonymize a BIDS dataset.
+
+    This function creates a copy of a BIDS dataset, and tries to remove all
+    personally identifiable information from the copy.
+
+    Parameters
+    ----------
+    bids_root_in : path-like
+        The root directory of the input BIDS dataset.
+    bids_root_out : path-like
+        The directory to place the anonymized dataset into.
+    daysback : int | 'auto'
+        Number of days by which to move back the recording date in time. If
+        ``'auto'``, tries to randomly pick a suitable number.
+    subject_mapping : dict | callable | 'auto' | None
+        How to anonymize subject IDs. If a dictionary, maps the original IDs
+        (keys) to the anonymized IDs (values). If a function, must be one that
+        accepts the original IDs as a list of strings and returns a dictionary
+        with original IDs as keys and anonymized IDs as values. If ``'auto'``,
+        automatically produces a mapping (zero-padded numerical IDs) and prints
+        it on the screen. If ``None``, subject IDs are not changed.
+    datatypes : list of str | str | None
+        Which data type to anonymize. If can be ``meg``, ``eeg``, ``ieeg``, or
+        ``anat``. Multiple data types may be passed as a collection of strings.
+        If ``None``, try to anonymize the entire input dataset.
+    %(random_state)s
+        The RNG will be used to derive ``daysback`` and ``subject_mapping`` if
+        they are ``'auto'``.
+    %(verbose)s
+    """
+    bids_root_in = Path(bids_root_in).expanduser()
+    bids_root_out = Path(bids_root_out).expanduser()
+    rng = np.random.default_rng(seed=random_state)
+
+    if not bids_root_in.is_dir():
+        raise FileNotFoundError(
+            f'The specified input directory does not exist: {bids_root_in}'
+        )
+
+    if bids_root_in == bids_root_out:
+        raise ValueError('Input and output directory must differ')
+
+    if bids_root_out.exists():
+        raise FileExistsError(
+            f'The specified output directory already exists. Please remove '
+            f'it to perform anonymization: {bids_root_out}'
+        )
+
+    if not isinstance(subject_mapping, dict):
+        participants_tsv = _from_tsv(bids_root_in / 'participants.tsv')
+        participants_in = [
+            participant.replace('sub-', '')
+            for participant in participants_tsv['participant_id']
+        ]
+
+        if subject_mapping == 'auto':
+            # Don't change `emptyroom` subject ID
+            if 'emptyroom' in participants_in:
+                n_participants = len(participants_in) - 1
+            else:
+                n_participants = len(participants_in)
+
+            participants_out = rng.permutation(
+                np.arange(start=1, stop=n_participants + 1, dtype=int)
+            )
+
+            # Zero-pad anonymized IDs
+            id_len = len(str(len(participants_out)))
+
+            participants_out = [str(p).zfill(id_len) for p in participants_out]
+
+            if 'emptyroom' in participants_in:
+                # Append empty-room at the end
+                participants_in.remove('emptyroom')
+                participants_in.append('emptyroom')
+                participants_out.append('emptyroom')
+
+            assert len(participants_in) == len(participants_out)
+            subject_mapping = dict(zip(participants_in, participants_out))
+        elif callable(subject_mapping):
+            subject_mapping = subject_mapping(participants_in)
+        elif subject_mapping is None:
+            # identity mapping
+            subject_mapping = dict(zip(participants_in, participants_in))
+
+    if subject_mapping not in ('auto', None):
+        # Make sure we're mapping to strings
+        for k, v in subject_mapping.items():
+            subject_mapping[k] = str(v)
+
+    if ('emptyroom' in subject_mapping and
+            subject_mapping['emptyroom'] != 'emptyroom'):
+        warn(
+            f'You requested to change the "emptyroom" subject ID '
+            f'(to {subject_mapping["emptyroom"]}). It is not '
+            f'recommended to do this!'
+        )
+
+    allowed_datatypes = ('meg', 'eeg', 'ieeg', 'anat')
+    allowed_suffixes = ('meg', 'eeg', 'ieeg', 'T1w', 'FLASH')
+    allowed_extensions = []
+    for v in ALLOWED_DATATYPE_EXTENSIONS.values():
+        allowed_extensions.extend(v)
+    allowed_extensions.extend(['.nii', '.nii.gz'])
+
+    if isinstance(datatypes, str):
+        requested_datatypes = [datatypes]
+    elif datatypes is None:
+        requested_datatypes = allowed_datatypes
+    else:
+        requested_datatypes = datatypes
+
+    for datatype in requested_datatypes:
+        if datatype not in allowed_datatypes:
+            raise ValueError(f'Unsupported data type: {datatype}')
+    del datatype, datatypes
+
+    # Assemble list of candidate files for conversion
+    matches = bids_root_in.glob('sub-*/**/sub-*.*')
+    bids_paths_in = []
+    for f in matches:
+        bids_path = get_bids_path_from_fname(f, verbose='error')
+        if (
+            bids_path.datatype in requested_datatypes and
+            (
+                (
+                    bids_path.suffix in allowed_suffixes and
+                    bids_path.extension in allowed_extensions
+                ) or (
+                    _check_finecal_path(bids_path) or
+                    _check_crosstalk_path(bids_path)
+                )
+            )
+        ):
+            bids_paths_in.append(bids_path)
+
+    # Ensure we convert empty-room recordings first, as we'll want to pass
+    # their anonymized path when writing the associated experimental recordings
+    if 'meg' in requested_datatypes:
+        bids_paths_in_er_only = [
+            bp for bp in bids_paths_in
+            if bp.subject == 'emptyroom' and bp.task == 'noise'
+        ]
+        bids_paths_in_er_first = bids_paths_in_er_only.copy()
+        for bp in bids_paths_in:
+            if bp not in bids_paths_in_er_only:
+                bids_paths_in_er_first.append(bp)
+
+        bids_paths_in = bids_paths_in_er_first
+        del bids_paths_in_er_first, bids_paths_in_er_only
+
+    logger.info('\nAnonymizing BIDS dataset')
+    if daysback == 'auto':
+        # Find recordings that can be read with MNE-Python to extract the
+        # recording dates
+        bids_paths = [
+            bp for bp in bids_paths_in
+            if (
+                bp.datatype != 'anat' and
+                not _check_crosstalk_path(bp) and
+                not _check_finecal_path(bp)
+            )
+        ]
+        if bids_paths:
+            logger.info('Determining "daysback" for anonymization.')
+
+            daysback = _get_daysback(
+                bids_paths=bids_paths, rng=rng, show_progress_thresh=20
+            )
+        else:
+            daysback = None
+        del bids_paths
+
+    # Check subject_mapping
+    subjects_in_dataset = set([bp.subject for bp in bids_paths_in])
+    subjects_missing_mapping_keys = [
+        s for s in subjects_in_dataset
+        if s not in subject_mapping
+    ]
+    if subjects_missing_mapping_keys:
+        raise IndexError(
+            f'The subject_mapping dictionary does not contain an entry for '
+            f'subject ID: {", ".join(subjects_missing_mapping_keys)}'
+        )
+
+    _, unique_vals_idx, counts = np.unique(
+        list(subject_mapping.values()), return_index=True, return_counts=True
+    )
+    non_unique_vals_idx = unique_vals_idx[counts > 1]
+    if non_unique_vals_idx.size > 0:
+        keys = np.array(list(subject_mapping.values()))[non_unique_vals_idx]
+        raise ValueError(
+            f'The subject_mapping dictionary contains duplicated anonymized '
+            f'subjet IDs: {", ".join(keys)}'
+        )
+
+    # Produce some logging output
+    msg = (
+        f'\n'
+        f'    Input:  {bids_root_in}\n'
+        f'    Output: {bids_root_out}\n'
+        f'\n'
+    )
+    if daysback is None:
+        msg += 'Not shifting recording dates (found anatomical scans only).\n'
+    else:
+        msg += (
+            f'Shifting recording dates by {daysback} days '
+            f'({round(daysback / 365, 1)} years).\n'
+        )
+    msg += 'Using the following subject ID anonymization mapping:\n\n'
+    for orig_sub, anon_sub in subject_mapping.items():
+        msg += f'    sub-{orig_sub} → sub-{anon_sub}\n'
+    logger.info(msg)
+    del msg
+
+    # Actual processing starts here
+    for bp_in in ProgressBar(iterable=bids_paths_in, mesg='Anonymizing'):
+        bp_out = (
+            bp_in.copy().update(
+                subject=subject_mapping[bp_in.subject],
+                root=bids_root_out
+            )
+        )
+
+        bp_er_in = bp_er_out = None
+
+        # Handle empty-room anonymization: we need to change the session to
+        # match the new date
+        if (
+            bp_in.datatype == 'meg' and
+            'emptyroom' in subject_mapping and
+            not (_check_finecal_path(bp_in) or _check_crosstalk_path(bp_in))
+        ):
+            if bp_in.subject == 'emptyroom':
+                er_session_in = bp_in.session
+            else:
+                # An experimental recording, so we need to find the associated
+                # empty-room
+                bp_er_in = bp_in.find_empty_room(
+                    use_sidecar_only=True, verbose='error'
+                )
+                if bp_er_in is None:
+                    er_session_in = None
+                else:
+                    er_session_in = bp_er_in.session
+
+            # Update the session entity
+            if er_session_in is not None:
+                date_fmt = '%Y%m%d'
+                er_session_out = (
+                    datetime.strptime(er_session_in, date_fmt) -
+                    timedelta(days=daysback)
+                )
+                er_session_out = datetime.strftime(er_session_out, date_fmt)
+
+                if bp_in.subject == 'emptyroom':
+                    bp_out.session = er_session_out
+                    assert bp_er_out is None
+                else:
+                    bp_er_out = bp_er_in.copy().update(
+                        subject=subject_mapping['emptyroom'],
+                        session=er_session_out,
+                        root=bp_out.root
+                    )
+
+        if bp_in.datatype == 'anat':
+            bp_anat_json = bp_in.copy().update(extension='.json')
+            anat_json = json.loads(
+                bp_anat_json.fpath.read_text(encoding='utf-8')
+            )
+            landmarks = anat_json['AnatomicalLandmarkCoordinates']
+            landmarks_dig = mne.channels.make_dig_montage(
+                nasion=landmarks['NAS'],
+                lpa=landmarks['LPA'],
+                rpa=landmarks['RPA'],
+                coord_frame='mri_voxel'
+            )
+            write_anat(
+                image=bp_in.fpath,
+                bids_path=bp_out,
+                landmarks=landmarks_dig,
+                deface=True,
+                verbose='error'
+            )
+        elif _check_crosstalk_path(bp_in):
+            write_meg_crosstalk(
+                fname=bp_in.fpath,
+                bids_path=bp_out,
+                verbose='error'
+            )
+        elif _check_finecal_path(bp_in):
+            write_meg_calibration(
+                calibration=bp_in.fpath,
+                bids_path=bp_out,
+                verbose='error'
+            )
+        else:
+            raw = read_raw_bids(bids_path=bp_in, verbose='error')
+            write_raw_bids(
+                raw=raw,
+                bids_path=bp_out,
+                anonymize={
+                    'daysback': daysback,
+                    'keep_his': False
+                },
+                empty_room=bp_er_out,
+                verbose='error'
+            )
+
+        # Enrich sidecars
+        bp_in_json = bp_in.copy().update(extension='.json')
+        bp_out_json = bp_out.copy().update(extension='.json')
+
+        if bp_in_json.fpath.exists():
+            json_in = json.loads(
+                bp_in_json.fpath.read_text(encoding='utf-8')
+            )
+        else:
+            json_in = dict()
+
+        if bp_out_json.fpath.exists():
+            json_out = json.loads(
+                bp_out_json.fpath.read_text(encoding='utf-8')
+            )
+        else:
+            json_out = dict()
+
+        # Only transfer data that we believe doesn't contain any personally
+        # identifiable information
+        updates = dict()
+        for key, value in json_in.items():
+            if key in ANONYMIZED_JSON_KEY_WHITELIST and key not in json_out:
+                updates[key] = value
+        del json_in, json_out
+
+        if updates:
+            bp_out_json.fpath.touch(exist_ok=True)
+            update_sidecar_json(
+                bids_path=bp_out_json,
+                entries=updates,
+                verbose=False
+            )
+
+    # Copy some additional files
+    additional_files = (
+        'README',
+        'CHANGES',
+        'dataset_description.json',
+        'participants.json'
+    )
+    for fname in additional_files:
+        in_path = bids_root_in / fname
+        if in_path.exists():
+            shutil.copy(src=in_path, dst=bids_root_out)

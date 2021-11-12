@@ -17,7 +17,7 @@ import json
 from typing import Optional
 
 import numpy as np
-from mne.utils import warn, logger, _validate_type, verbose
+from mne.utils import warn, logger, _validate_type, verbose, _check_fname
 
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
@@ -779,29 +779,25 @@ class BIDSPath(object):
         else:
             search_str = '*.*'
 
-        fnames = self.root.rglob(search_str)
+        paths = self.root.rglob(search_str)
         # Only keep files (not directories), and omit the JSON sidecars.
-        fnames = [f.name for f in fnames
-                  if f.is_file() and f.suffix != '.json']
-        fnames = _filter_fnames(fnames, suffix=self.suffix,
+        paths = [p for p in paths
+                 if p.is_file() and p.suffix != '.json']
+        fnames = _filter_fnames(paths, suffix=self.suffix,
                                 extension=self.extension,
                                 **self.entities)
 
         bids_paths = []
         for fname in fnames:
-            # get datatype
-            fpath = list(self.root.rglob(f'*{fname}*'))[0]
-            datatype = _infer_datatype_from_path(fpath)
-
-            # form the BIDSPath object
-            bids_path = get_bids_path_from_fname(fname, check=False)
-            bids_path.root = self.root
-            bids_path.datatype = datatype
-
-            # to check whether the BIDSPath is conforming to BIDS if
+            # Form the BIDSPath object.
+            # To check whether the BIDSPath is conforming to BIDS if
             # check=True, we first instantiate without checking and then run
             # the check manually, allowing us to be more specific about the
             # exception to catch
+            datatype = _infer_datatype_from_path(fname)
+            bids_path = get_bids_path_from_fname(fname, check=False)
+            bids_path.root = self.root
+            bids_path.datatype = datatype
             bids_path.check = True
 
             try:
@@ -870,22 +866,27 @@ class BIDSPath(object):
                                  f'Use one of these suffixes '
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
 
-    def find_empty_room(self):
+    @verbose
+    def find_empty_room(self, use_sidecar_only=False, verbose=None):
         """Find the corresponding empty-room file of an MEG recording.
 
         This will only work if the ``.root`` attribute of the
         :class:`mne_bids.BIDSPath` instance has been set.
 
-        .. note:: If the sidecar JSON file contains an ``AssociatedEmptyRoom``
-                  entry, the empty-room recording specified there will be used.
-                  Otherwise, this method will try to find the best-matching
-                  empty-room recording based on measurement date.
+        Parameters
+        ----------
+        use_sidecar_only : bool
+            Whether to only check the ``AssociatedEmptyRoom`` entry in the
+            sidecar JSON file or not. If ``False``, first look for the entry,
+            and if unsuccessful, try to find the best-matching empty-room
+            recording in the dataset based on the measurement date.
 
         Returns
         -------
         BIDSPath | None
             The path corresponding to the best-matching empty-room measurement.
             Returns ``None`` if none was found.
+        %(verbose)s
         """
         if self.datatype not in ('meg', None):
             raise ValueError('Empty-room data is only supported for MEG '
@@ -907,6 +908,13 @@ class BIDSPath(object):
             er_bids_path = get_bids_path_from_fname(emptytoom_path)
             er_bids_path.root = self.root
             er_bids_path.datatype = 'meg'
+        elif use_sidecar_only:
+            logger.info(
+                'The MEG sidecar file does not contain an '
+                '"AssociatedEmptyRoom" entry. Aborting search for an '
+                'empty-room recording, as you passed use_sidecar_only=True'
+            )
+            return None
         else:
             logger.info(
                 'The MEG sidecar file does not contain an '
@@ -1521,7 +1529,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         Path to the "root" directory from which to start traversing to gather
         BIDS entities from file- and folder names. This will commonly be the
         BIDS root, but it may also be a subdirectory inside of a BIDS dataset,
@@ -1592,6 +1600,15 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
 
     """
+    root = _check_fname(
+        fname=root,
+        overwrite='read',
+        must_exist=True,
+        need_dir=True,
+        name='Root directory'
+    )
+    root = Path(root)
+
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
                 'acquisition', 'split', 'suffix')
     entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
@@ -1614,13 +1631,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     p = re.compile(r'{}-(.*?)_'.format(entity_long_abbr_map[entity_key]))
     values = list()
-    filenames = (Path(root)
-                 .rglob(f'*{entity_long_abbr_map[entity_key]}-*_*'))
-    for filename in filenames:
-        # Ignore `derivatives` folder.
-        if str(filename).startswith(op.join(root, 'derivatives')):
-            continue
+    filenames = root.glob(f'sub-*/**/*{entity_long_abbr_map[entity_key]}-*_*')
 
+    for filename in filenames:
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any([filename.stem.startswith(f'sub-{s}_')
@@ -1773,7 +1786,7 @@ def _path_to_str(var):
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
                    space=None, split=None, suffix=None, extension=None):
-    """Filter a list of BIDS filenames based on BIDS entity values.
+    """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
     Parameters
     ----------
@@ -1784,6 +1797,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     list of pathlib.Path
 
     """
+    leading_path_str = r'.*\/?'  # nothing or something ending with a `/`
     sub_str = f'sub-{subject}' if subject else r'sub-([^_]+)'
     ses_str = f'_ses-{session}' if session else r'(|_ses-([^_]+))'
     task_str = f'_task-{task}' if task else r'(|_task-([^_]+))'
@@ -1797,8 +1811,11 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                   else r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'
 
-    regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-              rec_str + space_str + split_str + suffix_str + ext_str)
+    regexp = (
+        leading_path_str +
+        sub_str + ses_str + task_str + acq_str + run_str + proc_str +
+        rec_str + space_str + split_str + suffix_str + ext_str
+    )
 
     # Convert to str so we can apply the regexp ...
     fnames = [str(f) for f in fnames]

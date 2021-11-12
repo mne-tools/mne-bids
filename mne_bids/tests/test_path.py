@@ -5,21 +5,13 @@
 import os
 import os.path as op
 import shutil as sh
-
-# This is here to handle mne-python <0.20
-import warnings
 from pathlib import Path
 import shutil
 from datetime import datetime, timezone
 
 import pytest
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
-
+import mne
 from mne.datasets import testing
 from mne.io import anonymize_info
 
@@ -47,9 +39,9 @@ bids_path = BIDSPath(
 
 
 @pytest.fixture(scope='session')
-def return_bids_test_dir(tmpdir_factory):
+def return_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
-    bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
+    bids_root = str(tmp_path_factory.mktemp('mnebids_utils_test_bids_ds'))
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -106,6 +98,13 @@ def test_get_keys(return_bids_test_dir):
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
+    # Add some derivative data that should be ignored by get_entity_vals()
+    deriv_path = Path(bids_root) / 'derivatives'
+    deriv_meg_dir = deriv_path / 'pipeline' / 'sub-deriv' / 'ses-deriv' / 'meg'
+    deriv_meg_dir.mkdir(parents=True)
+    (deriv_meg_dir / 'sub-deriv_ses-deriv_task-deriv_meg.fif').touch()
+    (deriv_meg_dir / 'sub-deriv_ses-deriv_task-deriv_meg.json').touch()
+
     if kwargs is None:
         kwargs = dict()
 
@@ -125,6 +124,9 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         }
         assert entities == [f'{entity_long_to_short[entity]}-{val}'
                             for val in expected_vals]
+
+    # Clean up
+    shutil.rmtree(deriv_path)
 
 
 def test_search_folder_for_text(capsys):
@@ -196,28 +198,29 @@ def test_print_dir_tree(capsys):
     assert '.pyc' not in out
 
 
-def test_make_folders(tmpdir):
+def test_make_folders(tmp_path):
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
     bids_path = BIDSPath(subject='01', session='foo',
-                         datatype='eeg', root=str(tmpdir))
+                         datatype='eeg', root=str(tmp_path))
     bids_path.mkdir().directory
-    assert op.isdir(tmpdir / 'sub-01' / 'ses-foo' / 'eeg')
+    assert op.isdir(tmp_path / 'sub-01' / 'ses-foo' / 'eeg')
 
     # If we remove a kwarg the folder shouldn't be created
     bids_path = BIDSPath(subject='02', datatype='eeg',
-                         root=tmpdir)
+                         root=tmp_path)
     bids_path.mkdir().directory
-    assert op.isdir(tmpdir / 'sub-02' / 'eeg')
+    assert op.isdir(tmp_path / 'sub-02' / 'eeg')
 
     # Check if a pathlib.Path bids_root works.
     bids_path = BIDSPath(subject='03', session='foo',
-                         datatype='eeg', root=Path(tmpdir))
+                         datatype='eeg', root=tmp_path)
     bids_path.mkdir().directory
-    assert op.isdir(tmpdir / 'sub-03' / 'ses-foo' / 'eeg')
+    assert op.isdir(tmp_path / 'sub-03' / 'ses-foo' / 'eeg')
 
     # Check if bids_root=None creates folders in the current working directory
-    bids_root = tmpdir.mkdir("tmp")
+    bids_root = tmp_path / "tmp"
+    bids_root.mkdir()
     curr_dir = os.getcwd()
     os.chdir(bids_root)
     bids_path = BIDSPath(subject='04', session='foo',
@@ -806,13 +809,15 @@ def test_match(return_bids_test_dir):
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_find_empty_room(return_bids_test_dir, tmpdir):
+def test_find_empty_room(return_bids_test_dir, tmp_path):
     """Test reading of empty room data."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
-    bids_root = tmpdir.mkdir("bids")
-    tmp_dir = tmpdir.mkdir("tmp")
+    bids_root = tmp_path / "bids"
+    bids_root.mkdir()
+    tmp_dir = tmp_path / "tmp"
+    tmp_dir.mkdir()
 
     raw = _read_raw_fif(raw_fname)
     bids_path = BIDSPath(subject='01', session='01',
@@ -875,7 +880,8 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
 
     # test that the `AssociatedEmptyRoom` key in MEG sidecar is respected
 
-    bids_root = tmpdir.mkdir('associated-empty-room')
+    bids_root = tmp_path / 'associated-empty-room'
+    bids_root.mkdir()
     raw = _read_raw_fif(raw_fname)
     meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
     er_date = datetime(year=2010, month=1, day=1, tzinfo=timezone.utc)
@@ -918,15 +924,19 @@ def test_find_empty_room(return_bids_test_dir, tmpdir):
     write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
     assert bids_path.find_empty_room() == er_matching_date_bids_path
 
+    # If we enforce searching only via `AssociatedEmptyRoom`, we should get no
+    # result
+    assert bids_path.find_empty_room(use_sidecar_only=True) is None
+
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_find_emptyroom_ties(tmpdir):
+def test_find_emptyroom_ties(tmp_path):
     """Test that we receive a warning on a date tie."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
-    bids_root = str(tmpdir)
+    bids_root = str(tmp_path)
     bids_path.update(root=bids_root)
     session = '20010101'
     er_dir_path = BIDSPath(subject='emptyroom', session=session,
@@ -958,13 +968,13 @@ def test_find_emptyroom_ties(tmpdir):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_find_emptyroom_no_meas_date(tmpdir):
+def test_find_emptyroom_no_meas_date(tmp_path):
     """Test that we warn if measurement date can be read or inferred."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
-    bids_root = str(tmpdir)
+    bids_root = str(tmp_path)
     bids_path.update(root=bids_root)
     er_session = 'mysession'
     er_meas_date = None

@@ -39,11 +39,23 @@ Enhancements
 
 - :func:`mne_bids.write_raw_bids` now accepts ``'EDF'`` as a ``'format'`` value to force conversion to EDF files, by `Adam Li`_ (:gh:`866`)
 
+- :func:`mne_bids.write_raw_bids` now adds ``SpatialCompensation`` information to the JSON sidecar for MEG data, by `Julia Guiomar Niso Galán`_ (:gh:`885`)
+
 - Modify iEEG tutorial to use MNE ``raw`` object, by `Alex Rockhill`_ (:gh:`859`)
 
 - Add :func:`mne_bids.search_folder_for_text` to find specific metadata entries (e.g. all ``"n/a"`` sidecar data fields, or to check that "60 Hz" was written properly as the power line frequency), by `Alex Rockhill`_ (:gh: `870`)
 
 - Add :func:`mne_bids.get_bids_path_from_fname` to return a :class:`mne_bids.BIDSPath` from a file path, by `Adam Li`_ (:gh:`883`)
+
+- Great performance improvements in :func:`mne_bids.stats.count_events` and :meth:`mne_bids.BIDSPath.match`, significantly reducing processing time, by `Richard Höchenberger`_ (:gh:`888`)
+
+- The command ``mne_bids count_events`` gained new parameters: ``--output`` to direct the output into a CSV file; ``--overwrite`` to overwrite an existing file; and  ``--silent`` to suppress output of the event counts to the console, by `Richard Höchenberger`_ (:gh:`888`)
+
+- The new function :func:`mne_bids.anonymize_dataset` can be used to anonymize an entire BIDS dataset, by `Richard Höchenberger`_ (:gh:`893`)
+
+- :meth:`mne_bids.BIDSPath.find_empty_room` gained a new parameter ``use_sidecar_only`` to limit empty-room search to the metadata stored in the sidecar files, by `Richard Höchenberger`_ (:gh:`893`)
+
+- :meth:`mne_bids.BIDSPath.find_empty_room` gained a new parameter ``verbose`` to limit verbosity of the output, by `Richard Höchenberger`_ (:gh:`893`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -72,6 +84,10 @@ Bug fixes
 - Fix reading of EDF files with lower/upper case extension, by `Adam Li`_ (:gh:`875`)
 
 - Fix reading of TSV files with only a single column, by `Marijn van Vliet`_ (:gh:`886`)
+
+- Fix erroneous measurement date check in :func:`mne_bids.write_raw_bids` when requesting to anonymize empty-room data, by `Richard Höchenberger`_ (:gh:`893`)
+
+- Ensure that :func:`mne_bids.get_entity_vals` only includes files found in ``sub-*`` folders in the BIDS root, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`899`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
