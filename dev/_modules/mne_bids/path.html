@@ -806,14 +806,6 @@
 
                 <span class="c1"># found no matching paths</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_paths</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not locate a data file of a supported &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;format. This is likely a problem with your &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;BIDS dataset. Please run the BIDS validator &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;on your data. (root=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s1">, &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;basename=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">). &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">matching_paths</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                    <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
                     <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
                 <span class="c1"># if paths still cannot be resolved, then there is an error</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -2054,7 +2046,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-10.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-12.<br>
 </p>
     </div>
     
