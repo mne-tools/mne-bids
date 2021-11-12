@@ -331,7 +331,7 @@ def _check_anonymize(anonymize, raw, ext):
                              'is able to store in FIF format, must '
                              f'be less than {daysback_max}')
     keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
-    keep_src = anonymize['keep_source'] if 'keep_source' in anonymize else True
+    keep_src = anonymize['keep_source'] if 'keep_source' in anonymize else False
     return daysback, keep_his, keep_src
 
 

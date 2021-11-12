@@ -2573,7 +2573,7 @@ def test_coordsystem_json_compliance(
     warning_str['edf_warning'],
     warning_str['brainvision_unit']
 )
-def test_anonymize(subject, dir_name, fname, reader, tmp_path):
+def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     """Test writing anonymized EDF data."""
     data_path = testing.data_path()
 
@@ -2620,21 +2620,25 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         assert _raw.info['meas_date'].day == 1
     assert raw2.info['meas_date'].year < 1925
 
-    # get the sidecar JSON
-    sidecar_fname = bids_path.copy().update(extension='.json')
-    with open(sidecar_fname, 'r') as fin:
-        sidecar_json = json.load(fin)
-    assert sidecar_json['Sources'] == list(raw.filenames)
-
-    # write again and this time without Sources
+    # write without sources
+    scans_fname = BIDSPath(subject=bids_path.subject, session=bids_path.session,
+                            suffix='scans', extension='.tsv',
+                            root=bids_path.root)
     anonymize['keep_source'] = False
     bids_path = \
         write_raw_bids(raw, orig_bids_path, overwrite=True,
                        anonymize=anonymize, verbose=False)
-    sidecar_fname = bids_path.copy().update(extension='.json')
-    with open(sidecar_fname, 'r') as fin:
-        sidecar_json = json.load(fin)
-    assert 'Sources' not in sidecar_json
+    scans_tsv = _from_tsv(scans_fname)
+    assert 'sources' not in scans_tsv.keys()
+
+    # Write with sources this time get the scans tsv
+    with pytest.warns(RuntimeWarning, match='`daysback` is too small'):
+        bids_path = write_raw_bids(
+            raw, orig_bids_path, overwrite=True,
+            anonymize=dict(daysback=0, keep_source=True), verbose=False)
+    scans_tsv = _from_tsv(scans_fname)
+    assert scans_tsv['sources'] == [op.basename(fname) for fname in raw.filenames]
+    _bids_validate(bids_path.root)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

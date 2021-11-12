@@ -425,7 +425,7 @@ def _participants_json(fname, overwrite=False):
     _write_json(fname, cols, overwrite)
 
 
-def _scans_tsv(raw, raw_fname, fname, overwrite=False):
+def _scans_tsv(raw, raw_fname, fname, keep_src, overwrite=False):
     """Create a scans.tsv file and save it.
 
     Parameters
@@ -436,6 +436,9 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
+    keep_src : bool
+        If ``True`` (default), the filename of the raw source will
+        be stored in the ``sources`` column.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -447,10 +450,6 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
     meas_date = raw.info['meas_date']
     if meas_date is None:
         acq_time = 'n/a'
-    # The "Z" indicates UTC time
-    elif isinstance(meas_date, (tuple, list, np.ndarray)):  # pragma: no cover
-        # for MNE < v0.20
-        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     elif isinstance(meas_date, datetime):
         # for MNE >= v0.20
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
@@ -477,6 +476,24 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
         [('filename', ['{:s}'.format(raw_f.replace(os.sep, '/'))
           for raw_f in raw_fnames]),
             ('acq_time', [acq_time] * len(raw_fnames))])
+    
+    # add source filename if desired
+    if keep_src:
+        data['sources'] = [op.basename(fname) for fname in raw.filenames]
+
+        # write out a sidecar JSON if not exists
+        sidecar_path = str(fname).replace('.tsv', '.json')
+        sidecar_json = {'sources': 'Original source filename.'}
+        if not op.exists(sidecar_path):
+            with open(sidecar_path, 'w') as fout:
+                json.dump(sidecar_json, fout)
+        else:
+            with open(sidecar_path, 'r') as fin:
+                curr_sidecar_json = json.load(fin)
+            if 'sources' not in curr_sidecar_json:
+                sidecar_json.update(curr_sidecar_json)
+                with open(sidecar_path, 'w') as fout:
+                    json.dump(sidecar_json, fout)
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
@@ -485,6 +502,14 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
             raise FileExistsError(f'"{raw_fname}" already exists in '
                                   f'the scans list. Please set '
                                   f'overwrite to True.')
+
+        for key in data.keys():
+            if key in orig_data:
+                continue
+
+            # add 'n/a' if any missing columns
+            orig_data[key] = ['n/a'] * len(next(iter(data.values())))
+
         # otherwise add the new data
         data = _combine_rows(orig_data, data, 'filename')
 
@@ -604,7 +629,7 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
 
 
 def _sidecar_json(raw, task, manufacturer, fname, datatype,
-                  keep_source, emptyroom_fname=None, overwrite=False):
+                  emptyroom_fname=None, overwrite=False):
     """Create a sidecar json file depending on the suffix and save it.
 
     The sidecar json file provides meta data about the data
@@ -623,8 +648,6 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         Filename to save the sidecar json to.
     datatype : str
         Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
-    keep_source : bool
-        Whether to keep the filenames of the source, ``raw``.
     emptyroom_fname : str | mne_bids.BIDSPath
         For MEG recordings, the path to an empty-room data file to be
         associated with ``raw``. Only supported for MEG.
@@ -791,10 +814,6 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     ch_info_json += append_datatype_json
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
-
-    if keep_source:
-        # add source filename
-        ch_info_json['Sources'] = raw.filenames
 
     _write_json(fname, ch_info_json, overwrite)
 
@@ -1464,7 +1483,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         suffix='channels', extension='.tsv')
 
     # Anonymize
-    keep_src = True
+    keep_src = False
     if anonymize is not None:
         daysback, keep_his, keep_src = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his)
@@ -1532,7 +1551,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     _sidecar_json(raw, task=bids_path.task, manufacturer=manufacturer,
                   fname=sidecar_path.fpath, datatype=bids_path.datatype,
-                  keep_source=keep_src,
                   emptyroom_fname=associated_er_path, overwrite=overwrite)
     _channels_tsv(raw, channels_path.fpath, overwrite)
 
@@ -1649,7 +1667,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # write to the scans.tsv file the output file written
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
-    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite)
+    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, keep_src, overwrite)
     logger.info(f'Wrote {scans_path.fpath} entry with '
                 f'{scan_relative_fpath}.')
 
@@ -2580,7 +2598,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 bids_path=bp_out,
                 anonymize={
                     'daysback': daysback,
-                    'keep_his': False
+                    'keep_his': False,
+                    'keep_src': False,
                 },
                 empty_room=bp_er_out,
                 verbose='error'
