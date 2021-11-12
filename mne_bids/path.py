@@ -1512,7 +1512,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_processings=None, ignore_spaces=None,
                     ignore_acquisitions=None, ignore_splits=None,
                     ignore_modalities=None, ignore_datatypes=None,
-                    with_key=False, verbose=None):
+                    ignore_dirs=('derivatives', 'sourcedata'), with_key=False,
+                    verbose=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
@@ -1538,28 +1539,33 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     entity_key : str
         The name of the entity key to search for.
-    ignore_subjects : str | iterable | None
+    ignore_subjects : str | collection of str | None
         Subject(s) to ignore. By default, entities from the ``emptyroom``
         mock-subject are not returned. If ``None``, include all subjects.
-    ignore_sessions : str | iterable | None
+    ignore_sessions : str | collection of str | None
         Session(s) to ignore. If ``None``, include all sessions.
-    ignore_tasks : str | iterable | None
+    ignore_tasks : str | collection of str | None
         Task(s) to ignore. If ``None``, include all tasks.
-    ignore_runs : str | iterable | None
+    ignore_runs : str | collection of str | None
         Run(s) to ignore. If ``None``, include all runs.
-    ignore_processings : str | iterable | None
+    ignore_processings : str | collection of str | None
         Processing(s) to ignore. If ``None``, include all processings.
-    ignore_spaces : str | iterable | None
+    ignore_spaces : str | collection of str | None
         Space(s) to ignore. If ``None``, include all spaces.
-    ignore_acquisitions : str | iterable | None
+    ignore_acquisitions : str | collection of str | None
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
-    ignore_splits : str | iterable | None
+    ignore_splits : str | collection of str | None
         Split(s) to ignore. If ``None``, include all splits.
-    ignore_modalities : str | iterable | None
+    ignore_modalities : str | collection of str | None
         Modalities(s) to ignore. If ``None``, include all modalities.
-    ignore_datatypes : str | iterable | None
+    ignore_datatypes : str | collection of str | None
         Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
         ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
+    ignore_dirs : str | collection of str | None
+        Directories nested directly within ``root`` to ignore. If ``None``,
+        include all directories in the search.
+
+        .. versionaded:: 0.9
     with_key : bool
         If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
@@ -1599,7 +1605,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         need_dir=True,
         name='Root directory'
     )
-    root = Path(root)
+    root = Path(root).expanduser()
 
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
                 'acquisition', 'split', 'suffix')
@@ -1621,11 +1627,26 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     ignore_splits = _ensure_tuple(ignore_splits)
     ignore_modalities = _ensure_tuple(ignore_modalities)
 
+    ignore_dirs = _ensure_tuple(ignore_dirs)
+    existing_ignore_dirs = [
+        root / d for d in ignore_dirs
+        if (root / d).exists() and (root / d).is_dir()
+    ]
+    ignore_dirs = _ensure_tuple(existing_ignore_dirs)
+
     p = re.compile(r'{}-(.*?)_'.format(entity_long_abbr_map[entity_key]))
     values = list()
-    filenames = root.glob(f'sub-*/**/*{entity_long_abbr_map[entity_key]}-*_*')
+    filenames = root.glob(f'**/*{entity_long_abbr_map[entity_key]}-*_*')
 
     for filename in filenames:
+        # Skip ignored directories
+        # XXX In Python 3.9, we can use Path.is_relative_to() here
+        if any([
+            str(filename).startswith(str(ignore_dir))
+            for ignore_dir in ignore_dirs
+        ]):
+            continue
+
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any([filename.stem.startswith(f'sub-{s}_')
