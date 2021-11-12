@@ -1287,10 +1287,10 @@
 <span class="sd">        to ``True``. See warning for the ``allow_preload`` parameter.</span>
 <span class="sd">    bids_path : mne_bids.BIDSPath</span>
 <span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
-<span class="sd">        **must** have the ``.root`` attribute set. If the ``.datatype``</span>
-<span class="sd">        attribute is not set, it will be inferred from the recording data type</span>
-<span class="sd">        found in ``raw``. In case of multiple data types, the ``.datatype``</span>
-<span class="sd">        attribute must be set.</span>
+<span class="sd">        **must** have the ``subject``, ``task``, and ``root`` attributes set.</span>
+<span class="sd">        If the ``datatype`` attribute is not set, it will be inferred from the</span>
+<span class="sd">        recording data type found in ``raw``. In case of multiple data types,</span>
+<span class="sd">        the ``.datatype`` attribute must be set.</span>
 <span class="sd">        Example::</span>
 
 <span class="sd">            bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;01&#39;, task=&#39;testing&#39;,</span>
@@ -1502,11 +1502,23 @@
     <span class="k">if</span> <span class="n">symlink</span> <span class="ow">and</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot create symlinks when anonymizing data.&#39;</span><span class="p">)</span>
 
-    <span class="c1"># Check if the root is available</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
-                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
-                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. Please call &#39;</span>
+            <span class="s1">&#39;&quot;bids_path.root = &lt;root&gt;&quot; to set the root of the BIDS dataset.&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The subject of the &quot;bids_path&quot; must be set. Please call &#39;</span>
+            <span class="s1">&#39;&quot;bids_path.subject = &lt;subject&gt;&quot;&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The task of the &quot;bids_path&quot; must be set. Please call &#39;</span>
+            <span class="s1">&#39;&quot;bids_path.task = &lt;task&gt;&quot;&#39;</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;You passed events_data, but no event_id &#39;</span>
