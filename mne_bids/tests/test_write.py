@@ -624,16 +624,14 @@ def test_fif(_bids_validate, tmp_path):
         write_raw_bids(raw, bids_path)
 
     # test whether extra points in raw.info['dig'] are correctly used
-    # to set DigitizedHeadShape in the json sidecar
-    # unchanged sample data includes Extra points
-    meg_json = _find_matching_sidecar(
-        bids_path.copy().update(root=bids_root),
-        suffix='meg', extension='.json')
+    # to set DigitizedHeadShape in the JSON sidecar
+    # unchanged sample data includes extra points
+    meg_json_path = bids_path.copy().update(
+        root=bids_root, datatype='meg', suffix='meg', extension='.json'
+    ).fpath
 
-    with open(meg_json, 'r') as f:
-        meg_json_data = json.load(f)
-
-    assert meg_json_data['DigitizedHeadPoints'] is True
+    meg_json = json.loads(meg_json_path.read_text(encoding='utf-8'))
+    assert meg_json['DigitizedHeadPoints'] is True
 
     # drop extra points from raw.info['dig'] and write again
     raw_no_extra_points = _read_raw_fif(raw_fname)
@@ -648,17 +646,14 @@ def test_fif(_bids_validate, tmp_path):
     write_raw_bids(raw_no_extra_points, bids_path, events_data=events,
                    event_id=event_id, overwrite=True)
 
-    meg_json = _find_matching_sidecar(
-        bids_path.copy().update(root=bids_root),
-        suffix='meg', extension='.json')
-    with open(meg_json, 'r') as fin:
-        meg_json_data = json.load(fin)
-        # sample data does not have Extra points, so it should
-        # DigitizedHeadPoints should be false
-        assert meg_json_data['DigitizedHeadPoints'] is False
+    meg_json_path = bids_path.copy().update(
+        root=bids_root, datatype='meg', suffix='meg', extension='.json'
+    ).fpath
+    meg_json = json.loads(meg_json_path.read_text(encoding='utf-8'))
 
-    assert 'SoftwareFilters' in meg_json_data
-    software_filters = meg_json_data['SoftwareFilters']
+    assert meg_json['DigitizedHeadPoints'] is False
+    assert 'SoftwareFilters' in meg_json
+    software_filters = meg_json['SoftwareFilters']
     assert 'SpatialCompensation' in software_filters
     assert 'GradientOrder' in software_filters['SpatialCompensation']
     assert (software_filters['SpatialCompensation']['GradientOrder'] ==
@@ -1150,7 +1145,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
-    events, events_id = mne.events_from_annotations(raw, event_id=None)
+    events, _ = mne.events_from_annotations(raw, event_id=None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         bids_output_path = write_raw_bids(**kwargs)
@@ -1243,7 +1238,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
-    bids_fname = bids_path.copy().update(run=run2)
+    bids_path = bids_path.copy().update(run=run2)
     # add data in as a montage, but .set_montage only works for some
     # channel types, so make a specific selection
     ch_names = [ch_name
@@ -1261,9 +1256,9 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     # electrodes are not written w/o landmarks
     with pytest.warns(RuntimeWarning, match='Skipping EEG electrodes.tsv... '
                                             'Setting montage not possible'):
-        write_raw_bids(raw, bids_fname, overwrite=True)
+        write_raw_bids(raw, bids_path, overwrite=True)
 
-    electrodes_fpath = _find_matching_sidecar(bids_fname,
+    electrodes_fpath = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
                                               extension='.tsv',
                                               on_error='ignore')
@@ -1288,7 +1283,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "double" format'):
             write_raw_bids(**kwargs)
 
-    electrodes_fpath = _find_matching_sidecar(bids_fname,
+    electrodes_fpath = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
                                               extension='.tsv')
     assert op.exists(electrodes_fpath)
@@ -1331,10 +1326,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 write_raw_bids(**kwargs)
 
         data = _from_tsv(scans_tsv)
-        bids_fname = bids_path.copy()
+        bids_path = bids_path.copy()
         if dir_name != 'EDF':
-            bids_fname = bids_fname.update(suffix='eeg', extension='.vhdr')
-        assert any([bids_fname.basename in fname
+            bids_path = bids_path.update(suffix='eeg', extension='.vhdr')
+        assert any([bids_path.basename in fname
                     for fname in data['filename']])
 
     # Also cover iEEG
@@ -1403,17 +1398,22 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # XXX: Should be improved with additional coordinate system descriptions
     # iEEG montages written from mne-python end up as "Other"
-    bids_fname.update(root=bids_root)
-    electrodes_fname = _find_matching_sidecar(bids_fname,
-                                              suffix='electrodes',
-                                              extension='.tsv')
-    coordsystem_fname = _find_matching_sidecar(bids_fname,
-                                               suffix='coordsystem',
-                                               extension='.json')
-    assert 'space-fsaverage' in electrodes_fname
-    assert 'space-fsaverage' in coordsystem_fname
-    with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
-        coordsystem_json = json.load(fin)
+    bids_path.update(root=bids_root)
+    electrodes_path = bids_path.copy().update(
+        suffix='electrodes', extension='.tsv',
+        space='fsaverage', task=None, run=None
+    ).fpath
+    coordsystem_path = bids_path.copy().update(
+        suffix='coordsystem', extension='.json',
+        space='fsaverage', task=None, run=None
+    ).fpath
+
+    assert electrodes_path.exists()
+    assert coordsystem_path.exists()
+
+    coordsystem_json = json.loads(
+        coordsystem_path.read_text(encoding='utf-8')
+    )
     assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
 
     # test writing to ACPC
@@ -1436,17 +1436,22 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     _bids_validate(bids_root)
 
-    bids_fname.update(root=bids_root)
-    electrodes_fname = _find_matching_sidecar(bids_fname,
-                                              suffix='electrodes',
-                                              extension='.tsv')
-    coordsystem_fname = _find_matching_sidecar(bids_fname,
-                                               suffix='coordsystem',
-                                               extension='.json')
-    assert 'space-ACPC' in electrodes_fname
-    assert 'space-ACPC' in coordsystem_fname
-    with open(coordsystem_fname, 'r', encoding='utf-8') as fin:
-        coordsystem_json = json.load(fin)
+    bids_path.update(root=bids_root)
+    electrodes_path = bids_path.copy().update(
+        suffix='electrodes', extension='.tsv', space='ACPC',
+        task=None, run=None
+    ).fpath
+    coordsystem_path = bids_path.copy().update(
+        suffix='coordsystem', extension='.json', space='ACPC',
+        task=None, run=None
+    ).fpath
+
+    assert electrodes_path.exists()
+    assert coordsystem_path.exists()
+
+    coordsystem_json = json.loads(
+        coordsystem_path.read_text(encoding='utf-8')
+    )
     assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
 
     kwargs.update(acpc_aligned=False)
