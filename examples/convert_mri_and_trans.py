@@ -160,7 +160,7 @@ print_dir_tree(output_path)
 #           the T1 image as input for the FreeSurfer recon-all, see
 #           :ref:`tut-freesurfer-mne`.
 estim_trans = get_head_mri_trans(
-    bids_path=bids_path, t1_bids_path=t1w_bids_path, fs_subject='sample',
+    bids_path=bids_path,fs_subject='sample',
     fs_subjects_dir=fs_subjects_dir
 )
 
