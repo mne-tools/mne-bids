@@ -1938,8 +1938,8 @@
 
 
 <div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-               <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1w</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
 
 <span class="sd">    Given an MRI scan, format and store the MR data according to BIDS in the</span>
@@ -1981,29 +1981,6 @@
 <span class="sd">        - `theta`: is the angle of the defacing shear in degrees relative</span>
 <span class="sd">          to vertical (default 15).</span>
 
-<span class="sd">    raw : mne.io.Raw | None</span>
-<span class="sd">        The raw data of ``subject`` corresponding to the MR scan in ``image``.</span>
-<span class="sd">        If ``None``, ``trans`` has to be ``None`` as well.</span>
-
-<span class="sd">        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.</span>
-
-<span class="sd">    trans : mne.transforms.Transform | str | None</span>
-<span class="sd">        The transformation matrix from head to MRI coordinates. Can</span>
-<span class="sd">        also be a string pointing to a ``.trans`` file containing the</span>
-<span class="sd">        transformation matrix. If ``None`` and no ``landmarks`` parameter is</span>
-<span class="sd">        passed, no sidecar JSON file will be created.</span>
-
-<span class="sd">        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.</span>
-
-<span class="sd">    t1w : str | pathlib.Path | NibabelImageObject | None</span>
-<span class="sd">        This parameter is useful if image written is not already a T1 image.</span>
-<span class="sd">        If the image written is to have a sidecar or be defaced,</span>
-<span class="sd">        this can be done using `raw`, `trans` and `t1w`. The T1 must be</span>
-<span class="sd">        passed here because the coregistration uses freesurfer surfaces which</span>
-<span class="sd">        are in T1 space.</span>
-
-<span class="sd">        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.</span>
-
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to False.</span>
@@ -2023,12 +2000,6 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
     <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
-
-    <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">t1w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`raw`, `trans` and `t1w` are depreciated &#39;</span>
-                         <span class="s1">&#39;use `mne_bids.get_anat_landmarks` instead&#39;</span><span class="p">)</span>
-
-    <span class="k">del</span> <span class="n">raw</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">t1w</span>
 
     <span class="n">write_sidecar</span> <span class="o">=</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
@@ -2859,7 +2830,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-12.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-14.<br>
 </p>
     </div>
     

@@ -318,6 +318,7 @@
 <li><p>Reading BIDS data with <code class="docutils literal notranslate"><span class="pre">&quot;HeadCoilFrequency&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;PowerLineFrequency&quot;</span></code> data specified in JSON sidecars will only “warn” in case of mismatches between Raw and JSON data, by <a class="reference external" href="https://github.com/fravona2211">Franziska von Albedyll</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/885">#885</a>)</p></li>
 <li><p>Accessing <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.fpath</span></code></a> emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use <em class="xref py py-obj">mne_bids.BIDSPath.fpath.exists()</em> to check whether the path exists in the file system, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/904">#904</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_entity_vals()</span></code></a> gained a new parameter, <code class="docutils literal notranslate"><span class="pre">ignore_dirs</span></code>, to exclude directories from the search, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/899">#899</a>, <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/908">#908</a>)</p></li>
+<li><p>In <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a>, the deprecated parameters <code class="docutils literal notranslate"><span class="pre">raw</span></code>, <code class="docutils literal notranslate"><span class="pre">trans</span></code>, and <code class="docutils literal notranslate"><span class="pre">t1w</span></code> have been removed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/909">#909</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -378,7 +379,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-12.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-14.<br>
 </p>
     </div>
     
