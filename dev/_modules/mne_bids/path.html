@@ -1617,7 +1617,7 @@
     <span class="c1"># search suffix is BIDS-suffix and extension</span>
     <span class="n">search_suffix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_suffix</span> <span class="o">=</span> <span class="n">search_suffix</span> <span class="o">+</span> <span class="n">suffix</span>
+        <span class="n">search_suffix</span> <span class="o">=</span> <span class="n">suffix</span>
 
         <span class="c1"># do not search for suffix if suffix is explicitly passed</span>
         <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -1634,15 +1634,24 @@
 
     <span class="c1"># We only use subject and session as identifier, because all other</span>
     <span class="c1"># parameters are potentially not binding for metadata sidecar files</span>
-    <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">search_str_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">search_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;_ses-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">search_str_filename</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;_ses-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="c1"># Find all potential sidecar files, doing a recursive glob</span>
-    <span class="c1"># from bids_root/sub_id/</span>
-    <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                         <span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="n">search_str</span> <span class="o">+</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="n">search_suffix</span><span class="p">)</span>
-    <span class="n">candidate_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># from bids_root/sub-*, potentially taking into account the data type</span>
+    <span class="n">search_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="c1"># ** -&gt; don&#39;t forget about potentially present session directories</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">search_dir</span> <span class="o">=</span> <span class="n">search_dir</span> <span class="o">/</span> <span class="s1">&#39;**&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">search_dir</span> <span class="o">=</span> <span class="n">search_dir</span> <span class="o">/</span> <span class="s1">&#39;**&#39;</span> <span class="o">/</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+
+    <span class="n">search_str_complete</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+        <span class="n">search_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">search_str_filename</span><span class="si">}</span><span class="s1">*</span><span class="si">{</span><span class="n">search_suffix</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">candidate_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_str_complete</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">best_candidates</span> <span class="o">=</span> <span class="n">_find_best_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span>
                                             <span class="n">candidate_list</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -1660,7 +1669,7 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expected to find a single </span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s1"> file &#39;</span>
                <span class="sa">f</span><span class="s1">&#39;associated with </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">, &#39;</span>
                <span class="sa">f</span><span class="s1">&#39;but found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_list</span><span class="p">)</span><span class="si">}</span><span class="s1">: &quot;</span><span class="si">{</span><span class="n">candidate_list</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
-    <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
+    <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{</span><span class="n">search_str_complete</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
     <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
