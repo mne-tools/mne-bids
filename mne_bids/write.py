@@ -1665,7 +1665,7 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
 
     Parameters
     ----------
-    image : str | pathlib.Path | mne_bids.BIDSPath | NibabelImageObject
+    image : path-like | mne_bids.BIDSPath | NibabelImageObject
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
@@ -1684,7 +1684,7 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
         the anatomical landmarks if they are not provided in MRI voxel space.
         This is because the head coordinate of a
         :class:`mne.channels.DigMontage` is aligned using FreeSurfer surfaces.
-    fs_subjects_dir : str | pathlib.Path | None
+    fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable. Must be provided to write
         anatomical landmarks if they are not provided in MRI voxel space.
@@ -1747,7 +1747,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
 
     Parameters
     ----------
-    image : str | pathlib.Path | NibabelImageObject
+    image : path-like | NibabelImageObject
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
@@ -1788,7 +1788,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
 
         Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.
 
-    t1w : str | pathlib.Path | NibabelImageObject | None
+    t1w : path-like | NibabelImageObject | None
         This parameter is useful if image written is not already a T1 image.
         If the image written is to have a sidecar or be defaced,
         this can be done using `raw`, `trans` and `t1w`. The T1 must be

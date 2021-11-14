@@ -43,7 +43,7 @@ def update_sidecar_json(bids_path, entries, verbose=None):
         is present in the dataset, it will be
         selected automatically. This must uniquely identify
         an existing file path, else an error will be raised.
-    entries : dict | str | pathlib.Path
+    entries : dict | path-like
         A dictionary, or JSON file that defines the
         sidecar fields and corresponding values to be updated to.
     %(verbose)s

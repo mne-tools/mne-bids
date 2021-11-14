@@ -798,7 +798,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     fs_subject : str | None
         The subject identifier used for FreeSurfer. If ``None``, defaults to
         the ``subject`` entity in ``bids_path``.
-    fs_subjects_dir : str | pathlib.Path | None
+    fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable.
 

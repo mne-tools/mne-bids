@@ -198,7 +198,7 @@ class BIDSPath(object):
     datatype : str
         The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
         ``'ieeg'``.
-    root : str | pathlib.Path | None
+    root : path-like | None
         The root directory of the BIDS dataset.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
@@ -1093,7 +1093,7 @@ def search_folder_for_text(entry, folder, extensions=('.json', '.tsv'),
     ----------
     entry : str
         The string to search for
-    folder : str | pathlib.Path
+    folder : path-like
         The folder in which to search.
     extensions : list | tuple | str
         The extensions to search through. Default is ``json`` and
@@ -1149,7 +1149,7 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
 
     Parameters
     ----------
-    folder : str | pathlib.Path
+    folder : path-like
         The folder for which to print the directory tree.
     max_depth : int
         The maximum depth into which to descend recursively for printing
@@ -1481,7 +1481,7 @@ def get_datatypes(root, verbose=None):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         Path to the root of the BIDS directory.
     %(verbose)s
 

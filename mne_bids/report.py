@@ -149,7 +149,7 @@ def _summarize_dataset(root):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
 
     Returns
@@ -185,7 +185,7 @@ def _summarize_participants_tsv(root):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
 
     Returns
@@ -258,7 +258,7 @@ def _summarize_scans(root, session=None):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     session : str, optional
         The session for a item. Corresponds to "ses".
@@ -298,7 +298,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     scans_fpaths : list
         A list of all *_scans.tsv files in ``root``. The summary
@@ -386,7 +386,7 @@ def _summarize_channels_tsv(root, scans_fpaths):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     scans_fpaths : list
         A list of all *_scans.tsv files in ``root``. The summary
@@ -466,7 +466,7 @@ def make_report(root, session=None, verbose=None):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     session : str | None
             The (optional) session for a item. Corresponds to "ses".
