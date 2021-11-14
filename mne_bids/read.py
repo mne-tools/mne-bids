@@ -861,7 +861,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     if not t1w_bids_path.fpath.exists():
         raise FileNotFoundError(
             f'Did not find T1w recording file, tried location: '
-            f'{t1w_bids_path}'
+            f'{t1w_path_candidate.name.replace(".nii.gz", "")}[.nii, .nii.gz]'
         )
 
     # Get MRI landmarks from the JSON sidecar
