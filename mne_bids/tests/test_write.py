@@ -626,9 +626,15 @@ def test_fif(_bids_validate, tmp_path):
     # test whether extra points in raw.info['dig'] are correctly used
     # to set DigitizedHeadShape in the JSON sidecar
     # unchanged sample data includes extra points
-    meg_json_path = bids_path.copy().update(
-        root=bids_root, datatype='meg', suffix='meg', extension='.json'
-    ).fpath
+    meg_json_path = Path(
+        _find_matching_sidecar(
+            bids_path=bids_path.copy().update(
+                root=bids_root, datatype='meg'
+            ),
+            suffix='meg',
+            extension='.json'
+        )
+    )
 
     meg_json = json.loads(meg_json_path.read_text(encoding='utf-8'))
     assert meg_json['DigitizedHeadPoints'] is True
@@ -646,9 +652,15 @@ def test_fif(_bids_validate, tmp_path):
     write_raw_bids(raw_no_extra_points, bids_path, events_data=events,
                    event_id=event_id, overwrite=True)
 
-    meg_json_path = bids_path.copy().update(
-        root=bids_root, datatype='meg', suffix='meg', extension='.json'
-    ).fpath
+    meg_json_path = Path(
+        _find_matching_sidecar(
+            bids_path=bids_path.copy().update(
+                root=bids_root, datatype='meg'
+            ),
+            suffix='meg',
+            extension='.json'
+        )
+    )
     meg_json = json.loads(meg_json_path.read_text(encoding='utf-8'))
 
     assert meg_json['DigitizedHeadPoints'] is False
@@ -1411,6 +1423,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     assert electrodes_path.exists()
     assert coordsystem_path.exists()
 
+    # Test we get the correct sidecar via _find_matching_sidecar()
+    electrodes_fname = _find_matching_sidecar(bids_path,
+                                              suffix='electrodes',
+                                              extension='.tsv')
+    coordsystem_fname = _find_matching_sidecar(bids_path,
+                                               suffix='coordsystem',
+                                               extension='.json')
+    electrodes_fname == str(electrodes_fpath)
+    coordsystem_fname == str(coordsystem_path)
+
     coordsystem_json = json.loads(
         coordsystem_path.read_text(encoding='utf-8')
     )
@@ -1448,6 +1470,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     assert electrodes_path.exists()
     assert coordsystem_path.exists()
+
+    # Test we get the correct sidecar via _find_matching_sidecar()
+    electrodes_fname = _find_matching_sidecar(bids_path,
+                                              suffix='electrodes',
+                                              extension='.tsv')
+    coordsystem_fname = _find_matching_sidecar(bids_path,
+                                               suffix='coordsystem',
+                                               extension='.json')
+    electrodes_fname == str(electrodes_fpath)
+    coordsystem_fname == str(coordsystem_path)
 
     coordsystem_json = json.loads(
         coordsystem_path.read_text(encoding='utf-8')

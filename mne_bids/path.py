@@ -1410,7 +1410,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
     # search suffix is BIDS-suffix and extension
     search_suffix = ''
     if suffix is not None:
-        search_suffix = search_suffix + suffix
+        search_suffix = suffix
 
         # do not search for suffix if suffix is explicitly passed
         bids_path = bids_path.copy()
@@ -1432,7 +1432,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
         search_str_filename += f'_ses-{bids_path.session}'
 
     # Find all potential sidecar files, doing a recursive glob
-    # from bids_root/sub_id, potentially taking into account the data type
+    # from bids_root/sub-*, potentially taking into account the data type
     search_dir = Path(bids_root) / f'sub-{bids_path.subject}'
     # ** -> don't forget about potentially present session directories
     if bids_path.datatype is None:
@@ -1443,7 +1443,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
     search_str_complete = str(
         search_dir / f'{search_str_filename}*{search_suffix}'
     )
-    
+
     candidate_list = glob.glob(search_str_complete, recursive=True)
     best_candidates = _find_best_candidates(bids_path.entities,
                                             candidate_list)

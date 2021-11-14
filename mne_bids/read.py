@@ -833,14 +833,26 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     t1w_bids_path = (
         (meg_bids_path if t1_bids_path is None else t1_bids_path)
         .copy()
-        .update(datatype='anat', suffix='T1w', extension='.nii.gz')
+        .update(
+            datatype='anat',
+            suffix='T1w',
+            task=None
+        )
     )
-    if t1_bids_path is None:
-        # Eliminate electrophysiological task and run entities
-        t1w_bids_path.task = None
-        t1w_bids_path.run = None
+    t1_paths = t1w_bids_path.match()
+    if any([p.suffix == '.nii' for p in t1_paths]):
+        t1w_bids_path.extension = '.nii'
+    elif any([p.suffix == '.nii.gz' for p in t1_paths]):
+        t1w_bids_path.extension = '.nii.gz'
+    else:
+        raise FileNotFoundError(
+            f'Could not find T1w MRI scan in the following locations: '
+            f'{t1w_bids_path.fpath}[.nii,.nii.gz]'
+        )
 
-    t1w_json_bids_path = t1w_bids_path.copy().update(extension='.json')
+    t1w_json_bids_path = _find_matching_sidecar(
+        bids_path=t1w_bids_path, extension='.json'
+    )
     del t1_bids_path
 
     if not t1w_json_bids_path.fpath.exists():
