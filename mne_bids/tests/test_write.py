@@ -1433,9 +1433,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     electrodes_fname == str(electrodes_fpath)
     coordsystem_fname == str(coordsystem_path)
 
-    coordsystem_json = json.loads(
-        coordsystem_path.read_text(encoding='utf-8')
-    )
+    coordsystem_json = json.loads(coordsystem_path.read_text(encoding='utf-8'))
     assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
 
     # test writing to ACPC
@@ -1481,9 +1479,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     electrodes_fname == str(electrodes_fpath)
     coordsystem_fname == str(coordsystem_path)
 
-    coordsystem_json = json.loads(
-        coordsystem_path.read_text(encoding='utf-8')
-    )
+    coordsystem_json = json.loads(coordsystem_path.read_text(encoding='utf-8'))
     assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
 
     kwargs.update(acpc_aligned=False)
