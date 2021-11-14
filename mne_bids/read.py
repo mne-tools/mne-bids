@@ -28,7 +28,7 @@ from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              reader, _map_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping, verbose
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
-                           _infer_datatype)
+                           _infer_datatype, get_bids_path_from_fname)
 
 
 def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
@@ -830,15 +830,42 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     meg_bids_path.update(datatype='meg', suffix='meg')
 
     # Get the sidecar file for MRI landmarks
-    match_bids_path = meg_bids_path if t1_bids_path is None else t1_bids_path
-    t1w_path = _find_matching_sidecar(
-        match_bids_path, suffix='T1w', extension='.nii.gz')
+    t1w_bids_path = (
+        (meg_bids_path if t1_bids_path is None else t1_bids_path)
+        .copy()
+        .update(
+            datatype='anat',
+            suffix='T1w',
+            task=None
+        )
+    )
     t1w_json_path = _find_matching_sidecar(
-        match_bids_path, suffix='T1w', extension='.json')
+        bids_path=t1w_bids_path, extension='.json', on_error='ignore'
+    )
+    del t1_bids_path
+
+    if t1w_json_path is not None:
+        t1w_json_path = Path(t1w_json_path)
+
+    if t1w_json_path is None or not t1w_json_path.exists():
+        raise FileNotFoundError(
+            f'Did not find T1w JSON sidecar file, tried location: '
+            f'{t1w_json_path}'
+        )
+    for extension in ('.nii', '.nii.gz'):
+        t1w_path_candidate = t1w_json_path.with_suffix(extension)
+        if t1w_path_candidate.exists():
+            t1w_bids_path = get_bids_path_from_fname(fname=t1w_path_candidate)
+            break
+
+    if not t1w_bids_path.fpath.exists():
+        raise FileNotFoundError(
+            f'Did not find T1w recording file, tried location: '
+            f'{t1w_path_candidate.name.replace(".nii.gz", "")}[.nii, .nii.gz]'
+        )
 
     # Get MRI landmarks from the JSON sidecar
-    with open(t1w_json_path, 'r', encoding='utf-8') as f:
-        t1w_json = json.load(f)
+    t1w_json = json.loads(t1w_json_path.read_text(encoding='utf-8'))
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
@@ -871,13 +898,13 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     if fs_subject is None:
         fs_subject = f'sub-{meg_bids_path.subject}'
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
-    fs_t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
-    if not fs_t1_fname.exists():
+    fs_t1_path = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
+    if not fs_t1_path.exists():
         raise ValueError(
-            f"Could not find {fs_t1_fname}. Consider running FreeSurfer's "
+            f"Could not find {fs_t1_path}. Consider running FreeSurfer's "
             f"'recon-all` for subject {fs_subject}.")
-    fs_t1_mgh = nib.load(str(fs_t1_fname))
-    t1_nifti = nib.load(str(t1w_path))
+    fs_t1_mgh = nib.load(str(fs_t1_path))
+    t1_nifti = nib.load(str(t1w_bids_path.fpath))
 
     # Convert to MGH format to access vox2ras method
     t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
