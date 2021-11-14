@@ -840,31 +840,27 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         )
     )
     t1_paths = t1w_bids_path.match()
-    if any([p.suffix == '.nii' for p in t1_paths]):
-        t1w_bids_path.extension = '.nii'
-    elif any([p.suffix == '.nii.gz' for p in t1_paths]):
-        t1w_bids_path.extension = '.nii.gz'
-    else:
-        raise FileNotFoundError(
-            f'Could not find T1w MRI scan in the following locations: '
-            f'{t1w_bids_path.fpath}[.nii,.nii.gz]'
-        )
+    if not any([p.extension in ['.nii', '.nii.gz']
+                for p in t1_paths]):
+        msg = (f'Could not find T1w MRI scan in the following locations: '
+               f'{t1w_bids_path.fpath}[.nii,.nii.gz]')
+        if t1_bids_path is None:
+            msg += '\nConsider explicitly passing the "t1_bids_path" parameter'
+        raise FileNotFoundError(msg)
 
-    t1w_json_bids_path = _find_matching_sidecar(
-        bids_path=t1w_bids_path, extension='.json'
+    t1w_json_path = Path(
+        _find_matching_sidecar(bids_path=t1w_bids_path, extension='.json')
     )
     del t1_bids_path
 
-    if not t1w_json_bids_path.fpath.exists():
+    if not t1w_json_path.exists():
         raise FileNotFoundError(
             f'Did not find T1w JSON sidecar file, tried location: '
-            f'{t1w_json_bids_path.fpath}'
+            f'{t1w_json_path}'
         )
 
     # Get MRI landmarks from the JSON sidecar
-    t1w_json = json.loads(
-        t1w_json_bids_path.fpath.read_text(encoding='utf-8')
-    )
+    t1w_json = json.loads(t1w_json_path.read_text(encoding='utf-8'))
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
@@ -883,7 +879,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     if np.isnan(mri_landmarks).any():
         raise RuntimeError(
             f'Could not extract fiducial points from T1w sidecar file: '
-            f'{t1w_json_bids_path}\n\n'
+            f'{t1w_json_path}\n\n'
             f'The sidecar file SHOULD contain a key '
             f'"AnatomicalLandmarkCoordinates" pointing to an '
             f'object with the keys "LPA", "NAS", and "RPA". '

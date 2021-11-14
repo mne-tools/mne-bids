@@ -121,7 +121,7 @@ print(trans)
 # w.r.t. the T1 image.
 
 # First create the BIDSPath object.
-t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path,
+t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path, run=None,
                          suffix='T1w')
 
 # use ``trans`` to transform landmarks from the ``raw`` file to
@@ -159,8 +159,10 @@ print_dir_tree(output_path)
 # .. note:: If this dataset were shared with you, you would first have to use
 #           the T1 image as input for the FreeSurfer recon-all, see
 #           :ref:`tut-freesurfer-mne`.
-estim_trans = get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
-                                 fs_subjects_dir=fs_subjects_dir)
+estim_trans = get_head_mri_trans(
+    bids_path=bids_path, t1_bids_path=t1w_bids_path, fs_subject='sample',
+    fs_subjects_dir=fs_subjects_dir
+)
 
 # %%
 # Finally, let's use the T1 weighted MRI image and plot the anatomical
