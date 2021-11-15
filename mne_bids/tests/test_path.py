@@ -125,6 +125,13 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         assert entities == [f'{entity_long_to_short[entity]}-{val}'
                             for val in expected_vals]
 
+        # Test without ignoring the derivatives dir
+        entities = get_entity_vals(
+            root=bids_root, entity_key=entity, **kwargs, ignore_dirs=None
+        )
+        if entity not in ('acquisition', 'run'):
+            assert 'deriv' in entities
+
     # Clean up
     shutil.rmtree(deriv_path)
 
@@ -409,16 +416,6 @@ def test_bids_path_inference(return_bids_test_dir):
         task=task, root=bids_root)
     with pytest.raises(RuntimeError, match='Found more than one'):
         bids_path.fpath
-
-    # can't locate a file, but the basename should work
-    bids_path = BIDSPath(
-        subject=subject_id, session=session_id, acquisition=acq,
-        task=task, run='10', root=bids_root)
-    with pytest.warns(RuntimeWarning, match='Could not locate'):
-        fpath = bids_path.fpath
-        assert str(fpath) == op.join(bids_root, f'sub-{subject_id}',
-                                     f'ses-{session_id}',
-                                     bids_path.basename)
 
     # shouldn't error out when there is no uncertainty
     channels_fname = BIDSPath(subject=subject_id, session=session_id,

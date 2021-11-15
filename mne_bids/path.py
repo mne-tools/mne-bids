@@ -599,14 +599,6 @@ class BIDSPath(object):
 
                 # found no matching paths
                 if not matching_paths:
-                    msg = (f'Could not locate a data file of a supported '
-                           f'format. This is likely a problem with your '
-                           f'BIDS dataset. Please run the BIDS validator '
-                           f'on your data. (root={self.root}, '
-                           f'basename={self.basename}). '
-                           f'{matching_paths}')
-                    warn(msg)
-
                     bids_fpath = op.join(data_path, self.basename)
                 # if paths still cannot be resolved, then there is an error
                 elif len(matching_paths) > 1:
@@ -1418,7 +1410,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
     # search suffix is BIDS-suffix and extension
     search_suffix = ''
     if suffix is not None:
-        search_suffix = search_suffix + suffix
+        search_suffix = suffix
 
         # do not search for suffix if suffix is explicitly passed
         bids_path = bids_path.copy()
@@ -1435,15 +1427,24 @@ def _find_matching_sidecar(bids_path, suffix=None,
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    search_str = f'sub-{bids_path.subject}'
+    search_str_filename = f'sub-{bids_path.subject}'
     if bids_path.session is not None:
-        search_str += f'_ses-{bids_path.session}'
+        search_str_filename += f'_ses-{bids_path.session}'
 
     # Find all potential sidecar files, doing a recursive glob
-    # from bids_root/sub_id/
-    search_str = op.join(bids_root, f'sub-{bids_path.subject}',
-                         '**', search_str + '*' + search_suffix)
-    candidate_list = glob.glob(search_str, recursive=True)
+    # from bids_root/sub-*, potentially taking into account the data type
+    search_dir = Path(bids_root) / f'sub-{bids_path.subject}'
+    # ** -> don't forget about potentially present session directories
+    if bids_path.datatype is None:
+        search_dir = search_dir / '**'
+    else:
+        search_dir = search_dir / '**' / bids_path.datatype
+
+    search_str_complete = str(
+        search_dir / f'{search_str_filename}*{search_suffix}'
+    )
+
+    candidate_list = glob.glob(search_str_complete, recursive=True)
     best_candidates = _find_best_candidates(bids_path.entities,
                                             candidate_list)
     if len(best_candidates) == 1:
@@ -1461,7 +1462,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
         msg = (f'Expected to find a single {suffix} file '
                f'associated with {bids_path.basename}, '
                f'but found {len(candidate_list)}: "{candidate_list}".')
-    msg += '\n\nThe search_str was "{}"'.format(search_str)
+    msg += f'\n\nThe search_str was "{search_str_complete}"'
     if on_error == 'raise':
         raise RuntimeError(msg)
     elif on_error == 'warn':
@@ -1520,7 +1521,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_processings=None, ignore_spaces=None,
                     ignore_acquisitions=None, ignore_splits=None,
                     ignore_modalities=None, ignore_datatypes=None,
-                    with_key=False, verbose=None):
+                    ignore_dirs=('derivatives', 'sourcedata'), with_key=False,
+                    verbose=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
@@ -1546,28 +1548,33 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     entity_key : str
         The name of the entity key to search for.
-    ignore_subjects : str | iterable | None
+    ignore_subjects : str | array-like of str | None
         Subject(s) to ignore. By default, entities from the ``emptyroom``
         mock-subject are not returned. If ``None``, include all subjects.
-    ignore_sessions : str | iterable | None
+    ignore_sessions : str | array-like of str | None
         Session(s) to ignore. If ``None``, include all sessions.
-    ignore_tasks : str | iterable | None
+    ignore_tasks : str | array-like of str | None
         Task(s) to ignore. If ``None``, include all tasks.
-    ignore_runs : str | iterable | None
+    ignore_runs : str | array-like of str | None
         Run(s) to ignore. If ``None``, include all runs.
-    ignore_processings : str | iterable | None
+    ignore_processings : str | array-like of str | None
         Processing(s) to ignore. If ``None``, include all processings.
-    ignore_spaces : str | iterable | None
+    ignore_spaces : str | array-like of str | None
         Space(s) to ignore. If ``None``, include all spaces.
-    ignore_acquisitions : str | iterable | None
+    ignore_acquisitions : str | array-like of str | None
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
-    ignore_splits : str | iterable | None
+    ignore_splits : str | array-like of str | None
         Split(s) to ignore. If ``None``, include all splits.
-    ignore_modalities : str | iterable | None
+    ignore_modalities : str | array-like of str | None
         Modalities(s) to ignore. If ``None``, include all modalities.
-    ignore_datatypes : str | iterable | None
+    ignore_datatypes : str | array-like of str | None
         Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
         ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
+    ignore_dirs : str | array-like of str | None
+        Directories nested directly within ``root`` to ignore. If ``None``,
+        include all directories in the search.
+
+        .. versionadded:: 0.9
     with_key : bool
         If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
@@ -1607,7 +1614,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         need_dir=True,
         name='Root directory'
     )
-    root = Path(root)
+    root = Path(root).expanduser()
 
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
                 'acquisition', 'split', 'suffix')
@@ -1629,11 +1636,26 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     ignore_splits = _ensure_tuple(ignore_splits)
     ignore_modalities = _ensure_tuple(ignore_modalities)
 
+    ignore_dirs = _ensure_tuple(ignore_dirs)
+    existing_ignore_dirs = [
+        root / d for d in ignore_dirs
+        if (root / d).exists() and (root / d).is_dir()
+    ]
+    ignore_dirs = _ensure_tuple(existing_ignore_dirs)
+
     p = re.compile(r'{}-(.*?)_'.format(entity_long_abbr_map[entity_key]))
     values = list()
-    filenames = root.glob(f'sub-*/**/*{entity_long_abbr_map[entity_key]}-*_*')
+    filenames = root.glob(f'**/*{entity_long_abbr_map[entity_key]}-*_*')
 
     for filename in filenames:
+        # Skip ignored directories
+        # XXX In Python 3.9, we can use Path.is_relative_to() here
+        if any([
+            str(filename).startswith(str(ignore_dir))
+            for ignore_dir in ignore_dirs
+        ]):
+            continue
+
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any([filename.stem.startswith(f'sub-{s}_')

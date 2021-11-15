@@ -75,7 +75,7 @@ def run():
         allow_maxshield = True
 
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
-                    hsp=opt.hsp, config=opt.config,
+                    hsp=opt.hsp, config_path=opt.config,
                     allow_maxshield=allow_maxshield)
     if opt.line_freq is not None:
         line_freq = None if opt.line_freq == "None" else opt.line_freq

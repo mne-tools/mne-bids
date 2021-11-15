@@ -8,7 +8,6 @@
 # License: BSD-3-Clause
 import os.path as op
 from pathlib import Path
-import glob
 import json
 import re
 import warnings
@@ -29,36 +28,35 @@ from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              reader, _map_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping, verbose
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
-                           _infer_datatype)
+                           _infer_datatype, get_bids_path_from_fname)
 
 
-def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
-              allow_maxshield=False, config=None, **kwargs):
+def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
+              allow_maxshield=False, config_path=None, **kwargs):
     """Read a raw file into MNE, making inferences based on extension."""
-    _, ext = _parse_ext(raw_fpath)
+    _, ext = _parse_ext(raw_path)
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-        raw = io.read_raw_kit(raw_fpath, elp=electrode, hsp=hsp,
+        raw = io.read_raw_kit(raw_path, elp=electrode, hsp=hsp,
                               mrk=hpi, preload=False, **kwargs)
 
     # BTi systems
     elif ext == '.pdf':
-        raw = io.read_raw_bti(raw_fpath, config_fname=config,
-                              head_shape_fname=hsp,
-                              preload=False, **kwargs)
+        raw = io.read_raw_bti(
+            pdf_fname=str(raw_path),  # FIXME MNE should accept Path!
+            config_fname=str(config_path),  # FIXME MNE should accept Path!
+            head_shape_fname=hsp,
+            preload=False,
+            **kwargs
+        )
 
     elif ext == '.fif':
-        raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
+        raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF']:
-        raw_fpath = Path(raw_fpath)
-        # handle EDF extension upper/lower casing
-        if ext == '.edf' and not raw_fpath.exists():
-            raw_fpath = raw_fpath.with_suffix('.EDF')
-        elif ext == '.EDF' and not raw_fpath.exists():
-            raw_fpath = raw_fpath.with_suffix('.edf')
-        raw = reader[ext](raw_fpath, **kwargs)
+        raw_path = Path(raw_path)
+        raw = reader[ext](raw_path, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
@@ -652,23 +650,36 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
     if suffix is None:
         bids_path.update(suffix=datatype)
 
-    data_dir = bids_path.directory
-    bids_fname = bids_path.fpath.name
-
-    if op.splitext(bids_fname)[1] == '.pdf':
-        bids_raw_folder = op.join(data_dir, f'{bids_path.basename}')
-        bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
-        config = op.join(bids_raw_folder, 'config')
+    if bids_path.fpath.suffix == '.pdf':
+        bids_raw_folder = bids_path.directory / f'{bids_path.basename}'
+        raw_path = list(bids_raw_folder.glob('c,rf*'))[0]
+        config_path = bids_raw_folder / 'config'
     else:
-        bids_fpath = op.join(data_dir, bids_fname)
+        raw_path = bids_path.fpath
         # Resolve for FIFF files
-        if (bids_fpath.endswith('.fif') and bids_path.split is None and
-                op.islink(bids_fpath)):
-            target_path = op.realpath(bids_fpath)
+        if (
+            raw_path.suffix == '.fif' and
+            bids_path.split is None and
+            raw_path.is_symlink()
+        ):
+            target_path = raw_path.resolve()
             logger.info(f'Resolving symbolic link: '
-                        f'{bids_fpath} -> {target_path}')
-            bids_fpath = target_path
-        config = None
+                        f'{raw_path} -> {target_path}')
+            raw_path = target_path
+        config_path = None
+
+    # Special-handle EDF filenames: we accept upper- and lower-case extensions
+    if raw_path.suffix.lower() == '.edf':
+        for extension in ('.edf', '.EDF'):
+            candidate_path = raw_path.with_suffix(extension)
+            if candidate_path.exists():
+                raw_path = candidate_path
+                break
+
+    if not raw_path.exists():
+        raise FileNotFoundError(f'File does not exist: {raw_path}')
+    if config_path is not None and not config_path.exists():
+        raise FileNotFoundError(f'config directory not found: {config_path}')
 
     if extra_params is None:
         extra_params = dict()
@@ -676,10 +687,10 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         del extra_params['exclude']
         logger.info('"exclude" parameter is not supported by read_raw_bids')
 
-    if bids_fname.endswith('.fif') and 'allow_maxshield' not in extra_params:
+    if raw_path.suffix == '.fif' and 'allow_maxshield' not in extra_params:
         extra_params['allow_maxshield'] = True
-    raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, **extra_params)
+    raw = _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
+                    config_path=config_path, **extra_params)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
@@ -739,14 +750,16 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         raw = _handle_scans_reading(scans_fname, raw, bids_path)
 
     # read in associated subject info from participants.tsv
-    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    participants_tsv_path = bids_root / 'participants.tsv'
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_fpath):
-        raw = _handle_participants_reading(participants_tsv_fpath, raw,
-                                           subject)
+    if op.exists(participants_tsv_path):
+        raw = _handle_participants_reading(
+            participants_fname=participants_tsv_path,
+            raw=raw,
+            subject=subject
+        )
     else:
-        warn("Participants file not found for {}... Not reading "
-             "in any particpants.tsv data.".format(bids_fname))
+        warn(f"participants.tsv file not found for {raw_path}")
 
     assert raw.annotations.orig_time == raw.info['meas_date']
     return raw
@@ -817,15 +830,42 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     meg_bids_path.update(datatype='meg', suffix='meg')
 
     # Get the sidecar file for MRI landmarks
-    match_bids_path = meg_bids_path if t1_bids_path is None else t1_bids_path
-    t1w_path = _find_matching_sidecar(
-        match_bids_path, suffix='T1w', extension='.nii.gz')
+    t1w_bids_path = (
+        (meg_bids_path if t1_bids_path is None else t1_bids_path)
+        .copy()
+        .update(
+            datatype='anat',
+            suffix='T1w',
+            task=None
+        )
+    )
     t1w_json_path = _find_matching_sidecar(
-        match_bids_path, suffix='T1w', extension='.json')
+        bids_path=t1w_bids_path, extension='.json', on_error='ignore'
+    )
+    del t1_bids_path
+
+    if t1w_json_path is not None:
+        t1w_json_path = Path(t1w_json_path)
+
+    if t1w_json_path is None or not t1w_json_path.exists():
+        raise FileNotFoundError(
+            f'Did not find T1w JSON sidecar file, tried location: '
+            f'{t1w_json_path}'
+        )
+    for extension in ('.nii', '.nii.gz'):
+        t1w_path_candidate = t1w_json_path.with_suffix(extension)
+        if t1w_path_candidate.exists():
+            t1w_bids_path = get_bids_path_from_fname(fname=t1w_path_candidate)
+            break
+
+    if not t1w_bids_path.fpath.exists():
+        raise FileNotFoundError(
+            f'Did not find T1w recording file, tried location: '
+            f'{t1w_path_candidate.name.replace(".nii.gz", "")}[.nii, .nii.gz]'
+        )
 
     # Get MRI landmarks from the JSON sidecar
-    with open(t1w_json_path, 'r', encoding='utf-8') as f:
-        t1w_json = json.load(f)
+    t1w_json = json.loads(t1w_json_path.read_text(encoding='utf-8'))
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
@@ -858,13 +898,13 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     if fs_subject is None:
         fs_subject = f'sub-{meg_bids_path.subject}'
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
-    fs_t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
-    if not fs_t1_fname.exists():
+    fs_t1_path = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
+    if not fs_t1_path.exists():
         raise ValueError(
-            f"Could not find {fs_t1_fname}. Consider running FreeSurfer's "
+            f"Could not find {fs_t1_path}. Consider running FreeSurfer's "
             f"'recon-all` for subject {fs_subject}.")
-    fs_t1_mgh = nib.load(str(fs_t1_fname))
-    t1_nifti = nib.load(str(t1w_path))
+    fs_t1_mgh = nib.load(str(fs_t1_path))
+    t1_nifti = nib.load(str(t1w_bids_path.fpath))
 
     # Convert to MGH format to access vox2ras method
     t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)

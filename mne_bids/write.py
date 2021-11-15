@@ -1080,10 +1080,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : mne_bids.BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
-        **must** have the ``.root`` attribute set. If the ``.datatype``
-        attribute is not set, it will be inferred from the recording data type
-        found in ``raw``. In case of multiple data types, the ``.datatype``
-        attribute must be set.
+        **must** have the ``subject``, ``task``, and ``root`` attributes set.
+        If the ``datatype`` attribute is not set, it will be inferred from the
+        recording data type found in ``raw``. In case of multiple data types,
+        the ``.datatype`` attribute must be set.
         Example::
 
             bids_path = BIDSPath(subject='01', session='01', task='testing',
@@ -1300,11 +1300,23 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     if symlink and anonymize is not None:
         raise ValueError('Cannot create symlinks when anonymizing data.')
 
-    # Check if the root is available
     if bids_path.root is None:
-        raise ValueError('The root of the "bids_path" must be set. '
-                         'Please use `bids_path.update(root="<root>")` '
-                         'to set the root of the BIDS folder to read.')
+        raise ValueError(
+            'The root of the "bids_path" must be set. Please call '
+            '"bids_path.root = <root>" to set the root of the BIDS dataset.'
+        )
+
+    if bids_path.subject is None:
+        raise ValueError(
+            'The subject of the "bids_path" must be set. Please call '
+            '"bids_path.subject = <subject>"'
+        )
+
+    if bids_path.task is None:
+        raise ValueError(
+            'The task of the "bids_path" must be set. Please call '
+            '"bids_path.task = <task>"'
+        )
 
     if events_data is not None and event_id is None:
         raise RuntimeError('You passed events_data, but no event_id '
@@ -1729,8 +1741,8 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
 
 
 @verbose
-def write_anat(image, bids_path, landmarks=None, deface=False,
-               raw=None, trans=None, t1w=None, overwrite=False, verbose=None):
+def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
+               verbose=None):
     """Put anatomical MRI data into a BIDS format.
 
     Given an MRI scan, format and store the MR data according to BIDS in the
@@ -1772,29 +1784,6 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
         - `theta`: is the angle of the defacing shear in degrees relative
           to vertical (default 15).
 
-    raw : mne.io.Raw | None
-        The raw data of ``subject`` corresponding to the MR scan in ``image``.
-        If ``None``, ``trans`` has to be ``None`` as well.
-
-        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.
-
-    trans : mne.transforms.Transform | str | None
-        The transformation matrix from head to MRI coordinates. Can
-        also be a string pointing to a ``.trans`` file containing the
-        transformation matrix. If ``None`` and no ``landmarks`` parameter is
-        passed, no sidecar JSON file will be created.
-
-        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.
-
-    t1w : str | pathlib.Path | NibabelImageObject | None
-        This parameter is useful if image written is not already a T1 image.
-        If the image written is to have a sidecar or be defaced,
-        this can be done using `raw`, `trans` and `t1w`. The T1 must be
-        passed here because the coregistration uses freesurfer surfaces which
-        are in T1 space.
-
-        Deprecated in v0.8, use :func:`mne_bids.get_anat_landmarks` instead.
-
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1814,12 +1803,6 @@ def write_anat(image, bids_path, landmarks=None, deface=False,
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
-
-    if raw is not None or trans is not None or t1w is not None:
-        raise ValueError('`raw`, `trans` and `t1w` are depreciated '
-                         'use `mne_bids.get_anat_landmarks` instead')
-
-    del raw, trans, t1w
 
     write_sidecar = landmarks is not None
 
