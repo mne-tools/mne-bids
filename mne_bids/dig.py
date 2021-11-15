@@ -309,7 +309,7 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         Path in the BIDS dataset to save the ``electrodes.tsv``
         and ``coordsystem.json`` file for. ``datatype``
         attribute must be ``eeg``, or ``ieeg``. For ``meg``
