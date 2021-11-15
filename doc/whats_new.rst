@@ -75,6 +75,8 @@ API and behavior changes
 Requirements
 ^^^^^^^^^^^^
 
+- MNE-BIDS now requires MNE-Python 0.24 or newer.
+
 - Writing BrainVision files now requires ``pybv`` version 0.6, by `Stefan Appelhoff`_ (:gh:`880`)
 
 
