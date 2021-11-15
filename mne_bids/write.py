@@ -57,7 +57,7 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              ANONYMIZED_JSON_KEY_WHITELIST)
 
 
-class anonymize(TypedDict, total=False):
+class AnonymizeArg(TypedDict, total=False):
     daysback : int
     keep_his : bool
     keep_source : bool
@@ -1360,6 +1360,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    types=(BIDSPath, None))
     _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
     _validate_type(acpc_aligned, bool, 'acpc_aligned')
+
+    # convert anonymize dictionary to TypedDict
+    anonymize = AnonymizeArg(**anonymize)
 
     raw = raw.copy()
     convert = False  # flag if converting not copying
