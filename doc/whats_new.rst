@@ -66,8 +66,16 @@ API and behavior changes
 
 - Reading BIDS data with ``"HeadCoilFrequency"`` and ``"PowerLineFrequency"`` data specified in JSON sidecars will only "warn" in case of mismatches between Raw and JSON data, by `Franziska von Albedyll`_ (:gh:`885`)
 
+- Accessing :attr:`mne_bids.BIDSPath.fpath` emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use `mne_bids.BIDSPath.fpath.exists()` to check whether the path exists in the file system, by `Richard Höchenberger`_ (:gh:`904`)
+
+- :func:`mne_bids.get_entity_vals` gained a new parameter, ``ignore_dirs``, to exclude directories from the search, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`899`, :gh:`908`)
+
+- In :func:`mne_bids.write_anat`, the deprecated parameters ``raw``, ``trans``, and ``t1w`` have been removed, by `Richard Höchenberger`_ (:gh:`909`)
+
 Requirements
 ^^^^^^^^^^^^
+
+- MNE-BIDS now requires MNE-Python 0.24 or newer.
 
 - Writing BrainVision files now requires ``pybv`` version 0.6, by `Stefan Appelhoff`_ (:gh:`880`)
 
@@ -87,7 +95,11 @@ Bug fixes
 
 - Fix erroneous measurement date check in :func:`mne_bids.write_raw_bids` when requesting to anonymize empty-room data, by `Richard Höchenberger`_ (:gh:`893`)
 
-- Ensure that :func:`mne_bids.get_entity_vals` only includes files found in ``sub-*`` folders in the BIDS root, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`899`)
+- :func:`mne_bids.write_raw_bids` now raises an exception if the provided :class:`mne_bids.BIDSPath` doesn't contain ``subject`` and ``task`` entities, which are required for neurophysiological data, by `Richard Höchenberger`_ (:gh:`903`)
+
+- :func:`mne_bids.read_raw_bids` now handles datasets with multiple electrophysiological data types correctly, by `Richard Höchenberger`_ (:gh:`910`)
+
+- More robust handling of situations where :func:`mne_bids.read_raw_bids` tries to read a file that does not exist, by `Richard Höchenberger`_ (:gh:`904`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

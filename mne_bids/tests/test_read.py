@@ -154,7 +154,7 @@ def test_read_participants_data(tmp_path):
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     os.remove(participants_tsv_fpath)
-    with pytest.warns(RuntimeWarning, match='Participants file not found'):
+    with pytest.warns(RuntimeWarning, match='participants.tsv file not found'):
         raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['subject_info'] is None
 
@@ -213,7 +213,7 @@ def test_get_head_mri_trans(tmp_path):
                    overwrite=False)
 
     # We cannot recover trans if no MRI has yet been written
-    with pytest.raises(RuntimeError, match='Did not find any T1w'):
+    with pytest.raises(FileNotFoundError, match='Did not find'):
         estimated_trans = get_head_mri_trans(
             bids_path=bids_path, fs_subject='sample',
             fs_subjects_dir=subjects_dir)
@@ -281,7 +281,9 @@ def test_get_head_mri_trans(tmp_path):
     #
     # Case 1: different BIDS roots
     meg_bids_path = _bids_path.copy().update(root=tmp_path / 'meg_root')
-    t1_bids_path = _bids_path.copy().update(root=tmp_path / 'mri_root')
+    t1_bids_path = _bids_path.copy().update(
+        root=tmp_path / 'mri_root', task=None, run=None
+    )
     raw = _read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path=meg_bids_path)
@@ -298,7 +300,9 @@ def test_get_head_mri_trans(tmp_path):
     raw = _read_raw_fif(raw_fname)
     meg_bids_path = _bids_path.copy().update(root=tmp_path / 'session_test',
                                              session='01')
-    t1_bids_path = meg_bids_path.copy().update(session='02')
+    t1_bids_path = meg_bids_path.copy().update(
+        session='02', task=None, run=None
+    )
 
     write_raw_bids(raw, bids_path=meg_bids_path)
     write_anat(t1w_mgh, bids_path=t1_bids_path, landmarks=landmarks)
@@ -1069,3 +1073,20 @@ def test_read_edf_extension_casing(tmp_path):
 
     # obtain the sensor positions and assert ch_coords are same
     read_raw_bids(bids_path, verbose=True)
+
+
+def test_file_not_found(tmp_path):
+    """Check behavior if the requested file cannot be found."""
+    # First a path with a filename extension.
+    bp = BIDSPath(
+        root=tmp_path, subject='foo', task='bar', datatype='eeg', suffix='eeg',
+        extension='.fif'
+    )
+    bp.fpath.parent.mkdir(parents=True)
+    with pytest.raises(FileNotFoundError, match='File does not exist'):
+        read_raw_bids(bids_path=bp)
+
+    # Now without an extension
+    bp.extension = None
+    with pytest.raises(FileNotFoundError, match='File does not exist'):
+        read_raw_bids(bids_path=bp)
