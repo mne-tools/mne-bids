@@ -1242,7 +1242,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
 
     Parameters
     ----------
-    fname : str
+    fname : path-like
         The path to parse a `BIDSPath` from.
     check : bool
         Whether to check if the generated `BIDSPath` complies with the BIDS
