@@ -2613,7 +2613,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
 
 
 def test_write_uppercase_edf(tmp_path):
-    subject = 'cap',
+    subject = 'cap'
     dir_name = 'EDF'
     fname = 'test_reduced.edf'
 
