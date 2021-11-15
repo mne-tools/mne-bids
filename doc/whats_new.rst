@@ -72,6 +72,8 @@ API and behavior changes
 
 - In :func:`mne_bids.write_anat`, the deprecated parameters ``raw``, ``trans``, and ``t1w`` have been removed, by `Richard Höchenberger`_ (:gh:`909`)
 
+- In :func:`mne_bids.write_raw_bids`, any EDF output is always stored with lower-case extension (``.edf``), by `Adam Li`_ (:gh:`906`)
+
 Requirements
 ^^^^^^^^^^^^
 
