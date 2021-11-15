@@ -59,6 +59,7 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
 
 class AnonymizeArg(TypedDict, total=False):
     """Anonymize argument for write_raw_bids."""
+    
     daysback: int
     keep_his: bool
     keep_source: bool
@@ -1363,6 +1364,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     _validate_type(acpc_aligned, bool, 'acpc_aligned')
 
     # convert anonymize dictionary to TypedDict
+    if anonymize is None:
+        anonymize = dict()
     anonymize = AnonymizeArg(**anonymize)
 
     raw = raw.copy()
