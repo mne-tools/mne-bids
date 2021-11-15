@@ -2669,7 +2669,7 @@ def test_write_uppercase_edf(tmp_path):
     # now read in the file and write to BIDS
     bids_root = tmp_path / 'bids1'
     raw = _read_raw_edf(raw_fname)
-    bids_path = BIDSPath(subject=subject, root=bids_root)
+    bids_path = BIDSPath(subject=subject, task=task, root=bids_root)
     bids_path = write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     # the final output file should have lower case EDF extension
