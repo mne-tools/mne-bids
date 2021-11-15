@@ -57,6 +57,8 @@ Enhancements
 
 - :meth:`mne_bids.BIDSPath.find_empty_room` gained a new parameter ``verbose`` to limit verbosity of the output, by `Richard Höchenberger`_ (:gh:`893`)
 
+- :func:`mne_bids.write_raw_bids` can now write the source filename to scans.tsv under a new column, ``sources``, by `Adam Li`_ (:gh:`890`)
+
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

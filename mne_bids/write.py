@@ -7,7 +7,7 @@
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD-3-Clause
-from typing import List
+from typing import List, TypedDict
 import json
 import sys
 import os
@@ -55,6 +55,12 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
                              ANONYMIZED_JSON_KEY_WHITELIST)
+
+
+class anonymize(TypedDict, total=False):
+    daysback : int
+    keep_his : bool
+    keep_source : bool
 
 
 def _is_numeric(n):
@@ -425,7 +431,7 @@ def _participants_json(fname, overwrite=False):
     _write_json(fname, cols, overwrite)
 
 
-def _scans_tsv(raw, raw_fname, fname, keep_src, overwrite=False):
+def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     """Create a scans.tsv file and save it.
 
     Parameters
@@ -436,7 +442,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_src, overwrite=False):
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
-    keep_src : bool
+    keep_source : bool
         If ``True`` (default), the filename of the raw source will
         be stored in the ``sources`` column.
     overwrite : bool
@@ -478,8 +484,8 @@ def _scans_tsv(raw, raw_fname, fname, keep_src, overwrite=False):
             ('acq_time', [acq_time] * len(raw_fnames))])
     
     # add source filename if desired
-    if keep_src:
-        data['sources'] = [op.basename(fname) for fname in raw.filenames]
+    if keep_source:
+        data['sources'] = [Path(fname).name for fname in raw.filenames]
 
         # write out a sidecar JSON if not exists
         sidecar_path = str(fname).replace('.tsv', '.json')
@@ -508,7 +514,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_src, overwrite=False):
                 continue
 
             # add 'n/a' if any missing columns
-            orig_data[key] = ['n/a'] * len(next(iter(data.values())))
+            orig_data[key] = ['n/a'] * len(list(data.values()))
 
         # otherwise add the new data
         data = _combine_rows(orig_data, data, 'filename')
@@ -1495,9 +1501,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         suffix='channels', extension='.tsv')
 
     # Anonymize
-    keep_src = False
+    rce = False
     if anonymize is not None:
-        daysback, keep_his, keep_src = _check_anonymize(anonymize, raw, ext)
+        daysback, keep_his, keep_source = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his)
 
         if bids_path.datatype == 'meg' and ext != '.fif':
@@ -1679,7 +1685,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # write to the scans.tsv file the output file written
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
-    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, keep_src, overwrite)
+    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, keep_source, overwrite)
     logger.info(f'Wrote {scans_path.fpath} entry with '
                 f'{scan_relative_fpath}.')
 
@@ -2582,7 +2588,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 anonymize={
                     'daysback': daysback,
                     'keep_his': False,
-                    'keep_src': False,
+                    'keep_source': False,
                 },
                 empty_room=bp_er_out,
                 verbose='error'
