@@ -2661,9 +2661,10 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     assert raw2.info['meas_date'].year < 1925
 
     # write without sources
-    scans_fname = BIDSPath(subject=bids_path.subject, session=bids_path.session,
-                            suffix='scans', extension='.tsv',
-                            root=bids_path.root)
+    scans_fname = BIDSPath(subject=bids_path.subject,
+                           session=bids_path.session,
+                           suffix='scans', extension='.tsv',
+                           root=bids_path.root)
     anonymize['keep_source'] = False
     bids_path = \
         write_raw_bids(raw, orig_bids_path, overwrite=True,
@@ -2677,7 +2678,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
             raw, orig_bids_path, overwrite=True,
             anonymize=dict(daysback=0, keep_source=True), verbose=False)
     scans_tsv = _from_tsv(scans_fname)
-    assert scans_tsv['sources'] == [op.basename(fname) for fname in raw.filenames]
+    assert scans_tsv['sources'] == [
+        op.basename(fname) for fname in raw.filenames]
     _bids_validate(bids_path.root)
 
 

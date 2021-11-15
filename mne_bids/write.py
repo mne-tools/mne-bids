@@ -58,9 +58,10 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
 
 
 class AnonymizeArg(TypedDict, total=False):
-    daysback : int
-    keep_his : bool
-    keep_source : bool
+    """Anonymize argument for write_raw_bids."""
+    daysback: int
+    keep_his: bool
+    keep_source: bool
 
 
 def _is_numeric(n):
@@ -482,7 +483,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         [('filename', ['{:s}'.format(raw_f.replace(os.sep, '/'))
           for raw_f in raw_fnames]),
             ('acq_time', [acq_time] * len(raw_fnames))])
-    
+
     # add source filename if desired
     if keep_source:
         data['sources'] = [Path(fname).name for fname in raw.filenames]
@@ -1504,7 +1505,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         suffix='channels', extension='.tsv')
 
     # Anonymize
-    rce = False
+    keep_source = False
     if anonymize is not None:
         daysback, keep_his, keep_source = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his)
@@ -1688,7 +1689,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # write to the scans.tsv file the output file written
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
-    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, keep_source, overwrite)
+    _scans_tsv(raw, scan_relative_fpath,
+               scans_path.fpath, keep_source, overwrite)
     logger.info(f'Wrote {scans_path.fpath} entry with '
                 f'{scan_relative_fpath}.')
 
