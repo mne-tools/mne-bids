@@ -1507,7 +1507,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # Anonymize
     keep_source = False
-    if anonymize is not None:
+    if anonymize != ("",):
         daysback, keep_his, keep_source = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his)
 
