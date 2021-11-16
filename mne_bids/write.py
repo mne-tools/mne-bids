@@ -1363,7 +1363,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # convert anonymize dictionary to TypedDict
     if anonymize is None:
         anonymize = dict()
-    anonymize = AnonymizeArg(**anonymize)
+    anonymize = _AnonymizeArgs(**anonymize)
 
     raw = raw.copy()
     convert = False  # flag if converting not copying
