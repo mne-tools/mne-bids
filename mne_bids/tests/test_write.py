@@ -2604,7 +2604,7 @@ def test_coordsystem_json_compliance(
         ('03', 'NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
         ('emptyroom', 'MEG/sample',
          'sample_audvis_trunc_raw.fif', _read_raw_fif),
-        ('cap', 'EDF', 'test_reduced.edf', _read_raw_edf),
+        # ('cap', 'EDF', 'test_reduced.edf', _read_raw_edf),
     ]
 )
 @pytest.mark.filterwarnings(
@@ -2673,10 +2673,10 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     assert 'sources' not in scans_tsv.keys()
 
     # Write with sources this time get the scans tsv
-    with pytest.warns(RuntimeWarning, match='`daysback` is too small'):
-        bids_path = write_raw_bids(
-            raw, orig_bids_path, overwrite=True,
-            anonymize=dict(daysback=0, keep_source=True), verbose=False)
+    bids_path = write_raw_bids(
+        raw, orig_bids_path, overwrite=True,
+        anonymize=dict(daysback=daysback_min, keep_source=True),
+        verbose=False)
     scans_tsv = _from_tsv(scans_fname)
     assert scans_tsv['sources'] == [
         Path(f).name for f in raw.filenames

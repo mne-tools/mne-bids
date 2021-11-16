@@ -491,15 +491,14 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         # write out a sidecar JSON if not exists
         sidecar_json_path = Path(fname).with_suffix('.json')
         sidecar_json = {'sources': 'Original source filename.'}
-        if not sidecar_json_path.exists():
-            sidecar_path.write_text(json.dumps(sidecar_json), encoding='utf-8')
+        if not op.exists(sidecar_json_path):
+            _write_json(sidecar_json_path, sidecar_json)
         else:
-            with open(sidecar_path, 'r') as fin:
+            with open(sidecar_json_path, 'r') as fin:
                 curr_sidecar_json = json.load(fin)
             if 'sources' not in curr_sidecar_json:
                 sidecar_json.update(curr_sidecar_json)
-                with open(sidecar_path, 'w') as fout:
-                    json.dump(sidecar_json, fout)
+                _write_json(sidecar_json_path, sidecar_json, overwrite=True)
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
@@ -1189,8 +1188,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             information apart from the recording date.
 
         ``keep_source`` : bool
-            If ``True`` (default), the filename of the raw source fill will
-            be stored in the sidecar JSON ``Sources`` key.
+            If ``True`` (default), the filename of the raw source will
+            be stored in the scans.tsv ``sources`` column.
 
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
@@ -1690,8 +1689,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # write to the scans.tsv file the output file written
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
-    _scans_tsv(raw, scan_relative_fpath,
-               scans_path.fpath, keep_source, overwrite)
+    _scans_tsv(raw, raw_fname=scan_relative_fpath,
+               fname=scans_path.fpath, keep_source=keep_source,
+               overwrite=overwrite)
     logger.info(f'Wrote {scans_path.fpath} entry with '
                 f'{scan_relative_fpath}.')
 
