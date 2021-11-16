@@ -2673,6 +2673,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     assert 'sources' not in scans_tsv.keys()
 
     # Write with sources this time get the scans tsv
+    print('ABOUT TO WRITE ANOTHER ONE...')
     bids_path = write_raw_bids(
         raw, orig_bids_path, overwrite=True,
         anonymize=dict(daysback=daysback_min, keep_source=True),

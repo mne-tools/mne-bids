@@ -59,6 +59,7 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
 
 class _AnonymizeArgs(TypedDict, total=False):
     """Anonymize argument for write_raw_bids."""
+
     daysback: int
     keep_his: bool
     keep_source: bool
@@ -513,7 +514,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
                 continue
 
             # add 'n/a' if any missing columns
-            orig_data[key] = ['n/a'] * len(list(data.values()))
+            orig_data[key] = ['n/a'] * len(next(iter(data.values())))
 
         # otherwise add the new data
         data = _combine_rows(orig_data, data, 'filename')
@@ -1520,7 +1521,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                      'for anonymization')
                 convert = True
                 bids_path.update(extension='.vhdr')
-
+        print(f'KEEP SOURCE IS... {keep_source}')
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
     unit = UNITS.get(ext, 'n/a')
