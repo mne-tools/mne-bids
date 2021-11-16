@@ -439,7 +439,7 @@ def copyfile_edf(src, dest, anonymize=None):
 
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
-        if ext_src == ['.bdf', '.BDF']:
+        if ext_src in ['.bdf', '.BDF']:
             raw = read_raw_bdf(dest, preload=False, verbose=0)
         elif ext_src in ['.edf', '.EDF']:
             raw = read_raw_edf(dest, preload=False, verbose=0)
