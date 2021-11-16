@@ -229,7 +229,7 @@ def _summarize_participants_tsv(root):
     p_ages = participants_tsv.get('age')
     min_age, max_age = 'n/a', 'n/a'
     mean_age, std_age = 'n/a', 'n/a'
-    n_age_unknown = len(p_ages)
+    n_age_unknown = len(p_ages) if p_ages else len(p_ids)
     if p_ages:
         # only summarize age if they are numerics
         if all([age.isnumeric() for age in p_ages if age != 'n/a']):
