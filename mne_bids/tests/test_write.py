@@ -2679,7 +2679,8 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
             anonymize=dict(daysback=0, keep_source=True), verbose=False)
     scans_tsv = _from_tsv(scans_fname)
     assert scans_tsv['sources'] == [
-        op.basename(fname) for fname in raw.filenames]
+        Path(f).name for f in raw.filenames
+    ]
     _bids_validate(bids_path.root)
 
 

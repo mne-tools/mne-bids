@@ -57,9 +57,8 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              ANONYMIZED_JSON_KEY_WHITELIST)
 
 
-class AnonymizeArg(TypedDict, total=False):
+class _AnonymizeArgs(TypedDict, total=False):
     """Anonymize argument for write_raw_bids."""
-    
     daysback: int
     keep_his: bool
     keep_source: bool
@@ -445,7 +444,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     fname : str
         Filename to save the scans.tsv to.
     keep_source : bool
-        If ``True`` (default), the filename of the raw source will
+        If ``True`` (default), ``raw.filenames`` will
         be stored in the ``sources`` column.
     overwrite : bool
         Defaults to False.
@@ -490,11 +489,10 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         data['sources'] = [Path(fname).name for fname in raw.filenames]
 
         # write out a sidecar JSON if not exists
-        sidecar_path = str(fname).replace('.tsv', '.json')
+        sidecar_json_path = Path(fname).with_suffix('.json')
         sidecar_json = {'sources': 'Original source filename.'}
-        if not op.exists(sidecar_path):
-            with open(sidecar_path, 'w') as fout:
-                json.dump(sidecar_json, fout)
+        if not sidecar_json_path.exists():
+            sidecar_path.write_text(json.dumps(sidecar_json), encoding='utf-8')
         else:
             with open(sidecar_path, 'r') as fin:
                 curr_sidecar_json = json.load(fin)
