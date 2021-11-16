@@ -198,7 +198,7 @@ class BIDSPath(object):
     datatype : str
         The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
         ``'ieeg'``.
-    root : str | pathlib.Path | None
+    root : path-like | None
         The root directory of the BIDS dataset.
     check : bool
         If ``True``, enforces BIDS conformity. Defaults to ``True``.
@@ -520,7 +520,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        bidspath : mne_bids.BIDSPath
+        bidspath : BIDSPath
             The copied bidspath.
         """
         return deepcopy(self)
@@ -536,7 +536,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        self : mne_bids.BIDSPath
+        self : BIDSPath
             The BIDSPath object.
         """
         self.directory.mkdir(parents=True, exist_ok=exist_ok)
@@ -655,7 +655,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        bidspath : mne_bids.BIDSPath
+        bidspath : BIDSPath
             The updated instance of BIDSPath.
 
         Examples
@@ -1093,7 +1093,7 @@ def search_folder_for_text(entry, folder, extensions=('.json', '.tsv'),
     ----------
     entry : str
         The string to search for
-    folder : str | pathlib.Path
+    folder : path-like
         The folder in which to search.
     extensions : list | tuple | str
         The extensions to search through. Default is ``json`` and
@@ -1149,7 +1149,7 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
 
     Parameters
     ----------
-    folder : str | pathlib.Path
+    folder : path-like
         The folder for which to print the directory tree.
     max_depth : int
         The maximum depth into which to descend recursively for printing
@@ -1242,7 +1242,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
 
     Parameters
     ----------
-    fname : str
+    fname : path-like
         The path to parse a `BIDSPath` from.
     check : bool
         Whether to check if the generated `BIDSPath` complies with the BIDS
@@ -1306,7 +1306,7 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 
     Parameters
     ----------
-    fname : mne_bids.BIDSPath | str
+    fname : BIDSPath | path-like
         The path to parse.
     on_error : 'raise' | 'warn' | 'ignore'
         If any unsupported labels in the filename are found and this is set
@@ -1381,7 +1381,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         Full name of the data file.
     suffix : str | None
         The filename suffix. This is the entity after the last ``_``
@@ -1490,7 +1490,7 @@ def get_datatypes(root, verbose=None):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         Path to the root of the BIDS directory.
     %(verbose)s
 

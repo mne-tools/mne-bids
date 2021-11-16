@@ -137,9 +137,9 @@ def copyfile_ctf(src, dest):
 
     Parameters
     ----------
-    src : str | pathlib.Path
+    src : path-like
         Path to the source raw .ds folder.
-    dest : str | pathlib.Path
+    dest : path-like
         Path to the destination of the new bids folder.
 
     See Also
@@ -170,9 +170,9 @@ def copyfile_kit(src, dest, subject_id, session_id,
 
     Parameters
     ----------
-    src : str | pathlib.Path
+    src : path-like
         Path to the source raw .con or .sqd folder.
-    dest : str | pathlib.Path
+    dest : path-like
         Path to the destination of the new bids folder.
     subject_id : str | None
         The subject ID. Corresponds to "sub".
@@ -272,9 +272,9 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
 
     Parameters
     ----------
-    vhdr_src : str | pathlib.Path
+    vhdr_src : path-like
         The source path of the .vhdr file to be copied.
-    vhdr_dest : str | pathlib.Path
+    vhdr_dest : path-like
         The destination path of the .vhdr file.
     anonymize : dict | None
         If None (default), no anonymization is performed.
@@ -381,9 +381,9 @@ def copyfile_edf(src, dest, anonymize=None):
 
     Parameters
     ----------
-    src : str | pathlib.Path
+    src : path-like
         The source path of the .edf or .bdf file to be copied.
-    dest : str | pathlib.Path
+    dest : path-like
         The destination path of the .edf or .bdf file.
     anonymize : dict | None
         If None (default), no anonymization is performed.
@@ -484,9 +484,9 @@ def copyfile_eeglab(src, dest):
 
     Parameters
     ----------
-    src : str | pathlib.Path
+    src : path-like
         Path to the source raw .set file.
-    dest : str | pathlib.Path
+    dest : path-like
         Path to the destination of the new .set file.
 
     See Also
@@ -547,7 +547,7 @@ def copyfile_bti(raw, dest):
     ----------
     raw : mne.io.Raw
         An MNE-Python raw object of BTi data.
-    dest : str | pathlib.Path
+    dest : path-like
         Destination to copy the BTi data to.
 
     See Also

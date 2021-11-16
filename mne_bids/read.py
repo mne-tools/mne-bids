@@ -586,7 +586,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The file to read. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. The ``.datatype`` attribute
         **may** be set. If ``.datatype`` is not set and only one data type
@@ -781,12 +781,12 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The path of the electrophysiology recording.
     extra_params : None | dict
         Extra parameters to be passed to :func:`mne.io.read_raw` when reading
         the MEG file.
-    t1_bids_path : mne_bids.BIDSPath | None
+    t1_bids_path : BIDSPath | None
         If ``None`` (default), will try to discover the T1-weighted MRI file
         based on the name and location of the MEG recording specified via the
         ``bids_path`` parameter. Alternatively, you explicitly specify which
@@ -798,7 +798,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     fs_subject : str | None
         The subject identifier used for FreeSurfer. If ``None``, defaults to
         the ``subject`` entity in ``bids_path``.
-    fs_subjects_dir : str | pathlib.Path | None
+    fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable.
 
