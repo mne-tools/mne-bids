@@ -424,15 +424,15 @@ def copyfile_edf(src, dest, anonymize=None):
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
 
-    if ext_dest in ['.EDF', '.BDF']:
-        warn('Upper-case extension for EDF/BDF files is not supported '
-             'in BIDS. Converting destination extension to lower-case.')
-        ext_dest = ext_dest.lower()
-        dest = Path(dest).with_suffix(ext_dest)
-
     if ext_src != ext_dest:
-        raise ValueError(f'Need to move data with same extension, '
-                         f' but got "{ext_src}" and "{ext_dest}"')
+        if ext_dest in ['.EDF', '.BDF']:
+            warn('Upper-case extension for EDF/BDF files is not supported '
+                 'in BIDS. Converting destination extension to lower-case.')
+            ext_dest = ext_dest.lower()
+            dest = Path(dest).with_suffix(ext_dest)
+        else:
+            raise ValueError(f'Need to move data with same extension, '
+                             f' but got "{ext_src}" and "{ext_dest}"')
 
     # Copy data prior to any anonymization
     sh.copyfile(src, dest)
