@@ -1264,10 +1264,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
 
-    When writing EDF files, all EDF file extensions are forced to be
-    lower-case incompliance with the BIDS specification. Although EDF
-    supports both upper and lower case extension (i.e. '.EDF' and '.edf'),
-    BIDS requires '.edf'.
+    When writing EDF or BDF files, all file extensions are forced to be
+    lower-case, in compliance with the BIDS specification.
 
     See Also
     --------
@@ -1345,10 +1343,12 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raw_fname = raw_fname.replace('.dat', '.lay')
         _, ext = _parse_ext(raw_fname)
 
-        # force all EDF files with upper-case extension to be written as
+        # force all EDF/BDF files with upper-case extension to be written as
         # lower case
         if ext == '.EDF':
             ext = '.edf'
+        elif ext == '.BDF':
+            ext = '.bdf'
 
         if ext not in ALLOWED_INPUT_EXTENSIONS:
             raise ValueError(f'Unrecognized file format {ext}')

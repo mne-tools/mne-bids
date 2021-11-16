@@ -91,8 +91,6 @@ Bug fixes
 
 - Fix writing and reading EDF files with upper-case extension (``.EDF``), by `Adam Li`_ (:gh:`868`)
 
-- Fix reading of EDF files with lower/upper case extension, by `Adam Li`_ (:gh:`875`)
-
 - Fix reading of TSV files with only a single column, by `Marijn van Vliet`_ (:gh:`886`)
 
 - Fix erroneous measurement date check in :func:`mne_bids.write_raw_bids` when requesting to anonymize empty-room data, by `Richard Höchenberger`_ (:gh:`893`)
