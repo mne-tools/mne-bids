@@ -414,7 +414,7 @@ example, electrode location TSV files do not need a “task” field.</p>
 </dd>
 <dt><strong>acquisition: str | None</strong></dt><dd><p>The acquisition parameters. Corresponds to “acq”.</p>
 </dd>
-<dt><strong>run</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The run number. Corresponds to “run”.</p>
+<dt><strong>run</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The run number. Corresponds to “run”.</p>
 </dd>
 <dt><strong>processing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The processing label. Corresponds to “proc”.</p>
 </dd>
@@ -426,7 +426,7 @@ Corresponds to “space”.
 Note that valid values for <code class="docutils literal notranslate"><span class="pre">space</span></code> must come from a list
 of BIDS keywords as described in the BIDS specification.</p>
 </dd>
-<dt><strong>split</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.
+<dt><strong>split</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.
 Corresponds to “split”.</p>
 </dd>
 <dt><strong>suffix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The filename suffix. This is the entity after the
@@ -442,9 +442,9 @@ The following filename suffix’s are accepted:
 <dt><strong>datatype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The BIDS data type, e.g., <code class="docutils literal notranslate"><span class="pre">'anat'</span></code>, <code class="docutils literal notranslate"><span class="pre">'func'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>,
 <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>.</p>
 </dd>
-<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
+<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/glossary.html#term-path-like" title="(in MNE v1.0)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
 </dd>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces BIDS conformity. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces BIDS conformity. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -523,7 +523,7 @@ different properties look like for our object:</p>
 </dd>
 <dt><a class="reference internal" href="#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Full filepath for this BIDS file.</p>
 </dd>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to enforce BIDS conformity.</p>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to enforce BIDS conformity.</p>
 </dd>
 </dl>
 </dd>
@@ -576,7 +576,7 @@ different properties look like for our object:</p>
 <dl class="field-list">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl>
-<dt><strong>bidspath</strong><span class="classifier"><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The copied bidspath.</p>
+<dt><strong>bidspath</strong><span class="classifier"><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The copied bidspath.</p>
 </dd>
 </dl>
 </dd>
@@ -631,7 +631,7 @@ directory would be:</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>use_sidecar_only</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Whether to only check the <code class="docutils literal notranslate"><span class="pre">AssociatedEmptyRoom</span></code> entry in the
+<dt><strong>use_sidecar_only</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to only check the <code class="docutils literal notranslate"><span class="pre">AssociatedEmptyRoom</span></code> entry in the
 sidecar JSON file or not. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, first look for the entry,
 and if unsuccessful, try to find the best-matching empty-room
 recording in the dataset based on the measurement date.</p>
@@ -640,10 +640,10 @@ recording in the dataset based on the measurement date.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The path corresponding to the best-matching empty-room measurement.
+<dt><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The path corresponding to the best-matching empty-room measurement.
 Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if none was found.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">logging documentation</span></a> and
 <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
@@ -679,7 +679,7 @@ path.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only returns paths that conform to BIDS. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only returns paths that conform to BIDS. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
 (default), the <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute of the returned
 <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> object will be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> for paths that
 do conform to BIDS, and to <code class="docutils literal notranslate"><span class="pre">False</span></code> for those that don’t.</p>
@@ -688,7 +688,7 @@ do conform to BIDS, and to <code class="docutils literal notranslate"><span clas
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>bids_paths</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The matching paths.</p>
+<dt><strong>bids_paths</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The matching paths.</p>
 </dd>
 </dl>
 </dd>
@@ -736,14 +736,14 @@ found.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>exist_ok</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, raise an exception if the directory already exists.
+<dt><strong>exist_ok</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, raise an exception if the directory already exists.
 Otherwise, do nothing (default).</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>self</strong><span class="classifier"><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The BIDSPath object.</p>
+<dt><strong>self</strong><span class="classifier"><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The BIDSPath object.</p>
 </dd>
 </dl>
 </dd>
@@ -835,7 +835,7 @@ in the BIDS specification.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.10)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>If a boolean, controls whether to enforce BIDS conformity. This
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If a boolean, controls whether to enforce BIDS conformity. This
 will set the <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute accordingly. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, rely on
 the existing <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute instead, which is set upon
 <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instantiation. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -849,7 +849,7 @@ or updates for ‘root’ or ‘datatype’.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl>
-<dt><strong>bidspath</strong><span class="classifier"><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The updated instance of BIDSPath.</p>
+<dt><strong>bidspath</strong><span class="classifier"><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The updated instance of BIDSPath.</p>
 </dd>
 </dl>
 </dd>
@@ -984,7 +984,7 @@ or updates for ‘root’ or ‘datatype’.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-15.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
 </p>
     </div>
     

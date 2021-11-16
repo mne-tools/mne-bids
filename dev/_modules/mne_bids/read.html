@@ -793,7 +793,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The file to read. The :class:`mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``.root`` attribute set. The ``.datatype`` attribute</span>
 <span class="sd">        **may** be set. If ``.datatype`` is not set and only one data type</span>
@@ -988,12 +988,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The path of the electrophysiology recording.</span>
 <span class="sd">    extra_params : None | dict</span>
 <span class="sd">        Extra parameters to be passed to :func:`mne.io.read_raw` when reading</span>
 <span class="sd">        the MEG file.</span>
-<span class="sd">    t1_bids_path : mne_bids.BIDSPath | None</span>
+<span class="sd">    t1_bids_path : BIDSPath | None</span>
 <span class="sd">        If ``None`` (default), will try to discover the T1-weighted MRI file</span>
 <span class="sd">        based on the name and location of the MEG recording specified via the</span>
 <span class="sd">        ``bids_path`` parameter. Alternatively, you explicitly specify which</span>
@@ -1005,7 +1005,7 @@
 <span class="sd">    fs_subject : str | None</span>
 <span class="sd">        The subject identifier used for FreeSurfer. If ``None``, defaults to</span>
 <span class="sd">        the ``subject`` entity in ``bids_path``.</span>
-<span class="sd">    fs_subjects_dir : str | pathlib.Path | None</span>
+<span class="sd">    fs_subjects_dir : path-like | None</span>
 <span class="sd">        The FreeSurfer subjects directory. If ``None``, defaults to the</span>
 <span class="sd">        ``SUBJECTS_DIR`` environment variable.</span>
 
@@ -1166,7 +1166,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-15.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
 </p>
     </div>
     

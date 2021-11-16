@@ -344,9 +344,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    src : str | pathlib.Path</span>
+<span class="sd">    src : path-like</span>
 <span class="sd">        Path to the source raw .ds folder.</span>
-<span class="sd">    dest : str | pathlib.Path</span>
+<span class="sd">    dest : path-like</span>
 <span class="sd">        Path to the destination of the new bids folder.</span>
 
 <span class="sd">    See Also</span>
@@ -377,9 +377,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    src : str | pathlib.Path</span>
+<span class="sd">    src : path-like</span>
 <span class="sd">        Path to the source raw .con or .sqd folder.</span>
-<span class="sd">    dest : str | pathlib.Path</span>
+<span class="sd">    dest : path-like</span>
 <span class="sd">        Path to the destination of the new bids folder.</span>
 <span class="sd">    subject_id : str | None</span>
 <span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
@@ -479,9 +479,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    vhdr_src : str | pathlib.Path</span>
+<span class="sd">    vhdr_src : path-like</span>
 <span class="sd">        The source path of the .vhdr file to be copied.</span>
-<span class="sd">    vhdr_dest : str | pathlib.Path</span>
+<span class="sd">    vhdr_dest : path-like</span>
 <span class="sd">        The destination path of the .vhdr file.</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If None (default), no anonymization is performed.</span>
@@ -588,9 +588,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    src : str | pathlib.Path</span>
+<span class="sd">    src : path-like</span>
 <span class="sd">        The source path of the .edf or .bdf file to be copied.</span>
-<span class="sd">    dest : str | pathlib.Path</span>
+<span class="sd">    dest : path-like</span>
 <span class="sd">        The destination path of the .edf or .bdf file.</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If None (default), no anonymization is performed.</span>
@@ -691,9 +691,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    src : str | pathlib.Path</span>
+<span class="sd">    src : path-like</span>
 <span class="sd">        Path to the source raw .set file.</span>
-<span class="sd">    dest : str | pathlib.Path</span>
+<span class="sd">    dest : path-like</span>
 <span class="sd">        Path to the destination of the new .set file.</span>
 
 <span class="sd">    See Also</span>
@@ -754,7 +754,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        An MNE-Python raw object of BTi data.</span>
-<span class="sd">    dest : str | pathlib.Path</span>
+<span class="sd">    dest : path-like</span>
 <span class="sd">        Destination to copy the BTi data to.</span>
 
 <span class="sd">    See Also</span>
@@ -796,7 +796,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-15.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
 </p>
     </div>
     

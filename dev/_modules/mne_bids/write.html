@@ -1285,7 +1285,7 @@
 <span class="sd">        The raw data. It must be an instance of `mne.io.Raw` that is not</span>
 <span class="sd">        already loaded from disk unless ``allow_preload`` is explicitly set</span>
 <span class="sd">        to ``True``. See warning for the ``allow_preload`` parameter.</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``subject``, ``task``, and ``root`` attributes set.</span>
 <span class="sd">        If the ``datatype`` attribute is not set, it will be inferred from the</span>
@@ -1387,7 +1387,7 @@
 <span class="sd">           Symlinks are currently only supported on macOS and Linux. We will</span>
 <span class="sd">           add support for Windows 10 at a later time.</span>
 
-<span class="sd">    empty_room : mne_bids.BIDSPath | None</span>
+<span class="sd">    empty_room : BIDSPath | None</span>
 <span class="sd">        The empty-room recording to be associated with this file. This is</span>
 <span class="sd">        only supported for MEG data, and only if the ``root`` attributes of</span>
 <span class="sd">        ``bids_path`` and ``empty_room`` are the same. Pass ``None``</span>
@@ -1432,7 +1432,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The path of the created data file.</span>
 
 <span class="sd">    Notes</span>
@@ -1872,7 +1872,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    image : str | pathlib.Path | mne_bids.BIDSPath | NibabelImageObject</span>
+<span class="sd">    image : path-like | mne_bids.BIDSPath | NibabelImageObject</span>
 <span class="sd">        Path to an MRI scan (e.g. T1w) of the subject. Can be in any format</span>
 <span class="sd">        readable by nibabel. Can also be a nibabel image object of an</span>
 <span class="sd">        MRI scan. Will be written as a .nii.gz file.</span>
@@ -1891,7 +1891,7 @@
 <span class="sd">        the anatomical landmarks if they are not provided in MRI voxel space.</span>
 <span class="sd">        This is because the head coordinate of a</span>
 <span class="sd">        :class:`mne.channels.DigMontage` is aligned using FreeSurfer surfaces.</span>
-<span class="sd">    fs_subjects_dir : str | pathlib.Path | None</span>
+<span class="sd">    fs_subjects_dir : path-like | None</span>
 <span class="sd">        The FreeSurfer subjects directory. If ``None``, defaults to the</span>
 <span class="sd">        ``SUBJECTS_DIR`` environment variable. Must be provided to write</span>
 <span class="sd">        anatomical landmarks if they are not provided in MRI voxel space.</span>
@@ -1954,11 +1954,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    image : str | pathlib.Path | NibabelImageObject</span>
+<span class="sd">    image : path-like | NibabelImageObject</span>
 <span class="sd">        Path to an MRI scan (e.g. T1w) of the subject. Can be in any format</span>
 <span class="sd">        readable by nibabel. Can also be a nibabel image object of an</span>
 <span class="sd">        MRI scan. Will be written as a .nii.gz file.</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The file to write. The :class:`mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``root`` and ``subject`` attributes set.</span>
 <span class="sd">        The suffix is assumed to be ``&#39;T1w&#39;`` if not present. It can</span>
@@ -1994,7 +1994,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        Path to the written MRI data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
@@ -2109,7 +2109,7 @@
 <span class="sd">        Descriptions of the reasons that lead to the exclusion of the</span>
 <span class="sd">        channel(s). If a list, it must match the length of ``ch_names``.</span>
 <span class="sd">        If ``None``, no descriptions are added.</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The recording to update. The :class:`mne_bids.BIDSPath` instance passed</span>
 <span class="sd">        here **must** have the ``.root`` attribute set. The ``.datatype``</span>
 <span class="sd">        attribute **may** be set. If ``.datatype`` is not set and only one data</span>
@@ -2141,7 +2141,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The recording to update. The :class:`mne_bids.BIDSPath` instance passed</span>
 <span class="sd">        here **must** have the ``.root`` attribute set. The ``.datatype``</span>
 <span class="sd">        attribute **may** be set. If ``.datatype`` is not set and only one data</span>
@@ -2266,7 +2266,7 @@
 <span class="sd">        Either the path of the ``.dat`` file containing the file-calibration</span>
 <span class="sd">        matrix, or the dictionary returned by</span>
 <span class="sd">        :func:`mne.preprocessing.read_fine_calibration`.</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and</span>
 <span class="sd">        ``subject`` set,  and that ``datatype`` is either ``&#39;meg&#39;`` or</span>
 <span class="sd">        ``None``.</span>
@@ -2322,7 +2322,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    fname : path-like</span>
 <span class="sd">        The path of the ``FIFF`` file containing the crosstalk information.</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and</span>
 <span class="sd">        ``subject`` set,  and that ``datatype`` is either ``&#39;meg&#39;`` or</span>
 <span class="sd">        ``None``.</span>
@@ -2830,7 +2830,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-15.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
 </p>
     </div>
     

@@ -405,7 +405,7 @@
 <span class="sd">    datatype : str</span>
 <span class="sd">        The BIDS data type, e.g., ``&#39;anat&#39;``, ``&#39;func&#39;``, ``&#39;eeg&#39;``, ``&#39;meg&#39;``,</span>
 <span class="sd">        ``&#39;ieeg&#39;``.</span>
-<span class="sd">    root : str | pathlib.Path | None</span>
+<span class="sd">    root : path-like | None</span>
 <span class="sd">        The root directory of the BIDS dataset.</span>
 <span class="sd">    check : bool</span>
 <span class="sd">        If ``True``, enforces BIDS conformity. Defaults to ``True``.</span>
@@ -727,7 +727,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        bidspath : mne_bids.BIDSPath</span>
+<span class="sd">        bidspath : BIDSPath</span>
 <span class="sd">            The copied bidspath.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -743,7 +743,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        self : mne_bids.BIDSPath</span>
+<span class="sd">        self : BIDSPath</span>
 <span class="sd">            The BIDSPath object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="n">exist_ok</span><span class="p">)</span>
@@ -862,7 +862,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        bidspath : mne_bids.BIDSPath</span>
+<span class="sd">        bidspath : BIDSPath</span>
 <span class="sd">            The updated instance of BIDSPath.</span>
 
 <span class="sd">        Examples</span>
@@ -1300,7 +1300,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    entry : str</span>
 <span class="sd">        The string to search for</span>
-<span class="sd">    folder : str | pathlib.Path</span>
+<span class="sd">    folder : path-like</span>
 <span class="sd">        The folder in which to search.</span>
 <span class="sd">    extensions : list | tuple | str</span>
 <span class="sd">        The extensions to search through. Default is ``json`` and</span>
@@ -1356,7 +1356,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    folder : str | pathlib.Path</span>
+<span class="sd">    folder : path-like</span>
 <span class="sd">        The folder for which to print the directory tree.</span>
 <span class="sd">    max_depth : int</span>
 <span class="sd">        The maximum depth into which to descend recursively for printing</span>
@@ -1449,7 +1449,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fname : str</span>
+<span class="sd">    fname : path-like</span>
 <span class="sd">        The path to parse a `BIDSPath` from.</span>
 <span class="sd">    check : bool</span>
 <span class="sd">        Whether to check if the generated `BIDSPath` complies with the BIDS</span>
@@ -1513,7 +1513,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fname : mne_bids.BIDSPath | str</span>
+<span class="sd">    fname : BIDSPath | path-like</span>
 <span class="sd">        The path to parse.</span>
 <span class="sd">    on_error : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
 <span class="sd">        If any unsupported labels in the filename are found and this is set</span>
@@ -1588,7 +1588,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : mne_bids.BIDSPath</span>
+<span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        Full name of the data file.</span>
 <span class="sd">    suffix : str | None</span>
 <span class="sd">        The filename suffix. This is the entity after the last ``_``</span>
@@ -1697,7 +1697,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">    root : path-like</span>
 <span class="sd">        Path to the root of the BIDS directory.</span>
 <span class="sd">    %(verbose)s</span>
 
@@ -2076,7 +2076,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-15.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
 </p>
     </div>
     

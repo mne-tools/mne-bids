@@ -496,7 +496,7 @@ which are however optional. The required inputs are:</p>
         The raw data. It must be an instance of `mne.io.Raw` that is not
         already loaded from disk unless ``allow_preload`` is explicitly set
         to ``True``. See warning for the ``allow_preload`` parameter.
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``subject``, ``task``, and ``root`` attributes set.
         If the ``datatype`` attribute is not set, it will be inferred from the
@@ -598,7 +598,7 @@ which are however optional. The required inputs are:</p>
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
 
-    empty_room : mne_bids.BIDSPath | None
+    empty_room : BIDSPath | None
         The empty-room recording to be associated with this file. This is
         only supported for MEG data, and only if the ``root`` attributes of
         ``bids_path`` and ``empty_room`` are the same. Pass ``None``
@@ -648,7 +648,7 @@ which are however optional. The required inputs are:</p>
 
     Returns
     -------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The path of the created data file.
 
     Notes
@@ -1262,7 +1262,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.320 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.077 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1312,7 +1312,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-15.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
 </p>
     </div>
     
