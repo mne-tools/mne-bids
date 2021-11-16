@@ -51,8 +51,8 @@ numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
 numpydoc_xref_aliases = {
     'BIDSPath': ':class:`BIDSPath <mne_bids.BIDSPath>`',
-    'path-like': ':class:`path-like <mne:path-like>`',
-    'array-like': ':class:`array-like <mne:array-like>`',
+    'path-like': ':term:`path-like <mne:path-like>`',
+    'array-like': ':term:`array-like <mne:array-like>`',
     'int': ':class:`int <python:int>`',
     'bool': ':class:`bool <python:bool>`',
     'float': ':class:`float <python:float>`',
