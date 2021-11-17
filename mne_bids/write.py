@@ -438,7 +438,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         Filename to save the scans.tsv to.
     keep_source : bool
         If ``True`` (default), ``raw.filenames`` will
-        be stored in the ``sources`` column.
+        be stored in the ``source`` column.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -479,18 +479,18 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
 
     # add source filename if desired
     if keep_source:
-        data['sources'] = [Path(fname).name for fname in raw.filenames]
+        data['source'] = [Path(fname).name for fname in raw.filenames]
 
         # write out a sidecar JSON if not exists
         sidecar_json_path = Path(fname).with_suffix('.json')
-        sidecar_json = {'sources': 'Original source filename.'}
+        sidecar_json = {'source': 'Original source filename.'}
 
         if not op.exists(sidecar_json_path):
             _write_json(sidecar_json_path, sidecar_json)
         else:
             with open(sidecar_json_path, 'r') as fin:
                 curr_sidecar_json = json.load(fin)
-            if 'sources' not in curr_sidecar_json:
+            if 'source' not in curr_sidecar_json:
                 sidecar_json.update(curr_sidecar_json)
                 _write_json(sidecar_json_path, sidecar_json, overwrite=True)
 
@@ -1183,7 +1183,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         ``keep_source`` : bool
             If ``True`` (default), the filename of the raw source will
-            be stored in the scans.tsv ``sources`` column.
+            be stored in the scans.tsv ``source`` column.
 
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
