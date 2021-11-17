@@ -1180,7 +1180,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         ``keep_source`` : bool
             If ``True`` (default), the filename of the raw source will
-            be stored in the scans.tsv ``source`` column.
+            be stored in the ``source`` column of  ``scans.tsv``.
 
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
