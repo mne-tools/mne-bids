@@ -1264,6 +1264,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
 
+    If the file paths of ``raw`` and ``bids_path`` are the same, then
+    an error will occur because MNE-BIDS will inherently delete the
+    source file otherwise. This can lead to errors, so the user must
+    specify a different data path, or explicitly set ``format``.
+
     See Also
     --------
     mne.io.Raw.anonymize
@@ -1539,19 +1544,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
 
-    if os.path.exists(bids_path.fpath):
-        if overwrite:
-            # Need to load data before removing its source
-            raw.load_data()
-            if bids_path.fpath.is_dir():
-                shutil.rmtree(bids_path.fpath)
-            else:
-                bids_path.fpath.unlink()
-        else:
-            raise FileExistsError(
-                f'"{bids_path.fpath}" already exists. '  # noqa: F821
-                'Please set overwrite to True.')
-
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
     if not convert:
@@ -1596,6 +1588,29 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                              f'accepted input format for {datatype} datatype. '
                              f'Please use one of {CONVERT_FORMATS[datatype]} '
                              f'for {datatype} datatype.')
+
+    # error should be raised if trying to copyfiles into the same
+    # location, which mne-bids will not do
+    if bids_path.fpath.exists() and not convert and \
+            bids_path.fpath.as_posix() == raw_fname:
+        raise RuntimeError(f'Desired output BIDs path {bids_path.fpath} is '
+                           f'the source file. Please pass a different output '
+                           f'BIDS path, or set `format` explicitly.')
+
+    # otherwise if the BIDS path currently exists, check if we
+    # would like to overwrite the existing dataset
+    if bids_path.fpath.exists():
+        if overwrite:
+            # Need to load data before removing its source
+            raw.load_data()
+            if bids_path.fpath.is_dir():
+                shutil.rmtree(bids_path.fpath)
+            else:
+                bids_path.fpath.unlink()
+        else:
+            raise FileExistsError(
+                f'"{bids_path.fpath}" already exists. '  # noqa: F821
+                'Please set overwrite to True.')
 
     # File saving branching logic
     if convert:

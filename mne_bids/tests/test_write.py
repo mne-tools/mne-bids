@@ -3341,3 +3341,25 @@ def test_anonymize_dataset_daysback(tmpdir):
         rng=np.random.default_rng(),
         show_progress_thresh=20
     )
+
+
+def test_repeat_write_location(tmpdir):
+    """Test error writing BIDS dataset to the same location."""
+    # write the file first to disc
+    dir_name = 'EDF'
+    fname = 'test_reduced.edf'
+    bids_root = tmpdir.mkdir('bids2')
+    bids_path = _bids_path.copy().update(root=bids_root)
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+    raw = _read_raw_edf(raw_fname)
+    bids_path = write_raw_bids(raw, bids_path, verbose=False)
+
+    # read in the dataset
+    raw = read_raw_bids(bids_path, verbose=False)
+
+    with pytest.raises(RuntimeError,
+                       match='Desired output BIDs path'):
+        # try to write to the same path again
+        write_raw_bids(raw, bids_path, overwrite=True,
+                       verbose=False)
