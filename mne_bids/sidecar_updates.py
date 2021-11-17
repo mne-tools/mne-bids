@@ -35,7 +35,7 @@ def update_sidecar_json(bids_path, entries, verbose=None):
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The set of paths to update. The :class:`mne_bids.BIDSPath` instance
         passed here **must** have the ``.root`` attribute set. The
         ``.datatype`` attribute **may** be set. If ``.datatype`` is
@@ -146,7 +146,7 @@ def update_anat_landmarks(bids_path, landmarks, verbose=None):
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         Path of the MR image.
     landmarks : mne.channels.DigMontage
         An :class:`mne.channels.DigMontage` instance with coordinates for the

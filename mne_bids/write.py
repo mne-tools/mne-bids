@@ -1102,7 +1102,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         The raw data. It must be an instance of `mne.io.Raw` that is not
         already loaded from disk unless ``allow_preload`` is explicitly set
         to ``True``. See warning for the ``allow_preload`` parameter.
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``subject``, ``task``, and ``root`` attributes set.
         If the ``datatype`` attribute is not set, it will be inferred from the
@@ -1208,7 +1208,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
 
-    empty_room : mne_bids.BIDSPath | None
+    empty_room : BIDSPath | None
         The empty-room recording to be associated with this file. This is
         only supported for MEG data, and only if the ``root`` attributes of
         ``bids_path`` and ``empty_room`` are the same. Pass ``None``
@@ -1253,7 +1253,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     Returns
     -------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The path of the created data file.
 
     Notes
@@ -1291,6 +1291,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     existing ``dataset_description.json`` file.
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
+
+    When writing EDF or BDF files, all file extensions are forced to be
+    lower-case, in compliance with the BIDS specification.
 
     See Also
     --------
@@ -1367,6 +1370,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raw_fname = raw_fname.replace('.fdt', '.set')
         raw_fname = raw_fname.replace('.dat', '.lay')
         _, ext = _parse_ext(raw_fname)
+
+        # force all EDF/BDF files with upper-case extension to be written as
+        # lower case
+        if ext == '.EDF':
+            ext = '.edf'
+        elif ext == '.BDF':
+            ext = '.bdf'
 
         if ext not in ALLOWED_INPUT_EXTENSIONS:
             raise ValueError(f'Unrecognized file format {ext}')
@@ -1653,7 +1663,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
-    elif ext in ['.edf', '.EDF', '.bdf']:
+    elif ext in ['.edf', '.EDF', '.bdf', '.BDF']:
         if anonymize is not None:
             warn("EDF/EDF+/BDF files contain two fields for recording dates."
                  "Due to file format limitations, one of these fields only "
@@ -1695,7 +1705,7 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
 
     Parameters
     ----------
-    image : str | pathlib.Path | mne_bids.BIDSPath | NibabelImageObject
+    image : path-like | mne_bids.BIDSPath | NibabelImageObject
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
@@ -1714,7 +1724,7 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
         the anatomical landmarks if they are not provided in MRI voxel space.
         This is because the head coordinate of a
         :class:`mne.channels.DigMontage` is aligned using FreeSurfer surfaces.
-    fs_subjects_dir : str | pathlib.Path | None
+    fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable. Must be provided to write
         anatomical landmarks if they are not provided in MRI voxel space.
@@ -1777,11 +1787,11 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
 
     Parameters
     ----------
-    image : str | pathlib.Path | NibabelImageObject
+    image : path-like | NibabelImageObject
         Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of an
         MRI scan. Will be written as a .nii.gz file.
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The file to write. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
@@ -1817,7 +1827,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
 
     Returns
     -------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         Path to the written MRI data.
     """
     if not has_nibabel():  # pragma: no cover
@@ -1932,7 +1942,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         Descriptions of the reasons that lead to the exclusion of the
         channel(s). If a list, it must match the length of ``ch_names``.
         If ``None``, no descriptions are added.
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The recording to update. The :class:`mne_bids.BIDSPath` instance passed
         here **must** have the ``.root`` attribute set. The ``.datatype``
         attribute **may** be set. If ``.datatype`` is not set and only one data
@@ -1964,7 +1974,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None,
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The recording to update. The :class:`mne_bids.BIDSPath` instance passed
         here **must** have the ``.root`` attribute set. The ``.datatype``
         attribute **may** be set. If ``.datatype`` is not set and only one data
@@ -2089,7 +2099,7 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
         Either the path of the ``.dat`` file containing the file-calibration
         matrix, or the dictionary returned by
         :func:`mne.preprocessing.read_fine_calibration`.
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
         ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
         ``None``.
@@ -2145,7 +2155,7 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
     ----------
     fname : path-like
         The path of the ``FIFF`` file containing the crosstalk information.
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
         ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
         ``None``.
