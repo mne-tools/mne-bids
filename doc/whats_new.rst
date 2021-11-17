@@ -72,6 +72,8 @@ API and behavior changes
 
 - In :func:`mne_bids.write_anat`, the deprecated parameters ``raw``, ``trans``, and ``t1w`` have been removed, by `Richard Höchenberger`_ (:gh:`909`)
 
+- In :func:`mne_bids.write_raw_bids`, any EDF output is always stored with lower-case extension (``.edf``), by `Adam Li`_ (:gh:`906`)
+
 Requirements
 ^^^^^^^^^^^^
 
@@ -88,8 +90,6 @@ Bug fixes
 - Properly support CTF MEG data with 2nd-order gradient compensation, by `Mainak Jas`_ (:gh:`858`)
 
 - Fix writing and reading EDF files with upper-case extension (``.EDF``), by `Adam Li`_ (:gh:`868`)
-
-- Fix reading of EDF files with lower/upper case extension, by `Adam Li`_ (:gh:`875`)
 
 - Fix reading of TSV files with only a single column, by `Marijn van Vliet`_ (:gh:`886`)
 

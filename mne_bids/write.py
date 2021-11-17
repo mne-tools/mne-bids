@@ -1264,6 +1264,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
 
+    When writing EDF or BDF files, all file extensions are forced to be
+    lower-case, in compliance with the BIDS specification.
+
     See Also
     --------
     mne.io.Raw.anonymize
@@ -1339,6 +1342,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raw_fname = raw_fname.replace('.fdt', '.set')
         raw_fname = raw_fname.replace('.dat', '.lay')
         _, ext = _parse_ext(raw_fname)
+
+        # force all EDF/BDF files with upper-case extension to be written as
+        # lower case
+        if ext == '.EDF':
+            ext = '.edf'
+        elif ext == '.BDF':
+            ext = '.bdf'
 
         if ext not in ALLOWED_INPUT_EXTENSIONS:
             raise ValueError(f'Unrecognized file format {ext}')
@@ -1625,7 +1635,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
-    elif ext in ['.edf', '.EDF', '.bdf']:
+    elif ext in ['.edf', '.EDF', '.bdf', '.BDF']:
         if anonymize is not None:
             warn("EDF/EDF+/BDF files contain two fields for recording dates."
                  "Due to file format limitations, one of these fields only "

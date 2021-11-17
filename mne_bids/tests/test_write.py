@@ -2604,7 +2604,6 @@ def test_coordsystem_json_compliance(
         ('03', 'NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
         ('emptyroom', 'MEG/sample',
          'sample_audvis_trunc_raw.fif', _read_raw_fif),
-        ('cap', 'EDF', 'test_reduced.edf', _read_raw_edf),
     ]
 )
 @pytest.mark.filterwarnings(
@@ -2618,13 +2617,6 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
     data_path = testing.data_path()
 
     raw_fname = op.join(data_path, dir_name, fname)
-
-    # capitalize the EDF extension file
-    if subject == 'cap':
-        new_basename = (op.basename(raw_fname).split('.edf')[0] + '.EDF')
-        new_raw_fname = tmp_path / new_basename
-        sh.copyfile(raw_fname, new_raw_fname)
-        raw_fname = new_raw_fname.as_posix()
 
     bids_root = tmp_path / 'bids1'
     raw = reader(raw_fname)
@@ -2652,12 +2644,46 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         )
 
     raw2 = read_raw_bids(bids_path, verbose=False)
-    if raw_fname.lower().endswith('.edf'):
+    if raw_fname.endswith('.edf'):
         _raw = reader(bids_path)
         assert _raw.info['meas_date'].year == 1985
         assert _raw.info['meas_date'].month == 1
         assert _raw.info['meas_date'].day == 1
     assert raw2.info['meas_date'].year < 1925
+
+
+@pytest.mark.parametrize('dir_name, fname', [
+    ['EDF', 'test_reduced.edf'],
+    ['BDF', 'test_bdf_stim_channel.bdf']
+])
+def test_write_uppercase_edfbdf(tmp_path, dir_name, fname):
+    """Test writing uppercase EDF/BDF ext results in lowercase."""
+    subject = 'cap'
+    if dir_name == 'EDF':
+        read_func = _read_raw_edf
+    elif dir_name == 'BDF':
+        read_func = _read_raw_bdf
+
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, dir_name, fname)
+
+    # capitalize the extension file
+    lower_case_ext = f'.{dir_name.lower()}'
+    upper_case_ext = f'.{dir_name.upper()}'
+    new_basename = (op.basename(raw_fname).split(lower_case_ext)[0] +
+                    upper_case_ext)
+    new_raw_fname = tmp_path / new_basename
+    sh.copyfile(raw_fname, new_raw_fname)
+    raw_fname = new_raw_fname.as_posix()
+
+    # now read in the file and write to BIDS
+    bids_root = tmp_path / 'bids1'
+    raw = read_func(raw_fname)
+    bids_path = BIDSPath(subject=subject, task=task, root=bids_root)
+    bids_path = write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+    # the final output file should have lower case EDF extension
+    assert bids_path.extension == lower_case_ext
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

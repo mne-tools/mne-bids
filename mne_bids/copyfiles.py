@@ -18,13 +18,14 @@ import os
 import os.path as op
 import re
 import shutil as sh
+from pathlib import Path
 
 from scipy.io import loadmat, savemat
 
 import mne
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
-from mne.utils import logger, verbose
+from mne.utils import logger, verbose, warn
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -422,16 +423,23 @@ def copyfile_edf(src, dest, anonymize=None):
     # Ensure source & destination extensions are the same
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
-    if ext_src != ext_dest:
+
+    if ext_src.lower() != ext_dest.lower():
         raise ValueError(f'Need to move data with same extension, '
                          f' but got "{ext_src}" and "{ext_dest}"')
+
+    if ext_dest in ['.EDF', '.BDF']:
+        warn('Upper-case extension for EDF/BDF files is not supported '
+             'in BIDS. Converting destination extension to lower-case.')
+        ext_dest = ext_dest.lower()
+        dest = Path(dest).with_suffix(ext_dest)
 
     # Copy data prior to any anonymization
     sh.copyfile(src, dest)
 
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
-        if ext_src == '.bdf':
+        if ext_src in ['.bdf', '.BDF']:
             raw = read_raw_bdf(dest, preload=False, verbose=0)
         elif ext_src in ['.edf', '.EDF']:
             raw = read_raw_edf(dest, preload=False, verbose=0)
