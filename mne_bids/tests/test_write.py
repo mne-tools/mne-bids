@@ -2670,7 +2670,7 @@ def test_write_uppercase_edfbdf(tmp_path, dir_name, fname):
     # capitalize the extension file
     lower_case_ext = f'.{dir_name.lower()}'
     upper_case_ext = f'.{dir_name.upper()}'
-    new_basename = (op.basename(raw_fname).split(lower_case_ext)[0] + \
+    new_basename = (op.basename(raw_fname).split(lower_case_ext)[0] +
                     upper_case_ext)
     new_raw_fname = tmp_path / new_basename
     sh.copyfile(raw_fname, new_raw_fname)
