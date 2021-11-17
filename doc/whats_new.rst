@@ -97,7 +97,7 @@ Bug fixes
 
 - :func:`mne_bids.write_raw_bids` now raises an exception if the provided :class:`mne_bids.BIDSPath` doesn't contain ``subject`` and ``task`` entities, which are required for neurophysiological data, by `Richard Höchenberger`_ (:gh:`903`)
 
-- :func:`mne_bids.read_raw_bids` now handles datasets with multiple electrophysiological data types correctly, by `Richard Höchenberger`_ (:gh:`910`)
+- :func:`mne_bids.read_raw_bids` now handles datasets with multiple electrophysiological data types correctly, by `Richard Höchenberger`_ (:gh:`910`, :gh`915`)
 
 - More robust handling of situations where :func:`mne_bids.read_raw_bids` tries to read a file that does not exist, by `Richard Höchenberger`_ (:gh:`904`)
 

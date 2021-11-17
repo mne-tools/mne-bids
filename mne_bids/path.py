@@ -1409,7 +1409,9 @@ def _find_matching_sidecar(bids_path, suffix=None,
 
     # search suffix is BIDS-suffix and extension
     search_suffix = ''
-    if suffix is not None:
+    if suffix is None and bids_path.suffix is not None:
+        search_suffix = bids_path.suffix
+    elif suffix is not None:
         search_suffix = suffix
 
         # do not search for suffix if suffix is explicitly passed
@@ -1417,7 +1419,9 @@ def _find_matching_sidecar(bids_path, suffix=None,
         bids_path.check = False
         bids_path.update(suffix=None)
 
-    if extension is not None:
+    if extension is None and bids_path.extension is not None:
+        search_suffix = search_suffix + bids_path.extension
+    elif extension is not None:
         search_suffix = search_suffix + extension
 
         # do not search for extension if extension is explicitly passed
