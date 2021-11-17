@@ -48,6 +48,7 @@ meg_manufacturers = {
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.edf': 'n/a', '.EDF': 'n/a', '.bdf': 'Biosemi',
+                     '.BDF': 'Biosemi',
                      '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden'}

@@ -1635,7 +1635,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
-    elif ext in ['.edf', '.EDF', '.bdf']:
+    elif ext in ['.edf', '.EDF', '.bdf', '.BDF']:
         if anonymize is not None:
             warn("EDF/EDF+/BDF files contain two fields for recording dates."
                  "Due to file format limitations, one of these fields only "

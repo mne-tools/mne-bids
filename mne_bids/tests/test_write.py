@@ -2652,29 +2652,38 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
     assert raw2.info['meas_date'].year < 1925
 
 
-def test_write_uppercase_edf(tmp_path):
-    """Test writing uppercase EDF extension results in lowercase."""
+@pytest.mark.parametrize('dir_name, fname', [
+    ['EDF', 'test_reduced.edf'],
+    ['BDF', 'test_bdf_stim_channel.bdf']
+])
+def test_write_uppercase_edfbdf(tmp_path, dir_name, fname):
+    """Test writing uppercase EDF/BDF ext results in lowercase."""
     subject = 'cap'
-    dir_name = 'EDF'
-    fname = 'test_reduced.edf'
+    if dir_name == 'EDF':
+        read_func = _read_raw_edf
+    elif dir_name == 'BDF':
+        read_func = _read_raw_bdf
 
     data_path = testing.data_path()
     raw_fname = op.join(data_path, dir_name, fname)
 
-    # capitalize the EDF extension file
-    new_basename = (op.basename(raw_fname).split('.edf')[0] + '.EDF')
+    # capitalize the extension file
+    lower_case_ext = f'.{dir_name.lower()}'
+    upper_case_ext = f'.{dir_name.upper()}'
+    new_basename = (op.basename(raw_fname).split(lower_case_ext)[0] + \
+                    upper_case_ext)
     new_raw_fname = tmp_path / new_basename
     sh.copyfile(raw_fname, new_raw_fname)
     raw_fname = new_raw_fname.as_posix()
 
     # now read in the file and write to BIDS
     bids_root = tmp_path / 'bids1'
-    raw = _read_raw_edf(raw_fname)
+    raw = read_func(raw_fname)
     bids_path = BIDSPath(subject=subject, task=task, root=bids_root)
     bids_path = write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     # the final output file should have lower case EDF extension
-    assert bids_path.extension == '.edf'
+    assert bids_path.extension == lower_case_ext
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
