@@ -7,7 +7,7 @@
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD-3-Clause
-from typing import List, TypedDict
+from typing import List
 import json
 import sys
 import os
@@ -55,14 +55,6 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
                              ANONYMIZED_JSON_KEY_WHITELIST)
-
-
-class _AnonymizeArgs(TypedDict, total=False):
-    """Anonymize argument for write_raw_bids."""
-
-    daysback: int
-    keep_his: bool
-    keep_source: bool
 
 
 def _is_numeric(n):
@@ -1361,11 +1353,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
     _validate_type(acpc_aligned, bool, 'acpc_aligned')
 
-    # convert anonymize dictionary to TypedDict
-    if anonymize is None:
-        anonymize = dict()
-    anonymize = _AnonymizeArgs(**anonymize)
-
     raw = raw.copy()
     convert = False  # flag if converting not copying
 
@@ -1507,7 +1494,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # Anonymize
     keep_source = False
-    if anonymize != ("",):
+    if anonymize is not None:
         daysback, keep_his, keep_source = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his)
 
@@ -1521,7 +1508,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                      'for anonymization')
                 convert = True
                 bids_path.update(extension='.vhdr')
-        print(f'KEEP SOURCE IS... {keep_source}')
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
     unit = UNITS.get(ext, 'n/a')
