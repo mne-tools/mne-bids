@@ -479,7 +479,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
 
     # add source filename if desired
     if keep_source:
-        data['source'] = [Path(fname).name for fname in raw.filenames]
+        data['source'] = [Path(src_fname).name for src_fname in raw.filenames]
 
         # write out a sidecar JSON if not exists
         sidecar_json_path = Path(fname).with_suffix('.json')
