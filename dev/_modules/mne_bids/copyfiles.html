@@ -225,13 +225,14 @@
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="p">(</span><span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">read_raw_edf</span><span class="p">,</span> <span class="n">read_raw_bdf</span><span class="p">,</span>
                     <span class="n">anonymize_info</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_check_anonymize</span>
@@ -629,16 +630,23 @@
     <span class="c1"># Ensure source &amp; destination extensions are the same</span>
     <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
     <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="n">ext_src</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Need to move data with same extension, &#39;</span>
                          <span class="sa">f</span><span class="s1">&#39; but got &quot;</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">&quot; and &quot;</span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ext_dest</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.EDF&#39;</span><span class="p">,</span> <span class="s1">&#39;.BDF&#39;</span><span class="p">]:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Upper-case extension for EDF/BDF files is not supported &#39;</span>
+             <span class="s1">&#39;in BIDS. Converting destination extension to lower-case.&#39;</span><span class="p">)</span>
+        <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">ext_dest</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">ext_dest</span><span class="p">)</span>
 
     <span class="c1"># Copy data prior to any anonymization</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
 
     <span class="c1"># Anonymize EDF/BDF data, if requested</span>
     <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ext_src</span> <span class="o">==</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.BDF&#39;</span><span class="p">]:</span>
             <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.EDF&#39;</span><span class="p">]:</span>
             <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -796,7 +804,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-17.<br>
 </p>
     </div>
     

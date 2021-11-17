@@ -687,6 +687,9 @@ which are however optional. The required inputs are:</p>
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
 
+    When writing EDF or BDF files, all file extensions are forced to be
+    lower-case, in compliance with the BIDS specification.
+
     See Also
     --------
     mne.io.Raw.anonymize
@@ -765,7 +768,7 @@ Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_iee
 Ready.
 /home/circleci/project/mne_bids/utils.py:324: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
   warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1479: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1489: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -781,7 +784,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1610: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1620: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -930,7 +933,7 @@ Call stack:
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 232, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
   File &quot;&lt;decorator-gen-552&gt;&quot;, line 24, in read_raw_bids
-  File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 730, in read_raw_bids
+  File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 722, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 519, in _read_dig_bids
     montage = _handle_electrodes_reading(electrodes_fpath, coord_frame,
@@ -1094,7 +1097,7 @@ Ready.
 Ready.
 /home/circleci/project/mne_bids/utils.py:324: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
   warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1479: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1489: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1110,7 +1113,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1610: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1620: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -1169,7 +1172,7 @@ Call stack:
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 300, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
   File &quot;&lt;decorator-gen-552&gt;&quot;, line 24, in read_raw_bids
-  File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 730, in read_raw_bids
+  File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 722, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 519, in _read_dig_bids
     montage = _handle_electrodes_reading(electrodes_fpath, coord_frame,
@@ -1262,7 +1265,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.077 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  12.378 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1312,7 +1315,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-17.<br>
 </p>
     </div>
     

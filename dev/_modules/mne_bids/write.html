@@ -1471,6 +1471,9 @@
 <span class="sd">    If you need to add more data there, or overwrite it, then you should</span>
 <span class="sd">    call :func:`mne_bids.make_dataset_description` directly.</span>
 
+<span class="sd">    When writing EDF or BDF files, all file extensions are forced to be</span>
+<span class="sd">    lower-case, in compliance with the BIDS specification.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    mne.io.Raw.anonymize</span>
@@ -1546,6 +1549,13 @@
         <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">)</span>
         <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;.lay&#39;</span><span class="p">)</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
+
+        <span class="c1"># force all EDF/BDF files with upper-case extension to be written as</span>
+        <span class="c1"># lower case</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.EDF&#39;</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.edf&#39;</span>
+        <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.BDF&#39;</span><span class="p">:</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.bdf&#39;</span>
 
         <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized file format </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -1832,7 +1842,7 @@
     <span class="c1"># BrainVision is multifile, copy over all of them and fix pointers</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
         <span class="n">copyfile_brainvision</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="n">anonymize</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.EDF&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.EDF&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.BDF&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;</span>
                  <span class="s2">&quot;Due to file format limitations, one of these fields only &quot;</span>
@@ -2830,7 +2840,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-16.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-17.<br>
 </p>
     </div>
     
