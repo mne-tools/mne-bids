@@ -2777,7 +2777,10 @@
         <span class="c1"># Enrich sidecars</span>
         <span class="n">bp_in_json</span> <span class="o">=</span> <span class="n">bp_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
         <span class="n">bp_out_json</span> <span class="o">=</span> <span class="n">bp_out</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="n">bp_in_events</span> <span class="o">=</span> <span class="n">bp_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+        <span class="n">bp_out_events</span> <span class="o">=</span> <span class="n">bp_out</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 
+        <span class="c1"># Enrich the JSON file</span>
         <span class="k">if</span> <span class="n">bp_in_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">json_in</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
                 <span class="n">bp_in_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
@@ -2794,18 +2797,32 @@
 
         <span class="c1"># Only transfer data that we believe doesn&#39;t contain any personally</span>
         <span class="c1"># identifiable information</span>
-        <span class="n">updates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">json_updates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">json_in</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">json_out</span><span class="p">:</span>
-                <span class="n">updates</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="n">json_updates</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">del</span> <span class="n">json_in</span><span class="p">,</span> <span class="n">json_out</span>
 
-        <span class="k">if</span> <span class="n">updates</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">json_updates</span><span class="p">:</span>
             <span class="n">bp_out_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">update_sidecar_json</span><span class="p">(</span>
                 <span class="n">bids_path</span><span class="o">=</span><span class="n">bp_out_json</span><span class="p">,</span>
-                <span class="n">entries</span><span class="o">=</span><span class="n">updates</span><span class="p">,</span>
+                <span class="n">entries</span><span class="o">=</span><span class="n">json_updates</span><span class="p">,</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Transfer trigger codes from original *_events.tsv file</span>
+        <span class="k">if</span> <span class="n">bp_in_events</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">bp_out_events</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="n">events_tsv_in</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">bp_in_events</span><span class="p">)</span>
+            <span class="n">events_tsv_out</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">bp_out_events</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="n">events_tsv_in</span><span class="p">[</span><span class="s1">&#39;trial_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">events_tsv_out</span><span class="p">[</span><span class="s1">&#39;trial_type&#39;</span><span class="p">]</span>
+            <span class="n">events_tsv_out</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">events_tsv_in</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+            <span class="n">_write_tsv</span><span class="p">(</span>
+                <span class="n">fname</span><span class="o">=</span><span class="n">bp_out_events</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+                <span class="n">dictionary</span><span class="o">=</span><span class="n">events_tsv_out</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
 
     <span class="c1"># Copy some additional files</span>
