@@ -834,8 +834,10 @@ def test_match(return_bids_test_dir):
 
     # Test `check` parameter
     bids_path_01 = _bids_path.copy()
-    bids_path_01.update(session=None, task=None, run=None,
-                        suffix='foo', extension='.eeg', check=False)
+    bids_path_01.update(
+        root=bids_root, session=None, task=None, run=None,
+        suffix='foo', extension='.eeg', check=False
+    )
     bids_path_01.fpath.touch()
 
     assert bids_path_01.match(check=True) == []
