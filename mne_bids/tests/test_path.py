@@ -1010,7 +1010,7 @@ def test_find_emptyroom_no_meas_date(tmp_path):
                         'sample_audvis_trunc_raw.fif')
 
     bids_root = str(tmp_path)
-    bids_path =  _bids_path.copy().update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
     er_session = 'mysession'
     er_meas_date = None
 
@@ -1071,7 +1071,7 @@ def test_meg_calibration_fpath(return_bids_test_dir):
 
     # datatype is not 'meg''.
     bids_path_ = _bids_path.copy().update(subject='01', root=bids_root,
-                                         datatype='eeg')
+                                          datatype='eeg')
     with pytest.raises(ValueError, match='Can only find .* for MEG'):
         bids_path_.meg_calibration_fpath
 
