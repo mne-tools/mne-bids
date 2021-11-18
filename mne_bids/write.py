@@ -2570,7 +2570,10 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         # Enrich sidecars
         bp_in_json = bp_in.copy().update(extension='.json')
         bp_out_json = bp_out.copy().update(extension='.json')
+        bp_in_events = bp_in.copy().update(suffix='events', extension='.tsv')
+        bp_out_events = bp_out.copy().update(suffix='events', extension='.tsv')
 
+        # Enrich the JSON file
         if bp_in_json.fpath.exists():
             json_in = json.loads(
                 bp_in_json.fpath.read_text(encoding='utf-8')
@@ -2587,18 +2590,32 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
 
         # Only transfer data that we believe doesn't contain any personally
         # identifiable information
-        updates = dict()
+        json_updates = dict()
         for key, value in json_in.items():
             if key in ANONYMIZED_JSON_KEY_WHITELIST and key not in json_out:
-                updates[key] = value
+                json_updates[key] = value
         del json_in, json_out
 
-        if updates:
+        if json_updates:
             bp_out_json.fpath.touch(exist_ok=True)
             update_sidecar_json(
                 bids_path=bp_out_json,
-                entries=updates,
+                entries=json_updates,
                 verbose=False
+            )
+
+        # Transfer trigger codes from original *_events.tsv file
+        if bp_in_events.fpath.exists():
+            assert bp_out_events.fpath.exists()
+            events_tsv_in = _from_tsv(bp_in_events)
+            events_tsv_out = _from_tsv(bp_out_events)
+
+            assert events_tsv_in['trial_type'] == events_tsv_out['trial_type']
+            events_tsv_out['value'] = events_tsv_in['value']
+            _write_tsv(
+                fname=bp_out_events.fpath,
+                dictionary=events_tsv_out,
+                overwrite=True
             )
 
     # Copy some additional files

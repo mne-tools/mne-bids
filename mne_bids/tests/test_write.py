@@ -3149,6 +3149,16 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     assert (bids_root_anon / 'sub-emptyroom' / 'ses-19221211' / 'meg' /
             'sub-emptyroom_ses-19221211_task-noise_meg.fif').exists()
 
+    events_tsv_orig_bp = bids_path.copy().update(
+        suffix='events', extension='.tsv'
+    )
+    events_tsv_anonymized_bp = events_tsv_orig_bp.copy().update(
+        subject='1', root=bids_root_anon
+    )
+    events_tsv_orig = _from_tsv(events_tsv_orig_bp)
+    events_tsv_anonymized = _from_tsv(events_tsv_anonymized_bp)
+    assert events_tsv_orig == events_tsv_anonymized
+
     # Explicitly specify multiple data types
     bids_root_anon = tmpdir / 'bids-anonymized-1'
     anonymize_dataset(
