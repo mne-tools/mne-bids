@@ -487,10 +487,10 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         sidecar_json = dict()
         sidecar_json['source'] = 'Original source filename.'
 
-        if not op.exists(sidecar_json_path):
-            _write_json(sidecar_json_path, sidecar_json)
-        else:
+        if sidecar_json_path.exists():
             update_sidecar_json(sidecar_json_path, sidecar_json)
+        else:
+            _write_json(sidecar_json_path, sidecar_json)
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
@@ -1181,7 +1181,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         ``keep_source`` : bool
             If ``True`` (default), the filename of the raw source will
-            be stored in the scans.tsv ``source`` column.
+            be stored in the ``source`` column of  ``scans.tsv``.
 
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
