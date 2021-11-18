@@ -33,7 +33,7 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_path = BIDSPath(
+_bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
@@ -60,7 +60,7 @@ def return_bids_test_dir(tmp_path_factory):
     events = mne.read_events(events_fname)
     events = events[events[:, 2] != 0]
 
-    bids_path.update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
     # Write multiple runs for test_purposes
     for run_idx in [run, '02']:
         name = bids_path.copy().update(run=run_idx)
@@ -358,14 +358,14 @@ def test_find_best_candidates(candidate_list, best_candidates):
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
-def test_find_matching_sidecar(return_bids_test_dir):
+def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = return_bids_test_dir
 
-    bids_fpath = bids_path.copy().update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
 
     # Now find a sidecar
-    sidecar_fname = _find_matching_sidecar(bids_fpath,
+    sidecar_fname = _find_matching_sidecar(bids_path,
                                            suffix='coordsystem',
                                            extension='.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
@@ -377,32 +377,70 @@ def test_find_matching_sidecar(return_bids_test_dir):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
         print_dir_tree(bids_root)
-        _find_matching_sidecar(bids_fpath,
+        _find_matching_sidecar(bids_path,
                                suffix='coordsystem', extension='.json')
 
     # Find nothing and raise.
     with pytest.raises(RuntimeError, match='Did not find any'):
-        fname = _find_matching_sidecar(bids_fpath, suffix='foo',
+        fname = _find_matching_sidecar(bids_path, suffix='foo',
                                        extension='.bogus')
 
     # Find nothing and receive None and a warning.
     on_error = 'warn'
     with pytest.warns(RuntimeWarning, match='Did not find any'):
-        fname = _find_matching_sidecar(bids_fpath, suffix='foo',
+        fname = _find_matching_sidecar(bids_path, suffix='foo',
                                        extension='.bogus', on_error=on_error)
     assert fname is None
 
     # Find nothing and receive None.
     on_error = 'ignore'
-    fname = _find_matching_sidecar(bids_fpath, suffix='foo',
+    fname = _find_matching_sidecar(bids_path, suffix='foo',
                                    extension='.bogus', on_error=on_error)
     assert fname is None
 
     # Invalid on_error.
     on_error = 'hello'
     with pytest.raises(ValueError, match='Acceptable values for on_error are'):
-        _find_matching_sidecar(bids_fpath, suffix='coordsystem',
+        _find_matching_sidecar(bids_path, suffix='coordsystem',
                                extension='.json', on_error=on_error)
+
+    # Test behavior of suffix and extension params when suffix and extension
+    # are also (not) present in the passed BIDSPath
+    bids_path = BIDSPath(
+        subject='test', task='task', datatype='eeg', root=tmp_path
+    )
+    bids_path.mkdir()
+
+    for suffix, extension in zip(
+        ['eeg', 'eeg', 'events', 'events'],
+        ['.fif', '.json', '.tsv', '.json']
+    ):
+        bids_path.suffix = suffix
+        bids_path.extension = extension
+        bids_path.fpath.touch()
+
+    # suffix parameter should always override BIDSPath.suffix
+    bids_path.extension = '.json'
+
+    for bp_suffix in (None, 'eeg'):
+        bids_path.suffix = bp_suffix
+        s = _find_matching_sidecar(bids_path=bids_path, suffix='events')
+        assert Path(s).name == 'sub-test_task-task_events.json'
+
+    # extension parameter should always override BIDSPath.extension
+    bids_path.suffix = 'events'
+
+    for bp_extension in (None, '.json'):
+        bids_path.extension = bp_extension
+        s = _find_matching_sidecar(bids_path=bids_path, extension='.tsv')
+        assert Path(s).name == 'sub-test_task-task_events.tsv'
+
+    # If suffix and extension parameters are not passed, use BIDSPath
+    # attributes
+    bids_path.suffix = 'events'
+    bids_path.extension = '.tsv'
+    s = _find_matching_sidecar(bids_path=bids_path)
+    assert Path(s).name == 'sub-test_task-task_events.tsv'
 
 
 def test_bids_path_inference(return_bids_test_dir):
@@ -736,7 +774,7 @@ def test_match(return_bids_test_dir):
     paths = bids_path_01.match()
     assert len(paths) == 0
 
-    bids_path_01 = bids_path.copy().update(root=None)
+    bids_path_01 = _bids_path.copy().update(root=None)
     with pytest.raises(RuntimeError, match='Cannot match'):
         bids_path_01.match()
 
@@ -795,7 +833,7 @@ def test_match(return_bids_test_dir):
     assert Path(paths[0]).parent.name == 'meg'
 
     # Test `check` parameter
-    bids_path_01 = bids_path.copy()
+    bids_path_01 = _bids_path.copy()
     bids_path_01.update(session=None, task=None, run=None,
                         suffix='foo', extension='.eeg', check=False)
     bids_path_01.fpath.touch()
@@ -934,7 +972,7 @@ def test_find_emptyroom_ties(tmp_path):
                         'sample_audvis_trunc_raw.fif')
 
     bids_root = str(tmp_path)
-    bids_path.update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
     session = '20010101'
     er_dir_path = BIDSPath(subject='emptyroom', session=session,
                            datatype='meg', root=bids_root)
@@ -972,7 +1010,7 @@ def test_find_emptyroom_no_meas_date(tmp_path):
                         'sample_audvis_trunc_raw.fif')
 
     bids_root = str(tmp_path)
-    bids_path.update(root=bids_root)
+    bids_path =  _bids_path.copy().update(root=bids_root)
     er_session = 'mysession'
     er_meas_date = None
 
@@ -1018,28 +1056,28 @@ def test_meg_calibration_fpath(return_bids_test_dir):
 
     # File exists, so BIDSPath.meg_calibration_fpath should return a non-None
     # value.
-    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
+    bids_path_ = _bids_path.copy().update(subject='01', root=bids_root)
     assert bids_path_.meg_calibration_fpath is not None
 
     # subject not set.
-    bids_path_ = bids_path.copy().update(root=bids_root, subject=None)
+    bids_path_ = _bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
         bids_path_.meg_calibration_fpath
 
     # root not set.
-    bids_path_ = bids_path.copy().update(subject='01', root=None)
+    bids_path_ = _bids_path.copy().update(subject='01', root=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
         bids_path_.meg_calibration_fpath
 
     # datatype is not 'meg''.
-    bids_path_ = bids_path.copy().update(subject='01', root=bids_root,
+    bids_path_ = _bids_path.copy().update(subject='01', root=bids_root,
                                          datatype='eeg')
     with pytest.raises(ValueError, match='Can only find .* for MEG'):
         bids_path_.meg_calibration_fpath
 
     # Delete the fine-calibration file. BIDSPath.meg_calibration_fpath
     # should then return None.
-    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
+    bids_path_ = _bids_path.copy().update(subject='01', root=bids_root)
     Path(bids_path_.meg_calibration_fpath).unlink()
     assert bids_path_.meg_calibration_fpath is None
 
@@ -1049,30 +1087,30 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
 
     # File exists, so BIDSPath.crosstalk_fpath should return a non-None
     # value.
-    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
-    assert bids_path_.meg_crosstalk_fpath is not None
+    bids_path = _bids_path.copy().update(subject='01', root=bids_root)
+    assert bids_path.meg_crosstalk_fpath is not None
 
     # subject not set.
-    bids_path_ = bids_path.copy().update(root=bids_root, subject=None)
+    bids_path = _bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
-        bids_path_.meg_crosstalk_fpath
+        bids_path.meg_crosstalk_fpath
 
     # root not set.
-    bids_path_ = bids_path.copy().update(subject='01', root=None)
+    bids_path = _bids_path.copy().update(subject='01', root=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
-        bids_path_.meg_crosstalk_fpath
+        bids_path.meg_crosstalk_fpath
 
     # datatype is not 'meg''.
-    bids_path_ = bids_path.copy().update(subject='01', root=bids_root,
+    bids_path = _bids_path.copy().update(subject='01', root=bids_root,
                                          datatype='eeg')
     with pytest.raises(ValueError, match='Can only find .* for MEG'):
-        bids_path_.meg_crosstalk_fpath
+        bids_path.meg_crosstalk_fpath
 
     # Delete the crosstalk file. BIDSPath.meg_crosstalk_fpath should then
     # return None.
-    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
-    Path(bids_path_.meg_crosstalk_fpath).unlink()
-    assert bids_path_.meg_crosstalk_fpath is None
+    bids_path = _bids_path.copy().update(subject='01', root=bids_root)
+    Path(bids_path.meg_crosstalk_fpath).unlink()
+    assert bids_path.meg_crosstalk_fpath is None
 
 
 def test_datasetdescription_with_bidspath(return_bids_test_dir):
