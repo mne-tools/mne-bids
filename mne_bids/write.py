@@ -484,8 +484,11 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         # write out a sidecar JSON if not exists
         sidecar_json_path = Path(fname).with_suffix('.json')
         sidecar_json_path = get_bids_path_from_fname(sidecar_json_path)
-        sidecar_json = dict(source=dict(
-            Description="Original source filename."))
+        sidecar_json = {
+            'source': {
+                'Description': 'Original source filename.'
+            }
+        }
 
         if sidecar_json_path.fpath.exists():
             update_sidecar_json(sidecar_json_path, sidecar_json)
