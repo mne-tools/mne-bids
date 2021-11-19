@@ -43,7 +43,7 @@ from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
-from mne_bids.sidecar_updates import _update_sidecar
+from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
 from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
@@ -2612,7 +2612,7 @@ def test_coordsystem_json_compliance(
     warning_str['edf_warning'],
     warning_str['brainvision_unit']
 )
-def test_anonymize(subject, dir_name, fname, reader, tmp_path):
+def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     """Test writing anonymized EDF data."""
     data_path = testing.data_path()
 
@@ -2632,6 +2632,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         bids_path.update(task='task', suffix='eeg', datatype='eeg')
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
+    orig_bids_path = bids_path.copy()
     bids_path = \
         write_raw_bids(raw, bids_path, overwrite=True,
                        anonymize=anonymize, verbose=False)
@@ -2650,6 +2651,49 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         assert _raw.info['meas_date'].month == 1
         assert _raw.info['meas_date'].day == 1
     assert raw2.info['meas_date'].year < 1925
+
+    # write without source
+    scans_fname = BIDSPath(subject=bids_path.subject,
+                           session=bids_path.session,
+                           suffix='scans', extension='.tsv',
+                           root=bids_path.root)
+    anonymize['keep_source'] = False
+    bids_path = \
+        write_raw_bids(raw, orig_bids_path, overwrite=True,
+                       anonymize=anonymize, verbose=False)
+    scans_tsv = _from_tsv(scans_fname)
+    assert 'source' not in scans_tsv.keys()
+
+    # Write with source this time get the scans tsv
+    bids_path = write_raw_bids(
+        raw, orig_bids_path, overwrite=True,
+        anonymize=dict(daysback=daysback_min, keep_source=True),
+        verbose=False)
+    scans_fname = BIDSPath(subject=bids_path.subject,
+                           session=bids_path.session,
+                           suffix='scans', extension='.tsv',
+                           root=bids_path.root)
+    scans_tsv = _from_tsv(scans_fname)
+    assert scans_tsv['source'] == [
+        Path(f).name for f in raw.filenames
+    ]
+    _bids_validate(bids_path.root)
+
+    # update the scans sidecar JSON with information
+    scans_json_fpath = scans_fname.copy().update(extension='.json')
+    with open(scans_json_fpath, 'r') as fin:
+        scans_json = json.load(fin)
+    scans_json['test'] = 'New stuff...'
+    update_sidecar_json(scans_json_fpath, scans_json)
+
+    # write again and make sure scans json was not altered
+    bids_path = write_raw_bids(
+        raw, orig_bids_path, overwrite=True,
+        anonymize=dict(daysback=daysback_min, keep_source=True),
+        verbose=False)
+    with open(scans_json_fpath, 'r') as fin:
+        scans_json = json.load(fin)
+    assert 'test' in scans_json
 
 
 @pytest.mark.parametrize('dir_name, fname', [
