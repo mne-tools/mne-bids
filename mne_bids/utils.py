@@ -193,7 +193,8 @@ def _write_json(fname, dictionary, overwrite=False):
     logger.info(f"Writing '{fname}'...")
 
 
-def _write_tsv(fname, dictionary, overwrite=False):
+@verbose
+def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
