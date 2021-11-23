@@ -1,0 +1,509 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.9 documentation</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet">
+  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
+    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
+    <!-- ... and optionally preload the `woff2` for snappier page loads -->
+    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
+    <style>
+        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
+        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_bids.get_anat_landmarks" href="mne_bids.get_anat_landmarks.html" />
+    <link rel="prev" title="mne_bids.write_anat" href="mne_bids.write_anat.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../index.html">
+<p class="title">MNE-BIDS</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../whats_new.html">
+  News
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Install
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../use.html">
+  Use
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="cli.html">
+  CLI
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../contribute.html">
+  Contribute
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v0.9
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.10 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.9 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.8/index.html">v0.8</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.7/index.html">v0.7</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.6/index.html">v0.6</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a>
+    </div>
+</div>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
+            <span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://mne.discourse.group/tags/mne-bids" rel="noopener" target="_blank" title="Discourse">
+            <span><i class="fab fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label>
+          </a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.write_raw_bids.html">
+   mne_bids.write_raw_bids
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.read_raw_bids.html">
+   mne_bids.read_raw_bids
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.write_meg_calibration.html">
+   mne_bids.write_meg_calibration
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.write_meg_crosstalk.html">
+   mne_bids.write_meg_crosstalk
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.BIDSPath.html">
+   mne_bids.BIDSPath
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.make_dataset_description.html">
+   mne_bids.make_dataset_description
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.make_report.html">
+   mne_bids.make_report
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.write_anat.html">
+   mne_bids.write_anat
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   mne_bids.mark_channels
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_anat_landmarks.html">
+   mne_bids.get_anat_landmarks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.update_anat_landmarks.html">
+   mne_bids.update_anat_landmarks
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_head_mri_trans.html">
+   mne_bids.get_head_mri_trans
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_anonymization_daysback.html">
+   mne_bids.get_anonymization_daysback
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.search_folder_for_text.html">
+   mne_bids.search_folder_for_text
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.print_dir_tree.html">
+   mne_bids.print_dir_tree
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_bids_path_from_fname.html">
+   mne_bids.get_bids_path_from_fname
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_entities_from_fname.html">
+   mne_bids.get_entities_from_fname
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_entity_vals.html">
+   mne_bids.get_entity_vals
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.get_datatypes.html">
+   mne_bids.get_datatypes
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.inspect_dataset.html">
+   mne_bids.inspect_dataset
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.update_sidecar_json.html">
+   mne_bids.update_sidecar_json
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.anonymize_dataset.html">
+   mne_bids.anonymize_dataset
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.stats.count_events.html">
+   mne_bids.stats.count_events
+  </a>
+ </li>
+</ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html">
+   mne_bids.copyfiles.copyfile_brainvision
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html">
+   mne_bids.copyfiles.copyfile_edf
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html">
+   mne_bids.copyfiles.copyfile_eeglab
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html">
+   mne_bids.copyfiles.copyfile_ctf
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">
+   mne_bids.copyfiles.copyfile_bti
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">
+   mne_bids.copyfiles.copyfile_kit
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-bids-mark-channels">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_bids.mark_channels
+    </span>
+   </code>
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="mne-bids-mark-channels">
+<h1>mne_bids.mark_channels<a class="headerlink" href="#mne-bids-mark-channels" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="mne_bids.mark_channels">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">mark_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#mark_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.mark_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update status and description of channels in an existing BIDS dataset.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The recording to update. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed
+here <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. The <code class="docutils literal notranslate"><span class="pre">.datatype</span></code>
+attribute <strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is not set and only one data
+type (e.g., only EEG or MEG data) is present in the dataset, it will be
+selected automatically.</p>
+</dd>
+<dt><strong>ch_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The names of the channel(s) to mark with a <code class="docutils literal notranslate"><span class="pre">status</span></code> and possibly a
+<code class="docutils literal notranslate"><span class="pre">description</span></code>. Can be an empty list to indicate all channel names.</p>
+</dd>
+<dt><strong>status</strong><span class="classifier">‘good’ | ‘bad’ | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The status of the channels (‘good’, or ‘bad’). Default is ‘bad’. If it
+is a list, then must be a list of ‘good’, or ‘bad’ that has the same
+length as <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>.</p>
+</dd>
+<dt><strong>descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Descriptions of the reasons that lead to the exclusion of the
+channel(s). If a list, it must match the length of <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no descriptions are added.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">logging documentation</span></a> and
+<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+argument.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Mark a single channel as bad.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./mne_bids/tests/data/tiny_bids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;rest&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="s1">&#39;C4&#39;</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Mark multiple channels as bad, and add a description as to why.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;PO10&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;very noisy&#39;</span><span class="p">,</span> <span class="s1">&#39;continuously flat&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Mark all channels with a new description, while keeping them as a “good”
+channel.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;resected&#39;</span><span class="p">,</span> <span class="s1">&#39;resected&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="s1">&#39;C4&#39;</span><span class="p">],</span>
+<span class="gp">... </span>              <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;good&#39;</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="examples-using-mne-bids-mark-channels">
+<span id="sphx-glr-backreferences-mne-bids-mark-channels"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.mark_channels</span></code><a class="headerlink" href="#examples-using-mne-bids-mark-channels" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><figure class="align-default" id="id1">
+<img alt="03. Interactive data inspection and bad channel selection" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
+<figcaption>
+<p><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div><div class="sphx-glr-clear"></div></section>
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'> 
+    <a class='left-prev' id="prev-link" href="mne_bids.write_anat.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">mne_bids.write_anat</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="mne_bids.get_anat_landmarks.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_bids.get_anat_landmarks</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-23.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

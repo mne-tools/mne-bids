@@ -1,0 +1,26 @@
+a[class^="sphx-glr-backref-module-mne_bids"] {
+  /* make all MNE-BIDS backrefs bold */
+  font-weight: 800;
+}
+
+span.option {
+  /* avoid breaking lines in our command-line parameters */
+  white-space: nowrap;
+}
+
+/* gallery thumbnail size */
+.sphx-glr-thumbcontainer {
+  min-width: 160px;
+  height: 250px;
+}
+
+/* ************************************************* Previous / Next buttons */
+.prev-next-bottom a.left-prev:before {
+  content:"❮\00A0"
+}
+.prev-next-bottom a.right-next:after {
+  content:"\00A0❯"
+}
+.prev-next-bottom a.right-next {
+  text-align: right;
+}
