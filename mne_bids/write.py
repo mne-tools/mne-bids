@@ -1182,8 +1182,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             subject information apart from the recording date.
 
         ``keep_source`` : bool
-            Whether to store the name of the ``raw`` input data in the
-            ``source`` column of  ``scans.tsv``. By default, this information
+            Whether to store the name of the ``raw`` input file in the
+            ``source`` column of ``scans.tsv``. By default, this information
             is not stored.
 
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
