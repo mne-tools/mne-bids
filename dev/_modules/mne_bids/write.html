@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.9.dev0 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.9 documentation</title>
     
   <link href="../../_static/css/theme.css" rel="stylesheet">
   <link href="../../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
@@ -133,12 +133,13 @@
       <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.9.dev0
+        v0.9
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.9 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.8 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.10 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.9 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.8/index.html">v0.8</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.7/index.html">v0.7</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.6/index.html">v0.6</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a>
@@ -644,8 +645,7 @@
 <span class="sd">    fname : str</span>
 <span class="sd">        Filename to save the scans.tsv to.</span>
 <span class="sd">    keep_source : bool</span>
-<span class="sd">        If ``True`` (default), ``raw.filenames`` will</span>
-<span class="sd">        be stored in the ``source`` column.</span>
+<span class="sd">        Wehter to store``raw.filenames`` in the ``source`` column.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Defaults to False.</span>
 <span class="sd">        Whether to overwrite the existing data in the file.</span>
@@ -1386,12 +1386,13 @@
 
 <span class="sd">        ``keep_his`` : bool</span>
 <span class="sd">            If ``False`` (default), all subject information next to the</span>
-<span class="sd">            recording date will be overwritten as well. If True, keep subject</span>
-<span class="sd">            information apart from the recording date.</span>
+<span class="sd">            recording date will be overwritten as well. If ``True``, keep</span>
+<span class="sd">            subject information apart from the recording date.</span>
 
 <span class="sd">        ``keep_source`` : bool</span>
-<span class="sd">            If ``True`` (default), the filename of the raw source will</span>
-<span class="sd">            be stored in the ``source`` column of  ``scans.tsv``.</span>
+<span class="sd">            Whether to store the name of the ``raw`` input file in the</span>
+<span class="sd">            ``source`` column of ``scans.tsv``. By default, this information</span>
+<span class="sd">            is not stored.</span>
 
 <span class="sd">    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;EDF&#39; | &#39;FIF&#39;</span>
 <span class="sd">        Controls the file format of the data after BIDS conversion. If</span>
