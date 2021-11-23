@@ -400,7 +400,8 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="nd">@verbose</span>
+<span class="k">def</span> <span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write an ordered dictionary to a .tsv file.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>
