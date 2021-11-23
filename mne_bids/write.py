@@ -437,8 +437,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     fname : str
         Filename to save the scans.tsv to.
     keep_source : bool
-        If ``True`` (default), ``raw.filenames`` will
-        be stored in the ``source`` column.
+        Wehter to store``raw.filenames`` in the ``source`` column.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -1179,12 +1178,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         ``keep_his`` : bool
             If ``False`` (default), all subject information next to the
-            recording date will be overwritten as well. If True, keep subject
-            information apart from the recording date.
+            recording date will be overwritten as well. If ``True``, keep
+            subject information apart from the recording date.
 
         ``keep_source`` : bool
-            If ``True`` (default), the filename of the raw source will
-            be stored in the ``source`` column of  ``scans.tsv``.
+            Whether to store the name of the ``raw`` input file in the
+            ``source`` column of ``scans.tsv``. By default, this information
+            is not stored.
 
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If

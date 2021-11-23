@@ -9,25 +9,41 @@ What's new?
 
 .. _changes_0_9:
 
-Version 0.9 (unreleased)
+Version 0.9 (2021-11-23)
 ------------------------
 
-...
+This release brings compatibility with MNE-Python 0.24 and some new convenience
+functions and speedups of existing code to help you be more productive! 👩🏽‍💻
+And, of course, plenty of bug fixes. 🐞
 
 Notable changes
 ~~~~~~~~~~~~~~~
 
-- ...
+- 🧠 Compatibility with MNE-Python 0.24!
+- 👻 Anonymize an entire BIDS dataset via :func:`mne_bids.anonymize_dataset`!
+- 🏝 Conveniently turn a path into a :class:`BIDSPath` via
+  :func:`get_bids_path_from_fname`!
+- 🏎 :func:`mne_bids.stats.count_events` and :meth:`mne_bids.BIDSPath.match`
+  are operating **much** faster now!
+- 🔍 :func:`write_raw_bids` now stores the names of the input files in the
+  ``source`` column of ``*_scans.tsv``, making it easier for you to
+  *go back to the source* should you ever need to!
 
 Authors
 ~~~~~~~
 
-* `Alex Rockhill`_
-* `Richard Höchenberger`_
-* `Mainak Jas`_
+People who contributed to this release (in alphabetical order):
+
 * `Adam Li`_
-* `Stefan Appelhoff`_
+* `Alex Rockhill`_
+* `Alexandre Gramfort`_
+* `Clemens Brunner`_
 * `Franziska von Albedyll`_
+* `Julia Guiomar Niso Galán`_
+* `Mainak Jas`_
+* `Marijn van Vliet`_
+* `Richard Höchenberger`_
+* `Stefan Appelhoff`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,7 +82,7 @@ API and behavior changes
 
 - :func:`mne_bids.get_entities_from_fname` does not return ``suffix`` anymore as that is not considered a BIDS entity, by `Adam Li`_ (:gh:`883`)
 
-- Reading BIDS data with ``"HeadCoilFrequency"`` and ``"PowerLineFrequency"`` data specified in JSON sidecars will only "warn" in case of mismatches between Raw and JSON data, by `Franziska von Albedyll`_ (:gh:`885`)
+- Reading BIDS data with ``"HeadCoilFrequency"`` and ``"PowerLineFrequency"`` data specified in JSON sidecars will only "warn" in case of mismatches between Raw and JSON data, by `Franziska von Albedyll`_ (:gh:`855`)
 
 - Accessing :attr:`mne_bids.BIDSPath.fpath` emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use `mne_bids.BIDSPath.fpath.exists()` to check whether the path exists in the file system, by `Richard Höchenberger`_ (:gh:`904`)
 
@@ -82,7 +98,6 @@ Requirements
 - MNE-BIDS now requires MNE-Python 0.24 or newer.
 
 - Writing BrainVision files now requires ``pybv`` version 0.6, by `Stefan Appelhoff`_ (:gh:`880`)
-
 
 Bug fixes
 ^^^^^^^^^
