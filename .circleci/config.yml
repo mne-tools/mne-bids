@@ -3,8 +3,8 @@ version: 2.1
 
 jobs:
   docs-build:
-    docker:
-      - image: cimg/python:3.8
+    machine:
+        image: ubuntu-2004:202111-01
     steps:
         - checkout
 
@@ -19,13 +19,19 @@ jobs:
               - pip-cache-0-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
 
         - run:
-            name: Get Python running
+            name: Setup Python3 environment
             command: |
-              python -m pip install --user --upgrade --progress-bar off pip
-              python -m pip install --user --upgrade --progress-bar off -r test_requirements.txt
-              python -m pip install --user --upgrade --progress-bar off -r doc/requirements.txt
+                python3 -m venv /home/circleci/mne_bids_env
+                echo "source /home/circleci/mne_bids_env/bin/activate" >> $BASH_ENV
+
+        - run:
+            name: Install Python packages
+            command: |
+              python -m pip install --upgrade --progress-bar off pip
+              python -m pip install --upgrade --progress-bar off -r test_requirements.txt
+              python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
               python -m pip install --upgrade --no-deps https://api.github.com/repos/mne-tools/mne-python/zipball/main
-              python -m pip install --user -e .
+              python -m pip install -e .
 
         - run:
             name: Build the documentation
@@ -82,8 +88,8 @@ jobs:
 
 
   link-check:
-    docker:
-      - image: cimg/python:3.8
+    machine:
+        image: ubuntu-2004:202111-01
     steps:
       - checkout
 
@@ -95,13 +101,19 @@ jobs:
             - pip-cache-0-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
 
       - run:
-          name: Get Python running
+          name: Setup Python3 environment
           command: |
-            python -m pip install --user --upgrade --progress-bar off pip
-            python -m pip install --user --upgrade --progress-bar off -r test_requirements.txt
-            python -m pip install --user --upgrade --progress-bar off -r doc/requirements.txt
+              python3 -m venv /home/circleci/mne_bids_env
+              echo "source /home/circleci/mne_bids_env/bin/activate" >> $BASH_ENV
+
+      - run:
+          name: Install Python packages
+          command: |
+            python -m pip install --upgrade --progress-bar off pip
+            python -m pip install --upgrade --progress-bar off -r test_requirements.txt
+            python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
             python -m pip install --upgrade --no-deps https://api.github.com/repos/mne-tools/mne-python/zipball/main
-            python -m pip install --user -e .
+            python -m pip install -e .
 
       - run:
           name: Check links

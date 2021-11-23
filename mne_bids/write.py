@@ -2633,7 +2633,7 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             update_sidecar_json(
                 bids_path=bp_out_json,
                 entries=json_updates,
-                verbose=False
+                verbose='error'
             )
 
         # Transfer trigger codes from original *_events.tsv file
@@ -2647,7 +2647,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
             _write_tsv(
                 fname=bp_out_events.fpath,
                 dictionary=events_tsv_out,
-                overwrite=True
+                overwrite=True,
+                verbose='error'
             )
 
     # Copy some additional files
