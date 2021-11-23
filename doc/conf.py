@@ -140,8 +140,9 @@ html_theme_options = {
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.9 (devel)',
-        'stable': 'v0.8 (stable)',
+        'dev': 'v0.10 (devel)',
+        'stable': 'v0.9 (stable)',
+        'v0.8': 'v0.8',
         'v0.7': 'v0.7',
         'v0.6': 'v0.6',
         'v0.5': 'v0.5',
