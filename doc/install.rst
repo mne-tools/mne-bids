@@ -24,8 +24,8 @@ Optional:
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution.
 We require that you **use Python 3.7 or higher**.
 You may choose to install ``mne-bids``
-`via pip <#Installation via pip>`_ or
-`via conda <#Installation via conda>`_.
+`via pip <#installation-via-pip>`_ or
+`via conda <#installation-via-conda>`_.
 
 Installation via pip
 --------------------
