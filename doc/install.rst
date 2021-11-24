@@ -6,16 +6,23 @@ Installation
 Dependencies
 ------------
 
-* ``mne`` (>=0.21.2)
+Required:
+
+* ``mne`` (>=0.24)
 * ``numpy`` (>=1.16.0)
 * ``scipy`` (>=1.2.0, or >=1.5.0 for certain operations with EEGLAB data)
-* ``nibabel`` (>=2.2, optional, for processing MRI data)
-* ``pybv`` (>=0.6, optional, for writing BrainVision data)
-* ``pandas`` (>=0.24.0, optional, for generating event statistics)
-* ``matplotlib`` (>=3.1.0, optional, for using the interactive data inspector)
+* ``setuptools`` (>=46.4.0)
+
+Optional:
+
+* ``nibabel`` (>=2.5, for processing MRI data)
+* ``pybv`` (>=0.6, for writing BrainVision data)
+* ``matplotlib`` (>=3.1.0, for using the interactive data inspector)
+* ``pandas`` (>=0.24.0, for generating event statistics)
+* ``EDFlib-Python`` (>=1.0.2, for writing EDF data)
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution.
-We require that you use Python 3.7 or higher.
+We require that you **use Python 3.7 or higher**.
 You may choose to install ``mne-bids``
 `via pip <#Installation via pip>`_ or
 `via conda <#Installation via conda>`_.
