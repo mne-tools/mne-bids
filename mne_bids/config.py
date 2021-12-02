@@ -52,7 +52,7 @@ eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden',
-                     '.cnt': 'Neuroscan'}
+                     '.cnt': 'Neuroscan', '.CNT': 'Neuroscan'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
@@ -68,7 +68,7 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.bdf': io.read_raw_bdf,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
           '.EEG': io.read_raw_nihon,
-          '.cnt': io.read_raw_cnt}
+          '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt}
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -92,7 +92,7 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
                           '.set',  # EEGLAB, potentially accompanied by .fdt
-                          '.cnt']  # Neuroscan
+                          ]
 
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.edf',  # European Data Format
@@ -111,7 +111,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
 # recommended formats
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
-    allowed_extensions_ieeg + ['.lay', '.EEG']
+    allowed_extensions_ieeg + ['.lay', '.EEG', '.cnt', '.CNT']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
