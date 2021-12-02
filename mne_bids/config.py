@@ -51,7 +51,8 @@ eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.BDF': 'Biosemi',
                      '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
-                     '.EEG': 'Nihon Kohden'}
+                     '.EEG': 'Nihon Kohden',
+                     '.cnt': 'Neuroscan'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
@@ -66,7 +67,8 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.edf': io.read_raw_edf, '.EDF': io.read_raw_edf,
           '.bdf': io.read_raw_bdf,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
-          '.EEG': io.read_raw_nihon}
+          '.EEG': io.read_raw_nihon,
+          '.cnt': io.read_raw_cnt}
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -90,7 +92,7 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
                           '.set',  # EEGLAB, potentially accompanied by .fdt
-                          ]
+                          '.cnt']  # Neuroscan
 
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.edf',  # European Data Format
