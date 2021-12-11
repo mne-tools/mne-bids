@@ -52,7 +52,7 @@ Requirements
 Bug fixes
 ^^^^^^^^^
 
-- ...
+- Forcing EDF conversion in :func:`mne_bids.write_raw_bids` properly uses the ``overwrite`` parameter now, by `Adam Li`_ (:gh:`930`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
