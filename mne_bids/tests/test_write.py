@@ -2851,6 +2851,50 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
         raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
 
+@requires_version('mne', '0.24')
+@requires_version('pybv', '0.6')
+@pytest.mark.parametrize(
+    'dir_name, format, fname, reader', test_converteeg_data)
+@pytest.mark.filterwarnings(
+    warning_str['channel_unit_changed'], warning_str['edfblocks'])
+def test_convert_multiple(dir_name, format, fname, reader, tmp_path):
+    bids_root = tmp_path / format
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    raw = reader(raw_fname)
+    # drop 'misc' type channels when exporting
+    raw = raw.pick_types(eeg=True)
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True,
+                  verbose=False)
+
+    if format in ['BrainVision', 'auto']:
+        if dir_name == 'NihonKohden':
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "short" format'):
+                write_raw_bids(**kwargs)
+
+                # should work when writing the second time
+                write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "double" format'):
+                write_raw_bids(**kwargs)
+
+                # should work when writing the second time
+                write_raw_bids(**kwargs)
+    else:
+        with pytest.warns(RuntimeWarning,
+                          match='Converting data files to EDF format'):
+            write_raw_bids(**kwargs)
+
+            # should work when writing the second time
+            write_raw_bids(**kwargs)
+
+
 @requires_version('mne', '0.22')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)

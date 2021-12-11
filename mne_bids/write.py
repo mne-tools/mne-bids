@@ -960,7 +960,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
                       meas_date=meas_date)
 
 
-def _write_raw_edf(raw, bids_fname):
+def _write_raw_edf(raw, bids_fname, overwrite):
     """Store data as EDF.
 
     Parameters
@@ -969,9 +969,11 @@ def _write_raw_edf(raw, bids_fname):
         Raw data to save.
     bids_fname : str
         The output filename.
+    overwrite : bool
+        Whether to overwrite an existing file or not.
     """
     assert str(bids_fname).endswith('.edf')
-    raw.export(bids_fname)
+    raw.export(bids_fname, overwrite=overwrite)
 
 
 @verbose
@@ -1644,7 +1646,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                       if ext == '.pdf' else bids_path.fpath))
         elif bids_path.datatype in ['eeg', 'ieeg'] and format == 'EDF':
             warn('Converting data files to EDF format')
-            _write_raw_edf(raw, bids_path.fpath)
+            _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn('Converting data files to BrainVision format')
             bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
