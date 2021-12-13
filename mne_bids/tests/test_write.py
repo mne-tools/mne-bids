@@ -2858,7 +2858,8 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
     warning_str['channel_unit_changed'], warning_str['edfblocks'])
-def test_format_conversion_overwrite(dir_name, format, fname, reader, tmp_path):
+def test_format_conversion_overwrite(dir_name, format, fname, reader,
+                                     tmp_path):
     """Test that overwrite works when format is passed to write_raw_bids."""
     bids_root = tmp_path / format
     data_path = op.join(testing.data_path(), dir_name)
