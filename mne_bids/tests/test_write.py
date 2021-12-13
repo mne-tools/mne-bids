@@ -2871,8 +2871,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
     raw = reader(raw_fname)
     # drop 'misc' type channels when exporting
     raw = raw.pick_types(eeg=True)
-    kwargs = dict(raw=raw, format=format, bids_path=bids_path, overwrite=True,
-                  verbose=False)
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, verbose=False)
 
     with warnings.catch_warnings():
         # ignore all warnings for this case to remove verbosity
@@ -2882,7 +2881,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
         # writing with the 'format' parameter should always work
         # if overwrite is True
         write_raw_bids(**kwargs)
-        write_raw_bids(**kwargs)
+        write_raw_bids(**kwargs, overwrite=True)
 
 
 @requires_version('mne', '0.22')
