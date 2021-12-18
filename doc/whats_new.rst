@@ -52,7 +52,7 @@ Requirements
 Bug fixes
 ^^^^^^^^^
 
-- ...
+- Forcing EDF conversion in :func:`mne_bids.write_raw_bids` properly uses the ``overwrite`` parameter now, by `Adam Li`_ (:gh:`930`)
 
 - Fix setting unknown ages if no age parameter is supplied in csv in function :func:`mne_bids.make_report` (:gh:`912`)
 
