@@ -23,6 +23,7 @@ Authors
 ~~~~~~~
 
 * `Alex Rockhill`_
+* `Simon Kern`_
 * `Richard Höchenberger`_
 * `Mainak Jas`_
 * `Adam Li`_
@@ -82,6 +83,8 @@ Requirements
 
 Bug fixes
 ^^^^^^^^^
+
+- Fix setting unknown ages if no age parameter is supplied in csv in function :func:`mne_bids.report._summarize_participants_tsv` (:gh:`912`)
 
 - Fix writing Ricoh/KIT data that comes without an associated ``.mrk``, ``.elp``, or ``.hsp`` file using :func:`mne_bids.write_raw_bids`, by `Richard Höchenberger`_ (:gh:`850`)
 

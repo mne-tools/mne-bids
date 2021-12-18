@@ -2,6 +2,7 @@
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD-3-Clause
+import os
 import os.path as op
 
 import mne
@@ -43,6 +44,43 @@ def test_report(tmp_path):
     bids_path.update(root=bids_root)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
+    report = make_report(bids_root)
+
+    expected_report = \
+    f"""This dataset was created by [Unspecified] and conforms to BIDS version {BIDS_VERSION}.
+This report was generated with MNE-BIDS (https://doi.org/10.21105/joss.01896).
+The dataset consists of 1 participants (sex were all unknown; handedness were
+all unknown; ages all unknown) and 1 recording sessions: 01. Data was recorded
+using a MEG system (Elekta manufacturer) sampled at 300.31 Hz with line noise at
+60.0 Hz. The following software filters were applied during recording:
+SpatialCompensation. There was 1 scan in total. Recording durations ranged from
+20.0 to 20.0 seconds (mean = 20.0, std = 0.0), for a total of 20.0 seconds of
+data recorded over all scans. For each dataset, there were on average 376.0 (std
+= 0.0) recording channels per scan, out of which 374.0 (std = 0.0) were used in
+analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
+
+    assert report == expected_report
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_report_no_participant_information(tmp_path):
+    """
+    Test that report generated works as intended even when all participant
+    information such as age, gender, handedness is removed from the tsv file.
+    """
+    bids_root = str(tmp_path)
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw.info['line_freq'] = 60
+    bids_path.update(root=bids_root)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    
+    # remove all information and check if report still runs
+    os.remove(op.join(bids_root, 'participants.json'))
+    
+    # overwrite participant information to see if report still runs
+    with open(op.join(bids_root, 'participants.tsv'), 'w') as f:
+        f.write('participant_id\nsub-001')
+        
     report = make_report(bids_root)
 
     expected_report = \
