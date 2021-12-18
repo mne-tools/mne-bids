@@ -78,8 +78,7 @@ def test_report_no_participant_information(tmp_path):
     (bids_root / 'participants.json').unlink()
     
     # overwrite participant information to see if report still runs
-    with open(op.join(bids_root, 'participants.tsv'), 'w') as f:
-        f.write('participant_id\nsub-001')
+    (bids_root / 'participants.tsv').write_text('participant_id\nsub-001')
         
     report = make_report(bids_root)
 
