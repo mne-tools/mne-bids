@@ -64,10 +64,7 @@ analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_report_no_participant_information(tmp_path):
-    """
-    Test that report generated works as intended even when all participant
-    information such as age, gender, handedness is removed from the tsv file.
-    """
+    """Test report with participants.tsv with participant_id column only."""
     bids_root = tmp_path
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
