@@ -193,7 +193,8 @@ def _write_json(fname, dictionary, overwrite=False):
     logger.info(f"Writing '{fname}'...")
 
 
-def _write_tsv(fname, dictionary, overwrite=False):
+@verbose
+def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
@@ -331,7 +332,9 @@ def _check_anonymize(anonymize, raw, ext):
                              'is able to store in FIF format, must '
                              f'be less than {daysback_max}')
     keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
-    return daysback, keep_his
+    keep_source = anonymize['keep_source'] if 'keep_source' in \
+        anonymize else False
+    return daysback, keep_his, keep_source
 
 
 def _get_anonymization_daysback(raw):

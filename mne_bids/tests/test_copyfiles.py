@@ -6,6 +6,7 @@
 # License: BSD-3-Clause
 import os.path as op
 import datetime
+from pathlib import Path
 
 import pytest
 
@@ -174,6 +175,22 @@ def test_copyfile_edf(tmp_path):
     rec = 'Startdate {0} ID-123 John BioSemi_ActiveTwo'.format(anon_startdate)
     assert id_info == "023 F X X"
     assert rec_info == rec
+
+
+def test_copyfile_edfbdf_uppercase(tmp_path):
+    """Test the copying of EDF/BDF files with upper-case extension."""
+    bids_root = tmp_path / "bids1"
+    bids_root.mkdir()
+    data_path = op.join(base_path, 'edf', 'tests', 'data')
+
+    # Test regular copying
+    for ext in ['.edf', '.bdf']:
+        raw_fname = op.join(data_path, 'test' + ext)
+        new_name = op.join(bids_root, 'test_copy' + ext.upper())
+
+        with pytest.warns(RuntimeWarning, match='Upper-case extension'):
+            copyfile_edf(raw_fname, new_name)
+        assert Path(new_name).with_suffix(ext).exists()
 
 
 @pytest.mark.parametrize('fname',

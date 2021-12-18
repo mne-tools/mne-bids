@@ -43,7 +43,7 @@ from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
-from mne_bids.sidecar_updates import _update_sidecar
+from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
 from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
@@ -2604,7 +2604,6 @@ def test_coordsystem_json_compliance(
         ('03', 'NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
         ('emptyroom', 'MEG/sample',
          'sample_audvis_trunc_raw.fif', _read_raw_fif),
-        ('cap', 'EDF', 'test_reduced.edf', _read_raw_edf),
     ]
 )
 @pytest.mark.filterwarnings(
@@ -2613,18 +2612,11 @@ def test_coordsystem_json_compliance(
     warning_str['edf_warning'],
     warning_str['brainvision_unit']
 )
-def test_anonymize(subject, dir_name, fname, reader, tmp_path):
+def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     """Test writing anonymized EDF data."""
     data_path = testing.data_path()
 
     raw_fname = op.join(data_path, dir_name, fname)
-
-    # capitalize the EDF extension file
-    if subject == 'cap':
-        new_basename = (op.basename(raw_fname).split('.edf')[0] + '.EDF')
-        new_raw_fname = tmp_path / new_basename
-        sh.copyfile(raw_fname, new_raw_fname)
-        raw_fname = new_raw_fname.as_posix()
 
     bids_root = tmp_path / 'bids1'
     raw = reader(raw_fname)
@@ -2640,6 +2632,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         bids_path.update(task='task', suffix='eeg', datatype='eeg')
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
+    orig_bids_path = bids_path.copy()
     bids_path = \
         write_raw_bids(raw, bids_path, overwrite=True,
                        anonymize=anonymize, verbose=False)
@@ -2652,12 +2645,89 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path):
         )
 
     raw2 = read_raw_bids(bids_path, verbose=False)
-    if raw_fname.lower().endswith('.edf'):
+    if raw_fname.endswith('.edf'):
         _raw = reader(bids_path)
         assert _raw.info['meas_date'].year == 1985
         assert _raw.info['meas_date'].month == 1
         assert _raw.info['meas_date'].day == 1
     assert raw2.info['meas_date'].year < 1925
+
+    # write without source
+    scans_fname = BIDSPath(subject=bids_path.subject,
+                           session=bids_path.session,
+                           suffix='scans', extension='.tsv',
+                           root=bids_path.root)
+    anonymize['keep_source'] = False
+    bids_path = \
+        write_raw_bids(raw, orig_bids_path, overwrite=True,
+                       anonymize=anonymize, verbose=False)
+    scans_tsv = _from_tsv(scans_fname)
+    assert 'source' not in scans_tsv.keys()
+
+    # Write with source this time get the scans tsv
+    bids_path = write_raw_bids(
+        raw, orig_bids_path, overwrite=True,
+        anonymize=dict(daysback=daysback_min, keep_source=True),
+        verbose=False)
+    scans_fname = BIDSPath(subject=bids_path.subject,
+                           session=bids_path.session,
+                           suffix='scans', extension='.tsv',
+                           root=bids_path.root)
+    scans_tsv = _from_tsv(scans_fname)
+    assert scans_tsv['source'] == [
+        Path(f).name for f in raw.filenames
+    ]
+    _bids_validate(bids_path.root)
+
+    # update the scans sidecar JSON with information
+    scans_json_fpath = scans_fname.copy().update(extension='.json')
+    with open(scans_json_fpath, 'r') as fin:
+        scans_json = json.load(fin)
+    scans_json['test'] = 'New stuff...'
+    update_sidecar_json(scans_json_fpath, scans_json)
+
+    # write again and make sure scans json was not altered
+    bids_path = write_raw_bids(
+        raw, orig_bids_path, overwrite=True,
+        anonymize=dict(daysback=daysback_min, keep_source=True),
+        verbose=False)
+    with open(scans_json_fpath, 'r') as fin:
+        scans_json = json.load(fin)
+    assert 'test' in scans_json
+
+
+@pytest.mark.parametrize('dir_name, fname', [
+    ['EDF', 'test_reduced.edf'],
+    ['BDF', 'test_bdf_stim_channel.bdf']
+])
+def test_write_uppercase_edfbdf(tmp_path, dir_name, fname):
+    """Test writing uppercase EDF/BDF ext results in lowercase."""
+    subject = 'cap'
+    if dir_name == 'EDF':
+        read_func = _read_raw_edf
+    elif dir_name == 'BDF':
+        read_func = _read_raw_bdf
+
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, dir_name, fname)
+
+    # capitalize the extension file
+    lower_case_ext = f'.{dir_name.lower()}'
+    upper_case_ext = f'.{dir_name.upper()}'
+    new_basename = (op.basename(raw_fname).split(lower_case_ext)[0] +
+                    upper_case_ext)
+    new_raw_fname = tmp_path / new_basename
+    sh.copyfile(raw_fname, new_raw_fname)
+    raw_fname = new_raw_fname.as_posix()
+
+    # now read in the file and write to BIDS
+    bids_root = tmp_path / 'bids1'
+    raw = read_func(raw_fname)
+    bids_path = BIDSPath(subject=subject, task=task, root=bids_root)
+    bids_path = write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+    # the final output file should have lower case EDF extension
+    assert bids_path.extension == lower_case_ext
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -3122,6 +3192,16 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
             'sub-1_ses-01_acq-01_T1w.nii.gz').exists()
     assert (bids_root_anon / 'sub-emptyroom' / 'ses-19221211' / 'meg' /
             'sub-emptyroom_ses-19221211_task-noise_meg.fif').exists()
+
+    events_tsv_orig_bp = bids_path.copy().update(
+        suffix='events', extension='.tsv'
+    )
+    events_tsv_anonymized_bp = events_tsv_orig_bp.copy().update(
+        subject='1', root=bids_root_anon
+    )
+    events_tsv_orig = _from_tsv(events_tsv_orig_bp)
+    events_tsv_anonymized = _from_tsv(events_tsv_anonymized_bp)
+    assert events_tsv_orig == events_tsv_anonymized
 
     # Explicitly specify multiple data types
     bids_root_anon = tmpdir / 'bids-anonymized-1'
