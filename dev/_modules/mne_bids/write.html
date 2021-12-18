@@ -1168,7 +1168,7 @@
                       <span class="n">meas_date</span><span class="o">=</span><span class="n">meas_date</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
 
 <span class="sd">    Parameters</span>
@@ -1177,9 +1177,11 @@
 <span class="sd">        Raw data to save.</span>
 <span class="sd">    bids_fname : str</span>
 <span class="sd">        The output filename.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite an existing file or not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.edf&#39;</span><span class="p">)</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="make_dataset_description"><a class="viewcode-back" href="../../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description">[docs]</a><span class="nd">@verbose</span>
@@ -1852,7 +1854,7 @@
                       <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span> <span class="k">else</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;EDF&#39;</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to EDF format&#39;</span><span class="p">)</span>
-            <span class="n">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
+            <span class="n">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format&#39;</span><span class="p">)</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
@@ -2891,7 +2893,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-11-24.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-12-18.<br>
 </p>
     </div>
     
