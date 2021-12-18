@@ -54,7 +54,7 @@ Bug fixes
 
 - ...
 
-- Fix setting unknown ages if no age parameter is supplied in csv in function :func:`mne_bids.report._summarize_participants_tsv` (:gh:`912`)
+- Fix setting unknown ages if no age parameter is supplied in csv in function :func:`mne_bids.make_report` (:gh:`912`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
