@@ -75,7 +75,7 @@ def test_report_no_participant_information(tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     
     # remove all information and check if report still runs
-    os.remove(op.join(bids_root, 'participants.json'))
+    (bids_root / 'participants.json').unlink()
     
     # overwrite participant information to see if report still runs
     with open(op.join(bids_root, 'participants.tsv'), 'w') as f:
