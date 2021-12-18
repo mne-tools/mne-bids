@@ -68,7 +68,7 @@ def test_report_no_participant_information(tmp_path):
     Test that report generated works as intended even when all participant
     information such as age, gender, handedness is removed from the tsv file.
     """
-    bids_root = str(tmp_path)
+    bids_root = tmp_path
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
     bids_path.update(root=bids_root)
