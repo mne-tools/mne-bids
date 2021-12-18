@@ -20,6 +20,7 @@ import shutil as sh
 import json
 from pathlib import Path
 import codecs
+import warnings
 
 from pkg_resources import parse_version
 
@@ -2849,6 +2850,38 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     # by the physical min/max. The precision is to 0.09 uV.
     assert_array_almost_equal(
         raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
+
+
+@requires_version('mne', '0.24')
+@requires_version('pybv', '0.6')
+@pytest.mark.parametrize(
+    'dir_name, format, fname, reader', test_converteeg_data)
+@pytest.mark.filterwarnings(
+    warning_str['channel_unit_changed'], warning_str['edfblocks'])
+def test_format_conversion_overwrite(dir_name, format, fname, reader,
+                                     tmp_path):
+    """Test that overwrite works when format is passed to write_raw_bids."""
+    bids_root = tmp_path / format
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    raw = reader(raw_fname)
+    # drop 'misc' type channels when exporting
+    raw = raw.pick_types(eeg=True)
+    kwargs = dict(raw=raw, format=format, bids_path=bids_path, verbose=False)
+
+    with warnings.catch_warnings():
+        # ignore all warnings for this case to remove verbosity
+        # this unit test is not meant to test for warnings
+        warnings.filterwarnings('ignore')
+
+        # writing with the 'format' parameter should always work
+        # if overwrite is True
+        write_raw_bids(**kwargs)
+        write_raw_bids(**kwargs, overwrite=True)
 
 
 @requires_version('mne', '0.22')
