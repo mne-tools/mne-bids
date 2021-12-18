@@ -30,3 +30,4 @@
 .. _Clemens Brunner: https://github.com/cbrnr
 .. _Kambiz Tavabi: https://github.com/ktavabi
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
+.. _Simon Kern: https://github.com/skjerns
