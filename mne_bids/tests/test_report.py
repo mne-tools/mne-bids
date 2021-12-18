@@ -71,7 +71,7 @@ def test_report_no_participant_information(tmp_path):
     bids_root = tmp_path
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     
     # remove all information and check if report still runs
