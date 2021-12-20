@@ -112,25 +112,25 @@ jobs:
         include:
           # Only test older Python versions on `ubuntu-latest` platform
           - os: ubuntu-latest
-            python-version: ["3.7"]
-            mne-version: [mne-stable]
-            bids-validator-version: [validator-stable]
+            python-version: "3.7"
+            mne-version: mne-stable
+            bids-validator-version: validator-stable
 
           - os: ubuntu-latest
-            python-version: ["3.8"]
-            mne-version: [mne-stable]
-            bids-validator-version: [validator-stable]
+            python-version: "3.8"
+            mne-version: mne-stable
+            bids-validator-version: validator-stable
 
           - os: ubuntu-latest
-            python-version: ["3.9"]
-            mne-version: [mne-stable]
-            bids-validator-version: [validator-stable]
+            python-version: "3.9"
+            mne-version:[mne-stable
+            bids-validator-version: validator-stable
 
           # Only test devel versions with Python 3.10
           - os: ubuntu-latest
             python-version: "3.10"
-            mne-version: [mne-main]
-            bids-validator-version: [validator-main]
+            mne-version: mne-main
+            bids-validator-version: validator-main
 
     env:
       TZ: Europe/Berlin
