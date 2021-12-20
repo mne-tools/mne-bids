@@ -111,7 +111,8 @@ jobs:
 
         # Only test devel versions with Python 3.10
         include:
-          - python-version: "3.10"
+          - os: ubuntu-latest
+            python-version: "3.10"
             mne-version: main
             bids-validator-version: main
 
