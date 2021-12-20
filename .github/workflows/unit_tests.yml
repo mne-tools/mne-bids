@@ -123,7 +123,7 @@ jobs:
 
           - os: ubuntu-latest
             python-version: "3.9"
-            mne-version:[mne-stable
+            mne-version: mne-stable
             bids-validator-version: validator-stable
 
           # Only test devel versions with Python 3.10
