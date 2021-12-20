@@ -106,31 +106,31 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10"]
-        mne-version: [stable]
-        bids-validator-version: [stable]
+        mne-version: [mne-stable]
+        bids-validator-version: [validator-stable]
 
         include:
           # Only test older Python versions on `ubuntu-latest` platform
           - os: ubuntu-latest
             python-version: ["3.7"]
-            mne-version: [stable]
-            bids-validator-version: [stable]
+            mne-version: [mne-stable]
+            bids-validator-version: [validator-stable]
 
           - os: ubuntu-latest
             python-version: ["3.8"]
-            mne-version: [stable]
-            bids-validator-version: [stable]
+            mne-version: [mne-stable]
+            bids-validator-version: [validator-stable]
 
           - os: ubuntu-latest
             python-version: ["3.9"]
-            mne-version: [stable]
-            bids-validator-version: [stable]
+            mne-version: [mne-stable]
+            bids-validator-version: [validator-stable]
 
           # Only test devel versions with Python 3.10
           - os: ubuntu-latest
             python-version: "3.10"
-            mne-version: main
-            bids-validator-version: main
+            mne-version: [mne-main]
+            bids-validator-version: [validator-main]
 
     env:
       TZ: Europe/Berlin
@@ -164,23 +164,23 @@ jobs:
         pip install -r test_requirements.txt
 
     - name: Install MNE (stable)
-      if: "matrix.mne-version == 'stable'"
+      if: "matrix.mne-version == 'mne-stable'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.24
         pip install --no-deps -e ./mne-python
 
     - name: Install MNE (main)
-      if: "matrix.mne-version == 'main'"
+      if: "matrix.mne-version == 'mne-main'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
         pip install --no-deps -e ./mne-python
 
     - name: Install BIDS validator (stable)
-      if: "matrix.bids-validator-version == 'stable'"
+      if: "matrix.bids-validator-version == 'validator-stable'"
       run: npm install -g bids-validator
 
     - name: Install BIDS validator (main)
-      if: "matrix.bids-validator-version == 'main'"
+      if: "matrix.bids-validator-version == 'validator-main'"
       run: |
         pushd ..
         # Get npm 7+
@@ -216,7 +216,7 @@ jobs:
       shell: bash
 
     - name: Upload coverage stats to codecov
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.bids-validator-version == 'main' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.bids-validator-version == 'validator-main' }}
       uses: codecov/codecov-action@v2
       with:
         files: ./coverage.xml
