@@ -54,7 +54,7 @@ Bug fixes
 
 - Forcing EDF conversion in :func:`mne_bids.write_raw_bids` properly uses the ``overwrite`` parameter now, by `Adam Li`_ (:gh:`930`)
 
-- Fix loading tsv participant summary information when only subject_id is supplied and all other information (age, gender, handedness) is missing in :func:`mne_bids.make_report` (:gh:`912`)
+- :func:`mne_bids.make_report` now correctly handles `participant.tsv` files that only contain a `subject_id` column, by `Simon Kern`_ (:gh:`912`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
