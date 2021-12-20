@@ -23,7 +23,7 @@ Authors
 ~~~~~~~
 
 People who contributed to this release (in alphabetical order):
-
+* `Simon Kern`_
 * `Adam Li`_
 * `Alex Rockhill`_
 * `Alexandre Gramfort`_
@@ -53,6 +53,8 @@ Bug fixes
 ^^^^^^^^^
 
 - Forcing EDF conversion in :func:`mne_bids.write_raw_bids` properly uses the ``overwrite`` parameter now, by `Adam Li`_ (:gh:`930`)
+
+- :func:`mne_bids.make_report` now correctly handles `participant.tsv` files that only contain a `participant_id` column, by `Simon Kern`_ (:gh:`912`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
