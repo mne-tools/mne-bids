@@ -2,7 +2,6 @@
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD-3-Clause
-import os
 import os.path as op
 
 import mne
@@ -34,6 +33,7 @@ warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
 )
 
+bids_path2 = bids_path.copy()
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_report(tmp_path):
@@ -68,15 +68,15 @@ def test_report_no_participant_information(tmp_path):
     bids_root = tmp_path
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
-    bids_path = bids_path.copy().update(root=bids_root)
+    bids_path = bids_path2.update(root=bids_root)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
-    
+
     # remove all information and check if report still runs
     (bids_root / 'participants.json').unlink()
-    
+
     # overwrite participant information to see if report still runs
     (bids_root / 'participants.tsv').write_text('participant_id\nsub-001')
-        
+
     report = make_report(bids_root)
 
     expected_report = \
