@@ -112,7 +112,17 @@ jobs:
         include:
           # Only test older Python versions on `ubuntu-latest` platform
           - os: ubuntu-latest
-            python-version: ["3.7", "3.8", "3.9"]
+            python-version: ["3.7"]
+            mne-version: [stable]
+            bids-validator-version: [stable]
+
+          - os: ubuntu-latest
+            python-version: ["3.8"]
+            mne-version: [stable]
+            bids-validator-version: [stable]
+
+          - os: ubuntu-latest
+            python-version: ["3.9"]
             mne-version: [stable]
             bids-validator-version: [stable]
 
