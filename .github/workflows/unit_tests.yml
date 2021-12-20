@@ -105,27 +105,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-18.04, ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10"]
+        python-version: ["3.7", "3.10"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         bids-validator-version: [validator-stable]
 
         include:
-          # Only test older Python versions on `ubuntu-latest` platform
-          - os: ubuntu-latest
-            python-version: "3.7"
-            mne-version: mne-stable
-            bids-validator-version: validator-stable
-
-          - os: ubuntu-latest
-            python-version: "3.8"
-            mne-version: mne-stable
-            bids-validator-version: validator-stable
-
-          - os: ubuntu-latest
-            python-version: "3.9"
-            mne-version: mne-stable
-            bids-validator-version: validator-stable
-
           # Only test devel versions with Python 3.10
           - os: ubuntu-latest
             python-version: "3.10"
