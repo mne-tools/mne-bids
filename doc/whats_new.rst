@@ -56,6 +56,9 @@ Bug fixes
 
 - :func:`mne_bids.make_report` now correctly handles `participant.tsv` files that only contain a `participant_id` column, by `Simon Kern`_ (:gh:`912`)
 
+- :func:`mne_bids.write_raw_bids` doesn't store age, handedness, and sex in `participants.tsv` anymore for empty-room recordings, by `Richard Höchenberger`_ (:gh:`935`)
+
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst
