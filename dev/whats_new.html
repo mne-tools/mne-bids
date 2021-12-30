@@ -318,6 +318,7 @@
 <ul class="simple">
 <li><p>Forcing EDF conversion in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> properly uses the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> parameter now, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/930">#930</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_report()</span></code></a> now correctly handles <em class="xref py py-obj">participant.tsv</em> files that only contain a <em class="xref py py-obj">participant_id</em> column, by <a class="reference external" href="https://github.com/skjerns">Simon Kern</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/912">#912</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> doesn’t store age, handedness, and sex in <em class="xref py py-obj">participants.tsv</em> anymore for empty-room recordings, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/935">#935</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -359,7 +360,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-12-20.<br>
+    &copy; Copyright 2017-2021, MNE Developers. Last updated on 2021-12-30.<br>
 </p>
     </div>
     
