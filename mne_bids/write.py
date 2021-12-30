@@ -303,14 +303,11 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         False, an error will be raised.
 
     """
-    subject_id = 'sub-' + subject_id
-    data = OrderedDict(participant_id=[subject_id])
-
     subject_age = "n/a"
     sex = "n/a"
     hand = 'n/a'
     subject_info = raw.info.get('subject_info', None)
-    if subject_info is not None:
+    if subject_id != 'emptyroom' and subject_info is not None:
         # add sex
         sex = _map_options(what='sex', key=subject_info.get('sex', 0),
                            fro='mne', to='bids')
@@ -336,6 +333,8 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         else:
             subject_age = "n/a"
 
+    subject_id = 'sub-' + subject_id
+    data = OrderedDict(participant_id=[subject_id])
     data.update({'age': [subject_age], 'sex': [sex], 'hand': [hand]})
 
     if os.path.exists(fname):
@@ -1533,8 +1532,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     _readme(bids_path.datatype, readme_fname, False)
 
     # save all participants meta data
-    _participants_tsv(raw, bids_path.subject, participants_tsv_fname,
-                      overwrite)
+    _participants_tsv(
+        raw=raw, subject_id=bids_path.subject, fname=participants_tsv_fname,
+        overwrite=overwrite
+    )
     _participants_json(participants_json_fname, True)
 
     # for MEG, we only write coordinate system

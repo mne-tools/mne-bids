@@ -161,9 +161,12 @@ def test_write_participants(_bids_validate, tmp_path):
     # add fake participants data
     raw.set_meas_date(datetime(year=1994, month=1, day=26,
                                tzinfo=timezone.utc))
-    raw.info['subject_info'] = {'his_id': subject_id2,
-                                'birthday': (1993, 1, 26),
-                                'sex': 1, 'hand': 2}
+    raw.info['subject_info'] = {
+        'his_id': subject_id2,
+        'birthday': (1993, 1, 26),
+        'sex': 1,
+        'hand': 2
+    }
 
     bids_path = _bids_path.copy().update(root=tmp_path)
     write_raw_bids(raw, bids_path)
@@ -222,7 +225,6 @@ def test_write_participants(_bids_validate, tmp_path):
 
     # if overwrite is False, then nothing should change from the above
     with pytest.raises(FileExistsError, match='already exists'):
-        raw.info['subject_info'] = None
         write_raw_bids(raw, bids_path, overwrite=False)
     data = _from_tsv(participants_tsv)
     with open(participants_json_fpath, 'r', encoding='utf-8') as fin:
@@ -232,6 +234,19 @@ def test_write_participants(_bids_validate, tmp_path):
     assert data['subject_test_col1'][participant_idx] == 'S'
     # in addition assert the original ordering of the new overwritten file
     assert list(data.keys()) == orig_key_order
+
+    # For empty-room data, all fields except participant_id should be 'n/a'
+    assert raw.info['subject_info']  # Ensure the following test makes sense!
+    bids_path_er = bids_path.copy().update(
+        subject='emptyroom', task='noise',
+        session=raw.info['meas_date'].strftime('%Y%m%d')
+    )
+    write_raw_bids(raw=raw, bids_path=bids_path_er, verbose=False)
+    participants_tsv = _from_tsv(participants_tsv)
+    idx = participants_tsv['participant_id'].index('sub-emptyroom')
+    assert participants_tsv['hand'][idx] == 'n/a'
+    assert participants_tsv['sex'][idx] == 'n/a'
+    assert participants_tsv['age'][idx] == 'n/a'
 
 
 def test_write_correct_inputs():
