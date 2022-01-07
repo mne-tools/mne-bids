@@ -347,11 +347,12 @@ def test_handle_events_reading(tmp_path):
         raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
-    # Test with same `trial_type` referring to different `value`
-    events = {'onset': [11, 12, 13],
-              'duration': ['n/a', 'n/a', 'n/a'],
-              'trial_type': ["event1", "event1", "event2"],
-              'value': [1, 2, 3]}
+    # Test with same `trial_type` referring to different `value`:
+    # The events should be renamed automatically
+    events = {'onset': [11, 12, 13, 14, 15],
+              'duration': ['n/a', 'n/a', 'n/a', 'n/a', 'n/a'],
+              'trial_type': ["event1", "event1", "event2", "event3", "event3"],
+              'value': [1, 2, 3, 4, 'n/a']}
     events_fname = tmp_path / 'bids3' / 'sub-01_task-test_events.json'
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
@@ -359,9 +360,11 @@ def test_handle_events_reading(tmp_path):
     raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
-    assert len(events) == 3
+    assert len(events) == 5
     assert 'event1/1' in event_id
     assert 'event1/2' in event_id
+    assert 'event3/4' in event_id
+    assert 'event3/na' in event_id  # 'n/a' value should become 'na'
     # The event with unique value mapping should not be renamed
     assert 'event2' in event_id
 
