@@ -29,7 +29,7 @@ from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 @verbose
 def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
                     show_annotations=True, verbose=None):
-    f"""Inspect and annotate BIDS raw data.
+    """Inspect and annotate BIDS raw data.
 
     This function allows you to browse MEG, EEG, and iEEG raw data stored in a
     BIDS dataset. You can toggle the status of a channel (bad or good) by
@@ -64,7 +64,9 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
         will be marked as ``bad`` in ``*_channels.tsv``.
 
         .. note::
-            This function calls :func:`{annotate_func_name}`
+            This function calls ``mne.preprocessing.annotate_amplitude``
+            (MNE-Python 1.0 or newer) or ``mne.preprocessing.annotate_flat``
+            (older versions of MNE-Python)
             and will only consider segments of at least **50 ms consecutive
             flatness** as "flat" (deviating from MNE-Python's default of 5 ms).
             If more than 5 percent of a channel's data has been marked as flat,
