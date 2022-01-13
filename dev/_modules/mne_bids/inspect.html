@@ -217,8 +217,16 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_flat</span>
+
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.fixes</span> <span class="kn">import</span> <span class="n">_compare_version</span>
+
+<span class="k">if</span> <span class="n">_compare_version</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0.dev0&#39;</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_flat</span>
+    <span class="n">_annotate_flat_func</span> <span class="o">=</span> <span class="n">annotate_flat</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_amplitude</span>
+    <span class="n">_annotate_flat_func</span> <span class="o">=</span> <span class="n">annotate_amplitude</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">mark_channels</span>
 <span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_read_events</span>
@@ -264,8 +272,10 @@
 <span class="sd">        will be marked as ``bad`` in ``*_channels.tsv``.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            This function calls :func:`mne.preprocessing.annotate_flat` and</span>
-<span class="sd">            will only consider segments of at least **50 ms consecutive</span>
+<span class="sd">            This function calls ``mne.preprocessing.annotate_amplitude``</span>
+<span class="sd">            (MNE-Python 1.0 or newer) or ``mne.preprocessing.annotate_flat``</span>
+<span class="sd">            (older versions of MNE-Python)</span>
+<span class="sd">            and will only consider segments of at least **50 ms consecutive</span>
 <span class="sd">            flatness** as &quot;flat&quot; (deviating from MNE-Python&#39;s default of 5 ms).</span>
 <span class="sd">            If more than 5 percent of a channel&#39;s data has been marked as flat,</span>
 <span class="sd">            the entire channel will be added to the list of bad channels. Only</span>
@@ -333,7 +343,18 @@
 
     <span class="k">if</span> <span class="n">find_flat</span><span class="p">:</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>  <span class="c1"># Speeds up processing dramatically</span>
-        <span class="n">flat_annot</span><span class="p">,</span> <span class="n">flat_chans</span> <span class="o">=</span> <span class="n">annotate_flat</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_annotate_flat_func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;annotate_amplitude&#39;</span><span class="p">:</span>
+            <span class="n">flat_annot</span><span class="p">,</span> <span class="n">flat_chans</span> <span class="o">=</span> <span class="n">annotate_amplitude</span><span class="p">(</span>
+                <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+                <span class="n">flat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+                <span class="n">bad_percent</span><span class="o">=</span><span class="mi">5</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># annotate_flat</span>
+            <span class="n">flat_annot</span><span class="p">,</span> <span class="n">flat_chans</span> <span class="o">=</span> <span class="n">annotate_flat</span><span class="p">(</span>
+                <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+                <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.05</span>
+            <span class="p">)</span>
         <span class="n">new_annot</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span> <span class="o">+</span> <span class="n">flat_annot</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">new_annot</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">flat_chans</span><span class="p">))</span>
@@ -636,7 +657,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-07.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-13.<br>
 </p>
     </div>
     
