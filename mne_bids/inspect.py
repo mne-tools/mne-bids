@@ -13,7 +13,7 @@ import mne
 from mne.utils import logger, verbose
 from mne.fixes import _compare_version
 
-if _compare_version(mne.__version__, '<=', '1.0'):
+if _compare_version(mne.__version__, '<', '1.0'):
     from mne.preprocessing import annotate_flat
     _annotate_flat_func = annotate_flat
 else:
