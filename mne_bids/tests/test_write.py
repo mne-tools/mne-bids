@@ -78,9 +78,10 @@ warning_str = dict(
               'blocks:RuntimeWarning:mne',
     brainvision_unit='ignore:Encountered unsupported '
                      'non-voltage units*.:UserWarning',
-    cnt_warning1='ignore:.*Could not parse meas date from the header. Setting to None.',
+    cnt_warning1='ignore:.*Could not parse meas date from the header. '
+                 'Setting to None.',
     cnt_warning2='ignore:.*Could not define the number of bytes automatically.'
-                  ' Defaulting to 2.',
+                 ' Defaulting to 2.',
     no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne'
 )
 
@@ -110,7 +111,7 @@ test_eegieeg_data = [
     ('EDF', 'test_reduced.edf', _read_raw_edf),
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
-    ('CNT','scan41_short.cnt',_read_raw_cnt),
+    ('CNT', 'scan41_short.cnt', _read_raw_cnt),
 ]
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
@@ -125,10 +126,10 @@ test_convertmeg_data = [
 test_converteeg_data = [
     ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
-    ('CNT','BrainVision','scan41_short.cnt',_read_raw_cnt),
+    ('CNT', 'BrainVision', 'scan41_short.cnt', _read_raw_cnt),
     ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
-    ('CNT','EDF','scan41_short.cnt',_read_raw_cnt)
+    ('CNT', 'EDF', 'scan41_short.cnt', _read_raw_cnt)
 ]
 
 
@@ -1194,7 +1195,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             bids_output_path = write_raw_bids(**kwargs)
     elif dir_name == 'CNT':
         with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             bids_output_path = write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1241,7 +1243,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             write_raw_bids(**kwargs)
     elif dir_name == 'CNT':
         with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1266,7 +1269,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             write_raw_bids(**kwargs)
     elif dir_name == 'CNT':
         with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1331,7 +1335,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             write_raw_bids(**kwargs)
     elif dir_name == 'CNT':
         with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1381,7 +1386,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 write_raw_bids(**kwargs)
         elif dir_name == 'CNT':
             with pytest.warns(RuntimeWarning,
-                                match='Encountered data in "int" format. Converting to float32.'):
+                              match='Encountered data in "int" format. '
+                              'Converting to float32.'):
                 write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
@@ -1417,7 +1423,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             write_raw_bids(**kwargs)
     elif dir_name == 'CNT':
         with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1458,7 +1465,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             write_raw_bids(**kwargs)
     elif dir_name == 'CNT':
         with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1510,7 +1518,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             write_raw_bids(**kwargs)
     elif dir_name == 'CNT':
         with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1566,7 +1575,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 output_path = _test_anonymize(tmp_path / 'b', raw, bids_path)
         elif dir_name == 'CNT':
             with pytest.warns(RuntimeWarning,
-                                match='Encountered data in "int" format. Converting to float32.'):
+                              match='Encountered data in "int" format. '
+                              'Converting to float32.'):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / 'c', raw, bids_path)
         else:
@@ -2863,7 +2873,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
     warning_str['no_hand'],
-    )
+)
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
     bids_root = tmp_path / format
@@ -2887,7 +2897,8 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
                 bids_output_path = write_raw_bids(**kwargs)
         elif dir_name == 'CNT':
             with pytest.warns(RuntimeWarning,
-                              match='Encountered data in "int" format. Converting to float32.'):
+                              match='Encountered data in "int" format. '
+                              'Converting to float32.'):
                 bids_output_path = write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
@@ -2938,7 +2949,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
     warning_str['no_hand'],
-    )
+)
 def test_format_conversion_overwrite(dir_name, format, fname, reader,
                                      tmp_path):
     """Test that overwrite works when format is passed to write_raw_bids."""
@@ -2973,7 +2984,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
     warning_str['no_hand'],
-    )
+)
 def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmp_path):
     """Test error writing as BrainVision EEG data for MEG."""
     bids_root = tmp_path / 'bids1'
@@ -3033,7 +3044,7 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
     warning_str['no_hand'],
-    )
+)
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
     bids_root = tmp_path / 'bids_1'
