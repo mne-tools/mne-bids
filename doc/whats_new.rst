@@ -30,6 +30,7 @@ People who contributed to this release (in alphabetical order):
 * `Mainak Jas`_
 * `Richard Höchenberger`_
 * `Stefan Appelhoff`_
+* `Yorguin Mantilla`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,7 +38,7 @@ Detailed list of changes
 Enhancements
 ^^^^^^^^^^^^
 
-- ...
+- Add support for CNT (Neuroscan) files in :func:`mne_bids.write_raw_bids`, by `Yorguin Mantilla`_ (:gh:`924`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
