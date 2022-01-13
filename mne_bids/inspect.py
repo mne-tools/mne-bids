@@ -13,7 +13,7 @@ import mne
 from mne.utils import logger, verbose
 from mne.fixes import _compare_version
 
-if _compare_version(mne.__version__, '<', '1.0.dev0'):
+if _compare_version(mne.__version__, '<', '1.0.dev0'):  # pragma: no cover
     from mne.preprocessing import annotate_flat
     _annotate_flat_func = annotate_flat
 else:
@@ -142,7 +142,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
                 min_duration=0.05,
                 bad_percent=5
             )
-        else:  # annotate_flat
+        else:  # pragma: no cover
             flat_annot, flat_chans = annotate_flat(
                 raw=raw,
                 min_duration=0.05
