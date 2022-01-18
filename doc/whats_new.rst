@@ -48,7 +48,7 @@ API and behavior changes
 Requirements
 ^^^^^^^^^^^^
 
-- ...
+- MNE-BIDS now requires Jinja2 to work with MNE-Python 0.24.
 
 Bug fixes
 ^^^^^^^^^

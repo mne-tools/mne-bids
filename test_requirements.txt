@@ -14,3 +14,4 @@ check-manifest
 pydocstyle
 flake8
 pooch
+jinja2

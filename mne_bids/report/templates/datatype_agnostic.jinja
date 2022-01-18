@@ -1,0 +1,20 @@
+Data was recorded using an {{ system }} system
+{% if manufacturer %}
+({{ manufacturer }})
+{% endif %}
+sampled at {{ sfreq }} Hz
+with line noise at {{ powerlinefreq }} Hz.
+{% if software_filters %}
+The following software filters were applied during recording: 
+{{ software_filters }}.
+{% endif %}
+{% if n_scans > 1 %}
+There were {{n_scans}} scans in total.
+{% else %}
+There was {{n_scans}} scan in total.
+{% endif %}
+{{ length_recordings }}
+For each dataset, there were on average {{mean_chs}} (std = {{std_chs}})
+recording channels per scan, out of which {{mean_good_chs}}
+(std = {{std_good_chs}}) were used in analysis
+({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis).
