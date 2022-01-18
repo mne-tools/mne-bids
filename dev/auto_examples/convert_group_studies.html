@@ -8,17 +8,17 @@
 
     <title>05. BIDS conversion for group studies &#8212; MNE-BIDS 0.10.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet">
-  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
-
+    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
     
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
+    <link rel="stylesheet"
+      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
     
     <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
     <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
@@ -30,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
-
+    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -157,16 +157,12 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
+          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://mne.discourse.group/tags/mne-bids" rel="noopener" target="_blank" title="Discourse">
-            <span><i class="fab fa-discourse"></i></span>
-            <label class="sr-only">Discourse</label>
-          </a>
+          <a class="nav-link" href="https://mne.discourse.group/tags/mne-bids" rel="noopener" target="_blank" title="Discourse"><span><i class="fab fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
         </li>
       </ul>
       </div>
@@ -182,7 +178,8 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -281,6 +278,9 @@
 
   </div>
 </nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
             </div>
             
           
@@ -691,12 +691,13 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Summarizing participants.tsv /home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv...
 Summarizing scans.tsv files [PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;), PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;)]...
 The participant template found: sex were all unknown;
-handedness were all unknown; ages all unknown
+handedness were all unknown;
+ages all unknown
 This dataset was created by [Unspecified] and conforms to BIDS version 1.6.0.
 This report was generated with MNE-BIDS (https://doi.org/10.21105/joss.01896).
 The dataset consists of 2 participants (sex were all unknown; handedness were
 all unknown; ages all unknown) and 1 recording sessions: 01. Data was recorded
-using a EEG system sampled at 160.0 Hz with line noise at 50.0 Hz. There were 6
+using an EEG system sampled at 160.0 Hz with line noise at 50.0 Hz. There were 6
 scans in total. Recording durations ranged from 122.99 to 124.99 seconds (mean =
 123.99, std = 1.0), for a total of 743.96 seconds of data recorded over all
 scans. For each dataset, there were on average 64.0 (std = 0.0) recording
@@ -704,7 +705,7 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
 0.0 were removed from analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.596 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.576 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -724,7 +725,7 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
               
               
               <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
+<div class='prev-next-area'>
     <a class='left-prev' id="prev-link" href="convert_eeg_to_bids.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
@@ -747,13 +748,13 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
       </div>
     </div>
   
-  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
-<footer class="footer mt-5 mt-md-0">
+    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-13.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-18.<br>
 </p>
     </div>
     

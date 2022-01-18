@@ -8,17 +8,17 @@
 
     <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.10.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet">
-  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
-
+    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
     
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
+    <link rel="stylesheet"
+      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
     
     <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
     <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
@@ -30,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
-
+    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -157,16 +157,12 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
+          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://mne.discourse.group/tags/mne-bids" rel="noopener" target="_blank" title="Discourse">
-            <span><i class="fab fa-discourse"></i></span>
-            <label class="sr-only">Discourse</label>
-          </a>
+          <a class="nav-link" href="https://mne.discourse.group/tags/mne-bids" rel="noopener" target="_blank" title="Discourse"><span><i class="fab fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
         </li>
       </ul>
       </div>
@@ -182,7 +178,8 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -281,6 +278,9 @@
 
   </div>
 </nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
             </div>
             
           
@@ -967,26 +967,31 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-
-
 <table class="table table-hover table-striped table-sm table-responsive small">
     <tr>
         <th>Measurement date</th>
+
         <td>August 29, 1937  11:09:44 GMT</td>
 
     </tr>
     <tr>
         <th>Experimenter</th>
+
         <td>mne_anonymize</td>
 
     </tr>
         <th>Participant</th>
+
+
             <td>sub-1</td>
+
 
     </tr>
     <tr>
         <th>Digitized points</th>
-        <td>122 points</td>
+
+        <td>0 points</td>
+
     </tr>
     <tr>
         <th>Good channels</th>
@@ -1003,29 +1008,36 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
     <tr>
         <th>ECG channels</th>
         <td>Not available</td>
+
     <tr>
         <th>Sampling frequency</th>
         <td>999.41 Hz</td>
     </tr>
+
+
     <tr>
         <th>Highpass</th>
         <td>0.00 Hz</td>
     </tr>
+
+
     <tr>
         <th>Lowpass</th>
         <td>499.71 Hz</td>
     </tr>
 
+
+
     <tr>
         <th>Filenames</th>
         <td>sub-1_task-motor_ieeg.eeg</td>
     </tr>
+
     <tr>
         <th>Duration</th>
         <td>00:01:00 (HH:MM:SS)</td>
     </tr>
 </table>
-
 </div>
 <br />
 <br /></section>
@@ -1210,26 +1222,31 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 </pre></div>
 </div>
 <div class="output_subarea output_html rendered_html output_result">
-
-
 <table class="table table-hover table-striped table-sm table-responsive small">
     <tr>
         <th>Measurement date</th>
+
         <td>August 29, 1937  11:09:44 GMT</td>
 
     </tr>
     <tr>
         <th>Experimenter</th>
+
         <td>mne_anonymize</td>
 
     </tr>
         <th>Participant</th>
+
+
             <td>sub-1</td>
+
 
     </tr>
     <tr>
         <th>Digitized points</th>
-        <td>122 points</td>
+
+        <td>0 points</td>
+
     </tr>
     <tr>
         <th>Good channels</th>
@@ -1246,32 +1263,39 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     <tr>
         <th>ECG channels</th>
         <td>Not available</td>
+
     <tr>
         <th>Sampling frequency</th>
         <td>999.41 Hz</td>
     </tr>
+
+
     <tr>
         <th>Highpass</th>
         <td>0.00 Hz</td>
     </tr>
+
+
     <tr>
         <th>Lowpass</th>
         <td>499.71 Hz</td>
     </tr>
 
+
+
     <tr>
         <th>Filenames</th>
         <td>sub-1_task-motor_ieeg.eeg</td>
     </tr>
+
     <tr>
         <th>Duration</th>
         <td>00:01:00 (HH:MM:SS)</td>
     </tr>
 </table>
-
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.212 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.961 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1292,7 +1316,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
               
               
               <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
+<div class='prev-next-area'>
     <a class='left-prev' id="prev-link" href="convert_mri_and_trans.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
@@ -1315,13 +1339,13 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
       </div>
     </div>
   
-  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
-<footer class="footer mt-5 mt-md-0">
+    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-13.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-18.<br>
 </p>
     </div>
     

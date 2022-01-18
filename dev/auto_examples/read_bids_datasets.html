@@ -8,17 +8,17 @@
 
     <title>01. Read BIDS datasets &#8212; MNE-BIDS 0.10.dev0 documentation</title>
     
-  <link href="../_static/css/theme.css" rel="stylesheet">
-  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
-
+    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
     
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
+    <link rel="stylesheet"
+      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
     
     <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
     <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
@@ -30,7 +30,7 @@
     </style>
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/blank.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
-
+    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -157,16 +157,12 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Quick Links">
         <li class="nav-item">
-          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub">
-            <span><i class="fab fa-github-square"></i></span>
-            <label class="sr-only">GitHub</label>
-          </a>
+          <a class="nav-link" href="https://github.com/mne-tools/mne-bids" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="https://mne.discourse.group/tags/mne-bids" rel="noopener" target="_blank" title="Discourse">
-            <span><i class="fab fa-discourse"></i></span>
-            <label class="sr-only">Discourse</label>
-          </a>
+          <a class="nav-link" href="https://mne.discourse.group/tags/mne-bids" rel="noopener" target="_blank" title="Discourse"><span><i class="fab fa-discourse"></i></span>
+            <label class="sr-only">Discourse</label></a>
         </li>
       </ul>
       </div>
@@ -182,7 +178,8 @@
           
             
             <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -281,6 +278,9 @@
 
   </div>
 </nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
             </div>
             
           
@@ -427,25 +427,29 @@ Skipping participants.json: already downloaded.: 100%|##########| 1.24k/1.24k [0
 Skipping participants.tsv: already downloaded.: 100%|##########| 1.62k/1.62k [00:00&lt;?, ?B/s]
 
 
-Re-downloading README: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
 Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
 
 
 Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
+Re-downloading README: file size mismatch.: 0.00B [00:00, ?B/s]
 
-Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
 
 Re-downloading sub-pd6_ses-off_task-rest_beh.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
 
+Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|##########| 75.0/75.0 [00:00&lt;?, ?B/s]
 
-Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|##########| 2.22k/2.22k [00:00&lt;?, ?B/s]
+
+
+
+Re-downloading sub-pd6_ses-off_task-rest_channels.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|##########| 471/471 [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|##########| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|##########| 51.0/51.0 [00:00&lt;?, ?B/s]
@@ -454,28 +458,26 @@ Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|########
 Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|##########| 74.0/74.0 [00:00&lt;?, ?B/s]
 
 
-Re-downloading sub-pd6_ses-on_task-rest_beh.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
 Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|##########| 11.5M/11.5M [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|##########| 66.0/66.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|##########| 75.0/75.0 [00:00&lt;?, ?B/s]
-
+Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
 Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|##########| 433/433 [00:00&lt;?, ?B/s]
 
 
-Re-downloading sub-pd6_ses-off_task-rest_channels.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
-Re-downloading sub-pd6_ses-off_task-rest_eeg.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|##########| 17.4M/17.4M [00:00&lt;?, ?B/s]
+
+
+Re-downloading sub-pd6_ses-on_task-rest_beh.tsv: file size mismatch.: 0.00B [00:00, ?B/s]
+
+
+Re-downloading sub-pd6_ses-off_task-rest_eeg.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
 Finished downloading ds002778.
 
@@ -531,20 +533,21 @@ on the dataset contents.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Summarizing participants.tsv /home/circleci/mne_data/ds002778/participants.tsv...
 Summarizing scans.tsv files [PosixPath(&#39;/home/circleci/mne_data/ds002778/sub-pd6/ses-on/sub-pd6_ses-on_scans.tsv&#39;), PosixPath(&#39;/home/circleci/mne_data/ds002778/sub-pd6/ses-off/sub-pd6_ses-off_scans.tsv&#39;)]...
 The participant template found: comprised of 14 male and 17 female participants;
-comprised of 31 right hand, 0 left hand and 0 ambidextrous; ages ranged from 47.0 to 82.0 (mean = 63.39, std = 8.69)
-The UC San Diego Resting State EEG Data from Patients with Parkinson&#39;s Disease
+comprised of 31 right hand, 0 left hand and 0 ambidextrous;
+ages ranged from 47.0 to 82.0 (mean = 63.39, std = 8.69)
+ The UC San Diego Resting State EEG Data from Patients with Parkinson&#39;s Disease
 dataset was created by Alexander P. Rockhill, Nicko Jackson, Jobi George, Adam
 Aron, and Nicole C. Swann and conforms to BIDS version 1.2.2. This report was
 generated with MNE-BIDS (https://doi.org/10.21105/joss.01896). The dataset
 consists of 1 participants (comprised of 14 male and 17 female participants;
 comprised of 31 right hand, 0 left hand and 0 ambidextrous; ages ranged from
 47.0 to 82.0 (mean = 63.39, std = 8.69)) and 2 recording sessions: off, and on.
-Data was recorded using a EEG system (Biosemi manufacturer) sampled at 512.0 Hz
-with line noise at 60, and 50 Hz. There were 2 scans in total. Recording
-durations ranged from 191.0 to 289.0 seconds (mean = 240.0, std = 49.0), for a
-total of 480.0 seconds of data recorded over all scans. For each dataset, there
-were on average 41.0 (std = 0.0) recording channels per scan, out of which 41.0
-(std = 0.0) were used in analysis (0.0 +/- 0.0 were removed from analysis).
+Data was recorded using an EEG system (Biosemi) sampled at 512.0 Hz with line
+noise at 60, and 50 Hz. There were 2 scans in total. Recording durations ranged
+from 191.0 to 289.0 seconds (mean = 240.0, std = 49.0), for a total of 480.0
+seconds of data recorded over all scans. For each dataset, there were on average
+41.0 (std = 0.0) recording channels per scan, out of which 41.0 (std = 0.0) were
+used in analysis (0.0 +/- 0.0 were removed from analysis).
 </pre></div>
 </div>
 <p>Now it’s time to get ready for reading some of the data! First, we need to
@@ -697,7 +700,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.902 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.713 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -718,7 +721,7 @@ metadata.</p>
               
               
               <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
+<div class='prev-next-area'>
     <a class='left-prev' id="prev-link" href="../use.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
@@ -741,13 +744,13 @@ metadata.</p>
       </div>
     </div>
   
-  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
-<footer class="footer mt-5 mt-md-0">
+    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-13.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-18.<br>
 </p>
     </div>
     
