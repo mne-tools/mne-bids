@@ -25,6 +25,7 @@ jinja_env = jinja2.Environment(
     )
 )
 
+
 def _pretty_str(listed):
     # make strings a sequence of ',' and 'and'
     if not isinstance(listed, list):
@@ -34,6 +35,7 @@ def _pretty_str(listed):
         return ','.join(listed)
     return '{}, and {}'.format(', '.join(listed[:-1]), listed[-1])
 
+
 def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
     if minval == 'n/a':
         return 'ages all unknown'
@@ -42,14 +44,18 @@ def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
         unknown_str = f'; {n_unknown} with unknown {type}'
     else:
         unknown_str = ''
-    return f'ages ranged from {round(minval, 2)} to {round(maxval, 2)} '\
-           f'(mean = {round(meanval, 2)}, std = {round(stdval, 2)}{unknown_str})'
+    return (
+        f'ages ranged from {round(minval, 2)} to {round(maxval, 2)} '
+        f'(mean = {round(meanval, 2)}, std = {round(stdval, 2)}{unknown_str})'
+    )
+
 
 def _summarize_participant_hand(hands):
     n_unknown = len([hand for hand in hands if hand == 'n/a'])
 
     if n_unknown == len(hands):
-        return f'handedness were all unknown'
+        return 'handedness were all unknown'
+
     n_rhand = len([hand for hand in hands if hand.upper() == 'R'])
     n_lhand = len([hand for hand in hands if hand.upper() == 'L'])
     n_ambidex = len([hand for hand in hands if hand.upper() == 'A'])
@@ -57,15 +63,18 @@ def _summarize_participant_hand(hands):
     return f'comprised of {n_rhand} right hand, {n_lhand} left hand ' \
            f'and {n_ambidex} ambidextrous'
 
+
 def _summarize_participant_sex(sexs):
     n_unknown = len([sex for sex in sexs if sex == 'n/a'])
 
     if n_unknown == len(sexs):
-        return f'sex were all unknown'
+        return 'sex were all unknown'
+
     n_males = len([sex for sex in sexs if sex.upper() == 'M'])
     n_females = len([sex for sex in sexs if sex.upper() == 'F'])
 
     return f'comprised of {n_males} male and {n_females} female participants'
+
 
 def _length_recording_str(length_recordings):
     import numpy as np
@@ -78,10 +87,14 @@ def _length_recording_str(length_recordings):
     std_record_length = round(np.std(length_recordings), 2)
     total_record_length = round(sum(length_recordings), 2)
 
-    return f'Recording durations ranged from {min_record_length} to {max_record_length} seconds '\
-           f'(mean = {mean_record_length}, std = {std_record_length}), '\
-           f'for a total of {total_record_length} seconds of data recorded '\
-           f'over all scans.'
+    return (
+        f'Recording durations ranged from {min_record_length} to '
+        f'{max_record_length} seconds '
+        f'(mean = {mean_record_length}, std = {std_record_length}), '
+        f'for a total of {total_record_length} seconds of data recorded '
+        f'over all scans.'
+    )
+
 
 def _summarize_software_filters(software_filters):
     if software_filters in [{}, 'n/a']:
