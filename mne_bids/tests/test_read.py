@@ -296,6 +296,14 @@ def test_get_head_mri_trans(tmp_path):
     )
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
+    # Reset landmark names again
+    coords = t1w_json['AnatomicalLandmarkCoordinates']
+    coords['LPA'] = coords['LPA-foo']
+    coords['RPA'] = coords['RPA-bar']
+    coords['NAS'] = coords['NAS-baz']
+    del coords['LPA-foo'], coords['RPA-bar'], coords['NAS-baz']
+    _write_json(t1w_json_fpath, t1w_json, overwrite=True)
+
     # Test t1_bids_path parameter
     #
     # Case 1: different BIDS roots
