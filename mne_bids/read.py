@@ -17,7 +17,9 @@ import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
-from mne.utils import has_nibabel, logger, warn, get_subjects_dir
+from mne.utils import (
+    has_nibabel, logger, warn, get_subjects_dir, _validate_type
+)
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -760,14 +762,16 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
 
 @verbose
-def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None, verbose=None):
-    """Produce transformation matrix from MEG and MRI landmark points.
+def get_head_mri_trans(
+    bids_path, extra_params=None, t1_bids_path=None, fs_subject=None,
+    fs_subjects_dir=None, landmark_names=None, verbose=None
+):
+    """Derive a transformation matrix from digitized and anatomical landmarks.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
-    files of (i) the MEG and (ii) the T1-weighted MRI data. The two sets of
-    points will then be used to calculate a transformation matrix from head
-    coordinates to MRI coordinates.
+    files of (i) the electrophysiological and (ii) the T1-weighted MRI data.
+    The two sets of points will then be used to calculate a transformation
+    matrix from head coordinates to MRI coordinates.
 
     .. note:: The MEG and MRI data need **not** necessarily be stored in the
               same session or even in the same BIDS dataset. See the
@@ -797,6 +801,23 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
+    landmark_names : dict | None
+        A mapping from the "canonical" names of the anatomical landmarks to
+        the names actually used in the sidecar file of the anatomical scan.
+        If ``None``, this function will look for the following landmarks:
+        ``LPA``, ``RPA``, ``NAS``, ``Nasion`` (in that order, and ignoring
+        casing). If a dictionary is provided, it **must** contain the following
+        keys: ``LPA``, ``RPA``, ``NAS``. Note that here, case **does** matter.
+        Assuming the landmark coordinates vary e.g. across sessions, you could,
+        for example, use the following mapping::
+
+            {
+                'LPA': 'LPA_ses-02',
+                'RPA': 'RPA_ses-02',
+                'NAS': 'NAS_ses-02'
+            }
+
+        .. versionadded:: 0.10
     %(verbose)s
 
     Returns
@@ -858,22 +879,57 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
             f'{t1w_path_candidate.name.replace(".nii.gz", "")}[.nii, .nii.gz]'
         )
 
+    _validate_type(
+        item=landmark_names,
+        types=(None, dict),
+        item_name='landmark_names'
+    )
+
+    if landmark_names is None:
+        landmark_to_mri_map = {
+            'LPA': ['LPA'],
+            'RPA': ['RPA'],
+            'NAS': ['NAS', 'Nasion'],
+        }
+    else:
+        for canonical_landmark_name in ('LPA', 'RPA', 'NAS'):
+            if canonical_landmark_name not in landmark_names:
+                raise KeyError(
+                    f'A required landmark, {canonical_landmark_name}, could '
+                    f'not be found in the landmark_names dictionary. The '
+                    f'following landmarks were found: '
+                    f'{", ".join(landmark_names.keys())}'
+                )
+        landmark_to_mri_map = {
+            'LPA': [landmark_names['LPA']],
+            'RPA': [landmark_names['RPA']],
+            'NAS': [landmark_names['NAS']]
+        }
+
     # Get MRI landmarks from the JSON sidecar
     t1w_json = json.loads(t1w_json_path.read_text(encoding='utf-8'))
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
     mri_landmarks = np.full((3, 3), np.nan)
-    for landmark_name, coords in mri_coords_dict.items():
-        if landmark_name.upper() == 'LPA':
-            mri_landmarks[0, :] = coords
-        elif landmark_name.upper() == 'RPA':
-            mri_landmarks[2, :] = coords
-        elif (landmark_name.upper() == 'NAS' or
-              landmark_name.lower() == 'nasion'):
-            mri_landmarks[1, :] = coords
-        else:
-            continue
+
+    for (
+        canonical_landmark_name, candidate_mri_landmark_names
+    ) in landmark_to_mri_map.items():
+        for candidate_name in candidate_mri_landmark_names:
+            for mri_landmark_name, coords in mri_coords_dict.items():
+                if mri_landmark_name.upper() == candidate_name.upper():
+                    idx = None  # safeguard
+                    if canonical_landmark_name.upper() == 'LPA':
+                        idx = 0
+                    elif canonical_landmark_name.upper() == 'RPA':
+                        idx = 2
+                    elif canonical_landmark_name.upper() == 'NAS':
+                        idx = 1
+
+                    mri_landmarks[idx, :] = coords
+                else:
+                    continue
 
     if np.isnan(mri_landmarks).any():
         raise RuntimeError(
