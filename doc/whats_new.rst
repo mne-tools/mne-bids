@@ -40,7 +40,7 @@ Enhancements
 
 - Add support for CNT (Neuroscan) files in :func:`mne_bids.write_raw_bids`, by `Yorguin Mantilla`_ (:gh:`924`)
 
-:func:`mne_bids.get_head_mri_trans` gained a new parameter, ``landmark_names``, allowing to specify custom names used for the anatomical landmarks in the MRI data, by `Richard Höchenberger`_ (:gh:`xxx`)
+:func:`mne_bids.get_head_mri_trans` gained a new parameter, ``landmark_names``, allowing to specify custom names used for the anatomical landmarks in the MRI data, by `Richard Höchenberger`_ (:gh:`946`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
