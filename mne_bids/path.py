@@ -939,9 +939,10 @@ class BIDSPath(object):
             raise ValueError('Can only find fine-calibration file for MEG '
                              'datasets.')
 
-        path = BIDSPath(subject=self.subject, session=self.session, task=self.task,
-                        acquisition='calibration', suffix='meg',
-                        extension='.dat', datatype='meg', root=self.root).fpath
+        path = BIDSPath(subject=self.subject, session=self.session,
+                        task=self.task, acquisition='calibration',
+                        suffix='meg', extension='.dat', datatype='meg',
+                        root=self.root).fpath
         if not path.exists():
             path = None
 
@@ -965,9 +966,10 @@ class BIDSPath(object):
         if self.datatype not in (None, 'meg'):
             raise ValueError('Can only find crosstalk file for MEG datasets.')
 
-        path = BIDSPath(subject=self.subject, session=self.session, task=self.task,
-                        acquisition='crosstalk', suffix='meg',
-                        extension='.fif', datatype='meg', root=self.root).fpath
+        path = BIDSPath(subject=self.subject, session=self.session,
+                        task=self.task, acquisition='crosstalk',
+                        suffix='meg', extension='.fif', datatype='meg',
+                        root=self.root).fpath
         if not path.exists():
             path = None
 
