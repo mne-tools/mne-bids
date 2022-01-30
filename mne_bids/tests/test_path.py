@@ -1134,3 +1134,12 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
     bids_path.update(suffix='dataset_description', check=False)
     assert bids_path.fpath.as_posix() == \
         Path(f'{return_bids_test_dir}/dataset_description.json').as_posix()
+
+
+def test_update_fail_check_no_change():
+    bids_path = BIDSPath(subject='test')
+    try:
+        bids_path.update(suffix='ave')
+    except Exception:
+        pass
+    assert bids_path.suffix is None
