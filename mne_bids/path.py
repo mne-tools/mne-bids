@@ -742,7 +742,10 @@ class BIDSPath(object):
         try:
             self._check()
         except Exception as e:
+            old_check = self.check
+            self.check = False
             self.update(**old_kwargs)
+            self.check = old_check
             raise e
         return self
 
