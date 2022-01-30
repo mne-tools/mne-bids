@@ -151,13 +151,15 @@ jobs:
       if: "matrix.mne-version == 'mne-stable'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.24
-        pip install -e ./mne-python
+        cd ./mne-python
+        pip install -e .[hdf5]
 
     - name: Install MNE (main)
       if: "matrix.mne-version == 'mne-main'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
-        pip install -e ./mne-python
+        cd ./mne-python
+        pip install -e .[hdf5]
 
     - name: Install BIDS validator (stable)
       if: "matrix.bids-validator-version == 'validator-stable'"
