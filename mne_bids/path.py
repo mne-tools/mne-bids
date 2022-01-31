@@ -714,6 +714,7 @@ class BIDSPath(object):
                 kwargs['extension'] = f'.{extension}'
 
         # error check entities
+        old_kwargs = dict()
         for key, val in kwargs.items():
 
             # check if there are any characters not allowed
@@ -728,6 +729,8 @@ class BIDSPath(object):
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
                 val = Path(val).expanduser()
+            old_kwargs[key] = \
+                getattr(self, f'{key}') if hasattr(self, f'_{key}') else None
             setattr(self, f'_{key}', val)
 
         # infer datatype if suffix is uniquely the datatype
@@ -735,8 +738,15 @@ class BIDSPath(object):
                 self.suffix in SUFFIX_TO_DATATYPE:
             self._datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
-        # Perform a check of the entities.
-        self._check()
+        # Perform a check of the entities and revert changes if check fails
+        try:
+            self._check()
+        except Exception as e:
+            old_check = self.check
+            self.check = False
+            self.update(**old_kwargs)
+            self.check = old_check
+            raise e
         return self
 
     def match(self, check=False):
