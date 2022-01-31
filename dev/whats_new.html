@@ -322,6 +322,7 @@
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> doesn’t store age, handedness, and sex in <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> anymore for empty-room recordings, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/935">#935</a>)</p></li>
 <li><p>When <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> automatically creates new hierarchical event names based on event values (in cases where the same <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> was assigned to different <code class="docutils literal notranslate"><span class="pre">value``s</span> <span class="pre">in</span> <span class="pre">``*_events.tsv</span></code>), <code class="docutils literal notranslate"><span class="pre">'n/a'</span></code> values will now be converted to <code class="docutils literal notranslate"><span class="pre">'na'</span></code>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/937">#937</a>)</p></li>
 <li><p>Avoid <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> in <a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset()</span></code></a> with the upcoming MNE-Python 1.0 release, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/942">#942</a>)</p></li>
+<li><p>Avoid modifying the instance of <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> if validation fails when calling <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.update()</span></code></a>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/950">#950</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -363,13 +364,13 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-30.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-31.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
 </p>
     </div>
     
