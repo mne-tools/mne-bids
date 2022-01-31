@@ -97,6 +97,8 @@ jobs:
         python -c 'import nibabel; print(nibabel.__version__)'
         python -c 'import matplotlib; print(matplotlib.__version__)'
         python -c 'import pandas; print(pandas.__version__)'
+        python -c 'import pymatreader; print(pymatreader.__version__)'
+        python -c 'import EDFlib; print("EDFlib has no .__version__")'
 
   test:
     timeout-minutes: 60
@@ -151,15 +153,13 @@ jobs:
       if: "matrix.mne-version == 'mne-stable'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.24
-        cd ./mne-python
-        pip install -e .[hdf5]
+        pip install -e ./mne-python
 
     - name: Install MNE (main)
       if: "matrix.mne-version == 'mne-main'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
-        cd ./mne-python
-        pip install -e .[hdf5]
+        pip install -e ./mne-python
 
     - name: Install BIDS validator (stable)
       if: "matrix.bids-validator-version == 'validator-stable'"
