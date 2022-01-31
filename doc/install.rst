@@ -17,9 +17,10 @@ Optional:
 
 * ``nibabel`` (>=2.5, for processing MRI data)
 * ``pybv`` (>=0.6, for writing BrainVision data)
+* ``pymatreader`` (>=0.0.29 , for operations with EEGLAB data)
 * ``matplotlib`` (>=3.1.0, for using the interactive data inspector)
 * ``pandas`` (>=0.24.0, for generating event statistics)
-* ``EDFlib-Python`` (>=1.0.2, for writing EDF data)
+* ``EDFlib-Python`` (>=1.0.6, for writing EDF data)
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution.
 We require that you **use Python 3.7 or higher**.

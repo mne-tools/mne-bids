@@ -6,7 +6,8 @@ pandas>=0.24.0
 nibabel>=2.5
 pybv>=0.6
 openneuro-py>=2022.1
-EDFlib-Python>=1.0.2
+EDFlib-Python>=1.0.6
+pymatreader>=0.0.29
 pytest
 pytest-cov
 pytest-sugar
