@@ -1,5 +1,5 @@
 nilearn
-sphinx
+sphinx <4.3
 sphinx_gallery
 sphinx-copybutton
 pydata-sphinx-theme
