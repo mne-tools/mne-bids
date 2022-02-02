@@ -904,19 +904,19 @@ TypeError: not all arguments converted during string formatting
 Call stack:
   File &quot;/home/circleci/mne_bids_env/bin/sphinx-build&quot;, line 8, in &lt;module&gt;
     sys.exit(main())
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 292, in main
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 296, in main
     return make_main(argv)
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 199, in make_main
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 201, in make_main
     return make_mode.run_make_mode(argv[1:])
   File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/make_mode.py&quot;, line 167, in run_make_mode
     return make.run_generic_build(args[0])
   File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/make_mode.py&quot;, line 155, in run_generic_build
     return build_main(args + opts)
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 276, in build_main
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 280, in build_main
     app = Sphinx(args.sourcedir, args.confdir, args.outputdir,
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 270, in __init__
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 263, in __init__
     self._init_builder()
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 328, in _init_builder
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 322, in _init_builder
     self.events.emit(&#39;builder-inited&#39;)
   File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/events.py&quot;, line 101, in emit
     results.append(listener.handler(self.app, *args))
@@ -938,7 +938,7 @@ Call stack:
     exec(self.code, self.fake_main.__dict__)
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 232, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
-  File &quot;&lt;decorator-gen-570&gt;&quot;, line 24, in read_raw_bids
+  File &quot;&lt;decorator-gen-572&gt;&quot;, line 12, in read_raw_bids
   File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 724, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 519, in _read_dig_bids
@@ -1155,19 +1155,19 @@ TypeError: not all arguments converted during string formatting
 Call stack:
   File &quot;/home/circleci/mne_bids_env/bin/sphinx-build&quot;, line 8, in &lt;module&gt;
     sys.exit(main())
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 292, in main
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 296, in main
     return make_main(argv)
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 199, in make_main
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 201, in make_main
     return make_mode.run_make_mode(argv[1:])
   File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/make_mode.py&quot;, line 167, in run_make_mode
     return make.run_generic_build(args[0])
   File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/make_mode.py&quot;, line 155, in run_generic_build
     return build_main(args + opts)
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 276, in build_main
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/cmd/build.py&quot;, line 280, in build_main
     app = Sphinx(args.sourcedir, args.confdir, args.outputdir,
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 270, in __init__
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 263, in __init__
     self._init_builder()
-  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 328, in _init_builder
+  File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/application.py&quot;, line 322, in _init_builder
     self.events.emit(&#39;builder-inited&#39;)
   File &quot;/home/circleci/mne_bids_env/lib/python3.9/site-packages/sphinx/events.py&quot;, line 101, in emit
     results.append(listener.handler(self.app, *args))
@@ -1189,7 +1189,7 @@ Call stack:
     exec(self.code, self.fake_main.__dict__)
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 300, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
-  File &quot;&lt;decorator-gen-570&gt;&quot;, line 24, in read_raw_bids
+  File &quot;&lt;decorator-gen-572&gt;&quot;, line 12, in read_raw_bids
   File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 724, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 519, in _read_dig_bids
@@ -1295,7 +1295,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 </table>
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.241 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.139 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1345,13 +1345,13 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-01-31.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-02.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.2.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
 </p>
     </div>
     
