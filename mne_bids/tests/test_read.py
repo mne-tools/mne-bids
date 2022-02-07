@@ -321,16 +321,17 @@ def test_get_head_mri_trans(tmp_path):
     landmarks2 = landmarks.copy()
     landmarks2.dig[0]['r'] *= -1
     write_anat(t1w_mgh, bids_path=t1_bids_path, overwrite=True,
-               landmarks={"session1": landmarks, "session2": landmarks2})
+               deface=True,
+               landmarks={"coreg": landmarks, "deface": landmarks2})
     read_trans1 = get_head_mri_trans(
         bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
         fs_subject='sample', fs_subjects_dir=subjects_dir,
-        kind="session1")
+        kind="coreg")
     assert np.allclose(trans['trans'], read_trans1['trans'])
     read_trans2 = get_head_mri_trans(
         bids_path=meg_bids_path, t1_bids_path=t1_bids_path,
         fs_subject='sample', fs_subjects_dir=subjects_dir,
-        kind="session2")
+        kind="deface")
     assert not np.allclose(trans['trans'], read_trans2['trans'])
 
 

@@ -1807,7 +1807,7 @@ def _get_landmarks(landmarks, image_nii, kind=''):
         'NAS' + suffix: list(landmarks[1, :]),
         'RPA' + suffix: list(landmarks[2, :])
     }
-    return img_json
+    return img_json, landmarks
 
 
 @verbose
@@ -1848,8 +1848,10 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         file will be created.
     deface : bool | dict
         If False, no defacing is performed.
-        If True, deface with default parameters.
-        `trans` and `raw` must not be `None` if True.
+        If True, deface with default parameters using ``landmarks``
+        that are mandatory. If multiple landmarks are provide, it will
+        use the ones called ``"deface"`` and if not present the first
+        ones in the ``landmarks`` dictionary are used.
         If dict, accepts the following keys:
 
         - `inset`: how far back in voxels to start defacing
@@ -1921,7 +1923,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         img_json = {}
         for kind, this_landmarks in landmarks.items():
             img_json.update(
-                _get_landmarks(this_landmarks, image_nii, kind=kind)
+                _get_landmarks(this_landmarks, image_nii, kind=kind)[0]
             )
         img_json = {'AnatomicalLandmarkCoordinates': img_json}
         fname = bids_path.copy().update(extension='.json')
@@ -1932,7 +1934,12 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         _write_json(fname, img_json, overwrite)
 
         if deface:
-            image_nii = _deface(image_nii, landmarks, deface)
+            landmarks_deface = landmarks.get("deface")
+            if landmarks_deface is None:
+                # Take first one if none is specified for defacing.
+                landmarks_deface = next(iter(landmarks.items()))[1]
+            _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
+            image_nii = _deface(image_nii, landmarks_deface, deface)
 
     # Save anatomical data
     if op.exists(bids_path):
