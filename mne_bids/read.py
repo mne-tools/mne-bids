@@ -761,7 +761,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
 @verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None, verbose=None):
+                       fs_subject=None, fs_subjects_dir=None, kind="",
+                       verbose=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -797,6 +798,13 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
+    kind : str | None
+        The suffix of the fiducials names to be used. If None, no suffix
+        is appended and one uses the landmarks called Nasion/NAS, LPA, and RPA.
+        The kind should be without the ``_`` inserted between landmark name
+        and the suffix kind.
+
+        .. versionadded:: 0.10
     %(verbose)s
 
     Returns
@@ -863,14 +871,15 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
+    suffix = f"_{kind}" if kind else ""
     mri_landmarks = np.full((3, 3), np.nan)
     for landmark_name, coords in mri_coords_dict.items():
-        if landmark_name.upper() == 'LPA':
+        if landmark_name.upper() == ('LPA' + suffix).upper():
             mri_landmarks[0, :] = coords
-        elif landmark_name.upper() == 'RPA':
+        elif landmark_name.upper() == ('RPA' + suffix).upper():
             mri_landmarks[2, :] = coords
-        elif (landmark_name.upper() == 'NAS' or
-              landmark_name.lower() == 'nasion'):
+        elif (landmark_name.upper() == ('NAS' + suffix).upper() or
+              landmark_name.lower() == ('nasion' + suffix).lower()):
             mri_landmarks[1, :] = coords
         else:
             continue
