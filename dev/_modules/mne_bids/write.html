@@ -1982,6 +1982,42 @@
     <span class="k">return</span> <span class="n">landmarks</span></div>
 
 
+<span class="k">def</span> <span class="nf">_get_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+        <span class="n">landmarks</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
+        <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">landmark</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">landmark</span> <span class="ow">in</span>
+                              <span class="n">landmarks</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># unpack</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Prepare to write the sidecar JSON, extract MEG landmarks</span>
+        <span class="n">coords_dict</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span><span class="n">landmarks</span><span class="o">.</span><span class="n">dig</span><span class="p">)</span>
+        <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span>
+                                <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span>
+                                <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]))</span>
+
+    <span class="c1"># check if coord frame is supported</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_MRI_VOXEL</span><span class="p">,</span>
+                           <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Coordinate frame not supported: </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># convert to voxels from scanner RAS to voxels</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span><span class="p">:</span>
+        <span class="c1"># Make MGH image for header properties</span>
+        <span class="n">img_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">image_nii</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">image_nii</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+        <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span>
+            <span class="n">landmarks</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
+
+    <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">kind</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Write sidecar.json</span>
+    <span class="n">img_json</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;LPA&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+        <span class="s1">&#39;NAS&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span>
+        <span class="s1">&#39;RPA&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">img_json</span><span class="p">,</span> <span class="n">landmarks</span>
+
+
 <div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -2008,16 +2044,23 @@
 <span class="sd">        **must** have the ``root`` and ``subject`` attributes set.</span>
 <span class="sd">        The suffix is assumed to be ``&#39;T1w&#39;`` if not present. It can</span>
 <span class="sd">        also be ``&#39;FLASH&#39;``, for example, to indicate FLASH MRI.</span>
-<span class="sd">    landmarks : mne.channels.DigMontage | str | None</span>
+<span class="sd">    landmarks : mne.channels.DigMontage | path-like | dict | None</span>
 <span class="sd">        The montage or path to a montage with landmarks that can be</span>
 <span class="sd">        passed to provide information for defacing. Landmarks can be determined</span>
 <span class="sd">        from the head model using `mne coreg` GUI, or they can be determined</span>
-<span class="sd">        from the MRI using freeview.  If ``None`` and no ``trans`` parameter</span>
-<span class="sd">        is passed, no sidecar JSON file will be created.</span>
+<span class="sd">        from the MRI using ``freeview``.  If a dictionary is passed, then the</span>
+<span class="sd">        values must be instances of :class:`~mne.channels.DigMontage` or</span>
+<span class="sd">        path-like objects pointing to a :class:`~mne.channels.DigMontage`</span>
+<span class="sd">        stored on disk, and the keys of the must be strings</span>
+<span class="sd">        (e.g. ``&#39;session-1&#39;``) which will be used as naming suffix for the</span>
+<span class="sd">        landmarks in the sidecar JSON file. If ``None``, no sidecar JSON file</span>
+<span class="sd">        will be created.</span>
 <span class="sd">    deface : bool | dict</span>
 <span class="sd">        If False, no defacing is performed.</span>
-<span class="sd">        If True, deface with default parameters.</span>
-<span class="sd">        `trans` and `raw` must not be `None` if True.</span>
+<span class="sd">        If ``True``, deface with default parameters using the provided</span>
+<span class="sd">        ``landmarks``. If multiple landmarks are provided, will</span>
+<span class="sd">        use the ones with the suffix ``&#39;deface&#39;``; if no landmarks with this</span>
+<span class="sd">        suffix exist, will use the first ones in the ``landmarks`` dictionary.</span>
 <span class="sd">        If dict, accepts the following keys:</span>
 
 <span class="sd">        - `inset`: how far back in voxels to start defacing</span>
@@ -2084,35 +2127,14 @@
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
     <span class="k">if</span> <span class="n">write_sidecar</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">landmarks</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
-            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">landmark</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">landmark</span> <span class="ow">in</span>
-                                  <span class="n">landmarks</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>  <span class="c1"># unpack</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Prepare to write the sidecar JSON, extract MEG landmarks</span>
-            <span class="n">coords_dict</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span><span class="n">landmarks</span><span class="o">.</span><span class="n">dig</span><span class="p">)</span>
-            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span>
-                                    <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span>
-                                    <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]))</span>
-
-        <span class="c1"># check if coord frame is supported</span>
-        <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_MRI_VOXEL</span><span class="p">,</span>
-                               <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Coordinate frame not supported: </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-        <span class="c1"># convert to voxels from scanner RAS to voxels</span>
-        <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_RAS</span><span class="p">:</span>
-            <span class="c1"># Make MGH image for header properties</span>
-            <span class="n">img_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">image_nii</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">image_nii</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
-            <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span>
-                <span class="n">landmarks</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
-
-        <span class="c1"># Write sidecar.json</span>
-        <span class="n">img_json</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">img_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]</span> <span class="o">=</span> \
-            <span class="p">{</span><span class="s1">&#39;LPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
-             <span class="s1">&#39;NAS&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span>
-             <span class="s1">&#39;RPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">landmarks</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="n">landmarks</span><span class="p">}</span>
+        <span class="n">img_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">this_landmarks</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">img_json</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">_get_landmarks</span><span class="p">(</span><span class="n">this_landmarks</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="n">img_json</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">:</span> <span class="n">img_json</span><span class="p">}</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Wanted to write a file but it already exists and &#39;</span>
@@ -2121,7 +2143,12 @@
         <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">img_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">deface</span><span class="p">:</span>
-            <span class="n">image_nii</span> <span class="o">=</span> <span class="n">_deface</span><span class="p">(</span><span class="n">image_nii</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">)</span>
+            <span class="n">landmarks_deface</span> <span class="o">=</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deface&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">landmarks_deface</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Take first one if none is specified for defacing.</span>
+                <span class="n">landmarks_deface</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">landmarks</span><span class="o">.</span><span class="n">items</span><span class="p">()))[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">landmarks_deface</span> <span class="o">=</span> <span class="n">_get_landmarks</span><span class="p">(</span><span class="n">landmarks_deface</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">)</span>
+            <span class="n">image_nii</span> <span class="o">=</span> <span class="n">_deface</span><span class="p">(</span><span class="n">image_nii</span><span class="p">,</span> <span class="n">landmarks_deface</span><span class="p">,</span> <span class="n">deface</span><span class="p">)</span>
 
     <span class="c1"># Save anatomical data</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
@@ -2894,7 +2921,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-02.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-13.<br>
 </p>
     </div>
     

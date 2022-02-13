@@ -969,7 +969,8 @@
 
 <div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1_bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                       <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
 
 <span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
@@ -1005,6 +1006,17 @@
 <span class="sd">        ``SUBJECTS_DIR`` environment variable.</span>
 
 <span class="sd">        .. versionadded:: 0.8</span>
+<span class="sd">    kind : str | None</span>
+<span class="sd">        The suffix of the anatomical landmark names in the JSON sidecar.</span>
+<span class="sd">        A suffix might be present e.g. to distinguish landmarks between</span>
+<span class="sd">        sessions. If provided, should not include a leading underscore ``_``.</span>
+<span class="sd">        For example, if the landmark names in the JSON sidecar file are</span>
+<span class="sd">        ``LPA_ses-1``, ``RPA_ses-1``, ``NAS_ses-1``, you should pass</span>
+<span class="sd">        ``&#39;ses-1&#39;`` here.</span>
+<span class="sd">        If ``None``, no suffix is appended, the landmarks named</span>
+<span class="sd">        ``Nasion`` (or ``NAS``), ``LPA``, and ``RPA`` will be used.</span>
+
+<span class="sd">        .. versionadded:: 0.10</span>
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
@@ -1071,14 +1083,15 @@
     <span class="n">mri_coords_dict</span> <span class="o">=</span> <span class="n">t1w_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
 
     <span class="c1"># landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">kind</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">landmark_name</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="n">mri_coords_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;LPA&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;LPA&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
             <span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coords</span>
-        <span class="k">elif</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;RPA&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;RPA&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
             <span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coords</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;NAS&#39;</span> <span class="ow">or</span>
-              <span class="n">landmark_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;nasion&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;NAS&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">or</span>
+              <span class="n">landmark_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;nasion&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
             <span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coords</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">continue</span>
@@ -1161,7 +1174,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-02.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-13.<br>
 </p>
     </div>
     
