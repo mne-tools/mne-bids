@@ -761,7 +761,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
 @verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None, kind="",
+                       fs_subject=None, fs_subjects_dir=None, *, kind="",
                        verbose=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
@@ -799,10 +799,14 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
 
         .. versionadded:: 0.8
     kind : str | None
-        The suffix of the fiducials names to be used. If None, no suffix
-        is appended and one uses the landmarks called Nasion/NAS, LPA, and RPA.
-        The kind should be without the ``_`` inserted between landmark name
-        and the suffix kind.
+        The suffix of the anatomical landmark names in the JSON sidecar.
+        A suffix might be present e.g. to distinguish landmarks between
+        sessions. If provided, should not include a leading underscore ``_``.
+        For example, if the landmark names in the JSON sidecar file are
+        ``LPA_ses-1``, ``RPA_ses-1``, ``NAS_ses-1``, you should pass
+        ``'ses-1'`` here.
+        If ``None``, no suffix is appended, the landmarks named
+        ``Nasion`` (or ``NAS``), ``LPA``, and ``RPA`` will be used.
 
         .. versionadded:: 0.10
     %(verbose)s

@@ -40,7 +40,7 @@ Enhancements
 
 - Add support for CNT (Neuroscan) files in :func:`mne_bids.write_raw_bids`, by `Yorguin Mantilla`_ (:gh:`924`)
 
-- Add the ability to write multiple landmarks with :func:`mne_bids.write_anat` (e.g. to have different landmarks per session) by `Alexandre Gramfort`_ (:gh:`955`)
+- Add the ability to write multiple landmarks with :func:`mne_bids.write_anat` (e.g. to have separate landmarks for different sessions) by `Alexandre Gramfort`_ (:gh:`955`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^

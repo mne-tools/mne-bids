@@ -1840,18 +1840,19 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         The montage or path to a montage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
-        from the MRI using freeview.  If a dict is passed then the values
-        must be instances of ``DigMontage`` or path-like pointing to filenames,
-        and the keys of the dict must be strings (e.g. ``'session1'``) which
-        will be used as naming suffix of the points in the sidecar JSON file.
-        If ``None`` and no ``trans`` parameter is passed, no sidecar JSON
-        file will be created.
+        from the MRI using ``freeview``.  If a dictionary is passed, then the
+        values must be instances of :class:`~mne.channels.DigMontage` or
+        path-like objects pointing to a :class:`~mne.channels.DigMontage`
+        stored on disk, and the keys of the must be strings
+        (e.g. ``'session-1'``) which will be used as naming suffix for the
+        landmarks in the sidecar JSON file. If ``None``, no sidecar JSON file
+        will be created.
     deface : bool | dict
         If False, no defacing is performed.
-        If True, deface with default parameters using ``landmarks``
-        that are mandatory. If multiple landmarks are provide, it will
-        use the ones called ``"deface"`` and if not present the first
-        ones in the ``landmarks`` dictionary are used.
+        If ``True``, deface with default parameters using the provided
+        ``landmarks``. If multiple landmarks are provided, will
+        use the ones with the suffix ``'deface'``; if no landmarks with this
+        suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
         - `inset`: how far back in voxels to start defacing
