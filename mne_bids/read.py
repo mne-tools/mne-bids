@@ -761,7 +761,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
 @verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None, verbose=None):
+                       fs_subject=None, fs_subjects_dir=None, *, kind="",
+                       verbose=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -797,6 +798,17 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
+    kind : str | None
+        The suffix of the anatomical landmark names in the JSON sidecar.
+        A suffix might be present e.g. to distinguish landmarks between
+        sessions. If provided, should not include a leading underscore ``_``.
+        For example, if the landmark names in the JSON sidecar file are
+        ``LPA_ses-1``, ``RPA_ses-1``, ``NAS_ses-1``, you should pass
+        ``'ses-1'`` here.
+        If ``None``, no suffix is appended, the landmarks named
+        ``Nasion`` (or ``NAS``), ``LPA``, and ``RPA`` will be used.
+
+        .. versionadded:: 0.10
     %(verbose)s
 
     Returns
@@ -863,14 +875,15 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
+    suffix = f"_{kind}" if kind else ""
     mri_landmarks = np.full((3, 3), np.nan)
     for landmark_name, coords in mri_coords_dict.items():
-        if landmark_name.upper() == 'LPA':
+        if landmark_name.upper() == ('LPA' + suffix).upper():
             mri_landmarks[0, :] = coords
-        elif landmark_name.upper() == 'RPA':
+        elif landmark_name.upper() == ('RPA' + suffix).upper():
             mri_landmarks[2, :] = coords
-        elif (landmark_name.upper() == 'NAS' or
-              landmark_name.lower() == 'nasion'):
+        elif (landmark_name.upper() == ('NAS' + suffix).upper() or
+              landmark_name.lower() == ('nasion' + suffix).lower()):
             mri_landmarks[1, :] = coords
         else:
             continue

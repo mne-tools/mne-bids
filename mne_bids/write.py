@@ -1774,6 +1774,42 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     return landmarks
 
 
+def _get_landmarks(landmarks, image_nii, kind=''):
+    import nibabel as nib
+    if isinstance(landmarks, (str, Path)):
+        landmarks, coord_frame = read_fiducials(landmarks)
+        landmarks = np.array([landmark['r'] for landmark in
+                              landmarks], dtype=float)  # unpack
+    else:
+        # Prepare to write the sidecar JSON, extract MEG landmarks
+        coords_dict, coord_frame = _get_fid_coords(landmarks.dig)
+        landmarks = np.asarray((coords_dict['lpa'],
+                                coords_dict['nasion'],
+                                coords_dict['rpa']))
+
+    # check if coord frame is supported
+    if coord_frame not in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+                           FIFF.FIFFV_MNE_COORD_RAS):
+        raise ValueError(f'Coordinate frame not supported: {coord_frame}')
+
+    # convert to voxels from scanner RAS to voxels
+    if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
+        # Make MGH image for header properties
+        img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
+        landmarks = _mri_scanner_ras_to_mri_voxels(
+            landmarks * 1e3, img_mgh)
+
+    suffix = f"_{kind}" if kind else ""
+
+    # Write sidecar.json
+    img_json = {
+        'LPA' + suffix: list(landmarks[0, :]),
+        'NAS' + suffix: list(landmarks[1, :]),
+        'RPA' + suffix: list(landmarks[2, :])
+    }
+    return img_json, landmarks
+
+
 @verbose
 def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
                verbose=None):
@@ -1800,16 +1836,23 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
-    landmarks : mne.channels.DigMontage | str | None
+    landmarks : mne.channels.DigMontage | path-like | dict | None
         The montage or path to a montage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
-        from the MRI using freeview.  If ``None`` and no ``trans`` parameter
-        is passed, no sidecar JSON file will be created.
+        from the MRI using ``freeview``.  If a dictionary is passed, then the
+        values must be instances of :class:`~mne.channels.DigMontage` or
+        path-like objects pointing to a :class:`~mne.channels.DigMontage`
+        stored on disk, and the keys of the must be strings
+        (e.g. ``'session-1'``) which will be used as naming suffix for the
+        landmarks in the sidecar JSON file. If ``None``, no sidecar JSON file
+        will be created.
     deface : bool | dict
         If False, no defacing is performed.
-        If True, deface with default parameters.
-        `trans` and `raw` must not be `None` if True.
+        If ``True``, deface with default parameters using the provided
+        ``landmarks``. If multiple landmarks are provided, will
+        use the ones with the suffix ``'deface'``; if no landmarks with this
+        suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
         - `inset`: how far back in voxels to start defacing
@@ -1876,35 +1919,14 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if write_sidecar:
-        if isinstance(landmarks, str):
-            landmarks, coord_frame = read_fiducials(landmarks)
-            landmarks = np.array([landmark['r'] for landmark in
-                                  landmarks], dtype=float)  # unpack
-        else:
-            # Prepare to write the sidecar JSON, extract MEG landmarks
-            coords_dict, coord_frame = _get_fid_coords(landmarks.dig)
-            landmarks = np.asarray((coords_dict['lpa'],
-                                    coords_dict['nasion'],
-                                    coords_dict['rpa']))
-
-        # check if coord frame is supported
-        if coord_frame not in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
-                               FIFF.FIFFV_MNE_COORD_RAS):
-            raise ValueError(f'Coordinate frame not supported: {coord_frame}')
-
-        # convert to voxels from scanner RAS to voxels
-        if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
-            # Make MGH image for header properties
-            img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
-            landmarks = _mri_scanner_ras_to_mri_voxels(
-                landmarks * 1e3, img_mgh)
-
-        # Write sidecar.json
-        img_json = dict()
-        img_json['AnatomicalLandmarkCoordinates'] = \
-            {'LPA': list(landmarks[0, :]),
-             'NAS': list(landmarks[1, :]),
-             'RPA': list(landmarks[2, :])}
+        if not isinstance(landmarks, dict):
+            landmarks = {"": landmarks}
+        img_json = {}
+        for kind, this_landmarks in landmarks.items():
+            img_json.update(
+                _get_landmarks(this_landmarks, image_nii, kind=kind)[0]
+            )
+        img_json = {'AnatomicalLandmarkCoordinates': img_json}
         fname = bids_path.copy().update(extension='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
@@ -1913,7 +1935,12 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         _write_json(fname, img_json, overwrite)
 
         if deface:
-            image_nii = _deface(image_nii, landmarks, deface)
+            landmarks_deface = landmarks.get("deface")
+            if landmarks_deface is None:
+                # Take first one if none is specified for defacing.
+                landmarks_deface = next(iter(landmarks.items()))[1]
+            _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
+            image_nii = _deface(image_nii, landmarks_deface, deface)
 
     # Save anatomical data
     if op.exists(bids_path):
