@@ -1,5 +1,5 @@
 .. _Mainak Jas: https://jasmainak.github.io/
-.. _Teon Brooks: https://teonbrooks.github.io/
+.. _Teon Brooks: https://teonbrooks.com
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
 .. _Matt Sanderson: https://github.com/monkeyman192
 .. _Stefan Appelhoff: https://stefanappelhoff.com/
