@@ -180,7 +180,7 @@ def test_update_anat_landmarks(tmp_path):
     # the file unless `on_missing` is `'raise'`
     bids_path_mri_json.fpath.unlink()
     with pytest.raises(
-        IndexError,
+        KeyError,
         match='No AnatomicalLandmarkCoordinates section found'
     ):
         update_anat_landmarks(bids_path=bids_path_mri, landmarks=landmarks_new)
@@ -189,7 +189,7 @@ def test_update_anat_landmarks(tmp_path):
         bids_path=bids_path_mri, landmarks=landmarks_new, on_missing='ignore'
     )
 
-    with pytest.raises(NameError, match='landmark not found'):
+    with pytest.raises(KeyError, match='landmark not found'):
         update_anat_landmarks(
             bids_path=bids_path_mri, landmarks=landmarks_new, kind='ses-1'
         )
