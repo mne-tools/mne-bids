@@ -400,14 +400,14 @@ refer to the <a class="reference external" href="https://bids-specification.read
 <p>First, we need some data to work with. We will use the
 data downloaded via MNE-Python’s <code class="docutils literal notranslate"><span class="pre">datasets</span></code> API:
 <a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.misc.data_path()</span></code></a></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">misc_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="mne.datasets.misc.data_path" class="sphx-glr-backref-module-mne-datasets-misc sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">misc_path</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="mne.datasets.misc.data_path" class="sphx-glr-backref-module-mne-datasets-misc sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 
 <span class="c1"># The electrode coords data are in the tsv file format</span>
 <span class="c1"># which is easily read in using numpy</span>
 <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">misc_path</span></a><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_seeg_ieeg.fif&#39;</span><span class="p">))</span>
+    <span class="n">misc_path</span><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_seeg_ieeg.fif&#39;</span><span class="p">))</span>
 <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># specify power line frequency as required by BIDS</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">misc_path</span></a><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">)</span>  <span class="c1"># Freesurfer recon-all directory</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><span class="n">misc_path</span><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">)</span>  <span class="c1"># Freesurfer recon-all directory</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -938,7 +938,7 @@ Call stack:
     exec(self.code, self.fake_main.__dict__)
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 232, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
-  File &quot;&lt;decorator-gen-574&gt;&quot;, line 12, in read_raw_bids
+  File &quot;&lt;decorator-gen-575&gt;&quot;, line 12, in read_raw_bids
   File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 724, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 519, in _read_dig_bids
@@ -1077,7 +1077,7 @@ from “mri” aka surface RAS space.
 
 <span class="c1"># load our raw data again</span>
 <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">misc_path</span></a><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_seeg_ieeg.fif&#39;</span><span class="p">))</span>
+    <span class="n">misc_path</span><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_seeg_ieeg.fif&#39;</span><span class="p">))</span>
 <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># specify power line frequency as required by BIDS</span>
 
 <span class="c1"># get Talairach transform</span>
@@ -1189,7 +1189,7 @@ Call stack:
     exec(self.code, self.fake_main.__dict__)
   File &quot;/home/circleci/project/examples/convert_ieeg_to_bids.py&quot;, line 300, in &lt;module&gt;
     raw = read_raw_bids(bids_path=bids_path)
-  File &quot;&lt;decorator-gen-574&gt;&quot;, line 12, in read_raw_bids
+  File &quot;&lt;decorator-gen-575&gt;&quot;, line 12, in read_raw_bids
   File &quot;/home/circleci/project/mne_bids/read.py&quot;, line 724, in read_raw_bids
     _read_dig_bids(electrodes_fname, coordsystem_fname,
   File &quot;/home/circleci/project/mne_bids/dig.py&quot;, line 519, in _read_dig_bids
@@ -1295,7 +1295,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 </table>
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.712 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.831 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
