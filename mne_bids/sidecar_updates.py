@@ -270,7 +270,8 @@ def update_anat_landmarks(
         _on_missing(
             on_missing=on_missing,
             msg=f'No AnatomicalLandmarkCoordinates section found in '
-                f'{bids_path_json.fpath.name}'
+                f'{bids_path_json.fpath.name}',
+            error_klass=IndexError
         )
         mri_json['AnatomicalLandmarkCoordinates'] = dict()
 
@@ -282,8 +283,10 @@ def update_anat_landmarks(
             _on_missing(
                 on_missing=on_missing,
                 msg=f'Anatomical landmark not found in '
-                    f'{bids_path_json.fpath.name}: {name}'
+                    f'{bids_path_json.fpath.name}: {name}',
+                error_klass=NameError
             )
-            mri_json['AnatomicalLandmarkCoordinates'][name] = coords
+
+        mri_json['AnatomicalLandmarkCoordinates'][name] = coords
 
     update_sidecar_json(bids_path=bids_path_json, entries=mri_json)
