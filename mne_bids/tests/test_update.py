@@ -177,12 +177,30 @@ def test_update_anat_landmarks(tmp_path):
     )
 
     # Remove JSON sidecar; updating the anatomical landmarks should re-create
-    # the file
+    # the file unless `on_missing` is `'raise'`
     bids_path_mri_json.fpath.unlink()
-    update_anat_landmarks(bids_path=bids_path_mri, landmarks=landmarks_new)
+    with pytest.raises(
+        KeyError,
+        match='No AnatomicalLandmarkCoordinates section found'
+    ):
+        update_anat_landmarks(bids_path=bids_path_mri, landmarks=landmarks_new)
 
-    with bids_path_mri_json.fpath.open(encoding='utf-8') as f:
-        mri_json = json.load(f)
+    update_anat_landmarks(
+        bids_path=bids_path_mri, landmarks=landmarks_new, on_missing='ignore'
+    )
+
+    with pytest.raises(KeyError, match='landmark not found'):
+        update_anat_landmarks(
+            bids_path=bids_path_mri, landmarks=landmarks_new, kind='ses-1'
+        )
+    update_anat_landmarks(
+        bids_path=bids_path_mri, landmarks=landmarks_new, kind='ses-1',
+        on_missing='ignore'
+    )
+
+    mri_json = json.loads(bids_path_mri_json.fpath.read_text(encoding='utf-8'))
+    assert 'NAS' in mri_json['AnatomicalLandmarkCoordinates']
+    assert 'NAS_ses-1' in mri_json['AnatomicalLandmarkCoordinates']
 
     assert np.allclose(
         landmarks_new.dig[1]['r'],

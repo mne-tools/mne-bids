@@ -10,7 +10,9 @@ import json
 from collections import OrderedDict
 
 from mne.channels import DigMontage
-from mne.utils import logger, _validate_type, verbose
+from mne.utils import (
+    logger, _validate_type, verbose, _check_on_missing, _on_missing
+)
 from mne_bids import BIDSPath
 from mne_bids.utils import _write_json
 
@@ -138,7 +140,9 @@ def _update_sidecar(sidecar_fname, key, val):
 
 
 @verbose
-def update_anat_landmarks(bids_path, landmarks, verbose=None):
+def update_anat_landmarks(
+    bids_path, landmarks, kind=None, on_missing='raise', verbose=None
+):
     """Update the anatomical landmark coordinates of an MRI scan.
 
     This will change the ``AnatomicalLandmarkCoordinates`` entry in the
@@ -156,6 +160,22 @@ def update_anat_landmarks(bids_path, landmarks, verbose=None):
         .. note:: :func:`mne_bids.get_anat_landmarks` provides a convenient and
                   reliable way to generate the landmark coordinates in the
                   required coordinate system.
+    kind : str | None
+        The suffix of the anatomical landmark names in the JSON sidecar.
+        A suffix might be present e.g. to distinguish landmarks between
+        sessions. If provided, should not include a leading underscore ``_``.
+        For example, if the landmark names in the JSON sidecar file are
+        ``LPA_ses-1``, ``RPA_ses-1``, ``NAS_ses-1``, you should pass
+        ``'ses-1'`` here.
+        If ``None``, no suffix is appended, the landmarks named
+        ``Nasion`` (or ``NAS``), ``LPA``, and ``RPA`` will be used.
+
+        .. versionadded:: 0.10
+    on_missing : 'ignore' | 'warn' | 'raise'
+        How to behave if the specified landmarks cannot be found in the MRI
+        JSON sidecar file.
+
+        .. versionadded:: 0.10
     %(verbose)s
 
     Notes
@@ -164,6 +184,7 @@ def update_anat_landmarks(bids_path, landmarks, verbose=None):
     """
     _validate_type(item=bids_path, types=BIDSPath, item_name='bids_path')
     _validate_type(item=landmarks, types=DigMontage, item_name='landmarks')
+    _check_on_missing(on_missing)
 
     # Do some path verifications and fill in some gaps the users might have
     # left (datatype and extension)
@@ -240,12 +261,32 @@ def update_anat_landmarks(bids_path, landmarks, verbose=None):
             f'following points are missing: '
             f'{", ".join(missing_points)}')
 
-    mri_json = {
-        'AnatomicalLandmarkCoordinates': name_to_coords_map
-    }
-
     bids_path_json = bids_path.copy().update(extension='.json')
     if not bids_path_json.fpath.exists():  # Must exist before we can update it
         _write_json(bids_path_json.fpath, dict())
+
+    mri_json = json.loads(bids_path_json.fpath.read_text(encoding='utf-8'))
+    if 'AnatomicalLandmarkCoordinates' not in mri_json:
+        _on_missing(
+            on_missing=on_missing,
+            msg=f'No AnatomicalLandmarkCoordinates section found in '
+                f'{bids_path_json.fpath.name}',
+            error_klass=KeyError
+        )
+        mri_json['AnatomicalLandmarkCoordinates'] = dict()
+
+    for name, coords in name_to_coords_map.items():
+        if kind is not None:
+            name = f'{name}_{kind}'
+
+        if name not in mri_json['AnatomicalLandmarkCoordinates']:
+            _on_missing(
+                on_missing=on_missing,
+                msg=f'Anatomical landmark not found in '
+                    f'{bids_path_json.fpath.name}: {name}',
+                error_klass=KeyError
+            )
+
+        mri_json['AnatomicalLandmarkCoordinates'][name] = coords
 
     update_sidecar_json(bids_path=bids_path_json, entries=mri_json)

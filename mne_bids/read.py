@@ -761,7 +761,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
 @verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None, *, kind="",
+                       fs_subject=None, fs_subjects_dir=None, *, kind=None,
                        verbose=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
@@ -875,7 +875,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
-    suffix = f"_{kind}" if kind else ""
+    suffix = f"_{kind}" if kind is not None else ""
     mri_landmarks = np.full((3, 3), np.nan)
     for landmark_name, coords in mri_coords_dict.items():
         if landmark_name.upper() == ('LPA' + suffix).upper():
