@@ -198,8 +198,9 @@ def test_update_anat_landmarks(tmp_path):
         on_missing='ignore'
     )
 
-    with bids_path_mri_json.fpath.open(encoding='utf-8') as f:
-        mri_json = json.load(f)
+    mri_json = json.loads(bids_path_mri_json.fpath.read_text(encoding='utf-8'))
+    assert 'NAS' in mri_json['AnatomicalLandmarkCoordinates']
+    assert 'NAS_ses-1' in mri_json['AnatomicalLandmarkCoordinates']
 
     assert np.allclose(
         landmarks_new.dig[1]['r'],
