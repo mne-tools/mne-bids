@@ -218,7 +218,9 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">DigMontage</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">_check_on_missing</span><span class="p">,</span> <span class="n">_on_missing</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_write_json</span>
 
@@ -346,7 +348,9 @@
 
 
 <div class="viewcode-block" id="update_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">update_anat_landmarks</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">update_anat_landmarks</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Update the anatomical landmark coordinates of an MRI scan.</span>
 
 <span class="sd">    This will change the ``AnatomicalLandmarkCoordinates`` entry in the</span>
@@ -364,6 +368,22 @@
 <span class="sd">        .. note:: :func:`mne_bids.get_anat_landmarks` provides a convenient and</span>
 <span class="sd">                  reliable way to generate the landmark coordinates in the</span>
 <span class="sd">                  required coordinate system.</span>
+<span class="sd">    kind : str | None</span>
+<span class="sd">        The suffix of the anatomical landmark names in the JSON sidecar.</span>
+<span class="sd">        A suffix might be present e.g. to distinguish landmarks between</span>
+<span class="sd">        sessions. If provided, should not include a leading underscore ``_``.</span>
+<span class="sd">        For example, if the landmark names in the JSON sidecar file are</span>
+<span class="sd">        ``LPA_ses-1``, ``RPA_ses-1``, ``NAS_ses-1``, you should pass</span>
+<span class="sd">        ``&#39;ses-1&#39;`` here.</span>
+<span class="sd">        If ``None``, no suffix is appended, the landmarks named</span>
+<span class="sd">        ``Nasion`` (or ``NAS``), ``LPA``, and ``RPA`` will be used.</span>
+
+<span class="sd">        .. versionadded:: 0.10</span>
+<span class="sd">    on_missing : &#39;ignore&#39; | &#39;warn&#39; | &#39;raise&#39;</span>
+<span class="sd">        How to behave if the specified landmarks cannot be found in the MRI</span>
+<span class="sd">        JSON sidecar file.</span>
+
+<span class="sd">        .. versionadded:: 0.10</span>
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Notes</span>
@@ -372,6 +392,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;bids_path&#39;</span><span class="p">)</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">DigMontage</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;landmarks&#39;</span><span class="p">)</span>
+    <span class="n">_check_on_missing</span><span class="p">(</span><span class="n">on_missing</span><span class="p">)</span>
 
     <span class="c1"># Do some path verifications and fill in some gaps the users might have</span>
     <span class="c1"># left (datatype and extension)</span>
@@ -448,13 +469,33 @@
             <span class="sa">f</span><span class="s1">&#39;following points are missing: &#39;</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_points</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-    <span class="n">mri_json</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">:</span> <span class="n">name_to_coords_map</span>
-    <span class="p">}</span>
-
     <span class="n">bids_path_json</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># Must exist before we can update it</span>
         <span class="n">_write_json</span><span class="p">(</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+
+    <span class="n">mri_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mri_json</span><span class="p">:</span>
+        <span class="n">_on_missing</span><span class="p">(</span>
+            <span class="n">on_missing</span><span class="o">=</span><span class="n">on_missing</span><span class="p">,</span>
+            <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;No AnatomicalLandmarkCoordinates section found in &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">error_klass</span><span class="o">=</span><span class="ne">KeyError</span>
+        <span class="p">)</span>
+        <span class="n">mri_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="n">name_to_coords_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mri_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]:</span>
+            <span class="n">_on_missing</span><span class="p">(</span>
+                <span class="n">on_missing</span><span class="o">=</span><span class="n">on_missing</span><span class="p">,</span>
+                <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Anatomical landmark not found in &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="n">error_klass</span><span class="o">=</span><span class="ne">KeyError</span>
+            <span class="p">)</span>
+
+        <span class="n">mri_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span>
 
     <span class="n">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path_json</span><span class="p">,</span> <span class="n">entries</span><span class="o">=</span><span class="n">mri_json</span><span class="p">)</span></div>
 </pre></div>
@@ -478,7 +519,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-15.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-16.<br>
 </p>
     </div>
     

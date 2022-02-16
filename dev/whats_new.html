@@ -300,13 +300,14 @@
 <h4>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Add support for CNT (Neuroscan) files in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/yjmantilla">Yorguin Mantilla</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/924">#924</a>)</p></li>
-<li><p>Add the ability to write multiple landmarks with <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a> (e.g. to have separate landmarks for different sessions) by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/955">#955</a>)</p></li>
+<li><p>Add the ability to write multiple landmarks with <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a> (e.g. to have separate landmarks for different sessions) via the new <code class="docutils literal notranslate"><span class="pre">kind</span></code> parameter, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/955">#955</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> and <a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks" title="mne_bids.update_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_anat_landmarks()</span></code></a> gained a new``kind`` parameter to specify which of multiple landmark sets to retrieve, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/955">#955</a>, <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/957">#957</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
 <h4>API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks" title="mne_bids.update_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_anat_landmarks()</span></code></a> will now by default raise an exception if the requested MRI landmarks do not already exist. Use the new <code class="docutils literal notranslate"><span class="pre">on_missing</span></code> parameter to control this behavior, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/957">#957</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -365,7 +366,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-15.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-16.<br>
 </p>
     </div>
     
