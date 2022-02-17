@@ -839,7 +839,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('TriggerChannelCount', n_stimchan),
         ('NIRSChannelCount', n_nirscwchan),
         ('NIRSSourceOptodeCount', n_nirscwsrc),
-        ('NIRSDetectorOptodeCount', n_nirscwdet),]
+        ('NIRSDetectorOptodeCount', n_nirscwdet)]
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
