@@ -7,7 +7,7 @@ BIDS_VERSION = "1.6.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-EPHY_ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg']
+EPHY_ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg', 'nirs']
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ['anat', 'beh']
 
@@ -60,6 +60,8 @@ ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.lay': 'Persyst', '.dat': 'Persyst',
                       '.EEG': 'Nihon Kohden'}
 
+nirs_manufacturers = {'.snirf': 'SNIRF'}
+
 # file-extension map to mne-python readers
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -68,7 +70,8 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.bdf': io.read_raw_bdf,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
           '.EEG': io.read_raw_nihon,
-          '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt}
+          '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt,
+          '.snirf': io.read_raw_snirf}
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -79,6 +82,7 @@ MANUFACTURERS = dict()
 MANUFACTURERS.update(meg_manufacturers)
 MANUFACTURERS.update(eeg_manufacturers)
 MANUFACTURERS.update(ieeg_manufacturers)
+MANUFACTURERS.update(nirs_manufacturers)
 
 # List of synthetic channels by manufacturer that are to be excluded from the
 # channel list. Currently this is only for stimulus channels.
@@ -101,26 +105,32 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.nwb',  # Neurodata without borders
                            ]
 
+allowed_extensions_nirs = ['.snirf',  # SNIRF
+                           ]
+
 # allowed extensions (data formats) in BIDS spec
 ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
                                'eeg': allowed_extensions_eeg,
-                               'ieeg': allowed_extensions_ieeg}
+                               'ieeg': allowed_extensions_ieeg,
+                               'nirs': allowed_extensions_nirs}
 
 # allow additional extensions that are not BIDS
 # compliant, but we will convert to the
 # recommended formats
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
-    allowed_extensions_ieeg + ['.lay', '.EEG', '.cnt', '.CNT']
+    allowed_extensions_ieeg + allowed_extensions_nirs +\
+    ['.lay', '.EEG', '.cnt', '.CNT']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
     'meg', 'markers', 'eeg', 'ieeg', 'T1w', 'FLASH',  # datatype
     'participants', 'scans',
-    'electrodes', 'channels', 'coordsystem', 'events',  # sidecars
+    'electrodes', 'optodes', 'channels', 'coordsystem', 'events',  # sidecars
     'headshape', 'digitizer',  # meg-specific sidecars
-    'beh', 'physio', 'stim'  # behavioral
+    'beh', 'physio', 'stim',  # behavioral
+    'nirs'
 ]
 
 # converts suffix to known path modalities
