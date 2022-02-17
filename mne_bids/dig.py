@@ -6,6 +6,7 @@
 import json
 from collections import OrderedDict
 from pathlib import Path
+import re
 
 import mne
 import numpy as np
