@@ -836,7 +836,9 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('ECGChannelCount', n_ecgchan),
         ('EMGChannelCount', n_emgchan),
         ('MiscChannelCount', n_miscchan),
-        ('TriggerChannelCount', n_stimchan),
+        ('TriggerChannelCount', n_stimchan)]
+
+    ch_info_ch_counts_nirs = [
         ('NIRSChannelCount', n_nirscwchan),
         ('NIRSSourceOptodeCount', n_nirscwsrc),
         ('NIRSDetectorOptodeCount', n_nirscwdet)]
@@ -851,6 +853,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         append_datatype_json = ch_info_json_ieeg
     elif datatype == 'nirs':
         append_datatype_json = ch_info_json_nirs
+        ch_info_ch_counts.append(ch_info_ch_counts_nirs)
 
     ch_info_json += append_datatype_json
     ch_info_json += ch_info_ch_counts
