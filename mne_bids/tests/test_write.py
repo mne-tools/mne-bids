@@ -105,6 +105,7 @@ _read_raw_brainvision = _wrap_read_raw(mne.io.read_raw_brainvision)
 _read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
 _read_raw_nihon = _wrap_read_raw(mne.io.read_raw_nihon)
 _read_raw_cnt = _wrap_read_raw(mne.io.read_raw_cnt)
+_read_raw_snirf = _wrap_read_raw(mne.io.read_raw_snirf)
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
@@ -1585,6 +1586,19 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 write_raw_bids(**kwargs)  # Converts.
                 output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
         _bids_validate(output_path)
+
+
+def test_snirf(_bids_validate, tmp_path):
+    """Test write_raw_bids conversion for SNIRF data."""
+
+    raw_fname = op.join(testing.data_path(), 'SNIRF', 'MNE-NIRS', '20220217',
+                        '20220217_nirx_15_3_recording.snirf')
+
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='nirs')
+
+    raw = _read_raw_snirf(raw_fname)
+    write_raw_bids(raw, bids_path, overwrite=False)
+    _bids_validate(tmp_path)
 
 
 def test_bdf(_bids_validate, tmp_path):
