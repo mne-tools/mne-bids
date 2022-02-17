@@ -344,7 +344,9 @@ REFERENCES = {'mne-bids':
               'D\'Ambrosio, S., David, O., … Hermes, D. (2019). iEEG-BIDS, '
               'extending the Brain Imaging Data Structure specification '
               'to human intracranial electrophysiology. Scientific Data, '
-              '6, 102. https://doi.org/10.1038/s41597-019-0105-7'}
+              '6, 102. https://doi.org/10.1038/s41597-019-0105-7',
+              'nirs':
+              'In preperation'}
 
 
 # Mapping subject information between MNE-BIDS and MNE-Python.

@@ -853,7 +853,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         append_datatype_json = ch_info_json_ieeg
     elif datatype == 'nirs':
         append_datatype_json = ch_info_json_nirs
-        ch_info_ch_counts.append(ch_info_ch_counts_nirs)
+        ch_info_ch_counts.extend(ch_info_ch_counts_nirs)
 
     ch_info_json += append_datatype_json
     ch_info_json += ch_info_ch_counts
