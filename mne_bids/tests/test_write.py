@@ -39,7 +39,8 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      get_anat_landmarks, write, anonymize_dataset)
+                      get_anat_landmarks, write, anonymize_dataset,
+                      get_entity_vals)
 from mne_bids.write import _get_fid_coords
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
@@ -1598,6 +1599,28 @@ def test_snirf(_bids_validate, tmp_path):
     raw = _read_raw_snirf(raw_fname)
     write_raw_bids(raw, bids_path, overwrite=False)
     _bids_validate(tmp_path)
+
+    subjects = get_entity_vals(tmp_path, 'subject')
+    assert len(subjects) == 1
+    sessions = get_entity_vals(tmp_path, 'session')
+    assert sessions == ['01']
+    rawbids = read_raw_bids(bids_path)
+    assert rawbids.annotations.onset[0] == raw.annotations.onset[0]
+    assert rawbids.annotations.description[2] == raw.annotations.description[2]
+    assert rawbids.annotations.description[2] == '1.0'
+    assert raw.times[-1] == rawbids.times[-1]
+
+    # Test common modifications when generating BIDS-formatted data.
+    raw.annotations.duration = [2, 7, 1]
+    raw.annotations.rename({'1.0': 'Control',
+                            '2.0': 'Tapping/Left',
+                            '4.0': 'Tapping/Right'})
+    write_raw_bids(raw, bids_path, overwrite=True)
+    _bids_validate(tmp_path)
+    rawbids = read_raw_bids(bids_path)
+    assert rawbids.annotations.onset[0] == raw.annotations.onset[0]
+    assert rawbids.annotations.description[2] == 'Control'
+    assert raw.times[-1] == rawbids.times[-1]
 
 
 def test_bdf(_bids_validate, tmp_path):
