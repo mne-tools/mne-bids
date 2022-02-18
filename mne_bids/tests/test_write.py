@@ -1593,7 +1593,6 @@ def test_snirf(_bids_validate, tmp_path):
 
     raw_fname = op.join(testing.data_path(), 'SNIRF', 'MNE-NIRS', '20220217',
                         '20220217_nirx_15_3_recording.snirf')
-
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='nirs')
 
     raw = _read_raw_snirf(raw_fname)
