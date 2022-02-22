@@ -962,11 +962,11 @@ def test_write_read_fif_split_file(tmp_path):
     write_raw_bids(raw, bids_path, verbose=False)
     bids_path.update(acquisition='01')
     n_channels = len(raw.ch_names)
-    n_times = int(2.2e9 / (n_channels * 4))  # enough to produce a split
+    n_times = int(5e6 / n_channels)
     data = np.empty((n_channels, n_times), dtype=np.float32)
     raw = mne.io.RawArray(data, raw.info)
     big_fif_fname = pathlib.Path(tmp_dir) / 'test_raw.fif'
-    raw.save(big_fif_fname)
+    raw.save(big_fif_fname, split_size='3MB')
     raw = _read_raw_fif(big_fif_fname, verbose=False)
     write_raw_bids(raw, bids_path, verbose=False)
 
