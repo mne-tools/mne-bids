@@ -28,6 +28,7 @@ from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_write_json)
 from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
+import mne_bids.write
 from mne_bids.write import write_anat, write_raw_bids, get_anat_landmarks
 
 subject_id = '01'
@@ -949,7 +950,7 @@ def test_bads_reading(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_write_read_fif_split_file(tmp_path):
+def test_write_read_fif_split_file(tmp_path, monkeypatch):
     """Test split files are read correctly."""
     # load raw test file, extend it to be larger than 2gb, and save it
     bids_root = tmp_path / 'bids'
@@ -962,13 +963,18 @@ def test_write_read_fif_split_file(tmp_path):
     write_raw_bids(raw, bids_path, verbose=False)
     bids_path.update(acquisition='01')
     n_channels = len(raw.ch_names)
-    n_times = int(2.2e9 / (n_channels * 4))  # enough to produce a split
+    n_times = int(2.5e6 / n_channels)  # enough to produce a 10MB split
     data = np.empty((n_channels, n_times), dtype=np.float32)
     raw = mne.io.RawArray(data, raw.info)
     big_fif_fname = pathlib.Path(tmp_dir) / 'test_raw.fif'
-    raw.save(big_fif_fname)
+
+    split_size = '10MB'
+    raw.save(big_fif_fname, split_size=split_size)
     raw = _read_raw_fif(big_fif_fname, verbose=False)
-    write_raw_bids(raw, bids_path, verbose=False)
+
+    with monkeypatch.context() as m:  # Force MNE-BIDS to split at 10MB
+        m.setattr(mne_bids.write, '_FIFF_SPLIT_SIZE', split_size)
+        write_raw_bids(raw, bids_path, verbose=False)
 
     # test whether split raw files were read correctly
     raw1 = read_raw_bids(bids_path=bids_path)

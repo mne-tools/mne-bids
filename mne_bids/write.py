@@ -57,6 +57,9 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              ANONYMIZED_JSON_KEY_WHITELIST)
 
 
+_FIFF_SPLIT_SIZE = '2GB'  # MNE-Python default; can be altered during debugging
+
+
 def _is_numeric(n):
     return isinstance(n, (np.integer, np.floating, int, float))
 
@@ -890,8 +893,10 @@ def _write_raw_fif(raw, bids_fname):
         should be saved.
 
     """
-    raw.save(bids_fname, fmt=raw.orig_format, split_naming='bids',
-             overwrite=True)
+    raw.save(
+        bids_fname, fmt=raw.orig_format, split_size=_FIFF_SPLIT_SIZE,
+        split_naming='bids', overwrite=True
+    )
 
 
 def _write_raw_brainvision(raw, bids_fname, events, overwrite):
