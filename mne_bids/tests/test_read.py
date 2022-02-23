@@ -7,7 +7,6 @@ import os
 import os.path as op
 import pathlib
 from datetime import datetime, timezone
-import warnings
 
 import pytest
 import shutil as sh
@@ -952,14 +951,12 @@ def test_bads_reading(tmp_path):
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_write_read_fif_split_file(tmp_path):
     """Test split files are read correctly."""
-    # load raw test file and save it as as split file
+    # load raw test file, extend it to be larger than 2gb, and save it
     bids_root = tmp_path / 'bids'
     tmp_dir = tmp_path / 'tmp'
     tmp_dir.mkdir()
 
-    bids_path = _bids_path.copy().update(
-        root=bids_root, datatype='meg', extension='.fif'
-    )
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     bids_path.update(acquisition=None)
     write_raw_bids(raw, bids_path, verbose=False)
@@ -970,58 +967,19 @@ def test_write_read_fif_split_file(tmp_path):
     raw = mne.io.RawArray(data, raw.info)
     big_fif_fname = pathlib.Path(tmp_dir) / 'test_raw.fif'
     raw.save(big_fif_fname, split_size='10MB')
-
-    # write_raw_bids() doesn't support a `split_size` parameter, and would
-    # normally only start splitting FIFF files exceeding 2GB in size. To
-    # write split files smaller than this, we hack our way around things and
-    # manually write two files with a `split` entity.
-    raw_split_1 = _read_raw_fif(big_fif_fname, verbose=False, preload=False)
-    # Prevent MNE from reading the subsequent split(s) when loading this file
-    raw_split_1._filenames = [raw_split_1.filenames[0]]
-    raw_split_1._first_samps = [raw_split_1._first_samps[0]]
-    raw_split_1._last_samps = [raw_split_1._last_samps[0]]
-    raw_split_1.load_data()
-
-    with warnings.catch_warnings():  # Filename doesn't meet MNE conventions
-        warnings.simplefilter('ignore')
-        raw_split_2 = _read_raw_fif(
-            big_fif_fname.with_name('test_raw-1.fif'),
-            verbose=False,
-            preload=True
-        )
-
-    write_raw_bids(
-        raw=raw_split_1,
-        bids_path=bids_path.copy().update(split=1),
-        allow_preload=True,
-        format='FIF',
-        verbose=False
-    )
-    write_raw_bids(
-        raw=raw_split_2,
-        bids_path=bids_path.copy().update(split=2),
-        allow_preload=True,
-        format='FIF',
-        verbose=False
-    )
+    raw = _read_raw_fif(big_fif_fname, verbose=False)
+    write_raw_bids(raw, bids_path, verbose=False)
 
     # test whether split raw files were read correctly
-
-    # XXX Broken – that it worked before probably suggests we have a bug in
-    # write_raw_bids()? As the BIDS spec demands that also the first fname of
-    # split files already have the `split` entity. However, read_raw_bids()
-    # cannot handle this unless `split` is passed via `BIDSPath`!
-    # https://bids-specification.readthedocs.io/en/stable/99-appendices/06-meg-file-formats.html#split-files
-    # raw1 = read_raw_bids(bids_path=bids_path)
-    # assert 'split-01' in str(bids_path.fpath)
-    
+    raw1 = read_raw_bids(bids_path=bids_path)
+    assert 'split-01' in str(bids_path.fpath)
     bids_path.update(split='01')
     raw2 = read_raw_bids(bids_path=bids_path)
-
     bids_path.update(split='02')
     raw3 = read_raw_bids(bids_path=bids_path)
-
-    assert len(raw2) + len(raw3) == len(raw)
+    assert len(raw) == len(raw1)
+    assert len(raw) == len(raw2)
+    assert len(raw) > len(raw3)
 
     # check that split files both appear in scans.tsv
     scans_tsv = BIDSPath(
