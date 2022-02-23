@@ -265,6 +265,9 @@
                              <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">)</span>
 
 
+<span class="n">_FIFF_SPLIT_SIZE</span> <span class="o">=</span> <span class="s1">&#39;2GB&#39;</span>  <span class="c1"># MNE-Python default; can be altered during debugging</span>
+
+
 <span class="k">def</span> <span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
 
@@ -1098,8 +1101,10 @@
 <span class="sd">        should be saved.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span>
-             <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">bids_fname</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="p">,</span> <span class="n">split_size</span><span class="o">=</span><span class="n">_FIFF_SPLIT_SIZE</span><span class="p">,</span>
+        <span class="n">split_naming</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
@@ -2921,7 +2926,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-16.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-02-23.<br>
 </p>
     </div>
     
