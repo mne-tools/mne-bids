@@ -833,7 +833,10 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
                          'to set the root of the BIDS folder to read.')
 
     # only get this for MEG data
-    meg_bids_path.update(datatype='meg', suffix='meg')
+    if meg_bids_path.datatype is None:
+        meg_bids_path.datatype = 'meg'
+    if meg_bids_path.suffix is None:
+        meg_bids_path.suffix = 'meg'
 
     # Get the sidecar file for MRI landmarks
     t1w_bids_path = (
