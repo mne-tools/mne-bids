@@ -23,6 +23,7 @@ Authors
 ~~~~~~~
 
 People who contributed to this release (in alphabetical order):
+
 * `Simon Kern`_
 * `Adam Li`_
 * `Alex Rockhill`_
