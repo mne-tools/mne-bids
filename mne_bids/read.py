@@ -17,7 +17,9 @@ import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
-from mne.utils import has_nibabel, logger, warn, get_subjects_dir
+from mne.utils import (
+    has_nibabel, logger, warn, get_subjects_dir, check_version
+)
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -55,6 +57,10 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
+        if ext == '.snirf' and not check_version('mne', '1.0'):
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 

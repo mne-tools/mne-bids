@@ -146,6 +146,11 @@ def _channels_tsv(raw, fname, overwrite=False):
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
     if 'fnirs_cw_amplitude' in raw:
+        if not check_version('mne', '1.0'):
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+
         ch_data["wavelength_nominal"] = [raw.info["chs"][i]["loc"][9] for i in
                                          range(len(raw.ch_names))]
 
@@ -828,7 +833,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('SEEGChannelCount', n_seegchan + n_dbschan)]
 
     ch_info_json_nirs = [
-        ('Manufacturer', manufacturer)]
+        ('Manufacturer', manufacturer)
+    ]
 
     ch_info_ch_counts = [
         ('EEGChannelCount', n_eegchan),
@@ -841,7 +847,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     ch_info_ch_counts_nirs = [
         ('NIRSChannelCount', n_nirscwchan),
         ('NIRSSourceOptodeCount', n_nirscwsrc),
-        ('NIRSDetectorOptodeCount', n_nirscwdet)]
+        ('NIRSDetectorOptodeCount', n_nirscwdet)
+    ]
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
@@ -852,6 +859,10 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     elif datatype == 'ieeg':
         append_datatype_json = ch_info_json_ieeg
     elif datatype == 'nirs':
+        if not check_version('mne', '1.0'):
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
         append_datatype_json = ch_info_json_nirs
         ch_info_ch_counts.extend(ch_info_ch_counts_nirs)
 
@@ -1594,6 +1605,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                                 datatype=bids_path.datatype,
                                 overwrite=overwrite)
     elif bids_path.datatype in ['eeg', 'ieeg', 'nirs']:
+        if bids_path.datatype == 'nirs' and not check_version('mne', '1.0'):
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if montage is not None or \

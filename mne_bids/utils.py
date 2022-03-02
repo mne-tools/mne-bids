@@ -129,6 +129,10 @@ def _handle_datatype(raw, datatype):
         if 'eeg' in raw:
             datatypes.append('eeg')
         if 'fnirs' in raw:
+            if not check_version('mne', '1.0'):
+                raise RuntimeError(
+                    'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+                )
             datatypes.append('nirs')
         if len(datatypes) == 0:
             raise ValueError('No MEG, EEG or iEEG channels found in data. '

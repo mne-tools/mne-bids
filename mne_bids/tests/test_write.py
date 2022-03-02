@@ -1589,6 +1589,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         _bids_validate(output_path)
 
 
+@pytest.mark.skipif(not check_version('mne', '1.0')
 def test_snirf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for SNIRF data."""
 
