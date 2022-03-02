@@ -146,7 +146,7 @@ def _channels_tsv(raw, fname, overwrite=False):
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
     if 'fnirs_cw_amplitude' in raw:
-        if not check_version('mne', '1.0'):
+        if not check_version('mne', '1.0'):  # pragma: no cover
             raise RuntimeError(
                 'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
             )
@@ -859,7 +859,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     elif datatype == 'ieeg':
         append_datatype_json = ch_info_json_ieeg
     elif datatype == 'nirs':
-        if not check_version('mne', '1.0'):
+        if not check_version('mne', '1.0'):  # pragma: no cover
             raise RuntimeError(
                 'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
             )
