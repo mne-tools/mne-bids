@@ -1605,7 +1605,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                                 datatype=bids_path.datatype,
                                 overwrite=overwrite)
     elif bids_path.datatype in ['eeg', 'ieeg', 'nirs']:
-        if bids_path.datatype == 'nirs' and not check_version('mne', '1.0'):
+        if (
+            bids_path.datatype == 'nirs' and
+            not check_version('mne', '1.0')
+        ):  # pragma: no cover
             raise RuntimeError(
                 'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
             )
