@@ -18,6 +18,9 @@ data. Specifically, we will follow these steps:
 
 5. Repeat the process for the ``fsaverage`` template coordinate frame.
 
+6. Repeat the process for one of the other standard template coordinate frames
+   allowed by BIDS.
+
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
 
@@ -48,6 +51,7 @@ refer to the `iEEG part of the BIDS specification`_.
 # %%
 
 import os.path as op
+import numpy as np
 import shutil
 
 from nilearn.plotting import plot_anat
@@ -70,6 +74,7 @@ misc_path = mne.datasets.misc.data_path()
 # which is easily read in using numpy
 raw = mne.io.read_raw_fif(op.join(
     misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
+raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})  # fake intracranial
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 
@@ -195,7 +200,7 @@ T1_bids_path = write_anat(T1_fname, bids_path, deface=True,
 #
 # `acpc_aligned=True` affirms that our MRI is aligned to ACPC
 # if this is not true, convert to `fsaverage` (see below)!
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
                montage=montage, acpc_aligned=True, overwrite=True)
 
 # check our output
@@ -271,7 +276,14 @@ print(text)
 # from "mri" aka surface RAS space.
 # ``fsaverage`` is very useful for group analysis as shown in
 # `Working with SEEG
-# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
+# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_. Note, this
+# is only a linear transform and so loses quite a bit of accuracy relative
+# to the needs of intracranial researchers so it is quite suboptimal. A better
+# option is to use a symmetric diffeomorphic transform to create a one-to-one
+# mapping of brain voxels from the individual's brain to the template. Even so,
+# it's better to provide the coordinates in the individual's brain space, as
+# was done above, so that the researcher who uses the coordinates has the
+# ability to tranform them to a template of their choice (see below).
 
 # ensure the output path doesn't contain any leftover files from previous
 # tests and example runs
@@ -282,6 +294,7 @@ if op.exists(bids_root):
 raw = mne.io.read_raw_fif(op.join(
     misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
 
 # get Talairach transform
 mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
@@ -293,7 +306,7 @@ montage.apply_trans(trans)  # head->mri
 montage.apply_trans(mri_mni_t)
 
 # write to BIDS, this time with a template coordinate system
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
                montage=montage, overwrite=True)
 
 # read in the BIDS dataset
@@ -322,3 +335,87 @@ montage.add_mni_fiducials(subjects_dir=subjects_dir)
 # ``montage.add_estimated_fiducials(template, os.environ['FREESURFER_HOME'])``
 # where ``template`` maybe be ``cvs_avg35_inMNI152`` for instance
 raw.set_montage(montage)
+
+# %%
+# Step 6: Store coordinates in another template space accepted by BIDS
+# --------------------------------------------------------------------
+# As of thid writing, BIDS accepts channel coordinates in reference to the
+# the following template spaces: ``ICBM452AirSpace``, ``ICBM452Warp5Space``,
+# ``IXI549Space``, ``fsaverage``, ``fsaverageSym``, ``fsLR``, ``MNIColin27``,
+# ``MNI152Lin``, ``MNI152NLin2009[a-c][Sym|Asym]``, ``MNI152NLin6Sym``,
+# ``MNI152NLin6ASym``, ``MNI305``, ``NIHPD``, ``OASIS30AntsOASISAnts``,
+# ``OASIS30Atropos``, ``Talairach`` and ``UNCInfant``. As discussed above,
+# it is recommended to share the coordinates in the individual subject's
+# anatomical reference frame so that researchers who use the data can
+# transform the coordinates to any of these templates that they choose. If
+# BIDS-formatted data is shared in one of these template coordinate frames,
+# the data can still be analyzed in MNE-Python. However, MNE-Python only
+# recognizes a few coordinate frames (so that coordinate frames that are
+# not regularly used by the MNE community don't misleadingly appear to be
+# being fully maintained when they are not) so you'll need a bit more
+# know-how, which we will go over below.
+
+# ensure the output path doesn't contain any leftover files from previous
+# tests and example runs
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+
+# first we'll write our data as if it were MNI152NLin2009bAsym coordinates
+# (you would need to transform your coordinates to this template first)
+bids_path.update(datatype='ieeg', space='MNI152NLin2009bAsym')
+
+# load our raw data again
+raw = mne.io.read_raw_fif(op.join(
+    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
+raw.set_channel_types({ch: 'seeg' for ch in raw.ch_names})
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+
+# get the montage as stored in raw
+# MNE stores coordinates in raw objects in "head" coordinates for consistency
+montage = raw.get_montage()
+
+# define a transform to MNI152NLin2009bAsym (fake it)
+# MNE-Python doesn't recognize MNI152NLin2009bAsym, so we have to use
+# the unknown coordinate frame
+head_template_t = np.array([[1.0, 0.1, 0.2, 10.1],
+                            [-0.1, 1.0, 0.1, -20.3],
+                            [0.2, -0.1, 1.0, -30.7],
+                            [0.0, 0.0, 0.0, 1.0]])
+head_template_trans = mne.transforms.Transform(
+    fro='head', to='unknown', trans=head_template_t)
+montage.apply_trans(head_template_trans)
+
+# get fiducials in the template coordinate frame for later
+pos = montage.get_positions()
+nasion, lpa, rpa = (pos[fid] for fid in ('nasion', 'lpa', 'rpa'))
+
+# write to BIDS, with the montage in fsaverage coordinates
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
+               montage=montage, overwrite=True)
+
+# read back in the raw data
+raw = read_raw_bids(bids_path=bids_path)
+
+# get the montage
+montage = raw.get_montage()
+print('Montage set to: ' + montage.get_positions()['coord_frame'])
+
+# now we can use the fiducials that we stored before to store the
+# coordinates in the "head" coordinate frame that is prefered
+# you would have to find the fiducials for the template its
+# documentation or using Freeview on the template MRI or with
+# the MNE coregistration GUI if you didn't have them already
+pos = montage.get_positions()
+montage = mne.channels.make_dig_montage(
+    ch_pos=pos['ch_pos'], nasion=nasion, lpa=lpa, rpa=rpa,
+    coord_frame=pos['coord_frame'])
+
+# now check that we can recover our transform
+head_template_trans2 = mne.channels.compute_native_head_t(montage)
+print(f'Original: {head_template_trans}\nRecovered: {head_template_trans2}')
+
+# finally we have a montage in head coordinates that can be
+# transformed back the template coordinate frame stored as
+# unknown in MNE
+raw.set_montage(montage)  # transforms to head

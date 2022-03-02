@@ -153,7 +153,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
 # Annotations to never remove during reading or writing
 ANNOTATIONS_TO_KEEP = ('BAD_ACQ_SKIP',)
 
-coordsys_standard_template = [
+BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES = [
     'ICBM452AirSpace',
     'ICBM452Warp5Space',
     'IXI549Space',
@@ -199,7 +199,7 @@ coordsys_meg = ['CTF', 'ElektaNeuromag', '4DBti', 'KitYokogawa', 'ChietiItab']
 coordsys_eeg = ['CapTrak']
 coordsys_ieeg = ['Pixels', 'ACPC']
 coordsys_wildcard = ['Other']
-coordsys_shared = (coordsys_standard_template +
+coordsys_shared = (BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES +
                    coordsys_standard_template_deprecated +
                    coordsys_wildcard)
 
@@ -282,7 +282,7 @@ MNE_STR_TO_FRAME = dict(
 MNE_FRAME_TO_STR = {val: key for key, val in MNE_STR_TO_FRAME.items()}
 
 # see BIDS specification for description we copied over from each
-BIDS_COORD_FRAME_DESCRIPTIONS = {
+BIDS_COORD_FRAME_DESCRIPTIONS = dict(**{
     'acpc': 'The origin of the coordinate system is at the Anterior '
             'Commissure and the negative y-axis is passing through the '
             'Posterior Commissure. The positive z-axis is passing through '
@@ -304,7 +304,59 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
     'fsaverage': 'Defined by FreeSurfer, the MRI (surface RAS) origin is '
                  'at the center of a 256×256×256 mm^3 anisotropic volume '
                  '(may not be in the center of the head).',
-}
+    'icbm452airspace': 'Reference space defined by the "average of 452 '
+                       'T1-weighted MRIs of normal young adult brains" '
+                       'with "linear transforms of the subjects into the '
+                       'atlas space using a 12-parameter affine '
+                       'transformation"',
+    'icbm452warp5space': 'Reference space defined by the "average of 452 '
+                         'T1-weighted MRIs of normal young adult brains" '
+                         '"based on a 5th order polynomial transformation '
+                         'into the atlas space"',
+    'ixi549space': 'Reference space defined by the average of the "549 (...) '
+                   'subjects from the IXI dataset" linearly transformed to '
+                   'ICBM MNI 452.',
+    'fsaveragesym': 'The fsaverage is a dual template providing both '
+                    'volumetric and surface coordinates references. The '
+                    'volumetric template corresponds to a FreeSurfer variant '
+                    'of MNI305 space. The fsaverageSym atlas also defines a '
+                    'symmetric surface reference system (formerly described '
+                    'as fsaveragesym).',
+    'fslr': 'The fsLR is a dual template providing both volumetric and '
+            'surface coordinates references. The volumetric template '
+            'corresponds to MNI152NLin6Asym. Surface templates are given '
+            'at several sampling densities: 164k (used by HCP pipelines '
+            'for 3T and 7T anatomical analysis), 59k (used by HCP pipelines '
+            'for 7T MRI bold and DWI analysis), 32k (used by HCP pipelines '
+            'for 3T MRI bold and DWI analysis), or 4k (used by HCP '
+            'pipelines for MEG analysis) fsaverage_LR surface '
+            'reconstructed from the T1w image.',
+    'mnicolin27': 'Average of 27 T1 scans of a single subject.',
+    'mni152lin': 'Also known as ICBM (version with linear coregistration).',
+    'mni152nlin6sym': 'Also known as symmetric ICBM 6th generation '
+                      '(non-linear coregistration).',
+    'mni152nlin6asym': 'A variation of MNI152NLin6Sym built by A. Janke that '
+                       'is released as the MNI template of FSL. Volumetric '
+                       'templates included with HCP-Pipelines correspond to '
+                       'this template too.',
+    'mni305': 'Also known as avg305.',
+    'nihpd': 'Pediatric templates generated from the NIHPD sample. Available '
+             'for different age groups (4.5–18.5 y.o., 4.5–8.5 y.o., '
+             '7–11 y.o., 7.5–13.5 y.o., 10–14 y.o., 13–18.5 y.o. This '
+             'template also comes in either -symmetric or -asymmetric flavor.',
+    'oasis30antsoasisants':
+        'See https://figshare.com/articles/ANTs_ANTsR_Brain_Templates/915436',
+    'oasis30atropos':
+        'See https://mindboggle.info/data.html',
+    'talairach': 'Piecewise linear scaling of the brain is implemented as '
+                 'described in TT88.',
+    'uncinfant': 'Infant Brain Atlases from Neonates to 1- and 2-year-olds.'
+},
+    **{f'mni152nlin2009{letter}{sym}': 'Also known as ICBM '
+       '(non-linear coregistration with 40 iterations, '
+       'released in 2009). It comes in either three different flavours '
+       'each in symmetric or asymmetric version.'
+       for letter in ('a', 'b', 'c') for sym in ('Sym', 'Asym')})
 
 REFERENCES = {'mne-bids':
               'Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., '
