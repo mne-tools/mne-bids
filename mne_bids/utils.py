@@ -292,7 +292,7 @@ def _extract_landmarks(dig):
             coord_frame['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['coord_frame']
 
     # for now, we only support "head" coordinates
-    for  frame in coord_frame.values():
+    for frame in coord_frame.values():
         assert frame == FIFF.FIFFV_COORD_HEAD
 
     return coords

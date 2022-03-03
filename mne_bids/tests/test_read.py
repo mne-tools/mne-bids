@@ -413,6 +413,7 @@ def test_get_head_mri_trans(tmp_path):
     )
     write_raw_bids(raw=raw, bids_path=bids_path, verbose=False)
 
+
 def test_handle_events_reading(tmp_path):
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
