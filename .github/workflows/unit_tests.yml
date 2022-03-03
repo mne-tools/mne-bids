@@ -237,7 +237,6 @@ jobs:
       run: make test
 
     - name: Upload coverage stats to codecov
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.bids-validator-version == 'validator-main' }}
       uses: codecov/codecov-action@v2
       with:
         files: ./coverage.xml
