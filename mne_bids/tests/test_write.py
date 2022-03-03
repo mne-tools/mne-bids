@@ -1590,6 +1590,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
 
 @pytest.mark.skipif(
+    os.environ.get('BIDS_VALIDATOR_BRANCH') != 'NIRS',
+    reason="requires Rob's NIRS branch of bids-validator"
+)
+@pytest.mark.skipif(
     not check_version('mne', '1.0'),
     reason='requires MNE-Python 1.0'
 )

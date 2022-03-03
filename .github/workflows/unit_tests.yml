@@ -117,10 +117,10 @@ jobs:
 
         include:
           # Only test devel versions with Python 3.10
-          - os: ubuntu-latest
-            python-version: "3.10"
-            mne-version: mne-main
-            bids-validator-version: validator-main
+          - os: [ubuntu-latest]
+            python-version: ["3.10"]
+            mne-version: [mne-main]
+            bids-validator-version: [validator-main, validator-NIRS]
 
     env:
       TZ: Europe/Berlin
@@ -167,15 +167,32 @@ jobs:
 
     - name: Install BIDS validator (stable)
       if: "matrix.bids-validator-version == 'validator-stable'"
-      run: npm install -g bids-validator
+      run: |
+        npm install -g bids-validator
+        echo "BIDS_VALIDATOR_BRANCH=stable" >> $GITHUB_ENV
 
-    - name: Install BIDS validator (main)
+    - name: Download BIDS validator (main)
+      if: "matrix.bids-validator-version == 'validator-main'"
+      run: |
+        pushd ..
+        git clone --depth 1 https://github.com/bids-standard/bids-validator
+        popd
+        echo "BIDS_VALIDATOR_BRANCH=main" >> $GITHUB_ENV
+
+    - name: Download BIDS validator (NIRS)
+      if: "matrix.bids-validator-version == 'validator-NIRS'"
+      run: |
+        pushd ..
+        git clone --depth 1 --branch nirs https://github.com/rob-luke/bids-validator.git
+        popd
+        echo "BIDS_VALIDATOR_BRANCH=NIRS" >> $GITHUB_ENV
+
+    - name: Install BIDS validator (main or NIRS)
       if: "matrix.bids-validator-version == 'validator-main'"
       run: |
         pushd ..
         # Get npm 7+
         npm install -g npm
-        git clone --depth 1 --branch nirs https://github.com/rob-luke/bids-validator.git
         cd bids-validator
         # Generate the full development node_modules
         npm install
@@ -202,8 +219,8 @@ jobs:
       run: pip install -e .
 
     - name: Run pytest
-      run: make test
       shell: bash
+      run: make test
 
     - name: Upload coverage stats to codecov
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.10' && matrix.bids-validator-version == 'validator-main' }}
