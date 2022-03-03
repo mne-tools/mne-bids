@@ -147,7 +147,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: 14
+        node-version: 16
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -207,8 +207,6 @@ jobs:
       if: ${{ (matrix.bids-validator-version == 'validator-main') || (matrix.bids-validator-version == 'validator-NIRS') }}
       run: |
         pushd ..
-        # Get npm 7+
-        npm install -g npm
         cd bids-validator
         # Generate the full development node_modules
         npm install
