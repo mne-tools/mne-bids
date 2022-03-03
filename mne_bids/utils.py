@@ -272,18 +272,41 @@ def _infer_eeg_placement_scheme(raw):
     return placement_scheme
 
 
-def _extract_landmarks(dig):
-    """Extract NAS, LPA, and RPA from raw.info['dig']."""
+def _extract_landmarks(dig, assert_coord_frame=FIFF.FIFFV_COORD_HEAD):
+    """Extract NAS, LPA, and RPA from raw.info['dig'].
+
+    Parameters
+    ----------
+    assert_coord_frame : None | int
+        A coordinate frame, as defined in FIFF.FIFFV_COORD_*. If the landmark
+        coordinates are not in this coordinate frame, an exception will be
+        raised. If ``None``, no such checks will be performed.
+    """
     coords = dict()
+    coord_frame = dict()
+
     landmarks = {d['ident']: d for d in dig
                  if d['kind'] == FIFF.FIFFV_POINT_CARDINAL}
     if landmarks:
         if FIFF.FIFFV_POINT_NASION in landmarks:
             coords['NAS'] = landmarks[FIFF.FIFFV_POINT_NASION]['r'].tolist()
+            coord_frame['NAS'] = (landmarks[FIFF.FIFFV_POINT_NASION]
+                                  ['coord_frame'])
         if FIFF.FIFFV_POINT_LPA in landmarks:
             coords['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['r'].tolist()
+            coord_frame['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['coord_frame']
         if FIFF.FIFFV_POINT_RPA in landmarks:
             coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
+            coord_frame['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['coord_frame']
+
+    if assert_coord_frame is not None:
+        for landmark, frame in coord_frame.items():
+            if frame != assert_coord_frame:
+                raise ValueError(
+                    f'The coordinate frame of {landmark} is {frame}, but '
+                    f'{assert_coord_frame} was requested'
+                )
+
     return coords
 
 
