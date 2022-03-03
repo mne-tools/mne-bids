@@ -10,7 +10,6 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.io._digitization import _get_fid_coords
 from mne.transforms import _str_to_frame
 from mne.utils import logger, warn
 
