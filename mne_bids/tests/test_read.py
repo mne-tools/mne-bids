@@ -401,6 +401,17 @@ def test_get_head_mri_trans(tmp_path):
                 fs_subjects_dir=subjects_dir
             )
 
+    # Should fail for an unsupported coordinate frame
+    raw = _read_raw_fif(raw_fname)
+    bids_root = tmp_path / 'unsupported_coord_frame'
+    bids_path = BIDSPath(
+        subject='01', task='av', datatype='meg', suffix='meg',
+        extension='.fif', root=bids_root
+    )
+    t1_bids_path = _bids_path.copy().update(
+        root=tmp_path / 'mri_root', task=None, run=None
+    )
+    write_raw_bids(raw=raw, bids_path=bids_path, verbose=False)
 
 def test_handle_events_reading(tmp_path):
     """Test reading events from a BIDS events.tsv file."""

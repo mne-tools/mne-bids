@@ -272,16 +272,8 @@ def _infer_eeg_placement_scheme(raw):
     return placement_scheme
 
 
-def _extract_landmarks(dig, assert_coord_frame=FIFF.FIFFV_COORD_HEAD):
-    """Extract NAS, LPA, and RPA from raw.info['dig'].
-
-    Parameters
-    ----------
-    assert_coord_frame : None | int
-        A coordinate frame, as defined in FIFF.FIFFV_COORD_*. If the landmark
-        coordinates are not in this coordinate frame, an exception will be
-        raised. If ``None``, no such checks will be performed.
-    """
+def _extract_landmarks(dig):
+    """Extract NAS, LPA, and RPA from raw.info['dig']."""
     coords = dict()
     coord_frame = dict()
 
@@ -299,13 +291,9 @@ def _extract_landmarks(dig, assert_coord_frame=FIFF.FIFFV_COORD_HEAD):
             coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
             coord_frame['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['coord_frame']
 
-    if assert_coord_frame is not None:
-        for landmark, frame in coord_frame.items():
-            if frame != assert_coord_frame:
-                raise ValueError(
-                    f'The coordinate frame of {landmark} is {frame}, but '
-                    f'{assert_coord_frame} was requested'
-                )
+    # for now, we only support "head" coordinates
+    for  frame in coord_frame.items():
+        assert frame == FIFF.FIFFV_COORD_HEAD
 
     return coords
 

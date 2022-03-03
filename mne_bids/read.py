@@ -950,16 +950,6 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         extra_params['allow_maxshield'] = True
 
     raw = read_raw_bids(bids_path=meg_bids_path, extra_params=extra_params)
-    for landmark in raw.info['dig'][:3]:
-        if landmark['coord_frame'] != FIFF.FIFFV_COORD_HEAD:
-            raise ValueError(
-                f'The coordinate frame of the digitization points could not '
-                f'be converted to the MNE "head" coordinate system. '
-                f'Currently, this is only possible for the following '
-                f'BIDS-supported coordinate systems: ElektaNeuromag, '
-                f'ChietiItab, and CapTrak. This error occurred while trying '
-                f'to process the following landmark: {landmark}'
-            )
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],
                                 meg_coords_dict['NAS'],
