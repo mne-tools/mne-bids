@@ -45,6 +45,8 @@ Enhancements
 
 - :func:`mne_bids.get_head_mri_trans` and :func:`mne_bids.update_anat_landmarks` gained a new``kind`` parameter to specify which of multiple landmark sets to retrieve, by `Alexandre Gramfort`_ and `Richard Höchenberger`_ (:gh:`955`, :gh:`957`)
 
+- Add an explanation in :ref:`ieeg-example` why it is better to have intracranial data (especially but really MEG and EEG too) in individual rather than template coordinates, by `Alex Rockhill`_ (:gh:`975`)
+
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
