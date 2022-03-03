@@ -16,8 +16,7 @@ import mne
 from mne.datasets import testing
 from mne_bids import BIDSPath, write_raw_bids
 from mne_bids.dig import _write_dig_bids, _read_dig_bids
-from mne_bids.config import (ALLOWED_SPACES_WRITE, BIDS_TO_MNE_FRAMES,
-                             BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES)
+from mne_bids.config import ALLOWED_SPACES_WRITE, BIDS_TO_MNE_FRAMES
 
 import warnings
 warnings.filterwarnings('ignore', category=DeprecationWarning)
