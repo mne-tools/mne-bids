@@ -299,6 +299,9 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
 
 def _set_montage_no_head_trans(raw, montage):
     """Set a montage for raw without transforming to head."""
+    for d in raw.dig.copy():  # remove fiducials, not supported if not in head
+        if d['kind'] == FIFF.FIFFV_POINT_CARDINAL:
+            raw.dig.remove(d)
     pos = montage.get_positions()
     ch_pos = pos['ch_pos']
     for ch in raw.info['chs']:  # in BIDS channels in tsv will match with raw

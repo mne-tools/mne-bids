@@ -291,9 +291,9 @@ def _extract_landmarks(dig):
             coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
             coord_frame['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['coord_frame']
 
-    # for now, we only support "head" coordinates
+    # assert all in the same coordinate frame
     for frame in coord_frame.values():
-        assert frame == FIFF.FIFFV_COORD_HEAD
+        assert frame == coord_frame['NAS']
 
     return coords
 
