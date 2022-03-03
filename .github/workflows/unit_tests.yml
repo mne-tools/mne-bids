@@ -204,7 +204,7 @@ jobs:
         echo "BIDS_VALIDATOR_BRANCH=NIRS" >> $GITHUB_ENV
 
     - name: Install BIDS validator (main or NIRS)
-      if: "matrix.bids-validator-version == 'validator-main'"
+      if: ${{ (matrix.bids-validator-version == 'validator-main') || (matrix.bids-validator-version == 'validator-NIRS') }}
       run: |
         pushd ..
         # Get npm 7+
