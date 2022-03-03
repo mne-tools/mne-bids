@@ -106,7 +106,7 @@ def test_dig_eeg_ieeg(tmp_path):
                 task=None, run=None, suffix='coordsystem', extension='.json')
             if bids_path.space == 'Pixels':
                 with pytest.warns(RuntimeWarning,
-                                  match='not recognized by mne'):
+                                  match='not recognized by MNE'):
                     _read_dig_bids(electrodes_path, coordsystem_path,
                                    datatype, raw)
             elif mne_coord_frame is None:

@@ -14,7 +14,7 @@ from mne.transforms import _str_to_frame
 from mne.utils import logger, warn
 
 from mne_bids.config import (ALLOWED_SPACES, ALLOWED_SPACES_WRITE,
-                             BIDS_COORDINATE_UNITS,
+                             BIDS_COORDINATE_UNITS, BIDS_MEG_COORDINATE_FRAMES,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
                              MNE_FRAME_TO_STR, BIDS_COORD_FRAME_DESCRIPTIONS)
 from mne_bids.tsv_handler import _from_tsv
@@ -395,14 +395,17 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
         match = bids_path.space.lower() == coord_frame.lower()
         if bids_path.space.lower() == 'fsaverage' and coord_frame == 'MNI305':
             match = True
-            mne_coord_frame = coord_frame = allowed[bids_path.space.lower()]
         if bids_path.space.lower() == 'mni305' and coord_frame == 'fsaverage':
             match = True
-            mne_coord_frame = coord_frame = allowed[bids_path.space.lower()]
+        # allow MEG space for EEG data
+        if bids_path.space.lower() in [cf.lower() for cf in
+                                       BIDS_MEG_COORDINATE_FRAMES]:
+            match = True
         if not match:
             raise ValueError('Coordinates in the montage are in the '
                              f'{coord_frame} coordinate frame but '
                              f'BIDSPath.space is {bids_path.space}')
+        mne_coord_frame = coord_frame = allowed[bids_path.space.lower()]
 
     # create electrodes/coordsystem files using a subset of entities
     # that are specified for these files in the specification
@@ -467,7 +470,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
             warn(f"Coordinate frame of {datatype} data is 'Other' "
                  "which will be set as 'unknown'")
         elif datatype == 'ieeg' and bids_coord_frame == 'Pixels':
-            warn("Coordinate frame for iEEG data of pixels will be stored"
+            warn("Coordinate frame for iEEG data of pixels will be stored "
                  "as 'unknown' since it is not recognized by MNE.")
         else:
             warn("Setting coordinate frame to 'unknown' for "
