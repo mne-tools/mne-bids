@@ -47,8 +47,7 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
-from mne_bids.config import (REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS,
-                             BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES)
+from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -1586,16 +1585,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 write_raw_bids(**kwargs)  # Converts.
                 output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
         _bids_validate(output_path)
-
-
-def test_ieeg_standard_templates(_bids_validate, tmp_path):
-    """Test that raw ieeg files can be written using standard templates."""
-    bids_root = tmp_path / 'bids1'
-    bids_path = _bids_path.copy().update(root=bids_root, datatype='ieeg')
-    data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
-    raw = _read_raw_fif(raw_fname)
 
 
 def test_bdf(_bids_validate, tmp_path):

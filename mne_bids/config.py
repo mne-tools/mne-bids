@@ -198,17 +198,22 @@ coordsys_standard_template_deprecated = [
 coordsys_meg = ['CTF', 'ElektaNeuromag', '4DBti', 'KitYokogawa', 'ChietiItab']
 coordsys_eeg = ['CapTrak']
 coordsys_ieeg = ['Pixels', 'ACPC']
-coordsys_wildcard = ['Other']
 coordsys_shared = (BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES +
-                   coordsys_standard_template_deprecated +
-                   coordsys_wildcard)
+                   coordsys_standard_template_deprecated)
 
 ALLOWED_SPACES = dict()
-ALLOWED_SPACES['meg'] = coordsys_shared + coordsys_meg + coordsys_eeg
-ALLOWED_SPACES['eeg'] = coordsys_shared + coordsys_meg + coordsys_eeg
+ALLOWED_SPACES['meg'] = ALLOWED_SPACES['eeg'] = \
+    coordsys_shared + coordsys_meg + coordsys_eeg
 ALLOWED_SPACES['ieeg'] = coordsys_shared + coordsys_ieeg
 ALLOWED_SPACES['anat'] = None
 ALLOWED_SPACES['beh'] = None
+
+# write only
+ALLOWED_SPACES_WRITE = dict()
+ALLOWED_SPACES_WRITE['meg'] = ALLOWED_SPACES_WRITE['eeg'] = \
+    BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES + coordsys_meg + coordsys_eeg
+ALLOWED_SPACES_WRITE['ieeg'] = \
+    BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES + coordsys_ieeg
 
 # See: https://bids-specification.readthedocs.io/en/latest/99-appendices/04-entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
 ENTITY_VALUE_TYPE = {
@@ -259,9 +264,6 @@ MNE_TO_BIDS_FRAMES = {
     'head': 'CapTrak',
     'mni_tal': 'fsaverage',
     # 'fs_tal': 'fsaverage',  # XXX: not used
-    'unknown': 'Other',
-    'ras': 'Other',
-    'mri': 'Other'
 }
 
 # these coordinate frames in mne-python are related to scalp/meg
@@ -287,6 +289,13 @@ BIDS_COORD_FRAME_DESCRIPTIONS = dict(**{
             'Commissure and the negative y-axis is passing through the '
             'Posterior Commissure. The positive z-axis is passing through '
             'a mid-hemispheric point in the superior direction.',
+    'pixels': 'If electrodes are localized in 2D space (only x and y are '
+              'specified and z is n/a), then the positions in this file '
+              'must correspond to the locations expressed in pixels on '
+              'the photo/drawing/rendering of the electrodes on the brain. '
+              'In this case, coordinates must be (row,column) pairs, with '
+              '(0,0) corresponding to the upper left pixel and (N,0) '
+              'corresponding to the lower left pixel.',
     'ctf': 'ALS orientation and the origin between the ears',
     'elektaneuromag': 'RAS orientation and the origin between the ears',
     '4dbti': 'ALS orientation and the origin between the ears',
