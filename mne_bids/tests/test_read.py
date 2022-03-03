@@ -913,7 +913,9 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
     ctf_data_path = op.join(testing.data_path(), 'CTF')
     raw_ctf_fname = op.join(ctf_data_path, fname)
     raw_ctf = _read_raw_ctf(raw_ctf_fname, clean_names=True)
-    bids_path = _bids_path.copy().update(root=tmp_path)
+    bids_path = _bids_path.copy().update(
+        root=tmp_path, datatype='meg', suffix='meg'
+    )
     write_raw_bids(raw_ctf, bids_path, overwrite=False)
 
     # Take a fake trans
