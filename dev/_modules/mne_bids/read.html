@@ -985,7 +985,12 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    bids_path : BIDSPath</span>
-<span class="sd">        The path of the electrophysiology recording.</span>
+<span class="sd">        The path of the electrophysiology recording. If ``datatype`` and</span>
+<span class="sd">        ``suffix`` are not present, they will be set to ``&#39;meg&#39;``, and a</span>
+<span class="sd">        warning will be raised.</span>
+
+<span class="sd">        .. versionchanged:: 0.10</span>
+<span class="sd">           A warning is raised it ``datatype`` or ``suffix`` are not set.</span>
 <span class="sd">    extra_params : None | dict</span>
 <span class="sd">        Extra parameters to be passed to :func:`mne.io.read_raw` when reading</span>
 <span class="sd">        the MEG file.</span>
@@ -1040,8 +1045,17 @@
                          <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
                          <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
 
-    <span class="c1"># only get this for MEG data</span>
-    <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
+    <span class="c1"># if the bids_path is underspecified, only get info for MEG data</span>
+    <span class="k">if</span> <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;bids_path did not have a datatype set. Assuming &quot;meg&quot;. This &#39;</span>
+             <span class="s1">&#39;will raise an exception in the future.&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne_bids&#39;</span><span class="p">,</span>
+             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;bids_path did not have a suffix set. Assuming &quot;meg&quot;. This &#39;</span>
+             <span class="s1">&#39;will raise an exception in the future.&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne_bids&#39;</span><span class="p">,</span>
+             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
     <span class="c1"># Get the sidecar file for MRI landmarks</span>
     <span class="n">t1w_bids_path</span> <span class="o">=</span> <span class="p">(</span>

@@ -407,7 +407,12 @@ same session or even in the same BIDS dataset. See the
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The path of the electrophysiology recording.</p>
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The path of the electrophysiology recording. If <code class="docutils literal notranslate"><span class="pre">datatype</span></code> and
+<code class="docutils literal notranslate"><span class="pre">suffix</span></code> are not present, they will be set to <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>, and a
+warning will be raised.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.10: </span>A warning is raised it <code class="docutils literal notranslate"><span class="pre">datatype</span></code> or <code class="docutils literal notranslate"><span class="pre">suffix</span></code> are not set.</p>
+</div>
 </dd>
 <dt><strong>extra_params</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Extra parameters to be passed to <a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw.html#mne.io.read_raw" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw()</span></code></a> when reading
 the MEG file.</p>

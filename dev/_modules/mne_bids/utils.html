@@ -483,15 +483,26 @@
 <span class="k">def</span> <span class="nf">_extract_landmarks</span><span class="p">(</span><span class="n">dig</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Extract NAS, LPA, and RPA from raw.info[&#39;dig&#39;].&quot;&quot;&quot;</span>
     <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">coord_frame</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
     <span class="n">landmarks</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span>
                  <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_CARDINAL</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">landmarks</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">coord_frame</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">]</span>
+                                  <span class="p">[</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">coord_frame</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">][</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
             <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">coord_frame</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
+
+    <span class="c1"># for now, we only support &quot;head&quot; coordinates</span>
+    <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">coord_frame</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">assert</span> <span class="n">frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span>
+
     <span class="k">return</span> <span class="n">coords</span>
 
 
