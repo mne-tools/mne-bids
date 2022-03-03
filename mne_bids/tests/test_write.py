@@ -510,7 +510,11 @@ def test_fif(_bids_validate, tmp_path):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype='eeg')
-    raw2 = read_raw_bids(bids_path=bids_path)
+    if check_version('mne', '0.24'):
+        with pytest.warns(RuntimeWarning, match='Not setting position'):
+            raw2 = read_raw_bids(bids_path=bids_path)
+    else:
+        raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
     events2, _ = mne.events_from_annotations(raw2, event_id)
@@ -3575,7 +3579,9 @@ def test_write_dig(tmpdir):
     montage = raw.get_montage()
     # fake transform to pixel coordinates
     montage.apply_trans(mne.transforms.Transform('head', 'unknown'))
-    _write_dig_bids(bids_path, raw, montage)
+    with pytest.warns(RuntimeWarning,
+                      match='assuming identity'):
+        _write_dig_bids(bids_path, raw, montage)
     electrodes_path = bids_path.copy().update(
         task=None, run=None, suffix='electrodes', extension='.tsv')
     coordsystem_path = bids_path.copy().update(

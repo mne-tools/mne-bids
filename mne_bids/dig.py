@@ -297,21 +297,6 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
     _write_json(fname, fid_json, overwrite=True)
 
 
-def _set_montage_no_head_trans(raw, montage):
-    """Set a montage for raw without transforming to head."""
-    for d in raw.dig.copy():  # remove fiducials, not supported if not in head
-        if d['kind'] == FIFF.FIFFV_POINT_CARDINAL:
-            raw.dig.remove(d)
-    pos = montage.get_positions()
-    ch_pos = pos['ch_pos']
-    for ch in raw.info['chs']:  # in BIDS channels in tsv will match with raw
-        if ch['ch_name'] in ch_pos:  # skip MEG, non-digitized
-            ch['loc'][:3] = ch_pos[ch['ch_name']]
-            ch['coord_frame'] = _str_to_frame[pos['coord_frame']]
-    with raw.info._unlock():
-        raw.info['dig'] = montage.dig
-
-
 def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
                     overwrite=False):
     """Write BIDS formatted DigMontage from Raw instance.
@@ -346,7 +331,9 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
     else:
         # prevent transformation back to "head", only should be used
         # in this specific circumstance
-        _set_montage_no_head_trans(raw, montage)
+        if bids_path.datatype == 'ieeg':
+            montage.remove_fiducials()
+        raw.set_montage(montage)
 
     # get coordinate frame from digMontage
     digpoint = montage.dig[0]
@@ -540,10 +527,11 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     # XXX: Starting with mne 0.24, this will raise a RuntimeWarning
     #      if channel types are included outside of
     #      (EEG/sEEG/ECoG/DBS/fNIRS). Probably needs a fix in the future.
-    fid_coords, _ = _get_fid_coords(montage.dig, raise_error=False)
-    has_fids = all([fid_coords[key] for key in ('nasion', 'lpa', 'rpa')])
-    if has_fids:
-        raw.set_montage(montage, on_missing='warn')
-    else:
-        # leave in coordinate frame, don't assume identity unknown->head trans
-        _set_montage_no_head_trans(raw, montage)
+    raw.set_montage(montage, on_missing='warn')
+
+    # put back in unknown for unknown coordinate frame
+    if coord_frame == 'unknown':
+        for ch in raw.info['chs']:
+            ch['coord_frame'] = _str_to_frame['unknown']
+        for d in raw.info['dig']:
+            d['coord_frame'] = _str_to_frame['unknown']

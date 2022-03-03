@@ -787,6 +787,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     orig_locs = raw.info['dig'][1]
     test_locs = raw_test.info['dig'][1]
     assert orig_locs == test_locs
+    print(object_diff(raw.info['chs'], raw_test.info['chs']))
     assert not object_diff(raw.info['chs'], raw_test.info['chs'])
 
     # read in the data and assert montage is the same
