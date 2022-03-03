@@ -129,7 +129,7 @@ def _handle_datatype(raw, datatype):
         if 'eeg' in raw:
             datatypes.append('eeg')
         if 'fnirs' in raw:
-            if not check_version('mne', '1.0'):
+            if not check_version('mne', '1.0'):  # pragma: no cover
                 raise RuntimeError(
                     'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
                 )
