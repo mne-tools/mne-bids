@@ -117,10 +117,15 @@ jobs:
 
         include:
           # Only test devel versions with Python 3.10
-          - os: [ubuntu-latest]
-            python-version: ["3.10"]
-            mne-version: [mne-main]
-            bids-validator-version: [validator-main, validator-NIRS]
+          - os: ubuntu-latest
+            python-version: "3.10"
+            mne-version: mne-main
+            bids-validator-version: validator-main
+
+          - os: ubuntu-latest
+            python-version: "3.10"
+            mne-version: mne-main
+            bids-validator-version: validator-NIRS
 
     env:
       TZ: Europe/Berlin
