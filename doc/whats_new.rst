@@ -30,6 +30,7 @@ People who contributed to this release (in alphabetical order):
 * `Alexandre Gramfort`_
 * `Mainak Jas`_
 * `Richard Höchenberger`_
+* `Robert Luke`_
 * `Stefan Appelhoff`_
 * `Yorguin Mantilla`_
 
@@ -44,6 +45,8 @@ Enhancements
 - Add the ability to write multiple landmarks with :func:`mne_bids.write_anat` (e.g. to have separate landmarks for different sessions) via the new ``kind`` parameter, by `Alexandre Gramfort`_ (:gh:`955`)
 
 - :func:`mne_bids.get_head_mri_trans` and :func:`mne_bids.update_anat_landmarks` gained a new``kind`` parameter to specify which of multiple landmark sets to retrieve, by `Alexandre Gramfort`_ and `Richard Höchenberger`_ (:gh:`955`, :gh:`957`)
+
+- Add support for fNIRS (SNIRF) files in :func:`mne_bids.write_raw_bids`, by `Robert Luke`_ (:gh:`406`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
