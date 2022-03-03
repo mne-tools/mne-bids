@@ -209,7 +209,9 @@ def test_get_head_mri_trans(tmp_path):
 
     # Write it to BIDS
     raw = _read_raw_fif(raw_fname)
-    bids_path = _bids_path.copy().update(root=tmp_path)
+    bids_path = _bids_path.copy().update(
+        root=tmp_path, datatype='meg', suffix='meg'
+    )
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=False)
 
@@ -230,9 +232,13 @@ def test_get_head_mri_trans(tmp_path):
     landmarks = get_anat_landmarks(
         t1w_mgh, raw.info, trans, fs_subject='sample',
         fs_subjects_dir=subjects_dir)
+    t1w_bids_path = bids_path.copy().update(
+        datatype='anat', suffix='T1w'
+    )
     t1w_bids_path = write_anat(
-        t1w_mgh, bids_path=bids_path, landmarks=landmarks, verbose=True)
-    anat_dir = bids_path.directory
+        t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks, verbose=True
+    )
+    anat_dir = t1w_bids_path.directory
 
     # Try to get trans back through fitting points
     estimated_trans = get_head_mri_trans(
@@ -258,8 +264,9 @@ def test_get_head_mri_trans(tmp_path):
     raw = _read_raw_fif(raw_fname)
     write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    overwrite=True)  # overwrite with new acq
-    t1w_bids_path = write_anat(t1w_mgh, bids_path=bids_path,
-                               landmarks=landmarks, overwrite=True)
+    t1w_bids_path = write_anat(
+        t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks, overwrite=True
+    )
 
     t1w_json_fpath = t1w_bids_path.copy().update(extension='.json').fpath
     with t1w_json_fpath.open('r', encoding='utf-8') as f:
@@ -281,7 +288,9 @@ def test_get_head_mri_trans(tmp_path):
     # Test t1_bids_path parameter
     #
     # Case 1: different BIDS roots
-    meg_bids_path = _bids_path.copy().update(root=tmp_path / 'meg_root')
+    meg_bids_path = _bids_path.copy().update(
+        root=tmp_path / 'meg_root', datatype='meg', suffix='meg'
+    )
     t1_bids_path = _bids_path.copy().update(
         root=tmp_path / 'mri_root', task=None, run=None
     )
@@ -299,10 +308,12 @@ def test_get_head_mri_trans(tmp_path):
 
     # Case 2: different sessions
     raw = _read_raw_fif(raw_fname)
-    meg_bids_path = _bids_path.copy().update(root=tmp_path / 'session_test',
-                                             session='01')
+    meg_bids_path = _bids_path.copy().update(
+        root=tmp_path / 'session_test', session='01', datatype='meg',
+        suffix='meg'
+    )
     t1_bids_path = meg_bids_path.copy().update(
-        session='02', task=None, run=None
+        session='02', task=None, run=None, datatype='anat', suffix='T1w'
     )
 
     write_raw_bids(raw, bids_path=meg_bids_path)
@@ -367,6 +378,28 @@ def test_get_head_mri_trans(tmp_path):
             fs_subject='sample',
             fs_subjects_dir=subjects_dir
         )
+
+    # bids_path without datatype is deprecated
+    bids_path = electrophys_bids_path.copy().update(datatype=None)
+    with pytest.raises(FileNotFoundError):  # defaut location is all wrong!
+        with pytest.warns(DeprecationWarning, match='no datatype'):
+            get_head_mri_trans(
+                bids_path=bids_path,
+                t1_bids_path=t1_bids_path,
+                fs_subject='sample',
+                fs_subjects_dir=subjects_dir
+            )
+
+    # bids_path without suffix is deprecated
+    bids_path = electrophys_bids_path.copy().update(suffix=None)
+    with pytest.raises(FileNotFoundError):  # defaut location is all wrong!
+        with pytest.warns(DeprecationWarning, match='no datatype'):
+            get_head_mri_trans(
+                bids_path=bids_path,
+                t1_bids_path=t1_bids_path,
+                fs_subject='sample',
+                fs_subjects_dir=subjects_dir
+            )
 
 
 def test_handle_events_reading(tmp_path):

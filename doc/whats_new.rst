@@ -50,6 +50,8 @@ API and behavior changes
 
 - :func:`mne_bids.update_anat_landmarks` will now by default raise an exception if the requested MRI landmarks do not already exist. Use the new ``on_missing`` parameter to control this behavior, by `Richard Höchenberger`_ (:gh:`957`)
 
+- :func:`mne_bids.get_head_mri_trans` now raises a warning if ``datatype`` or ``suffix`` of the provided electrophysiological :class:`mne_bids.BIDSPath` are not set. In the future, this will raise an exception, by `Richard Höchenberger`_(:gh:`969`)
+
 Requirements
 ^^^^^^^^^^^^
 
