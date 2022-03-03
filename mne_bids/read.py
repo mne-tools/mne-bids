@@ -778,7 +778,11 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     ----------
     bids_path : BIDSPath
         The path of the electrophysiology recording. If ``datatype`` and
-        ``suffix`` are not present, they will be set to ``'meg'``.
+        ``suffix`` are not present, they will be set to ``'meg'``, and a
+        warning will be raised.
+
+        .. versionchanged:: 0.10
+           A warning is raised it ``datatype`` or ``suffix`` are not set.
     extra_params : None | dict
         Extra parameters to be passed to :func:`mne.io.read_raw` when reading
         the MEG file.
