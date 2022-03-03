@@ -1,6 +1,8 @@
 """
 .. _ieeg-example:
 
+.. currentmodule:: mne_bids
+
 ====================================
 08. Convert iEEG data to BIDS format
 ====================================
