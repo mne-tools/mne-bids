@@ -1626,6 +1626,17 @@ def test_snirf(_bids_validate, tmp_path):
     assert rawbids.annotations.description[2] == 'Control'
     assert raw.times[-1] == rawbids.times[-1]
 
+    # Test with different optode coordinate frame
+    raw = _read_raw_snirf(raw_fname, optode_frame="mri")
+    write_raw_bids(raw, bids_path, overwrite=True)
+    _bids_validate(tmp_path)
+
+    raw = _read_raw_snirf(raw_fname, optode_frame="mri")
+    raw.info['dig'].pop(1)
+    with pytest.warns(RuntimeWarning,
+                      match='Setting montage not possible'):
+        write_raw_bids(raw, bids_path, overwrite=True)
+
 
 def test_bdf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for Biosemi data."""
