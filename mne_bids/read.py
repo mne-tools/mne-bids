@@ -777,7 +777,12 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     Parameters
     ----------
     bids_path : BIDSPath
-        The path of the electrophysiology recording.
+        The path of the electrophysiology recording. If ``datatype`` and
+        ``suffix`` are not present, they will be set to ``'meg'``, and a
+        warning will be raised.
+
+        .. versionchanged:: 0.10
+           A warning is raised it ``datatype`` or ``suffix`` are not set.
     extra_params : None | dict
         Extra parameters to be passed to :func:`mne.io.read_raw` when reading
         the MEG file.
@@ -832,8 +837,17 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # only get this for MEG data
-    meg_bids_path.update(datatype='meg', suffix='meg')
+    # if the bids_path is underspecified, only get info for MEG data
+    if meg_bids_path.datatype is None:
+        meg_bids_path.datatype = 'meg'
+        warn('bids_path did not have a datatype set. Assuming "meg". This '
+             'will raise an exception in the future.', module='mne_bids',
+             category=DeprecationWarning)
+    if meg_bids_path.suffix is None:
+        meg_bids_path.suffix = 'meg'
+        warn('bids_path did not have a suffix set. Assuming "meg". This '
+             'will raise an exception in the future.', module='mne_bids',
+             category=DeprecationWarning)
 
     # Get the sidecar file for MRI landmarks
     t1w_bids_path = (

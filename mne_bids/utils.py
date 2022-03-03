@@ -275,15 +275,26 @@ def _infer_eeg_placement_scheme(raw):
 def _extract_landmarks(dig):
     """Extract NAS, LPA, and RPA from raw.info['dig']."""
     coords = dict()
+    coord_frame = dict()
+
     landmarks = {d['ident']: d for d in dig
                  if d['kind'] == FIFF.FIFFV_POINT_CARDINAL}
     if landmarks:
         if FIFF.FIFFV_POINT_NASION in landmarks:
             coords['NAS'] = landmarks[FIFF.FIFFV_POINT_NASION]['r'].tolist()
+            coord_frame['NAS'] = (landmarks[FIFF.FIFFV_POINT_NASION]
+                                  ['coord_frame'])
         if FIFF.FIFFV_POINT_LPA in landmarks:
             coords['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['r'].tolist()
+            coord_frame['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['coord_frame']
         if FIFF.FIFFV_POINT_RPA in landmarks:
             coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
+            coord_frame['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['coord_frame']
+
+    # for now, we only support "head" coordinates
+    for frame in coord_frame.values():
+        assert frame == FIFF.FIFFV_COORD_HEAD
+
     return coords
 
 

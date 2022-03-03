@@ -73,7 +73,6 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype):
     Handle reading the coordinate frame and coordinate unit
     of each electrode.
     """
-    # open coordinate system sidecar json
     with open(coordsystem_fpath, 'r', encoding='utf-8-sig') as fin:
         coordsystem_json = json.load(fin)
 
@@ -93,8 +92,9 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype):
         coord_frame_desc = coordsystem_json.get('iEEGCoordinateDescription',
                                                 None)
 
-    logger.info(f"Reading in coordinate system frame {coord_frame}: "
-                f"{coord_frame_desc}.")
+    msg = f'Reading coordinate system frame {coord_frame}'
+    if coord_frame_desc:
+        msg += f': {coord_frame_desc}'
 
     return coord_frame, coord_unit
 
@@ -450,15 +450,14 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     montage : mne.channels.DigMontage
         The coordinate data as MNE-Python DigMontage object.
     """
-    # read in coordinate information
     bids_coord_frame, bids_coord_unit = _handle_coordsystem_reading(
         coordsystem_fpath, datatype)
 
     if datatype == 'meg':
         if bids_coord_frame not in BIDS_MEG_COORDINATE_FRAMES:
-            warn("MEG Coordinate frame is not accepted "
-                 "BIDS keyword. The allowed keywords are: "
-                 "{}".format(BIDS_MEG_COORDINATE_FRAMES))
+            warn(f'MEG coordinate frame "{bids_coord_frame}" is not '
+                 f'supported. The supported coordinate frames are: '
+                 f'{BIDS_MEG_COORDINATE_FRAMES}')
             coord_frame = None
         elif bids_coord_frame == 'Other':
             warn("Coordinate frame of MEG data can't be determined "
