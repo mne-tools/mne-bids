@@ -472,10 +472,10 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         # iEEG datatype for mne-python only supports
         # mni_tal == fsaverage == MNI305
         if bids_coord_frame == 'Pixels':
-            warn("Coordinate frame of iEEG data in pixels does not "
-                 "get read in by mne-python. Skipping reading of "
-                 "electrodes.tsv ...")
-            coord_frame = None
+            warn("Coordinate frame of iEEG data in pixels is not "
+                 "recognized mne-python, the coordinate frame "
+                 "of the montage will be set to 'unknown'")
+            coord_frame = 'unknown'
         elif bids_coord_frame == 'ACPC':
             coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
         elif bids_coord_frame == 'Other':
