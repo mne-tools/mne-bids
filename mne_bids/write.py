@@ -582,12 +582,7 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr_t = t1_mgh.header.get_vox2ras_tkr()
     ras_tkr2vox_t = linalg.inv(vox2ras_tkr_t)
-
-    vox_landmarks = apply_trans(ras_tkr2vox_t, mri_landmarks)  # in voxels
-
-    # Correct for zooming: scale along X, Y, and Z dimension accordingly
-    zooms = t1_mgh.header.get_zooms()[:3]
-    vox_landmarks[:3, :3] = vox_landmarks[:3, :3] @ np.diag(zooms)
+    vox_landmarks = apply_trans(ras_tkr2vox_t, mri_landmarks)
 
     return vox_landmarks
 

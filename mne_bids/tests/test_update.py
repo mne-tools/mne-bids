@@ -262,12 +262,11 @@ def test_update_anat_landmarks(tmp_path):
         fs_subject='sample',
         fs_subjects_dir=data_path / 'subjects'
     )
-
     expected_coords_in_voxels = np.array(
-        [[205.14606,  135.72171, 130.31943],   # noqa: E241
-         [126.81018,  92.27632,  222.29512],   # noqa: E241
-         [ 51.13456, 139.75822,  127.855515]]  # noqa: E201,E241
-    )  # noqa: E241
+        [[68.38202,  45.24057,  43.439808],  # noqa: E241
+         [42.27006,  30.758774, 74.09837 ],  # noqa: E202, E241
+         [17.044853, 46.586075, 42.618504]]
+    )
     mri_json = json.loads(
         bids_path_mri_json.fpath.read_text(encoding='utf-8')
     )
