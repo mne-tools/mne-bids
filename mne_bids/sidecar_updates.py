@@ -255,7 +255,7 @@ def update_anat_landmarks(
             f'bids_path. Tried the following filenames: '
             f'{", ".join([p.name for p in tried_paths])}')
 
-    if not isinstance(landmarks, DigMontage):
+    if not isinstance(landmarks, DigMontage):  # it's pathlike
         if fs_subject is None:
             fs_subject = bids_path.subject
 
