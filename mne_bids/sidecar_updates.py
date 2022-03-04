@@ -175,7 +175,7 @@ def update_anat_landmarks(
         .. versionchanged:: 0.10
            Added support for ``path-like`` input.
     fs_subject : str
-        The subject identifier used for FreeSurfer. This If ``None``, defaults
+        The subject identifier used for FreeSurfer. If ``None``, defaults
         to the ``subject`` entity in ``bids_path``. Must be provided if
         ``landmarks`` is ``path-like``; otherwise, it will be ignored.
     fs_subjects_dir : path-like | None
