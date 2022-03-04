@@ -76,7 +76,7 @@ Bug fixes
 
 - :func:`mne_bids.get_head_mri_trans` now respects ``datatype`` and ``suffix`` of the provided electrophysiological :class:`mne_bids.BIDSPath`, simplifying e.g. reading of derivaties, by `Richard Höchenberger`_ (:gh:`969`)
 
-- Fix datasets with unknown coordinate frames being transformed to "head" with by assuming an identity transform, by `Alex Rockhill`_ (:gh:`976`)
+- Fix datasets with unknown coordinate frames being transformed to "head" by assuming an identity transform, by `Alex Rockhill`_ (:gh:`976`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
