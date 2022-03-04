@@ -10,6 +10,7 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne.io.constants import FIFF
+from mne.transforms import _str_to_frame
 from mne.utils import logger, warn
 
 from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
@@ -35,11 +36,6 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
                 'coords from {}.'.format(electrodes_fname))
     electrodes_dict = _from_tsv(electrodes_fname)
     ch_names_tsv = electrodes_dict['name']
-
-    summary_str = [(ch, coord) for idx, (ch, coord)
-                   in enumerate(electrodes_dict.items())
-                   if idx < 5]
-    logger.info("The read in electrodes file is: \n", summary_str)
 
     def _float_or_nan(val):
         if val == "n/a":
@@ -352,15 +348,18 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
     coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
 
     if bids_path.datatype == 'ieeg' and mne_coord_frame == 'mri':
-        if acpc_aligned:
-            coord_frame = 'ACPC'
-        else:
+        if not acpc_aligned:
             raise RuntimeError(
                 '`acpc_aligned` is False, if your T1 is not aligned '
                 'to ACPC and the coordinates are in fact in ACPC '
                 'space there will be no way to relate the coordinates '
                 'to the T1. If the T1 is ACPC-aligned, use '
                 '`acpc_aligned=True`')
+        coord_frame = 'ACPC'
+
+    if bids_path.datatype == 'ieeg' and bids_path.space is not None and \
+            bids_path.space.lower() == 'pixels':
+        coord_frame = 'Pixels'
 
     # create electrodes/coordsystem files using a subset of entities
     # that are specified for these files in the specification
@@ -377,9 +376,6 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
                                extension='.tsv')
     coordsystem_path = BIDSPath(**coord_file_entities, suffix='coordsystem',
                                 extension='.json')
-
-    logger.info(f'Writing electrodes file to... {electrodes_path}')
-    logger.info(f'Writing coordsytem file to... {coordsystem_path}')
 
     if datatype == 'ieeg':
         if coord_frame is not None:
@@ -442,13 +438,8 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
     raw : mne.io.Raw
-        The raw data as MNE-Python ``Raw`` object. Will set montage
-        read in via ``raw.set_montage(montage)``.
-
-    Returns
-    -------
-    montage : mne.channels.DigMontage
-        The coordinate data as MNE-Python DigMontage object.
+        The raw data as MNE-Python ``Raw`` object. The montage
+        will be set in place.
     """
     bids_coord_frame, bids_coord_unit = _handle_coordsystem_reading(
         coordsystem_fpath, datatype)
@@ -472,10 +463,10 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         # iEEG datatype for mne-python only supports
         # mni_tal == fsaverage == MNI305
         if bids_coord_frame == 'Pixels':
-            warn("Coordinate frame of iEEG data in pixels does not "
-                 "get read in by mne-python. Skipping reading of "
-                 "electrodes.tsv ...")
-            coord_frame = None
+            warn("Coordinate frame of iEEG data in pixels is not "
+                 "recognized by mne-python, the coordinate frame "
+                 "of the montage will be set to 'unknown'")
+            coord_frame = 'unknown'
         elif bids_coord_frame == 'ACPC':
             coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
         elif bids_coord_frame == 'Other':
@@ -537,4 +528,9 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     #      (EEG/sEEG/ECoG/DBS/fNIRS). Probably needs a fix in the future.
     raw.set_montage(montage, on_missing='warn')
 
-    return montage
+    # put back in unknown for unknown coordinate frame
+    if coord_frame == 'unknown':
+        for ch in raw.info['chs']:
+            ch['coord_frame'] = _str_to_frame['unknown']
+        for d in raw.info['dig']:
+            d['coord_frame'] = _str_to_frame['unknown']

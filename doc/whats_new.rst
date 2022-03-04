@@ -45,6 +45,8 @@ Enhancements
 
 - Similarly, :func:`mne_bids.get_head_mri_trans` and :func:`mne_bids.update_anat_landmarks` gained a new ``kind`` parameter to specify which of multiple landmark sets to operate on, by `Alexandre Gramfort`_ and `Richard Höchenberger`_ (:gh:`955`, :gh:`957`)
 
+- Add support for iEEG data in the coordinate frame ``Pixels``; although MNE-Python does not recognize this coordinate frame and so it will be set to ``unknown`` in the montage, MNE-Python can still be used to analyze this kind of data, by `Alex Rockhill`_ (:gh:`976`)
+
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -73,6 +75,8 @@ Bug fixes
 - Avoid modifying the instance of :class:`mne_bids.BIDSPath` if validation fails when calling :meth:`mne_bids.BIDSPath.update`, by `Alexandre Gramfort`_ (:gh:`950`)
 
 - :func:`mne_bids.get_head_mri_trans` now respects ``datatype`` and ``suffix`` of the provided electrophysiological :class:`mne_bids.BIDSPath`, simplifying e.g. reading of derivaties, by `Richard Höchenberger`_ (:gh:`969`)
+
+- Do not convert unknown coordinate frames to ``head``, by `Alex Rockhill`_ (:gh:`976`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
