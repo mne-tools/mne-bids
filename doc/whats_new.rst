@@ -45,6 +45,8 @@ Enhancements
 
 - Similarly, :func:`mne_bids.get_head_mri_trans` and :func:`mne_bids.update_anat_landmarks` gained a new ``kind`` parameter to specify which of multiple landmark sets to operate on, by `Alexandre Gramfort`_ and `Richard Höchenberger`_ (:gh:`955`, :gh:`957`)
 
+- :func:`mne_bids.update_anat_landmarks` can now directly work with fiducials saved from the MNE-Python coregistration GUI or :func:`mne.io.write_fiducials`, by Richard Höchenberger`_ (:gh:`977`)
+
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

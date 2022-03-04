@@ -251,3 +251,31 @@ def test_update_anat_landmarks(tmp_path):
                        match='did not contain all required cardinal points'):
         update_anat_landmarks(bids_path=bids_path_mri,
                               landmarks=landmarks_invalid)
+
+    # Test with path-like landmarks
+    fiducials_path = (data_path / 'subjects' / 'sample' / 'bem' /
+                      'sample-fiducials.fif')
+
+    update_anat_landmarks(
+        bids_path=bids_path_mri,
+        landmarks=fiducials_path,
+        fs_subject='sample',
+        fs_subjects_dir=data_path / 'subjects'
+    )
+
+    expected_coords_in_voxels = np.array(
+        [[205.14606,  135.72171, 130.31943],   # noqa: E241
+         [126.81018,  92.27632,  222.29512],   # noqa: E241
+         [ 51.13456, 139.75822,  127.855515]]  # noqa: E201,E241
+    )  # noqa: E241
+    mri_json = json.loads(
+        bids_path_mri_json.fpath.read_text(encoding='utf-8')
+    )
+    for landmark, expected_coords in zip(
+        ('LPA', 'NAS', 'RPA'),
+        expected_coords_in_voxels
+    ):
+        assert np.allclose(
+            mri_json['AnatomicalLandmarkCoordinates'][landmark],
+            expected_coords
+        )
