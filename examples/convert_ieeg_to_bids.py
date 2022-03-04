@@ -273,8 +273,8 @@ print(text)
 # Here we'll use the MNI Talairach transform to get to ``fsaverage`` space
 # from "mri" aka surface RAS space.
 # ``fsaverage`` is very useful for group analysis as shown in
-# :ref:`tut-working-with-seeg` Note, this is only a linear transform and so
-# loses quite a bit of accuracy relative to the needs of intracranial
+# :ref:`tut-working-with-seeg`. Note, this is only a linear transform and so
+# one loses quite a bit of accuracy relative to the needs of intracranial
 # researchers so it is quite suboptimal. A better option is to use a
 # symmetric diffeomorphic transform to create a one-to-one mapping of brain
 # voxels from the individual's brain to the template as shown in
