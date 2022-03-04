@@ -3594,4 +3594,5 @@ def test_write_dig(tmpdir):
     assert montage2.get_positions()['coord_frame'] == 'unknown'
     assert_array_almost_equal(
         np.array(list(montage.get_positions()['ch_pos'].values())),
-        np.array(list(montage2.get_positions()['ch_pos'].values())))
+        np.array(list(montage2.get_positions()['ch_pos'].values()))
+    )
