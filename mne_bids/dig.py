@@ -215,6 +215,11 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
     sources = np.zeros(picks.shape)
     detectors = np.zeros(picks.shape)
     for ii in picks:
+        # NIRS channel names take a specific form in MNE-Python.
+        # The channel names always reflect the source and detector
+        # pair, followed by the wavelength frequency.
+        # The following code extracts the source and detector
+        # numbers from the channel name.
         ch1_name_info = re.match(r'S(\d+)_D(\d+) (\d+)',
                                  raw.info['chs'][ii]['ch_name'])
         sources[ii] = ch1_name_info.groups()[0]
@@ -240,7 +245,7 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
         ys[i + n_sources] = raw.info["chs"][d_idx]["loc"][7]
         zs[i + n_sources] = raw.info["chs"][d_idx]["loc"][8]
 
-    ch_data = OrderedDict([
+    ch_data = dict([
         ('name', names),
         ('type', np.concatenate((np.full(len(unique_sources), 'source'),
                                  np.full(len(unique_detectors), 'detector')))),

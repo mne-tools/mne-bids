@@ -159,6 +159,11 @@ def _channels_tsv(raw, fname, overwrite=False):
         sources = np.empty(picks.shape, dtype="<U20")
         detectors = np.empty(picks.shape, dtype="<U20")
         for ii in picks:
+            # NIRS channel names take a specific form in MNE-Python.
+            # The channel names always reflect the source and detector
+            # pair, followed by the wavelength frequency.
+            # The following code extracts the source and detector
+            # numbers from the channel name.
             ch1_name_info = re.match(r'S(\d+)_D(\d+) (\d+)',
                                      raw.info['chs'][ii]['ch_name'])
             sources[ii] = "S" + str(ch1_name_info.groups()[0])
