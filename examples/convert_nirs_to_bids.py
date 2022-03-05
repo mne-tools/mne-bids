@@ -127,7 +127,7 @@ trigger_info = {'1.0': 'Control',
                 '2.0': 'Tapping/Left',
                 '3.0': 'Tapping/Right'}
 raw.annotations.rename(trigger_info)
-raw.annotations.set_durations(stimulus_duration)
+raw.annotations.set_durations(5.0)
 
 
 # %%
