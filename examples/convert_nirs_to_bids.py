@@ -1,7 +1,7 @@
 """
-===================================
+====================================
 13. Convert NIRS data to BIDS format
-===================================
+====================================
 
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS
 data. Specifically, we will follow these steps:
@@ -64,11 +64,8 @@ urllib.request.urlretrieve("https://github.com/rob-luke/BIDS-NIRS-Tapping/raw"
                            "sub-01_task-tapping_nirs.snirf",
                            file_path)
 
-# %%
 # Let's see whether the data has been downloaded using a quick visualization
 # of the directory tree.
-
-# get MNE directory with example data
 print_dir_tree(data_dir)
 
 # %%
@@ -121,6 +118,17 @@ raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
 # show the electrode positions
 raw.plot_sensors()
+
+# %%
+# I also like to rename the triggers to something meaningful and
+# set the duration of each stimulus
+
+trigger_info = {'1.0': 'Control',
+                '2.0': 'Tapping/Left',
+                '3.0': 'Tapping/Right'}
+raw.annotations.rename(trigger_info)
+raw.annotations.set_durations(stimulus_duration)
+
 
 # %%
 # With these steps, we have everything to start a new BIDS directory using
