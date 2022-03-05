@@ -795,11 +795,12 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         Use this parameter e.g. if the T1 scan was recorded during a different
         session than the MEG. It is even possible to point to a T1 image stored
         in an entirely different BIDS dataset than the MEG data.
-    fs_subject : str | None
+    fs_subject : str
+    
         The subject identifier used for FreeSurfer.
 
         .. versionchanged:: 0.10
-           Deprecated defaulting to ``bids_path.subject`` if ``None``.
+           Does not default anymore to ``bids_path.subject`` if ``None``.
     fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable.
