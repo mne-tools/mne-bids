@@ -796,7 +796,6 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         session than the MEG. It is even possible to point to a T1 image stored
         in an entirely different BIDS dataset than the MEG data.
     fs_subject : str
-    
         The subject identifier used for FreeSurfer.
 
         .. versionchanged:: 0.10
