@@ -56,6 +56,8 @@ API and behavior changes
 
 - :func:`mne_bids.get_head_mri_trans` now raises a warning if ``datatype`` or ``suffix`` of the provided electrophysiological :class:`mne_bids.BIDSPath` are not set. In the future, this will raise an exception, by `Richard Höchenberger`_(:gh:`969`)
 
+- Passing ``fs_subject=None`` to :func:`get_head_mri_trans` has been deprecated. Please pass the FreeSurfer subject name explicitly, by Richard Höchenberger`_ (:gh:`977`)
+
 Requirements
 ^^^^^^^^^^^^
 
