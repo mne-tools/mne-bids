@@ -33,7 +33,6 @@ import urllib.request
 import tempfile
 
 import mne
-from mne.datasets import eegbci
 
 from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
 from mne_bids.stats import count_events
@@ -43,8 +42,7 @@ from mne_bids.stats import count_events
 # -----------------
 #
 # First, we need some data to work with. We will use the
-# 
-# `fNIRS Finger Tapping Dataset <https://github.com/rob-luke/BIDS-NIRS-Tapping>`_
+# `Finger Tapping Dataset <https://github.com/rob-luke/BIDS-NIRS-Tapping>`_
 # available on GitHub.
 #
 # The data consists of 109 volunteers performing 14 experimental runs each.
@@ -62,7 +60,9 @@ file_path = f"{data_dir}/sub-01_task-tapping_nirs.snirf"
 
 # Download the data for subject 1.
 urllib.request.urlretrieve("https://github.com/rob-luke/BIDS-NIRS-Tapping/raw"
-    "/01-Raw-to-SNIRF/sub-01/nirs/sub-01_task-tapping_nirs.snirf", file_path)
+                           "/01-Raw-to-SNIRF/sub-01/nirs/"
+                           "sub-01_task-tapping_nirs.snirf",
+                           file_path)
 
 # %%
 # Let's see whether the data has been downloaded using a quick visualization
