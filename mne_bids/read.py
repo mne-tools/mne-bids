@@ -916,9 +916,9 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
             f'{mri_coords_dict}'
         )
 
-    # The MRI landmarks are in "voxels". We need to convert the to the
-    # neuromag RAS coordinate system in order to compare the with MEG landmarks
-    # see also: `mne_bids.write.write_anat`
+    # The MRI landmarks are in "voxels". We need to convert them to the
+    # Neuromag RAS coordinate system in order to compare them with MEG
+    # landmarks. See also: `mne_bids.write.write_anat`
     if fs_subject is None:
         warn('Passing "fs_subject=None" has been deprecated and will raise '
              'an error in future versions. Please explicitly specify the '
