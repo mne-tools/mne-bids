@@ -119,7 +119,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
 # recommended formats
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
-    allowed_extensions_ieeg + allowed_extensions_nirs +\
+    allowed_extensions_ieeg + allowed_extensions_nirs + \
     ['.lay', '.EEG', '.cnt', '.CNT']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
