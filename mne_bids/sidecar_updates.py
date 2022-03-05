@@ -174,9 +174,8 @@ def update_anat_landmarks(
 
         .. versionchanged:: 0.10
            Added support for ``path-like`` input.
-    fs_subject : str
-        The subject identifier used for FreeSurfer. If ``None``, defaults
-        to the ``subject`` entity in ``bids_path``. Must be provided if
+    fs_subject : str | None
+        The subject identifier used for FreeSurfer. Must be provided if
         ``landmarks`` is ``path-like``; otherwise, it will be ignored.
     fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
@@ -257,8 +256,10 @@ def update_anat_landmarks(
 
     if not isinstance(landmarks, DigMontage):  # it's pathlike
         if fs_subject is None:
-            fs_subject = bids_path.subject
-
+            raise ValueError(
+                'You must provide the "fs_subject" parameter when passing the '
+                'path to fiducials'
+            )
         landmarks = _get_landmarks_from_fiducials_file(
             bids_path=bids_path,
             fname=landmarks,
