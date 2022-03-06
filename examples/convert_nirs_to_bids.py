@@ -59,8 +59,8 @@ data_dir = tempfile.mkdtemp()
 
 # Download the data for subject 1.
 
-url =('https://github.com/rob-luke/BIDS-NIRS-Tapping/raw/'
-      '01-Raw-to-SNIRF/sub-01/nirs/sub-01_task-tapping_nirs.snirf')
+url = ('https://github.com/rob-luke/BIDS-NIRS-Tapping/raw/'
+       '01-Raw-to-SNIRF/sub-01/nirs/sub-01_task-tapping_nirs.snirf')
 hash = '627eea5777f387512dc48ec8e2d329132bfdc943b21ebfa7b432141b0b0dbf59'
 
 file_path = pooch.retrieve(
