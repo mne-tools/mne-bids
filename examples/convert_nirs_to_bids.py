@@ -29,9 +29,9 @@ data. Specifically, we will follow these steps:
 # We are importing everything we need for this example:
 import os.path as op
 import shutil
-import urllib.request
 import tempfile
 
+import pooch
 import mne
 
 from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
@@ -56,13 +56,20 @@ from mne_bids.stats import count_events
 
 # Create a temporary directory to store the data in
 data_dir = tempfile.mkdtemp()
-file_path = f"{data_dir}/sub-01_task-tapping_nirs.snirf"
 
 # Download the data for subject 1.
-urllib.request.urlretrieve("https://github.com/rob-luke/BIDS-NIRS-Tapping/raw"
-                           "/01-Raw-to-SNIRF/sub-01/nirs/"
-                           "sub-01_task-tapping_nirs.snirf",
-                           file_path)
+
+url =('https://github.com/rob-luke/BIDS-NIRS-Tapping/raw/'
+      '01-Raw-to-SNIRF/sub-01/nirs/sub-01_task-tapping_nirs.snirf')
+hash = '627eea5777f387512dc48ec8e2d329132bfdc943b21ebfa7b432141b0b0dbf59'
+
+file_path = pooch.retrieve(
+    url=url,
+    known_hash=f'sha256:{hash}',
+    fname='sub-01_task-tapping_nirs.snirf',
+    path=data_dir,
+    progressbar=True
+)
 
 # Let's see whether the data has been downloaded using a quick visualization
 # of the directory tree.
