@@ -23,4 +23,8 @@ if __name__ == "__main__":
     setup(
         version=version,
         setup_requires=SETUP_REQUIRES,
+        install_requires=[
+            'mne >=0.24',
+            'pooch >=1.6'
+        ]
     )
