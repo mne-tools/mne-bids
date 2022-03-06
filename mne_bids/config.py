@@ -297,6 +297,13 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
             'Commissure and the negative y-axis is passing through the '
             'Posterior Commissure. The positive z-axis is passing through '
             'a mid-hemispheric point in the superior direction.',
+    'pixels': 'If electrodes are localized in 2D space (only x and y are '
+              'specified and z is n/a), then the positions in this file '
+              'must correspond to the locations expressed in pixels on '
+              'the photo/drawing/rendering of the electrodes on the brain. '
+              'In this case, coordinates must be (row,column) pairs, with '
+              '(0,0) corresponding to the upper left pixel and (N,0) '
+              'corresponding to the lower left pixel.',
     'ctf': 'ALS orientation and the origin between the ears',
     'elektaneuromag': 'RAS orientation and the origin between the ears',
     '4dbti': 'ALS orientation and the origin between the ears',

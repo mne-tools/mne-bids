@@ -42,6 +42,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       get_anat_landmarks, write, anonymize_dataset,
                       get_entity_vals)
 from mne_bids.write import _get_fid_coords
+from mne_bids.dig import _write_dig_bids, _read_dig_bids
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -3610,4 +3611,43 @@ def test_anonymize_dataset_daysback(tmpdir):
         ],
         rng=np.random.default_rng(),
         show_progress_thresh=20
+    )
+
+
+def test_write_dig(tmpdir):
+    """Test whether the channel locations are written out properly."""
+    # Check progress bar output
+    bids_root = tmpdir / 'bids'
+    data_path = Path(testing.data_path())
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+
+    # test coordinates in pixels
+    bids_path = _bids_path.copy().update(
+        root=bids_root, datatype='ieeg', space='Pixels')
+    os.makedirs(op.join(bids_root, 'sub-01', 'ses-01', bids_path.datatype),
+                exist_ok=True)
+    raw = _read_raw_fif(raw_path, verbose=False)
+    raw.pick_types(eeg=True)
+    raw.del_proj()
+    raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
+
+    montage = raw.get_montage()
+    # fake transform to pixel coordinates
+    montage.apply_trans(mne.transforms.Transform('head', 'unknown'))
+    with pytest.warns(RuntimeWarning,
+                      match='assuming identity'):
+        _write_dig_bids(bids_path, raw, montage)
+    electrodes_path = bids_path.copy().update(
+        task=None, run=None, suffix='electrodes', extension='.tsv')
+    coordsystem_path = bids_path.copy().update(
+        task=None, run=None, suffix='coordsystem', extension='.json')
+    with pytest.warns(RuntimeWarning,
+                      match='recognized by mne-python'):
+        _read_dig_bids(electrodes_path, coordsystem_path,
+                       bids_path.datatype, raw)
+    montage2 = raw.get_montage()
+    assert montage2.get_positions()['coord_frame'] == 'unknown'
+    assert_array_almost_equal(
+        np.array(list(montage.get_positions()['ch_pos'].values())),
+        np.array(list(montage2.get_positions()['ch_pos'].values()))
     )
