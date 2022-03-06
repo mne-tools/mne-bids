@@ -241,15 +241,16 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
         ys[i + n_sources] = raw.info["chs"][d_idx]["loc"][7]
         zs[i + n_sources] = raw.info["chs"][d_idx]["loc"][8]
 
-    ch_data = dict([
-        ('name', names),
-        ('type', np.concatenate((np.full(len(unique_sources), 'source'),
-                                 np.full(len(unique_detectors), 'detector')))),
-        ('x', xs),
-        ('y', ys),
-        ('z', zs),
-    ])
-
+    ch_data = {
+        'name': names,
+        'type': np.concatenate(
+            (np.full(len(unique_sources), 'source'),
+             np.full(len(unique_detectors), 'detector'))
+        ),
+        'x': xs,
+        'y': ys,
+        'z': zs,
+    }
     _write_tsv(fname, ch_data, overwrite, verbose)
 
 
