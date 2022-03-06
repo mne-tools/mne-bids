@@ -62,6 +62,8 @@ Requirements
 
 - MNE-BIDS now requires Jinja2 to work with MNE-Python 0.24.
 
+- Running the fNIRS example requires Pooch 1.6 to download the data.
+
 Bug fixes
 ^^^^^^^^^
 
