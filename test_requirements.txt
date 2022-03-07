@@ -14,5 +14,4 @@ pytest-sugar
 check-manifest
 pydocstyle
 flake8
-pooch>=1.6
 jinja2
