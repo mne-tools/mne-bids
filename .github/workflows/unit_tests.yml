@@ -122,6 +122,22 @@ jobs:
             mne-version: mne-main
             bids-validator-version: validator-main
 
+          # Tests with the NIRS branch of bids-validator
+          - os: ubuntu-latest
+            python-version: "3.10"
+            mne-version: mne-main
+            bids-validator-version: validator-NIRS
+
+          - os: macos-latest
+            python-version: "3.10"
+            mne-version: mne-main
+            bids-validator-version: validator-NIRS
+
+          - os: windows-latest
+            python-version: "3.10"
+            mne-version: mne-main
+            bids-validator-version: validator-NIRS
+
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
@@ -129,9 +145,9 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: 14
+        node-version: 16
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -167,15 +183,30 @@ jobs:
 
     - name: Install BIDS validator (stable)
       if: "matrix.bids-validator-version == 'validator-stable'"
-      run: npm install -g bids-validator
+      run: |
+        npm install -g bids-validator
+        echo "BIDS_VALIDATOR_BRANCH=stable" >> $GITHUB_ENV
 
-    - name: Install BIDS validator (main)
+    - name: Download BIDS validator (main)
       if: "matrix.bids-validator-version == 'validator-main'"
       run: |
         pushd ..
-        # Get npm 7+
-        npm install -g npm
         git clone --depth 1 https://github.com/bids-standard/bids-validator
+        popd
+        echo "BIDS_VALIDATOR_BRANCH=main" >> $GITHUB_ENV
+
+    - name: Download BIDS validator (NIRS)
+      if: "matrix.bids-validator-version == 'validator-NIRS'"
+      run: |
+        pushd ..
+        git clone --depth 1 --branch nirs https://github.com/rob-luke/bids-validator.git
+        popd
+        echo "BIDS_VALIDATOR_BRANCH=NIRS" >> $GITHUB_ENV
+
+    - name: Install BIDS validator (main or NIRS)
+      if: ${{ (matrix.bids-validator-version == 'validator-main') || (matrix.bids-validator-version == 'validator-NIRS') }}
+      run: |
+        pushd ..
         cd bids-validator
         # Generate the full development node_modules
         npm install
@@ -202,8 +233,8 @@ jobs:
       run: pip install -e .
 
     - name: Run pytest
-      run: make test
       shell: bash
+      run: make test
 
     - name: Upload coverage stats to codecov
       uses: codecov/codecov-action@v2

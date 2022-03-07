@@ -9,6 +9,7 @@
 # License: BSD-3-Clause
 from typing import List
 import json
+import re
 import sys
 import os
 import os.path as op
@@ -25,7 +26,7 @@ import mne
 from mne.transforms import (_get_trans, apply_trans, rotation, translation)
 from mne import Epochs
 from mne.io.constants import FIFF
-from mne.io.pick import channel_type
+from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
@@ -98,7 +99,9 @@ def _channels_tsv(raw, fname, overwrite=False):
                     misc='Miscellaneous',
                     bio='Biological',
                     ias='Internal Active Shielding',
-                    dbs='Deep Brain Stimulation')
+                    dbs='Deep Brain Stimulation',
+                    fnirs_cw_amplitude='Near Infrared Spectroscopy '
+                                       '(continuous wave)',)
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
@@ -141,6 +144,37 @@ def _channels_tsv(raw, fname, overwrite=False):
         ('status_description', status_description)
     ])
     ch_data = _drop(ch_data, ignored_channels, 'name')
+
+    if 'fnirs_cw_amplitude' in raw:
+        if not check_version('mne', '1.0'):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+
+        ch_data["wavelength_nominal"] = [raw.info["chs"][i]["loc"][9] for i in
+                                         range(len(raw.ch_names))]
+
+        picks = _picks_to_idx(raw.info, 'fnirs', exclude=[], allow_empty=True)
+
+        sources = np.empty(picks.shape, dtype="<U20")
+        detectors = np.empty(picks.shape, dtype="<U20")
+        for ii in picks:
+            # NIRS channel names take a specific form in MNE-Python.
+            # The channel names always reflect the source and detector
+            # pair, followed by the wavelength frequency.
+            # The following code extracts the source and detector
+            # numbers from the channel name.
+            ch1_name_info = re.match(r'S(\d+)_D(\d+) (\d+)',
+                                     raw.info['chs'][ii]['ch_name'])
+            sources[ii] = "S" + str(ch1_name_info.groups()[0])
+            detectors[ii] = "D" + str(ch1_name_info.groups()[1])
+        ch_data["source"] = sources
+        ch_data["detector"] = detectors
+        ch_data.move_to_end('wavelength_nominal', last=False)
+        ch_data.move_to_end('detector', last=False)
+        ch_data.move_to_end('source', last=False)
+        ch_data.move_to_end('type', last=False)
+        ch_data.move_to_end('name', last=False)
 
     _write_tsv(fname, ch_data, overwrite)
 
@@ -709,6 +743,13 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
     n_dbschan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_DBS_CH])
+    nirs_channels = [ch for ch in raw.info['chs'] if
+                     ch['kind'] == FIFF.FIFFV_FNIRS_CH]
+    n_nirscwchan = len(nirs_channels)
+    n_nirscwsrc = len(np.unique([ch["ch_name"].split(" ")[0].split("_")[0]
+                                 for ch in nirs_channels]))
+    n_nirscwdet = len(np.unique([ch["ch_name"].split(" ")[0].split("_")[1]
+                                 for ch in nirs_channels]))
 
     # Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found
     # Set DigitizedHeadPoints to True if any "Extra" points are found
@@ -796,6 +837,11 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('iEEGReference', 'n/a'),
         ('ECOGChannelCount', n_ecogchan),
         ('SEEGChannelCount', n_seegchan + n_dbschan)]
+
+    ch_info_json_nirs = [
+        ('Manufacturer', manufacturer)
+    ]
+
     ch_info_ch_counts = [
         ('EEGChannelCount', n_eegchan),
         ('EOGChannelCount', n_eogchan),
@@ -803,6 +849,12 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('EMGChannelCount', n_emgchan),
         ('MiscChannelCount', n_miscchan),
         ('TriggerChannelCount', n_stimchan)]
+
+    ch_info_ch_counts_nirs = [
+        ('NIRSChannelCount', n_nirscwchan),
+        ('NIRSSourceOptodeCount', n_nirscwsrc),
+        ('NIRSDetectorOptodeCount', n_nirscwdet)
+    ]
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
@@ -812,6 +864,13 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         append_datatype_json = ch_info_json_eeg
     elif datatype == 'ieeg':
         append_datatype_json = ch_info_json_ieeg
+    elif datatype == 'nirs':
+        if not check_version('mne', '1.0'):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+        append_datatype_json = ch_info_json_nirs
+        ch_info_ch_counts.extend(ch_info_ch_counts_nirs)
 
     ch_info_json += append_datatype_json
     ch_info_json += ch_info_ch_counts
@@ -1551,7 +1610,15 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                                 fname=coordsystem_path.fpath,
                                 datatype=bids_path.datatype,
                                 overwrite=overwrite)
-    elif bids_path.datatype in ['eeg', 'ieeg']:
+    elif bids_path.datatype in ['eeg', 'ieeg', 'nirs']:
+        if (
+            bids_path.datatype == 'nirs' and
+            not check_version('mne', '1.0')
+        ):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if montage is not None or \

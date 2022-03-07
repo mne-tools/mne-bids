@@ -18,7 +18,7 @@ from mne.channels import make_standard_montage
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import warn, logger, verbose
+from mne.utils import warn, logger, verbose, check_version
 
 from mne_bids.tsv_handler import _to_tsv
 
@@ -68,6 +68,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
         mapping = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                        ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
                        resp='RESP', bio='MISC', dbs='DBS',
+                       fnirs_cw_amplitude='NIRSCWAMPLITUDE',
                        # MEG channels
                        meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
                        megrefgradaxial='MEGREFGRADAXIAL',
@@ -77,7 +78,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     elif fro == 'bids' and to == 'mne':
         mapping = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
                        ECOG='ecog', SEEG='seeg', EOG='eog', ECG='ecg',
-                       RESP='resp',
+                       RESP='resp', NIRS='fnirs_cw_amplitude',
                        # No MEG channels for now
                        # Many to one mapping
                        VEOG='eog', HEOG='eog', DBS='dbs')
@@ -127,6 +128,12 @@ def _handle_datatype(raw, datatype):
             datatypes.append('meg')
         if 'eeg' in raw:
             datatypes.append('eeg')
+        if 'fnirs_cw_amplitude' in raw:
+            if not check_version('mne', '1.0'):  # pragma: no cover
+                raise RuntimeError(
+                    'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+                )
+            datatypes.append('nirs')
         if len(datatypes) == 0:
             raise ValueError('No MEG, EEG or iEEG channels found in data. '
                              'Please use raw.set_channel_types to set the '
@@ -450,7 +457,7 @@ def _check_datatype(raw, datatype):
     -------
     None
     """
-    supported_types = ('meg', 'eeg', 'ieeg')
+    supported_types = ('meg', 'eeg', 'ieeg', 'nirs')
     if datatype not in supported_types:
         raise ValueError(
             f'The specified datatype {datatype} is currently not supported. '
@@ -461,6 +468,8 @@ def _check_datatype(raw, datatype):
     if datatype == 'eeg' and datatype in raw:
         datatype_matches = True
     elif datatype == 'meg' and datatype in raw:
+        datatype_matches = True
+    elif datatype == 'nirs' and 'fnirs_cw_amplitude' in raw:
         datatype_matches = True
     elif datatype == 'ieeg':
         ieeg_types = ('seeg', 'ecog', 'dbs')
