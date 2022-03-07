@@ -37,7 +37,7 @@ The complete set of rules is written down in the
 Supported file formats
 ----------------------
 
-Currently, we support all file formats that are in the BIDS specification for MEG, EEG, and iEEG data.
+Currently, we support all file formats that are in the BIDS specification for MEG, EEG, fNIRS, and iEEG data.
 We also support a range of additional manufacturer formats to facilitate converting them to their BIDS-recommended
 formats. For example, if you have a Nihon Kohden file, you can read that file using MNE-Python, and
 then use MNE-BIDS convert it to the BrainVision format and store it according to BIDS.

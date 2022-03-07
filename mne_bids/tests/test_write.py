@@ -39,7 +39,8 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_channels, write_meg_calibration,
                       write_meg_crosstalk, get_entities_from_fname,
-                      get_anat_landmarks, write, anonymize_dataset)
+                      get_anat_landmarks, write, anonymize_dataset,
+                      get_entity_vals)
 from mne_bids.write import _get_fid_coords
 from mne_bids.dig import _write_dig_bids, _read_dig_bids
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
@@ -106,6 +107,7 @@ _read_raw_brainvision = _wrap_read_raw(mne.io.read_raw_brainvision)
 _read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
 _read_raw_nihon = _wrap_read_raw(mne.io.read_raw_nihon)
 _read_raw_cnt = _wrap_read_raw(mne.io.read_raw_cnt)
+_read_raw_snirf = _wrap_read_raw(mne.io.read_raw_snirf)
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
@@ -1586,6 +1588,59 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 write_raw_bids(**kwargs)  # Converts.
                 output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
         _bids_validate(output_path)
+
+
+@pytest.mark.skipif(
+    os.environ.get('BIDS_VALIDATOR_BRANCH') != 'NIRS',
+    reason="requires Rob's NIRS branch of bids-validator"
+)
+@pytest.mark.skipif(
+    not check_version('mne', '1.0'),
+    reason='requires MNE-Python 1.0'
+)
+def test_snirf(_bids_validate, tmp_path):
+    """Test write_raw_bids conversion for SNIRF data."""
+
+    raw_fname = op.join(testing.data_path(), 'SNIRF', 'MNE-NIRS', '20220217',
+                        '20220217_nirx_15_3_recording.snirf')
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype='nirs')
+
+    raw = _read_raw_snirf(raw_fname)
+    write_raw_bids(raw, bids_path, overwrite=False)
+    _bids_validate(tmp_path)
+
+    subjects = get_entity_vals(tmp_path, 'subject')
+    assert len(subjects) == 1
+    sessions = get_entity_vals(tmp_path, 'session')
+    assert sessions == ['01']
+    rawbids = read_raw_bids(bids_path)
+    assert rawbids.annotations.onset[0] == raw.annotations.onset[0]
+    assert rawbids.annotations.description[2] == raw.annotations.description[2]
+    assert rawbids.annotations.description[2] == '1.0'
+    assert raw.times[-1] == rawbids.times[-1]
+
+    # Test common modifications when generating BIDS-formatted data.
+    raw.annotations.duration = [2, 7, 1]
+    raw.annotations.rename({'1.0': 'Control',
+                            '2.0': 'Tapping/Left',
+                            '4.0': 'Tapping/Right'})
+    write_raw_bids(raw, bids_path, overwrite=True)
+    _bids_validate(tmp_path)
+    rawbids = read_raw_bids(bids_path)
+    assert rawbids.annotations.onset[0] == raw.annotations.onset[0]
+    assert rawbids.annotations.description[2] == 'Control'
+    assert raw.times[-1] == rawbids.times[-1]
+
+    # Test with different optode coordinate frame
+    raw = _read_raw_snirf(raw_fname, optode_frame="mri")
+    write_raw_bids(raw, bids_path, overwrite=True)
+    _bids_validate(tmp_path)
+
+    raw = _read_raw_snirf(raw_fname, optode_frame="mri")
+    raw.info['dig'].pop(1)
+    with pytest.warns(RuntimeWarning,
+                      match='Setting montage not possible'):
+        write_raw_bids(raw, bids_path, overwrite=True)
 
 
 def test_bdf(_bids_validate, tmp_path):

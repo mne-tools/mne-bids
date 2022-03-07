@@ -6,12 +6,14 @@
 import json
 from collections import OrderedDict
 from pathlib import Path
+import re
 
 import mne
 import numpy as np
 from mne.io.constants import FIFF
 from mne.transforms import _str_to_frame
 from mne.utils import logger, warn
+from mne.io.pick import _picks_to_idx
 
 from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
                              BIDS_MEG_COORDINATE_FRAMES,
@@ -190,6 +192,68 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
     _write_tsv(fname, data, overwrite=True)
 
 
+def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
+    """Create a optodes.tsv file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    fname : str | BIDSPath
+        Filename to save the optodes.tsv to.
+    overwrite : bool
+        Whether to overwrite the existing file.
+        Defaults to False.
+    verbose : bool
+        Set verbose output to True or False.
+    """
+    picks = _picks_to_idx(raw.info, 'fnirs', exclude=[], allow_empty=True)
+    sources = np.zeros(picks.shape)
+    detectors = np.zeros(picks.shape)
+    for ii in picks:
+        # NIRS channel names take a specific form in MNE-Python.
+        # The channel names always reflect the source and detector
+        # pair, followed by the wavelength frequency.
+        # The following code extracts the source and detector
+        # numbers from the channel name.
+        ch1_name_info = re.match(r'S(\d+)_D(\d+) (\d+)',
+                                 raw.info['chs'][ii]['ch_name'])
+        sources[ii] = ch1_name_info.groups()[0]
+        detectors[ii] = ch1_name_info.groups()[1]
+    unique_sources = np.unique(sources)
+    n_sources = len(unique_sources)
+    unique_detectors = np.unique(detectors)
+    names = np.concatenate((
+        ["S" + str(s) for s in unique_sources.astype(int)],
+        ["D" + str(d) for d in unique_detectors.astype(int)]))
+
+    xs = np.zeros(names.shape)
+    ys = np.zeros(names.shape)
+    zs = np.zeros(names.shape)
+    for i, source in enumerate(unique_sources):
+        s_idx = np.where(sources == source)[0][0]
+        xs[i] = raw.info["chs"][s_idx]["loc"][3]
+        ys[i] = raw.info["chs"][s_idx]["loc"][4]
+        zs[i] = raw.info["chs"][s_idx]["loc"][5]
+    for i, detector in enumerate(unique_detectors):
+        d_idx = np.where(detectors == detector)[0][0]
+        xs[i + n_sources] = raw.info["chs"][d_idx]["loc"][6]
+        ys[i + n_sources] = raw.info["chs"][d_idx]["loc"][7]
+        zs[i + n_sources] = raw.info["chs"][d_idx]["loc"][8]
+
+    ch_data = {
+        'name': names,
+        'type': np.concatenate(
+            (np.full(len(unique_sources), 'source'),
+             np.full(len(unique_detectors), 'detector'))
+        ),
+        'x': xs,
+        'y': ys,
+        'z': zs,
+    }
+    _write_tsv(fname, ch_data, overwrite, verbose)
+
+
 def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
                             sensor_coord_system, fname, datatype,
                             overwrite=False):
@@ -277,6 +341,12 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
             'iEEGCoordinateSystem': sensor_coord_system,
             'iEEGCoordinateSystemDescription': sensor_coord_system_descr,
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
+        }
+    elif datatype == "nirs":
+        fid_json = {
+            'NIRSCoordinateSystem': sensor_coord_system,
+            'NIRSCoordinateSystemDescription': sensor_coord_system_descr,
+            'NIRSCoordinateUnits': unit,
         }
 
     # note that any coordsystem.json file shared within sessions
@@ -374,6 +444,8 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
     datatype = bids_path.datatype
     electrodes_path = BIDSPath(**coord_file_entities, suffix='electrodes',
                                extension='.tsv')
+    optodes_path = BIDSPath(**coord_file_entities, suffix='optodes',
+                            extension='.tsv')
     coordsystem_path = BIDSPath(**coord_file_entities, suffix='coordsystem',
                                 extension='.json')
 
@@ -416,6 +488,25 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
                                     overwrite=overwrite)
         else:
             warn("Skipping EEG electrodes.tsv... "
+                 "Setting montage not possible if anatomical "
+                 "landmarks (NAS, LPA, RPA) are missing, "
+                 "and coord_frame is not 'head'.")
+    elif datatype == 'nirs':
+        # We only write NIRS optodes.tsv and coordsystem.json
+        # if we have LPA, RPA, and NAS available to rescale to a known
+        # coordinate system frame
+        coords = _extract_landmarks(raw.info['dig'])
+        landmarks = set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys()))
+
+        if coord_frame_int == FIFF.FIFFV_COORD_HEAD and landmarks:
+            # Now write the data
+            _write_optodes_tsv(raw, optodes_path, overwrite)
+            _write_coordsystem_json(raw=raw, unit='m', hpi_coord_system='n/a',
+                                    sensor_coord_system='CapTrak',
+                                    fname=coordsystem_path, datatype=datatype,
+                                    overwrite=overwrite)
+        else:
+            warn("Skipping fNIRS optodes.tsv... "
                  "Setting montage not possible if anatomical "
                  "landmarks (NAS, LPA, RPA) are missing, "
                  "and coord_frame is not 'head'.")

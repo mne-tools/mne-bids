@@ -30,6 +30,7 @@ People who contributed to this release (in alphabetical order):
 * `Alexandre Gramfort`_
 * `Mainak Jas`_
 * `Richard Höchenberger`_
+* `Robert Luke`_
 * `Stefan Appelhoff`_
 * `Yorguin Mantilla`_
 
@@ -38,6 +39,8 @@ Detailed list of changes
 
 Enhancements
 ^^^^^^^^^^^^
+
+- Add experimental support for fNIRS (SNIRF) files in :func:`mne_bids.write_raw_bids`, by `Robert Luke`_ (:gh:`406`)
 
 - Add support for CNT (Neuroscan) files in :func:`mne_bids.write_raw_bids`, by `Yorguin Mantilla`_ (:gh:`924`)
 
