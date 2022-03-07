@@ -18,10 +18,6 @@ from mne_bids.dig import _write_dig_bids, _read_dig_bids
 from mne_bids.config import (BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES,
                              BIDS_TO_MNE_FRAMES)
 
-import warnings
-warnings.filterwarnings('ignore', category=DeprecationWarning)
-
-
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
 session_id = '01'
@@ -38,6 +34,7 @@ data_path = testing.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
 raw = mne.io.read_raw(raw_fname)
+raw.drop_channels(raw.info['bads'])
 raw.info['line_freq'] = 60
 montage = raw.get_montage()
 
@@ -81,6 +78,8 @@ def test_dig_template(tmp_path):
     for datatype in ('eeg', 'ieeg'):
         os.makedirs(op.join(bids_root, 'sub-01', 'ses-01', datatype))
 
+    raw_test = raw.copy().pick_types(eeg=True)
+
     for datatype in ('eeg', 'ieeg'):
         bids_path = _bids_path.copy().update(root=bids_root, datatype=datatype)
         for coord_frame in BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES:
@@ -93,25 +92,23 @@ def test_dig_template(tmp_path):
             else:
                 mnt.apply_trans(mne.transforms.Transform(
                     'head', mne_coord_frame))
-            _write_dig_bids(bids_path, raw, mnt, acpc_aligned=True)
+            _write_dig_bids(bids_path, raw_test, mnt, acpc_aligned=True)
             electrodes_path = bids_path.copy().update(
                 task=None, run=None, suffix='electrodes', extension='.tsv')
             coordsystem_path = bids_path.copy().update(
                 task=None, run=None, suffix='coordsystem', extension='.json')
-            if bids_path.space == 'Pixels':
-                with pytest.warns(RuntimeWarning,
-                                  match='not recognized by MNE'):
-                    _read_dig_bids(electrodes_path, coordsystem_path,
-                                   datatype, raw)
-            elif mne_coord_frame is None:
+            if mne_coord_frame is None:
                 with pytest.warns(RuntimeWarning,
                                   match='not an MNE-Python coordinate frame'):
                     _read_dig_bids(electrodes_path, coordsystem_path,
-                                   datatype, raw)
+                                   datatype, raw_test)
             else:
+                if coord_frame == 'MNI305':  # saved to fsaverage, same
+                    electrodes_path.update(space='fsaverage')
+                    coordsystem_path.update(space='fsaverage')
                 _read_dig_bids(electrodes_path, coordsystem_path,
-                               datatype, raw)
-            mnt2 = raw.get_montage()
+                               datatype, raw_test)
+            mnt2 = raw_test.get_montage()
             pos2 = mnt2.get_positions()
             np.testing.assert_array_almost_equal(
                 np.array(list(pos['ch_pos'].values())),

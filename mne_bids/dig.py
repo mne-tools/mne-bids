@@ -17,7 +17,6 @@ from mne.utils import logger, warn
 from mne.io.pick import _picks_to_idx
 
 from mne_bids.config import (ALLOWED_SPACES,
-                             BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES,
                              BIDS_COORDINATE_UNITS,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
                              MNE_FRAME_TO_STR, BIDS_COORD_FRAME_DESCRIPTIONS)
@@ -293,19 +292,9 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
                          .format(coord_frame))
 
     # get the coordinate frame description
-    try:
-        sensor_coord_system, sensor_coord_system_mne = sensor_coord_system
-    except ValueError:
-        sensor_coord_system_mne = "n/a"
     sensor_coord_system_descr = (BIDS_COORD_FRAME_DESCRIPTIONS
                                  .get(sensor_coord_system.lower(), "n/a"))
-    if sensor_coord_system == 'Other':
-        logger.info('Using the `Other` keyword for the CoordinateSystem '
-                    'field. Please specify the CoordinateSystemDescription '
-                    'field manually.')
-        sensor_coord_system_descr = (BIDS_COORD_FRAME_DESCRIPTIONS
-                                     .get(sensor_coord_system_mne.lower(),
-                                          "n/a"))
+
     coords = _extract_landmarks(dig)
     # create the coordinate json data structure based on 'datatype'
     if datatype == 'meg':
@@ -398,14 +387,17 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
     if montage is None:
         montage = raw.get_montage()
     else:
-        # prevent transformation back to "head", only should be used
-        # in this specific circumstance
-        if montage.get_positions()['coord_frame'] != 'head':
-            montage.remove_fiducials()
+        # transform back to native montage coordinates if given
         with warnings.catch_warnings():
             warnings.filterwarnings(action='ignore', category=RuntimeWarning,
-                                    module='mne')
+                                    message='.*nasion not found', module='mne')
             raw.set_montage(montage)
+        montage_coord_frame = montage.get_positions()['coord_frame']
+        if montage_coord_frame != 'head':
+            for ch in raw.info['chs']:
+                ch['coord_frame'] = _str_to_frame[montage_coord_frame]
+            for d in raw.info['dig']:
+                d['coord_frame'] = _str_to_frame[montage_coord_frame]
 
     # get coordinate frame from digMontage
     digpoint = montage.dig[0]
@@ -477,8 +469,7 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
     # Now write the data to the elec coords and the coordsystem
     _channels_fun(raw, channels_path, bids_path.datatype, overwrite)
     _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system='n/a',
-                            sensor_coord_system=(coord_frame,
-                                                 mne_coord_frame),
+                            sensor_coord_system=coord_frame,
                             fname=coordsystem_path,
                             datatype=bids_path.datatype,
                             overwrite=overwrite)
@@ -549,7 +540,10 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     # XXX: Starting with mne 0.24, this will raise a RuntimeWarning
     #      if channel types are included outside of
     #      (EEG/sEEG/ECoG/DBS/fNIRS). Probably needs a fix in the future.
-    raw.set_montage(montage, on_missing='warn')
+    with warnings.catch_warnings():
+        warnings.filterwarnings(action='ignore', category=RuntimeWarning,
+                                message='.*nasion not found', module='mne')
+        raw.set_montage(montage, on_missing='warn')
 
     # put back in unknown for unknown coordinate frame
     if coord_frame == 'unknown':

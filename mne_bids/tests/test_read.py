@@ -693,7 +693,8 @@ def test_handle_eeg_coords_reading(tmp_path):
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="unknown")
     raw.set_montage(montage)
-    with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
+    with pytest.raises(RuntimeError, match="'head' coordinate frame "
+                                           "must contain"):
         write_raw_bids(raw, bids_path, overwrite=True)
 
     bids_path.update(root=tmp_path)
@@ -709,12 +710,12 @@ def test_handle_eeg_coords_reading(tmp_path):
     assert electrodes_fname is None
 
     # create montage in head frame and set should result in
-    # warning if landmarks not set
+    # an error if landmarks are not set
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="head")
     raw.set_montage(montage)
-    with pytest.warns(RuntimeWarning, match='Setting montage not possible '
-                                            'if anatomical landmarks'):
+    with pytest.raises(RuntimeError, match="'head' coordinate frame "
+                                           "must contain"):
         write_raw_bids(raw, bids_path, overwrite=True)
 
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
