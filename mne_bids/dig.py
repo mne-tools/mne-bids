@@ -15,9 +15,7 @@ from mne.transforms import _str_to_frame
 from mne.utils import logger, warn
 from mne.io.pick import _picks_to_idx
 
-from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
-                             BIDS_MEG_COORDINATE_FRAMES,
-                             BIDS_EEG_COORDINATE_FRAMES,
+from mne_bids.config import (ALLOWED_SPACES,
                              BIDS_COORDINATE_UNITS,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
                              MNE_FRAME_TO_STR, BIDS_COORD_FRAME_DESCRIPTIONS)
@@ -535,57 +533,17 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     bids_coord_frame, bids_coord_unit = _handle_coordsystem_reading(
         coordsystem_fpath, datatype)
 
-    if datatype == 'meg':
-        if bids_coord_frame not in BIDS_MEG_COORDINATE_FRAMES:
-            warn(f'MEG coordinate frame "{bids_coord_frame}" is not '
-                 f'supported. The supported coordinate frames are: '
-                 f'{BIDS_MEG_COORDINATE_FRAMES}')
-            coord_frame = None
-        elif bids_coord_frame == 'Other':
-            warn("Coordinate frame of MEG data can't be determined "
-                 "when 'other'. The currently accepted keywords are: "
-                 "{}".format(BIDS_MEG_COORDINATE_FRAMES))
-            coord_frame = None
-        else:
-            coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
-    elif datatype == 'ieeg':
-        # iEEG datatype for BIDS only supports
-        # acpc, pixels and then standard templates
-        # iEEG datatype for mne-python only supports
-        # mni_tal == fsaverage == MNI305
-        if bids_coord_frame == 'Pixels':
-            warn("Coordinate frame of iEEG data in pixels is not "
-                 "recognized by mne-python, the coordinate frame "
-                 "of the montage will be set to 'unknown'")
-            coord_frame = 'unknown'
-        elif bids_coord_frame == 'ACPC':
-            coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
-        elif bids_coord_frame == 'Other':
-            # default coordinate frames to available ones in mne-python
-            # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
-            warn(f"Defaulting coordinate frame to unknown "
-                 f"from coordinate system input {bids_coord_frame}")
-            coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
-        else:
-            coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
-
-            # XXX: if the coordinate frame is not recognized, then
-            # coordinates are stored in a system that we cannot
-            # recognize yet.
-            if coord_frame is None:
-                warn(f"iEEG Coordinate frame {bids_coord_frame} is not a "
-                     f"readable BIDS keyword by mne-bids yet. The allowed "
-                     f"keywords are: {BIDS_IEEG_COORDINATE_FRAMES}")
-                coord_frame = 'unknown'
-    elif datatype == 'eeg':
-        # only accept captrak
-        if bids_coord_frame not in BIDS_EEG_COORDINATE_FRAMES:
-            warn("EEG Coordinate frame is not accepted "
-                 "BIDS keyword. The allowed keywords are: "
-                 "{}".format(BIDS_IEEG_COORDINATE_FRAMES))
-            coord_frame = None
-        else:
-            coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
+    if bids_coord_frame not in ALLOWED_SPACES[datatype]:
+        warn(f'"{bids_coord_frame}" is not a BIDS-acceptable coordinate frame '
+             f'for {datatype.upper()}. The supported coordinate frames are: '
+             '{}'.format(ALLOWED_SPACES[datatype]))
+        coord_frame = None
+    elif bids_coord_frame in BIDS_TO_MNE_FRAMES:
+        coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
+    else:
+        warn(f"{bids_coord_frame} is not an MNE-Python coordinate frame "
+             f"for {datatype.upper()} data and so will be set to 'unknown'")
+        coord_frame = 'unknown'
 
     # check coordinate units
     if bids_coord_unit not in BIDS_COORDINATE_UNITS:

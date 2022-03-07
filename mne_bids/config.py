@@ -205,18 +205,27 @@ coordsys_standard_template_deprecated = [
     'UNCInfant2V23',
 ]
 
-coordsys_meg = ['CTF', 'ElektaNeuromag', '4DBti', 'KitYokogawa', 'ChietiItab']
-coordsys_eeg = ['CapTrak']
-coordsys_ieeg = ['Pixels', 'ACPC']
+# accepted BIDS formats, which may be subject to change
+# depending on the specification
+BIDS_IEEG_COORDINATE_FRAMES = ['ACPC', 'Pixels']
+BIDS_MEG_COORDINATE_FRAMES = ['CTF', 'ElektaNeuromag',
+                              '4DBti', 'KitYokogawa',
+                              'ChietiItab']
+BIDS_EEG_COORDINATE_FRAMES = ['CapTrak']
+
+# accepted coordinate SI units
+BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
 coordsys_wildcard = ['Other']
-coordsys_shared = (coordsys_standard_template +
-                   coordsys_standard_template_deprecated +
-                   coordsys_wildcard)
+BIDS_SHARED_COORDINATE_FRAMES = (coordsys_standard_template +
+                                 coordsys_standard_template_deprecated +
+                                 coordsys_wildcard)
 
 ALLOWED_SPACES = dict()
-ALLOWED_SPACES['meg'] = coordsys_shared + coordsys_meg + coordsys_eeg
-ALLOWED_SPACES['eeg'] = coordsys_shared + coordsys_meg + coordsys_eeg
-ALLOWED_SPACES['ieeg'] = coordsys_shared + coordsys_ieeg
+ALLOWED_SPACES['meg'] = ALLOWED_SPACES['eeg'] = \
+    BIDS_SHARED_COORDINATE_FRAMES + BIDS_MEG_COORDINATE_FRAMES + \
+    BIDS_EEG_COORDINATE_FRAMES
+ALLOWED_SPACES['ieeg'] = \
+    BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FRAMES
 ALLOWED_SPACES['anat'] = None
 ALLOWED_SPACES['beh'] = None
 
@@ -235,17 +244,6 @@ ENTITY_VALUE_TYPE = {
     'extension': 'label'
 }
 
-# accepted BIDS formats, which may be subject to change
-# depending on the specification
-BIDS_IEEG_COORDINATE_FRAMES = ['ACPC', 'Pixels', 'Other']
-BIDS_MEG_COORDINATE_FRAMES = ['CTF', 'ElektaNeuromag',
-                              '4DBti', 'KitYokogawa',
-                              'ChietiItab', 'Other']
-BIDS_EEG_COORDINATE_FRAMES = ['CapTrak']
-
-# accepted coordinate SI units
-BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
-
 # mapping from supported BIDs coordinate frames -> MNE
 BIDS_TO_MNE_FRAMES = {
     'CTF': 'ctf_head',
@@ -256,8 +254,7 @@ BIDS_TO_MNE_FRAMES = {
     'CapTrak': 'head',
     'ACPC': 'mri',  # assumes T1 is ACPC-aligned, if not the coordinates are lost  # noqa
     'fsaverage': 'mni_tal',  # XXX: note fsaverage and MNI305 are the same  # noqa
-    'MNI305': 'mni_tal',
-    'Other': 'unknown'
+    'MNI305': 'mni_tal'
 }
 
 # mapping from supported MNE coordinate frames -> BIDS
