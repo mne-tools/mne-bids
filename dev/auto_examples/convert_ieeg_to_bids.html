@@ -275,6 +275,13 @@
   </a>
  </li>
 </ul>
+<ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="convert_nirs_to_bids.html">
+   13. Convert NIRS data to BIDS format
+  </a>
+ </li>
+</ul>
 
   </div>
 </nav>
@@ -354,7 +361,7 @@
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
 <section class="sphx-glr-example-title" id="convert-ieeg-data-to-bids-format">
-<span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
+<span id="ieeg-example"></span><span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
 <p>In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:</p>
 <ol class="arabic simple">
@@ -760,7 +767,7 @@ step is required.</p>
 <span class="c1">#</span>
 <span class="c1"># `acpc_aligned=True` affirms that our MRI is aligned to ACPC</span>
 <span class="c1"># if this is not true, convert to `fsaverage` (see below)!</span>
-<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="mi">30000</span><span class="p">),</span>
+<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="mi">40000</span><span class="p">),</span>
                <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">,</span> <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># check our output</span>
@@ -772,14 +779,12 @@ step is required.</p>
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/mne_bids/utils.py:336: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
-  warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1525: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1584: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
-/home/circleci/project/mne_bids/dig.py:335: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+/home/circleci/project/mne_bids/dig.py:405: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
   raw.set_montage(montage)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_coordsystem.json&#39;...
@@ -788,7 +793,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1657: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1724: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -887,7 +892,7 @@ Setting channel info structure...
 Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv.
 Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv.
-/home/circleci/project/mne_bids/dig.py:529: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+/home/circleci/project/mne_bids/dig.py:620: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
   raw.set_montage(montage, on_missing=&#39;warn&#39;)
 Recovered coordinate: [-0.0243  0.0261 -0.056 ]
 Saved coordinate:     [-0.0243  0.0261 -0.056 ]
@@ -911,7 +916,7 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
     <tr>
         <th>Measurement date</th>
 
-        <td>August 29, 1937  11:09:44 GMT</td>
+        <td>April 13, 1910  11:09:44 GMT</td>
 
     </tr>
     <tr>
@@ -1009,7 +1014,15 @@ reason, you can also do that.</p>
 <p>Here we’ll use the MNI Talairach transform to get to <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> space
 from “mri” aka surface RAS space.
 <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> is very useful for group analysis as shown in
-<a class="reference external" href="https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html">Working with SEEG</a>.</p>
+<a class="reference external" href="https://mne.tools/dev/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.0)"><span>Working with sEEG data</span></a>. Note, this is only a linear transform and so
+one loses quite a bit of accuracy relative to the needs of intracranial
+researchers so it is quite suboptimal. A better option is to use a
+symmetric diffeomorphic transform to create a one-to-one mapping of brain
+voxels from the individual’s brain to the template as shown in
+<a class="reference external" href="https://mne.tools/dev/auto_tutorials/clinical/10_ieeg_localize.html#tut-ieeg-localize" title="(in MNE v1.0)"><span>Locating intracranial electrode contacts</span></a>. Even so, it’s better to provide the coordinates
+in the individual’s brain space, as was done above, so that the researcher
+who uses the coordinates has the ability to tranform them to a template
+of their choice.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ensure the output path doesn&#39;t contain any leftover files from previous</span>
 <span class="c1"># tests and example runs</span>
 <span class="k">if</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.exists" title="os.path.exists" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">exists</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">):</span>
@@ -1036,7 +1049,7 @@ Ready.
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_mni_t</span></a><span class="p">)</span>
 
 <span class="c1"># write to BIDS, this time with a template coordinate system</span>
-<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="mi">30000</span><span class="p">),</span>
+<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="mi">40000</span><span class="p">),</span>
                <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># read in the BIDS dataset</span>
@@ -1053,14 +1066,12 @@ Ready.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/mne_bids/utils.py:336: RuntimeWarning: `daysback` is too small; the measurement date is after 1925, which is not recommended by BIDS.The minimum `daysback` value for changing the measurement date of this data to before this date is 34624
-  warn(&#39;`daysback` is too small; the measurement date &#39;
-/home/circleci/project/mne_bids/write.py:1525: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1584: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
-/home/circleci/project/mne_bids/dig.py:335: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+/home/circleci/project/mne_bids/dig.py:405: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
   raw.set_montage(montage)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_coordsystem.json&#39;...
@@ -1069,7 +1080,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1657: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1724: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -1078,7 +1089,7 @@ Setting channel info structure...
 Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv.
 Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
-/home/circleci/project/mne_bids/dig.py:529: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+/home/circleci/project/mne_bids/dig.py:620: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
   raw.set_montage(montage, on_missing=&#39;warn&#39;)
 Recovered coordinate: [-0.0231477   0.00949445 -0.05183359]
 Saved coordinate:     [-0.0231477   0.00949445 -0.05183359]
@@ -1106,7 +1117,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     <tr>
         <th>Measurement date</th>
 
-        <td>August 29, 1937  11:09:44 GMT</td>
+        <td>April 13, 1910  11:09:44 GMT</td>
 
     </tr>
     <tr>
@@ -1175,7 +1186,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
 </table>
 </div>
 <br />
-<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.936 seconds)</p>
+<br /><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.750 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1225,7 +1236,7 @@ the Freesurfer <code class="docutils literal notranslate"><span class="pre">reco
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-04.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-07.<br>
 </p>
     </div>
     

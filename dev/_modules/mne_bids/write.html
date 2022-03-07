@@ -217,6 +217,7 @@
 <span class="c1"># License: BSD-3-Clause</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
@@ -233,7 +234,7 @@
 <span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Epochs</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
-<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">channel_type</span>
+<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">channel_type</span><span class="p">,</span> <span class="n">_picks_to_idx</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">Bunch</span><span class="p">,</span>
@@ -306,7 +307,9 @@
                     <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;Miscellaneous&#39;</span><span class="p">,</span>
                     <span class="n">bio</span><span class="o">=</span><span class="s1">&#39;Biological&#39;</span><span class="p">,</span>
                     <span class="n">ias</span><span class="o">=</span><span class="s1">&#39;Internal Active Shielding&#39;</span><span class="p">,</span>
-                    <span class="n">dbs</span><span class="o">=</span><span class="s1">&#39;Deep Brain Stimulation&#39;</span><span class="p">)</span>
+                    <span class="n">dbs</span><span class="o">=</span><span class="s1">&#39;Deep Brain Stimulation&#39;</span><span class="p">,</span>
+                    <span class="n">fnirs_cw_amplitude</span><span class="o">=</span><span class="s1">&#39;Near Infrared Spectroscopy &#39;</span>
+                                       <span class="s1">&#39;(continuous wave)&#39;</span><span class="p">,)</span>
     <span class="n">get_specific</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;ref_meg&#39;</span><span class="p">,</span> <span class="s1">&#39;grad&#39;</span><span class="p">)</span>
 
     <span class="c1"># get the manufacturer from the file in the Raw object</span>
@@ -349,6 +352,37 @@
         <span class="p">(</span><span class="s1">&#39;status_description&#39;</span><span class="p">,</span> <span class="n">status_description</span><span class="p">)</span>
     <span class="p">])</span>
     <span class="n">ch_data</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">ch_data</span><span class="p">,</span> <span class="n">ignored_channels</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;fnirs_cw_amplitude&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">&#39;fNIRS support in MNE-BIDS requires MNE-Python version 1.0&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">ch_data</span><span class="p">[</span><span class="s2">&quot;wavelength_nominal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;loc&quot;</span><span class="p">][</span><span class="mi">9</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                                         <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">))]</span>
+
+        <span class="n">picks</span> <span class="o">=</span> <span class="n">_picks_to_idx</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;fnirs&#39;</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">allow_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">picks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;&lt;U20&quot;</span><span class="p">)</span>
+        <span class="n">detectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">picks</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;&lt;U20&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">:</span>
+            <span class="c1"># NIRS channel names take a specific form in MNE-Python.</span>
+            <span class="c1"># The channel names always reflect the source and detector</span>
+            <span class="c1"># pair, followed by the wavelength frequency.</span>
+            <span class="c1"># The following code extracts the source and detector</span>
+            <span class="c1"># numbers from the channel name.</span>
+            <span class="n">ch1_name_info</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;S(\d+)_D(\d+) (\d+)&#39;</span><span class="p">,</span>
+                                     <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">][</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;ch_name&#39;</span><span class="p">])</span>
+            <span class="n">sources</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;S&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ch1_name_info</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">detectors</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;D&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ch1_name_info</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">ch_data</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sources</span>
+        <span class="n">ch_data</span><span class="p">[</span><span class="s2">&quot;detector&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">detectors</span>
+        <span class="n">ch_data</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s1">&#39;wavelength_nominal&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ch_data</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s1">&#39;detector&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ch_data</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ch_data</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ch_data</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
@@ -916,6 +950,13 @@
                       <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_STIM_CH</span><span class="p">])</span> <span class="o">-</span> <span class="n">n_ignored</span>
     <span class="n">n_dbschan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
                      <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_DBS_CH</span><span class="p">])</span>
+    <span class="n">nirs_channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span> <span class="k">if</span>
+                     <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_FNIRS_CH</span><span class="p">]</span>
+    <span class="n">n_nirscwchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nirs_channels</span><span class="p">)</span>
+    <span class="n">n_nirscwsrc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;ch_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                                 <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">nirs_channels</span><span class="p">]))</span>
+    <span class="n">n_nirscwdet</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;ch_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                                 <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">nirs_channels</span><span class="p">]))</span>
 
     <span class="c1"># Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found</span>
     <span class="c1"># Set DigitizedHeadPoints to True if any &quot;Extra&quot; points are found</span>
@@ -1003,6 +1044,11 @@
         <span class="p">(</span><span class="s1">&#39;iEEGReference&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;ECOGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_ecogchan</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;SEEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_seegchan</span> <span class="o">+</span> <span class="n">n_dbschan</span><span class="p">)]</span>
+
+    <span class="n">ch_info_json_nirs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;Manufacturer&#39;</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">)</span>
+    <span class="p">]</span>
+
     <span class="n">ch_info_ch_counts</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="s1">&#39;EEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_eegchan</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;EOGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_eogchan</span><span class="p">),</span>
@@ -1010,6 +1056,12 @@
         <span class="p">(</span><span class="s1">&#39;EMGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_emgchan</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;MiscChannelCount&#39;</span><span class="p">,</span> <span class="n">n_miscchan</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;TriggerChannelCount&#39;</span><span class="p">,</span> <span class="n">n_stimchan</span><span class="p">)]</span>
+
+    <span class="n">ch_info_ch_counts_nirs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;NIRSChannelCount&#39;</span><span class="p">,</span> <span class="n">n_nirscwchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;NIRSSourceOptodeCount&#39;</span><span class="p">,</span> <span class="n">n_nirscwsrc</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;NIRSDetectorOptodeCount&#39;</span><span class="p">,</span> <span class="n">n_nirscwdet</span><span class="p">)</span>
+    <span class="p">]</span>
 
     <span class="c1"># Stitch together the complete JSON dictionary</span>
     <span class="n">ch_info_json</span> <span class="o">=</span> <span class="n">ch_info_json_common</span>
@@ -1019,6 +1071,13 @@
         <span class="n">append_datatype_json</span> <span class="o">=</span> <span class="n">ch_info_json_eeg</span>
     <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span>
         <span class="n">append_datatype_json</span> <span class="o">=</span> <span class="n">ch_info_json_ieeg</span>
+    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;nirs&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">&#39;fNIRS support in MNE-BIDS requires MNE-Python version 1.0&#39;</span>
+            <span class="p">)</span>
+        <span class="n">append_datatype_json</span> <span class="o">=</span> <span class="n">ch_info_json_nirs</span>
+        <span class="n">ch_info_ch_counts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ch_info_ch_counts_nirs</span><span class="p">)</span>
 
     <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">append_datatype_json</span>
     <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">ch_info_ch_counts</span>
@@ -1758,7 +1817,15 @@
                                 <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
                                 <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
                                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="s1">&#39;nirs&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;nirs&#39;</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">)</span>
+        <span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">&#39;fNIRS support in MNE-BIDS requires MNE-Python version 1.0&#39;</span>
+            <span class="p">)</span>
+
         <span class="c1"># We only write electrodes.tsv and accompanying coordsystem.json</span>
         <span class="c1"># if we have an available DigMontage</span>
         <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> \
@@ -2926,7 +2993,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-04.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-07.<br>
 </p>
     </div>
     

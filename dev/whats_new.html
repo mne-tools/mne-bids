@@ -292,6 +292,7 @@
 <li><p><a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a></p></li>
 <li><p><a class="reference external" href="https://jasmainak.github.io/">Mainak Jas</a></p></li>
 <li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
+<li><p><a class="reference external" href="https://github.com/rob-luke">Robert Luke</a></p></li>
 <li><p><a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
 <li><p><a class="reference external" href="https://github.com/yjmantilla">Yorguin Mantilla</a></p></li>
 </ul>
@@ -301,10 +302,12 @@
 <section id="enhancements">
 <h4>Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
+<li><p>Add experimental support for fNIRS (SNIRF) files in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/rob-luke">Robert Luke</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/406">#406</a>)</p></li>
 <li><p>Add support for CNT (Neuroscan) files in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/yjmantilla">Yorguin Mantilla</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/924">#924</a>)</p></li>
 <li><p>Add the ability to write multiple landmarks with <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a> (e.g. to have separate landmarks for different sessions) via the new <code class="docutils literal notranslate"><span class="pre">kind</span></code> parameter, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/955">#955</a>)</p></li>
 <li><p>Similarly, <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> and <a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks" title="mne_bids.update_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_anat_landmarks()</span></code></a> gained a new <code class="docutils literal notranslate"><span class="pre">kind</span></code> parameter to specify which of multiple landmark sets to operate on, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/955">#955</a>, <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/957">#957</a>)</p></li>
 <li><p>Add support for iEEG data in the coordinate frame <code class="docutils literal notranslate"><span class="pre">Pixels</span></code>; although MNE-Python does not recognize this coordinate frame and so it will be set to <code class="docutils literal notranslate"><span class="pre">unknown</span></code> in the montage, MNE-Python can still be used to analyze this kind of data, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/976">#976</a>)</p></li>
+<li><p>Add an explanation in <a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html#ieeg-example"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a> of why it is better to have intracranial data in individual rather than template coordinates, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/975">#975</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -372,7 +375,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-04.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-07.<br>
 </p>
     </div>
     
