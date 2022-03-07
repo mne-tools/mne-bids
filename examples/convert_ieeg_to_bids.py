@@ -339,7 +339,7 @@ raw.set_montage(montage)
 # %%
 # Step 6: Store coordinates in another template space accepted by BIDS
 # --------------------------------------------------------------------
-# As of thid writing, BIDS accepts channel coordinates in reference to the
+# As of this writing, BIDS accepts channel coordinates in reference to the
 # the following template spaces: ``ICBM452AirSpace``, ``ICBM452Warp5Space``,
 # ``IXI549Space``, ``fsaverage``, ``fsaverageSym``, ``fsLR``, ``MNIColin27``,
 # ``MNI152Lin``, ``MNI152NLin2009[a-c][Sym|Asym]``, ``MNI152NLin6Sym``,
@@ -429,7 +429,10 @@ print('Recovered coordinate: {recovered}\n'
 #      # identity transform since 'unknown' is already 'mri' == surface RAS
 #      # for the template brain MRI
 #      trans = mne.transforms.Transform(
-#          fro='unknown', to='mri', trans=np.eye(4))
+#          fro='unknown',
+#          to='mri',
+#          trans=np.eye(4)
+#      )
 #      brain = mne.viz.Brain('sample_seeg', subjects_dir=subjects_dir,
 #          **brain_kwargs)
 #      brain.add_sensors(raw.info, trans=trans)
@@ -443,7 +446,10 @@ print('Recovered coordinate: {recovered}\n'
 #      template_T1 = nib.load(op.join(subjects_dir, 'MNI152NLin2009bAsym',
 #                                     'mri', 'T1.mgz'))
 #      trans = mne.transforms.Transform(  # use vox to surface RAS transform
-#          fro='unknown', to='mri', trans=template_T1.header.get_vox2ras_tkr())
+#          fro='unknown',
+#          to='mri',
+#          trans=template_T1.header.get_vox2ras_tkr()
+#      )
 #      brain = mne.viz.Brain(
 #          'sample_seeg', subjects_dir=subjects_dir, **brain_kwargs)
 #      brain.add_sensors(raw.info, trans=trans)
@@ -461,7 +467,10 @@ print('Recovered coordinate: {recovered}\n'
 #      vox_mri_t = template_T1.header.get_vox2ras_tkr()
 #      ras_mri_t = np.dot(ras_vox_t, vox_mri_t)  # ras->vox with vox->mri
 #      trans = mne.transforms.Transform(
-#          fro='unknown', to='mri', trans=ras_mri_t)
+#          fro='unknown',
+#          to='mri',
+#          trans=ras_mri_t
+#      )
 #      brain = mne.viz.Brain(
 #          'sample_seeg', subjects_dir=subjects_dir, **brain_kwargs)
 #      brain.add_sensors(raw.info, trans=trans)

@@ -399,19 +399,12 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
             for d in raw.info['dig']:
                 d['coord_frame'] = _str_to_frame[montage_coord_frame]
 
-    # get coordinate frame from digMontage
-    digpoint = montage.dig[0]
-    if any(digpoint['coord_frame'] != _digpoint['coord_frame']
-           for _digpoint in montage.dig):
-        raise RuntimeError("Not all digpoints have the same coordinate frame.")
-
     # get the accepted mne-python coordinate frames
-    coord_frame_int = int(digpoint['coord_frame'])
+    coord_frame_int = int(montage.dig[0]['coord_frame'])
     mne_coord_frame = MNE_FRAME_TO_STR.get(coord_frame_int, None)
     coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
 
-    if coord_frame == 'CapTrak' and \
-            bids_path.datatype == 'eeg' or bids_path.datatype == 'nirs':
+    if coord_frame == 'CapTrak' and bids_path.datatype in ('eeg', 'nirs'):
         coords = _extract_landmarks(raw.info['dig'])
         landmarks = set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys()))
         if not landmarks:

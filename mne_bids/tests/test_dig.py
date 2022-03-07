@@ -13,7 +13,7 @@ import pytest
 
 import mne
 from mne.datasets import testing
-from mne_bids import BIDSPath, write_raw_bids
+from mne_bids import BIDSPath, write_raw_bids, read_raw_bids
 from mne_bids.dig import _write_dig_bids, _read_dig_bids
 from mne_bids.config import (BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES,
                              BIDS_TO_MNE_FRAMES)
@@ -72,11 +72,12 @@ def test_dig_io(tmp_path):
         write_raw_bids(raw, bids_path)
 
 
+@pytest.mark.filterwarnings('ignore:The unit for chann*.:RuntimeWarning:mne')
 def test_dig_template(tmp_path):
     """Test that eeg and ieeg dig are stored properly."""
     bids_root = tmp_path / 'bids1'
     for datatype in ('eeg', 'ieeg'):
-        os.makedirs(op.join(bids_root, 'sub-01', 'ses-01', datatype))
+        (bids_root / 'sub-01' / 'ses-01' / datatype).mkdir(parents=True)
 
     raw_test = raw.copy().pick_types(eeg=True)
 
@@ -117,3 +118,13 @@ def test_dig_template(tmp_path):
                 assert pos2['coord_frame'] == 'unknown'
             else:
                 assert pos2['coord_frame'] == mne_coord_frame
+
+    # test MEG
+    for coord_frame in BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES:
+        bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
+                                             space=coord_frame)
+        write_raw_bids(raw, bids_path)
+        raw_test = read_raw_bids(bids_path)
+        for ch, ch2 in zip(raw.info['chs'], raw_test.info['chs']):
+            np.testing.assert_array_equal(ch['loc'], ch2['loc'])
+            assert ch['coord_frame'] == ch2['coord_frame']

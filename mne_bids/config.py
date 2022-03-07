@@ -109,10 +109,12 @@ allowed_extensions_nirs = ['.snirf',  # SNIRF
                            ]
 
 # allowed extensions (data formats) in BIDS spec
-ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
-                               'eeg': allowed_extensions_eeg,
-                               'ieeg': allowed_extensions_ieeg,
-                               'nirs': allowed_extensions_nirs}
+ALLOWED_DATATYPE_EXTENSIONS = {
+    'meg': allowed_extensions_meg,
+    'eeg': allowed_extensions_eeg,
+    'ieeg': allowed_extensions_ieeg,
+    'nirs': allowed_extensions_nirs
+}
 
 # allow additional extensions that are not BIDS
 # compliant, but we will convert to the
@@ -285,7 +287,7 @@ MNE_STR_TO_FRAME = dict(
 MNE_FRAME_TO_STR = {val: key for key, val in MNE_STR_TO_FRAME.items()}
 
 # see BIDS specification for description we copied over from each
-BIDS_COORD_FRAME_DESCRIPTIONS = dict(**{
+BIDS_COORD_FRAME_DESCRIPTIONS = {
     'acpc': 'The origin of the coordinate system is at the Anterior '
             'Commissure and the negative y-axis is passing through the '
             'Posterior Commissure. The positive z-axis is passing through '
@@ -361,12 +363,14 @@ BIDS_COORD_FRAME_DESCRIPTIONS = dict(**{
     'talairach': 'Piecewise linear scaling of the brain is implemented as '
                  'described in TT88.',
     'uncinfant': 'Infant Brain Atlases from Neonates to 1- and 2-year-olds.'
-},
-    **{f'mni152nlin2009{letter}{sym}': 'Also known as ICBM '
-       '(non-linear coregistration with 40 iterations, '
-       'released in 2009). It comes in either three different flavours '
-       'each in symmetric or asymmetric version.'
-       for letter in ('a', 'b', 'c') for sym in ('Sym', 'Asym')})
+}
+
+for letter in ('a', 'b', 'c'):
+    for sym in ('Sym', 'Asym'):
+        BIDS_COORD_FRAME_DESCRIPTIONS[f'mni152nlin2009{letter}{sym}'] = \
+            'Also known as ICBM (non-linear coregistration with 40 iterations,'
+        ' released in 2009). It comes in either three different flavours '
+        'each in symmetric or asymmetric version.'
 
 REFERENCES = {'mne-bids':
               'Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., '

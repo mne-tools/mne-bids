@@ -1637,8 +1637,8 @@ def test_snirf(_bids_validate, tmp_path):
 
     raw = _read_raw_snirf(raw_fname, optode_frame="mri")
     raw.info['dig'].pop(1)
-    with pytest.warns(RuntimeWarning,
-                      match='Setting montage not possible'):
+    with pytest.raises(RuntimeError,
+                       match="'head' coordinate frame must contain nasion"):
         write_raw_bids(raw, bids_path, overwrite=True)
 
 
