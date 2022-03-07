@@ -42,7 +42,6 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       get_anat_landmarks, write, anonymize_dataset,
                       get_entity_vals)
 from mne_bids.write import _get_fid_coords
-from mne_bids.dig import _write_dig_bids, _read_dig_bids
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback, _write_json)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
