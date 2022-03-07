@@ -1,4 +1,6 @@
 """
+.. _ieeg-example:
+
 .. currentmodule:: mne_bids
 
 ====================================
@@ -195,7 +197,7 @@ T1_bids_path = write_anat(T1_fname, bids_path, deface=True,
 #
 # `acpc_aligned=True` affirms that our MRI is aligned to ACPC
 # if this is not true, convert to `fsaverage` (see below)!
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
                montage=montage, acpc_aligned=True, overwrite=True)
 
 # check our output
@@ -270,8 +272,15 @@ print(text)
 # Here we'll use the MNI Talairach transform to get to ``fsaverage`` space
 # from "mri" aka surface RAS space.
 # ``fsaverage`` is very useful for group analysis as shown in
-# `Working with SEEG
-# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
+# :ref:`tut-working-with-seeg`. Note, this is only a linear transform and so
+# one loses quite a bit of accuracy relative to the needs of intracranial
+# researchers so it is quite suboptimal. A better option is to use a
+# symmetric diffeomorphic transform to create a one-to-one mapping of brain
+# voxels from the individual's brain to the template as shown in
+# :ref:`tut-ieeg-localize`. Even so, it's better to provide the coordinates
+# in the individual's brain space, as was done above, so that the researcher
+# who uses the coordinates has the ability to tranform them to a template
+# of their choice.
 
 # ensure the output path doesn't contain any leftover files from previous
 # tests and example runs
@@ -293,7 +302,7 @@ montage.apply_trans(trans)  # head->mri
 montage.apply_trans(mri_mni_t)
 
 # write to BIDS, this time with a template coordinate system
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
                montage=montage, overwrite=True)
 
 # read in the BIDS dataset

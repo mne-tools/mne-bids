@@ -40,6 +40,8 @@ Detailed list of changes
 Enhancements
 ^^^^^^^^^^^^
 
+- Add experimental support for fNIRS (SNIRF) files in :func:`mne_bids.write_raw_bids`, by `Robert Luke`_ (:gh:`406`)
+
 - Add support for CNT (Neuroscan) files in :func:`mne_bids.write_raw_bids`, by `Yorguin Mantilla`_ (:gh:`924`)
 
 - Add the ability to write multiple landmarks with :func:`mne_bids.write_anat` (e.g. to have separate landmarks for different sessions) via the new ``kind`` parameter, by `Alexandre Gramfort`_ (:gh:`955`)
@@ -48,7 +50,7 @@ Enhancements
 
 - Add support for iEEG data in the coordinate frame ``Pixels``; although MNE-Python does not recognize this coordinate frame and so it will be set to ``unknown`` in the montage, MNE-Python can still be used to analyze this kind of data, by `Alex Rockhill`_ (:gh:`976`)
 
-- Add experimental support for fNIRS (SNIRF) files in :func:`mne_bids.write_raw_bids`, by `Robert Luke`_ (:gh:`406`)
+- Add an explanation in :ref:`ieeg-example` of why it is better to have intracranial data in individual rather than template coordinates, by `Alex Rockhill`_ (:gh:`975`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
