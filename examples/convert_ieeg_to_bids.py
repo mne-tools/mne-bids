@@ -73,7 +73,6 @@ misc_path = mne.datasets.misc.data_path()
 raw = mne.io.read_raw_fif(op.join(
     misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
-raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})  # fake intracranial
 subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 
 # %%
@@ -292,7 +291,6 @@ if op.exists(bids_root):
 raw = mne.io.read_raw_fif(op.join(
     misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
-raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})  # fake intracranial
 
 # get Talairach transform
 mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
