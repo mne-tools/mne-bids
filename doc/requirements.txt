@@ -8,3 +8,4 @@ matplotlib
 pillow
 pandas
 setuptools
+mne-nirs

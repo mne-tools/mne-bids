@@ -16,9 +16,6 @@ data. Specifically, we will follow these steps:
 
 .. currentmodule:: mne_bids
 
-.. _BrainVision format: https://www.brainproducts.com/productdetails.php?id=21&tab=5
-.. _CapTrak: https://www.fieldtriptoolbox.org/faq/coordsys/#details-of-the-captrak-coordinate-system
-
 """  # noqa: E501
 
 # Authors: Robert Luke <code@robertluke.net>
@@ -31,7 +28,6 @@ import os.path as op
 import shutil
 import tempfile
 
-import pooch
 import mne
 import mne_nirs  # For convenient downloading of example data
 
@@ -186,7 +182,7 @@ print(text)
 # %%
 # Now it's time to manually check the BIDS directory and the meta files to add
 # all the information that MNE-BIDS could not infer. For instance, you must
-# describe Authors. 
+# describe Authors.
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
