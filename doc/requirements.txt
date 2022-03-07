@@ -9,3 +9,4 @@ pillow
 pandas
 setuptools
 mne-nirs
+seaborn
