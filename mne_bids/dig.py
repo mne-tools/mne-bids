@@ -455,7 +455,7 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
         'subject': bids_path.subject,
         'session': bids_path.session,
         'acquisition': bids_path.acquisition,
-        'space': coord_frame
+        'space': None if bids_path.datatype == 'nirs' else coord_frame
     }
     channels_suffix = \
         'optodes' if bids_path.datatype == 'nirs' else 'electrodes'

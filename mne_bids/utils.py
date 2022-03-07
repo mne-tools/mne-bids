@@ -298,7 +298,7 @@ def _extract_landmarks(dig):
             coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
             coord_frame['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['coord_frame']
 
-    assert len(set(coord_frame.values())) == 1  # must all be the same
+    assert len(set(coord_frame.values())) < 2  # must all be the same
 
     return coords
 
