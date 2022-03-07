@@ -56,8 +56,7 @@ print_dir_tree(data_dir)
 # compliant dataset from this single file.
 
 # Specify file to use as input to BIDS generation process
-file_path = op.join(data_dir, "sub-01", "nirs",
-                    "sub-01_task-tapping_nirs.snirf")
+file_path = data_dir / "sub-01" / "nirs" / "sub-01_task-tapping_nirs.snirf"
 
 # %%
 # Convert to BIDS
