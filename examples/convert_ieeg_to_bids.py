@@ -20,6 +20,9 @@ data. Specifically, we will follow these steps:
 
 5. Repeat the process for the ``fsaverage`` template coordinate frame.
 
+6. Repeat the process for one of the other standard template coordinate frames
+   allowed by BIDS.
+
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
 
@@ -50,6 +53,7 @@ refer to the `iEEG part of the BIDS specification`_.
 # %%
 
 import os.path as op
+import numpy as np
 import shutil
 
 from nilearn.plotting import plot_anat
@@ -331,3 +335,133 @@ montage.add_mni_fiducials(subjects_dir=subjects_dir)
 # ``montage.add_estimated_fiducials(template, os.environ['FREESURFER_HOME'])``
 # where ``template`` maybe be ``cvs_avg35_inMNI152`` for instance
 raw.set_montage(montage)
+
+# %%
+# Step 6: Store coordinates in another template space accepted by BIDS
+# --------------------------------------------------------------------
+# As of thid writing, BIDS accepts channel coordinates in reference to the
+# the following template spaces: ``ICBM452AirSpace``, ``ICBM452Warp5Space``,
+# ``IXI549Space``, ``fsaverage``, ``fsaverageSym``, ``fsLR``, ``MNIColin27``,
+# ``MNI152Lin``, ``MNI152NLin2009[a-c][Sym|Asym]``, ``MNI152NLin6Sym``,
+# ``MNI152NLin6ASym``, ``MNI305``, ``NIHPD``, ``OASIS30AntsOASISAnts``,
+# ``OASIS30Atropos``, ``Talairach`` and ``UNCInfant``. As discussed above,
+# it is recommended to share the coordinates in the individual subject's
+# anatomical reference frame so that researchers who use the data can
+# transform the coordinates to any of these templates that they choose. If
+# BIDS-formatted data is shared in one of these template coordinate frames,
+# the data can still be analyzed in MNE-Python. However, MNE-Python only
+# recognizes a few coordinate frames (so that coordinate frames that are
+# not regularly used by the MNE community don't misleadingly appear to be
+# being fully maintained when they are not) so you'll need a bit more
+# know-how, which we will go over below.
+
+# ensure the output path doesn't contain any leftover files from previous
+# tests and example runs
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+
+# first we'll write our data as if it were MNI152NLin2009bAsym coordinates
+# (you would need to transform your coordinates to this template first)
+bids_path.update(datatype='ieeg', space='MNI152NLin2009bAsym')
+
+# load our raw data again
+raw = mne.io.read_raw_fif(op.join(
+    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+
+# get the montage as stored in raw
+# MNE stores coordinates in raw objects in "head" coordinates for consistency
+montage = raw.get_montage()
+
+# define a transform to MNI152NLin2009bAsym (fake it)
+# MNE-Python doesn't recognize MNI152NLin2009bAsym, so we have to use
+# the unknown coordinate frame
+head_template_t = np.array([[1.0, 0.1, 0.2, 10.1],
+                            [-0.1, 1.0, 0.1, -20.3],
+                            [0.2, -0.1, 1.0, -30.7],
+                            [0.0, 0.0, 0.0, 1.0]])
+head_template_trans = mne.transforms.Transform(
+    fro='head', to='unknown', trans=head_template_t)
+montage.apply_trans(head_template_trans)
+
+# write to BIDS, with the montage in fsaverage coordinates
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
+               montage=montage, overwrite=True)
+
+# %%
+# Now, let's see how we would work with the data in MNE. As shown below, the
+# montage has the same coordinates as when it was written, but the coordinate
+# frame is unknown.
+
+# read back in the raw data
+raw = read_raw_bids(bids_path=bids_path)
+
+# get the montage
+montage2 = raw.get_montage()
+print('Montage set to: ' + montage2.get_positions()['coord_frame'])
+
+# check that we can recover the coordinates
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=montage2.dig[0]['r'],
+          saved=montage.dig[0]['r']))
+
+# %%
+# To work with this data in the template coordinate frame, all the same steps
+# can be followed in :ref:`tut-working-with-seeg` and
+# :ref:`tut-working-with-ecog` after the montage is transformed to surface
+# RAS coordinates for the template MRI (if it isn't there already).
+#
+# First we'll need the ``subjects_dir`` where the recon-all for the template
+# brain is stored.
+#
+# .. code-block:: python
+#
+#    subjects_dir = op.join(misc_path, 'subjects')  # for example
+#    # add some plotting keyword arguments
+#    brain_kwargs = dict(cortex='low_contrast', alpha=0.2, background='white')
+#
+# If the montage is already in surface RAS for the template MRI, we can use:
+#
+# .. code-block:: python
+#
+#      # identity transform since 'unknown' is already 'mri' == surface RAS
+#      # for the template brain MRI
+#      trans = mne.transforms.Transform(
+#          fro='unknown', to='mri', trans=np.eye(4))
+#      brain = mne.viz.Brain('sample_seeg', subjects_dir=subjects_dir,
+#          **brain_kwargs)
+#      brain.add_sensors(raw.info, trans=trans)
+#
+# If the montage was in voxel coordinates, we'll first have to transform
+# to surface RAS:
+#
+# .. code-block:: python
+#
+#      import nibabel as nib
+#      template_T1 = nib.load(op.join(subjects_dir, 'MNI152NLin2009bAsym',
+#                                     'mri', 'T1.mgz'))
+#      trans = mne.transforms.Transform(  # use vox to surface RAS transform
+#          fro='unknown', to='mri', trans=template_T1.header.get_vox2ras_tkr())
+#      brain = mne.viz.Brain(
+#          'sample_seeg', subjects_dir=subjects_dir, **brain_kwargs)
+#      brain.add_sensors(raw.info, trans=trans)
+#
+#
+# Finally, if the montage was in scanner RAS coordinates, we'll have to
+# transform it back to voxels first before going to surface RAS:
+#
+# .. code-block:: python
+#
+#      import nibabel as nib
+#      template_T1 = nib.load(op.join(subjects_dir, 'MNI152NLin2009bAsym',
+#                                     'mri', 'T1.mgz'))
+#      ras_vox_t = template_T1.header.get_ras2vox()
+#      vox_mri_t = template_T1.header.get_vox2ras_tkr()
+#      ras_mri_t = np.dot(ras_vox_t, vox_mri_t)  # ras->vox with vox->mri
+#      trans = mne.transforms.Transform(
+#          fro='unknown', to='mri', trans=ras_mri_t)
+#      brain = mne.viz.Brain(
+#          'sample_seeg', subjects_dir=subjects_dir, **brain_kwargs)
+#      brain.add_sensors(raw.info, trans=trans)

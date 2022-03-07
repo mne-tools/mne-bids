@@ -1605,6 +1605,19 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not data_is_emptyroom:
+        if bids_path.space is None:
+            sensor_coord_system = orient
+        elif orient == 'n/a':
+            sensor_coord_system = bids_path.space
+        elif orient.lower() != bids_path.space.lower():
+            raise ValueError(f'BIDSPath.space {bids_path.space} conflicts'
+                             f'with filetype {ext} which has coordinate '
+                             f'frame {orient}')
+        _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
+                                sensor_coord_system=sensor_coord_system,
+                                fname=coordsystem_path.fpath,
+                                datatype=bids_path.datatype,
+                                overwrite=overwrite)
         _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
                                 sensor_coord_system=orient,
                                 fname=coordsystem_path.fpath,
