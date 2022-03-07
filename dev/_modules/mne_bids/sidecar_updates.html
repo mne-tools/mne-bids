@@ -217,10 +217,15 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
-<span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">DigMontage</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">DigMontage</span><span class="p">,</span> <span class="n">make_dig_montage</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">_check_on_missing</span><span class="p">,</span> <span class="n">_on_missing</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_fiducials</span>
+<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
+
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_write_json</span>
 
@@ -349,7 +354,8 @@
 
 <div class="viewcode-block" id="update_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">update_anat_landmarks</span><span class="p">(</span>
-    <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Update the anatomical landmark coordinates of an MRI scan.</span>
 
@@ -360,14 +366,29 @@
 <span class="sd">    ----------</span>
 <span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        Path of the MR image.</span>
-<span class="sd">    landmarks : mne.channels.DigMontage</span>
+<span class="sd">    landmarks : mne.channels.DigMontage | path-like</span>
 <span class="sd">        An :class:`mne.channels.DigMontage` instance with coordinates for the</span>
 <span class="sd">        nasion and left and right pre-auricular points in MRI voxel</span>
-<span class="sd">        coordinates.</span>
+<span class="sd">        coordinates. Alternatively, the path to a ``*-fiducials.fif`` file as</span>
+<span class="sd">        produced by the MNE-Python coregistration GUI or via</span>
+<span class="sd">        :func:`mne.io.write_fiducials`.</span>
 
 <span class="sd">        .. note:: :func:`mne_bids.get_anat_landmarks` provides a convenient and</span>
 <span class="sd">                  reliable way to generate the landmark coordinates in the</span>
 <span class="sd">                  required coordinate system.</span>
+
+<span class="sd">        .. note:: If ``path-like``, ``fs_subject`` and ``fs_subjects_dir``</span>
+<span class="sd">                  must be provided as well.</span>
+
+<span class="sd">        .. versionchanged:: 0.10</span>
+<span class="sd">           Added support for ``path-like`` input.</span>
+<span class="sd">    fs_subject : str | None</span>
+<span class="sd">        The subject identifier used for FreeSurfer. Must be provided if</span>
+<span class="sd">        ``landmarks`` is ``path-like``; otherwise, it will be ignored.</span>
+<span class="sd">    fs_subjects_dir : path-like | None</span>
+<span class="sd">        The FreeSurfer subjects directory. If ``None``, defaults to the</span>
+<span class="sd">        ``SUBJECTS_DIR`` environment variable. Must be provided if</span>
+<span class="sd">        ``landmarks`` is ``path-like``; otherwise, it will be ignored.</span>
 <span class="sd">    kind : str | None</span>
 <span class="sd">        The suffix of the anatomical landmark names in the JSON sidecar.</span>
 <span class="sd">        A suffix might be present e.g. to distinguish landmarks between</span>
@@ -391,7 +412,9 @@
 <span class="sd">    .. versionadded:: 0.8</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;bids_path&#39;</span><span class="p">)</span>
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">DigMontage</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;landmarks&#39;</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span>
+        <span class="n">item</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">DigMontage</span><span class="p">,</span> <span class="s1">&#39;path-like&#39;</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;landmarks&#39;</span>
+    <span class="p">)</span>
     <span class="n">_check_on_missing</span><span class="p">(</span><span class="n">on_missing</span><span class="p">)</span>
 
     <span class="c1"># Do some path verifications and fill in some gaps the users might have</span>
@@ -439,6 +462,19 @@
             <span class="sa">f</span><span class="s1">&#39;bids_path. Tried the following filenames: &#39;</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">tried_paths</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">DigMontage</span><span class="p">):</span>  <span class="c1"># it&#39;s pathlike</span>
+        <span class="k">if</span> <span class="n">fs_subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;You must provide the &quot;fs_subject&quot; parameter when passing the &#39;</span>
+                <span class="s1">&#39;path to fiducials&#39;</span>
+            <span class="p">)</span>
+        <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_get_landmarks_from_fiducials_file</span><span class="p">(</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+            <span class="n">fname</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span>
+            <span class="n">fs_subject</span><span class="o">=</span><span class="n">fs_subject</span><span class="p">,</span>
+            <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="n">fs_subjects_dir</span>
+        <span class="p">)</span>
+
     <span class="n">positions</span> <span class="o">=</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
     <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">!=</span> <span class="s1">&#39;mri_voxel&#39;</span><span class="p">:</span>
@@ -460,7 +496,10 @@
         <span class="k">if</span> <span class="n">coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">missing_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">name_to_coords_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+            <span class="c1"># Funnily, np.float64 is JSON-serializabe, while np.float32 is not!</span>
+            <span class="c1"># Thus, cast to float64 to avoid issues (which e.g. may arise when</span>
+            <span class="c1"># fiducials were read from disk!)</span>
+            <span class="n">name_to_coords_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">missing_points</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -498,6 +537,50 @@
         <span class="n">mri_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span>
 
     <span class="n">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path_json</span><span class="p">,</span> <span class="n">entries</span><span class="o">=</span><span class="n">mri_json</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_landmarks_from_fiducials_file</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span>
+                                       <span class="n">fs_subjects_dir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get anatomical landmarks from fiducials file, in MRI voxel space.&quot;&quot;&quot;</span>
+    <span class="c1"># avoid dicrular imports</span>
+    <span class="kn">from</span> <span class="nn">mne_bids.write</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">_get_t1w_mgh</span><span class="p">,</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">,</span> <span class="n">_get_fid_coords</span>
+    <span class="p">)</span>
+
+    <span class="n">digpoints</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+    <span class="c1"># All of this should be guaranteed, but better be safe than sorry!</span>
+    <span class="k">assert</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span>
+    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ident&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span>
+    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;ident&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span>
+    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;ident&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span>
+
+    <span class="n">montage_loaded</span> <span class="o">=</span> <span class="n">make_dig_montage</span><span class="p">(</span>
+        <span class="n">lpa</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
+        <span class="n">nasion</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
+        <span class="n">rpa</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
+        <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span>
+    <span class="p">)</span>
+    <span class="n">landmark_coords_mri</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span><span class="n">dig_points</span><span class="o">=</span><span class="n">montage_loaded</span><span class="o">.</span><span class="n">dig</span><span class="p">)</span>
+    <span class="n">landmark_coords_mri</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span>
+         <span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span>
+         <span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">])</span>
+    <span class="p">)</span>
+
+    <span class="n">t1w_mgh</span> <span class="o">=</span> <span class="n">_get_t1w_mgh</span><span class="p">(</span><span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="p">)</span>
+    <span class="n">landmark_coords_voxels</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span>
+        <span class="n">mri_landmarks</span><span class="o">=</span><span class="n">landmark_coords_mri</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># in mm</span>
+        <span class="n">t1_mgh</span><span class="o">=</span><span class="n">t1w_mgh</span>
+    <span class="p">)</span>
+    <span class="n">montage_voxels</span> <span class="o">=</span> <span class="n">make_dig_montage</span><span class="p">(</span>
+        <span class="n">lpa</span><span class="o">=</span><span class="n">landmark_coords_voxels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">nasion</span><span class="o">=</span><span class="n">landmark_coords_voxels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">rpa</span><span class="o">=</span><span class="n">landmark_coords_voxels</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+        <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">montage_voxels</span>
 </pre></div>
 
               </div>

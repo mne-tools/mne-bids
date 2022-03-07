@@ -426,8 +426,10 @@ Use this parameter e.g. if the T1 scan was recorded during a different
 session than the MEG. It is even possible to point to a T1 image stored
 in an entirely different BIDS dataset than the MEG data.</p>
 </dd>
-<dt><strong>fs_subject</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The subject identifier used for FreeSurfer. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to
-the <code class="docutils literal notranslate"><span class="pre">subject</span></code> entity in <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>.</p>
+<dt><strong>fs_subject</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The subject identifier used for FreeSurfer.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.10: </span>Does not default anymore to <code class="docutils literal notranslate"><span class="pre">bids_path.subject</span></code> if <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
 </dd>
 <dt><strong>fs_subjects_dir</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/glossary.html#term-path-like" title="(in MNE v1.0)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The FreeSurfer subjects directory. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to the
 <code class="docutils literal notranslate"><span class="pre">SUBJECTS_DIR</span></code> environment variable.</p>

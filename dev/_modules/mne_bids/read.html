@@ -1012,9 +1012,11 @@
 <span class="sd">        Use this parameter e.g. if the T1 scan was recorded during a different</span>
 <span class="sd">        session than the MEG. It is even possible to point to a T1 image stored</span>
 <span class="sd">        in an entirely different BIDS dataset than the MEG data.</span>
-<span class="sd">    fs_subject : str | None</span>
-<span class="sd">        The subject identifier used for FreeSurfer. If ``None``, defaults to</span>
-<span class="sd">        the ``subject`` entity in ``bids_path``.</span>
+<span class="sd">    fs_subject : str</span>
+<span class="sd">        The subject identifier used for FreeSurfer.</span>
+
+<span class="sd">        .. versionchanged:: 0.10</span>
+<span class="sd">           Does not default anymore to ``bids_path.subject`` if ``None``.</span>
 <span class="sd">    fs_subjects_dir : path-like | None</span>
 <span class="sd">        The FreeSurfer subjects directory. If ``None``, defaults to the</span>
 <span class="sd">        ``SUBJECTS_DIR`` environment variable.</span>
@@ -1130,11 +1132,15 @@
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mri_coords_dict</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span>
 
-    <span class="c1"># The MRI landmarks are in &quot;voxels&quot;. We need to convert the to the</span>
-    <span class="c1"># neuromag RAS coordinate system in order to compare the with MEG landmarks</span>
-    <span class="c1"># see also: `mne_bids.write.write_anat`</span>
+    <span class="c1"># The MRI landmarks are in &quot;voxels&quot;. We need to convert them to the</span>
+    <span class="c1"># Neuromag RAS coordinate system in order to compare them with MEG</span>
+    <span class="c1"># landmarks. See also: `mne_bids.write.write_anat`</span>
     <span class="k">if</span> <span class="n">fs_subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Passing &quot;fs_subject=None&quot; has been deprecated and will raise &#39;</span>
+             <span class="s1">&#39;an error in future versions. Please explicitly specify the &#39;</span>
+             <span class="s1">&#39;FreeSurfer subject name.&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="n">fs_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">meg_bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span>
+
     <span class="n">fs_subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">fs_t1_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span> <span class="o">/</span> <span class="s1">&#39;mri&#39;</span> <span class="o">/</span> <span class="s1">&#39;T1.mgz&#39;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fs_t1_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
