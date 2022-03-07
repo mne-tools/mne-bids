@@ -9,10 +9,15 @@
 import json
 from collections import OrderedDict
 
-from mne.channels import DigMontage
+import numpy as np
+
+from mne.channels import DigMontage, make_dig_montage
 from mne.utils import (
     logger, _validate_type, verbose, _check_on_missing, _on_missing
 )
+from mne.io import read_fiducials
+from mne.io.constants import FIFF
+
 from mne_bids import BIDSPath
 from mne_bids.utils import _write_json
 
@@ -141,7 +146,8 @@ def _update_sidecar(sidecar_fname, key, val):
 
 @verbose
 def update_anat_landmarks(
-    bids_path, landmarks, kind=None, on_missing='raise', verbose=None
+    bids_path, landmarks, *, fs_subject=None, fs_subjects_dir=None,
+    kind=None, on_missing='raise', verbose=None
 ):
     """Update the anatomical landmark coordinates of an MRI scan.
 
@@ -152,14 +158,29 @@ def update_anat_landmarks(
     ----------
     bids_path : BIDSPath
         Path of the MR image.
-    landmarks : mne.channels.DigMontage
+    landmarks : mne.channels.DigMontage | path-like
         An :class:`mne.channels.DigMontage` instance with coordinates for the
         nasion and left and right pre-auricular points in MRI voxel
-        coordinates.
+        coordinates. Alternatively, the path to a ``*-fiducials.fif`` file as
+        produced by the MNE-Python coregistration GUI or via
+        :func:`mne.io.write_fiducials`.
 
         .. note:: :func:`mne_bids.get_anat_landmarks` provides a convenient and
                   reliable way to generate the landmark coordinates in the
                   required coordinate system.
+
+        .. note:: If ``path-like``, ``fs_subject`` and ``fs_subjects_dir``
+                  must be provided as well.
+
+        .. versionchanged:: 0.10
+           Added support for ``path-like`` input.
+    fs_subject : str | None
+        The subject identifier used for FreeSurfer. Must be provided if
+        ``landmarks`` is ``path-like``; otherwise, it will be ignored.
+    fs_subjects_dir : path-like | None
+        The FreeSurfer subjects directory. If ``None``, defaults to the
+        ``SUBJECTS_DIR`` environment variable. Must be provided if
+        ``landmarks`` is ``path-like``; otherwise, it will be ignored.
     kind : str | None
         The suffix of the anatomical landmark names in the JSON sidecar.
         A suffix might be present e.g. to distinguish landmarks between
@@ -183,7 +204,9 @@ def update_anat_landmarks(
     .. versionadded:: 0.8
     """
     _validate_type(item=bids_path, types=BIDSPath, item_name='bids_path')
-    _validate_type(item=landmarks, types=DigMontage, item_name='landmarks')
+    _validate_type(
+        item=landmarks, types=(DigMontage, 'path-like'), item_name='landmarks'
+    )
     _check_on_missing(on_missing)
 
     # Do some path verifications and fill in some gaps the users might have
@@ -231,6 +254,19 @@ def update_anat_landmarks(
             f'bids_path. Tried the following filenames: '
             f'{", ".join([p.name for p in tried_paths])}')
 
+    if not isinstance(landmarks, DigMontage):  # it's pathlike
+        if fs_subject is None:
+            raise ValueError(
+                'You must provide the "fs_subject" parameter when passing the '
+                'path to fiducials'
+            )
+        landmarks = _get_landmarks_from_fiducials_file(
+            bids_path=bids_path,
+            fname=landmarks,
+            fs_subject=fs_subject,
+            fs_subjects_dir=fs_subjects_dir
+        )
+
     positions = landmarks.get_positions()
     coord_frame = positions['coord_frame']
     if coord_frame != 'mri_voxel':
@@ -252,7 +288,10 @@ def update_anat_landmarks(
         if coords is None:
             missing_points.append(name)
         else:
-            name_to_coords_map[name] = list(coords)
+            # Funnily, np.float64 is JSON-serializabe, while np.float32 is not!
+            # Thus, cast to float64 to avoid issues (which e.g. may arise when
+            # fiducials were read from disk!)
+            name_to_coords_map[name] = list(coords.astype('float64'))
 
     if missing_points:
         raise ValueError(
@@ -290,3 +329,47 @@ def update_anat_landmarks(
         mri_json['AnatomicalLandmarkCoordinates'][name] = coords
 
     update_sidecar_json(bids_path=bids_path_json, entries=mri_json)
+
+
+def _get_landmarks_from_fiducials_file(*, bids_path, fname, fs_subject,
+                                       fs_subjects_dir):
+    """Get anatomical landmarks from fiducials file, in MRI voxel space."""
+    # avoid dicrular imports
+    from mne_bids.write import (
+        _get_t1w_mgh, _mri_landmarks_to_mri_voxels, _get_fid_coords
+    )
+
+    digpoints, coord_frame = read_fiducials(fname)
+
+    # All of this should be guaranteed, but better be safe than sorry!
+    assert coord_frame == FIFF.FIFFV_COORD_MRI
+    assert digpoints[0]['ident'] == FIFF.FIFFV_POINT_LPA
+    assert digpoints[1]['ident'] == FIFF.FIFFV_POINT_NASION
+    assert digpoints[2]['ident'] == FIFF.FIFFV_POINT_RPA
+
+    montage_loaded = make_dig_montage(
+        lpa=digpoints[0]['r'],
+        nasion=digpoints[1]['r'],
+        rpa=digpoints[2]['r'],
+        coord_frame='mri'
+    )
+    landmark_coords_mri, _ = _get_fid_coords(dig_points=montage_loaded.dig)
+    landmark_coords_mri = np.asarray(
+        (landmark_coords_mri['lpa'],
+         landmark_coords_mri['nasion'],
+         landmark_coords_mri['rpa'])
+    )
+
+    t1w_mgh = _get_t1w_mgh(fs_subject, fs_subjects_dir)
+    landmark_coords_voxels = _mri_landmarks_to_mri_voxels(
+        mri_landmarks=landmark_coords_mri * 1000,  # in mm
+        t1_mgh=t1w_mgh
+    )
+    montage_voxels = make_dig_montage(
+        lpa=landmark_coords_voxels[0],
+        nasion=landmark_coords_voxels[1],
+        rpa=landmark_coords_voxels[2],
+        coord_frame='mri_voxel'
+    )
+
+    return montage_voxels

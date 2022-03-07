@@ -804,9 +804,11 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         Use this parameter e.g. if the T1 scan was recorded during a different
         session than the MEG. It is even possible to point to a T1 image stored
         in an entirely different BIDS dataset than the MEG data.
-    fs_subject : str | None
-        The subject identifier used for FreeSurfer. If ``None``, defaults to
-        the ``subject`` entity in ``bids_path``.
+    fs_subject : str
+        The subject identifier used for FreeSurfer.
+
+        .. versionchanged:: 0.10
+           Does not default anymore to ``bids_path.subject`` if ``None``.
     fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable.
@@ -922,11 +924,15 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
             f'{mri_coords_dict}'
         )
 
-    # The MRI landmarks are in "voxels". We need to convert the to the
-    # neuromag RAS coordinate system in order to compare the with MEG landmarks
-    # see also: `mne_bids.write.write_anat`
+    # The MRI landmarks are in "voxels". We need to convert them to the
+    # Neuromag RAS coordinate system in order to compare them with MEG
+    # landmarks. See also: `mne_bids.write.write_anat`
     if fs_subject is None:
+        warn('Passing "fs_subject=None" has been deprecated and will raise '
+             'an error in future versions. Please explicitly specify the '
+             'FreeSurfer subject name.', DeprecationWarning)
         fs_subject = f'sub-{meg_bids_path.subject}'
+
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
     fs_t1_path = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not fs_t1_path.exists():

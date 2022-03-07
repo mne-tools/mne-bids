@@ -186,13 +186,13 @@ _cardinal_ident_mapping = {
 }
 
 
-def _get_fid_coords(dig, raise_error=True):
+def _get_fid_coords(dig_points, raise_error=True):
     """Get the fiducial coordinates from a DigMontage.
 
     Parameters
     ----------
-    dig : mne.channels.DigMontage
-        The dig montage with the fiducial coordinates.
+    dig_points : array-like of DigPoint
+        The digitization points of the fiducial coordinates.
     raise_error : bool
         Whether to raise an error if the coordinates are missing or
         incorrectly formatted
@@ -207,7 +207,7 @@ def _get_fid_coords(dig, raise_error=True):
     fid_coords = Bunch(nasion=None, lpa=None, rpa=None)
     fid_coord_frames = dict()
 
-    for d in dig:
+    for d in dig_points:
         if d['kind'] == FIFF.FIFFV_POINT_CARDINAL:
             key = _cardinal_ident_mapping[d['ident']]
             fid_coords[key] = d['r']
@@ -614,9 +614,10 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
         The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
-    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-    ras2vox_tkr = linalg.inv(vox2ras_tkr)
-    vox_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    vox2ras_tkr_t = t1_mgh.header.get_vox2ras_tkr()
+    ras_tkr2vox_t = linalg.inv(vox2ras_tkr_t)
+    vox_landmarks = apply_trans(ras_tkr2vox_t, mri_landmarks)
+
     return vox_landmarks
 
 
@@ -1789,14 +1790,12 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
         The measurement information from an electrophysiology recording of
         the subject with the anatomical landmarks stored in its
         :class:`mne.channels.DigMontage`.
-    trans : mne.transforms.Transform | str
+    trans : mne.transforms.Transform | path-like
         The transformation matrix from head to MRI coordinates. Can
         also be a string pointing to a ``.trans`` file containing the
-        transformation matrix. If ``None`` and no ``landmarks`` parameter is
-        passed, no sidecar JSON file will be created.
+        transformation matrix.
     fs_subject : str
-        The subject identifier used for FreeSurfer. If ``None``, defaults to
-        the ``subject`` entity in ``bids_path``. Must be provided to write
+        The subject identifier used for FreeSurfer. Must be provided to write
         the anatomical landmarks if they are not provided in MRI voxel space.
         This is because the head coordinate of a
         :class:`mne.channels.DigMontage` is aligned using FreeSurfer surfaces.
@@ -1820,9 +1819,38 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     landmarks = np.asarray((coords_dict['lpa'],
                             coords_dict['nasion'],
                             coords_dict['rpa']))
+
     # get trans and ensure it is from head to MRI
     trans, _ = _get_trans(trans, fro='head', to='mri')
     landmarks = _meg_landmarks_to_mri_landmarks(landmarks, trans)
+
+    # Get FS T1 image in MGH format
+    t1w_mgh = _get_t1w_mgh(fs_subject, fs_subjects_dir)
+
+    # FS MGH image: go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
+    landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
+
+    # FS MGH image: go to T1 scanner space from T1 voxel space
+    landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
+
+    # Input image: go to T1 voxel space from T1 scanner space
+    if isinstance(image, BIDSPath):
+        image = image.fpath
+    img_nii = _load_image(image, name='image')
+    img_mgh = nib.MGHImage(img_nii.dataobj, img_nii.affine)
+    landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)
+
+    landmarks = mne.channels.make_dig_montage(
+        lpa=landmarks[0], nasion=landmarks[1], rpa=landmarks[2],
+        coord_frame='mri_voxel')
+
+    return landmarks
+
+
+def _get_t1w_mgh(fs_subject, fs_subjects_dir):
+    """Return the T1w image in MGH format."""
+    import nibabel as nib
+
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=True)
     t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not t1_fname.exists():
@@ -1831,19 +1859,7 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
                          f'got {Path(fs_subjects_dir) / fs_subject}')
     t1w_img = _load_image(str(t1_fname), name='T1.mgz')
     t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
-    # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
-    landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
-    # go to T1 scanner space from T1 voxel space
-    landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
-    if isinstance(image, BIDSPath):
-        image = image.fpath
-    img_nii = _load_image(image, name='image')
-    img_mgh = nib.MGHImage(img_nii.dataobj, img_nii.affine)
-    landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)
-    landmarks = mne.channels.make_dig_montage(
-        lpa=landmarks[0], nasion=landmarks[1], rpa=landmarks[2],
-        coord_frame='mri_voxel')
-    return landmarks
+    return t1w_mgh
 
 
 def _get_landmarks(landmarks, image_nii, kind=''):
