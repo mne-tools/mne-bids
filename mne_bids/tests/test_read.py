@@ -20,7 +20,8 @@ from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
 from mne_bids import BIDSPath
-from mne_bids.config import MNE_STR_TO_FRAME
+from mne_bids.config import (MNE_STR_TO_FRAME, BIDS_SHARED_COORDINATE_FRAMES,
+                             BIDS_TO_MNE_FRAMES)
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading)
@@ -733,8 +734,8 @@ def test_handle_eeg_coords_reading(tmp_path):
                                                suffix='coordsystem',
                                                extension='.json')
     _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
-    with pytest.warns(RuntimeWarning, match='EEG Coordinate frame is not '
-                                            'accepted BIDS keyword'):
+    with pytest.warns(RuntimeWarning, match='is not a BIDS-acceptable '
+                                            'coordinate frame for EEG'):
         raw_test = read_raw_bids(bids_path)
         assert raw_test.info['dig'] is None
 
@@ -842,25 +843,25 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(RuntimeWarning, match="Defaulting coordinate "
-                                                "frame to unknown"):
+        with pytest.warns(RuntimeWarning, match="not an MNE-Python "
+                                                "coordinate frame"):
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
             assert raw_test.info['dig'] is not None
 
     # check that standard template identifiers that are unsupported in
     # mne-python coordinate frames, still get read in, but produce a warning
-    coordinate_frames = ['individual', 'fsnative', 'scanner',
-                         'ICBM452AirSpace', 'NIHPD']
-    for coord_frame in coordinate_frames:
+    for coord_frame in BIDS_SHARED_COORDINATE_FRAMES:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(
-                RuntimeWarning, match=f"iEEG Coordinate frame {coord_frame} "
-                                      f"is not a readable BIDS keyword "):
+        if coord_frame in BIDS_TO_MNE_FRAMES:
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
-            assert raw_test.info['dig'] is not None
+        else:
+            with pytest.warns(RuntimeWarning, match="not an MNE-Python "
+                                                    "coordinate frame"):
+                raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
+        assert raw_test.info['dig'] is not None
 
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'ACPC')

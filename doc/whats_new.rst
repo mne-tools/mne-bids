@@ -54,6 +54,8 @@ Enhancements
 
 - :func:`mne_bids.update_anat_landmarks` can now directly work with fiducials saved from the MNE-Python coregistration GUI or :func:`mne.io.write_fiducials`, by Richard Höchenberger`_ (:gh:`977`)
 
+- All non-MNE-Python BIDS coordinate frames are now set to ``'unknown'`` on reading, by `Alex Rockhill`_ (:gh:`979`)
+
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

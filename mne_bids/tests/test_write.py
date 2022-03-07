@@ -3642,7 +3642,7 @@ def test_write_dig(tmpdir):
     coordsystem_path = bids_path.copy().update(
         task=None, run=None, suffix='coordsystem', extension='.json')
     with pytest.warns(RuntimeWarning,
-                      match='recognized by mne-python'):
+                      match='not an MNE-Python coordinate frame'):
         _read_dig_bids(electrodes_path, coordsystem_path,
                        bids_path.datatype, raw)
     montage2 = raw.get_montage()
