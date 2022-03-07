@@ -47,6 +47,8 @@ Enhancements
 
 - Add support for iEEG data in the coordinate frame ``Pixels``; although MNE-Python does not recognize this coordinate frame and so it will be set to ``unknown`` in the montage, MNE-Python can still be used to analyze this kind of data, by `Alex Rockhill`_ (:gh:`976`)
 
+- Add an explanation in :ref:`ieeg-example` of why it is better to have intracranial data in individual rather than template coordinates, by `Alex Rockhill`_ (:gh:`975`)
+
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
