@@ -26,7 +26,6 @@ data. Specifically, we will follow these steps:
 # We are importing everything we need for this example:
 import os.path as op
 import shutil
-import tempfile
 
 import mne
 import mne_nirs  # For convenient downloading of example data
@@ -110,7 +109,8 @@ subject_id = '01'
 
 # define a task name and a directory where to save the data to
 task = 'Tapping'
-bids_root = tempfile.mkdtemp()
+bids_root = data_dir.with_name(data_dir.name + '-bids')
+print(bids_root)
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
