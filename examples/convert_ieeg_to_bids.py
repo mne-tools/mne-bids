@@ -18,7 +18,7 @@ data. Specifically, we will follow these steps:
 
 4. Cite MNE-BIDS.
 
-5. Repeat the process for the ``fsaverage`` template coordinate frame.
+5. Repeat the process for the ``fsaverage`` template coordinate space.
 
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
@@ -115,13 +115,12 @@ montage.apply_trans(trans)  # head->mri
 # - `background on FreeSurfer`_
 # - `MNE-Python coordinate frames`_
 #
-# Currently, MNE-Python supports the ``mni_tal`` and ``mri`` coordinate frames,
+# MNE-Python supports uses ``mni_tal`` and ``mri`` coordinate frames,
 # corresponding to the ``fsaverage`` and ``ACPC`` (for an ACPC-aligned T1) BIDS
 # coordinate systems respectively. All other coordinate coordinate frames in
-# MNE-Python if written with :func:`mne_bids.write_raw_bids` are written with
-# coordinate system ``'Other'``. Note, then we suggest using
-# :func:`mne_bids.update_sidecar_json` to update the sidecar
-# ``*_coordsystem.json`` file to add additional information.
+# MNE-Python, if written with :func:`mne_bids.write_raw_bids`, must have
+# an :attr:`mne_bids.BIDSPath.space` specified, and will be read in with
+# the montage channel locations set to the coordinate frame 'unknown'.
 #
 # Step 2: Formatting as BIDS
 # --------------------------
@@ -207,7 +206,7 @@ print_dir_tree(bids_root)
 
 # %%
 # MNE-BIDS has created a suitable directory structure for us, and among other
-# meta data files, it started an ``events.tsv``` and ``channels.tsv`` file,
+# meta data files, it started an ``events.tsv`` and ``channels.tsv`` file,
 # and created an initial ``dataset_description.json`` file on top!
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
@@ -217,6 +216,7 @@ print_dir_tree(bids_root)
 
 search_folder_for_text('n/a', bids_root)
 
+# %%
 # Remember that there is a convenient JavaScript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
 # command line tool:
@@ -343,8 +343,8 @@ mni_head_t = mne.channels.compute_native_head_t(montage2)
 raw2.set_montage(montage2)
 
 # check that we can recover the coordinates
-print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
+print('Recovered coordinate head: {recovered}\n'
+      'Saved coordinate head:     {saved}'.format(
           recovered=raw2.info['chs'][0]['loc'][:3],
           saved=raw.info['chs'][0]['loc'][:3]))
 
@@ -368,7 +368,7 @@ print('Recovered coordinate: {recovered}\n'
 
 # %%
 # As you can see the coordinates stored in the ``raw`` object are slightly off.
-# This is because the head coordinate frame is defined by the fiducials
+# This is because the ``head`` coordinate frame is defined by the fiducials
 # (nasion, left and right pre-auricular points), and, in the first case,
 # the fiducials were found on the individual anatomy and then transformed
 # to MNI space, whereas, in the second case, they were found directly on
@@ -378,8 +378,8 @@ print('Recovered coordinate: {recovered}\n'
 # the positions are the same in MNI coordinates which is what is important.
 #
 # As a final step, let's go over how to assign the fiducials for a template
-# brain where they are not found for you. Many template coordinate frames
-# are allowed by BIDS but not used in MNE-Python.
+# brain where they are not found for you. Many template coordinate systems
+# are allowed by BIDS but are not used in MNE-Python.
 #
 # .. note::
 #     As of this writing, BIDS accepts channel coordinates in reference to the
@@ -563,7 +563,7 @@ print('Fiducial points determined from the template head anatomy in '
       f'scanner RAS:\nnasion: {nas}\nlpa:    {lpa}\nrpa:    {rpa}')
 
 # read raw in again to start over
-raw_ = read_raw_bids(bids_path=bids_path)
+raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
 # Now, it's the same as if we just got the montage from the raw in scanner RAS
@@ -603,3 +603,14 @@ print('Recovered coordinate: {recovered}\n'
       'Saved coordinate:     {saved}'.format(
           recovered=montage2.get_positions()['ch_pos']['LENT 1'],
           saved=montage.get_positions()['ch_pos']['LENT 1']))
+
+# %%
+# In summary, as we saw, these standard template spaces that are allowable by
+# BIDS are quite complicated. We therefore only cover these cases because
+# datasets are allowed to be in these coordinate systems, and we want to be
+# able to analyze them with MNE-Python. Because the coordinate space doesn't
+# specify a coordinate frame within that space for the standard templates
+# and because saving the raw data in the individual's ACPC space allows the
+# person analyzing the data to transform the positions to whatever template
+# they want, we recommend if at all possible, saving BIDS iEEG data in ACPC
+# space.
