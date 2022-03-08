@@ -42,6 +42,7 @@ montage = raw.get_montage()
 def test_dig_io(tmp_path):
     """Test passing different coordinate frames give proper warnings."""
     bids_root = tmp_path / 'bids1'
+    raw_test = raw.copy()
     for datatype in ('eeg', 'ieeg'):
         os.makedirs(op.join(bids_root, 'sub-01', 'ses-01', datatype))
 
@@ -53,7 +54,7 @@ def test_dig_io(tmp_path):
                                              space=None)
         with pytest.warns(RuntimeWarning,
                           match='Coordinate frame could not be inferred'):
-            _write_dig_bids(bids_path, raw, mnt, acpc_aligned=True)
+            _write_dig_bids(bids_path, raw_test, mnt, acpc_aligned=True)
 
     # test coordinate frame-BIDSPath.space mismatch
     mnt = montage.copy()
@@ -63,13 +64,13 @@ def test_dig_io(tmp_path):
                                          'or montage are in the CapTrak '
                                          'coordinate frame but '
                                          'BIDSPath.space is fsaverage'):
-        _write_dig_bids(bids_path, raw, mnt)
+        _write_dig_bids(bids_path, raw_test, mnt)
 
     # test MEG space conflict fif (ElektaNeuromag) != CTF
     bids_path = _bids_path.copy().update(
         root=bids_root, datatype='meg', space='CTF')
     with pytest.raises(ValueError, match='conflicts'):
-        write_raw_bids(raw, bids_path)
+        write_raw_bids(raw_test, bids_path)
 
 
 @pytest.mark.filterwarnings('ignore:The unit for chann*.:RuntimeWarning:mne')
@@ -120,11 +121,12 @@ def test_dig_template(tmp_path):
                 assert pos2['coord_frame'] == mne_coord_frame
 
     # test MEG
+    raw_test = raw.copy()
     for coord_frame in BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES:
         bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
                                              space=coord_frame)
-        write_raw_bids(raw, bids_path)
-        raw_test = read_raw_bids(bids_path)
-        for ch, ch2 in zip(raw.info['chs'], raw_test.info['chs']):
+        write_raw_bids(raw_test, bids_path)
+        raw_test2 = read_raw_bids(bids_path)
+        for ch, ch2 in zip(raw.info['chs'], raw_test2.info['chs']):
             np.testing.assert_array_equal(ch['loc'], ch2['loc'])
             assert ch['coord_frame'] == ch2['coord_frame']
