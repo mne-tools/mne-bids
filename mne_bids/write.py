@@ -55,7 +55,8 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
-                             ANONYMIZED_JSON_KEY_WHITELIST)
+                             ANONYMIZED_JSON_KEY_WHITELIST,
+                             BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES)
 
 
 _FIFF_SPLIT_SIZE = '2GB'  # MNE-Python default; can be altered during debugging
@@ -1605,8 +1606,23 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not data_is_emptyroom:
+        if bids_path.space is None:
+            sensor_coord_system = orient
+        elif orient == 'n/a':
+            sensor_coord_system = bids_path.space
+        elif bids_path.space in BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES:
+            sensor_coord_system = bids_path.space
+        elif orient != bids_path.space:
+            raise ValueError(f'BIDSPath.space {bids_path.space} conflicts '
+                             f'with filetype {ext} which has coordinate '
+                             f'frame {orient}')
         _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
-                                sensor_coord_system=orient,
+                                sensor_coord_system=sensor_coord_system,
+                                fname=coordsystem_path.fpath,
+                                datatype=bids_path.datatype,
+                                overwrite=overwrite)
+        _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
+                                sensor_coord_system=sensor_coord_system,
                                 fname=coordsystem_path.fpath,
                                 datatype=bids_path.datatype,
                                 overwrite=overwrite)
