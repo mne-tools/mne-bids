@@ -263,7 +263,8 @@
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
                              <span class="n">BIDS_VERSION</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">,</span> <span class="n">_map_options</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span>
                              <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">,</span> <span class="n">CONVERT_FORMATS</span><span class="p">,</span>
-                             <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">)</span>
+                             <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">,</span>
+                             <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES</span><span class="p">)</span>
 
 
 <span class="n">_FIFF_SPLIT_SIZE</span> <span class="o">=</span> <span class="s1">&#39;2GB&#39;</span>  <span class="c1"># MNE-Python default; can be altered during debugging</span>
@@ -1813,8 +1814,23 @@
 
     <span class="c1"># for MEG, we only write coordinate system</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sensor_coord_system</span> <span class="o">=</span> <span class="n">orient</span>
+        <span class="k">elif</span> <span class="n">orient</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span><span class="p">:</span>
+            <span class="n">sensor_coord_system</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="ow">in</span> <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES</span><span class="p">:</span>
+            <span class="n">sensor_coord_system</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span>
+        <span class="k">elif</span> <span class="n">orient</span> <span class="o">!=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;BIDSPath.space </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">space</span><span class="si">}</span><span class="s1"> conflicts &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;with filetype </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1"> which has coordinate &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;frame </span><span class="si">{</span><span class="n">orient</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">_write_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">hpi_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
-                                <span class="n">sensor_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
+                                <span class="n">sensor_coord_system</span><span class="o">=</span><span class="n">sensor_coord_system</span><span class="p">,</span>
+                                <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+                                <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+                                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+        <span class="n">_write_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">hpi_coord_system</span><span class="o">=</span><span class="n">orient</span><span class="p">,</span>
+                                <span class="n">sensor_coord_system</span><span class="o">=</span><span class="n">sensor_coord_system</span><span class="p">,</span>
                                 <span class="n">fname</span><span class="o">=</span><span class="n">coordsystem_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
                                 <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
                                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
@@ -3009,7 +3025,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-07.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-08.<br>
 </p>
     </div>
     

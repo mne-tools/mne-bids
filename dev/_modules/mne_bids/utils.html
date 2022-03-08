@@ -506,9 +506,7 @@
             <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">coord_frame</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
 
-    <span class="c1"># for now, we only support &quot;head&quot; coordinates</span>
-    <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">coord_frame</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="k">assert</span> <span class="n">frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">coord_frame</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">&lt;</span> <span class="mi">2</span>  <span class="c1"># must all be the same</span>
 
     <span class="k">return</span> <span class="n">coords</span>
 
@@ -711,7 +709,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-07.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-08.<br>
 </p>
     </div>
     
