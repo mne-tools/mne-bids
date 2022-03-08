@@ -280,7 +280,7 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
         Defaults to False.
 
     """
-    if raw.get_montage() is None or raw.get_montage().get_positions() is None:
+    if raw.get_montage() is None:
         dig = list()
         coords = dict()
     else:
