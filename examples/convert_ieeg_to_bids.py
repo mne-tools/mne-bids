@@ -115,7 +115,7 @@ montage.apply_trans(trans)  # head->mri
 # - `background on FreeSurfer`_
 # - `MNE-Python coordinate frames`_
 #
-# MNE-Python supports uses ``mni_tal`` and ``mri`` coordinate frames,
+# MNE-Python supports using ``mni_tal`` and ``mri`` coordinate frames,
 # corresponding to the ``fsaverage`` and ``ACPC`` (for an ACPC-aligned T1) BIDS
 # coordinate systems respectively. All other coordinate coordinate frames in
 # MNE-Python, if written with :func:`mne_bids.write_raw_bids`, must have
@@ -608,9 +608,9 @@ print('Recovered coordinate: {recovered}\n'
 # In summary, as we saw, these standard template spaces that are allowable by
 # BIDS are quite complicated. We therefore only cover these cases because
 # datasets are allowed to be in these coordinate systems, and we want to be
-# able to analyze them with MNE-Python. Because the coordinate space doesn't
-# specify a coordinate frame within that space for the standard templates
-# and because saving the raw data in the individual's ACPC space allows the
-# person analyzing the data to transform the positions to whatever template
-# they want, we recommend if at all possible, saving BIDS iEEG data in ACPC
-# space.
+# able to analyze them with MNE-Python. The template coordinate spaces
+# don't specify a coordinate frame, so it is better to save the raw data in
+# the individual's ACPC space allows the person analyzing the data to transform
+# the positions to whatever template they want. Thus, we recommend if at all
+# possible, saving BIDS iEEG data in ACPC coordinate space corresponding to the
+# individual subject's brain, not in a template coordinate frame.
