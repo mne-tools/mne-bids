@@ -73,6 +73,40 @@ def test_dig_io(tmp_path):
         write_raw_bids(raw_test, bids_path)
 
 
+def test_dig_pixels(tmp_path):
+    """Test dig stored correctly for the Pixels coordinate frame."""
+    bids_root = tmp_path / 'bids1'
+
+    # test coordinates in pixels
+    bids_path = _bids_path.copy().update(
+        root=bids_root, datatype='ieeg', space='Pixels')
+    os.makedirs(op.join(bids_root, 'sub-01', 'ses-01', bids_path.datatype),
+                exist_ok=True)
+    raw_test = raw.copy()
+    raw_test.pick_types(eeg=True)
+    raw_test.del_proj()
+    raw_test.set_channel_types({ch: 'ecog' for ch in raw_test.ch_names})
+
+    mnt = raw_test.get_montage()
+    # fake transform to pixel coordinates
+    mnt.apply_trans(mne.transforms.Transform('head', 'unknown'))
+    _write_dig_bids(bids_path, raw_test, mnt)
+    electrodes_path = bids_path.copy().update(
+        task=None, run=None, suffix='electrodes', extension='.tsv')
+    coordsystem_path = bids_path.copy().update(
+        task=None, run=None, suffix='coordsystem', extension='.json')
+    with pytest.warns(RuntimeWarning,
+                      match='not an MNE-Python coordinate frame'):
+        _read_dig_bids(electrodes_path, coordsystem_path,
+                       bids_path.datatype, raw_test)
+    mnt2 = raw_test.get_montage()
+    assert mnt2.get_positions()['coord_frame'] == 'unknown'
+    np.testing.assert_array_almost_equal(
+        np.array(list(mnt.get_positions()['ch_pos'].values())),
+        np.array(list(mnt2.get_positions()['ch_pos'].values()))
+    )
+
+
 @pytest.mark.filterwarnings('ignore:The unit for chann*.:RuntimeWarning:mne')
 def test_dig_template(tmp_path):
     """Test that eeg and ieeg dig are stored properly."""

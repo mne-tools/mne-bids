@@ -279,30 +279,6 @@ def _infer_eeg_placement_scheme(raw):
     return placement_scheme
 
 
-def _extract_landmarks(dig):
-    """Extract NAS, LPA, and RPA from raw.info['dig']."""
-    coords = dict()
-    coord_frame = dict()
-
-    landmarks = {d['ident']: d for d in dig
-                 if d['kind'] == FIFF.FIFFV_POINT_CARDINAL}
-    if landmarks:
-        if FIFF.FIFFV_POINT_NASION in landmarks:
-            coords['NAS'] = landmarks[FIFF.FIFFV_POINT_NASION]['r'].tolist()
-            coord_frame['NAS'] = (landmarks[FIFF.FIFFV_POINT_NASION]
-                                  ['coord_frame'])
-        if FIFF.FIFFV_POINT_LPA in landmarks:
-            coords['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['r'].tolist()
-            coord_frame['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['coord_frame']
-        if FIFF.FIFFV_POINT_RPA in landmarks:
-            coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
-            coord_frame['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['coord_frame']
-
-    assert len(set(coord_frame.values())) < 2  # must all be the same
-
-    return coords
-
-
 def _scale_coord_to_meters(coord, unit):
     """Scale units to meters (mne-python default)."""
     if unit == 'cm':

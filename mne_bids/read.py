@@ -28,7 +28,7 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              ANNOTATIONS_TO_KEEP,
                              reader, _map_options)
-from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping, verbose
+from mne_bids.utils import _get_ch_type_mapping, verbose
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype, get_bids_path_from_fname)
 
@@ -964,10 +964,8 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         extra_params['allow_maxshield'] = True
 
     raw = read_raw_bids(bids_path=meg_bids_path, extra_params=extra_params)
-    meg_coords_dict = _extract_landmarks(raw.info['dig'])
-    meg_landmarks = np.asarray((meg_coords_dict['LPA'],
-                                meg_coords_dict['NAS'],
-                                meg_coords_dict['RPA']))
+    pos = raw.get_montage().get_positions()
+    meg_landmarks = np.asarray((pos['lpa'], pos['nasion'], pos['rpa']))
 
     # Given the two sets of points, fit the transform
     trans_fitted = fit_matched_points(src_pts=meg_landmarks,
