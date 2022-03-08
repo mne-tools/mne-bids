@@ -233,13 +233,7 @@ search_folder_for_text('n/a', bids_root)
 # :func:`read_raw_bids` to read in the data.
 
 # read in the BIDS dataset to plot the coordinates
-raw = read_raw_bids(bids_path=bids_path)
-
-# compare with standard
-print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
-          recovered=raw.info['chs'][0]['loc'][:3],
-          saved=montage.dig[0]['r']))
+raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
 # Now we have to go back to "head" coordinates with the head->mri transform.
@@ -247,11 +241,31 @@ print('Recovered coordinate: {recovered}\n'
 # .. note:: If you were downloading this from ``OpenNeuro``, you would
 #           have to run the Freesurfer ``recon-all`` to get the transforms.
 
-montage = raw.get_montage()
+montage2 = raw2.get_montage()
+
 # this uses Freesurfer recon-all subject directory
-montage.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
+montage2.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
+
+# get head->mri trans, invert from mri->head
+trans2 = mne.transforms.invert_transform(
+    mne.channels.compute_native_head_t(montage2))
+
 # now the montage is properly in "head" and ready for analysis in MNE
-raw.set_montage(montage)
+raw2.set_montage(montage2)
+
+# get the monage, apply the trans and make sure it's the same
+# note: the head coordinates may differ because they are defined by
+# the fiducials which are estimated; as long as the head->mri trans
+# is computed with the same fiducials, the coordinates will be the same
+# in ACPC space which is what matters
+montage2 = raw.get_montage()  # get montage in 'head' coordinates
+montage2.apply_trans(trans2)
+
+# compare with standard
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
+          saved=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
 # Step 4: Cite mne-bids
@@ -345,11 +359,11 @@ print('Recovered trans:\n{recovered}\n'
 
 # ensure that the data in MNI coordinates is exactly the same
 # (within numerical precision)
-montage_ = raw2.get_montage()  # get montage after transformed back to head
-montage_.apply_trans(mne.transforms.invert_transform(mni_head_t))
+montage2 = raw2.get_montage()  # get montage after transformed back to head
+montage2.apply_trans(mne.transforms.invert_transform(mni_head_t))
 print('Recovered coordinate: {recovered}\n'
       'Saved coordinate:     {saved}'.format(
-          recovered=montage.get_positions()['ch_pos']['LENT 1'],
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
           saved=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
@@ -393,32 +407,38 @@ print('Fiducial points determined from the template head anatomy:\n'
       f'nasion: {nas}\nlpa:    {lpa}\nrpa:    {rpa}')
 
 # read raw in again to start over
-raw_ = read_raw_bids(bids_path=bids_path)
-montage_ = raw_.get_montage()
+raw2 = read_raw_bids(bids_path=bids_path)
+montage2 = raw2.get_montage()
 
 # note: for fsaverage, the montage will be in the coordinate frame
 # 'mni_tal' because it is recognized by MNE but other templates will be
 # in the 'unknown' coordinate frame because they are not recognized by MNE
-pos_ = montage_.get_positions()
+pos2 = montage2.get_positions()
 
 # here we will set the coordinate frame to be 'mri' because our channel
 # positions and fiducials are in the Freesurfer surface RAS coordinate
 # frame of the template T1 MRI (in this case fsaverage)
-montage_ = mne.channels.make_dig_montage(  # add fiducials
-    ch_pos=pos_['ch_pos'],
+montage2 = mne.channels.make_dig_montage(  # add fiducials
+    ch_pos=pos2['ch_pos'],
     nasion=nas,
     lpa=lpa,
     rpa=rpa,
     coord_frame='mri')
 
+# get head->mri trans, invert from mri->head
+trans2 = mne.transforms.invert_transform(
+    mne.channels.compute_native_head_t(montage2))
+
 # set the montage to transform back to 'head'
-raw_.set_montage(montage_)
+raw2.set_montage(montage2)
 
 # check that the coordinates were recovered
-print('Recovered new coordinate:      {recovered2}\n'
-      'Recovered original coordinate: {recovered}'.format(
-          recovered2=raw_.info['chs'][0]['loc'][:3],
-          recovered=raw2.info['chs'][0]['loc'][:3]))
+montage2 = raw2.get_montage()  # get montage after transformed back to head
+montage2.apply_trans(trans2)
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
+          saved=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
 # We showed how to add the fiducials from ``montage.add_mni_fiducials``
@@ -469,13 +489,13 @@ print('Fiducial points determined from the template head anatomy in voxels:\n'
       f'nasion: {nas}\nlpa:    {lpa}\nrpa:    {rpa}')
 
 # read raw in again to start over
-raw_ = read_raw_bids(bids_path=bids_path)
+raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
-# now it's the same as if we just got the montage from the raw in voxels
+# Now, it's the same as if we just got the montage from the raw in voxels
 # i.e. if we would do ``montage = raw.get_montage()`` and get the positions
 # directly in voxels instead of doing the transform to voxels first
-montage_ = mne.channels.make_dig_montage(  # add fiducials
+montage2 = mne.channels.make_dig_montage(  # add fiducials
     ch_pos=pos['ch_pos'],
     nasion=nas,
     lpa=lpa,
@@ -486,19 +506,27 @@ vox_mri_trans = mne.transforms.Transform(
     to='mri',
     trans=vox_mri_t
 )
-montage_.apply_trans(vox_mri_trans)
+montage2.apply_trans(vox_mri_trans)
 scale_t = np.eye(4)
 scale_t[:3, :3] /= 1000  # mm->m
-montage_.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
+montage2.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
+
+# get head->mri trans, invert from mri->head
+trans2 = mne.transforms.invert_transform(
+    mne.channels.compute_native_head_t(montage2))
 
 # set the montage to transform back to 'head'
-raw_.set_montage(montage_)
+raw2.set_montage(montage2)
 
-# check that the coordinates were recovered exactly this time
-print('Recovered coordinate: {recovered2}\n'
-      'Original coordinate:  {recovered}'.format(
-          recovered2=raw_.info['chs'][0]['loc'][:3],
-          recovered=raw.info['chs'][0]['loc'][:3]))
+# check that the coordinates were recovered
+montage = raw.get_montage()  # get the original montage
+montage.apply_trans(trans)  # head->mri
+montage2 = raw2.get_montage()  # get montage after transformed back to head
+montage2.apply_trans(trans2)
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
+          saved=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
 # Finally, the template could also be in scanner RAS:
@@ -538,10 +566,10 @@ print('Fiducial points determined from the template head anatomy in '
 raw_ = read_raw_bids(bids_path=bids_path)
 
 # %%
-# now it's the same as if we just got the montage from the raw in scanner RAS
+# Now, it's the same as if we just got the montage from the raw in scanner RAS
 # i.e. we would use ``montage = raw.get_montage()`` instead of having to do
 # the transforms above
-montage_ = mne.channels.make_dig_montage(  # add fiducials
+montage2 = mne.channels.make_dig_montage(  # add fiducials
     ch_pos=pos['ch_pos'],
     nasion=nas,
     lpa=lpa,
@@ -554,16 +582,24 @@ ras_mri_trans = mne.transforms.Transform(
     to='mri',
     trans=np.dot(ras_vox_t, vox_mri_t)  # combine ras->vox and vox->mri to get
 )                                       # ras->mri
-montage_.apply_trans(ras_mri_trans)
+montage2.apply_trans(ras_mri_trans)
 scale_t = np.eye(4)
 scale_t[:3, :3] /= 1000  # mm->m
-montage_.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
+montage2.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
+
+# get head->mri trans, invert from mri->head
+trans2 = mne.transforms.invert_transform(
+    mne.channels.compute_native_head_t(montage2))
 
 # set the montage to transform back to 'head'
-raw_.set_montage(montage_)
+raw2.set_montage(montage2)
 
 # check that the coordinates were recovered exactly this time
-print('Recovered coordinate: {recovered2}\n'
-      'Original coordinate:  {recovered}'.format(
-          recovered2=raw_.info['chs'][0]['loc'][:3],
-          recovered=raw.info['chs'][0]['loc'][:3]))
+montage = raw.get_montage()  # get the original montage
+montage.apply_trans(trans)  # head->mri
+montage2 = raw2.get_montage()  # get montage after transformed back to head
+montage2.apply_trans(trans2)
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
+          saved=montage.get_positions()['ch_pos']['LENT 1']))
