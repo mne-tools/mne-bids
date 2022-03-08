@@ -964,6 +964,18 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         extra_params['allow_maxshield'] = True
 
     raw = read_raw_bids(bids_path=meg_bids_path, extra_params=extra_params)
+
+    if (raw.get_montage() is None or
+        raw.get_montage().get_positions() is None or
+        any([raw.get_montage().get_positions()[fid_key] is None
+             for fid_key in ('nasion', 'lpa', 'rpa')])):
+        raise RuntimeError(
+            f'Could not extract fiducial points from ``raw`` file: '
+            f'{meg_bids_path}\n\n'
+            f'The ``raw`` file SHOULD contain digitization points '
+            'for the nasion and left and right pre-auricular points '
+            'but none were found'
+        )
     pos = raw.get_montage().get_positions()
     meg_landmarks = np.asarray((pos['lpa'], pos['nasion'], pos['rpa']))
 

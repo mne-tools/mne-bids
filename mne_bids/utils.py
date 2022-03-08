@@ -15,7 +15,6 @@ from os import path as op
 
 import numpy as np
 from mne.channels import make_standard_montage
-from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
 from mne.utils import warn, logger, verbose, check_version
