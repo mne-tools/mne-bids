@@ -223,7 +223,6 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">make_standard_montage</span>
-<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.io.kit.kit</span> <span class="kn">import</span> <span class="n">get_kit_info</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">pick_types</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">check_version</span>
@@ -487,30 +486,6 @@
     <span class="k">return</span> <span class="n">placement_scheme</span>
 
 
-<span class="k">def</span> <span class="nf">_extract_landmarks</span><span class="p">(</span><span class="n">dig</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Extract NAS, LPA, and RPA from raw.info[&#39;dig&#39;].&quot;&quot;&quot;</span>
-    <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="n">coord_frame</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-
-    <span class="n">landmarks</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span>
-                 <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_CARDINAL</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">landmarks</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-            <span class="n">coord_frame</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">]</span>
-                                  <span class="p">[</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-            <span class="n">coord_frame</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">][</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-            <span class="n">coord_frame</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
-
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">coord_frame</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">&lt;</span> <span class="mi">2</span>  <span class="c1"># must all be the same</span>
-
-    <span class="k">return</span> <span class="n">coords</span>
-
-
 <span class="k">def</span> <span class="nf">_scale_coord_to_meters</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Scale units to meters (mne-python default).&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;cm&#39;</span><span class="p">:</span>
@@ -709,7 +684,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-08.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-09.<br>
 </p>
     </div>
     
