@@ -610,7 +610,8 @@ print('Recovered coordinate: {recovered}\n'
 # datasets are allowed to be in these coordinate systems, and we want to be
 # able to analyze them with MNE-Python. The template coordinate spaces
 # don't specify a coordinate frame, so it is better to save the raw data in
-# the individual's ACPC space allows the person analyzing the data to transform
-# the positions to whatever template they want. Thus, we recommend if at all
-# possible, saving BIDS iEEG data in ACPC coordinate space corresponding to the
-# individual subject's brain, not in a template coordinate frame.
+# the individual's ACPC space, allowing the person analyzing the data to
+# transform the positions to whatever template they want. Thus, we recommend
+# if at all possible, saving BIDS iEEG data in ACPC coordinate space
+# corresponding to the individual subject's brain, not in a template
+# coordinate frame.
