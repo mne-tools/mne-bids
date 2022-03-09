@@ -260,6 +260,20 @@ def test_get_head_mri_trans(tmp_path):
                                              fs_subject='sample',
                                              fs_subjects_dir=subjects_dir)
 
+    # test raw with no fiducials to provoke error
+    t1w_bids_path = write_anat(  # put back
+        t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks, overwrite=True
+    )
+    montage = raw.get_montage()
+    montage.remove_fiducials()
+    raw_test = raw.copy()
+    raw_test.set_montage(montage)
+    raw_test.save(bids_path.fpath, overwrite=True)
+
+    with pytest.raises(RuntimeError, match='Could not extract fiducial'):
+        get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
+                           fs_subjects_dir=subjects_dir)
+
     # test we are permissive for different casings of landmark names in the
     # sidecar, and also accept "nasion" instead of just "NAS"
     raw = _read_raw_fif(raw_fname)

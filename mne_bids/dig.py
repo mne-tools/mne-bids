@@ -21,8 +21,7 @@ from mne_bids.config import (ALLOWED_SPACES,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
                              MNE_FRAME_TO_STR, BIDS_COORD_FRAME_DESCRIPTIONS)
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.utils import (_extract_landmarks, _scale_coord_to_meters,
-                            _write_json, _write_tsv)
+from mne_bids.utils import _scale_coord_to_meters, _write_json, _write_tsv
 from mne_bids.path import BIDSPath
 
 
@@ -281,24 +280,24 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
         Defaults to False.
 
     """
-    dig = raw.info['dig']
-    if dig is None:
-        dig = []
-
-    coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
-    if len(coord_frame) > 1:  # noqa E501
-        raise ValueError('All HPI, electrodes, and fiducials must be in the '
-                         'same coordinate frame. Found: "{}"'
-                         .format(coord_frame))
+    if raw.get_montage() is None:
+        dig = list()
+        coords = dict()
+    else:
+        montage = raw.get_montage()
+        pos = montage.get_positions()
+        dig = list() if montage.dig is None else montage.dig
+        coords = dict(
+            NAS=list() if pos['nasion'] is None else pos['nasion'].tolist(),
+            LPA=list() if pos['lpa'] is None else pos['lpa'].tolist(),
+            RPA=list() if pos['rpa'] is None else pos['rpa'].tolist())
 
     # get the coordinate frame description
     sensor_coord_system_descr = (BIDS_COORD_FRAME_DESCRIPTIONS
                                  .get(sensor_coord_system.lower(), "n/a"))
 
-    coords = _extract_landmarks(dig)
     # create the coordinate json data structure based on 'datatype'
     if datatype == 'meg':
-        landmarks = dict(coords)
         hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
         if hpi:
             for ident in hpi.keys():
@@ -311,7 +310,7 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
             'HeadCoilCoordinates': coords,
             'HeadCoilCoordinateSystem': hpi_coord_system,
             'HeadCoilCoordinateUnits': unit,  # XXX validate this
-            'AnatomicalLandmarkCoordinates': landmarks,
+            'AnatomicalLandmarkCoordinates': coords,
             'AnatomicalLandmarkCoordinateSystem': sensor_coord_system,
             'AnatomicalLandmarkCoordinateUnits': unit
         }
@@ -386,18 +385,22 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
 
     if montage is None:
         montage = raw.get_montage()
-    else:
-        # transform back to native montage coordinates if given
+    else:  # assign montage to raw but supress any coordinate transforms
+        montage = montage.copy()  # don't modify original
+        montage_coord_frame = montage.get_positions()['coord_frame']
+        fids = [d for d in montage.dig  # save to add back
+                if d['kind'] == FIFF.FIFFV_POINT_CARDINAL]
+        montage.remove_fiducials()  # prevent coordinate transform
         with warnings.catch_warnings():
             warnings.filterwarnings(action='ignore', category=RuntimeWarning,
                                     message='.*nasion not found', module='mne')
             raw.set_montage(montage)
-        montage_coord_frame = montage.get_positions()['coord_frame']
-        if montage_coord_frame != 'head':
-            for ch in raw.info['chs']:
-                ch['coord_frame'] = _str_to_frame[montage_coord_frame]
-            for d in raw.info['dig']:
-                d['coord_frame'] = _str_to_frame[montage_coord_frame]
+        for ch in raw.info['chs']:
+            ch['coord_frame'] = _str_to_frame[montage_coord_frame]
+        for d in raw.info['dig']:
+            d['coord_frame'] = _str_to_frame[montage_coord_frame]
+        with raw.info._unlock():  # add back fiducials
+            raw.info['dig'] = fids + raw.info['dig']
 
     # get the accepted mne-python coordinate frames
     coord_frame_int = int(montage.dig[0]['coord_frame'])
@@ -405,9 +408,8 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
     coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
 
     if coord_frame == 'CapTrak' and bids_path.datatype in ('eeg', 'nirs'):
-        coords = _extract_landmarks(raw.info['dig'])
-        landmarks = set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys()))
-        if not landmarks:
+        pos = raw.get_montage().get_positions()
+        if any([pos[fid_key] is None for fid_key in ('nasion', 'lpa', 'rpa')]):
             raise RuntimeError("'head' coordinate frame must contain nasion "
                                "and left and right pre-auricular point "
                                "landmarks")
