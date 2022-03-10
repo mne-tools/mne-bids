@@ -564,7 +564,7 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
         template coordinate frames (modified in place).
     space : str
         The name of the BIDS standard template. See
-        :const:`mne_bids.config.BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS`
+        https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html#standard-template-identifiers
         for a list of acceptable spaces.
     coord_frame : str
         BIDS template coordinate systems do not specify a coordinate frame
