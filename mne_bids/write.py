@@ -56,7 +56,7 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
                              ANONYMIZED_JSON_KEY_WHITELIST,
-                             BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES)
+                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
 
 
 _FIFF_SPLIT_SIZE = '2GB'  # MNE-Python default; can be altered during debugging
@@ -1610,7 +1610,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             sensor_coord_system = orient
         elif orient == 'n/a':
             sensor_coord_system = bids_path.space
-        elif bids_path.space in BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES:
+        elif bids_path.space in BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS:
             sensor_coord_system = bids_path.space
         elif orient != bids_path.space:
             raise ValueError(f'BIDSPath.space {bids_path.space} conflicts '

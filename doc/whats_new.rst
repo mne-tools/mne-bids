@@ -52,11 +52,13 @@ Enhancements
 
 - Add an explanation in :ref:`ieeg-example` of why it is better to have intracranial data in individual rather than template coordinates, by `Alex Rockhill`_ (:gh:`975`)
 
-- :func:`mne_bids.update_anat_landmarks` can now directly work with fiducials saved from the MNE-Python coregistration GUI or :func:`mne.io.write_fiducials`, by Richard Höchenberger`_ (:gh:`977`)
+- :func:`mne_bids.update_anat_landmarks` can now directly work with fiducials saved from the MNE-Python coregistration GUI or :func:`mne.io.write_fiducials`, by `Richard Höchenberger`_ (:gh:`977`)
 
 - All non-MNE-Python BIDS coordinate frames are now set to ``'unknown'`` on reading, by `Alex Rockhill`_ (:gh:`979`)
 
 - :func:`mne_bids.write_raw_bids` can now write to template coordinates by `Alex Rockhill`_ (:gh:`980`)
+
+- Add :func:`mne_bids.template_to_head` to transform channel locations in BIDS standard template coordinate systems to ``head`` and also provides a ``trans``, by `Alex Rockhill`_ (:gh:`983`)
 
 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^

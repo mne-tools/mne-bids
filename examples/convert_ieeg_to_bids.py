@@ -59,7 +59,8 @@ from nilearn.plotting import plot_anat
 import mne
 from mne_bids import (BIDSPath, write_raw_bids, write_anat,
                       get_anat_landmarks, read_raw_bids,
-                      search_folder_for_text, print_dir_tree)
+                      search_folder_for_text, print_dir_tree,
+                      template_to_head)
 
 # %%
 # Step 1: Download the data
@@ -325,46 +326,53 @@ write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
 raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
-# Now we should go back to "head" coordinates. We do this with ``fsaverage``
-# fiducials which are in MNI space. In this case, you would not need to run
-# the Freesurfer ``recon-all`` for the subject, you would just need a
-# ``subjects_dir`` with ``fsaverage`` in it, which is accessible using
-# :func:`mne.datasets.fetch_fsaverage`.
+# MNE-Python used 'head' coordinates with a head -> mri ``trans`` so we need
+# to make sure our montage is in this form. As shown below, the montage is
+# in the 'mni_tal' coordinate frame but doesn't have fiducials. The 'head'
+# coordinate frame is defined based on the fiducial points so we need to add
+# these. Fortunately, there is a convenient :func:`mne_bids.template_to_head`
+# function that stores these fiducials and takes care of the transformations.
+# Once this function is applied, you can use the ``raw`` object and the
+# ``trans`` as in any MNE example (e.g. :ref:`tut-working-with-seeg`).
 
-montage2 = raw2.get_montage()
-# add fiducials for "mni_tal" (which is the coordinate frame fsaverage is in)
-# so that it can properly be set to "head"
-montage2.add_mni_fiducials(subjects_dir=subjects_dir)
+# use `coord_frame='mri'` to indicate that the montage is in surface RAS
+# and `unit='m'` to indicate that the units are in meters
+trans2 = template_to_head(raw2, space='fsaverage', coord_frame='mri', unit='m')
+# this a bit confusing since we transformed from mri->mni and now we're
+# saying we're back in 'mri' but that is because we were in the surface RAS
+# coordinate frame of `sample_seeg` and transformed to 'mni_tal', which is the
+# surface RAS coordinate frame for `fsaverage`: since MNE denotes surface RAS
+# as 'mri', both coordinate frames are 'mri', they are just relative to
+# different subjects/template spaces
 
-# get the new head->mri (in this case mri == mni because fsavearge is in MNI)
-mni_head_t = mne.channels.compute_native_head_t(montage2)
-
-# set the montage transforming to the "head" coordinate frame
-raw2.set_montage(montage2)
+# %%
+# Let's check that we can recover the original coordinates from the BIDS
+# dataset now that we are working in the 'head' coordinate frame with a
+# head->mri trans which is the setup MNE-Python is designed around.
 
 # check that we can recover the coordinates
 print('Recovered coordinate head: {recovered}\n'
-      'Saved coordinate head:     {saved}'.format(
+      'Original coordinate head:  {original}'.format(
           recovered=raw2.info['chs'][0]['loc'][:3],
-          saved=raw.info['chs'][0]['loc'][:3]))
+          original=raw.info['chs'][0]['loc'][:3]))
 
 # check difference in trans
 print('Recovered trans:\n{recovered}\n'
-      'Original trans:\n{saved}'.format(
-          recovered=mni_head_t['trans'].round(3),
+      'Original trans:\n{original}'.format(
+          recovered=trans2['trans'].round(3),
           # combine head->mri with mri->mni to get head->mni
           # and then invert to get mni->head
-          saved=np.linalg.inv(np.dot(trans['trans'], mri_mni_t['trans'])
-                              ).round(3)))
+          original=np.linalg.inv(np.dot(trans['trans'], mri_mni_t['trans'])
+                                 ).round(3)))
 
 # ensure that the data in MNI coordinates is exactly the same
-# (within numerical precision)
+# (within computer precision)
 montage2 = raw2.get_montage()  # get montage after transformed back to head
-montage2.apply_trans(mne.transforms.invert_transform(mni_head_t))
+montage2.apply_trans(trans2)
 print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
+      'Original coordinate:  {original}'.format(
           recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          saved=montage.get_positions()['ch_pos']['LENT 1']))
+          original=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
 # As you can see the coordinates stored in the ``raw`` object are slightly off.
@@ -377,9 +385,11 @@ print('Recovered coordinate: {recovered}\n'
 # different head->mri transforms. Once these transforms are applied, however,
 # the positions are the same in MNI coordinates which is what is important.
 #
-# As a final step, let's go over how to assign the fiducials for a template
-# brain where they are not found for you. Many template coordinate systems
-# are allowed by BIDS but are not used in MNE-Python.
+# As a final step, let's go over how to assign coordinate systems that are
+# not recognized by MNE-Python. Many template coordinate systems are allowed by
+# BIDS but are not used in MNE-Python. For these templates, the fiducials have
+# been found and the transformations have been pre-computed so that we can
+# get our coordinates in the ``head`` coordinate frame that MNE-Python uses.
 #
 # .. note::
 #     As of this writing, BIDS accepts channel coordinates in reference to the
@@ -392,68 +402,46 @@ print('Recovered coordinate: {recovered}\n'
 #     it is recommended to share the coordinates in the individual subject's
 #     anatomical reference frame so that researchers who use the data can
 #     transform the coordinates to any of these templates that they choose.
+#
+# Unfortunately, template coordinate systems are not guranteed to be in
+# ``surface RAS`` (as was the case for the ``fsaverage`` example above);
+# the BIDS standard template descriptions only specify
+# the anatomical space (as defined by the template T1 MRI), not the
+# coordinate frame of that space. The coordinates could be in
+# ``surface RAS``, ``voxels`` or ``scanner RAS`` (see
+# :ref:`tut-source-alignment` for a tutorial explaining the different
+# coordinate frames). Fortunately, as mentioned before, MNE-BIDS has
+# pre-computed the transforms for the BIDS standard template coordinate
+# systems. We'll have to inspect the description of the BIDS dataset and/or
+# the electrodes.tsv sidecar file accompanying an electrophysiology recording
+# to determine which coordinate frame the channel locations are in and
+# whether they are in meters or millimeters (for ``surface RAS`` or
+# ``scanner RAS``). We have already shown how to transform from ``surface RAS``
+# above (it works the same for any other ``space`` argument) so let's go
+# over ``voxels`` and ``scanner RAS``
+#
+# .. warning::
+#
+#     If no coordinate frame is passed to :func:`mne_bids.template_to_head`
+#     it will infer ``voxels`` if the coordinates are only positive and
+#     ``scanner RAS`` otherwise. Be sure not to use the wrong coordinate
+#     frame! ``surface RAS`` and ``scanner RAS`` are quite similar which
+#     is especially confusing, but, fortunately, in most of the Freesurfer
+#     template coordinate systems ``surface RAS`` is identical to
+#     ``scanner RAS``(``surface RAS`` is a Freesurfer coordinate frame so
+#     it is most likely to be used with Freesurfer template coordinate
+#     systems). This is the case for ``fsaverage``, ``MNI305`` and
+#     ``fsaverageSym`` but not ``fsLR``.
 
-pos = montage.get_positions()
-# fiducial points are included in the sample data but could be found using
-# Freeview (note the coordinates are in MNE "mri" coordinates which is the
-# same as Freesurfers TkRegRAS but in meters not millimeters --
-# divide the TkRegRAS values by 1000)
-# or fiducial points could also be found with the MNE coregistration GUI
-nas = pos['nasion']
-lpa = pos['lpa']
-rpa = pos['rpa']
+# ensure the output path doesn't contain any leftover files from previous
+# tests and example runs
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
 
-print('Fiducial points determined from the template head anatomy:\n'
-      f'nasion: {nas}\nlpa:    {lpa}\nrpa:    {rpa}')
+# first we have to transform the montage to voxels to make it as if
+# we had gotten the montage directly from the BIDS dataset in voxels
 
-# read raw in again to start over
-raw2 = read_raw_bids(bids_path=bids_path)
-montage2 = raw2.get_montage()
-
-# note: for fsaverage, the montage will be in the coordinate frame
-# 'mni_tal' because it is recognized by MNE but other templates will be
-# in the 'unknown' coordinate frame because they are not recognized by MNE
-pos2 = montage2.get_positions()
-
-# here we will set the coordinate frame to be 'mri' because our channel
-# positions and fiducials are in the Freesurfer surface RAS coordinate
-# frame of the template T1 MRI (in this case fsaverage)
-montage2 = mne.channels.make_dig_montage(  # add fiducials
-    ch_pos=pos2['ch_pos'],
-    nasion=nas,
-    lpa=lpa,
-    rpa=rpa,
-    coord_frame='mri')
-
-# get head->mri trans, invert from mri->head
-trans2 = mne.transforms.invert_transform(
-    mne.channels.compute_native_head_t(montage2))
-
-# set the montage to transform back to 'head'
-raw2.set_montage(montage2)
-
-# check that the coordinates were recovered
-montage2 = raw2.get_montage()  # get montage after transformed back to head
-montage2.apply_trans(trans2)
-print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
-          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          saved=montage.get_positions()['ch_pos']['LENT 1']))
-
-# %%
-# We showed how to add the fiducials from ``montage.add_mni_fiducials``
-# yourself, which allows us to use any coordinate frame, even if it's not MNI,
-# but we still assumed that the coordinates were in Freesurfer surface RAS.
-# Unfortunately, this is not guranteed to be the case because the BIDS
-# template descriptions only specify the anatomical space (as defined by the
-# template T1 MRI) not the coordinate frame of the space; the coordinates
-# could be in terms of surface RAS, voxels of the template MRI or scanner RAS
-# MRI coordinates. See :ref:`tut-source-alignment` for a tutorial explaining
-# the different coordinate frames. If the coordinates are in voxels or scanner
-# RAS, we'll have to find the fiducials in those same coordinates.
-
-# get the template T1 (must be mgz to have surface RAS transforms
-# the Freesurfer command `mri_convert` can be used to convert
+# get a template mgz image to transform the montage to voxel coordinates
 subjects_dir = op.join(mne.datasets.sample.data_path(), 'subjects')
 template_T1 = nib.load(op.join(subjects_dir, 'fsaverage', 'mri', 'T1.mgz'))
 
@@ -467,142 +455,85 @@ raw = mne.io.read_raw_fif(op.join(  # load our raw data again
     misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
 montage = raw.get_montage()  # get the original montage
 montage.apply_trans(trans)  # head->mri
-mri_vox_trans = mne.transforms.Transform(
-    fro='mri',
-    to='mri_voxel',
-    trans=np.linalg.inv(vox_mri_t)
-)
-scale_t = np.eye(4)
-scale_t[:3, :3] *= 1000  # m->mm
-montage.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
-montage.apply_trans(mri_vox_trans)  # transform our original montage
-
-# print transformed fiducials, these could be found in the voxel locator in
-# Freesurfer's `freeview` based on the template MRI since we wouldn't have
-# them found for us for a template other than fsaverage
+montage.apply_trans(mri_mni_t)  # mri->mni == surface RAS for fsaverage
 pos = montage.get_positions()
-nas = pos['nasion']
-lpa = pos['lpa']
-rpa = pos['rpa']
+ch_pos = np.array(list(pos['ch_pos'].values()))  # get an array of positions
+# mri -> vox and m -> mm
+ch_pos = mne.transforms.apply_trans(np.linalg.inv(vox_mri_t), ch_pos * 1000)
 
-print('Fiducial points determined from the template head anatomy in voxels:\n'
-      f'nasion: {nas}\nlpa:    {lpa}\nrpa:    {rpa}')
+montage_vox = mne.channels.make_dig_montage(
+    ch_pos=dict(zip(pos['ch_pos'].keys(), ch_pos)), coord_frame='mri_voxel')
 
-# read raw in again to start over
-raw2 = read_raw_bids(bids_path=bids_path)
+# specify our standard template coordinate system space
+bids_path.update(datatype='ieeg', space='fsaverage')
+
+# write to BIDS, this time with a template coordinate system in voxels
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
+               montage=montage_vox, overwrite=True)
 
 # %%
-# Now, it's the same as if we just got the montage from the raw in voxels
-# i.e. if we would do ``montage = raw.get_montage()`` and get the positions
-# directly in voxels instead of doing the transform to voxels first
-montage2 = mne.channels.make_dig_montage(  # add fiducials
-    ch_pos=pos['ch_pos'],
-    nasion=nas,
-    lpa=lpa,
-    rpa=rpa,
-    coord_frame='mri_voxel')
-vox_mri_trans = mne.transforms.Transform(
-    fro='mri_voxel',
-    to='mri',
-    trans=vox_mri_t
-)
-montage2.apply_trans(vox_mri_trans)
-scale_t = np.eye(4)
-scale_t[:3, :3] /= 1000  # mm->m
-montage2.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
+# Now, let's load our data and convert our montage to ``head``.
 
-# get head->mri trans, invert from mri->head
-trans2 = mne.transforms.invert_transform(
-    mne.channels.compute_native_head_t(montage2))
+raw2 = read_raw_bids(bids_path=bids_path)
+trans2 = template_to_head(raw2, space='fsaverage', coord_frame='mri_voxel')
 
-# set the montage to transform back to 'head'
-raw2.set_montage(montage2)
+# %%
+# Let's check to make sure again that the original coordinates from the BIDS
+# dataset were recovered.
 
-# check that the coordinates were recovered
-montage = raw.get_montage()  # get the original montage
-montage.apply_trans(trans)  # head->mri
 montage2 = raw2.get_montage()  # get montage after transformed back to head
-montage2.apply_trans(trans2)
+montage2.apply_trans(trans2)  # apply trans to go back to 'mri'
 print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
+      'Original coordinate:  {original}'.format(
           recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          saved=montage.get_positions()['ch_pos']['LENT 1']))
+          original=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
 # Finally, the template could also be in scanner RAS:
 
-# transform the channel data to scanner RAS just to demonstrate how to
-# transform it back (this is the case where the BIDS-formatted data in the
-# template space is in scanner RAS coordinates so it would already be
-# transformed when read in)
+# ensure the output path doesn't contain any leftover files from previous
+# tests and example runs
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+# get voxels to scanner RAS transform
+vox_ras_t = template_T1.header.get_vox2ras()
+
 raw = mne.io.read_raw_fif(op.join(  # load our raw data again
     misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
 montage = raw.get_montage()  # get the original montage
 montage.apply_trans(trans)  # head->mri
-scale_t = np.eye(4)
-scale_t[:3, :3] *= 1000  # m->mm
-montage.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
-montage.apply_trans(mri_vox_trans)  # transform our original montage
-vox_ras_t = template_T1.header.get_vox2ras()  # no tkr for scanner RAS
-vox_ras_trans = mne.transforms.Transform(
-    fro='mri_voxel',
-    to='ras',
-    trans=vox_ras_t
-)
-montage.apply_trans(vox_ras_trans)
-
-# print transformed fiducials, these could be found in the RAS locator in
-# Freesurfer's `freeview` based on the template MRI
-# note in this case, they are in mm and should not be transformed
+montage.apply_trans(mri_mni_t)  # mri->mni
 pos = montage.get_positions()
-nas = pos['nasion']
-lpa = pos['lpa']
-rpa = pos['rpa']
+ch_pos = np.array(list(pos['ch_pos'].values()))  # get an array of positions
+# mri -> vox and m -> mm
+ch_pos = mne.transforms.apply_trans(np.linalg.inv(vox_mri_t), ch_pos * 1000)
+ch_pos = mne.transforms.apply_trans(vox_ras_t, ch_pos)
 
-print('Fiducial points determined from the template head anatomy in '
-      f'scanner RAS:\nnasion: {nas}\nlpa:    {lpa}\nrpa:    {rpa}')
+montage_ras = mne.channels.make_dig_montage(
+    ch_pos=dict(zip(pos['ch_pos'].keys(), ch_pos)), coord_frame='ras')
 
-# read raw in again to start over
-raw2 = read_raw_bids(bids_path=bids_path)
+# write to BIDS, this time with a template coordinate system in voxels
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
+               montage=montage_ras, overwrite=True)
 
 # %%
-# Now, it's the same as if we just got the montage from the raw in scanner RAS
-# i.e. we would use ``montage = raw.get_montage()`` instead of having to do
-# the transforms above
-montage2 = mne.channels.make_dig_montage(  # add fiducials
-    ch_pos=pos['ch_pos'],
-    nasion=nas,
-    lpa=lpa,
-    rpa=rpa,
-    coord_frame='ras')
-ras_vox_t = template_T1.header.get_ras2vox()
-vox_mri_t = template_T1.header.get_vox2ras_tkr()
-ras_mri_trans = mne.transforms.Transform(
-    fro='ras',
-    to='mri',
-    trans=np.dot(ras_vox_t, vox_mri_t)  # combine ras->vox and vox->mri to get
-)                                       # ras->mri
-montage2.apply_trans(ras_mri_trans)
-scale_t = np.eye(4)
-scale_t[:3, :3] /= 1000  # mm->m
-montage2.apply_trans(mne.transforms.Transform('mri', 'mri', scale_t))
+# Now, let's load our data and convert our montage to ``head``.
 
-# get head->mri trans, invert from mri->head
-trans2 = mne.transforms.invert_transform(
-    mne.channels.compute_native_head_t(montage2))
+raw2 = read_raw_bids(bids_path=bids_path)
+trans2 = template_to_head(  # unit='auto' automatically determines it's in mm
+    raw2, space='fsaverage', coord_frame='ras', unit='auto')
 
-# set the montage to transform back to 'head'
-raw2.set_montage(montage2)
+# %%
+# Let's check to make sure again that the original coordinates from the BIDS
+# dataset were recovered.
 
-# check that the coordinates were recovered exactly this time
-montage = raw.get_montage()  # get the original montage
-montage.apply_trans(trans)  # head->mri
 montage2 = raw2.get_montage()  # get montage after transformed back to head
-montage2.apply_trans(trans2)
+montage2.apply_trans(trans2)  # apply trans to go back to 'mri'
 print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
+      'Original coordinate:  {original}'.format(
           recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          saved=montage.get_positions()['ch_pos']['LENT 1']))
+          original=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
 # In summary, as we saw, these standard template spaces that are allowable by

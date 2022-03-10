@@ -14,3 +14,4 @@ from mne_bids.write import (make_dataset_description, write_anat,
                             get_anat_landmarks, anonymize_dataset)
 from mne_bids.sidecar_updates import update_sidecar_json, update_anat_landmarks
 from mne_bids.inspect import inspect_dataset
+from mne_bids.dig import template_to_head
