@@ -326,14 +326,15 @@ write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
 raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
-# MNE-Python used 'head' coordinates with a head -> mri ``trans`` so we need
-# to make sure our montage is in this form. As shown below, the montage is
-# in the 'mni_tal' coordinate frame but doesn't have fiducials. The 'head'
-# coordinate frame is defined based on the fiducial points so we need to add
-# these. Fortunately, there is a convenient :func:`mne_bids.template_to_head`
-# function that stores these fiducials and takes care of the transformations.
-# Once this function is applied, you can use the ``raw`` object and the
-# ``trans`` as in any MNE example (e.g. :ref:`tut-working-with-seeg`).
+# MNE-Python uses ``head`` coordinates with a ``head -> mri`` ``trans`` so we
+# need to make sure to get our data in this form. As shown below, the montage
+# is in the ``mni_tal`` coordinate frame but doesn't have fiducials. The
+# ``head`` coordinate frame is defined based on the fiducial points so we need
+# to add these. Fortunately, there is a convenient function
+# (:func:`mne_bids.template_to_head`) that loads stored fiducials and takes
+# care of the transformations. Once this function is applied, you can use
+# the ``raw`` object and the ``trans`` as in any MNE example
+# (e.g. :ref:`tut-working-with-seeg`).
 
 # use `coord_frame='mri'` to indicate that the montage is in surface RAS
 # and `unit='m'` to indicate that the units are in meters
@@ -342,13 +343,13 @@ trans2 = template_to_head(raw2, space='fsaverage', coord_frame='mri', unit='m')
 # saying we're back in 'mri' but that is because we were in the surface RAS
 # coordinate frame of `sample_seeg` and transformed to 'mni_tal', which is the
 # surface RAS coordinate frame for `fsaverage`: since MNE denotes surface RAS
-# as 'mri', both coordinate frames are 'mri', they are just relative to
-# different subjects/template spaces
+# as 'mri', both coordinate frames are 'mri', it's just that 'mni_tal' is 'mri'
+# when the subject is 'fsaverage'
 
 # %%
 # Let's check that we can recover the original coordinates from the BIDS
-# dataset now that we are working in the 'head' coordinate frame with a
-# head->mri trans which is the setup MNE-Python is designed around.
+# dataset now that we are working in the ``head`` coordinate frame with a
+# ``head -> mri`` ``trans`` which is the setup MNE-Python is designed around.
 
 # check that we can recover the coordinates
 print('Recovered coordinate head: {recovered}\n'
@@ -416,9 +417,9 @@ print('Recovered coordinate: {recovered}\n'
 # the electrodes.tsv sidecar file accompanying an electrophysiology recording
 # to determine which coordinate frame the channel locations are in and
 # whether they are in meters or millimeters (for ``surface RAS`` or
-# ``scanner RAS``). We have already shown how to transform from ``surface RAS``
-# above (it works the same for any other ``space`` argument) so let's go
-# over ``voxels`` and ``scanner RAS``
+# ``scanner RAS``, if not in ``voxels``). We have already shown how to
+# transform from ``surface RAS`` above (it works the same for any other
+# ``space`` argument) so let's go over ``voxels`` and ``scanner RAS``.
 #
 # .. warning::
 #
@@ -428,7 +429,7 @@ print('Recovered coordinate: {recovered}\n'
 #     frame! ``surface RAS`` and ``scanner RAS`` are quite similar which
 #     is especially confusing, but, fortunately, in most of the Freesurfer
 #     template coordinate systems ``surface RAS`` is identical to
-#     ``scanner RAS``(``surface RAS`` is a Freesurfer coordinate frame so
+#     ``scanner RAS``. ``surface RAS`` is a Freesurfer coordinate frame so
 #     it is most likely to be used with Freesurfer template coordinate
 #     systems). This is the case for ``fsaverage``, ``MNI305`` and
 #     ``fsaverageSym`` but not ``fsLR``.

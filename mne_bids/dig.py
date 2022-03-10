@@ -568,9 +568,10 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
     coord_frame : str
         BIDS template coordinate systems do not specify a coordinate frame
         so this must be determined by inspecting the documentation for the
-        dataset or the electrodes.tsv file. Must be 'mri', 'mri_voxel'
-        or 'ras'. If 'auto', the montage will be assumed to be in voxels
-        if the coordinates are strictly positive and scanner RAS otherwise.
+        dataset or the electrodes.tsv file. Must be ``mri``, ``mri_voxel``
+        or ``ras``. If ``auto``, the montage will be assumed to be in
+        ``mri_voxel`` if the coordinates are strictly positive and
+        ``scanner RAS`` otherwise.
 
         .. warning::
 
@@ -581,16 +582,16 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
             in the dataset documentation.
 
     unit : str
-        Units that were used in the coordinate system specification; either
-        'm' or 'mm'. If 'auto', 'm' will be inferred if the montage spans
-        less than -1 to 1 in units (meters) and 'mm' otherwise. If the
+        The unit that was used in the coordinate system specification; either
+        ``m`` or ``mm``. If ``auto``, ``m`` will be inferred if the montage
+        spans less than -1 to 1 in units (meters) and ``mm`` otherwise. If the
         ``coord_frame`` is 'mri_voxel', ``unit`` will be ignored.
     %(verbose)s
 
     Returns
     -------
     trans : mne.transforms.Transform
-        The data transformation matrix from head to MRI coordinates.
+        The data transformation matrix from ``head`` to ``mri`` coordinates.
 
     """
     _validate_type(raw, mne.io.BaseRaw)
