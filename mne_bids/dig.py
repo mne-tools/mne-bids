@@ -4,7 +4,6 @@
 #          Alex Rockhill <aprockhill@mailbox.org>
 #
 # License: BSD-3-Clause
-import os.path as op
 import json
 from collections import OrderedDict
 from pathlib import Path

@@ -14,6 +14,7 @@ from numpy.testing import assert_almost_equal
 import warnings
 
 import mne
+import mne_bids
 from mne.datasets import testing
 from mne_bids import BIDSPath, write_raw_bids, read_raw_bids
 from mne_bids.dig import _write_dig_bids, _read_dig_bids, template_to_head
@@ -234,7 +235,7 @@ def test_template_to_head():
     _set_montage_no_trans(raw_test, montage)
     trans = template_to_head(raw_test, 'fsaverage', 'mri')
     trans2 = mne.read_trans(op.join(
-        op.dirname(op.dirname(__file__)), 'data',
+        op.dirname(op.dirname(mne_bids.__file__)), 'mne_bids', 'data',
         'space-fsaverage_trans.fif'))
     assert_almost_equal(trans['trans'], trans2['trans'])
 
