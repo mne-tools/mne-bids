@@ -10,6 +10,7 @@ from collections import OrderedDict
 from pathlib import Path
 import re
 import warnings
+from importlib_resources import files
 
 import mne
 import numpy as np
@@ -17,7 +18,6 @@ from mne.io.constants import FIFF
 from mne.utils import logger, warn, _validate_type, _check_option
 from mne.io.pick import _picks_to_idx
 
-from mne_bids import __file__
 from mne_bids.config import (ALLOWED_SPACES, BIDS_COORDINATE_UNITS,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
                              MNE_FRAME_TO_STR, MNE_STR_TO_FRAME,
@@ -618,21 +618,21 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
     if coord_frame == 'auto':
         coord_frame = 'mri_voxel' if locs.min() >= 0 else 'ras'
     # transform montage to head
-    data_dir = op.join(op.dirname(__file__), 'data')
+    data_dir = files('mne_bids.data')
     # set to the right coordinate frame as specified by the user
     for d in montage.dig:  # ensure same coordinate frame
         d['coord_frame'] = MNE_STR_TO_FRAME[coord_frame]
     # do the transforms, first ras -> vox if needed
     if montage.get_positions()['coord_frame'] == 'ras':
         ras_vox_trans = mne.read_trans(
-            op.join(data_dir, f'space-{space}_ras-vox_trans.fif'))
+            data_dir.joinpath(f'space-{space}_ras-vox_trans.fif'))
         if unit == 'm':  # must be in mm here
             for d in montage.dig:
                 d['r'] *= 1000
         montage.apply_trans(ras_vox_trans)
     if montage.get_positions()['coord_frame'] == 'mri_voxel':
         vox_mri_trans = mne.read_trans(
-            op.join(data_dir, f'space-{space}_vox-mri_trans.fif'))
+            data_dir.joinpath(f'space-{space}_vox-mri_trans.fif'))
         montage.apply_trans(vox_mri_trans)
     assert montage.get_positions()['coord_frame'] == 'mri'
     if not (unit == 'm' and coord_frame == 'mri'):  # if so, already in m
@@ -640,10 +640,10 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
             d['r'] /= 1000  # mm -> m
     # now add fiducials (in mri coordinates)
     fids = mne.io.read_fiducials(
-        op.join(data_dir, f'space-{space}_fiducials.fif'))[0]
+        data_dir.joinpath(f'space-{space}_fiducials.fif'))[0]
     montage.dig = fids + montage.dig  # add fiducials
     for fid in fids:  # ensure also in mri
         fid['coord_frame'] = MNE_STR_TO_FRAME['mri']
     raw.set_montage(montage)  # transform to head
     # finally return montage
-    return mne.read_trans(op.join(data_dir, f'space-{space}_trans.fif'))
+    return mne.read_trans(data_dir.joinpath(f'space-{space}_trans.fif'))
