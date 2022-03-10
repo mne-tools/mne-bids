@@ -210,7 +210,14 @@ def test_template_to_head():
                                            'found in the montage'):
         template_to_head(raw_test, 'fsaverage', coord_frame='auto')
 
+    # test unexpected coordinate frame
+    raw_test = raw.copy()
+    with pytest.raises(RuntimeError, match='not expected for a template'):
+        template_to_head(raw_test, 'fsaverage', coord_frame='auto')
+
     # test all coordinate frames
+    raw_test = raw.copy()
+    raw_test.set_montage(None)
     raw_test.pick_types(eeg=True)
     raw_test.drop_channels(raw_test.ch_names[3:])
     montage = mne.channels.make_dig_montage(
