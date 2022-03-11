@@ -625,14 +625,14 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
     # do the transforms, first ras -> vox if needed
     if montage.get_positions()['coord_frame'] == 'ras':
         ras_vox_trans = mne.read_trans(
-            data_dir.joinpath(f'space-{space}_ras-vox_trans.fif'))
+            data_dir / f'space-{space}_ras-vox_trans.fif')
         if unit == 'm':  # must be in mm here
             for d in montage.dig:
                 d['r'] *= 1000
         montage.apply_trans(ras_vox_trans)
     if montage.get_positions()['coord_frame'] == 'mri_voxel':
         vox_mri_trans = mne.read_trans(
-            data_dir.joinpath(f'space-{space}_vox-mri_trans.fif'))
+            data_dir / f'space-{space}_vox-mri_trans.fif')
         montage.apply_trans(vox_mri_trans)
     assert montage.get_positions()['coord_frame'] == 'mri'
     if not (unit == 'm' and coord_frame == 'mri'):  # if so, already in m
@@ -640,10 +640,10 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
             d['r'] /= 1000  # mm -> m
     # now add fiducials (in mri coordinates)
     fids = mne.io.read_fiducials(
-        data_dir.joinpath(f'space-{space}_fiducials.fif'))[0]
+        data_dir / f'space-{space}_fiducials.fif')[0]
     montage.dig = fids + montage.dig  # add fiducials
     for fid in fids:  # ensure also in mri
         fid['coord_frame'] = MNE_STR_TO_FRAME['mri']
     raw.set_montage(montage)  # transform to head
     # finally return montage
-    return mne.read_trans(data_dir.joinpath(f'space-{space}_trans.fif'))
+    return mne.read_trans(data_dir / f'space-{space}_trans.fif')
