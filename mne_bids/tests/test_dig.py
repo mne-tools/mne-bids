@@ -187,7 +187,7 @@ def _test_montage_trans(raw, montage, pos_test, space='fsaverage',
     """Test if a montage is transformed correctly."""
     _set_montage_no_trans(raw, montage)
     trans = template_to_head(
-        raw.info, space, coord_frame=coord_frame, unit=unit)
+        raw.info, space, coord_frame=coord_frame, unit=unit)[1]
     montage_test = raw.get_montage()
     montage_test.apply_trans(trans)
     assert_almost_equal(
@@ -228,7 +228,7 @@ def test_template_to_head():
     for space in BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS:
         for cf in ('mri', 'mri_voxel', 'ras'):
             _set_montage_no_trans(raw_test, montage)
-            trans = template_to_head(raw_test.info, space, cf)
+            trans = template_to_head(raw_test.info, space, cf)[1]
             assert trans['from'] == MNE_STR_TO_FRAME['head']
             assert trans['to'] == MNE_STR_TO_FRAME['mri']
             montage_test = raw_test.get_montage()
@@ -240,7 +240,7 @@ def test_template_to_head():
 
     # test that we get the right transform
     _set_montage_no_trans(raw_test, montage)
-    trans = template_to_head(raw_test.info, 'fsaverage', 'mri')
+    trans = template_to_head(raw_test.info, 'fsaverage', 'mri')[1]
     trans2 = mne.read_trans(op.join(
         op.dirname(op.dirname(mne_bids.__file__)), 'mne_bids', 'data',
         'space-fsaverage_trans.fif'))

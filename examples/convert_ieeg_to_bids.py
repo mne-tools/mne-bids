@@ -339,7 +339,7 @@ raw2 = read_raw_bids(bids_path=bids_path)
 # use `coord_frame='mri'` to indicate that the montage is in surface RAS
 # and `unit='m'` to indicate that the units are in meters
 trans2 = template_to_head(
-    raw2.info, space='fsaverage', coord_frame='mri', unit='m')
+    raw2.info, space='fsaverage', coord_frame='mri', unit='m')[1]
 # this a bit confusing since we transformed from mri->mni and now we're
 # saying we're back in 'mri' but that is because we were in the surface RAS
 # coordinate frame of `sample_seeg` and transformed to 'mni_tal', which is the
@@ -478,7 +478,7 @@ write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
 
 raw2 = read_raw_bids(bids_path=bids_path)
 trans2 = template_to_head(
-    raw2.info, space='fsaverage', coord_frame='mri_voxel')
+    raw2.info, space='fsaverage', coord_frame='mri_voxel')[1]
 
 # %%
 # Let's check to make sure again that the original coordinates from the BIDS
@@ -525,7 +525,7 @@ write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
 
 raw2 = read_raw_bids(bids_path=bids_path)
 trans2 = template_to_head(  # unit='auto' automatically determines it's in mm
-    raw2.info, space='fsaverage', coord_frame='ras', unit='auto')
+    raw2.info, space='fsaverage', coord_frame='ras', unit='auto')[1]
 
 # %%
 # Let's check to make sure again that the original coordinates from the BIDS
