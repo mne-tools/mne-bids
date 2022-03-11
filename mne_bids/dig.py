@@ -551,16 +551,47 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
             d['coord_frame'] = MNE_STR_TO_FRAME['unknown']
 
 
+def _get_montage_from_info(info):
+    """Workaround to get montage from info."""
+    # XXX remove upon 0.11 release
+    if info['dig'] is None:
+        return None
+    # obtain coord_frame, and landmark coords
+    # (nasion, lpa, rpa, hsp, hpi) from DigPoints
+    montage_bunch = mne.io._digitization._get_data_as_dict_from_dig(
+        info['dig'])
+    coord_frame = mne.transforms._frame_to_str.get(montage_bunch.coord_frame)
+
+    # get the channel names and chs data structure
+    ch_names, chs = info['ch_names'], info['chs']
+    picks = mne.pick_types(info, meg=False, eeg=True, seeg=True,
+                           ecog=True, dbs=True, fnirs=True, exclude=[])
+
+    # channel positions from dig do not match ch_names one to one,
+    # so use loc[:3] instead
+    ch_pos = {ch_names[ii]: chs[ii]['loc'][:3] for ii in picks}
+
+    # create montage
+    montage = mne.channels.make_dig_montage(
+        ch_pos=ch_pos,
+        coord_frame=coord_frame,
+        nasion=montage_bunch.nasion,
+        lpa=montage_bunch.lpa,
+        rpa=montage_bunch.rpa,
+        hsp=montage_bunch.hsp,
+        hpi=montage_bunch.hpi,
+    )
+    return montage
+
+
 @verbose
-def template_to_head(raw, space, coord_frame='auto', unit='auto',
+def template_to_head(info, space, coord_frame='auto', unit='auto',
                      verbose=None):
     """Transform a BIDS standard template montage to the head coordinate frame.
 
     Parameters
     ----------
-    raw : mne.io.Raw
-        The MNE-Python Raw object with a montage in one of the BIDS standard
-        template coordinate frames (modified in place).
+    %(info_not_none)s The info is modified in place.
     space : str
         The name of the BIDS standard template. See
         https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html#standard-template-identifiers
@@ -594,12 +625,14 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
         The data transformation matrix from ``head`` to ``mri`` coordinates.
 
     """
-    _validate_type(raw, mne.io.BaseRaw)
+    _validate_type(info, mne.io.Info)
     _check_option('space', space, BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
     _check_option('coord_frame', coord_frame,
                   ('auto', 'mri', 'mri_voxel', 'ras'))
     _check_option('unit', unit, ('auto', 'm', 'mm'))
-    montage = raw.get_montage()
+    # XXX: change to after 0.11 release
+    # montage = info.get_montage()
+    montage = _get_montage_from_info(info)
     if montage is None:
         raise RuntimeError('No montage found in the `raw` object')
     montage.remove_fiducials()  # we will add fiducials so remove any
@@ -644,6 +677,6 @@ def template_to_head(raw, space, coord_frame='auto', unit='auto',
     montage.dig = fids + montage.dig  # add fiducials
     for fid in fids:  # ensure also in mri
         fid['coord_frame'] = MNE_STR_TO_FRAME['mri']
-    raw.set_montage(montage)  # transform to head
+    info.set_montage(montage)  # transform to head
     # finally return montage
     return mne.read_trans(data_dir / f'space-{space}_trans.fif')
