@@ -553,13 +553,10 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
 
 # Remove once we depend on MNE-Python 1.0+
 def _get_montage(info):
-    try:
-        info.get_montage
-    except AttributeError:
-        return mne.io.RawArray(np.zeros((info['nchan'], 1)),
-                               info).get_montage()
-    else:
+    if hasattr(info, 'get_montage'):
         return info.get_montage()
+    # workaround
+    return mne.io.RawArray(np.zeros((info['nchan'], 1)), info).get_montage()
 
 
 @verbose
@@ -574,13 +571,12 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
         The name of the BIDS standard template. See
         https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html#standard-template-identifiers
         for a list of acceptable spaces.
-    coord_frame : str
-        BIDS template coordinate systems do not specify a coordinate frame
+    coord_frame : 'mri' | 'mri_voxel' | 'ras'
+        BIDS template coordinate systems do not specify a coordinate frame,
         so this must be determined by inspecting the documentation for the
-        dataset or the electrodes.tsv file. Must be ``mri``, ``mri_voxel``
-        or ``ras``. If ``auto``, the montage will be assumed to be in
-        ``mri_voxel`` if the coordinates are strictly positive and
-        ``scanner RAS`` otherwise.
+        dataset or the ``electrodes.tsv`` file.  If ``'auto'``, the coordinate
+        frame is assumed to be ``'mri_voxel'`` if the coordinates are strictly
+        positive, and ``'ras'`` (``"scanner RAS"``) otherwise.
 
         .. warning::
 
@@ -590,18 +586,19 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
             for template coordinate systems, currently, is if it is specified
             in the dataset documentation.
 
-    unit : str
-        The unit that was used in the coordinate system specification; either
-        ``m`` or ``mm``. If ``auto``, ``m`` will be inferred if the montage
-        spans less than -1 to 1 in units (meters) and ``mm`` otherwise. If the
-        ``coord_frame`` is 'mri_voxel', ``unit`` will be ignored.
+    unit : 'm' | 'mm' | 'auto'
+        The unit that was used in the coordinate system specification.
+        If ``'auto'``, ``'m'`` will be inferred if the montage
+        spans less than ``-1`` to ``1``, and ``'mm'`` otherwise. If the
+        ``coord_frame`` is ``'mri_voxel'``, ``unit`` will be ignored.
     %(verbose)s
 
     Returns
     -------
     %(info_not_none)s The modified ``Info`` object.
     trans : mne.transforms.Transform
-        The data transformation matrix from ``head`` to ``mri`` coordinates.
+        The data transformation matrix from ``'head'`` to ``'mri'``
+        coordinates.
 
     """
     _validate_type(info, mne.io.Info)
@@ -652,7 +649,8 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
             d['r'] /= 1000  # mm -> m
     # now add fiducials (in mri coordinates)
     fids = mne.io.read_fiducials(
-        data_dir / f'space-{space}_fiducials.fif')[0]
+        data_dir / f'space-{space}_fiducials.fif'
+    )[0]
     montage.dig = fids + montage.dig  # add fiducials
     for fid in fids:  # ensure also in mri
         fid['coord_frame'] = MNE_STR_TO_FRAME['mri']
