@@ -165,7 +165,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
 # Annotations to never remove during reading or writing
 ANNOTATIONS_TO_KEEP = ('BAD_ACQ_SKIP',)
 
-BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES = [
+BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS = [
     'ICBM452AirSpace',
     'ICBM452Warp5Space',
     'IXI549Space',
@@ -218,7 +218,7 @@ BIDS_EEG_COORDINATE_FRAMES = ['CapTrak']
 # accepted coordinate SI units
 BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
 coordsys_wildcard = ['Other']
-BIDS_SHARED_COORDINATE_FRAMES = (BIDS_STANDARD_TEMPLATE_COORDINATE_FRAMES +
+BIDS_SHARED_COORDINATE_FRAMES = (BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS +
                                  coordsys_standard_template_deprecated +
                                  coordsys_wildcard)
 

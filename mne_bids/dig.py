@@ -1,6 +1,7 @@
 """Read/write BIDS compatible electrode/coords structures from MNE."""
 # Authors: Adam Li <adam2392@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Alex Rockhill <aprockhill@mailbox.org>
 #
 # License: BSD-3-Clause
 import json
@@ -8,20 +9,22 @@ from collections import OrderedDict
 from pathlib import Path
 import re
 import warnings
+from importlib_resources import files
 
 import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.transforms import _str_to_frame
-from mne.utils import logger, warn
+from mne.utils import logger, warn, _validate_type, _check_option
 from mne.io.pick import _picks_to_idx
 
-from mne_bids.config import (ALLOWED_SPACES,
-                             BIDS_COORDINATE_UNITS,
+from mne_bids.config import (ALLOWED_SPACES, BIDS_COORDINATE_UNITS,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
-                             MNE_FRAME_TO_STR, BIDS_COORD_FRAME_DESCRIPTIONS)
+                             MNE_FRAME_TO_STR, MNE_STR_TO_FRAME,
+                             BIDS_COORD_FRAME_DESCRIPTIONS,
+                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.utils import _scale_coord_to_meters, _write_json, _write_tsv
+from mne_bids.utils import (_scale_coord_to_meters, _write_json, _write_tsv,
+                            verbose)
 from mne_bids.path import BIDSPath
 
 
@@ -396,9 +399,9 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
                                     message='.*nasion not found', module='mne')
             raw.set_montage(montage)
         for ch in raw.info['chs']:
-            ch['coord_frame'] = _str_to_frame[montage_coord_frame]
+            ch['coord_frame'] = MNE_STR_TO_FRAME[montage_coord_frame]
         for d in raw.info['dig']:
-            d['coord_frame'] = _str_to_frame[montage_coord_frame]
+            d['coord_frame'] = MNE_STR_TO_FRAME[montage_coord_frame]
         with raw.info._unlock():  # add back fiducials
             raw.info['dig'] = fids + raw.info['dig']
 
@@ -543,6 +546,114 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     # put back in unknown for unknown coordinate frame
     if coord_frame == 'unknown':
         for ch in raw.info['chs']:
-            ch['coord_frame'] = _str_to_frame['unknown']
+            ch['coord_frame'] = MNE_STR_TO_FRAME['unknown']
         for d in raw.info['dig']:
-            d['coord_frame'] = _str_to_frame['unknown']
+            d['coord_frame'] = MNE_STR_TO_FRAME['unknown']
+
+
+# Remove once we depend on MNE-Python 1.0+
+def _get_montage(info):
+    if hasattr(info, 'get_montage'):
+        return info.get_montage()
+    # workaround
+    return mne.io.RawArray(np.zeros((info['nchan'], 1)), info).get_montage()
+
+
+@verbose
+def template_to_head(info, space, coord_frame='auto', unit='auto',
+                     verbose=None):
+    """Transform a BIDS standard template montage to the head coordinate frame.
+
+    Parameters
+    ----------
+    %(info_not_none)s The info is modified in place.
+    space : str
+        The name of the BIDS standard template. See
+        https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html#standard-template-identifiers
+        for a list of acceptable spaces.
+    coord_frame : 'mri' | 'mri_voxel' | 'ras'
+        BIDS template coordinate systems do not specify a coordinate frame,
+        so this must be determined by inspecting the documentation for the
+        dataset or the ``electrodes.tsv`` file.  If ``'auto'``, the coordinate
+        frame is assumed to be ``'mri_voxel'`` if the coordinates are strictly
+        positive, and ``'ras'`` (``"scanner RAS"``) otherwise.
+
+        .. warning::
+
+            ``scanner RAS`` and ``surface RAS`` coordinates frames are similar
+            so be very careful not to assume a BIDS dataset's coordinates are
+            in one when they are actually in the other. The only way to tell
+            for template coordinate systems, currently, is if it is specified
+            in the dataset documentation.
+
+    unit : 'm' | 'mm' | 'auto'
+        The unit that was used in the coordinate system specification.
+        If ``'auto'``, ``'m'`` will be inferred if the montage
+        spans less than ``-1`` to ``1``, and ``'mm'`` otherwise. If the
+        ``coord_frame`` is ``'mri_voxel'``, ``unit`` will be ignored.
+    %(verbose)s
+
+    Returns
+    -------
+    %(info_not_none)s The modified ``Info`` object.
+    trans : mne.transforms.Transform
+        The data transformation matrix from ``'head'`` to ``'mri'``
+        coordinates.
+
+    """
+    _validate_type(info, mne.io.Info)
+    _check_option('space', space, BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
+    _check_option('coord_frame', coord_frame,
+                  ('auto', 'mri', 'mri_voxel', 'ras'))
+    _check_option('unit', unit, ('auto', 'm', 'mm'))
+    # XXX: change to after 0.11 release
+    # montage = info.get_montage()
+    montage = _get_montage(info)
+    if montage is None:
+        raise RuntimeError('No montage found in the `raw` object')
+    montage.remove_fiducials()  # we will add fiducials so remove any
+    pos = montage.get_positions()
+    if pos['coord_frame'] not in ('mni_tal', 'unknown'):
+        raise RuntimeError(
+            "Montage coordinate frame '{}' not expected for a template "
+            "montage, should be 'unknown' or 'mni_tal'".format(
+                pos['coord_frame']))
+    locs = np.array(list(pos['ch_pos'].values()))
+    locs = locs[~np.any(np.isnan(locs), axis=1)]  # only channels with loc
+    if locs.size == 0:
+        raise RuntimeError('No channel locations found in the montage')
+    if unit == 'auto':
+        unit = 'm' if abs(locs - locs.mean(axis=0)).max() < 1 else 'mm'
+    if coord_frame == 'auto':
+        coord_frame = 'mri_voxel' if locs.min() >= 0 else 'ras'
+    # transform montage to head
+    data_dir = files('mne_bids.data')
+    # set to the right coordinate frame as specified by the user
+    for d in montage.dig:  # ensure same coordinate frame
+        d['coord_frame'] = MNE_STR_TO_FRAME[coord_frame]
+    # do the transforms, first ras -> vox if needed
+    if montage.get_positions()['coord_frame'] == 'ras':
+        ras_vox_trans = mne.read_trans(
+            data_dir / f'space-{space}_ras-vox_trans.fif')
+        if unit == 'm':  # must be in mm here
+            for d in montage.dig:
+                d['r'] *= 1000
+        montage.apply_trans(ras_vox_trans)
+    if montage.get_positions()['coord_frame'] == 'mri_voxel':
+        vox_mri_trans = mne.read_trans(
+            data_dir / f'space-{space}_vox-mri_trans.fif')
+        montage.apply_trans(vox_mri_trans)
+    assert montage.get_positions()['coord_frame'] == 'mri'
+    if not (unit == 'm' and coord_frame == 'mri'):  # if so, already in m
+        for d in montage.dig:
+            d['r'] /= 1000  # mm -> m
+    # now add fiducials (in mri coordinates)
+    fids = mne.io.read_fiducials(
+        data_dir / f'space-{space}_fiducials.fif'
+    )[0]
+    montage.dig = fids + montage.dig  # add fiducials
+    for fid in fids:  # ensure also in mri
+        fid['coord_frame'] = MNE_STR_TO_FRAME['mri']
+    info.set_montage(montage)  # transform to head
+    # finally return montage
+    return info, mne.read_trans(data_dir / f'space-{space}_trans.fif')
