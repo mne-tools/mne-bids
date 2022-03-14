@@ -9,36 +9,55 @@ What's new?
 
 .. _changes_0_10:
 
-Version 0.10 (unreleased)
+Version 0.10 (2022-03-14)
 -------------------------
 
-...
+This release brings experimental fNIRS suppot, improvements in coordinate frame
+handling, and various enhancements regarding MRI fiducials.
 
-Notable changes
+📝 Notable changes
+~~~~~~~~~~~~~~~~~~
+
+- We now have **experimental** support for fNIRS data (SNIRF format). This is
+  still super fresh, and the respective BIDS enhancement proposal (BEP) has not
+  yet been finalized & accepted into the standard. However, we're excitied to
+  be able to do this first step towards fNIRS support!
+
+- Numerous improvements have been added to enhance our support for various
+  coordinate frames, including those that are not yet supported by MNE-BIDS.
+  These changes are mostly relevant to iEEG users. Please see the detailed list
+  of changes below.
+
+- We have added support for storing and reading multiple anatomical landmarks
+  ("fiducials") for the same participant. This makes it possible, for example,
+  to store different sets of landmarks for each recording session.
+
+- It's now possible to store Neuroscan (CNT) files with MNE-BIDS.
+
+👩🏽‍💻 Authors
 ~~~~~~~~~~~~~~~
 
-- ...
-
-Authors
-~~~~~~~
-
-People who contributed to this release (in alphabetical order):
+The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Simon Kern`_
+* `Swastika Gupta`_
+* `Yorguin Mantilla`_
+
+The following authors had contributed before. Thank you for sticking around! 🤘
+
 * `Adam Li`_
 * `Alex Rockhill`_
 * `Alexandre Gramfort`_
-* `Mainak Jas`_
+* `Eric Larson`_
 * `Richard Höchenberger`_
 * `Robert Luke`_
 * `Stefan Appelhoff`_
-* `Yorguin Mantilla`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Enhancements
-^^^^^^^^^^^^
+🚀 Enhancements
+^^^^^^^^^^^^^^^
 
 - Add experimental support for fNIRS (SNIRF) files in :func:`mne_bids.write_raw_bids`, by `Robert Luke`_ (:gh:`406`)
 
@@ -60,8 +79,8 @@ Enhancements
 
 - Add :func:`mne_bids.template_to_head` to transform channel locations in BIDS standard template coordinate systems to ``head`` and also provides a ``trans``, by `Alex Rockhill`_ (:gh:`983`)
 
-API and behavior changes
-^^^^^^^^^^^^^^^^^^^^^^^^
+🧐 API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - :func:`mne_bids.update_anat_landmarks` will now by default raise an exception if the requested MRI landmarks do not already exist. Use the new ``on_missing`` parameter to control this behavior, by `Richard Höchenberger`_ (:gh:`957`)
 
@@ -71,13 +90,13 @@ API and behavior changes
 
 - Corrupted or missing fiducials in ``head`` coordinates now raise an error instead of warning in :func:`mne_bids.write_raw_bids` by `Alex Rockhill`_ (:gh:`980`)
 
-Requirements
-^^^^^^^^^^^^
+🛠 Requirements
+^^^^^^^^^^^^^^^
 
 - MNE-BIDS now requires Jinja2 to work with MNE-Python 0.24.
 
-Bug fixes
-^^^^^^^^^
+🪲 Bug fixes
+^^^^^^^^^^^^
 
 - Forcing EDF conversion in :func:`mne_bids.write_raw_bids` properly uses the ``overwrite`` parameter now, by `Adam Li`_ (:gh:`930`)
 
