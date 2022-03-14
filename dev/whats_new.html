@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.10 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.11.dev0 documentation</title>
     
     <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -136,7 +136,7 @@
       <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.10
+        v0.11.dev0
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
@@ -208,8 +208,8 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#version-0-10-2022-03-14">
-   Version 0.10 (2022-03-14)
+  <a class="reference internal nav-link" href="#version-0-11-unreleased">
+   Version 0.11 (unreleased)
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
@@ -274,34 +274,20 @@
                 
   <section id="what-s-new">
 <span id="whats-new"></span><h1>What’s new?<a class="headerlink" href="#what-s-new" title="Permalink to this headline">¶</a></h1>
-<section id="version-0-10-2022-03-14">
-<span id="changes-0-10"></span><h2>Version 0.10 (2022-03-14)<a class="headerlink" href="#version-0-10-2022-03-14" title="Permalink to this headline">¶</a></h2>
-<p>This release brings experimental fNIRS suppot, improvements in coordinate frame
-handling, and various enhancements regarding MRI fiducials.</p>
+<section id="version-0-11-unreleased">
+<span id="changes-0-11"></span><h2>Version 0.11 (unreleased)<a class="headerlink" href="#version-0-11-unreleased" title="Permalink to this headline">¶</a></h2>
+<p>…</p>
 <section id="notable-changes">
 <h3>📝 Notable changes<a class="headerlink" href="#notable-changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>We now have <strong>experimental</strong> support for fNIRS data (SNIRF format). This is
-still super fresh, and the respective BIDS enhancement proposal (BEP) has not
-yet been finalized &amp; accepted into the standard. However, we’re excitied to
-be able to do this first step towards fNIRS support!</p></li>
-<li><p>Numerous improvements have been added to enhance our support for various
-coordinate frames, including those that are not yet supported by MNE-BIDS.
-These changes are mostly relevant to iEEG users. Please see the detailed list
-of changes below.</p></li>
-<li><p>We have added support for storing and reading multiple anatomical landmarks
-(“fiducials”) for the same participant. This makes it possible, for example,
-to store different sets of landmarks for each recording session.</p></li>
-<li><p>It’s now possible to store Neuroscan (CNT) files with MNE-BIDS.</p></li>
+<li><p>…</p></li>
 </ul>
 </section>
 <section id="authors">
 <h3>👩🏽‍💻 Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
 <p>The following authors contributed for the first time. Thank you so much! 🤩</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/skjerns">Simon Kern</a></p></li>
-<li><p><a class="reference external" href="https://swastyy.github.io">Swastika Gupta</a></p></li>
-<li><p><a class="reference external" href="https://github.com/yjmantilla">Yorguin Mantilla</a></p></li>
+<li><p>…</p></li>
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
@@ -319,44 +305,25 @@ to store different sets of landmarks for each recording session.</p></li>
 <section id="enhancements">
 <h4>🚀 Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>Add experimental support for fNIRS (SNIRF) files in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/rob-luke">Robert Luke</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/406">#406</a>)</p></li>
-<li><p>Add support for CNT (Neuroscan) files in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/yjmantilla">Yorguin Mantilla</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/924">#924</a>)</p></li>
-<li><p>Add the ability to write multiple landmarks with <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a> (e.g. to have separate landmarks for different sessions) via the new <code class="docutils literal notranslate"><span class="pre">kind</span></code> parameter, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/955">#955</a>)</p></li>
-<li><p>Similarly, <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> and <a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks" title="mne_bids.update_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_anat_landmarks()</span></code></a> gained a new <code class="docutils literal notranslate"><span class="pre">kind</span></code> parameter to specify which of multiple landmark sets to operate on, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/955">#955</a>, <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/957">#957</a>)</p></li>
-<li><p>Add support for iEEG data in the coordinate frame <code class="docutils literal notranslate"><span class="pre">Pixels</span></code>; although MNE-Python does not recognize this coordinate frame and so it will be set to <code class="docutils literal notranslate"><span class="pre">unknown</span></code> in the montage, MNE-Python can still be used to analyze this kind of data, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/976">#976</a>)</p></li>
-<li><p>Add an explanation in <a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html#ieeg-example"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a> of why it is better to have intracranial data in individual rather than template coordinates, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/975">#975</a>)</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks" title="mne_bids.update_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_anat_landmarks()</span></code></a> can now directly work with fiducials saved from the MNE-Python coregistration GUI or <a class="reference external" href="https://mne.tools/dev/generated/mne.io.write_fiducials.html#mne.io.write_fiducials" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.write_fiducials()</span></code></a>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/977">#977</a>)</p></li>
-<li><p>All non-MNE-Python BIDS coordinate frames are now set to <code class="docutils literal notranslate"><span class="pre">'unknown'</span></code> on reading, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/979">#979</a>)</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> can now write to template coordinates by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/980">#980</a>)</p></li>
-<li><p>Add <a class="reference internal" href="generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.template_to_head()</span></code></a> to transform channel locations in BIDS standard template coordinate systems to <code class="docutils literal notranslate"><span class="pre">head</span></code> and also provides a <code class="docutils literal notranslate"><span class="pre">trans</span></code>, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/983">#983</a>)</p></li>
+<li><p>…</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
 <h4>🧐 API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p><a class="reference internal" href="generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks" title="mne_bids.update_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.update_anat_landmarks()</span></code></a> will now by default raise an exception if the requested MRI landmarks do not already exist. Use the new <code class="docutils literal notranslate"><span class="pre">on_missing</span></code> parameter to control this behavior, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/957">#957</a>)</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> now raises a warning if <code class="docutils literal notranslate"><span class="pre">datatype</span></code> or <code class="docutils literal notranslate"><span class="pre">suffix</span></code> of the provided electrophysiological <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> are not set. In the future, this will raise an exception, by <em class="xref py py-obj">Richard Höchenberger`_(:gh:`969</em>)</p></li>
-<li><p>Passing <code class="docutils literal notranslate"><span class="pre">fs_subject=None</span></code> to <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_head_mri_trans()</span></code></a> has been deprecated. Please pass the FreeSurfer subject name explicitly, by Richard Höchenberger`_ (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/977">#977</a>)</p></li>
-<li><p>Corrupted or missing fiducials in <code class="docutils literal notranslate"><span class="pre">head</span></code> coordinates now raise an error instead of warning in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/980">#980</a>)</p></li>
+<li><p>…</p></li>
 </ul>
 </section>
 <section id="requirements">
 <h4>🛠 Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>MNE-BIDS now requires Jinja2 to work with MNE-Python 0.24.</p></li>
+<li><p>…</p></li>
 </ul>
 </section>
 <section id="bug-fixes">
 <h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>Forcing EDF conversion in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> properly uses the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> parameter now, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/930">#930</a>)</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_report()</span></code></a> now correctly handles <code class="docutils literal notranslate"><span class="pre">participant.tsv</span></code> files that only contain a <code class="docutils literal notranslate"><span class="pre">participant_id</span></code> column, by <a class="reference external" href="https://github.com/skjerns">Simon Kern</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/912">#912</a>)</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> doesn’t store age, handedness, and sex in <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code> anymore for empty-room recordings, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/935">#935</a>)</p></li>
-<li><p>When <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> automatically creates new hierarchical event names based on event values (in cases where the same <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> was assigned to different <code class="docutils literal notranslate"><span class="pre">value``s</span> <span class="pre">in</span> <span class="pre">``*_events.tsv</span></code>), <code class="docutils literal notranslate"><span class="pre">'n/a'</span></code> values will now be converted to <code class="docutils literal notranslate"><span class="pre">'na'</span></code>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/937">#937</a>)</p></li>
-<li><p>Avoid <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> in <a class="reference internal" href="generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset()</span></code></a> with the upcoming MNE-Python 1.0 release, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/942">#942</a>)</p></li>
-<li><p>Avoid modifying the instance of <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> if validation fails when calling <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.update()</span></code></a>, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/950">#950</a>)</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> now respects <code class="docutils literal notranslate"><span class="pre">datatype</span></code> and <code class="docutils literal notranslate"><span class="pre">suffix</span></code> of the provided electrophysiological <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>, simplifying e.g. reading of derivaties, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/969">#969</a>)</p></li>
-<li><p>Do not convert unknown coordinate frames to <code class="docutils literal notranslate"><span class="pre">head</span></code>, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/976">#976</a>)</p></li>
+<li><p>…</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
