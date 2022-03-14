@@ -15,8 +15,8 @@ Version 0.10 (2022-03-14)
 This release brings experimental fNIRS suppot, improvements in coordinate frame
 handling, and various enhancements regarding MRI fiducials.
 
-Notable changes
-~~~~~~~~~~~~~~~
+📝 Notable changes
+~~~~~~~~~~~~~~~~~~
 
 - We now have **experimental** support for fNIRS data (SNIRF format). This is
   still super fresh, and the respective BIDS enhancement proposal (BEP) has not
@@ -34,8 +34,8 @@ Notable changes
 
 - It's now possible to store Neuroscan (CNT) files with MNE-BIDS.
 
-Authors
-~~~~~~~
+👩🏽‍💻 Authors
+~~~~~~~~~~~~~~~
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
