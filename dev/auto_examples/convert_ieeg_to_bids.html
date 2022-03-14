@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.10.dev0 documentation</title>
+    <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.10 documentation</title>
     
     <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -136,12 +136,13 @@
       <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.10.dev0
+        v0.10
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.10 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.9 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.11 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.10 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.9/index.html">v0.9</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.8/index.html">v0.8</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.7/index.html">v0.7</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.6/index.html">v0.6</a>
@@ -401,7 +402,8 @@ refer to the <a class="reference external" href="https://bids-specification.read
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">,</span>
                       <a href="../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anat_landmarks</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">)</span>
+                      <a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span>
+                      <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <section id="step-1-download-the-data">
@@ -421,6 +423,225 @@ data downloaded via MNE-Python’s <code class="docutils literal notranslate"><s
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
+Dataset misc version 0.0 out of date, latest version is 0.23
+
+0.00B [00:00, ?B/s]
+281kB [00:00, 2.64MB/s]
+889kB [00:00, 4.30MB/s]
+1.35MB [00:00, 4.40MB/s]
+2.84MB [00:00, 8.35MB/s]
+5.48MB [00:00, 14.7MB/s]
+7.54MB [00:00, 16.7MB/s]
+9.54MB [00:00, 16.4MB/s]
+11.2MB [00:00, 12.0MB/s]
+12.6MB [00:01, 9.10MB/s]
+13.7MB [00:01, 6.98MB/s]
+14.6MB [00:01, 6.48MB/s]
+15.9MB [00:01, 7.73MB/s]
+16.8MB [00:01, 7.94MB/s]
+18.3MB [00:02, 9.02MB/s]
+19.3MB [00:02, 5.92MB/s]
+20.5MB [00:02, 6.95MB/s]
+21.4MB [00:02, 5.10MB/s]
+23.0MB [00:02, 6.86MB/s]
+23.9MB [00:03, 5.86MB/s]
+24.7MB [00:03, 5.36MB/s]
+26.0MB [00:03, 6.62MB/s]
+26.9MB [00:03, 4.93MB/s]
+28.1MB [00:03, 6.16MB/s]
+28.9MB [00:04, 4.74MB/s]
+30.2MB [00:04, 6.01MB/s]
+31.0MB [00:04, 4.52MB/s]
+32.3MB [00:04, 5.82MB/s]
+33.2MB [00:04, 4.50MB/s]
+34.5MB [00:05, 5.93MB/s]
+35.4MB [00:05, 6.34MB/s]
+36.2MB [00:05, 3.55MB/s]
+38.5MB [00:05, 6.11MB/s]
+40.9MB [00:05, 9.05MB/s]
+43.4MB [00:06, 11.9MB/s]
+45.8MB [00:06, 14.5MB/s]
+48.2MB [00:06, 16.4MB/s]
+50.7MB [00:06, 18.7MB/s]
+53.2MB [00:06, 20.2MB/s]
+55.6MB [00:06, 21.3MB/s]
+58.0MB [00:06, 21.9MB/s]
+60.4MB [00:06, 22.7MB/s]
+62.8MB [00:06, 22.8MB/s]
+65.2MB [00:06, 23.2MB/s]
+67.6MB [00:07, 23.4MB/s]
+70.0MB [00:07, 23.5MB/s]
+72.4MB [00:07, 23.8MB/s]
+74.9MB [00:07, 24.0MB/s]
+77.3MB [00:07, 24.1MB/s]
+79.7MB [00:08, 8.65MB/s]
+81.6MB [00:08, 10.0MB/s]
+83.5MB [00:08, 11.4MB/s]
+85.3MB [00:08, 12.7MB/s]
+87.2MB [00:08, 14.0MB/s]
+89.1MB [00:08, 8.72MB/s]
+90.5MB [00:09, 7.65MB/s]
+92.4MB [00:09, 9.39MB/s]
+94.3MB [00:09, 11.1MB/s]
+96.2MB [00:09, 12.7MB/s]
+98.1MB [00:09, 14.1MB/s]
+99.8MB [00:09, 14.7MB/s]
+103MB [00:09, 18.0MB/s]
+105MB [00:09, 18.3MB/s]
+107MB [00:10, 12.7MB/s]
+109MB [00:10, 15.4MB/s]
+111MB [00:10, 16.4MB/s]
+113MB [00:10, 17.4MB/s]
+115MB [00:10, 14.8MB/s]
+117MB [00:10, 9.87MB/s]
+118MB [00:11, 6.36MB/s]
+119MB [00:11, 5.81MB/s]
+120MB [00:11, 6.72MB/s]
+121MB [00:12, 5.26MB/s]
+122MB [00:12, 4.74MB/s]
+123MB [00:12, 4.37MB/s]
+123MB [00:12, 4.40MB/s]
+125MB [00:12, 6.22MB/s]
+126MB [00:12, 7.29MB/s]
+127MB [00:12, 7.62MB/s]
+128MB [00:13, 7.79MB/s]
+129MB [00:13, 8.84MB/s]
+130MB [00:13, 6.25MB/s]
+131MB [00:13, 5.17MB/s]
+131MB [00:13, 4.61MB/s]
+132MB [00:13, 5.03MB/s]
+133MB [00:14, 6.57MB/s]
+134MB [00:14, 5.38MB/s]
+135MB [00:14, 4.74MB/s]
+135MB [00:14, 4.35MB/s]
+136MB [00:14, 4.09MB/s]
+137MB [00:14, 5.38MB/s]
+139MB [00:15, 7.79MB/s]
+140MB [00:15, 6.13MB/s]
+140MB [00:15, 5.13MB/s]
+141MB [00:15, 4.55MB/s]
+141MB [00:15, 4.50MB/s]
+142MB [00:15, 5.57MB/s]
+144MB [00:16, 7.49MB/s]
+145MB [00:16, 5.77MB/s]
+145MB [00:16, 4.89MB/s]
+146MB [00:16, 4.54MB/s]
+147MB [00:16, 4.30MB/s]
+148MB [00:16, 6.74MB/s]
+149MB [00:17, 5.42MB/s]
+150MB [00:17, 4.81MB/s]
+150MB [00:17, 4.42MB/s]
+151MB [00:17, 4.14MB/s]
+152MB [00:17, 5.15MB/s]
+153MB [00:17, 6.54MB/s]
+154MB [00:18, 5.27MB/s]
+154MB [00:18, 4.73MB/s]
+155MB [00:18, 4.31MB/s]
+155MB [00:18, 3.94MB/s]
+156MB [00:18, 4.43MB/s]
+157MB [00:18, 6.38MB/s]
+158MB [00:18, 5.21MB/s]
+159MB [00:19, 4.63MB/s]
+159MB [00:19, 4.20MB/s]
+160MB [00:19, 4.09MB/s]
+160MB [00:19, 5.33MB/s]
+161MB [00:19, 5.73MB/s]
+163MB [00:19, 8.12MB/s]
+164MB [00:19, 5.99MB/s]
+164MB [00:20, 5.01MB/s]
+165MB [00:20, 4.44MB/s]
+165MB [00:20, 2.62MB/s]
+168MB [00:20, 5.48MB/s]
+170MB [00:21, 8.53MB/s]
+173MB [00:21, 11.5MB/s]
+175MB [00:21, 14.2MB/s]
+178MB [00:21, 16.6MB/s]
+180MB [00:21, 18.6MB/s]
+182MB [00:21, 20.1MB/s]
+185MB [00:21, 21.3MB/s]
+187MB [00:21, 22.2MB/s]
+190MB [00:21, 22.8MB/s]
+192MB [00:21, 23.2MB/s]
+195MB [00:22, 23.7MB/s]
+197MB [00:22, 24.0MB/s]
+200MB [00:22, 24.1MB/s]
+202MB [00:22, 24.3MB/s]
+205MB [00:22, 24.3MB/s]
+207MB [00:22, 24.3MB/s]
+209MB [00:22, 24.4MB/s]
+212MB [00:22, 24.3MB/s]
+214MB [00:22, 24.3MB/s]
+217MB [00:22, 24.4MB/s]
+219MB [00:23, 24.4MB/s]
+222MB [00:23, 24.5MB/s]
+224MB [00:23, 24.4MB/s]
+227MB [00:23, 24.4MB/s]
+229MB [00:23, 13.6MB/s]
+231MB [00:23, 14.0MB/s]
+233MB [00:23, 14.4MB/s]
+235MB [00:24, 14.7MB/s]
+236MB [00:24, 15.0MB/s]
+238MB [00:24, 15.2MB/s]
+239MB [00:24, 15.3MB/s]
+241MB [00:24, 15.3MB/s]
+243MB [00:24, 15.4MB/s]
+244MB [00:24, 15.5MB/s]
+246MB [00:24, 15.6MB/s]
+247MB [00:24, 15.6MB/s]
+249MB [00:25, 15.6MB/s]
+251MB [00:25, 5.97MB/s]
+252MB [00:25, 6.06MB/s]
+253MB [00:25, 6.34MB/s]
+254MB [00:26, 6.40MB/s]
+255MB [00:26, 6.56MB/s]
+255MB [00:26, 6.62MB/s]
+256MB [00:26, 6.62MB/s]
+257MB [00:26, 6.79MB/s]
+258MB [00:26, 6.83MB/s]
+258MB [00:26, 6.82MB/s]
+259MB [00:26, 6.91MB/s]
+260MB [00:27, 6.95MB/s]
+261MB [00:27, 6.88MB/s]
+261MB [00:27, 6.89MB/s]
+262MB [00:27, 6.90MB/s]
+263MB [00:27, 6.87MB/s]
+263MB [00:27, 6.79MB/s]
+264MB [00:27, 6.88MB/s]
+265MB [00:27, 6.92MB/s]
+266MB [00:27, 6.91MB/s]
+266MB [00:27, 6.90MB/s]
+267MB [00:28, 6.90MB/s]
+268MB [00:28, 6.92MB/s]
+268MB [00:28, 6.90MB/s]
+269MB [00:28, 6.94MB/s]
+270MB [00:28, 6.91MB/s]
+270MB [00:28, 6.94MB/s]
+271MB [00:28, 7.04MB/s]
+272MB [00:28, 7.05MB/s]
+273MB [00:28, 7.02MB/s]
+273MB [00:28, 6.92MB/s]
+274MB [00:29, 6.85MB/s]
+275MB [00:29, 6.77MB/s]
+275MB [00:29, 6.83MB/s]
+276MB [00:29, 6.89MB/s]
+277MB [00:29, 6.95MB/s]
+278MB [00:29, 6.94MB/s]
+278MB [00:29, 6.86MB/s]
+279MB [00:29, 6.91MB/s]
+280MB [00:29, 6.86MB/s]
+280MB [00:29, 7.00MB/s]
+281MB [00:30, 7.09MB/s]
+282MB [00:30, 7.04MB/s]
+283MB [00:30, 6.99MB/s]
+283MB [00:30, 6.93MB/s]
+284MB [00:30, 6.86MB/s]
+285MB [00:30, 6.79MB/s]
+285MB [00:30, 6.97MB/s]
+286MB [00:30, 6.94MB/s]
+287MB [00:30, 6.94MB/s]
+288MB [00:31, 7.03MB/s]
+0.00B [00:00, ?B/s]
+0.00B [00:00, ?B/s]
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
@@ -1020,54 +1241,62 @@ Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_tas
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
 </pre></div>
 </div>
-<p>Now we should go back to “head” coordinates. We do this with <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code>
-fiducials which are in MNI space. In this case, you would not need to run
-the Freesurfer <code class="docutils literal notranslate"><span class="pre">recon-all</span></code> for the subject, you would just need a
-<code class="docutils literal notranslate"><span class="pre">subjects_dir</span></code> with <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> in it, which is accessible using
-<a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.fetch_fsaverage.html#mne.datasets.fetch_fsaverage" title="(in MNE v1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.fetch_fsaverage()</span></code></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>
-<span class="c1"># add fiducials for &quot;mni_tal&quot; (which is the coordinate frame fsaverage is in)</span>
-<span class="c1"># so that it can properly be set to &quot;head&quot;</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.add_mni_fiducials" title="mne.channels.DigMontage.add_mni_fiducials" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">add_mni_fiducials</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>
-
-<span class="c1"># get the new head-&gt;mri (in this case mri == mni because fsavearge is in MNI)</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mni_head_t</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.compute_native_head_t.html#mne.channels.compute_native_head_t" title="mne.channels.compute_native_head_t" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">compute_native_head_t</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">)</span>
-
-<span class="c1"># set the montage transforming to the &quot;head&quot; coordinate frame</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_montage" title="mne.io.BaseRaw.set_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">set_montage</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">)</span>
-
-<span class="c1"># check that we can recover the coordinates</span>
+<p>MNE-Python uses <code class="docutils literal notranslate"><span class="pre">head</span></code> coordinates with a <code class="docutils literal notranslate"><span class="pre">head</span> <span class="pre">-&gt;</span> <span class="pre">mri</span></code> <code class="docutils literal notranslate"><span class="pre">trans</span></code> so we
+need to make sure to get our data in this form. As shown below, the montage
+is in the <code class="docutils literal notranslate"><span class="pre">mni_tal</span></code> coordinate frame but doesn’t have fiducials. The
+<code class="docutils literal notranslate"><span class="pre">head</span></code> coordinate frame is defined based on the fiducial points so we need
+to add these. Fortunately, there is a convenient function
+(<a class="reference internal" href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.template_to_head()</span></code></a>) that loads stored fiducials and takes
+care of the transformations. Once this function is applied, you can use
+the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object and the <code class="docutils literal notranslate"><span class="pre">trans</span></code> as in any MNE example
+(e.g. <a class="reference external" href="https://mne.tools/dev/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.0)"><span>Working with sEEG data</span></a>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># use `coord_frame=&#39;mri&#39;` to indicate that the montage is in surface RAS</span>
+<span class="c1"># and `unit=&#39;m&#39;` to indicate that the units are in meters</span>
+<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw2</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;fsaverage&#39;</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1"># this a bit confusing since we transformed from mri-&gt;mni and now we&#39;re</span>
+<span class="c1"># saying we&#39;re back in &#39;mri&#39; but that is because we were in the surface RAS</span>
+<span class="c1"># coordinate frame of `sample_seeg` and transformed to &#39;mni_tal&#39;, which is the</span>
+<span class="c1"># surface RAS coordinate frame for `fsaverage`: since MNE denotes surface RAS</span>
+<span class="c1"># as &#39;mri&#39;, both coordinate frames are &#39;mri&#39;, it&#39;s just that &#39;mni_tal&#39; is &#39;mri&#39;</span>
+<span class="c1"># when the subject is &#39;fsaverage&#39;</span>
+</pre></div>
+</div>
+<p>Let’s check that we can recover the original coordinates from the BIDS
+dataset now that we are working in the <code class="docutils literal notranslate"><span class="pre">head</span></code> coordinate frame with a
+<code class="docutils literal notranslate"><span class="pre">head</span> <span class="pre">-&gt;</span> <span class="pre">mri</span></code> <code class="docutils literal notranslate"><span class="pre">trans</span></code> which is the setup MNE-Python is designed around.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># check that we can recover the coordinates</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered coordinate head: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="s1">&#39;Saved coordinate head:     </span><span class="si">{saved}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+      <span class="s1">&#39;Original coordinate head:  </span><span class="si">{original}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
           <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw2</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;loc&#39;</span><span class="p">][:</span><span class="mi">3</span><span class="p">],</span>
-          <span class="n">saved</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;loc&#39;</span><span class="p">][:</span><span class="mi">3</span><span class="p">]))</span>
+          <span class="n">original</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;loc&#39;</span><span class="p">][:</span><span class="mi">3</span><span class="p">]))</span>
 
 <span class="c1"># check difference in trans</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered trans:</span><span class="se">\n</span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="s1">&#39;Original trans:</span><span class="se">\n</span><span class="si">{saved}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-          <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mni_head_t</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
+      <span class="s1">&#39;Original trans:</span><span class="se">\n</span><span class="si">{original}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
           <span class="c1"># combine head-&gt;mri with mri-&gt;mni to get head-&gt;mni</span>
           <span class="c1"># and then invert to get mni-&gt;head</span>
-          <span class="n">saved</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="numpy.linalg.inv" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.dot.html#numpy.dot" title="numpy.dot" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">dot</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">],</span> <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_mni_t</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">])</span>
-                              <span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+          <span class="n">original</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="numpy.linalg.inv" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.dot.html#numpy.dot" title="numpy.dot" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">dot</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">],</span> <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_mni_t</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">])</span>
+                                 <span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
 
 <span class="c1"># ensure that the data in MNI coordinates is exactly the same</span>
-<span class="c1"># (within numerical precision)</span>
+<span class="c1"># (within computer precision)</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">invert_transform</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mni_head_t</span></a><span class="p">))</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="s1">&#39;Saved coordinate:     </span><span class="si">{saved}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+      <span class="s1">&#39;Original coordinate:  </span><span class="si">{original}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
           <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">],</span>
-          <span class="n">saved</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]))</span>
+          <span class="n">original</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]))</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate head: [-0.02488703  0.03772073 -0.0126908 ]
-Saved coordinate head:     [-0.02599896  0.03496219 -0.01177379]
+Original coordinate head:  [-0.02599896  0.03496219 -0.01177379]
 Recovered trans:
-[[ 1.     0.004  0.    -0.002]
- [-0.004  0.998  0.057  0.031]
- [-0.    -0.057  0.998  0.04 ]
+[[ 1.    -0.004 -0.     0.002]
+ [ 0.004  0.998 -0.057 -0.029]
+ [ 0.     0.057  0.998 -0.041]
  [ 0.     0.     0.     1.   ]]
 Original trans:
 [[ 0.966  0.029  0.006 -0.003]
@@ -1075,7 +1304,7 @@ Original trans:
  [-0.001 -0.053  0.946  0.04 ]
  [ 0.     0.     0.     1.   ]]
 Recovered coordinate: [-0.0231477   0.00949445 -0.05183359]
-Saved coordinate:     [-0.0231477   0.00949445 -0.05183359]
+Original coordinate:  [-0.0231477   0.00949445 -0.05183359]
 </pre></div>
 </div>
 <p>As you can see the coordinates stored in the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object are slightly off.
@@ -1087,9 +1316,11 @@ the template brain (this was done once for the template so that we could
 just load it from a file). This difference means that there are slightly
 different head-&gt;mri transforms. Once these transforms are applied, however,
 the positions are the same in MNI coordinates which is what is important.</p>
-<p>As a final step, let’s go over how to assign the fiducials for a template
-brain where they are not found for you. Many template coordinate systems
-are allowed by BIDS but are not used in MNE-Python.</p>
+<p>As a final step, let’s go over how to assign coordinate systems that are
+not recognized by MNE-Python. Many template coordinate systems are allowed by
+BIDS but are not used in MNE-Python. For these templates, the fiducials have
+been found and the transformations have been pre-computed so that we can
+get our coordinates in the <code class="docutils literal notranslate"><span class="pre">head</span></code> coordinate frame that MNE-Python uses.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>As of this writing, BIDS accepts channel coordinates in reference to the
@@ -1103,80 +1334,44 @@ it is recommended to share the coordinates in the individual subject’s
 anatomical reference frame so that researchers who use the data can
 transform the coordinates to any of these templates that they choose.</p>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()</span>
-<span class="c1"># fiducial points are included in the sample data but could be found using</span>
-<span class="c1"># Freeview (note the coordinates are in MNE &quot;mri&quot; coordinates which is the</span>
-<span class="c1"># same as Freesurfers TkRegRAS but in meters not millimeters --</span>
-<span class="c1"># divide the TkRegRAS values by 1000)</span>
-<span class="c1"># or fiducial points could also be found with the MNE coregistration GUI</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">]</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">]</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fiducial points determined from the template head anatomy:</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="sa">f</span><span class="s1">&#39;nasion: </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a><span class="si">}</span><span class="se">\n</span><span class="s1">lpa:    </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="si">}</span><span class="se">\n</span><span class="s1">rpa:    </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
-<span class="c1"># read raw in again to start over</span>
-<span class="n">raw2</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>
-
-<span class="c1"># note: for fsaverage, the montage will be in the coordinate frame</span>
-<span class="c1"># &#39;mni_tal&#39; because it is recognized by MNE but other templates will be</span>
-<span class="c1"># in the &#39;unknown&#39; coordinate frame because they are not recognized by MNE</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()</span>
-
-<span class="c1"># here we will set the coordinate frame to be &#39;mri&#39; because our channel</span>
-<span class="c1"># positions and fiducials are in the Freesurfer surface RAS coordinate</span>
-<span class="c1"># frame of the template T1 MRI (in this case fsaverage)</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.make_dig_montage.html#mne.channels.make_dig_montage" title="mne.channels.make_dig_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span></a><span class="p">(</span>  <span class="c1"># add fiducials</span>
-    <span class="n">ch_pos</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos2</span></a><span class="p">[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">],</span>
-    <span class="n">nasion</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a><span class="p">,</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="p">,</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="p">,</span>
-    <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">)</span>
-
-<span class="c1"># get head-&gt;mri trans, invert from mri-&gt;head</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">invert_transform</span><span class="p">(</span>
-    <a href="https://mne.tools/dev/generated/mne.channels.compute_native_head_t.html#mne.channels.compute_native_head_t" title="mne.channels.compute_native_head_t" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">compute_native_head_t</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">))</span>
-
-<span class="c1"># set the montage to transform back to &#39;head&#39;</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_montage" title="mne.io.BaseRaw.set_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">set_montage</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">)</span>
-
-<span class="c1"># check that the coordinates were recovered</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="s1">&#39;Saved coordinate:     </span><span class="si">{saved}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-          <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">],</span>
-          <span class="n">saved</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]))</span>
-</pre></div>
+<p>Unfortunately, template coordinate systems are not guranteed to be in
+<code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code> (as was the case for the <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> example above);
+the BIDS standard template descriptions only specify
+the anatomical space (as defined by the template T1 MRI), not the
+coordinate frame of that space. The coordinates could be in
+<code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code>, <code class="docutils literal notranslate"><span class="pre">voxels</span></code> or <code class="docutils literal notranslate"><span class="pre">scanner</span> <span class="pre">RAS</span></code> (see
+<a class="reference external" href="https://mne.tools/dev/auto_tutorials/forward/20_source_alignment.html#tut-source-alignment" title="(in MNE v1.0)"><span>Source alignment and coordinate frames</span></a> for a tutorial explaining the different
+coordinate frames). Fortunately, as mentioned before, MNE-BIDS has
+pre-computed the transforms for the BIDS standard template coordinate
+systems. We’ll have to inspect the description of the BIDS dataset and/or
+the electrodes.tsv sidecar file accompanying an electrophysiology recording
+to determine which coordinate frame the channel locations are in and
+whether they are in meters or millimeters (for <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code> or
+<code class="docutils literal notranslate"><span class="pre">scanner</span> <span class="pre">RAS</span></code>, if not in <code class="docutils literal notranslate"><span class="pre">voxels</span></code>). We have already shown how to
+transform from <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code> above (it works the same for any other
+<code class="docutils literal notranslate"><span class="pre">space</span></code> argument) so let’s go over <code class="docutils literal notranslate"><span class="pre">voxels</span></code> and <code class="docutils literal notranslate"><span class="pre">scanner</span> <span class="pre">RAS</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If no coordinate frame is passed to <a class="reference internal" href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.template_to_head()</span></code></a>
+it will infer <code class="docutils literal notranslate"><span class="pre">voxels</span></code> if the coordinates are only positive and
+<code class="docutils literal notranslate"><span class="pre">scanner</span> <span class="pre">RAS</span></code> otherwise. Be sure not to use the wrong coordinate
+frame! <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code> and <code class="docutils literal notranslate"><span class="pre">scanner</span> <span class="pre">RAS</span></code> are quite similar which
+is especially confusing, but, fortunately, in most of the Freesurfer
+template coordinate systems <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code> is identical to
+<code class="docutils literal notranslate"><span class="pre">scanner</span> <span class="pre">RAS</span></code>. <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code> is a Freesurfer coordinate frame so
+it is most likely to be used with Freesurfer template coordinate
+systems). This is the case for <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code>, <code class="docutils literal notranslate"><span class="pre">MNI305</span></code> and
+<code class="docutils literal notranslate"><span class="pre">fsaverageSym</span></code> but not <code class="docutils literal notranslate"><span class="pre">fsLR</span></code>.</p>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Fiducial points determined from the template head anatomy:
-nasion: [ 0.00146763  0.08506715 -0.03483611]
-lpa:    [-0.08061612 -0.02908875 -0.04131077]
-rpa:    [ 0.08436285 -0.02850276 -0.04127743]
-Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.vhdr...
-Setting channel info structure...
-Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv.
-Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
-Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
-Recovered coordinate: [-0.0231477   0.00949445 -0.05183359]
-Saved coordinate:     [-0.0231477   0.00949445 -0.05183359]
-</pre></div>
-</div>
-<p>We showed how to add the fiducials from <code class="docutils literal notranslate"><span class="pre">montage.add_mni_fiducials</span></code>
-yourself, which allows us to use any coordinate frame, even if it’s not MNI,
-but we still assumed that the coordinates were in Freesurfer surface RAS.
-Unfortunately, this is not guranteed to be the case because the BIDS
-template descriptions only specify the anatomical space (as defined by the
-template T1 MRI) not the coordinate frame of the space; the coordinates
-could be in terms of surface RAS, voxels of the template MRI or scanner RAS
-MRI coordinates. See <a class="reference external" href="https://mne.tools/dev/auto_tutorials/forward/20_source_alignment.html#tut-source-alignment" title="(in MNE v1.0)"><span>Source alignment and coordinate frames</span></a> for a tutorial explaining
-the different coordinate frames. If the coordinates are in voxels or scanner
-RAS, we’ll have to find the fiducials in those same coordinates.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># get the template T1 (must be mgz to have surface RAS transforms</span>
-<span class="c1"># the Freesurfer command `mri_convert` can be used to convert</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ensure the output path doesn&#39;t contain any leftover files from previous</span>
+<span class="c1"># tests and example runs</span>
+<span class="k">if</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.exists" title="os.path.exists" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">exists</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">):</span>
+    <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+
+<span class="c1"># first we have to transform the montage to voxels to make it as if</span>
+<span class="c1"># we had gotten the montage directly from the BIDS dataset in voxels</span>
+
+<span class="c1"># get a template mgz image to transform the montage to voxel coordinates</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">(),</span> <span class="s1">&#39;subjects&#39;</span><span class="p">)</span>
 <a href="https://nipy.org/nibabel/reference/nibabel.freesurfer.html#nibabel.freesurfer.mghformat.MGHImage" title="nibabel.freesurfer.mghformat.MGHImage" class="sphx-glr-backref-module-nibabel-freesurfer-mghformat sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">template_T1</span></a> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">,</span> <span class="s1">&#39;fsaverage&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;T1.mgz&#39;</span><span class="p">))</span>
 
@@ -1190,181 +1385,167 @@ RAS, we’ll have to find the fiducials in those same coordinates.</p>
     <span class="n">misc_path</span><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_seeg_ieeg.fif&#39;</span><span class="p">))</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.get_montage" title="mne.io.Raw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get the original montage</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">)</span>  <span class="c1"># head-&gt;mri</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_vox_trans</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span>
-    <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span>
-    <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span><span class="p">,</span>
-    <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="numpy.linalg.inv" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_t</span></a><span class="p">)</span>
-<span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.eye.html#numpy.eye" title="numpy.eye" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">eye</span></a><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">1000</span>  <span class="c1"># m-&gt;mm</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">))</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_vox_trans</span></a><span class="p">)</span>  <span class="c1"># transform our original montage</span>
-
-<span class="c1"># print transformed fiducials, these could be found in the voxel locator in</span>
-<span class="c1"># Freesurfer&#39;s `freeview` based on the template MRI since we wouldn&#39;t have</span>
-<span class="c1"># them found for us for a template other than fsaverage</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_mni_t</span></a><span class="p">)</span>  <span class="c1"># mri-&gt;mni == surface RAS for fsaverage</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">]</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">]</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="nb">list</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>  <span class="c1"># get an array of positions</span>
+<span class="c1"># mri -&gt; vox and m -&gt; mm</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">apply_trans</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="numpy.linalg.inv" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_t</span></a><span class="p">),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fiducial points determined from the template head anatomy in voxels:</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="sa">f</span><span class="s1">&#39;nasion: </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a><span class="si">}</span><span class="se">\n</span><span class="s1">lpa:    </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="si">}</span><span class="se">\n</span><span class="s1">rpa:    </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage_vox</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.make_dig_montage.html#mne.channels.make_dig_montage" title="mne.channels.make_dig_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a><span class="p">)),</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span><span class="p">)</span>
 
-<span class="c1"># read raw in again to start over</span>
-<span class="n">raw2</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
+<span class="c1"># specify our standard template coordinate system space</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;fsaverage&#39;</span><span class="p">)</span>
+
+<span class="c1"># write to BIDS, this time with a template coordinate system in voxels</span>
+<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="mi">40000</span><span class="p">),</span>
+               <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage_vox</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-Fiducial points determined from the template head anatomy in voxels:
-nasion: [126.40839969 153.7306322  222.17529387]
-lpa:    [208.97995352 181.68190164 117.24475992]
-rpa:    [ 49.53170974 181.39058387 117.36679771]
-Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.vhdr...
-Setting channel info structure...
-Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv.
-Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
-Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
+Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
+    Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
+Ready.
+/home/circleci/project/mne_bids/write.py:1586: RuntimeWarning: Converting data files to BrainVision format for anonymization
+  warn(&#39;Converting data files to BrainVision format &#39;
+Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_coordsystem.json&#39;...
+Used Annotations descriptions: [&#39;Fixation&#39;, &#39;Go Cue&#39;, &#39;ISI Onset&#39;, &#39;Response&#39;]
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv&#39;...
+/home/circleci/project/mne_bids/write.py:1741: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
+Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr.
+
+BIDSPath(
+root: /home/circleci/mne_data/ieeg_bids
+datatype: ieeg
+basename: sub-1_task-motor_space-fsaverage_ieeg.vhdr)
 </pre></div>
 </div>
-<p>Now, it’s the same as if we just got the montage from the raw in voxels
-i.e. if we would do <code class="docutils literal notranslate"><span class="pre">montage</span> <span class="pre">=</span> <span class="pre">raw.get_montage()</span></code> and get the positions
-directly in voxels instead of doing the transform to voxels first</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.make_dig_montage.html#mne.channels.make_dig_montage" title="mne.channels.make_dig_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span></a><span class="p">(</span>  <span class="c1"># add fiducials</span>
-    <span class="n">ch_pos</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">],</span>
-    <span class="n">nasion</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a><span class="p">,</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="p">,</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="p">,</span>
-    <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span><span class="p">)</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_trans</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span>
-    <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span><span class="p">,</span>
-    <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span>
-    <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_t</span></a>
-<span class="p">)</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_trans</span></a><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.eye.html#numpy.eye" title="numpy.eye" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">eye</span></a><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">1000</span>  <span class="c1"># mm-&gt;m</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">))</span>
-
-<span class="c1"># get head-&gt;mri trans, invert from mri-&gt;head</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">invert_transform</span><span class="p">(</span>
-    <a href="https://mne.tools/dev/generated/mne.channels.compute_native_head_t.html#mne.channels.compute_native_head_t" title="mne.channels.compute_native_head_t" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">compute_native_head_t</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">))</span>
-
-<span class="c1"># set the montage to transform back to &#39;head&#39;</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_montage" title="mne.io.BaseRaw.set_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">set_montage</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">)</span>
-
-<span class="c1"># check that the coordinates were recovered</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.get_montage" title="mne.io.Raw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get the original montage</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">)</span>  <span class="c1"># head-&gt;mri</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="s1">&#39;Saved coordinate:     </span><span class="si">{saved}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-          <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">],</span>
-          <span class="n">saved</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]))</span>
+<p>Now, let’s load our data and convert our montage to <code class="docutils literal notranslate"><span class="pre">head</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw2</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">(</span>
+    <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw2</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;fsaverage&#39;</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.0243  0.0261 -0.056 ]
-Saved coordinate:     [-0.0243  0.0261 -0.056 ]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr...
+Setting channel info structure...
+Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_events.tsv.
+Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv.
+Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
+</pre></div>
+</div>
+<p>Let’s check to make sure again that the original coordinates from the BIDS
+dataset were recovered.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>  <span class="c1"># apply trans to go back to &#39;mri&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
+      <span class="s1">&#39;Original coordinate:  </span><span class="si">{original}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">],</span>
+          <span class="n">original</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.0231477   0.00949445 -0.05183359]
+Original coordinate:  [-0.0231477   0.00949445 -0.05183359]
 </pre></div>
 </div>
 <p>Finally, the template could also be in scanner RAS:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># transform the channel data to scanner RAS just to demonstrate how to</span>
-<span class="c1"># transform it back (this is the case where the BIDS-formatted data in the</span>
-<span class="c1"># template space is in scanner RAS coordinates so it would already be</span>
-<span class="c1"># transformed when read in)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># ensure the output path doesn&#39;t contain any leftover files from previous</span>
+<span class="c1"># tests and example runs</span>
+<span class="k">if</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.exists" title="os.path.exists" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">exists</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">):</span>
+    <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+
+<span class="c1"># get voxels to scanner RAS transform</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_ras_t</span></a> <span class="o">=</span> <a href="https://nipy.org/nibabel/reference/nibabel.filebasedimages.html#nibabel.filebasedimages.FileBasedImage.header" title="nibabel.filebasedimages.FileBasedImage.header" class="sphx-glr-backref-module-nibabel-filebasedimages sphx-glr-backref-type-py-method"><span class="n">template_T1</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras</span></a><span class="p">()</span>
+
 <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span>  <span class="c1"># load our raw data again</span>
     <span class="n">misc_path</span><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_seeg_ieeg.fif&#39;</span><span class="p">))</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.get_montage" title="mne.io.Raw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get the original montage</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">)</span>  <span class="c1"># head-&gt;mri</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.eye.html#numpy.eye" title="numpy.eye" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">eye</span></a><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">1000</span>  <span class="c1"># m-&gt;mm</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">))</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_vox_trans</span></a><span class="p">)</span>  <span class="c1"># transform our original montage</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_ras_t</span></a> <span class="o">=</span> <a href="https://nipy.org/nibabel/reference/nibabel.filebasedimages.html#nibabel.filebasedimages.FileBasedImage.header" title="nibabel.filebasedimages.FileBasedImage.header" class="sphx-glr-backref-module-nibabel-filebasedimages sphx-glr-backref-type-py-method"><span class="n">template_T1</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras</span></a><span class="p">()</span>  <span class="c1"># no tkr for scanner RAS</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_ras_trans</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span>
-    <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span><span class="p">,</span>
-    <span class="n">to</span><span class="o">=</span><span class="s1">&#39;ras&#39;</span><span class="p">,</span>
-    <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_ras_t</span></a>
-<span class="p">)</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_ras_trans</span></a><span class="p">)</span>
-
-<span class="c1"># print transformed fiducials, these could be found in the RAS locator in</span>
-<span class="c1"># Freesurfer&#39;s `freeview` based on the template MRI</span>
-<span class="c1"># note in this case, they are in mm and should not be transformed</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_mni_t</span></a><span class="p">)</span>  <span class="c1"># mri-&gt;mni</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">]</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">]</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="numpy.array" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="nb">list</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>  <span class="c1"># get an array of positions</span>
+<span class="c1"># mri -&gt; vox and m -&gt; mm</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">apply_trans</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="numpy.linalg.inv" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_t</span></a><span class="p">),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">apply_trans</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_ras_t</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fiducial points determined from the template head anatomy in &#39;</span>
-      <span class="sa">f</span><span class="s1">&#39;scanner RAS:</span><span class="se">\n</span><span class="s1">nasion: </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a><span class="si">}</span><span class="se">\n</span><span class="s1">lpa:    </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="si">}</span><span class="se">\n</span><span class="s1">rpa:    </span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage_ras</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.make_dig_montage.html#mne.channels.make_dig_montage" title="mne.channels.make_dig_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span></a><span class="p">(</span>
+    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ch_pos</span></a><span class="p">)),</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;ras&#39;</span><span class="p">)</span>
 
-<span class="c1"># read raw in again to start over</span>
-<span class="n">raw2</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
+<span class="c1"># write to BIDS, this time with a template coordinate system in voxels</span>
+<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="mi">40000</span><span class="p">),</span>
+               <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage_ras</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-Fiducial points determined from the template head anatomy in scanner RAS:
-nasion: [  1.59160031  94.17529387 -25.7306322 ]
-lpa:    [-80.97995352 -10.75524008 -53.68190164]
-rpa:    [ 78.46829026 -10.63320229 -53.39058387]
-Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.vhdr...
-Setting channel info structure...
-Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_events.tsv.
-Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv.
-Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
+Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
+    Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
+Ready.
+/home/circleci/project/mne_bids/write.py:1586: RuntimeWarning: Converting data files to BrainVision format for anonymization
+  warn(&#39;Converting data files to BrainVision format &#39;
+Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_coordsystem.json&#39;...
+Used Annotations descriptions: [&#39;Fixation&#39;, &#39;Go Cue&#39;, &#39;ISI Onset&#39;, &#39;Response&#39;]
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv&#39;...
+/home/circleci/project/mne_bids/write.py:1741: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
+Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
+Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr.
+
+BIDSPath(
+root: /home/circleci/mne_data/ieeg_bids
+datatype: ieeg
+basename: sub-1_task-motor_space-fsaverage_ieeg.vhdr)
 </pre></div>
 </div>
-<p>Now, it’s the same as if we just got the montage from the raw in scanner RAS
-i.e. we would use <code class="docutils literal notranslate"><span class="pre">montage</span> <span class="pre">=</span> <span class="pre">raw.get_montage()</span></code> instead of having to do
-the transforms above</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.make_dig_montage.html#mne.channels.make_dig_montage" title="mne.channels.make_dig_montage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span></a><span class="p">(</span>  <span class="c1"># add fiducials</span>
-    <span class="n">ch_pos</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a><span class="p">[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">],</span>
-    <span class="n">nasion</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">nas</span></a><span class="p">,</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">lpa</span></a><span class="p">,</span>
-    <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">rpa</span></a><span class="p">,</span>
-    <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;ras&#39;</span><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ras_vox_t</span></a> <span class="o">=</span> <a href="https://nipy.org/nibabel/reference/nibabel.filebasedimages.html#nibabel.filebasedimages.FileBasedImage.header" title="nibabel.filebasedimages.FileBasedImage.header" class="sphx-glr-backref-module-nibabel-filebasedimages sphx-glr-backref-type-py-method"><span class="n">template_T1</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_ras2vox</span></a><span class="p">()</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_t</span></a> <span class="o">=</span> <a href="https://nipy.org/nibabel/reference/nibabel.filebasedimages.html#nibabel.filebasedimages.FileBasedImage.header" title="nibabel.filebasedimages.FileBasedImage.header" class="sphx-glr-backref-module-nibabel-filebasedimages sphx-glr-backref-type-py-method"><span class="n">template_T1</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras_tkr</span></a><span class="p">()</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ras_mri_trans</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span>
-    <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;ras&#39;</span><span class="p">,</span>
-    <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span>
-    <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.dot.html#numpy.dot" title="numpy.dot" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">dot</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ras_vox_t</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vox_mri_t</span></a><span class="p">)</span>  <span class="c1"># combine ras-&gt;vox and vox-&gt;mri to get</span>
-<span class="p">)</span>                                       <span class="c1"># ras-&gt;mri</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ras_mri_trans</span></a><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.eye.html#numpy.eye" title="numpy.eye" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">eye</span></a><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">1000</span>  <span class="c1"># mm-&gt;m</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class"><span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span></a><span class="p">(</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">scale_t</span></a><span class="p">))</span>
-
-<span class="c1"># get head-&gt;mri trans, invert from mri-&gt;head</span>
-<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">invert_transform</span><span class="p">(</span>
-    <a href="https://mne.tools/dev/generated/mne.channels.compute_native_head_t.html#mne.channels.compute_native_head_t" title="mne.channels.compute_native_head_t" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">compute_native_head_t</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">))</span>
-
-<span class="c1"># set the montage to transform back to &#39;head&#39;</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_montage" title="mne.io.BaseRaw.set_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">set_montage</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">)</span>
-
-<span class="c1"># check that the coordinates were recovered exactly this time</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.get_montage" title="mne.io.Raw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get the original montage</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">)</span>  <span class="c1"># head-&gt;mri</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
-      <span class="s1">&#39;Saved coordinate:     </span><span class="si">{saved}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-          <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">],</span>
-          <span class="n">saved</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]))</span>
+<p>Now, let’s load our data and convert our montage to <code class="docutils literal notranslate"><span class="pre">head</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw2</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">(</span>  <span class="c1"># unit=&#39;auto&#39; automatically determines it&#39;s in mm</span>
+    <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw2</span><span class="o">.</span><span class="n">info</span></a><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="s1">&#39;fsaverage&#39;</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;ras&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.0243  0.0261 -0.056 ]
-Saved coordinate:     [-0.0243  0.0261 -0.056 ]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr...
+Setting channel info structure...
+Reading events from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_events.tsv.
+Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv.
+Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-fsaverage_electrodes.tsv.
+</pre></div>
+</div>
+<p>Let’s check to make sure again that the original coordinates from the BIDS
+dataset were recovered.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>  <span class="c1"># apply trans to go back to &#39;mri&#39;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s1">&#39;</span>
+      <span class="s1">&#39;Original coordinate:  </span><span class="si">{original}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+          <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">],</span>
+          <span class="n">original</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.0231477   0.00949445 -0.05183359]
+Original coordinate:  [-0.0231477   0.00949445 -0.05183359]
 </pre></div>
 </div>
 <p>In summary, as we saw, these standard template spaces that are allowable by
@@ -1377,10 +1558,10 @@ transform the positions to whatever template they want. Thus, we recommend
 if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.612 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  43.884 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.10/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/a577037ece7a732b0607a269316e55b8/convert_ieeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_ieeg_to_bids.py</span></code></a></p>
@@ -1427,7 +1608,7 @@ coordinate frame.</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-09.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-14.<br>
 </p>
     </div>
     
