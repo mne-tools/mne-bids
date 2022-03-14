@@ -57,7 +57,7 @@ Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 🚀 Enhancements
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 - Add experimental support for fNIRS (SNIRF) files in :func:`mne_bids.write_raw_bids`, by `Robert Luke`_ (:gh:`406`)
 
@@ -80,7 +80,7 @@ Detailed list of changes
 - Add :func:`mne_bids.template_to_head` to transform channel locations in BIDS standard template coordinate systems to ``head`` and also provides a ``trans``, by `Alex Rockhill`_ (:gh:`983`)
 
 🧐 API and behavior changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - :func:`mne_bids.update_anat_landmarks` will now by default raise an exception if the requested MRI landmarks do not already exist. Use the new ``on_missing`` parameter to control this behavior, by `Richard Höchenberger`_ (:gh:`957`)
 
@@ -91,12 +91,12 @@ Detailed list of changes
 - Corrupted or missing fiducials in ``head`` coordinates now raise an error instead of warning in :func:`mne_bids.write_raw_bids` by `Alex Rockhill`_ (:gh:`980`)
 
 🛠 Requirements
-^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 
 - MNE-BIDS now requires Jinja2 to work with MNE-Python 0.24.
 
 🪲 Bug fixes
-^^^^^^^^^^^
+^^^^^^^^^^^^
 
 - Forcing EDF conversion in :func:`mne_bids.write_raw_bids` properly uses the ``overwrite`` parameter now, by `Adam Li`_ (:gh:`930`)
 
