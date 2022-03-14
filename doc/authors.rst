@@ -32,3 +32,4 @@
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Simon Kern: https://github.com/skjerns
 .. _Yorguin Mantilla: https://github.com/yjmantilla
+.. _Swastika Gupta: https://swastyy.github.io
