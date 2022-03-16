@@ -105,7 +105,7 @@
   "upload_type": "software",
   "access_right": "open",
   "language": "eng",
-  "related_identifies": [
+  "related_identifiers": [
     {
       "relation": "isSupplementedBy",
       "identifier": "https://github.com/mne-tools/mne-bids/",
@@ -114,7 +114,7 @@
     {
       "relation": "isSupplementedBy",
       "identifier": "10.21105/joss.01896",
-      "resource_type": "article"
+      "resource_type": "publication-article"
     },
     {
       "relation": "isSupplementedBy",
