@@ -462,6 +462,9 @@ ch_pos = mne.transforms.apply_trans(vox_ras_t, ch_pos)
 montage_ras = mne.channels.make_dig_montage(
     ch_pos=dict(zip(pos['ch_pos'].keys(), ch_pos)), coord_frame='ras')
 
+# specify our standard template coordinate system space
+bids_path.update(datatype='ieeg', space='fsaverage')
+
 # write to BIDS, this time with a template coordinate system in voxels
 write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
                montage=montage_ras, overwrite=True)
