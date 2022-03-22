@@ -298,6 +298,14 @@ print(text)
 # in the individual's brain space, as was done above, so that the researcher
 # who uses the coordinates has the ability to tranform them to a template
 # of their choice.
+#
+# .. note::
+#
+#     For ``fsaverage``, the template coordinate system was defined
+#     so that ``scanner RAS`` is equivalent to ``surface RAS``.
+#     BIDS requires that template data be in ``scanner RAS`` so for
+#     coordinate frames where this is not the case, the coordinates
+#     must be converted (see below).
 
 # ensure the output path doesn't contain any leftover files from previous
 # tests and example runs
@@ -405,22 +413,11 @@ print('Recovered coordinate: {recovered}\n'
 #     anatomical reference frame so that researchers who use the data can
 #     transform the coordinates to any of these templates that they choose.
 #
-# Unfortunately, template coordinate systems are not guranteed to be in
-# ``surface RAS`` (as was the case for the ``fsaverage`` example above);
-# the BIDS standard template descriptions only specify
-# the anatomical space (as defined by the template T1 MRI), not the
-# coordinate frame of that space. The coordinates could be in
-# ``surface RAS``, ``voxels`` or ``scanner RAS`` (see
-# :ref:`tut-source-alignment` for a tutorial explaining the different
-# coordinate frames). Fortunately, as mentioned before, MNE-BIDS has
-# pre-computed the transforms for the BIDS standard template coordinate
-# systems. We'll have to inspect the description of the BIDS dataset and/or
-# the electrodes.tsv sidecar file accompanying an electrophysiology recording
-# to determine which coordinate frame the channel locations are in and
-# whether they are in meters or millimeters (for ``surface RAS`` or
-# ``scanner RAS``, if not in ``voxels``). We have already shown how to
-# transform from ``surface RAS`` above (it works the same for any other
-# ``space`` argument) so let's go over ``voxels`` and ``scanner RAS``.
+# BIDS requires that the template be stored in ``scanner RAS`` coordinates
+# so first we'll convert our original data to ``scanner RAS`` and then
+# convert it back. Just in case the template electrode coordinates are
+# provided in voxels or the unit is not specified, these options are able
+# to be overridden in :func:`mne_bids.template_to_head` for ease of use.
 #
 # .. warning::
 #
@@ -435,72 +432,21 @@ print('Recovered coordinate: {recovered}\n'
 #     systems). This is the case for ``fsaverage``, ``MNI305`` and
 #     ``fsaverageSym`` but not ``fsLR``.
 
+# %%
+# The template should be in scanner RAS:
+
 # ensure the output path doesn't contain any leftover files from previous
 # tests and example runs
 if op.exists(bids_root):
     shutil.rmtree(bids_root)
-
-# first we have to transform the montage to voxels to make it as if
-# we had gotten the montage directly from the BIDS dataset in voxels
 
 # get a template mgz image to transform the montage to voxel coordinates
 subjects_dir = op.join(mne.datasets.sample.data_path(), 'subjects')
 template_T1 = nib.load(op.join(subjects_dir, 'fsaverage', 'mri', 'T1.mgz'))
 
-# get vox->mri transform
-vox_mri_t = template_T1.header.get_vox2ras_tkr()
-
-# transform the channel data to voxels just to demonstrate how to transform it
-# back (this is the case where the BIDS-formatted data in the template space is
-# in voxel coordinates so it would already be transformed when read in)
-raw = mne.io.read_raw_fif(op.join(  # load our raw data again
-    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
-montage = raw.get_montage()  # get the original montage
-montage.apply_trans(trans)  # head->mri
-montage.apply_trans(mri_mni_t)  # mri->mni == surface RAS for fsaverage
-pos = montage.get_positions()
-ch_pos = np.array(list(pos['ch_pos'].values()))  # get an array of positions
-# mri -> vox and m -> mm
-ch_pos = mne.transforms.apply_trans(np.linalg.inv(vox_mri_t), ch_pos * 1000)
-
-montage_vox = mne.channels.make_dig_montage(
-    ch_pos=dict(zip(pos['ch_pos'].keys(), ch_pos)), coord_frame='mri_voxel')
-
-# specify our standard template coordinate system space
-bids_path.update(datatype='ieeg', space='fsaverage')
-
-# write to BIDS, this time with a template coordinate system in voxels
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
-               montage=montage_vox, overwrite=True)
-
-# %%
-# Now, let's load our data and convert our montage to ``head``.
-
-raw2 = read_raw_bids(bids_path=bids_path)
-trans2 = template_to_head(
-    raw2.info, space='fsaverage', coord_frame='mri_voxel')[1]
-
-# %%
-# Let's check to make sure again that the original coordinates from the BIDS
-# dataset were recovered.
-
-montage2 = raw2.get_montage()  # get montage after transformed back to head
-montage2.apply_trans(trans2)  # apply trans to go back to 'mri'
-print('Recovered coordinate: {recovered}\n'
-      'Original coordinate:  {original}'.format(
-          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          original=montage.get_positions()['ch_pos']['LENT 1']))
-
-# %%
-# Finally, the template could also be in scanner RAS:
-
-# ensure the output path doesn't contain any leftover files from previous
-# tests and example runs
-if op.exists(bids_root):
-    shutil.rmtree(bids_root)
-
-# get voxels to scanner RAS transform
-vox_ras_t = template_T1.header.get_vox2ras()
+# get voxels to surface RAS and scanner RAS transforms
+vox_mri_t = template_T1.header.get_vox2ras_tkr()  # surface RAS
+vox_ras_t = template_T1.header.get_vox2ras()  # scanner RAS
 
 raw = mne.io.read_raw_fif(op.join(  # load our raw data again
     misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
@@ -542,10 +488,9 @@ print('Recovered coordinate: {recovered}\n'
 # In summary, as we saw, these standard template spaces that are allowable by
 # BIDS are quite complicated. We therefore only cover these cases because
 # datasets are allowed to be in these coordinate systems, and we want to be
-# able to analyze them with MNE-Python. The template coordinate spaces
-# don't specify a coordinate frame, so it is better to save the raw data in
-# the individual's ACPC space, allowing the person analyzing the data to
-# transform the positions to whatever template they want. Thus, we recommend
-# if at all possible, saving BIDS iEEG data in ACPC coordinate space
+# able to analyze them with MNE-Python. BIDS data in a template coordinate
+# space doesn't allow you to convert to a template of your choosing so it is
+# better to save the raw data in the individual's ACPC space. Thus, we
+# recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 # corresponding to the individual subject's brain, not in a template
 # coordinate frame.

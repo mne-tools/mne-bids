@@ -33,7 +33,6 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     """Read associated electrodes.tsv and populate raw.
 
     Handle xyz coordinates and coordinate frame of each channel.
-    Assumes units of coordinates are in 'm'.
     """
     logger.info('Reading electrode '
                 'coords from {}.'.format(electrodes_fname))
