@@ -769,38 +769,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
 
 @verbose
-def get_ras_mri_trans(subject, subjects_dir=None, verbose=None):
-    """Produce transformation matrix from scanner RAS to surface RAS.
-
-    Parameters
-    ----------
-    %(subject)s
-    %(subjects_dir)s
-    %(verbose)s
-
-    Returns
-    -------
-    ras_mri_t : mne.transforms.Transform
-        The transformation matrix from ``'ras'`` (``scanner RAS``) to
-        ``'mri'`` (``surface RAS``).
-    """
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
-    subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    t1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
-    if not op.isfile(t1_fname):
-        raise RuntimeError(f'Freesurfer subject ({subject}) and/or '
-                           f'subjects_dir ({subjects_dir}, incorrectly '
-                           'formatted, T1.mgz not found')
-    T1 = nib.load(t1_fname)
-    vox_mri_t = T1.header.get_vox2ras_tkr()
-    ras_vox_t = T1.header.get_ras2vox()
-    return mne.transforms.Transform(
-        fro='ras', to='mri', trans=np.dot(ras_vox_t, vox_mri_t))
-
-
-@verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
                        fs_subject=None, fs_subjects_dir=None, *, kind=None,
                        verbose=None):

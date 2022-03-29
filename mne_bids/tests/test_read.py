@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 import pytest
 import shutil as sh
 import numpy as np
-from numpy.testing import assert_almost_equal, assert_allclose
+from numpy.testing import assert_almost_equal
 
 import mne
 from mne.io.constants import FIFF
@@ -22,16 +22,14 @@ from mne.datasets import testing, somato
 from mne_bids import BIDSPath
 from mne_bids.config import (MNE_STR_TO_FRAME, BIDS_SHARED_COORDINATE_FRAMES,
                              BIDS_TO_MNE_FRAMES)
-from mne_bids.read import (read_raw_bids,
-                           _read_raw, get_head_mri_trans, get_ras_mri_trans,
+from mne_bids.read import (read_raw_bids, _read_raw, get_head_mri_trans,
                            _handle_events_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_write_json)
 from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
 import mne_bids.write
-from mne_bids.write import (write_anat, write_raw_bids, get_anat_landmarks,
-                            get_mri_ras_trans)
+from mne_bids.write import write_anat, write_raw_bids, get_anat_landmarks
 
 subject_id = '01'
 session_id = '01'
@@ -1195,30 +1193,3 @@ def test_file_not_found(tmp_path):
     bp.extension = None
     with pytest.raises(FileNotFoundError, match='File does not exist'):
         read_raw_bids(bids_path=bp)
-
-
-def test_get_ras_trans():
-    """Test the RAS transformation convenience functions."""
-    subjects_dir = op.join(data_path, 'subjects')
-    with pytest.raises(RuntimeError, match='incorrectly formatted'):
-        get_ras_mri_trans('foo', subjects_dir)
-
-    # test ras to mri
-    ras_mri_t = get_ras_mri_trans('sample', subjects_dir)
-    assert ras_mri_t['from'] == MNE_STR_TO_FRAME['ras']
-    assert ras_mri_t['to'] == MNE_STR_TO_FRAME['mri']
-    assert_allclose(ras_mri_t['trans'],
-                    np.array([[1, 0, 0, -1.75786972],
-                              [0, 1, 0, -9.09598923],
-                              [0, 0, 1, -3.01302338],
-                              [0, 0, 0, 1]]), atol=1e-6)
-
-    # test mri to ras
-    mri_ras_t = get_mri_ras_trans('sample', subjects_dir)
-    assert mri_ras_t['from'] == MNE_STR_TO_FRAME['mri']
-    assert mri_ras_t['to'] == MNE_STR_TO_FRAME['ras']
-    assert_allclose(mri_ras_t['trans'],
-                    np.array([[1, 0, 0, 1.75786972],
-                              [0, 1, 0, 9.09598923],
-                              [0, 0, 1, 3.01302338],
-                              [0, 0, 0, 1]]), atol=1e-6)

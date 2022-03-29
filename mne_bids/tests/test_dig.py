@@ -17,7 +17,8 @@ import mne
 import mne_bids
 from mne.datasets import testing
 from mne_bids import BIDSPath, write_raw_bids, read_raw_bids
-from mne_bids.dig import _write_dig_bids, _read_dig_bids, template_to_head
+from mne_bids.dig import (_write_dig_bids, _read_dig_bids, template_to_head,
+                          convert_montage_to_mri, convert_montage_to_ras)
 from mne_bids.config import (BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
                              BIDS_TO_MNE_FRAMES, MNE_STR_TO_FRAME)
 
@@ -36,6 +37,8 @@ _bids_path = BIDSPath(
 data_path = testing.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
+trans = mne.read_trans(op.join(data_path, 'MEG', 'sample',
+                               'sample_audvis_trunc-trans.fif'))
 raw = mne.io.read_raw(raw_fname)
 raw.drop_channels(raw.info['bads'])
 raw.info['line_freq'] = 60
@@ -284,3 +287,33 @@ def test_template_to_head():
         d['r'] = np.array(d['r']) / 1000
     _test_montage_trans(raw_test, montage_m, pos_test,
                         coord_frame='ras', unit='auto')
+
+
+def test_convert_montage():
+    """Test the montage RAS conversion."""
+    raw_test = raw.copy()
+    montage = raw_test.get_montage()
+    montage.apply_trans(trans)
+
+    subjects_dir = op.join(data_path, 'subjects')
+    # test read
+    with pytest.raises(RuntimeError, match='incorrectly formatted'):
+        convert_montage_to_mri(montage, 'foo', subjects_dir)
+
+    # test write
+    with pytest.raises(RuntimeError, match='incorrectly formatted'):
+        convert_montage_to_ras(montage, 'foo', subjects_dir)
+
+    # test mri to ras
+    convert_montage_to_ras(montage, 'sample', subjects_dir)
+    pos = montage.get_positions()
+    assert pos['coord_frame'] == 'ras'
+    assert_almost_equal(pos['ch_pos']['EEG 001'],
+                        [-0.0366405, 0.063066, 0.0676311])
+
+    # test ras to mri
+    convert_montage_to_mri(montage, 'sample', subjects_dir)
+    pos = montage.get_positions()
+    assert pos['coord_frame'] == 'mri'
+    assert_almost_equal(pos['ch_pos']['EEG 001'],
+                        [-0.0313669, 0.0540269, 0.0949191])

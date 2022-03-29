@@ -57,7 +57,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Fix ACPC in ``surface RAS`` instead of ``scanner RAS`` in :ref:`ieeg-example` and add convence functions :func:`mne_bids.get_ras_mri_trans` and :func:`mne_bids.get_mri_ras_trans` to help, by `Alex Rockhill`_ :gh:`XXX`
+- Fix ACPC in ``surface RAS`` instead of ``scanner RAS`` in :ref:`ieeg-example` and add convence functions :func:`mne_bids.convert_montage_to_ras` and :func:`mne_bids.convert_montage_to_mri` to help, by `Alex Rockhill`_ :gh:`XXX`
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

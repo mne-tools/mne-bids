@@ -48,8 +48,7 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_edf)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
-from mne_bids.read import (_find_matching_sidecar, _read_events,
-                           get_ras_mri_trans)
+from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
@@ -1788,26 +1787,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 f'{scan_relative_fpath}.')
 
     return bids_path
-
-
-@verbose
-def get_mri_ras_trans(subject, subjects_dir=None, verbose=None):
-    """Produce transformation matrix from surface RAS to scanner RAS.
-
-    Parameters
-    ----------
-    %(subject)s
-    %(subjects_dir)s
-    %(verbose)s
-
-    Returns
-    -------
-    mri_ras_t : mne.transforms.Transform
-        The transformation matrix from ``'mri'`` (``surface RAS``) to
-        ``'ras'`` (``scanner RAS``).
-    """
-    return mne.transforms.invert_transform(
-        get_ras_mri_trans(subject=subject, subjects_dir=subjects_dir))
 
 
 def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):

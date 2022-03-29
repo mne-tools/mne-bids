@@ -60,8 +60,8 @@ import mne
 from mne_bids import (BIDSPath, write_raw_bids, write_anat,
                       get_anat_landmarks, read_raw_bids,
                       search_folder_for_text, print_dir_tree,
-                      template_to_head, get_mri_ras_trans,
-                      get_ras_mri_trans)
+                      template_to_head, convert_montage_to_ras,
+                      convert_montage_to_mri)
 
 # %%
 # Step 1: Download the data
@@ -98,15 +98,11 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 # estimate the transformation from "head" to "mri" space
 trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
 
-# get the transform from "mri" (Freesurfer surface RAS) to "ras" (scanner RAS)
-# scanner RAS needs to be aligned to ACPC
-mri_ras_t = get_mri_ras_trans('sample_seeg', subjects_dir)
-
 # %%
-# Now let's convert the montage to "mri"
+# Now let's convert the montage to "ras"
 montage = raw.get_montage()
 montage.apply_trans(trans)  # head->mri
-montage.apply_trans(mri_ras_t)  # mri->ras
+convert_montage_to_ras(montage, 'sample_seeg', subjects_dir)  # mri->ras
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -251,8 +247,7 @@ raw2 = read_raw_bids(bids_path=bids_path)
 montage2 = raw2.get_montage()
 
 # we need to go from scanner RAS back to surface RAS (requires recon-all)
-ras_mri_t = get_ras_mri_trans('sample_seeg', subjects_dir)
-montage2.apply_trans(ras_mri_t)
+convert_montage_to_mri(montage2, 'sample_seeg', subjects_dir=subjects_dir)
 
 # this uses Freesurfer recon-all subject directory
 montage2.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
@@ -269,7 +264,9 @@ raw2.set_montage(montage2)
 # the fiducials which are estimated; as long as the head->mri trans
 # is computed with the same fiducials, the coordinates will be the same
 # in ACPC space which is what matters
-montage2 = raw.get_montage()  # get montage in 'head' coordinates
+montage = raw.get_montage()  # the original montage in 'head' coordinates
+montage.apply_trans(trans)
+montage2 = raw2.get_montage()  # the recovered montage in 'head' coordinates
 montage2.apply_trans(trans2)
 
 # compare with standard
