@@ -60,7 +60,8 @@ import mne
 from mne_bids import (BIDSPath, write_raw_bids, write_anat,
                       get_anat_landmarks, read_raw_bids,
                       search_folder_for_text, print_dir_tree,
-                      template_to_head)
+                      template_to_head, get_mri_ras_trans,
+                      get_ras_mri_trans)
 
 # %%
 # Step 1: Download the data
@@ -97,10 +98,15 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 # estimate the transformation from "head" to "mri" space
 trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
 
+# get the transform from "mri" (Freesurfer surface RAS) to "ras" (scanner RAS)
+# scanner RAS needs to be aligned to ACPC
+mri_ras_t = get_mri_ras_trans('sample_seeg', subjects_dir)
+
 # %%
 # Now let's convert the montage to "mri"
 montage = raw.get_montage()
 montage.apply_trans(trans)  # head->mri
+montage.apply_trans(mri_ras_t)  # mri->ras
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -237,12 +243,16 @@ search_folder_for_text('n/a', bids_root)
 raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
-# Now we have to go back to "head" coordinates with the head->mri transform.
+# Now we have to go back to "head" coordinates.
 #
 # .. note:: If you were downloading this from ``OpenNeuro``, you would
 #           have to run the Freesurfer ``recon-all`` to get the transforms.
 
 montage2 = raw2.get_montage()
+
+# we need to go from scanner RAS back to surface RAS (requires recon-all)
+ras_mri_t = get_ras_mri_trans('sample_seeg', subjects_dir)
+montage2.apply_trans(ras_mri_t)
 
 # this uses Freesurfer recon-all subject directory
 montage2.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)

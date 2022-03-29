@@ -1507,7 +1507,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # test writing to ACPC
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                                 coord_frame='mri')
+                                                 coord_frame='ras')
     bids_root = tmp_path / 'bids4'
     bids_path.update(root=bids_root, datatype='ieeg')
     # test works if ACPC-aligned is specified
