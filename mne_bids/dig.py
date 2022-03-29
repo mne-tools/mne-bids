@@ -418,7 +418,8 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
                                "and left and right pre-auricular point "
                                "landmarks")
 
-    if bids_path.datatype == 'ieeg' and mne_coord_frame == 'ras':
+    if bids_path.datatype == 'ieeg' and bids_path.space in (None, 'ACPC') and \
+            mne_coord_frame == 'ras':
         if not acpc_aligned:
             raise RuntimeError(
                 '`acpc_aligned` is False, if your T1 is not aligned '

@@ -2598,7 +2598,7 @@ def test_event_storage(tmp_path):
 @pytest.mark.parametrize(
     'dir_name, fname, reader, datatype, coord_frame', [
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mni_tal'),
-        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mri'),
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'ras'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'head'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'mri'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'unknown'),
