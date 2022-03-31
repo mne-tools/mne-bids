@@ -31,6 +31,8 @@ mne_bids
    get_anat_landmarks
    update_anat_landmarks
    get_head_mri_trans
+   convert_montage_to_mri
+   convert_montage_to_ras
    template_to_head
    get_anonymization_daysback
    search_folder_for_text

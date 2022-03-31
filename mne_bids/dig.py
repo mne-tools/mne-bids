@@ -4,6 +4,7 @@
 #          Alex Rockhill <aprockhill@mailbox.org>
 #
 # License: BSD-3-Clause
+import os.path as op
 import json
 from collections import OrderedDict
 from pathlib import Path
@@ -14,7 +15,8 @@ from importlib_resources import files
 import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.utils import logger, warn, _validate_type, _check_option
+from mne.utils import (logger, warn, _validate_type, _check_option,
+                       has_nibabel, get_subjects_dir)
 from mne.io.pick import _picks_to_idx
 
 from mne_bids.config import (ALLOWED_SPACES, BIDS_COORDINATE_UNITS,
@@ -416,7 +418,8 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
                                "and left and right pre-auricular point "
                                "landmarks")
 
-    if bids_path.datatype == 'ieeg' and mne_coord_frame == 'mri':
+    if bids_path.datatype == 'ieeg' and bids_path.space in (None, 'ACPC') and \
+            mne_coord_frame == 'ras':
         if not acpc_aligned:
             raise RuntimeError(
                 '`acpc_aligned` is False, if your T1 is not aligned '
@@ -656,3 +659,87 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
     info.set_montage(montage)  # transform to head
     # finally return montage
     return info, mne.read_trans(data_dir / f'space-{space}_trans.fif')
+
+
+@verbose
+def convert_montage_to_ras(montage, subject, subjects_dir=None, verbose=None):
+    """Convert a montage from surface RAS (m) to scanner RAS (m).
+
+    Parameters
+    ----------
+    montage : mne.channels.DigMontage
+        The montage in the "mri" coordinate frame. Note: modified in place.
+    %(subject)s
+    %(subjects_dir)s
+    %(verbose)s
+    """
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+
+    subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
+    T1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+    if not op.isfile(T1_fname):
+        raise RuntimeError(f'Freesurfer subject ({subject}) and/or '
+                           f'subjects_dir ({subjects_dir}, incorrectly '
+                           'formatted, T1.mgz not found')
+    T1 = nib.load(T1_fname)
+
+    # transform from "mri" (Freesurfer surface RAS) to "ras" (scanner RAS)
+    mri_vox_t = np.linalg.inv(T1.header.get_vox2ras_tkr())
+    mri_vox_t[:3, :3] *= 1000  # scale from mm to m
+    mri_vox_trans = mne.transforms.Transform(
+        fro='mri', to='mri_voxel', trans=mri_vox_t)
+
+    vox_ras_t = T1.header.get_vox2ras()
+    vox_ras_t[:3] /= 1000  # scale from mm to m
+    vox_ras_trans = mne.transforms.Transform(
+        fro='mri_voxel', to='ras', trans=vox_ras_t)
+    montage.apply_trans(  # mri->vox + vox->ras = mri->ras
+        mne.transforms.combine_transforms(mri_vox_trans, vox_ras_trans,
+                                          fro='mri', to='ras'))
+
+
+@verbose
+def convert_montage_to_mri(montage, subject, subjects_dir=None, verbose=None):
+    """Convert a montage from scanner RAS (m) to surface RAS (m).
+
+    Parameters
+    ----------
+    montage : mne.channels.DigMontage
+        The montage in the "ras" coordinate frame. Note: modified in place.
+    %(subject)s
+    %(subjects_dir)s
+    %(verbose)s
+
+    Returns
+    -------
+    ras_mri_t : mne.transforms.Transform
+        The transformation matrix from ``'ras'`` (``scanner RAS``) to
+        ``'mri'`` (``surface RAS``).
+    """
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+
+    subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
+    T1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+    if not op.isfile(T1_fname):
+        raise RuntimeError(f'Freesurfer subject ({subject}) and/or '
+                           f'subjects_dir ({subjects_dir}, incorrectly '
+                           'formatted, T1.mgz not found')
+    T1 = nib.load(T1_fname)
+
+    # transform from "ras" (scanner RAS) to "mri" (Freesurfer surface RAS)
+    ras_vox_t = T1.header.get_ras2vox()
+    ras_vox_t[:3, :3] *= 1000  # scale from mm to m
+    ras_vox_trans = mne.transforms.Transform(
+        fro='ras', to='mri_voxel', trans=ras_vox_t)
+
+    vox_mri_t = T1.header.get_vox2ras_tkr()
+    vox_mri_t[:3] /= 1000  # scale from mm to m
+    vox_mri_trans = mne.transforms.Transform(
+        fro='mri_voxel', to='mri', trans=vox_mri_t)
+    montage.apply_trans(  # ras->vox + vox->mri = ras->mri
+        mne.transforms.combine_transforms(ras_vox_trans, vox_mri_trans,
+                                          fro='ras', to='mri'))

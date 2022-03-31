@@ -60,7 +60,8 @@ import mne
 from mne_bids import (BIDSPath, write_raw_bids, write_anat,
                       get_anat_landmarks, read_raw_bids,
                       search_folder_for_text, print_dir_tree,
-                      template_to_head)
+                      template_to_head, convert_montage_to_ras,
+                      convert_montage_to_mri)
 
 # %%
 # Step 1: Download the data
@@ -98,9 +99,10 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
 
 # %%
-# Now let's convert the montage to "mri"
+# Now let's convert the montage to "ras"
 montage = raw.get_montage()
 montage.apply_trans(trans)  # head->mri
+convert_montage_to_ras(montage, 'sample_seeg', subjects_dir)  # mri->ras
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -237,12 +239,15 @@ search_folder_for_text('n/a', bids_root)
 raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
-# Now we have to go back to "head" coordinates with the head->mri transform.
+# Now we have to go back to "head" coordinates.
 #
 # .. note:: If you were downloading this from ``OpenNeuro``, you would
 #           have to run the Freesurfer ``recon-all`` to get the transforms.
 
 montage2 = raw2.get_montage()
+
+# we need to go from scanner RAS back to surface RAS (requires recon-all)
+convert_montage_to_mri(montage2, 'sample_seeg', subjects_dir=subjects_dir)
 
 # this uses Freesurfer recon-all subject directory
 montage2.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
@@ -259,7 +264,9 @@ raw2.set_montage(montage2)
 # the fiducials which are estimated; as long as the head->mri trans
 # is computed with the same fiducials, the coordinates will be the same
 # in ACPC space which is what matters
-montage2 = raw.get_montage()  # get montage in 'head' coordinates
+montage = raw.get_montage()  # the original montage in 'head' coordinates
+montage.apply_trans(trans)
+montage2 = raw2.get_montage()  # the recovered montage in 'head' coordinates
 montage2.apply_trans(trans2)
 
 # compare with standard

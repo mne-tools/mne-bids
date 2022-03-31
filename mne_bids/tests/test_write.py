@@ -1507,7 +1507,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # test writing to ACPC
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                                 coord_frame='mri')
+                                                 coord_frame='ras')
     bids_root = tmp_path / 'bids4'
     bids_path.update(root=bids_root, datatype='ieeg')
     # test works if ACPC-aligned is specified
@@ -2598,7 +2598,7 @@ def test_event_storage(tmp_path):
 @pytest.mark.parametrize(
     'dir_name, fname, reader, datatype, coord_frame', [
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mni_tal'),
-        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'mri'),
+        ('EDF', 'test_reduced.edf', _read_raw_edf, 'ieeg', 'ras'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'head'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'mri'),
         ('EDF', 'test_reduced.edf', _read_raw_edf, 'eeg', 'unknown'),

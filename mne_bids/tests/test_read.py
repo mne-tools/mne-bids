@@ -22,8 +22,7 @@ from mne.datasets import testing, somato
 from mne_bids import BIDSPath
 from mne_bids.config import (MNE_STR_TO_FRAME, BIDS_SHARED_COORDINATE_FRAMES,
                              BIDS_TO_MNE_FRAMES)
-from mne_bids.read import (read_raw_bids,
-                           _read_raw, get_head_mri_trans,
+from mne_bids.read import (read_raw_bids, _read_raw, get_head_mri_trans,
                            _handle_events_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_write_json)
@@ -881,7 +880,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'ACPC')
     raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
-    coord_frame_int = MNE_STR_TO_FRAME['mri']
+    coord_frame_int = MNE_STR_TO_FRAME['ras']
     for digpoint in raw_test.info['dig']:
         assert digpoint['coord_frame'] == coord_frame_int
 
