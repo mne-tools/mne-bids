@@ -685,29 +685,19 @@ def convert_montage_to_ras(montage, subject, subjects_dir=None, verbose=None):
                            'formatted, T1.mgz not found')
     T1 = nib.load(T1_fname)
 
-    # scale from mm to m
-    scale_t = np.eye(4)
-    scale_t[:3, :3] *= 1000
-    scale_trans = mne.transforms.Transform(fro='mri', to='mri', trans=scale_t)
-    montage.apply_trans(scale_trans)
-
     # transform from "mri" (Freesurfer surface RAS) to "ras" (scanner RAS)
     mri_vox_t = np.linalg.inv(T1.header.get_vox2ras_tkr())
+    mri_vox_t[:3, :3] *= 1000  # scale from mm to m
     mri_vox_trans = mne.transforms.Transform(
         fro='mri', to='mri_voxel', trans=mri_vox_t)
-    montage.apply_trans(mri_vox_trans)  # mri->vox
 
     vox_ras_t = T1.header.get_vox2ras()
+    vox_ras_t[:3] /= 1000  # scale from mm to m
     vox_ras_trans = mne.transforms.Transform(
         fro='mri_voxel', to='ras', trans=vox_ras_t)
-    montage.apply_trans(vox_ras_trans)  # vox->ras
-
-    # finally, need to put back in m
-    scale_inv_t = np.eye(4)
-    scale_inv_t[:3, :3] /= 1000
-    scale_inv_trans = mne.transforms.Transform(
-        fro='ras', to='ras', trans=scale_inv_t)
-    montage.apply_trans(scale_inv_trans)
+    montage.apply_trans(  # mri->vox + vox->ras = mri->ras
+        mne.transforms.combine_transforms(mri_vox_trans, vox_ras_trans,
+                                          fro='mri', to='ras'))
 
 
 @verbose
@@ -740,26 +730,16 @@ def convert_montage_to_mri(montage, subject, subjects_dir=None, verbose=None):
                            'formatted, T1.mgz not found')
     T1 = nib.load(T1_fname)
 
-    # scale from mm to m
-    scale_t = np.eye(4)
-    scale_t[:3, :3] *= 1000
-    scale_trans = mne.transforms.Transform(fro='ras', to='ras', trans=scale_t)
-    montage.apply_trans(scale_trans)
-
     # transform from "ras" (scanner RAS) to "mri" (Freesurfer surface RAS)
     ras_vox_t = T1.header.get_ras2vox()
+    ras_vox_t[:3, :3] *= 1000  # scale from mm to m
     ras_vox_trans = mne.transforms.Transform(
         fro='ras', to='mri_voxel', trans=ras_vox_t)
-    montage.apply_trans(ras_vox_trans)  # ras->vox
 
     vox_mri_t = T1.header.get_vox2ras_tkr()
+    vox_mri_t[:3] /= 1000  # scale from mm to m
     vox_mri_trans = mne.transforms.Transform(
         fro='mri_voxel', to='mri', trans=vox_mri_t)
-    montage.apply_trans(vox_mri_trans)  # vox->mri
-
-    # finally, need to put back in m
-    scale_inv_t = np.eye(4)
-    scale_inv_t[:3, :3] /= 1000
-    scale_inv_trans = mne.transforms.Transform(
-        fro='mri', to='mri', trans=scale_inv_t)
-    montage.apply_trans(scale_inv_trans)
+    montage.apply_trans(  # ras->vox + vox->mri = ras->mri
+        mne.transforms.combine_transforms(ras_vox_trans, vox_mri_trans,
+                                          fro='ras', to='mri'))
