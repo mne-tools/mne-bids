@@ -8,29 +8,19 @@
 
     <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.11.dev0 documentation</title>
     
-    <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-  
+
     
-    <link rel="stylesheet"
-      href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-    <link rel="preload" as="font" type="font/woff2" crossorigin
-      href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-  
-    
-    <!-- add `style` or `link` tags with your CSS `@font-face` declarations here -->
-    <!-- ... and a `style` tag with setting `font-family` in `body` and `.header-style` -->
-    <!-- ... and optionally preload the `woff2` for snappier page loads -->
-    <!-- or add a `style` tag with a font fallback chain with good cross-platform coverage -->
-    <style>
-        body,.header-style {font-family: 'Source Sans Pro', sans-serif;}
-        code,kbd,pre,samp {font-family: 'Source Code Pro', monospace;}
-    </style>
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/pydata-sphinx-theme.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
@@ -38,8 +28,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
-    <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
-  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
@@ -62,7 +53,7 @@
     
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
     
     <div class="container-fluid" id="banner"></div>
 
@@ -299,7 +290,7 @@
               
               <div class="toc-item">
                 
-<div class="tocsection onthispage pt-5 pb-3">
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
 
@@ -362,7 +353,7 @@
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
 <section class="sphx-glr-example-title" id="convert-ieeg-data-to-bids-format">
-<span id="ieeg-example"></span><span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
+<span id="ieeg-example"></span><span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this headline">#</a></h1>
 <p>In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:</p>
 <ol class="arabic simple">
@@ -403,11 +394,12 @@ refer to the <a class="reference external" href="https://bids-specification.read
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">,</span>
                       <a href="../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anat_landmarks</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
                       <a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">)</span>
+                      <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">,</span> <a href="../generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras" title="mne_bids.convert_montage_to_ras" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_ras</span></a><span class="p">,</span>
+                      <a href="../generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri" title="mne_bids.convert_montage_to_mri" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_mri</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <section id="step-1-download-the-data">
-<h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this headline">¶</a></h2>
+<h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this headline">#</a></h2>
 <p>First, we need some data to work with. We will use the
 data downloaded via MNE-Python’s <code class="docutils literal notranslate"><span class="pre">datasets</span></code> API:
 <a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="(in MNE v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.misc.data_path()</span></code></a></p>
@@ -423,6 +415,229 @@ data downloaded via MNE-Python’s <code class="docutils literal notranslate"><s
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
+Dataset misc version 0.0 out of date, latest version is 0.23
+
+0.00B [00:00, ?B/s]
+178kB [00:00, 1.76MB/s]
+827kB [00:00, 4.52MB/s]
+1.31MB [00:00, 4.48MB/s]
+2.05MB [00:00, 5.41MB/s]
+5.08MB [00:00, 14.0MB/s]
+6.90MB [00:00, 15.4MB/s]
+9.16MB [00:00, 17.7MB/s]
+10.9MB [00:00, 14.4MB/s]
+12.5MB [00:01, 8.57MB/s]
+13.7MB [00:01, 6.64MB/s]
+14.6MB [00:01, 6.14MB/s]
+16.0MB [00:01, 7.46MB/s]
+17.0MB [00:01, 7.58MB/s]
+18.4MB [00:02, 8.48MB/s]
+19.4MB [00:02, 5.50MB/s]
+20.6MB [00:02, 6.51MB/s]
+21.5MB [00:02, 4.68MB/s]
+22.6MB [00:03, 5.72MB/s]
+23.6MB [00:03, 6.26MB/s]
+24.4MB [00:03, 4.28MB/s]
+25.1MB [00:03, 4.61MB/s]
+26.1MB [00:03, 5.61MB/s]
+26.9MB [00:04, 3.90MB/s]
+27.6MB [00:04, 4.48MB/s]
+28.4MB [00:04, 4.99MB/s]
+29.0MB [00:04, 4.04MB/s]
+30.2MB [00:04, 5.37MB/s]
+30.9MB [00:04, 4.71MB/s]
+31.5MB [00:05, 4.36MB/s]
+32.5MB [00:05, 5.57MB/s]
+33.2MB [00:05, 4.02MB/s]
+33.8MB [00:05, 4.31MB/s]
+35.3MB [00:05, 6.52MB/s]
+36.2MB [00:05, 4.89MB/s]
+36.8MB [00:06, 3.49MB/s]
+38.5MB [00:06, 5.45MB/s]
+40.9MB [00:06, 8.62MB/s]
+42.7MB [00:06, 10.5MB/s]
+44.4MB [00:06, 12.0MB/s]
+46.1MB [00:06, 13.2MB/s]
+47.8MB [00:06, 14.2MB/s]
+49.6MB [00:07, 15.0MB/s]
+51.3MB [00:07, 15.5MB/s]
+53.0MB [00:07, 15.9MB/s]
+55.4MB [00:07, 18.3MB/s]
+57.9MB [00:07, 20.1MB/s]
+60.2MB [00:07, 21.2MB/s]
+62.5MB [00:07, 21.8MB/s]
+64.8MB [00:07, 22.1MB/s]
+67.2MB [00:07, 22.5MB/s]
+69.8MB [00:07, 23.3MB/s]
+72.2MB [00:08, 23.7MB/s]
+74.7MB [00:08, 24.0MB/s]
+77.2MB [00:08, 24.2MB/s]
+79.6MB [00:08, 9.43MB/s]
+81.5MB [00:08, 10.8MB/s]
+83.5MB [00:09, 12.3MB/s]
+85.4MB [00:09, 13.6MB/s]
+87.3MB [00:09, 14.9MB/s]
+89.2MB [00:09, 11.1MB/s]
+90.8MB [00:09, 7.26MB/s]
+92.7MB [00:10, 8.95MB/s]
+94.5MB [00:10, 10.6MB/s]
+96.4MB [00:10, 12.1MB/s]
+98.3MB [00:10, 13.6MB/s]
+100MB [00:10, 14.3MB/s]
+103MB [00:10, 17.6MB/s]
+105MB [00:10, 19.1MB/s]
+107MB [00:10, 13.2MB/s]
+110MB [00:11, 15.8MB/s]
+112MB [00:11, 16.8MB/s]
+114MB [00:11, 18.4MB/s]
+116MB [00:11, 16.2MB/s]
+118MB [00:11, 9.36MB/s]
+120MB [00:12, 6.86MB/s]
+121MB [00:12, 8.07MB/s]
+122MB [00:12, 6.14MB/s]
+123MB [00:13, 5.24MB/s]
+124MB [00:13, 4.99MB/s]
+126MB [00:13, 6.29MB/s]
+127MB [00:13, 7.05MB/s]
+128MB [00:13, 7.39MB/s]
+129MB [00:13, 7.51MB/s]
+130MB [00:13, 8.83MB/s]
+131MB [00:14, 6.13MB/s]
+132MB [00:14, 5.05MB/s]
+132MB [00:14, 4.26MB/s]
+134MB [00:14, 6.32MB/s]
+135MB [00:14, 5.46MB/s]
+136MB [00:15, 4.85MB/s]
+136MB [00:15, 4.38MB/s]
+137MB [00:15, 4.18MB/s]
+138MB [00:15, 5.31MB/s]
+140MB [00:15, 7.56MB/s]
+140MB [00:15, 6.15MB/s]
+141MB [00:16, 5.05MB/s]
+142MB [00:16, 4.60MB/s]
+142MB [00:16, 4.40MB/s]
+143MB [00:16, 5.51MB/s]
+145MB [00:16, 7.43MB/s]
+146MB [00:16, 5.75MB/s]
+146MB [00:17, 4.86MB/s]
+147MB [00:17, 4.46MB/s]
+148MB [00:17, 4.36MB/s]
+149MB [00:17, 6.74MB/s]
+150MB [00:17, 5.40MB/s]
+151MB [00:17, 4.78MB/s]
+151MB [00:18, 4.40MB/s]
+152MB [00:18, 4.11MB/s]
+153MB [00:18, 5.12MB/s]
+154MB [00:18, 6.57MB/s]
+155MB [00:18, 5.24MB/s]
+155MB [00:18, 4.68MB/s]
+156MB [00:19, 4.27MB/s]
+156MB [00:19, 4.08MB/s]
+157MB [00:19, 4.63MB/s]
+158MB [00:19, 6.55MB/s]
+159MB [00:19, 5.31MB/s]
+160MB [00:19, 4.73MB/s]
+160MB [00:19, 4.28MB/s]
+161MB [00:20, 3.99MB/s]
+162MB [00:20, 5.70MB/s]
+163MB [00:20, 6.65MB/s]
+164MB [00:20, 7.69MB/s]
+165MB [00:20, 5.75MB/s]
+165MB [00:20, 4.93MB/s]
+166MB [00:20, 4.44MB/s]
+167MB [00:21, 2.48MB/s]
+169MB [00:21, 5.38MB/s]
+171MB [00:21, 8.46MB/s]
+174MB [00:21, 11.4MB/s]
+176MB [00:21, 14.1MB/s]
+179MB [00:21, 16.4MB/s]
+181MB [00:22, 18.3MB/s]
+184MB [00:22, 19.9MB/s]
+186MB [00:22, 21.3MB/s]
+189MB [00:22, 22.4MB/s]
+191MB [00:22, 23.1MB/s]
+194MB [00:22, 23.6MB/s]
+196MB [00:22, 24.0MB/s]
+199MB [00:22, 24.1MB/s]
+201MB [00:22, 24.0MB/s]
+203MB [00:23, 24.2MB/s]
+206MB [00:23, 24.3MB/s]
+208MB [00:23, 24.3MB/s]
+211MB [00:23, 24.4MB/s]
+213MB [00:23, 24.5MB/s]
+216MB [00:23, 24.6MB/s]
+218MB [00:23, 24.6MB/s]
+221MB [00:23, 23.7MB/s]
+223MB [00:23, 23.1MB/s]
+225MB [00:23, 23.1MB/s]
+228MB [00:24, 23.4MB/s]
+230MB [00:24, 13.6MB/s]
+232MB [00:24, 13.9MB/s]
+234MB [00:24, 14.3MB/s]
+235MB [00:24, 14.5MB/s]
+237MB [00:24, 14.6MB/s]
+239MB [00:24, 14.7MB/s]
+240MB [00:25, 14.7MB/s]
+242MB [00:25, 15.0MB/s]
+243MB [00:25, 15.3MB/s]
+245MB [00:25, 15.5MB/s]
+247MB [00:25, 15.5MB/s]
+248MB [00:25, 15.7MB/s]
+250MB [00:25, 15.7MB/s]
+251MB [00:26, 6.62MB/s]
+253MB [00:26, 6.70MB/s]
+254MB [00:26, 6.79MB/s]
+255MB [00:26, 6.81MB/s]
+255MB [00:26, 6.69MB/s]
+256MB [00:26, 6.86MB/s]
+257MB [00:27, 6.92MB/s]
+258MB [00:27, 6.96MB/s]
+259MB [00:27, 7.04MB/s]
+259MB [00:27, 6.93MB/s]
+260MB [00:27, 7.03MB/s]
+261MB [00:27, 7.12MB/s]
+262MB [00:27, 7.05MB/s]
+262MB [00:27, 6.85MB/s]
+263MB [00:27, 6.96MB/s]
+264MB [00:27, 6.94MB/s]
+264MB [00:28, 6.99MB/s]
+265MB [00:28, 6.90MB/s]
+266MB [00:28, 6.92MB/s]
+267MB [00:28, 6.80MB/s]
+267MB [00:28, 6.78MB/s]
+268MB [00:28, 6.74MB/s]
+269MB [00:28, 6.79MB/s]
+269MB [00:28, 6.80MB/s]
+270MB [00:28, 6.82MB/s]
+271MB [00:28, 6.93MB/s]
+271MB [00:29, 6.88MB/s]
+272MB [00:29, 6.96MB/s]
+273MB [00:29, 7.08MB/s]
+274MB [00:29, 7.04MB/s]
+274MB [00:29, 7.04MB/s]
+275MB [00:29, 6.92MB/s]
+276MB [00:29, 6.89MB/s]
+276MB [00:29, 6.92MB/s]
+277MB [00:29, 7.09MB/s]
+278MB [00:30, 6.92MB/s]
+279MB [00:30, 6.91MB/s]
+279MB [00:30, 6.90MB/s]
+280MB [00:30, 6.89MB/s]
+281MB [00:30, 6.97MB/s]
+281MB [00:30, 7.04MB/s]
+282MB [00:30, 7.10MB/s]
+283MB [00:30, 7.04MB/s]
+284MB [00:30, 7.10MB/s]
+284MB [00:30, 7.03MB/s]
+285MB [00:31, 6.96MB/s]
+286MB [00:31, 6.39MB/s]
+286MB [00:31, 6.09MB/s]
+287MB [00:31, 5.91MB/s]
+288MB [00:31, 5.80MB/s]
+288MB [00:31, 5.79MB/s]
+289MB [00:31, 6.21MB/s]
+0.00B [00:00, ?B/s]
+0.00B [00:00, ?B/s]
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
@@ -444,14 +659,15 @@ is the best option.</p>
 <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.coreg.estimate_head_mri_t.html#mne.coreg.estimate_head_mri_t" title="mne.coreg.estimate_head_mri_t" class="sphx-glr-backref-module-mne-coreg sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">coreg</span><span class="o">.</span><span class="n">estimate_head_mri_t</span></a><span class="p">(</span><span class="s1">&#39;sample_seeg&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p>Now let’s convert the montage to “mri”</p>
+<p>Now let’s convert the montage to “ras”</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.get_montage" title="mne.io.Raw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">)</span>  <span class="c1"># head-&gt;mri</span>
+<a href="../generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras" title="mne_bids.convert_montage_to_ras" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_ras</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">,</span> <span class="s1">&#39;sample_seeg&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>  <span class="c1"># mri-&gt;ras</span>
 </pre></div>
 </div>
 </section>
 <section id="bids-vs-mne-python-coordinate-systems">
-<h2>BIDS vs MNE-Python Coordinate Systems<a class="headerlink" href="#bids-vs-mne-python-coordinate-systems" title="Permalink to this headline">¶</a></h2>
+<h2>BIDS vs MNE-Python Coordinate Systems<a class="headerlink" href="#bids-vs-mne-python-coordinate-systems" title="Permalink to this headline">#</a></h2>
 <p>BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
 <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html">appendix VIII</a> of the BIDS specification.
 However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
@@ -469,7 +685,7 @@ an <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_b
 the montage channel locations set to the coordinate frame ‘unknown’.</p>
 </section>
 <section id="step-2-formatting-as-bids">
-<h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Permalink to this headline">¶</a></h2>
+<h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Permalink to this headline">#</a></h2>
 <p>Now, let us format the <em class="xref py py-obj">Raw</em> object into BIDS.</p>
 <p>With this step, we have everything to start a new BIDS directory using
 our data. To do that, we can use <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>
@@ -838,16 +1054,16 @@ participants.tsv
     2    sub-1     n/a       n/a       n/a
 sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv
     1    name      x         y         z         size
-    2    LENT 1    -0.024299 0.0261000 -0.055999 n/a
-    3    LENT 2    -0.026333 0.0271111 -0.054501 n/a
-    4    LENT 3    -0.029499 0.0287999 -0.052000 n/a
-    5    LENT 4    -0.032333 0.0301111 -0.050222 n/a
-    6    LENT 5    -0.034800 0.0309000 -0.048499 n/a
-    7    LENT 6    -0.037222 0.0319999 -0.046777 n/a
-    8    LENT 7    -0.039955 0.0327777 -0.044408 n/a
-    9    LAMY 1    -0.029111 0.0095555 -0.031777 n/a
-    10   LAMY 2    -0.033699 0.0101000 -0.031499 n/a
-    11   LAMY 3    -0.038636 0.0113636 -0.031181 n/a
+    2    LENT 1    -0.021200 0.0158514 -0.039700 n/a
+    3    LENT 2    -0.023233 0.0168625 -0.038201 n/a
+    4    LENT 3    -0.026400 0.0185514 -0.035700 n/a
+    5    LENT 4    -0.029233 0.0198625 -0.033922 n/a
+    6    LENT 5    -0.031700 0.0206514 -0.032200 n/a
+    7    LENT 6    -0.034122 0.0217514 -0.030478 n/a
+    8    LENT 7    -0.036855 0.0225292 -0.028108 n/a
+    9    LAMY 1    -0.026011 -0.000693 -0.015478 n/a
+    10   LAMY 2    -0.030600 -0.000148 -0.015200 n/a
+    11   LAMY 3    -0.035536 0.0011150 -0.014882 n/a
     ...
 sub-1/ieeg/sub-1_task-motor_channels.tsv
     1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de
@@ -871,7 +1087,7 @@ command line tool:</p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
 </section>
 <section id="step-3-load-channels-from-bids-formatted-dataset-and-compare">
-<h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Permalink to this headline">¶</a></h2>
+<h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Permalink to this headline">#</a></h2>
 <p>Now we have written our BIDS directory. We can use
 <a class="reference internal" href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> to read in the data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in the BIDS dataset to plot the coordinates</span>
@@ -886,13 +1102,16 @@ Reading channel info from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_tas
 Reading electrode coords from /home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv.
 </pre></div>
 </div>
-<p>Now we have to go back to “head” coordinates with the head-&gt;mri transform.</p>
+<p>Now we have to go back to “head” coordinates.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you were downloading this from <code class="docutils literal notranslate"><span class="pre">OpenNeuro</span></code>, you would
 have to run the Freesurfer <code class="docutils literal notranslate"><span class="pre">recon-all</span></code> to get the transforms.</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>
+
+<span class="c1"># we need to go from scanner RAS back to surface RAS (requires recon-all)</span>
+<a href="../generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri" title="mne_bids.convert_montage_to_mri" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_mri</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a><span class="p">,</span> <span class="s1">&#39;sample_seeg&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>
 
 <span class="c1"># this uses Freesurfer recon-all subject directory</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.add_estimated_fiducials" title="mne.channels.DigMontage.add_estimated_fiducials" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">add_estimated_fiducials</span></a><span class="p">(</span><span class="s1">&#39;sample_seeg&#39;</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subjects_dir</span></a><span class="p">)</span>
@@ -909,7 +1128,9 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
 <span class="c1"># the fiducials which are estimated; as long as the head-&gt;mri trans</span>
 <span class="c1"># is computed with the same fiducials, the coordinates will be the same</span>
 <span class="c1"># in ACPC space which is what matters</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.get_montage" title="mne.io.Raw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># get montage in &#39;head&#39; coordinates</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.get_montage" title="mne.io.Raw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># the original montage in &#39;head&#39; coordinates</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_montage" title="mne.io.BaseRaw.get_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span></a><span class="p">()</span>  <span class="c1"># the recovered montage in &#39;head&#39; coordinates</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>
 
 <span class="c1"># compare with standard</span>
@@ -920,13 +1141,13 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.0243  0.0261 -0.056 ]
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.02430001  0.02610001 -0.05600001]
 Saved coordinate:     [-0.0243  0.0261 -0.056 ]
 </pre></div>
 </div>
 </section>
 <section id="step-4-cite-mne-bids">
-<h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this headline">¶</a></h2>
+<h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this headline">#</a></h2>
 <p>We can see that the appropriate citations are already written in the README.
 If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 there.</p>
@@ -946,7 +1167,7 @@ Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D&#39;Ambrosio, S., David
 </div>
 </section>
 <section id="step-5-store-coordinates-in-a-template-space">
-<h2>Step 5: Store coordinates in a template space<a class="headerlink" href="#step-5-store-coordinates-in-a-template-space" title="Permalink to this headline">¶</a></h2>
+<h2>Step 5: Store coordinates in a template space<a class="headerlink" href="#step-5-store-coordinates-in-a-template-space" title="Permalink to this headline">#</a></h2>
 <p>Alternatively, if your T1 is not aligned to ACPC-space or you prefer to
 store the coordinates in a template space (e.g. <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code>) for another
 reason, you can also do that.</p>
@@ -1245,7 +1466,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  6.757 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  44.548 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1289,19 +1510,20 @@ coordinate frame.</p>
       </div>
     </div>
   
-    <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-  <footer class="footer mt-5 mt-md-0">
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
   <div class="container">
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-22.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-03-31.<br>
 </p>
     </div>
     
     <div class="footer-item">
       <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
     </div>
     
