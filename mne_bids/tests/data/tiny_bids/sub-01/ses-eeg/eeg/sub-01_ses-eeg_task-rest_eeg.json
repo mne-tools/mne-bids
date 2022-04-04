@@ -1,6 +1,6 @@
 {
     "TaskName": "rest",
-    "Manufacturer": "BrainProducts",
+    "Manufacturer": "Brain Products",
     "PowerLineFrequency": 60,
     "SamplingFrequency": 5000.0,
     "SoftwareFilters": "n/a",
