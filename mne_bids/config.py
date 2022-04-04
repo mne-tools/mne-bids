@@ -46,7 +46,7 @@ meg_manufacturers = {
     '.sqd': 'KIT/Yokogawa'
 }
 
-eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
+eeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                      '.edf': 'n/a', '.EDF': 'n/a', '.bdf': 'Biosemi',
                      '.BDF': 'Biosemi',
                      '.set': 'n/a', '.fdt': 'n/a',
@@ -54,7 +54,7 @@ eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.EEG': 'Nihon Kohden',
                      '.cnt': 'Neuroscan', '.CNT': 'Neuroscan'}
 
-ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
+ieeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                       '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
                       '.fdt': 'n/a', '.mef': 'n/a', '.nwb': 'n/a',
                       '.lay': 'Persyst', '.dat': 'Persyst',
