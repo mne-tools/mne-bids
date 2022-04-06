@@ -1253,7 +1253,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "double" format'):
             write_raw_bids(**kwargs)
 
-    make_dataset_description(bids_root, name="test",
+    make_dataset_description(path=bids_root, name="test",
                              authors=["test1", "test2"], overwrite=True)
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
     with open(dataset_description_fpath, 'r', encoding='utf-8') as f:

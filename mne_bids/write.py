@@ -1042,17 +1042,19 @@ def _write_raw_edf(raw, bids_fname, overwrite):
 
 
 @verbose
-def make_dataset_description(path, name, data_license=None,
+def make_dataset_description(*, path, name, hed_version=None,
+                             dataset_type='raw', data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
-                             references_and_links=None, doi=None,
-                             dataset_type='raw',
+                             ethics_approvals=None, references_and_links=None,
+                             doi=None, generated_by=None, source_datasets=None,
                              overwrite=False, verbose=None):
-    """Create json for a dataset description.
+    """Create a dataset_description.json file for a BIDS dataset.
 
-    BIDS datasets may have one or more fields, this function allows you to
-    specify which you wish to include in the description. See the BIDS
-    documentation for information about what each field means.
+    The dataset_description.json file is required in BIDS and describes
+    several general aspects of the dataset. You can use this function
+    to freely add metadata fields to this file. See the BIDS specification
+    for information about what each metadata field means.
 
     Parameters
     ----------
@@ -1060,30 +1062,45 @@ def make_dataset_description(path, name, data_license=None,
         A path to a folder where the description will be created.
     name : str
         The name of this BIDS dataset.
+    hed_version : str
+        If HED tags are used: The version of the HED schema used to validate
+        HED tags for study.
+    dataset_type : str
+        Must be either "raw" or "derivative". Defaults to "raw".
     data_license : str | None
         The license under which this dataset is published.
     authors : list | str | None
         List of individuals who contributed to the creation/curation of the
-        dataset. Must be a list of str or a single comma separated str
-        like ['a', 'b', 'c'].
-    acknowledgements : list | str | None
-        Either a str acknowledging individuals who contributed to the
-        creation/curation of this dataset OR a list of the individuals'
-        names as str.
-    how_to_acknowledge : list | str | None
-        Either a str describing how to acknowledge this dataset OR a list of
-        publications that should be cited.
+        dataset. Must be a list of str (e.g., ['a', 'b', 'c']) or a single
+        comma-separated str (e.g., 'a, b, c').
+    acknowledgements : str | None
+        A str acknowledging individuals who contributed to the
+        creation/curation of this dataset.
+    how_to_acknowledge : str | None
+        A str describing how to acknowledge this dataset.
     funding : list | str | None
         List of sources of funding (e.g., grant numbers). Must be a list of
-        str or a single comma separated str like ['a', 'b', 'c'].
+        str (e.g., ['a', 'b', 'c']) or a single comma-separated str
+        (e.g., 'a, b, c').
+    ethics_approvals : list | str | None
+        List of ethics committee approvals of the research protocols
+        and/or protocol identifiers. Must be a list of str (e.g.,
+        ['a', 'b', 'c']) or a single comma-separated str (e.g., 'a, b, c').
     references_and_links : list | str | None
         List of references to publication that contain information on the
-        dataset, or links.  Must be a list of str or a single comma
-        separated str like ['a', 'b', 'c'].
+        dataset, or links.  Must be a list of str (e.g., ['a', 'b', 'c'])
+        or a single comma-separated str (e.g., 'a, b, c').
     doi : str | None
-        The DOI for the dataset.
-    dataset_type : str
-        Must be either "raw" or "derivative". Defaults to "raw".
+        The Digital Object Identifier of the dataset (not the corresponding
+        paper). Must be of the form ``doi:<insert_doi>`` (e.g.,
+        doi:10.5281/zenodo.3686061).
+    generated_by : list of dict | None
+        Used to specify provenance of the dataset. See BIDS specification
+        for details.
+    source_datasets : list of dict | None
+        Used to specify the locations and relevant attributes of all source
+        datasets. Each dict in the list represents one source dataset and
+        may contain the following keys: ``URL``, ``DOI``, ``Version``.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1094,32 +1111,76 @@ def make_dataset_description(path, name, data_license=None,
 
     Notes
     -----
-    The required field BIDSVersion will be automatically filled by mne_bids.
+    The required metadata field ``BIDSVersion`` will be automatically filled in
+    by mne_bids.
 
     """
-    # Put potential string input into list of strings
-    if isinstance(authors, str):
-        authors = authors.split(', ')
-    if isinstance(funding, str):
-        funding = funding.split(', ')
-    if isinstance(references_and_links, str):
-        references_and_links = references_and_links.split(', ')
+    # Convert potential string input into list of strings
+    convert_vars = [authors, funding, references_and_links, ethics_approvals]
+    convert_vars = [[i.strip() for i in var.split(',')]
+                    if isinstance(var, str) else var
+                    for var in convert_vars]
+    authors, funding, references_and_links, ethics_approvals = convert_vars
+
+    # Perform input checks
     if dataset_type not in ['raw', 'derivative']:
         raise ValueError('`dataset_type` must be either "raw" or '
                          '"derivative."')
+    if isinstance(doi, str):
+        if not doi.startswith('doi:'):
+            warn('The `doi` field in dataset_description should be of the '
+                 'form `doi:<insert_doi>`')
 
+    # check generated_by and source_datasets
+    msg_type = '{} must be a list of dicts or None.'
+    msg_key = 'found unexpected key(s) in dict: {}'
+
+    generated_by_keys = set([
+        "Name", "Version", "Description", "CodeURL", "Container"])
+    if isinstance(generated_by, list):
+        if not all([isinstance(i, dict) for i in generated_by]):
+            raise ValueError(msg_type.format('generated_by'))
+        for i in generated_by:
+            if 'Name' not in i:
+                raise ValueError(
+                    '"Name" is a required field for each dict in '
+                    'generated_by')
+            if not set(i.keys()).issubset(generated_by_keys):
+                raise ValueError(msg_key.format(i.keys() - generated_by_keys))
+    else:
+        if generated_by is not None:
+            raise ValueError(msg_type.format('generated_by'))
+
+    source_ds_keys = set(["URL", "DOI", "Version"])
+    if isinstance(source_datasets, list):
+        if not all([isinstance(i, dict) for i in source_datasets]):
+            raise ValueError(msg_type.format('source_datasets'))
+        for i in source_datasets:
+            if not set(i.keys()).issubset(source_ds_keys):
+                raise ValueError(msg_key.format(i.keys() - source_ds_keys))
+    else:
+        if source_datasets is not None:
+            raise ValueError(msg_type.format('source_datasets'))
+
+    # Prepare dataset_description.json
     fname = op.join(path, 'dataset_description.json')
     description = OrderedDict([
         ('Name', name),
         ('BIDSVersion', BIDS_VERSION),
+        ('HEDVersion', hed_version),
         ('DatasetType', dataset_type),
         ('License', data_license),
         ('Authors', authors),
         ('Acknowledgements', acknowledgements),
         ('HowToAcknowledge', how_to_acknowledge),
         ('Funding', funding),
+        ('EthicsApprovals', ethics_approvals),
         ('ReferencesAndLinks', references_and_links),
-        ('DatasetDOI', doi)])
+        ('DatasetDOI', doi),
+        ('GeneratedBy', generated_by),
+        ('SourceDatasets', source_datasets)])
+
+    # Handle potentially existing file contents
     if op.isfile(fname):
         with open(fname, 'r', encoding='utf-8-sig') as fin:
             orig_cols = json.load(fin)
@@ -1131,12 +1192,14 @@ def make_dataset_description(path, name, data_license=None,
         for key in description:
             if description[key] is None or not overwrite:
                 description[key] = orig_cols.get(key, None)
+
     # default author to make dataset description BIDS compliant
     # if the user passed an author don't overwrite,
     # if there was an author there, only overwrite if `overwrite=True`
     if authors is None and (description['Authors'] is None or overwrite):
         description['Authors'] = ["[Unspecified]"]
 
+    # Only write data that is not None
     pop_keys = [key for key, val in description.items() if val is None]
     for key in pop_keys:
         description.pop(key)
@@ -1660,7 +1723,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # already exist. Always set overwrite to False here. If users
     # want to edit their dataset_description, they can directly call
     # this function.
-    make_dataset_description(bids_path.root, name=" ", overwrite=False)
+    make_dataset_description(path=bids_path.root, name=" ", overwrite=False)
 
     _sidecar_json(raw, task=bids_path.task, manufacturer=manufacturer,
                   fname=sidecar_path.fpath, datatype=bids_path.datatype,
