@@ -1242,17 +1242,19 @@
 
 
 <div class="viewcode-block" id="make_dataset_description"><a class="viewcode-back" href="../../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">make_dataset_description</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_license</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">make_dataset_description</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">hed_version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">dataset_type</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="n">data_license</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">authors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acknowledgements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">how_to_acknowledge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">funding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">references_and_links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                             <span class="n">dataset_type</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span>
+                             <span class="n">ethics_approvals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">references_and_links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generated_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_datasets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create json for a dataset description.</span>
+    <span class="sd">&quot;&quot;&quot;Create a dataset_description.json file for a BIDS dataset.</span>
 
-<span class="sd">    BIDS datasets may have one or more fields, this function allows you to</span>
-<span class="sd">    specify which you wish to include in the description. See the BIDS</span>
-<span class="sd">    documentation for information about what each field means.</span>
+<span class="sd">    The dataset_description.json file is required in BIDS and describes</span>
+<span class="sd">    several general aspects of the dataset. You can use this function</span>
+<span class="sd">    to freely add metadata fields to this file. See the BIDS specification</span>
+<span class="sd">    for information about what each metadata field means.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1260,30 +1262,45 @@
 <span class="sd">        A path to a folder where the description will be created.</span>
 <span class="sd">    name : str</span>
 <span class="sd">        The name of this BIDS dataset.</span>
+<span class="sd">    hed_version : str</span>
+<span class="sd">        If HED tags are used: The version of the HED schema used to validate</span>
+<span class="sd">        HED tags for study.</span>
+<span class="sd">    dataset_type : str</span>
+<span class="sd">        Must be either &quot;raw&quot; or &quot;derivative&quot;. Defaults to &quot;raw&quot;.</span>
 <span class="sd">    data_license : str | None</span>
 <span class="sd">        The license under which this dataset is published.</span>
 <span class="sd">    authors : list | str | None</span>
 <span class="sd">        List of individuals who contributed to the creation/curation of the</span>
-<span class="sd">        dataset. Must be a list of str or a single comma separated str</span>
-<span class="sd">        like [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;].</span>
-<span class="sd">    acknowledgements : list | str | None</span>
-<span class="sd">        Either a str acknowledging individuals who contributed to the</span>
-<span class="sd">        creation/curation of this dataset OR a list of the individuals&#39;</span>
-<span class="sd">        names as str.</span>
-<span class="sd">    how_to_acknowledge : list | str | None</span>
-<span class="sd">        Either a str describing how to acknowledge this dataset OR a list of</span>
-<span class="sd">        publications that should be cited.</span>
+<span class="sd">        dataset. Must be a list of str (e.g., [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]) or a single</span>
+<span class="sd">        comma-separated str (e.g., &#39;a, b, c&#39;).</span>
+<span class="sd">    acknowledgements : str | None</span>
+<span class="sd">        A str acknowledging individuals who contributed to the</span>
+<span class="sd">        creation/curation of this dataset.</span>
+<span class="sd">    how_to_acknowledge : str | None</span>
+<span class="sd">        A str describing how to acknowledge this dataset.</span>
 <span class="sd">    funding : list | str | None</span>
 <span class="sd">        List of sources of funding (e.g., grant numbers). Must be a list of</span>
-<span class="sd">        str or a single comma separated str like [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;].</span>
+<span class="sd">        str (e.g., [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]) or a single comma-separated str</span>
+<span class="sd">        (e.g., &#39;a, b, c&#39;).</span>
+<span class="sd">    ethics_approvals : list | str | None</span>
+<span class="sd">        List of ethics committee approvals of the research protocols</span>
+<span class="sd">        and/or protocol identifiers. Must be a list of str (e.g.,</span>
+<span class="sd">        [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]) or a single comma-separated str (e.g., &#39;a, b, c&#39;).</span>
 <span class="sd">    references_and_links : list | str | None</span>
 <span class="sd">        List of references to publication that contain information on the</span>
-<span class="sd">        dataset, or links.  Must be a list of str or a single comma</span>
-<span class="sd">        separated str like [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;].</span>
+<span class="sd">        dataset, or links.  Must be a list of str (e.g., [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;])</span>
+<span class="sd">        or a single comma-separated str (e.g., &#39;a, b, c&#39;).</span>
 <span class="sd">    doi : str | None</span>
-<span class="sd">        The DOI for the dataset.</span>
-<span class="sd">    dataset_type : str</span>
-<span class="sd">        Must be either &quot;raw&quot; or &quot;derivative&quot;. Defaults to &quot;raw&quot;.</span>
+<span class="sd">        The Digital Object Identifier of the dataset (not the corresponding</span>
+<span class="sd">        paper). Must be of the form ``doi:&lt;insert_doi&gt;`` (e.g.,</span>
+<span class="sd">        doi:10.5281/zenodo.3686061).</span>
+<span class="sd">    generated_by : list of dict | None</span>
+<span class="sd">        Used to specify provenance of the dataset. See BIDS specification</span>
+<span class="sd">        for details.</span>
+<span class="sd">    source_datasets : list of dict | None</span>
+<span class="sd">        Used to specify the locations and relevant attributes of all source</span>
+<span class="sd">        datasets. Each dict in the list represents one source dataset and</span>
+<span class="sd">        may contain the following keys: ``URL``, ``DOI``, ``Version``.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to False.</span>
@@ -1294,32 +1311,76 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The required field BIDSVersion will be automatically filled by mne_bids.</span>
+<span class="sd">    The required metadata field ``BIDSVersion`` will be automatically filled in</span>
+<span class="sd">    by mne_bids.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Put potential string input into list of strings</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">authors</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">authors</span> <span class="o">=</span> <span class="n">authors</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">funding</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">funding</span> <span class="o">=</span> <span class="n">funding</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">references_and_links</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">references_and_links</span> <span class="o">=</span> <span class="n">references_and_links</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span>
+    <span class="c1"># Convert potential string input into list of strings</span>
+    <span class="n">convert_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">authors</span><span class="p">,</span> <span class="n">funding</span><span class="p">,</span> <span class="n">references_and_links</span><span class="p">,</span> <span class="n">ethics_approvals</span><span class="p">]</span>
+    <span class="n">convert_vars</span> <span class="o">=</span> <span class="p">[[</span><span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">var</span>
+                    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">convert_vars</span><span class="p">]</span>
+    <span class="n">authors</span><span class="p">,</span> <span class="n">funding</span><span class="p">,</span> <span class="n">references_and_links</span><span class="p">,</span> <span class="n">ethics_approvals</span> <span class="o">=</span> <span class="n">convert_vars</span>
+
+    <span class="c1"># Perform input checks</span>
     <span class="k">if</span> <span class="n">dataset_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;raw&#39;</span><span class="p">,</span> <span class="s1">&#39;derivative&#39;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`dataset_type` must be either &quot;raw&quot; or &#39;</span>
                          <span class="s1">&#39;&quot;derivative.&quot;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">doi</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;doi:&#39;</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;The `doi` field in dataset_description should be of the &#39;</span>
+                 <span class="s1">&#39;form `doi:&lt;insert_doi&gt;`&#39;</span><span class="p">)</span>
 
+    <span class="c1"># check generated_by and source_datasets</span>
+    <span class="n">msg_type</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> must be a list of dicts or None.&#39;</span>
+    <span class="n">msg_key</span> <span class="o">=</span> <span class="s1">&#39;found unexpected key(s) in dict: </span><span class="si">{}</span><span class="s1">&#39;</span>
+
+    <span class="n">generated_by_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span>
+        <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="s2">&quot;Version&quot;</span><span class="p">,</span> <span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="s2">&quot;CodeURL&quot;</span><span class="p">,</span> <span class="s2">&quot;Container&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generated_by</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">generated_by</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_type</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;generated_by&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">generated_by</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;Name&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;&quot;Name&quot; is a required field for each dict in &#39;</span>
+                    <span class="s1">&#39;generated_by&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">generated_by_keys</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_key</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="n">generated_by_keys</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">generated_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_type</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;generated_by&#39;</span><span class="p">))</span>
+
+    <span class="n">source_ds_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;URL&quot;</span><span class="p">,</span> <span class="s2">&quot;DOI&quot;</span><span class="p">,</span> <span class="s2">&quot;Version&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_datasets</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">source_datasets</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_type</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;source_datasets&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">source_datasets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">source_ds_keys</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_key</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="n">source_ds_keys</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">source_datasets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_type</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;source_datasets&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Prepare dataset_description.json</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;dataset_description.json&#39;</span><span class="p">)</span>
     <span class="n">description</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([</span>
         <span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;BIDSVersion&#39;</span><span class="p">,</span> <span class="n">BIDS_VERSION</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;HEDVersion&#39;</span><span class="p">,</span> <span class="n">hed_version</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;DatasetType&#39;</span><span class="p">,</span> <span class="n">dataset_type</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;License&#39;</span><span class="p">,</span> <span class="n">data_license</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;Authors&#39;</span><span class="p">,</span> <span class="n">authors</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;Acknowledgements&#39;</span><span class="p">,</span> <span class="n">acknowledgements</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;HowToAcknowledge&#39;</span><span class="p">,</span> <span class="n">how_to_acknowledge</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;Funding&#39;</span><span class="p">,</span> <span class="n">funding</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;EthicsApprovals&#39;</span><span class="p">,</span> <span class="n">ethics_approvals</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;ReferencesAndLinks&#39;</span><span class="p">,</span> <span class="n">references_and_links</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;DatasetDOI&#39;</span><span class="p">,</span> <span class="n">doi</span><span class="p">)])</span>
+        <span class="p">(</span><span class="s1">&#39;DatasetDOI&#39;</span><span class="p">,</span> <span class="n">doi</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;GeneratedBy&#39;</span><span class="p">,</span> <span class="n">generated_by</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;SourceDatasets&#39;</span><span class="p">,</span> <span class="n">source_datasets</span><span class="p">)])</span>
+
+    <span class="c1"># Handle potentially existing file contents</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
             <span class="n">orig_cols</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
@@ -1331,12 +1392,14 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">description</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
                 <span class="n">description</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig_cols</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
     <span class="c1"># default author to make dataset description BIDS compliant</span>
     <span class="c1"># if the user passed an author don&#39;t overwrite,</span>
     <span class="c1"># if there was an author there, only overwrite if `overwrite=True`</span>
     <span class="k">if</span> <span class="n">authors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="s1">&#39;Authors&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">overwrite</span><span class="p">):</span>
         <span class="n">description</span><span class="p">[</span><span class="s1">&#39;Authors&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Unspecified]&quot;</span><span class="p">]</span>
 
+    <span class="c1"># Only write data that is not None</span>
     <span class="n">pop_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">description</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pop_keys</span><span class="p">:</span>
         <span class="n">description</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -1860,7 +1923,7 @@
     <span class="c1"># already exist. Always set overwrite to False here. If users</span>
     <span class="c1"># want to edit their dataset_description, they can directly call</span>
     <span class="c1"># this function.</span>
-    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="o">=</span><span class="n">manufacturer</span><span class="p">,</span>
                   <span class="n">fname</span><span class="o">=</span><span class="n">sidecar_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
