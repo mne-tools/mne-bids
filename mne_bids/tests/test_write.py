@@ -294,10 +294,6 @@ def test_write_correct_inputs():
 
 def test_make_dataset_description(tmp_path, monkeypatch):
     """Test making a dataset_description.json."""
-    with pytest.raises(ValueError, match='`dataset_type` must be either "raw" '
-                                         'or "derivative."'):
-        make_dataset_description(path=tmp_path, name='tst', dataset_type='src')
-
     make_dataset_description(path=tmp_path, name='tst')
 
     with open(op.join(tmp_path, 'dataset_description.json'), 'r',
@@ -328,6 +324,39 @@ def test_make_dataset_description(tmp_path, monkeypatch):
               encoding='utf-8') as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ['MNE B.', 'MNE P.']
+
+    # Check we raise warnings and errors where appropriate
+    with pytest.raises(ValueError, match='`dataset_type` must be either "raw" '
+                                         'or "derivative."'):
+        make_dataset_description(path=tmp_path, name='tst', dataset_type='src')
+
+    with pytest.warns(RuntimeWarning, match='The `doi` field in.*'):
+        make_dataset_description(path=tmp_path, name='tst',
+                                 doi='10.5281/zenodo.3686061')
+
+    for gen_by in [[1, 2], 12]:
+        with pytest.raises(ValueError, match='generated_by must be a list.*'):
+            make_dataset_description(path=tmp_path, name='tst',
+                                     generated_by=gen_by)
+
+    with pytest.raises(ValueError, match='"Name" is a required field.*'):
+        make_dataset_description(path=tmp_path, name='tst',
+                                 generated_by=[{"Version": 2}])
+
+    gen_by = [{"Name": "bla", "x": 3, "y": 1}]
+    with pytest.raises(ValueError, match=".*in dict: {'.', '.'}"):
+        make_dataset_description(path=tmp_path, name='tst',
+                                 generated_by=gen_by)
+
+    for s_ds in [[1, 2], 12]:
+        with pytest.raises(ValueError, match='source_datasets must be a.*'):
+            make_dataset_description(path=tmp_path, name='tst',
+                                     source_datasets=s_ds)
+
+    s_ds = [{"URL": "bla", "x": 3, "y": 1}]
+    with pytest.raises(ValueError, match=".*in dict: {'.', '.'}"):
+        make_dataset_description(path=tmp_path, name='tst',
+                                 source_datasets=s_ds)
 
     monkeypatch.setattr(write, 'BIDS_VERSION', 'old')
     with pytest.raises(ValueError, match='Previous BIDS version used'):
@@ -1032,7 +1061,11 @@ def test_bti(_bids_validate, tmp_path):
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
 
     # write the BIDS dataset description, then write BIDS files
-    make_dataset_description(tmp_path, name="BTi data")
+    s_ds = [{"URL": "https://mne.testing.data"}]
+    gen_by = [{"Name": "mne_bids"}]
+    make_dataset_description(
+        path=tmp_path, name="BTi data", source_datasets=s_ds,
+        generated_by=gen_by, authors="a,b,c")
     write_raw_bids(raw, bids_path, verbose=True)
 
     assert op.exists(tmp_path / 'participants.tsv')
@@ -1254,7 +1287,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             write_raw_bids(**kwargs)
 
     make_dataset_description(path=bids_root, name="test",
-                             authors=["test1", "test2"], overwrite=True)
+                             authors=["test1", "test2"], overwrite=True,
+                             dataset_type="raw",
+                             ethics_approvals=["approved by S."],
+                             hed_version="No HED used (just testing)")
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
     with open(dataset_description_fpath, 'r', encoding='utf-8') as f:
         dataset_description_json = json.load(f)
