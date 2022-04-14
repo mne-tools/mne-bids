@@ -1339,12 +1339,16 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
 
-    empty_room : BIDSPath | None
+    empty_room : mne.io.Raw | BIDSPath | None
         The empty-room recording to be associated with this file. This is
-        only supported for MEG data, and only if the ``root`` attributes of
-        ``bids_path`` and ``empty_room`` are the same. Pass ``None``
-        (default) if you do not wish to specify an associated empty-room
-        recording.
+        only supported for MEG data.
+        If :class:`~mne.io.Raw`, you may pass raw data that was not preloaded
+        (otherwise, pass ``allow_preload=True``); i.e., it behaves similar to
+        the ``raw`` parameter. The session name will be automatically generated
+        from the raw object's ``info['meas_date']``.
+        If a :class:`~mne_bids.BIDSPath`, the ``root`` attribute must be the
+        same as in ``bids_path``. Pass ``None`` (default) if you do not wish to
+        specify an associated empty-room recording.
     allow_preload : bool
         If ``True``, allow writing of preloaded raw objects (i.e.,
         ``raw.preload`` is ``True``). Because the original file is ignored, you
@@ -1386,6 +1390,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     -------
     bids_path : BIDSPath
         The path of the created data file.
+
+        .. note::
+           If you passed empty-room raw data via ``empty_room``, the
+           :class:`~mne_bids.BIDSPath` of the empty-room recording can be
+           retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
 
     Notes
     -----
@@ -1484,7 +1493,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                            'array. You need to pass both, or neither.')
 
     _validate_type(item=empty_room, item_name='empty_room',
-                   types=(BIDSPath, None))
+                   types=(mne.io.Raw, BIDSPath, None))
     _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
     _validate_type(acpc_aligned, bool, 'acpc_aligned')
 
@@ -1581,7 +1590,39 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 )
 
     associated_er_path = None
-    if empty_room is not None:
+
+    if isinstance(empty_room, mne.io.Raw):
+        er_date = empty_room.info['meas_date']
+        if not er_date:
+            raise ValueError(
+                'The empty-room raw data must have a valid measurement date '
+                'set. Please update its info["meas_date"] field.'
+            )
+        er_session = f'{er_date.year:04}{er_date.month:02}{er_date.day:02}'
+        er_bids_path = bids_path.copy().update(
+            subject='emptyroom',
+            session=er_session,
+            task='noise',
+            run=None
+        )
+        del er_date, er_session
+        write_raw_bids(
+            raw=empty_room,
+            bids_path=er_bids_path,
+            events_data=None,
+            event_id=None,
+            anonymize=anonymize,
+            format=format,
+            symlink=symlink,
+            allow_preload=allow_preload,
+            montage=montage,
+            acpc_aligned=acpc_aligned,
+            overwrite=overwrite,
+            verbose=verbose
+        )
+        associated_er_path = er_bids_path.fpath
+        del er_bids_path
+    elif isinstance(empty_room, BIDSPath):
         if bids_path.datatype != 'meg':
             raise ValueError('"empty_room" is only supported for '
                              'MEG data.')
@@ -1591,15 +1632,16 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         if bids_path.root != empty_room.root:
             raise ValueError('The MEG data and its associated empty-room '
                              'recording must share the same BIDS root.')
-
         associated_er_path = empty_room.fpath
+
+    if associated_er_path is not None:
         if not associated_er_path.exists():
             raise FileNotFoundError(f'Empty-room data file not found: '
                                     f'{associated_er_path}')
 
         # Turn it into a path relative to the BIDS root
         associated_er_path = Path(str(associated_er_path)
-                                  .replace(str(empty_room.root), ''))
+                                  .replace(str(bids_path.root), ''))
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 
