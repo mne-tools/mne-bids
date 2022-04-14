@@ -1349,6 +1349,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         If a :class:`~mne_bids.BIDSPath`, the ``root`` attribute must be the
         same as in ``bids_path``. Pass ``None`` (default) if you do not wish to
         specify an associated empty-room recording.
+
+        .. versionchanged:: 0.11
+           Accepts :class:`~mne.io.Raw` data.
     allow_preload : bool
         If ``True``, allow writing of preloaded raw objects (i.e.,
         ``raw.preload`` is ``True``). Because the original file is ignored, you
