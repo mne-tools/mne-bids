@@ -1496,7 +1496,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                            'array. You need to pass both, or neither.')
 
     _validate_type(item=empty_room, item_name='empty_room',
-                   types=(mne.io.Raw, BIDSPath, None))
+                   types=(mne.io.BaseRaw, BIDSPath, None))
     _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
     _validate_type(acpc_aligned, bool, 'acpc_aligned')
 
@@ -1594,14 +1594,14 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     associated_er_path = None
 
-    if isinstance(empty_room, mne.io.Raw):
+    if isinstance(empty_room, mne.io.BaseRaw):
         er_date = empty_room.info['meas_date']
         if not er_date:
             raise ValueError(
                 'The empty-room raw data must have a valid measurement date '
                 'set. Please update its info["meas_date"] field.'
             )
-        er_session = f'{er_date.year:04}{er_date.month:02}{er_date.day:02}'
+        er_session = er_date.strftime("%Y%m%d")
         er_bids_path = bids_path.copy().update(
             subject='emptyroom',
             session=er_session,
