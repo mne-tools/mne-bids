@@ -1207,11 +1207,15 @@ def make_dataset_description(*, path, name, hed_version=None,
 
 
 @verbose
-def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
-                   anonymize=None, format='auto', symlink=False,
-                   empty_room=None, allow_preload=False,
-                   montage=None, acpc_aligned=False,
-                   overwrite=False, verbose=None):
+def write_raw_bids(
+    raw, bids_path, *,
+    events_data=None, event_id=None,
+    anonymize=None, format='auto', symlink=False,
+    empty_room=None, meg_calibration=None, meg_crosstalk=None,
+    allow_preload=False,
+    montage=None, acpc_aligned=False,
+    overwrite=False, verbose=None
+):
     """Save raw data to a BIDS-compliant folder structure.
 
     .. warning:: * The original file is simply copied over if the original
@@ -1352,6 +1356,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         .. versionchanged:: 0.11
            Accepts :class:`~mne.io.Raw` data.
+    meg_calibration : path-like | dict | None
+        Either the path of the ``.dat`` file containing the
+        Elekta/Neuromag/MEGIN fine-calibration matrix, or the dictionary
+        returned by :func:`mne.preprocessing.read_fine_calibration`.
+    meg_crosstalk : path-like | None
+        The path of the ``FIFF`` file containing the Elekta/Neuromag/MEGIN
+        crosstalk information.
     allow_preload : bool
         If ``True``, allow writing of preloaded raw objects (i.e.,
         ``raw.preload`` is ``True``). Because the original file is ignored, you
@@ -1564,6 +1575,16 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = (bids_path.copy()
                  .update(datatype=datatype, suffix=datatype, extension=ext))
+
+    if bids_path.data_type != 'meg':
+        if empty_room is not None:
+            raise ValueError('Cannot specify empty_room for non-MEG data.')
+        if meg_calibration is not None:
+            raise ValueError(
+                'Cannot specify meg_calibration for non-MEG data.'
+            )
+        if meg_crosstalk is not None:
+            raise ValueError('Cannot specify meg_crosstalk for non-MEG data.')
 
     # Check whether provided info and raw indicates valid MEG emptyroom data
     data_is_emptyroom = False
@@ -1892,6 +1913,23 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                overwrite=overwrite)
     logger.info(f'Wrote {scans_path.fpath} entry with '
                 f'{scan_relative_fpath}.')
+
+    # Write fine-calibration and crosstalk files
+    if bids_path.datatype == 'meg' and not data_is_emptyroom:
+        if meg_calibration is not None:
+            logger.info('Writing MEG fine-calibration file.')
+            write_meg_calibration(
+                calibration=meg_calibration,
+                bids_path=bids_path,
+                verbose=verbose
+            )
+        if meg_crosstalk is None:
+            logger.info('Writing MEG crosstalk file.')
+            write_meg_crosstalk(
+                fname=meg_crosstalk,
+                bids_path=bids_path,
+                verbose=verbose
+            )
 
     return bids_path
 
@@ -2338,7 +2376,7 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
     Parameters
     ----------
     calibration : path-like | dict
-        Either the path of the ``.dat`` file containing the file-calibration
+        Either the path of the ``.dat`` file containing the fine-calibration
         matrix, or the dictionary returned by
         :func:`mne.preprocessing.read_fine_calibration`.
     bids_path : BIDSPath
