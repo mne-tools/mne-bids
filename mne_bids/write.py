@@ -1605,7 +1605,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             task='noise',
             run=None
         )
-        del er_date, er_session
         write_raw_bids(
             raw=empty_room,
             bids_path=er_bids_path,
@@ -1621,7 +1620,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             verbose=verbose
         )
         associated_er_path = er_bids_path.fpath
-        del er_bids_path
+        del er_bids_path, er_date, er_session
     elif isinstance(empty_room, BIDSPath):
         if bids_path.datatype != 'meg':
             raise ValueError('"empty_room" is only supported for '
