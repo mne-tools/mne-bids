@@ -235,7 +235,7 @@
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_empty_room.html">
-   09. Storing empty room data in BIDS format
+   09. Manually storing empty room data
   </a>
  </li>
 </ul>
@@ -628,12 +628,19 @@ which are however optional. The required inputs are:</p>
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
 
-    empty_room : BIDSPath | None
+    empty_room : mne.io.Raw | BIDSPath | None
         The empty-room recording to be associated with this file. This is
-        only supported for MEG data, and only if the ``root`` attributes of
-        ``bids_path`` and ``empty_room`` are the same. Pass ``None``
-        (default) if you do not wish to specify an associated empty-room
-        recording.
+        only supported for MEG data.
+        If :class:`~mne.io.Raw`, you may pass raw data that was not preloaded
+        (otherwise, pass ``allow_preload=True``); i.e., it behaves similar to
+        the ``raw`` parameter. The session name will be automatically generated
+        from the raw object&#39;s ``info[&#39;meas_date&#39;]``.
+        If a :class:`~mne_bids.BIDSPath`, the ``root`` attribute must be the
+        same as in ``bids_path``. Pass ``None`` (default) if you do not wish to
+        specify an associated empty-room recording.
+
+        .. versionchanged:: 0.11
+           Accepts :class:`~mne.io.Raw` data.
     allow_preload : bool
         If ``True``, allow writing of preloaded raw objects (i.e.,
         ``raw.preload`` is ``True``). Because the original file is ignored, you
@@ -680,6 +687,11 @@ which are however optional. The required inputs are:</p>
     -------
     bids_path : BIDSPath
         The path of the created data file.
+
+        .. note::
+           If you passed empty-room raw data via ``empty_room``, the
+           :class:`~mne_bids.BIDSPath` of the empty-room recording can be
+           retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
 
     Notes
     -----
@@ -903,7 +915,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.475 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.501 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-nirs-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_nirs_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -954,7 +966,7 @@ command line tool:</p>
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-04-06.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-04-14.<br>
 </p>
     </div>
     

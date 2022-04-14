@@ -1539,12 +1539,19 @@
 <span class="sd">           Symlinks are currently only supported on macOS and Linux. We will</span>
 <span class="sd">           add support for Windows 10 at a later time.</span>
 
-<span class="sd">    empty_room : BIDSPath | None</span>
+<span class="sd">    empty_room : mne.io.Raw | BIDSPath | None</span>
 <span class="sd">        The empty-room recording to be associated with this file. This is</span>
-<span class="sd">        only supported for MEG data, and only if the ``root`` attributes of</span>
-<span class="sd">        ``bids_path`` and ``empty_room`` are the same. Pass ``None``</span>
-<span class="sd">        (default) if you do not wish to specify an associated empty-room</span>
-<span class="sd">        recording.</span>
+<span class="sd">        only supported for MEG data.</span>
+<span class="sd">        If :class:`~mne.io.Raw`, you may pass raw data that was not preloaded</span>
+<span class="sd">        (otherwise, pass ``allow_preload=True``); i.e., it behaves similar to</span>
+<span class="sd">        the ``raw`` parameter. The session name will be automatically generated</span>
+<span class="sd">        from the raw object&#39;s ``info[&#39;meas_date&#39;]``.</span>
+<span class="sd">        If a :class:`~mne_bids.BIDSPath`, the ``root`` attribute must be the</span>
+<span class="sd">        same as in ``bids_path``. Pass ``None`` (default) if you do not wish to</span>
+<span class="sd">        specify an associated empty-room recording.</span>
+
+<span class="sd">        .. versionchanged:: 0.11</span>
+<span class="sd">           Accepts :class:`~mne.io.Raw` data.</span>
 <span class="sd">    allow_preload : bool</span>
 <span class="sd">        If ``True``, allow writing of preloaded raw objects (i.e.,</span>
 <span class="sd">        ``raw.preload`` is ``True``). Because the original file is ignored, you</span>
@@ -1586,6 +1593,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The path of the created data file.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           If you passed empty-room raw data via ``empty_room``, the</span>
+<span class="sd">           :class:`~mne_bids.BIDSPath` of the empty-room recording can be</span>
+<span class="sd">           retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1684,7 +1696,7 @@
                            <span class="s1">&#39;array. You need to pass both, or neither.&#39;</span><span class="p">)</span>
 
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;empty_room&#39;</span><span class="p">,</span>
-                   <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                   <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">DigMontage</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;montage&#39;</span><span class="p">)</span>
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">acpc_aligned</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="s1">&#39;acpc_aligned&#39;</span><span class="p">)</span>
 
@@ -1781,7 +1793,38 @@
                 <span class="p">)</span>
 
     <span class="n">associated_er_path</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">empty_room</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">):</span>
+        <span class="n">er_date</span> <span class="o">=</span> <span class="n">empty_room</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">er_date</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;The empty-room raw data must have a valid measurement date &#39;</span>
+                <span class="s1">&#39;set. Please update its info[&quot;meas_date&quot;] field.&#39;</span>
+            <span class="p">)</span>
+        <span class="n">er_session</span> <span class="o">=</span> <span class="n">er_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">er_session</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="s1">&#39;noise&#39;</span><span class="p">,</span>
+            <span class="n">run</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">write_raw_bids</span><span class="p">(</span>
+            <span class="n">raw</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">er_bids_path</span><span class="p">,</span>
+            <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">anonymize</span><span class="o">=</span><span class="n">anonymize</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
+            <span class="n">symlink</span><span class="o">=</span><span class="n">symlink</span><span class="p">,</span>
+            <span class="n">allow_preload</span><span class="o">=</span><span class="n">allow_preload</span><span class="p">,</span>
+            <span class="n">montage</span><span class="o">=</span><span class="n">montage</span><span class="p">,</span>
+            <span class="n">acpc_aligned</span><span class="o">=</span><span class="n">acpc_aligned</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+        <span class="p">)</span>
+        <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">fpath</span>
+        <span class="k">del</span> <span class="n">er_bids_path</span><span class="p">,</span> <span class="n">er_date</span><span class="p">,</span> <span class="n">er_session</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;empty_room&quot; is only supported for &#39;</span>
                              <span class="s1">&#39;MEG data.&#39;</span><span class="p">)</span>
@@ -1791,15 +1834,16 @@
         <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">!=</span> <span class="n">empty_room</span><span class="o">.</span><span class="n">root</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The MEG data and its associated empty-room &#39;</span>
                              <span class="s1">&#39;recording must share the same BIDS root.&#39;</span><span class="p">)</span>
-
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">empty_room</span><span class="o">.</span><span class="n">fpath</span>
+
+    <span class="k">if</span> <span class="n">associated_er_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Empty-room data file not found: &#39;</span>
                                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">associated_er_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="c1"># Turn it into a path relative to the BIDS root</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">associated_er_path</span><span class="p">)</span>
-                                  <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">empty_room</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+                                  <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
         <span class="c1"># Ensure it works on Windows too</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
 
@@ -3081,7 +3125,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-04-06.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-04-14.<br>
 </p>
     </div>
     
