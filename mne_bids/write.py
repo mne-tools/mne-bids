@@ -1576,7 +1576,7 @@ def write_raw_bids(
     bids_path = (bids_path.copy()
                  .update(datatype=datatype, suffix=datatype, extension=ext))
 
-    if bids_path.data_type != 'meg':
+    if bids_path.datatype != 'meg':
         if empty_room is not None:
             raise ValueError('Cannot specify empty_room for non-MEG data.')
         if meg_calibration is not None:
