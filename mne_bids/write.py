@@ -1923,7 +1923,7 @@ def write_raw_bids(
                 bids_path=bids_path,
                 verbose=verbose
             )
-        if meg_crosstalk is None:
+        if meg_crosstalk is not None:
             logger.info('Writing MEG crosstalk file.')
             write_meg_crosstalk(
                 fname=meg_crosstalk,
