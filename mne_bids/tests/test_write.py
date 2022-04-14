@@ -13,7 +13,6 @@ For each supported file format, implement a test.
 import sys
 import os
 import os.path as op
-import pytest
 from glob import glob
 from datetime import datetime, timezone, timedelta
 import shutil as sh
@@ -24,6 +23,7 @@ import warnings
 
 from pkg_resources import parse_version
 
+import pytest
 import numpy as np
 from numpy.testing import (assert_allclose, assert_array_equal,
                            assert_array_almost_equal)
@@ -3269,7 +3269,10 @@ def test_symlink(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_write_associated_emptyroom(_bids_validate, tmp_path):
+@pytest.mark.parametrize('empty_room_dtype', ['BIDSPath', 'raw'])
+def test_write_associated_emptyroom(
+    _bids_validate, tmp_path, empty_room_dtype
+):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_root = tmp_path / 'bids1'
     data_path = testing.data_path()
@@ -3277,19 +3280,37 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path):
                         'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_fname)
     meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
-    raw.set_meas_date(meas_date)
 
-    # First write "empty-room" data
-    bids_path_er = BIDSPath(subject='emptyroom', session='20200110',
-                            task='noise', root=bids_root, datatype='meg',
-                            suffix='meg', extension='.fif')
-    write_raw_bids(raw, bids_path=bids_path_er)
+    if empty_room_dtype == 'BIDSPath':
+        # First write "empty-room" data
+        raw.set_meas_date(meas_date)
+        bids_path_er = BIDSPath(subject='emptyroom', session='20200110',
+                                task='noise', root=bids_root, datatype='meg',
+                                suffix='meg', extension='.fif')
+        write_raw_bids(raw, bids_path=bids_path_er)
 
-    # Now we write experimental data and associate it with the empty-room
-    # recording
-    bids_path = bids_path_er.copy().update(subject='01', session=None,
-                                           task='task')
-    write_raw_bids(raw, bids_path=bids_path, empty_room=bids_path_er)
+        # Now we write experimental data and associate it with the empty-room
+        # recording
+        bids_path = bids_path_er.copy().update(
+            subject='01', session=None, task='task'
+        )
+        write_raw_bids(raw, bids_path=bids_path, empty_room=bids_path_er)
+    elif empty_room_dtype == 'raw':
+        bids_path = _bids_path.copy().update(
+            subject='01', session='session', task='task', suffix='meg',
+            extension='.fif', datatype='meg', root=bids_root
+        )
+
+        # Should raise if no measurement date was provided
+        raw.set_meas_date(None)
+        with pytest.raises(ValueError, match='empty-room .* measurement date'):
+            write_raw_bids(raw, bids_path=bids_path, empty_room=raw)
+
+        # With a proper measurement date it should work
+        raw.set_meas_date(meas_date)
+        write_raw_bids(raw, bids_path=bids_path, empty_room=raw)
+        bids_path_er = bids_path.find_empty_room()
+
     _bids_validate(bids_path.root)
 
     meg_json_path = bids_path.copy().update(extension='.json')

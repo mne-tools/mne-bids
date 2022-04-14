@@ -42,7 +42,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- ...
+- You can now write raw data and an associated empty-room recording with just a single call to :func:`mne_bids.write_raw_bids`: the ``empty_room`` parameter now also accepts a :class:`mne.io.Raw` data object. The empty-room session name will be derived from the recording date automatically, , by `Richard Höchenberger`_ (:gh:`xxx`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
