@@ -47,6 +47,7 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
             'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+er_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')  # empty room
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
@@ -72,23 +73,42 @@ if op.exists(output_path):
 #   *not* guess and you will have to update your BIDS fields manually.
 #
 # Based on our path definitions above, we read the raw data file, define
-# a new BIDS name for it, and then run the automatic BIDS conversion.
+# a new BIDS name for it, and then run the automatic BIDS conversion for both
+# the experimental data and its associated empty-room recording.
 
-raw = mne.io.read_raw_fif(raw_fname)
-raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+raw = mne.io.read_raw(raw_fname)
+raw_er = mne.io.read_raw(er_fname)
 
-bids_path = BIDSPath(subject='01', session='01',
-                     task='audiovisual', run='01', root=output_path)
-write_raw_bids(raw, bids_path, events_data=events_data,
-               event_id=event_id, overwrite=True)
+# specify power line frequency as required by BIDS
+raw.info['line_freq'] = 60
+raw_er.info['line_freq'] = 60
+
+bids_path = BIDSPath(
+    subject='01',
+    session='01',
+    task='audiovisual',
+    run='1',
+    root=output_path
+)
+write_raw_bids(
+    raw=raw,
+    bids_path=bids_path,
+    events_data=events_data,
+    event_id=event_id,
+    empty_room=raw_er,
+    overwrite=True
+)
 
 # %%
 # Let's pause and check that the information that we've written out to the
 # sidecar files that describe our data is correct.
 
 # Get the sidecar ``.json`` file
-print(bids_path.copy().update(extension='.json').fpath.read_text(
-    encoding='utf-8-sig'))
+sidecar_json_bids_path = bids_path.copy().update(extension='.json')
+sidecar_json_content = sidecar_json_bids_path.fpath.read_text(
+    encoding='utf-8-sig'
+)
+print(sidecar_json_content)
 
 # %%
 # The sample MEG dataset comes with fine-calibration and crosstalk files that
@@ -126,6 +146,15 @@ raw = read_raw_bids(bids_path=bids_path)
 events, event_id = mne.events_from_annotations(raw)
 epochs = mne.Epochs(raw, events, event_id)
 epochs['Auditory'].average().plot()
+
+# %%
+# We can easily get the :class:`mne_bids.BIDSPath` of the empty-room recording
+# that was associated with the experimental data while writing. The empty-room
+# data can then be loaded with :func:`read_raw_bids`.
+
+er_bids_path = bids_path.find_empty_room(use_sidecar_only=True)
+er_data = read_raw_bids(er_bids_path)
+er_data
 
 # %%
 # It is trivial to retrieve the path of the fine-calibration and crosstalk
