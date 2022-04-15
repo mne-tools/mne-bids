@@ -1208,8 +1208,8 @@ def make_dataset_description(*, path, name, hed_version=None,
 
 @verbose
 def write_raw_bids(
-    raw, bids_path, *,
-    events_data=None, event_id=None,
+    raw, bids_path, events_data=None, event_id=None,
+    *,
     anonymize=None, format='auto', symlink=False,
     empty_room=None, meg_calibration=None, meg_crosstalk=None,
     allow_preload=False,
