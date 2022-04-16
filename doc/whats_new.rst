@@ -42,7 +42,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- You can now write raw data and an associated empty-room recording with just a single call to :func:`mne_bids.write_raw_bids`: the ``empty_room`` parameter now also accepts a :class:`mne.io.Raw` data object. The empty-room session name will be derived from the recording date automatically, , by `Richard Höchenberger`_ (:gh:`xxx`)
+- You can now write raw data and an associated empty-room recording with just a single call to :func:`mne_bids.write_raw_bids`: the ``empty_room`` parameter now also accepts a :class:`mne.io.Raw` data object. The empty-room session name will be derived from the recording date automatically, by `Richard Höchenberger`_ (:gh:`xxx`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -57,7 +57,9 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Fix ACPC in ``surface RAS`` instead of ``scanner RAS`` in :ref:`ieeg-example` and add convenience functions :func:`mne_bids.convert_montage_to_ras` and :func:`mne_bids.convert_montage_to_mri` to help, by `Alex Rockhill`_ :gh:`990`
+- Fix ACPC in ``surface RAS`` instead of ``scanner RAS`` in :ref:`ieeg-example` and add convenience functions :func:`mne_bids.convert_montage_to_ras` and :func:`mne_bids.convert_montage_to_mri` to help, by `Alex Rockhill`_ (:gh:`990`)
+
+- Suppress superfluous warnings about MaxShield in many functions when handling Elekta/Neuromag/MEGIN data, by `Richard Höchenberger`_ (:gh:`1000`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

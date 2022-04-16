@@ -72,7 +72,7 @@ def run():
 
     allow_maxshield = False
     if opt.raw_fname.endswith('.fif'):
-        allow_maxshield = True
+        allow_maxshield = 'yes'
 
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config_path=opt.config,

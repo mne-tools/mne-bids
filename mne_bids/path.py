@@ -111,7 +111,7 @@ def _find_matched_empty_room(bids_path):
             _, ext = _parse_ext(er_fname)
             extra_params = None
             if ext == '.fif':
-                extra_params = dict(allow_maxshield=True)
+                extra_params = dict(allow_maxshield='yes')
 
             er_raw = read_raw_bids(bids_path=er_bids_path,
                                    extra_params=extra_params)

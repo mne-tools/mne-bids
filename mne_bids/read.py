@@ -961,7 +961,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     if extra_params is None:
         extra_params = dict()
     if ext == '.fif':
-        extra_params['allow_maxshield'] = True
+        extra_params['allow_maxshield'] = 'yes'
 
     raw = read_raw_bids(bids_path=meg_bids_path, extra_params=extra_params)
 

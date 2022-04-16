@@ -646,7 +646,7 @@ def test_handle_info_reading(tmp_path):
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_handle_chpi_reading(tmp_path):
     """Test reading of cHPI information."""
-    raw = _read_raw_fif(raw_fname_chpi, allow_maxshield=True)
+    raw = _read_raw_fif(raw_fname_chpi, allow_maxshield='yes')
     root = tmp_path / 'chpi'
     root.mkdir()
     bids_path = BIDSPath(subject='01', session='01',
