@@ -328,7 +328,7 @@
 
     <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span>
     <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
     <span class="n">old_bads</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">old_annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -429,7 +429,7 @@
     <span class="c1"># to events, which will be stored in the *_events.tsv sidecar.</span>
     <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span>
                         <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
@@ -650,7 +650,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-04-14.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-04-16.<br>
 </p>
     </div>
     
