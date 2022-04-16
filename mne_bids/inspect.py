@@ -128,7 +128,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
 
     extra_params = dict()
     if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = True
+        extra_params['allow_maxshield'] = 'yes'
     raw = read_raw_bids(bids_path, extra_params=extra_params, verbose='error')
     old_bads = raw.info['bads'].copy()
     old_annotations = raw.annotations.copy()
@@ -229,7 +229,7 @@ def _save_annotations(*, annotations, bids_path):
     # to events, which will be stored in the *_events.tsv sidecar.
     extra_params = dict()
     if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = True
+        extra_params['allow_maxshield'] = 'yes'
 
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
                         verbose='warning')

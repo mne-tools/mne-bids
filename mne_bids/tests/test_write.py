@@ -741,7 +741,7 @@ def test_chpi(_bids_validate, tmp_path, format):
         raw = _read_raw_fif(fif_raw_fname)
     elif format == 'fif':
         fif_raw_fname = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
-        raw = _read_raw_fif(fif_raw_fname, allow_maxshield=True)
+        raw = _read_raw_fif(fif_raw_fname, allow_maxshield='yes')
     elif format == 'ctf':
         ctf_raw_fname = op.join(data_path, 'CTF', 'testdata_ctf.ds')
         raw = _read_raw_ctf(ctf_raw_fname)
