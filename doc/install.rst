@@ -3,6 +3,10 @@
 Installation
 ============
 
+MNE-BIDS is included in the `official MNE-Python installers <https://mne.tools/stable/install/installers.html>`_.
+
+If you want to install MNE-BIDS manually instead, please continue reading.
+
 Dependencies
 ------------
 
@@ -36,7 +40,7 @@ simply run:
 
 .. code-block:: bash
 
-   pip install --user -U mne-bids[full]
+   pip install -U mne-bids[full]
 
 This ``pip`` command will also work if you want to upgrade if a newer version
 of ``mne-bids`` is available.
@@ -46,13 +50,13 @@ you may also install a basic version of ``mne-bids`` via
 
 .. code-block:: bash
 
-   pip install --user -U mne-bids
+   pip install --upgrade mne-bids
 
 If you want to install a snapshot of the current development version, run:
 
 .. code-block:: bash
 
-   pip install --user -U https://api.github.com/repos/mne-tools/mne-bids/zipball/main
+   pip install --upgrade https://api.github.com/repos/mne-tools/mne-bids/zipball/main
 
 To check if everything worked fine, the following command should
 print a version number and not give any error messages:
@@ -62,11 +66,9 @@ print a version number and not give any error messages:
    python -c 'import mne_bids; print(mne_bids.__version__)'
 
 MNE-BIDS works best with the latest stable release of MNE-Python (the ``mne`` package).
-To ensure MNE-Python is up-to-date, run:
+To ensure MNE-Python is up-to-date, follow the
+`MNE-Python installation instructions <https://mne.tools/stable/install/mne_python.html#installing-mne-python>`_.
 
-.. code-block:: bash
-
-   pip install --user -U mne
 
 Installation via conda
 ----------------------
