@@ -40,7 +40,7 @@ simply run:
 
 .. code-block:: bash
 
-   pip install -U mne-bids[full]
+   pip install --upgrade mne-bids[full]
 
 This ``pip`` command will also work if you want to upgrade if a newer version
 of ``mne-bids`` is available.
