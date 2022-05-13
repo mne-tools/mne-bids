@@ -52,7 +52,7 @@ eeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                      '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden',
-                     '.cnt': 'Neuroscan', '.CNT': 'Neuroscan'
+                     '.cnt': 'Neuroscan', '.CNT': 'Neuroscan',
                      '.bin': 'EGI', '.mff': 'EGI'}
 
 ieeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
