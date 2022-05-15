@@ -12,6 +12,7 @@ import mne
 
 from mne.utils import logger, verbose
 from mne.fixes import _compare_version
+from mne.viz import use_browser_backend
 
 if _compare_version(mne.__version__, '<', '1.0.dev0'):  # pragma: no cover
     from mne.preprocessing import annotate_flat
@@ -155,10 +156,14 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
         flat_chans = []
 
     show_options = bids_path.datatype == 'meg'
-    fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-                   highpass=l_freq, lowpass=h_freq,
-                   show_options=show_options,
-                   block=False, show=False, verbose='warning')
+
+    with use_browser_backend('matplotlib'):
+        fig = raw.plot(
+            title=f'{bids_path.root.name}: {bids_path.basename}',
+            highpass=l_freq, lowpass=h_freq,
+            show_options=show_options,
+            block=False, show=False, verbose='warning'
+        )
 
     # Add our own event handlers so that when the MNE Raw Browser is being
     # closed, our dialog box will pop up, asking whether to save changes.
