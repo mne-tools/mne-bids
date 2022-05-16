@@ -102,7 +102,7 @@ def _get_brainvision_paths(vhdr_path):
 
     # Try to find data file .eeg/.dat
     eeg_file_match = re.search(r'DataFile=(.*\.(eeg|dat))', ' '.join(lines))
-    
+
     if not eeg_file_match:
         raise ValueError('Could not find a .eeg or .dat file link in'
                          f' {vhdr_path}')
@@ -267,10 +267,11 @@ def _anonymize_brainvision(vhdr_file, date):
 def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     """Copy a BrainVision file triplet to a new location and repair links.
 
-    The BrainVision file format consists of three files: .vhdr, .eeg/.dat, and .vmrk
-    The .eeg/.dat and .vmrk files associated with the .vhdr file will be given names
-    as in `vhdr_dest` with adjusted extensions. Internal file pointers will be
-    fixed.
+    The BrainVision file format consists of three files:
+    .vhdr, .eeg/.dat, and .vmrk
+    The .eeg/.dat and .vmrk files associated with the .vhdr file will be
+    given names as in `vhdr_dest` with adjusted extensions. Internal file
+    pointers will be fixed.
 
     Parameters
     ----------
@@ -327,7 +328,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     # For that, we need to replace an old "basename" with a new one
     # assuming that all .eeg/.dat, .vhdr, .vmrk share one basename
     __, basename_src = op.split(fname_src)
-    assert op.split(eeg_file_path)[-1] in [basename_src + '.eeg', basename_src + '.dat']
+    assert op.split(eeg_file_path)[-1] in [
+        basename_src + '.eeg', basename_src + '.dat']
     assert basename_src + '.vmrk' == op.split(vmrk_file_path)[-1]
     __, basename_dest = op.split(fname_dest)
     search_lines = ['DataFile=' + basename_src + '.eeg',
