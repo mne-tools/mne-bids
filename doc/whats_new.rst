@@ -35,6 +35,7 @@ The following authors had contributed before. Thank you for sticking around! �
 * `Richard Höchenberger`_
 * `Robert Luke`_
 * `Stefan Appelhoff`_
+* `Dominik Welke`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,6 +63,8 @@ Detailed list of changes
 - Suppress superfluous warnings about MaxShield in many functions when handling Elekta/Neuromag/MEGIN data, by `Richard Höchenberger`_ (:gh:`1000`)
 
 - The MNE-BIDS Inspector didn't work if ``mne-qt-browser`` was installed and used as the default plotting backend, as the Inspector currently only supports the Matplotlib backend, by `Richard Höchenberger`_ (:gh:`1007`)
+
+- :func:`mne.copyfiles.copyfile_brainvision` can now deal with ``.dat`` file extension, by `Dominik Welke`_ (:gh:`1008`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
