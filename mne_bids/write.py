@@ -31,7 +31,7 @@ from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
-                       deprecated, ProgressBar)
+                       ProgressBar)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
