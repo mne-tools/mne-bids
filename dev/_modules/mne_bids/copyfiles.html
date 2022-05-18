@@ -273,7 +273,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the .eeg and .vmrk file paths from a BrainVision header file.</span>
+    <span class="sd">&quot;&quot;&quot;Get the .eeg/.dat and .vmrk file paths from a BrainVision header file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -283,7 +283,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    paths : tuple</span>
-<span class="sd">        Paths to the .eeg file at index 0 and the .vmrk file at index 1 of</span>
+<span class="sd">        Paths to the .eeg/.dat file at index 0 and the .vmrk file at index 1 of</span>
 <span class="sd">        the returned tuple.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -300,10 +300,11 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
-    <span class="c1"># Try to find data file .eeg</span>
-    <span class="n">eeg_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;DataFile=(.*\.eeg)&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="c1"># Try to find data file .eeg/.dat</span>
+    <span class="n">eeg_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;DataFile=(.*\.(eeg|dat))&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">eeg_file_match</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find a .eeg file link in&#39;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find a .eeg or .dat file link in&#39;</span>
                          <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">vhdr_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">eeg_file</span> <span class="o">=</span> <span class="n">eeg_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -354,7 +355,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
     <span class="c1"># list of file types to rename</span>
-    <span class="n">file_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.acq&#39;</span><span class="p">,</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.hc&#39;</span><span class="p">,</span> <span class="s1">&#39;.hist&#39;</span><span class="p">,</span> <span class="s1">&#39;.infods&#39;</span><span class="p">,</span> <span class="s1">&#39;.bak&#39;</span><span class="p">,</span>
+    <span class="n">file_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.acq&#39;</span><span class="p">,</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="s1">&#39;.hc&#39;</span><span class="p">,</span> <span class="s1">&#39;.hist&#39;</span><span class="p">,</span> <span class="s1">&#39;.infods&#39;</span><span class="p">,</span> <span class="s1">&#39;.bak&#39;</span><span class="p">,</span>
                   <span class="s1">&#39;.meg4&#39;</span><span class="p">,</span> <span class="s1">&#39;.newds&#39;</span><span class="p">,</span> <span class="s1">&#39;.res4&#39;</span><span class="p">)</span>
     <span class="c1"># Rename files in dest with the name of the dest directory</span>
     <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">file_types</span><span class="p">)]</span>
@@ -466,10 +467,11 @@
 <span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
 
-<span class="sd">    The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk</span>
-<span class="sd">    The .eeg and .vmrk files associated with the .vhdr file will be given names</span>
-<span class="sd">    as in `vhdr_dest` with adjusted extensions. Internal file pointers will be</span>
-<span class="sd">    fixed.</span>
+<span class="sd">    The BrainVision file format consists of three files:</span>
+<span class="sd">    .vhdr, .eeg/.dat, and .vmrk</span>
+<span class="sd">    The .eeg/.dat and .vmrk files associated with the .vhdr file will be</span>
+<span class="sd">    given names as in `vhdr_dest` with adjusted extensions. Internal file</span>
+<span class="sd">    pointers will be fixed.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -519,17 +521,19 @@
     <span class="c1"># extract encoding from brainvision header file, or default to utf-8</span>
     <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
 
-    <span class="c1"># Copy data .eeg ... no links to repair</span>
+    <span class="c1"># Copy data .eeg/.dat ... no links to repair</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">)</span>
 
     <span class="c1"># Write new header and marker files, fixing the file pointer links</span>
     <span class="c1"># For that, we need to replace an old &quot;basename&quot; with a new one</span>
-    <span class="c1"># assuming that all .eeg, .vhdr, .vmrk share one basename</span>
+    <span class="c1"># assuming that all .eeg/.dat, .vhdr, .vmrk share one basename</span>
     <span class="n">__</span><span class="p">,</span> <span class="n">basename_src</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_src</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.dat&#39;</span><span class="p">]</span>
     <span class="k">assert</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.vmrk&#39;</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">__</span><span class="p">,</span> <span class="n">basename_dest</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span><span class="p">)</span>
     <span class="n">search_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DataFile=&#39;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;DataFile=&#39;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.dat&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;MarkerFile=&#39;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.vmrk&#39;</span><span class="p">]</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
@@ -798,7 +802,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-05-15.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-05-18.<br>
 </p>
     </div>
     

@@ -231,7 +231,7 @@
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">Bunch</span><span class="p">,</span>
                        <span class="n">_validate_type</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
-                       <span class="n">deprecated</span><span class="p">,</span> <span class="n">ProgressBar</span><span class="p">)</span>
+                       <span class="n">ProgressBar</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">mne.preprocessing</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
@@ -2366,49 +2366,6 @@
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
-<span class="nd">@deprecated</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s1">&#39;mark_bad_channels is deprecated in favor of mark_channels &#39;</span>
-                  <span class="s1">&#39;and will be removed in v0.10.&#39;</span><span class="p">)</span>
-<span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">mark_bad_channels</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span>
-                      <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Update which channels are marked as &quot;bad&quot; in an existing BIDS dataset.</span>
-
-<span class="sd">    This modifies entries in the ``channels.tsv`` file in a BIDS dataset.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ch_names : str | list of str</span>
-<span class="sd">        The names of the channel(s) to mark as bad. Pass an empty list in</span>
-<span class="sd">        combination with ``overwrite=True`` to mark all channels as good.</span>
-<span class="sd">    descriptions : None | str | list of str</span>
-<span class="sd">        Descriptions of the reasons that lead to the exclusion of the</span>
-<span class="sd">        channel(s). If a list, it must match the length of ``ch_names``.</span>
-<span class="sd">        If ``None``, no descriptions are added.</span>
-<span class="sd">    bids_path : BIDSPath</span>
-<span class="sd">        The recording to update. The :class:`mne_bids.BIDSPath` instance passed</span>
-<span class="sd">        here **must** have the ``.root`` attribute set. The ``.datatype``</span>
-<span class="sd">        attribute **may** be set. If ``.datatype`` is not set and only one data</span>
-<span class="sd">        type (e.g., only EEG or MEG data) is present in the dataset, it will be</span>
-<span class="sd">        selected automatically.</span>
-<span class="sd">    overwrite : bool</span>
-<span class="sd">        If ``False``, only update the information of the channels passed via</span>
-<span class="sd">        ``ch_names``, and leave the rest untouched. If ``True``, update the</span>
-<span class="sd">        information of **all** channels: mark the channels passed via</span>
-<span class="sd">        ``ch_names`` as bad, and all remaining channels as good, also</span>
-<span class="sd">        discarding their descriptions.</span>
-<span class="sd">    %(verbose)s</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># if overwrite, first mark all channels as good and overwrite</span>
-    <span class="c1"># their descriptions</span>
-    <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="p">[],</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;good&#39;</span><span class="p">,</span>
-                      <span class="n">descriptions</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-
-    <span class="c1"># now mark the channels that we want as bad</span>
-    <span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span>
-                  <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-
-
 <div class="viewcode-block" id="mark_channels"><a class="viewcode-back" href="../../generated/mne_bids.mark_channels.html#mne_bids.mark_channels">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -3125,7 +3082,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-05-15.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-05-18.<br>
 </p>
     </div>
     
