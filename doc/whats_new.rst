@@ -43,14 +43,14 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- You can now write raw data and an associated empty-room recording with just a single call to :func:`mne_bids.write_raw_bids`: the ``empty_room`` parameter now also accepts an :class:`mne.io.Raw` data object. The empty-room session name will be derived from the recording date automatically, by `Richard Höchenberger`_ (:gh:`xxx`)
+- You can now write raw data and an associated empty-room recording with just a single call to :func:`mne_bids.write_raw_bids`: the ``empty_room`` parameter now also accepts an :class:`mne.io.Raw` data object. The empty-room session name will be derived from the recording date automatically, by `Richard Höchenberger`_ (:gh:`998`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - :func:`mne_bids.make_dataset_description` now accepts keyword arguments only, and can now also write the following metadata: ``HEDVersion``, ``EthicsApprovals``, ``GeneratedBy``, and ``SourceDatasets``, by `Stefan Appelhoff`_ (:gh:`406`)
 
-- The deprecated function ```mne_bids.mark_bad_channels`` has been removed in favor of :func:`mne_bids.mark_channels`, by `Richard Höchenberger`_ (:gh:`xxx`)
+- The deprecated function ```mne_bids.mark_bad_channels`` has been removed in favor of :func:`mne_bids.mark_channels`, by `Richard Höchenberger`_ (:gh:`1009`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
