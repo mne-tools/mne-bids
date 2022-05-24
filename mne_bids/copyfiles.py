@@ -313,8 +313,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     fname_src, ext_src = _parse_ext(vhdr_src)
     fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same extension, '
-                         ' but got "{ext_src}" and "{ext_dest}"')
+        raise ValueError(f'Need to move data with same extension, '
+                         f' but got "{ext_src}" and "{ext_dest}"')
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
@@ -322,8 +322,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     try:
         _ = read_raw_brainvision(vhdr_src, preload=False, verbose=None)
     except BaseException:
-        raise ImportError(f'The specified EEG data cannot be loaded by MNE '
-                          f'- it may be corrupted')
+        raise ImportError('The specified EEG data cannot be loaded by MNE '
+                          '- it may be corrupted')
 
     # extract encoding from brainvision header file, or default to utf-8
     enc = _get_brainvision_encoding(vhdr_src)
