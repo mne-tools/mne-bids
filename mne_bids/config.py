@@ -72,6 +72,7 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
           '.EEG': io.read_raw_nihon,
           '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt,
+          '.mff': io.read_raw_egi,
           '.snirf': io.read_raw_snirf}
 
 
@@ -97,6 +98,7 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
                           '.set',  # EEGLAB, potentially accompanied by .fdt
+                          '.mff',  # EGI format
                           ]
 
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
@@ -104,6 +106,7 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.set',  # EEGLAB, potentially accompanied by .fdt
                            '.mef',  # MEF: Multiscale Electrophysiology File
                            '.nwb',  # Neurodata without borders
+                           '.mff',  # EGI format
                            ]
 
 allowed_extensions_nirs = ['.snirf',  # SNIRF
