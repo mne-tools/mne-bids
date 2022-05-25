@@ -73,7 +73,7 @@ def _get_brainvision_encoding(vhdr_file):
 
 
 def _get_brainvision_paths(vhdr_path):
-    """Get the .eeg and .vmrk file paths from a BrainVision header file.
+    """Get the .eeg/.dat and .vmrk file paths from a BrainVision header file.
 
     Parameters
     ----------
@@ -83,7 +83,7 @@ def _get_brainvision_paths(vhdr_path):
     Returns
     -------
     paths : tuple
-        Paths to the .eeg file at index 0 and the .vmrk file at index 1 of
+        Paths to the .eeg/.dat file at index 0 and the .vmrk file at index 1 of
         the returned tuple.
 
     """
@@ -100,10 +100,11 @@ def _get_brainvision_paths(vhdr_path):
     with open(vhdr_path, 'r', encoding=enc) as f:
         lines = f.readlines()
 
-    # Try to find data file .eeg
-    eeg_file_match = re.search(r'DataFile=(.*\.eeg)', ' '.join(lines))
+    # Try to find data file .eeg/.dat
+    eeg_file_match = re.search(r'DataFile=(.*\.(eeg|dat))', ' '.join(lines))
+
     if not eeg_file_match:
-        raise ValueError('Could not find a .eeg file link in'
+        raise ValueError('Could not find a .eeg or .dat file link in'
                          f' {vhdr_path}')
     else:
         eeg_file = eeg_file_match.groups()[0]
@@ -154,7 +155,7 @@ def copyfile_ctf(src, dest):
     """
     _copytree(src, dest)
     # list of file types to rename
-    file_types = ('.acq', '.eeg', '.hc', '.hist', '.infods', '.bak',
+    file_types = ('.acq', '.eeg', '.dat', '.hc', '.hist', '.infods', '.bak',
                   '.meg4', '.newds', '.res4')
     # Rename files in dest with the name of the dest directory
     fnames = [f for f in os.listdir(dest) if f.endswith(file_types)]
@@ -266,10 +267,11 @@ def _anonymize_brainvision(vhdr_file, date):
 def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     """Copy a BrainVision file triplet to a new location and repair links.
 
-    The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
-    The .eeg and .vmrk files associated with the .vhdr file will be given names
-    as in `vhdr_dest` with adjusted extensions. Internal file pointers will be
-    fixed.
+    The BrainVision file format consists of three files:
+    .vhdr, .eeg/.dat, and .vmrk
+    The .eeg/.dat and .vmrk files associated with the .vhdr file will be
+    given names as in `vhdr_dest` with adjusted extensions. Internal file
+    pointers will be fixed.
 
     Parameters
     ----------
@@ -319,17 +321,19 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     # extract encoding from brainvision header file, or default to utf-8
     enc = _get_brainvision_encoding(vhdr_src)
 
-    # Copy data .eeg ... no links to repair
+    # Copy data .eeg/.dat ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
 
     # Write new header and marker files, fixing the file pointer links
     # For that, we need to replace an old "basename" with a new one
-    # assuming that all .eeg, .vhdr, .vmrk share one basename
+    # assuming that all .eeg/.dat, .vhdr, .vmrk share one basename
     __, basename_src = op.split(fname_src)
-    assert basename_src + '.eeg' == op.split(eeg_file_path)[-1]
+    assert op.split(eeg_file_path)[-1] in [
+        basename_src + '.eeg', basename_src + '.dat']
     assert basename_src + '.vmrk' == op.split(vmrk_file_path)[-1]
     __, basename_dest = op.split(fname_dest)
     search_lines = ['DataFile=' + basename_src + '.eeg',
+                    'DataFile=' + basename_src + '.dat',
                     'MarkerFile=' + basename_src + '.vmrk']
 
     with open(vhdr_src, 'r', encoding=enc) as fin:

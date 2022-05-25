@@ -31,7 +31,7 @@ from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
-                       deprecated, ProgressBar)
+                       ProgressBar)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -2164,49 +2164,6 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
     nib.save(image_nii, bids_path.fpath)
 
     return bids_path
-
-
-@deprecated(extra='mark_bad_channels is deprecated in favor of mark_channels '
-                  'and will be removed in v0.10.')
-@verbose
-def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
-                      overwrite=False, verbose=None):
-    """Update which channels are marked as "bad" in an existing BIDS dataset.
-
-    This modifies entries in the ``channels.tsv`` file in a BIDS dataset.
-
-    Parameters
-    ----------
-    ch_names : str | list of str
-        The names of the channel(s) to mark as bad. Pass an empty list in
-        combination with ``overwrite=True`` to mark all channels as good.
-    descriptions : None | str | list of str
-        Descriptions of the reasons that lead to the exclusion of the
-        channel(s). If a list, it must match the length of ``ch_names``.
-        If ``None``, no descriptions are added.
-    bids_path : BIDSPath
-        The recording to update. The :class:`mne_bids.BIDSPath` instance passed
-        here **must** have the ``.root`` attribute set. The ``.datatype``
-        attribute **may** be set. If ``.datatype`` is not set and only one data
-        type (e.g., only EEG or MEG data) is present in the dataset, it will be
-        selected automatically.
-    overwrite : bool
-        If ``False``, only update the information of the channels passed via
-        ``ch_names``, and leave the rest untouched. If ``True``, update the
-        information of **all** channels: mark the channels passed via
-        ``ch_names`` as bad, and all remaining channels as good, also
-        discarding their descriptions.
-    %(verbose)s
-    """
-    # if overwrite, first mark all channels as good and overwrite
-    # their descriptions
-    if overwrite:
-        mark_channels(bids_path=bids_path, ch_names=[], status='good',
-                      descriptions='n/a', verbose=verbose)
-
-    # now mark the channels that we want as bad
-    mark_channels(bids_path=bids_path, ch_names=ch_names, status='bad',
-                  descriptions=descriptions, verbose=verbose)
 
 
 @verbose
