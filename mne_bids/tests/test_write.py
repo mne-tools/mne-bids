@@ -107,6 +107,7 @@ _read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
 _read_raw_nihon = _wrap_read_raw(mne.io.read_raw_nihon)
 _read_raw_cnt = _wrap_read_raw(mne.io.read_raw_cnt)
 _read_raw_snirf = _wrap_read_raw(mne.io.read_raw_snirf)
+_read_raw_egi = _wrap_read_raw(mne.io.read_raw_egi)
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
@@ -114,6 +115,7 @@ test_eegieeg_data = [
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'scan41_short.cnt', _read_raw_cnt),
+	('EGI', 'test_egi.mff', _read_raw_egi),
 ]
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
