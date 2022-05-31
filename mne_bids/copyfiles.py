@@ -318,13 +318,6 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
-    # assert that the EEG data is not corrupted
-    try:
-        _ = read_raw_brainvision(vhdr_src, preload=False, verbose=None)
-    except BaseException:
-        raise ImportError('The specified EEG data cannot be loaded by MNE '
-                          '- it may be corrupted')
-
     # extract encoding from brainvision header file, or default to utf-8
     enc = _get_brainvision_encoding(vhdr_src)
 
