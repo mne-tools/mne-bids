@@ -521,6 +521,14 @@
     <span class="c1"># extract encoding from brainvision header file, or default to utf-8</span>
     <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
 
+    <span class="c1"># raise warning if binary file has .dat extension</span>
+    <span class="k">if</span> <span class="s1">&#39;.dat&#39;</span> <span class="ow">in</span> <span class="n">eeg_file_path</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The file extension of your binary EEG data file is .dat, while &quot;</span>
+             <span class="s2">&quot;the expected extension for raw data is .eeg. &quot;</span>
+             <span class="s2">&quot;This might imply it&#39;s preprocessed or processed data: &quot;</span>
+             <span class="s2">&quot;We copied the files and changed the extension to .eeg, &quot;</span>
+             <span class="s2">&quot;but please ensure that this is actually BIDS compatible data!&quot;</span><span class="p">)</span>
+
     <span class="c1"># Copy data .eeg/.dat ... no links to repair</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">)</span>
 
@@ -802,7 +810,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-05-18.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-01.<br>
 </p>
     </div>
     
