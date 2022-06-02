@@ -975,8 +975,8 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     overwrite : bool
         Whether or not to overwrite existing files.
     """
-    if not check_version('pybv', '0.6'):  # pragma: no cover
-        raise ImportError('pybv >=0.6 is required for converting '
+    if not check_version('pybv', '0.7.2'):  # pragma: no cover
+        raise ImportError('pybv >=0.7.2 is required for converting '
                           'file to BrainVision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
