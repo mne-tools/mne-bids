@@ -321,6 +321,14 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     # extract encoding from brainvision header file, or default to utf-8
     enc = _get_brainvision_encoding(vhdr_src)
 
+    # raise warning if binary file has .dat extension
+    if '.dat' in eeg_file_path:
+        warn("The file extension of your binary EEG data file is .dat, while "
+             "the expected extension for raw data is .eeg. "
+             "This might imply it's preprocessed or processed data: "
+             "We copied the files and changed the extension to .eeg, "
+             "but please ensure that this is actually BIDS compatible data!")
+
     # Copy data .eeg/.dat ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
 
