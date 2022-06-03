@@ -98,7 +98,6 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
                           '.set',  # EEGLAB, potentially accompanied by .fdt
-                          '.bin',  # EGI format
                           ]
 
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
