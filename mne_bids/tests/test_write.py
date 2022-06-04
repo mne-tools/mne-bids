@@ -516,13 +516,6 @@ def test_fif(_bids_validate, tmp_path):
     events = mne.find_events(raw2)
     event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
                 'visual/right': 4, 'smiley': 5, 'button': 32}
-    # XXX: Need to remove "Status" channel until pybv supports
-    # channels that are non-Volt
-    # XXX: change now?
-    idxs = mne.pick_types(raw.info, meg=False, stim=True)
-    stim_ch_names = np.array(raw.ch_names)[idxs]
-    raw2.drop_channels(stim_ch_names)
-    raw.drop_channels(stim_ch_names)
 
     epochs = mne.Epochs(raw2, events, event_id=event_id, tmin=-0.2, tmax=0.5,
                         preload=True)
