@@ -1637,7 +1637,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 )
 def test_snirf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for SNIRF data."""
-
     raw_fname = op.join(testing.data_path(), 'SNIRF', 'MNE-NIRS', '20220217',
                         '20220217_nirx_15_3_recording.snirf')
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='nirs')
@@ -2080,6 +2079,7 @@ def test_write_anat(_bids_validate, tmp_path):
 
 
 def test_write_raw_pathlike(tmp_path):
+    """Ensure writing pathlib.Path works."""
     data_path = Path(testing.data_path())
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -2102,6 +2102,7 @@ def test_write_raw_pathlike(tmp_path):
 
 
 def test_write_raw_no_dig(tmp_path):
+    """Test writing without dig."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -3327,7 +3328,7 @@ def test_write_associated_emptyroom(
 
 
 def test_preload(_bids_validate, tmp_path):
-    """Test writing custom preloaded raw objects"""
+    """Test writing custom preloaded raw objects."""
     bids_root = tmp_path / 'bids'
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq, n_points = 1024., int(1e6)
