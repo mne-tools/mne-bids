@@ -48,7 +48,8 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
+from mne_bids.config import (REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS,
+                             PYBV_VERSION)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -456,7 +457,7 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
         assert eeg_json['PowerLineFrequency'] == 'n/a'
 
 
-@requires_version('pybv', '0.7.2')
+@requires_version('pybv', PYBV_VERSION)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_fif(_bids_validate, tmp_path):
@@ -1137,7 +1138,7 @@ def test_vhdr(_bids_validate, tmp_path):
     assert op.exists(events_tsv_fname)
 
     # test anonymize and convert
-    if check_version('pybv', '0.7.2'):
+    if check_version('pybv', PYBV_VERSION):
         raw = _read_raw_brainvision(raw_fname)
         output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
         _bids_validate(output_path)
@@ -1405,7 +1406,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     assert len(list(data.values())[0]) == 2
 
     # check that scans list is properly converted to brainvision
-    if check_version('pybv', '0.7.2') or dir_name == 'EDF':
+    if check_version('pybv', PYBV_VERSION) or dir_name == 'EDF':
         if raw.info['meas_date'] is not None:
             daysback_min, daysback_max = _get_anonymization_daysback(raw)
             daysback = (daysback_min + daysback_max) // 2
@@ -1598,7 +1599,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         write_raw_bids(**kwargs)
 
     # test anonymize and convert
-    if check_version('pybv', '0.7.2') or dir_name == 'EDF':
+    if check_version('pybv', PYBV_VERSION) or dir_name == 'EDF':
         raw = reader(raw_fname)
         bids_path.update(root=bids_root, datatype='eeg')
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
@@ -1791,7 +1792,7 @@ def test_set(_bids_validate, tmp_path):
     _bids_validate(bids_root)
 
     # test anonymize and convert
-    if check_version('pybv', '0.7.2'):
+    if check_version('pybv', PYBV_VERSION):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
             output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
@@ -2956,7 +2957,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 
 
 @requires_version('mne', '0.24')
-@requires_version('pybv', '0.7.2')
+@requires_version('pybv', PYBV_VERSION)
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
@@ -3032,7 +3033,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 
 
 @requires_version('mne', '0.24')
-@requires_version('pybv', '0.7.2')
+@requires_version('pybv', PYBV_VERSION)
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
