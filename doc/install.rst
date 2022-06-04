@@ -20,7 +20,7 @@ Required:
 Optional:
 
 * ``nibabel`` (>=2.5, for processing MRI data)
-* ``pybv`` (>=0.7.2, for writing BrainVision data)
+* ``pybv`` (>=0.7.3, for writing BrainVision data)
 * ``pymatreader`` (>=0.0.29 , for operations with EEGLAB data)
 * ``matplotlib`` (>=3.1.0, for using the interactive data inspector)
 * ``pandas`` (>=0.24.0, for generating event statistics)
