@@ -255,7 +255,7 @@
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
                              <span class="n">BIDS_VERSION</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">,</span> <span class="n">_map_options</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span>
                              <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">,</span> <span class="n">CONVERT_FORMATS</span><span class="p">,</span>
-                             <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">,</span>
+                             <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">,</span> <span class="n">PYBV_VERSION</span><span class="p">,</span>
                              <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">)</span>
 
 
@@ -1175,9 +1175,9 @@
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether or not to overwrite existing files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;pybv&#39;</span><span class="p">,</span> <span class="s1">&#39;0.6&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;pybv &gt;=0.6 is required for converting &#39;</span>
-                          <span class="s1">&#39;file to BrainVision format&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;pybv&#39;</span><span class="p">,</span> <span class="n">PYBV_VERSION</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pybv &gt;= </span><span class="si">{</span><span class="n">PYBV_VERSION</span><span class="si">}</span><span class="s1"> is required for converting&#39;</span>
+                          <span class="s1">&#39; file to BrainVision format&#39;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">pybv</span> <span class="kn">import</span> <span class="n">write_brainvision</span>
     <span class="c1"># Subtract raw.first_samp because brainvision marks events starting from</span>
     <span class="c1"># the first available data point and ignores the raw.first_samp</span>
@@ -3082,7 +3082,7 @@
     
     <div class="footer-item">
       <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-01.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-04.<br>
 </p>
     </div>
     
