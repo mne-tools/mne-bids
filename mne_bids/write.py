@@ -55,7 +55,7 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
-                             ANONYMIZED_JSON_KEY_WHITELIST,
+                             ANONYMIZED_JSON_KEY_WHITELIST, PYBV_VERSION,
                              BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
 
 
@@ -975,9 +975,9 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     overwrite : bool
         Whether or not to overwrite existing files.
     """
-    if not check_version('pybv', '0.6'):  # pragma: no cover
-        raise ImportError('pybv >=0.6 is required for converting '
-                          'file to BrainVision format')
+    if not check_version('pybv', PYBV_VERSION):  # pragma: no cover
+        raise ImportError(f'pybv >= {PYBV_VERSION} is required for converting'
+                          ' file to BrainVision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
     # the first available data point and ignores the raw.first_samp

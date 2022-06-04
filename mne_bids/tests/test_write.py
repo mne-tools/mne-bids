@@ -48,7 +48,8 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS
+from mne_bids.config import (REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS,
+                             PYBV_VERSION)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -456,7 +457,7 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
         assert eeg_json['PowerLineFrequency'] == 'n/a'
 
 
-@requires_version('pybv', '0.6')
+@requires_version('pybv', PYBV_VERSION)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_fif(_bids_validate, tmp_path):
@@ -515,12 +516,6 @@ def test_fif(_bids_validate, tmp_path):
     events = mne.find_events(raw2)
     event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
                 'visual/right': 4, 'smiley': 5, 'button': 32}
-    # XXX: Need to remove "Status" channel until pybv supports
-    # channels that are non-Volt
-    idxs = mne.pick_types(raw.info, meg=False, stim=True)
-    stim_ch_names = np.array(raw.ch_names)[idxs]
-    raw2.drop_channels(stim_ch_names)
-    raw.drop_channels(stim_ch_names)
 
     epochs = mne.Epochs(raw2, events, event_id=event_id, tmin=-0.2, tmax=0.5,
                         preload=True)
@@ -1136,7 +1131,7 @@ def test_vhdr(_bids_validate, tmp_path):
     assert op.exists(events_tsv_fname)
 
     # test anonymize and convert
-    if check_version('pybv', '0.6'):
+    if check_version('pybv', PYBV_VERSION):
         raw = _read_raw_brainvision(raw_fname)
         output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
         _bids_validate(output_path)
@@ -1404,7 +1399,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     assert len(list(data.values())[0]) == 2
 
     # check that scans list is properly converted to brainvision
-    if check_version('pybv', '0.6') or dir_name == 'EDF':
+    if check_version('pybv', PYBV_VERSION) or dir_name == 'EDF':
         if raw.info['meas_date'] is not None:
             daysback_min, daysback_max = _get_anonymization_daysback(raw)
             daysback = (daysback_min + daysback_max) // 2
@@ -1597,7 +1592,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         write_raw_bids(**kwargs)
 
     # test anonymize and convert
-    if check_version('pybv', '0.6') or dir_name == 'EDF':
+    if check_version('pybv', PYBV_VERSION) or dir_name == 'EDF':
         raw = reader(raw_fname)
         bids_path.update(root=bids_root, datatype='eeg')
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
@@ -1635,7 +1630,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 )
 def test_snirf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for SNIRF data."""
-
     raw_fname = op.join(testing.data_path(), 'SNIRF', 'MNE-NIRS', '20220217',
                         '20220217_nirx_15_3_recording.snirf')
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='nirs')
@@ -1790,7 +1784,7 @@ def test_set(_bids_validate, tmp_path):
     _bids_validate(bids_root)
 
     # test anonymize and convert
-    if check_version('pybv', '0.6'):
+    if check_version('pybv', PYBV_VERSION):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
             output_path = _test_anonymize(tmp_path / 'tmp', raw, bids_path)
@@ -2078,6 +2072,7 @@ def test_write_anat(_bids_validate, tmp_path):
 
 
 def test_write_raw_pathlike(tmp_path):
+    """Ensure writing pathlib.Path works."""
     data_path = Path(testing.data_path())
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -2100,6 +2095,7 @@ def test_write_raw_pathlike(tmp_path):
 
 
 def test_write_raw_no_dig(tmp_path):
+    """Test writing without dig."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -2955,7 +2951,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 
 
 @requires_version('mne', '0.24')
-@requires_version('pybv', '0.6')
+@requires_version('pybv', PYBV_VERSION)
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
@@ -3031,7 +3027,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 
 
 @requires_version('mne', '0.24')
-@requires_version('pybv', '0.6')
+@requires_version('pybv', PYBV_VERSION)
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
@@ -3325,7 +3321,7 @@ def test_write_associated_emptyroom(
 
 
 def test_preload(_bids_validate, tmp_path):
-    """Test writing custom preloaded raw objects"""
+    """Test writing custom preloaded raw objects."""
     bids_root = tmp_path / 'bids'
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq, n_points = 1024., int(1e6)

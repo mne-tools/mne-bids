@@ -10,8 +10,7 @@
 In this example we will use MNE-BIDS to organize the MNE sample data according
 to the BIDS standard.
 In a second step we will read the organized dataset using MNE-BIDS.
-
-"""
+"""  # noqa: D400 D205
 
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
