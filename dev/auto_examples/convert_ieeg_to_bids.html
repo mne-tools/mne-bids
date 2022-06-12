@@ -1,18 +1,22 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.11.dev0 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -27,13 +31,14 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
@@ -45,33 +50,41 @@
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">MNE-BIDS</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-BIDS 0.11.dev0 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -165,13 +178,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -277,19 +290,20 @@
 
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -329,23 +343,21 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
@@ -353,7 +365,7 @@
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
 <section class="sphx-glr-example-title" id="convert-ieeg-data-to-bids-format">
-<span id="ieeg-example"></span><span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this headline">#</a></h1>
+<span id="ieeg-example"></span><span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this heading">#</a></h1>
 <p>In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:</p>
 <ol class="arabic simple">
@@ -399,7 +411,7 @@ refer to the <a class="reference external" href="https://bids-specification.read
 </pre></div>
 </div>
 <section id="step-1-download-the-data">
-<h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this headline">#</a></h2>
+<h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this heading">#</a></h2>
 <p>First, we need some data to work with. We will use the
 data downloaded via MNE-Python’s <code class="docutils literal notranslate"><span class="pre">datasets</span></code> API:
 <a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="(in MNE v1.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.misc.data_path()</span></code></a></p>
@@ -444,7 +456,7 @@ is the best option.</p>
 </div>
 </section>
 <section id="bids-vs-mne-python-coordinate-systems">
-<h2>BIDS vs MNE-Python Coordinate Systems<a class="headerlink" href="#bids-vs-mne-python-coordinate-systems" title="Permalink to this headline">#</a></h2>
+<h2>BIDS vs MNE-Python Coordinate Systems<a class="headerlink" href="#bids-vs-mne-python-coordinate-systems" title="Permalink to this heading">#</a></h2>
 <p>BIDS has many acceptable coordinate systems for iEEG, which can be viewed in
 <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html">appendix VIII</a> of the BIDS specification.
 However, MNE-BIDS depends on MNE-Python and MNE-Python does not support all
@@ -462,7 +474,7 @@ an <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_b
 the montage channel locations set to the coordinate frame ‘unknown’.</p>
 </section>
 <section id="step-2-formatting-as-bids">
-<h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Permalink to this headline">#</a></h2>
+<h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Permalink to this heading">#</a></h2>
 <p>Now, let us format the <em class="xref py py-obj">Raw</em> object into BIDS.</p>
 <p>With this step, we have everything to start a new BIDS directory using
 our data. To do that, we can use <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>
@@ -876,7 +888,7 @@ command line tool:</p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
 </section>
 <section id="step-3-load-channels-from-bids-formatted-dataset-and-compare">
-<h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Permalink to this headline">#</a></h2>
+<h2>Step 3: Load channels from BIDS-formatted dataset and compare<a class="headerlink" href="#step-3-load-channels-from-bids-formatted-dataset-and-compare" title="Permalink to this heading">#</a></h2>
 <p>Now we have written our BIDS directory. We can use
 <a class="reference internal" href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code></a> to read in the data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in the BIDS dataset to plot the coordinates</span>
@@ -936,7 +948,7 @@ Saved coordinate:     [-0.0243  0.0261 -0.056 ]
 </div>
 </section>
 <section id="step-4-cite-mne-bids">
-<h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this headline">#</a></h2>
+<h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this heading">#</a></h2>
 <p>We can see that the appropriate citations are already written in the README.
 If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 there.</p>
@@ -956,7 +968,7 @@ Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D&#39;Ambrosio, S., David
 </div>
 </section>
 <section id="step-5-store-coordinates-in-a-template-space">
-<h2>Step 5: Store coordinates in a template space<a class="headerlink" href="#step-5-store-coordinates-in-a-template-space" title="Permalink to this headline">#</a></h2>
+<h2>Step 5: Store coordinates in a template space<a class="headerlink" href="#step-5-store-coordinates-in-a-template-space" title="Permalink to this heading">#</a></h2>
 <p>Alternatively, if your T1 is not aligned to ACPC-space or you prefer to
 store the coordinates in a template space (e.g. <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code>) for another
 reason, you can also do that.</p>
@@ -1255,7 +1267,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.798 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.865 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1272,51 +1284,55 @@ coordinate frame.</p>
 </section>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="convert_mri_and_trans.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="convert_empty_room.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">09. Manually storing empty room data</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="convert_mri_and_trans.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="convert_empty_room.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">09. Manually storing empty room data</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-05.<br>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-12.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>

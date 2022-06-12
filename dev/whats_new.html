@@ -1,18 +1,22 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>What’s new? &#8212; MNE-BIDS 0.11.dev0 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -27,13 +31,14 @@
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
@@ -45,33 +50,41 @@
     <script type="text/javascript" src="_static/copybutton.js"></script>
     <script type="text/javascript" src="_static/scrollfix.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="index.html">
-<p class="title">MNE-BIDS</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-BIDS 0.11.dev0 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -165,13 +178,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -179,19 +192,20 @@
     
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -245,37 +259,35 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <section id="what-s-new">
-<span id="whats-new"></span><h1>What’s new?<a class="headerlink" href="#what-s-new" title="Permalink to this headline">#</a></h1>
+<span id="whats-new"></span><h1>What’s new?<a class="headerlink" href="#what-s-new" title="Permalink to this heading">#</a></h1>
 <section id="version-0-11-unreleased">
-<span id="changes-0-11"></span><h2>Version 0.11 (unreleased)<a class="headerlink" href="#version-0-11-unreleased" title="Permalink to this headline">#</a></h2>
+<span id="changes-0-11"></span><h2>Version 0.11 (unreleased)<a class="headerlink" href="#version-0-11-unreleased" title="Permalink to this heading">#</a></h2>
 <p>…</p>
 <section id="notable-changes">
-<h3>📝 Notable changes<a class="headerlink" href="#notable-changes" title="Permalink to this headline">#</a></h3>
+<h3>📝 Notable changes<a class="headerlink" href="#notable-changes" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>…</p></li>
 </ul>
 </section>
 <section id="authors">
-<h3>👩🏽‍💻 Authors<a class="headerlink" href="#authors" title="Permalink to this headline">#</a></h3>
+<h3>👩🏽‍💻 Authors<a class="headerlink" href="#authors" title="Permalink to this heading">#</a></h3>
 <p>The following authors contributed for the first time. Thank you so much! 🤩</p>
 <ul class="simple">
 <li><p>…</p></li>
@@ -293,33 +305,35 @@
 </ul>
 </section>
 <section id="detailed-list-of-changes">
-<h3>Detailed list of changes<a class="headerlink" href="#detailed-list-of-changes" title="Permalink to this headline">#</a></h3>
+<h3>Detailed list of changes<a class="headerlink" href="#detailed-list-of-changes" title="Permalink to this heading">#</a></h3>
 <section id="enhancements">
-<h4>🚀 Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this headline">#</a></h4>
+<h4>🚀 Enhancements<a class="headerlink" href="#enhancements" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p>You can now write raw data and an associated empty-room recording with just a single call to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>: the <code class="docutils literal notranslate"><span class="pre">empty_room</span></code> parameter now also accepts an <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> data object. The empty-room session name will be derived from the recording date automatically, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/998">#998</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
-<h4>🧐 API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this headline">#</a></h4>
+<h4>🧐 API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_dataset_description()</span></code></a> now accepts keyword arguments only, and can now also write the following metadata: <code class="docutils literal notranslate"><span class="pre">HEDVersion</span></code>, <code class="docutils literal notranslate"><span class="pre">EthicsApprovals</span></code>, <code class="docutils literal notranslate"><span class="pre">GeneratedBy</span></code>, and <code class="docutils literal notranslate"><span class="pre">SourceDatasets</span></code>, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/406">#406</a>)</p></li>
 <li><p>The deprecated function <code class="docutils literal notranslate"><span class="pre">mne_bids.mark_bad_channels</span></code> has been removed in favor of <a class="reference internal" href="generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.mark_channels()</span></code></a>, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1009">#1009</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree()</span></code></a> now raises a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> instead of a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> if the directory does not exist, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1013">#1013</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
-<h4>🛠 Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">#</a></h4>
+<h4>🛠 Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Writing BrainVision files now requires <code class="docutils literal notranslate"><span class="pre">pybv</span></code> version <code class="docutils literal notranslate"><span class="pre">0.7.3</span></code>, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1011">#1011</a>)</p></li>
 </ul>
 </section>
 <section id="bug-fixes">
-<h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">#</a></h4>
+<h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Fix ACPC in <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">RAS</span></code> instead of <code class="docutils literal notranslate"><span class="pre">scanner</span> <span class="pre">RAS</span></code> in <a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html#ieeg-example"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a> and add convenience functions <a class="reference internal" href="generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras" title="mne_bids.convert_montage_to_ras"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.convert_montage_to_ras()</span></code></a> and <a class="reference internal" href="generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri" title="mne_bids.convert_montage_to_mri"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.convert_montage_to_mri()</span></code></a> to help, by <a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/990">#990</a>)</p></li>
 <li><p>Suppress superfluous warnings about MaxShield in many functions when handling Elekta/Neuromag/MEGIN data, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1000">#1000</a>)</p></li>
 <li><p>The MNE-BIDS Inspector didn’t work if <code class="docutils literal notranslate"><span class="pre">mne-qt-browser</span></code> was installed and used as the default plotting backend, as the Inspector currently only supports the Matplotlib backend, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1007">#1007</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-func docutils literal notranslate"><span class="pre">copyfile_brainvision()</span></code></a> can now deal with <code class="docutils literal notranslate"><span class="pre">.dat</span></code> file extension, by <a class="reference external" href="https://github.com/dominikwelke">Dominik Welke</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1008">#1008</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_dir_tree()</span></code></a> now correctly expands <code class="docutils literal notranslate"><span class="pre">~</span></code> to the user’s home directory, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1013">#1013</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -328,51 +342,55 @@
 </section>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="index.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">MNE-BIDS</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="install.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Installation</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">MNE-BIDS</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="install.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Installation</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-05.<br>
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-12.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>

@@ -1,18 +1,22 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>MNE-BIDS Command Line Interface (CLI) &#8212; MNE-BIDS 0.11.dev0 documentation</title>
-    
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
 
-    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
   <link rel="stylesheet"
     href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -27,13 +31,14 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    
+
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
@@ -45,33 +50,41 @@
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
 
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
 
     
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
 
   <div id="navbar-start">
     
     
-<a class="navbar-brand" href="../index.html">
-<p class="title">MNE-BIDS</p>
-</a>
+  
 
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-BIDS 0.11.dev0 documentation</p>
+  
+</a>
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <span class="fas fa-bars"></span>
   </button>
 
   
@@ -165,13 +178,13 @@
     </nav>
     
 
-    <div class="container-xl">
-      <div class="row">
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
           
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -179,19 +192,20 @@
     
   </div>
 </nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
 
           
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
 <div class="tocsection onthispage mt-5 pt-1 pb-3">
     <i class="fas fa-list"></i> On this page
 </div>
@@ -353,34 +367,32 @@
 </ul>
 
 </nav>
-              </div>
-              
-              <div class="toc-item">
-                
-              </div>
-              
-            
-          </div>
-          
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
 
           
           
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+          <div class="bd-content col-12 col-md-9 col-xl-7">
               
-              <div>
+              <article class="bd-article" role="main">
                 
   <section id="mne-bids-command-line-interface-cli">
-<span id="python-cli"></span><h1>MNE-BIDS Command Line Interface (CLI)<a class="headerlink" href="#mne-bids-command-line-interface-cli" title="Permalink to this headline">#</a></h1>
+<span id="python-cli"></span><h1>MNE-BIDS Command Line Interface (CLI)<a class="headerlink" href="#mne-bids-command-line-interface-cli" title="Permalink to this heading">#</a></h1>
 <p>Here we list the MNE-BIDS tools that you can use from the command line.</p>
 <section id="mne-bids-calibration-to-bids">
-<span id="gen-mne-bids-calibration-to-bids"></span><h2>mne_bids calibration_to_bids<a class="headerlink" href="#mne-bids-calibration-to-bids" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-calibration-to-bids"></span><h2>mne_bids calibration_to_bids<a class="headerlink" href="#mne-bids-calibration-to-bids" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="write-elekta-neuromag-megin-fine-calibration-data-to-bids">
-<h3>Write Elekta/Neuromag/MEGIN fine-calibration data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-fine-calibration-data-to-bids" title="Permalink to this headline">#</a></h3>
+<h3>Write Elekta/Neuromag/MEGIN fine-calibration data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-fine-calibration-data-to-bids" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">calibration_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="options">
-<h4>Options<a class="headerlink" href="#options" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#options" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -411,12 +423,12 @@ $ mne_bids calibration_to_bids –subject_id=01 –session=test
 </section>
 </section>
 <section id="mne-bids-count-events">
-<span id="gen-mne-bids-count-events"></span><h2>mne_bids count_events<a class="headerlink" href="#mne-bids-count-events" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-count-events"></span><h2>mne_bids count_events<a class="headerlink" href="#mne-bids-count-events" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="count-events-in-bids-dataset">
-<h3>Count events in BIDS dataset.<a class="headerlink" href="#count-events-in-bids-dataset" title="Permalink to this headline">#</a></h3>
+<h3>Count events in BIDS dataset.<a class="headerlink" href="#count-events-in-bids-dataset" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">count_events</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id1">
-<h4>Options<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -449,12 +461,12 @@ etc.).</p>
 </section>
 </section>
 <section id="mne-bids-cp">
-<span id="gen-mne-bids-cp"></span><h2>mne_bids cp<a class="headerlink" href="#mne-bids-cp" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-cp"></span><h2>mne_bids cp<a class="headerlink" href="#mne-bids-cp" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="rename-files-making-a-copy-and-update-their-internal-pointers">
-<h3>Rename files (making a copy) and update their internal pointers.<a class="headerlink" href="#rename-files-making-a-copy-and-update-their-internal-pointers" title="Permalink to this headline">#</a></h3>
+<h3>Rename files (making a copy) and update their internal pointers.<a class="headerlink" href="#rename-files-making-a-copy-and-update-their-internal-pointers" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">cp</span> <span class="pre">-i</span> <span class="pre">INPUT</span> <span class="pre">-o</span> <span class="pre">OUTPUT</span></code></p>
 <section id="id2">
-<h4>Options<a class="headerlink" href="#id2" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -479,12 +491,12 @@ file)</p>
 </section>
 </section>
 <section id="mne-bids-crosstalk-to-bids">
-<span id="gen-mne-bids-crosstalk-to-bids"></span><h2>mne_bids crosstalk_to_bids<a class="headerlink" href="#mne-bids-crosstalk-to-bids" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-crosstalk-to-bids"></span><h2>mne_bids crosstalk_to_bids<a class="headerlink" href="#mne-bids-crosstalk-to-bids" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="write-elekta-neuromag-megin-crosstalk-data-to-bids">
-<h3>Write Elekta/Neuromag/MEGIN crosstalk data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-crosstalk-data-to-bids" title="Permalink to this headline">#</a></h3>
+<h3>Write Elekta/Neuromag/MEGIN crosstalk data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-crosstalk-data-to-bids" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">crosstalk_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id3">
-<h4>Options<a class="headerlink" href="#id3" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -515,12 +527,12 @@ $ mne_bids crosstalk_to_bids –subject_id=01 –session=test
 </section>
 </section>
 <section id="mne-bids-inspect">
-<span id="gen-mne-bids-inspect"></span><h2>mne_bids inspect<a class="headerlink" href="#mne-bids-inspect" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-inspect"></span><h2>mne_bids inspect<a class="headerlink" href="#mne-bids-inspect" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad">
-<h3>Inspect MEG and EEG raw data, and interactively mark channels as bad.<a class="headerlink" href="#inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad" title="Permalink to this headline">#</a></h3>
+<h3>Inspect MEG and EEG raw data, and interactively mark channels as bad.<a class="headerlink" href="#inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">inspect</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id4">
-<h4>Options<a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -582,12 +594,12 @@ $ mne_bids inspect –subject_id=01 –task=experiment –session=test –dataty
 </section>
 </section>
 <section id="mne-bids-mark-channels">
-<span id="gen-mne-bids-mark-channels"></span><h2>mne_bids mark_channels<a class="headerlink" href="#mne-bids-mark-channels" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-mark-channels"></span><h2>mne_bids mark_channels<a class="headerlink" href="#mne-bids-mark-channels" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="mark-channels-in-an-existing-bids-dataset-as-bad">
-<h3>Mark channels in an existing BIDS dataset as “bad”.<a class="headerlink" href="#mark-channels-in-an-existing-bids-dataset-as-bad" title="Permalink to this headline">#</a></h3>
+<h3>Mark channels in an existing BIDS dataset as “bad”.<a class="headerlink" href="#mark-channels-in-an-existing-bids-dataset-as-bad" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">mark_channels</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id5">
-<h4>Options<a class="headerlink" href="#id5" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -653,12 +665,12 @@ $ mne_bids mark_channels –ch_name=”MEG 0112” –description=”noisy”   
 </section>
 </section>
 <section id="mne-bids-raw-to-bids">
-<span id="gen-mne-bids-raw-to-bids"></span><h2>mne_bids raw_to_bids<a class="headerlink" href="#mne-bids-raw-to-bids" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-raw-to-bids"></span><h2>mne_bids raw_to_bids<a class="headerlink" href="#mne-bids-raw-to-bids" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="write-raw-files-to-bids-format">
-<h3>Write raw files to BIDS format.<a class="headerlink" href="#write-raw-files-to-bids-format" title="Permalink to this headline">#</a></h3>
+<h3>Write raw files to BIDS format.<a class="headerlink" href="#write-raw-files-to-bids-format" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">raw_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id6">
-<h4>Options<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -719,12 +731,12 @@ If unknown, pass None</p>
 </section>
 </section>
 <section id="mne-bids-report">
-<span id="gen-mne-bids-report"></span><h2>mne_bids report<a class="headerlink" href="#mne-bids-report" title="Permalink to this headline">#</a></h2>
+<span id="gen-mne-bids-report"></span><h2>mne_bids report<a class="headerlink" href="#mne-bids-report" title="Permalink to this heading">#</a></h2>
 <section class="callout" id="id7">
-<h3>Write raw files to BIDS format.<a class="headerlink" href="#id7" title="Permalink to this headline">#</a></h3>
+<h3>Write raw files to BIDS format.<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">report</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id8">
-<h4>Options<a class="headerlink" href="#id8" title="Permalink to this headline">#</a></h4>
+<h4>Options<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -743,51 +755,55 @@ If unknown, pass None</p>
 </section>
 
 
-              </div>
+              </article>
               
-              
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="mne_bids.copyfiles.copyfile_kit.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">mne_bids.copyfiles.copyfile_kit</p>
-        </div>
-    </a>
-    <a class='right-next' id="next-link" href="../contribute.html" title="next page">
-    <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Contributing to MNE-BIDS</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
-    </a>
-</div>
-              
-          </main>
-          
 
+              
+              <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="mne_bids.copyfiles.copyfile_kit.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">mne_bids.copyfiles.copyfile_kit</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../contribute.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">Contributing to MNE-BIDS</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+              </footer>
+              
+          </div>
+          
       </div>
     </div>
+
+  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
-    
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-05.<br>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-06-12.<br>
 </p>
-    </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
-    </div>
-    
   </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.1.<br>
+</p>
+  </div>
+  
+</div>
 </footer>
   </body>
 </html>
