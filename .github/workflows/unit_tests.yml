@@ -23,7 +23,7 @@ jobs:
       matrix:
         python-version: ["3.10"]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -51,7 +51,7 @@ jobs:
         os: [ubuntu-latest]
         python-version: ["3.7", "3.10"]  # Oldest and newest supported versions
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -78,7 +78,7 @@ jobs:
     - name: Remove sdist install
       run: pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build wheel
       run: python setup.py bdist_wheel
     - name: Install wheel
@@ -92,7 +92,7 @@ jobs:
     - name: Remove wheel install
       run: pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Test extras install
       run: |
         pip install .[full]
@@ -142,7 +142,7 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
