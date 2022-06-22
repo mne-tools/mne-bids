@@ -56,3 +56,4 @@ Please also cite one of the following papers to credit BIDS, depending on which 
 - [MEG-BIDS](https://doi.org/10.1038/sdata.2018.110)
 - [EEG-BIDS](https://doi.org/10.1038/s41597-019-0104-8)
 - [iEEG-BIDS](https://doi.org/10.1038/s41597-019-0105-7)
+ 
