@@ -1174,9 +1174,13 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
         If `return_str` is ``True``, the directory tree is returned as a
         string. Else, ``None`` is returned and the directory tree is printed.
     """
-    if not op.exists(folder):
-        raise ValueError('Directory does not exist: {}'.format(folder))
-
+    folder = _check_fname(
+        fname=folder,
+        overwrite='read',
+        must_exist=True,
+        name='Folder',
+        need_dir=True
+    )
     max_depth = _check_max_depth(max_depth)
 
     _validate_type(return_str, bool, 'return_str')

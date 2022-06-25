@@ -23,12 +23,12 @@ jobs:
       matrix:
         python-version: ["3.10"]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
         key: style-0-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
@@ -51,13 +51,13 @@ jobs:
         os: [ubuntu-latest]
         python-version: ["3.7", "3.10"]  # Oldest and newest supported versions
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v2
+    - uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
         key: build-0-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
@@ -78,7 +78,7 @@ jobs:
     - name: Remove sdist install
       run: pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build wheel
       run: python setup.py bdist_wheel
     - name: Install wheel
@@ -92,7 +92,7 @@ jobs:
     - name: Remove wheel install
       run: pip uninstall -y mne-bids
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Test extras install
       run: |
         pip install .[full]
@@ -142,7 +142,7 @@ jobs:
       TZ: Europe/Berlin
       FORCE_COLOR: true
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -159,7 +159,7 @@ jobs:
       # only do it on other operating systems
       # https://stackoverflow.com/q/61875869/5201771
       if: "matrix.os != 'ubuntu-latest'"
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
         key: test-0-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
@@ -237,6 +237,6 @@ jobs:
       run: make test
 
     - name: Upload coverage stats to codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
         files: ./coverage.xml

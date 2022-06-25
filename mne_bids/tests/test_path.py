@@ -165,7 +165,7 @@ def test_search_folder_for_text(capsys):
 
 def test_print_dir_tree(capsys):
     """Test printing a dir tree."""
-    with pytest.raises(ValueError, match='Directory does not exist'):
+    with pytest.raises(FileNotFoundError, match='Folder does not exist'):
         print_dir_tree('i_dont_exist')
 
     # We check the testing directory

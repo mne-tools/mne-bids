@@ -13,7 +13,7 @@ Furthermore, you can view and edit the experimental events and mark time
 segments as "bad".
 
 .. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/30_annotate_raw.html#annotating-raw-objects-interactively
-"""  # noqa:E501
+"""  # noqa: E501 D400 D205
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 #

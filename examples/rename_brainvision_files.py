@@ -93,7 +93,7 @@ raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
 # -------------------
 #
 # For converting data files, or writing new data to the BrainVision format, you
-# can use the `pybv`_ Python package.
+# can use :mod:`mne.export` or have a look at the `pybv`_ Python package.
 #
 # There is node JS tool to check the integrity of your BrainVision files.
 # For that, see the `BrainVision Validator <bv-validator_>`_

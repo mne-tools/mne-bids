@@ -20,7 +20,7 @@ Required:
 Optional:
 
 * ``nibabel`` (>=2.5, for processing MRI data)
-* ``pybv`` (>=0.6, for writing BrainVision data)
+* ``pybv`` (>=0.7.3, for writing BrainVision data)
 * ``pymatreader`` (>=0.0.29 , for operations with EEGLAB data)
 * ``matplotlib`` (>=3.1.0, for using the interactive data inspector)
 * ``pandas`` (>=0.24.0, for generating event statistics)
@@ -67,14 +67,14 @@ print a version number and not give any error messages:
 
 MNE-BIDS works best with the latest stable release of MNE-Python (the ``mne`` package).
 To ensure MNE-Python is up-to-date, follow the
-`MNE-Python installation instructions <https://mne.tools/stable/install/mne_python.html#installing-mne-python>`_.
+`MNE-Python installation instructions <https://mne.tools/stable/install/#>`_.
 
 
 Installation via conda
 ----------------------
 
 If you have followed the
-`MNE-Python installation instructions <https://mne.tools/stable/install/mne_python.html#installing-mne-python>`_,
+`MNE-Python installation instructions <https://mne.tools/stable/install/#>`_,
 all that's left to do is to install ``mne-bids`` without its dependencies, as
 they've already been installed during the MNE-Python installation process.
 

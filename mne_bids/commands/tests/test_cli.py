@@ -109,7 +109,6 @@ def test_cp(tmp_path):
 
 def test_mark_bad_chanels_single_file(tmp_path):
     """Test mne_bids mark_channels."""
-
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
 
@@ -162,7 +161,6 @@ def test_mark_bad_chanels_single_file(tmp_path):
 
 def test_mark_bad_chanels_multiple_files(tmp_path):
     """Test mne_bids mark_channels."""
-
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
 
@@ -204,7 +202,6 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
 
 def test_calibration_to_bids(tmp_path):
     """Test mne_bids calibration_to_bids."""
-
     # Check that help is printed
     check_usage(mne_bids_calibration_to_bids)
 
@@ -224,7 +221,6 @@ def test_calibration_to_bids(tmp_path):
 
 def test_crosstalk_to_bids(tmp_path):
     """Test mne_bids crosstalk_to_bids."""
-
     # Check that help is printed
     check_usage(mne_bids_crosstalk_to_bids)
 
@@ -245,7 +241,6 @@ def test_crosstalk_to_bids(tmp_path):
 @requires_pandas
 def test_count_events(tmp_path):
     """Test mne_bids count_events."""
-
     # Check that help is printed
     check_usage(mne_bids_count_events)
 
@@ -290,7 +285,6 @@ def test_count_events(tmp_path):
 @requires_version('mne', '0.22')
 def test_inspect(tmp_path):
     """Test mne_bids inspect."""
-
     # Check that help is printed
     check_usage(mne_bids_inspect)
 
