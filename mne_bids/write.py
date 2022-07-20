@@ -1022,7 +1022,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
                       resolution=resolution,
                       unit=unit,
                       fmt=fmt,
-                      meas_date=meas_date)
+                      meas_date=None)
 
 
 def _write_raw_edf(raw, bids_fname, overwrite):
