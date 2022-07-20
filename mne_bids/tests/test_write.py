@@ -1283,6 +1283,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        with pytest.warns(RuntimeWarning,
+                          match=r'Encountered data in "(float|single)" '
+                          'format. Converting to float32.'):
+            write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1311,6 +1316,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
+            write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        with pytest.warns(RuntimeWarning,
+                          match=r'Encountered data in "(float|single)" '
+                          'format. Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1378,6 +1388,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        with pytest.warns(RuntimeWarning,
+                          match=r'Encountered data in "(float|single)" '
+                          'format. Converting to float32.'):
+            write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1429,6 +1444,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                               match='Encountered data in "int" format. '
                               'Converting to float32.'):
                 write_raw_bids(**kwargs)
+        elif dir_name == 'EGI':
+            with pytest.warns(RuntimeWarning,
+                              match=r'Encountered data in "(float|single)" '
+                              'format. Converting to float32.'):
+                write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "short" format'):
@@ -1465,6 +1485,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
+            write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        with pytest.warns(RuntimeWarning,
+                          match=r'Encountered data in "(float|single)" '
+                          'format. Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1507,6 +1532,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
+            write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        with pytest.warns(RuntimeWarning,
+                          match=r'Encountered data in "(float|single)" '
+                          'format. Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1560,6 +1590,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
+            write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        with pytest.warns(RuntimeWarning,
+                          match=r'Encountered data in "(float|single)" '
+                          'format. Converting to float32.'):
             write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1619,11 +1654,17 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                               'Converting to float32.'):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / 'c', raw, bids_path)
+        elif dir_name == 'EGI':
+            with pytest.warns(RuntimeWarning,
+                              match=r'Encountered data in "(float|single)" '
+                              'format. Converting to float32.'):
+                write_raw_bids(**kwargs)
+                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
                 write_raw_bids(**kwargs)  # Converts.
-                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
+                output_path = _test_anonymize(tmp_path / 'e', raw, bids_path)
         _bids_validate(output_path)
 
 
