@@ -1232,8 +1232,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             bids_output_path = write_raw_bids(**kwargs)
     elif dir_name == 'EGI':
         with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "float" format. '
-                          'Converting to float32.'):
+                          match=r'Encountered data in "(float|single)" '
+                          'format. Converting to float32.'):
             bids_output_path = write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
