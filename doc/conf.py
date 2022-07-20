@@ -166,7 +166,7 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'nilearn': ('https://nilearn.github.io', None),
+    'nilearn': ('http://nilearn.github.io/stable', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'nibabel': ('https://nipy.org/nibabel', None),
 }
