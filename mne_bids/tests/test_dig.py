@@ -335,8 +335,9 @@ def test_electrodes_io(tmp_path):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
     write_raw_bids(raw, bids_path)
 
+    electrodes_fpath = 'sub-01_ses-01_acq-01_space-CapTrak_electrodes.tsv'
     with open(bids_path.directory /
-              'sub-01_ses-01_acq-01_space-CapTrak_electrodes.tsv') as sidecar:
+              electrodes_fpath, encoding='utf-8') as sidecar:
         n_entries = len([line for line in sidecar
                          if 'name' not in line])  # don't need the header
         # only eeg chs w/ electrode pos should be written to electrodes.tsv
