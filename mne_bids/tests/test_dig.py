@@ -325,3 +325,38 @@ def test_convert_montage():
     assert pos['coord_frame'] == 'mri'
     assert_almost_equal(pos['ch_pos']['EEG 001'],
                         [-0.0313669, 0.0540269, 0.0949191])
+
+
+def test_electrodes_io(tmp_path):
+    '''test that only channels with associated electrodes were written to
+       electrodes sidecar.'''
+    raw = _load_raw()
+    raw.pick_types(eeg=True, stim=True)  # we don't need meg channels
+    bids_root = tmp_path / 'bids1'
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+    os.makedirs(op.join(bids_root, 'sub-01', 'ses-01', 'eeg'), exist_ok=True)
+    write_raw_bids(raw, bids_path)
+
+    # test 1
+    with open(bids_path.directory /
+              'sub-01_ses-01_acq-01_space-CapTrak_electrodes.tsv') as sidecar:
+        n_entries = len([line for line in sidecar
+                         if 'name' not in line])  # don't need the header
+        # only eeg chs w/ electrode pos should be written to electrodes.tsv
+        assert n_entries == len(raw.copy().pick_types(eeg=True)
+                                          .info['ch_names'])
+
+    # test 2
+    with pytest.warns(RuntimeWarning) as record:
+        read_raw_bids(bids_path)
+        # list of warnings emitted by read_raw_bids
+        warnings = [record[i].message for i in range(len(record))]
+
+        # if the following test fails, then channels without
+        # associated electrodes were written to electrodes.tsv
+        # and mne.set_montage will issue a warning about these channels
+        # during read_raw_bids
+        if any('There are channels without locations'
+                in str(message) for message in warnings):
+            pytest.fail('1 or more channels without associated electrodes were'
+                        ' written to electrodes.tsv')
