@@ -336,7 +336,6 @@ def test_electrodes_io(tmp_path):
     (bids_root / 'sub-01' / 'ses-01' / 'eeg').mkdir(exist_ok=True)
     write_raw_bids(raw, bids_path)
 
-    # test 1
     with open(bids_path.directory /
               'sub-01_ses-01_acq-01_space-CapTrak_electrodes.tsv') as sidecar:
         n_entries = len([line for line in sidecar
@@ -348,18 +347,3 @@ def test_electrodes_io(tmp_path):
             .pick_types(eeg=True)
             .ch_names
         )
-
-    # test 2
-    with pytest.warns(RuntimeWarning) as record:
-        read_raw_bids(bids_path)
-        # list of warnings emitted by read_raw_bids
-        warnings = [record[i].message for i in range(len(record))]
-
-        # if the following test fails, then channels without
-        # associated electrodes were written to electrodes.tsv
-        # and mne.set_montage will issue a warning about these channels
-        # during read_raw_bids
-        if any('There are channels without locations'
-                in str(message) for message in warnings):
-            pytest.fail('1 or more channels without associated electrodes were'
-                        ' written to electrodes.tsv')
