@@ -342,7 +342,4 @@ def test_electrodes_io(tmp_path):
         n_entries = len([line for line in sidecar
                          if 'name' not in line])  # don't need the header
         # only eeg chs w/ electrode pos should be written to electrodes.tsv
-        assert n_entries == len(
-            raw
-            .get_channel_types('eeg')
-        )
+        assert n_entries == len(raw.get_channel_types('eeg'))
