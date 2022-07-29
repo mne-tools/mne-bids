@@ -51,7 +51,6 @@ jobs:
         os: [ubuntu-latest]
         python-version: ["3.7", "3.10"]  # Oldest and newest supported versions
     steps:
-    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -62,13 +61,16 @@ jobs:
         path: ${{ env.pythonLocation }}
         key: build-0-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
 
-    - name: Update pip, wheel, and setuptools
-      run: python -m pip install --upgrade pip wheel setuptools
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install wheel setuptools build
 
+    - uses: actions/checkout@v3
     - name: Build sdist
-      run: python setup.py sdist
+      run: python -m build --sdist
     - name: Install sdist
-      run: pip install ./dist/mne-bids-*
+      run: python -m pip install ./dist/mne-bids-*
     - name: Clean up working directory
       run: rm -rf ./*
     - name: Try importing mne_bids
@@ -76,13 +78,13 @@ jobs:
     - name: Try cli mne_bids
       run: mne_bids --version
     - name: Remove sdist install
-      run: pip uninstall -y mne-bids
+      run: python -m pip uninstall -y mne-bids
 
     - uses: actions/checkout@v3
     - name: Build wheel
-      run: python setup.py bdist_wheel
+      run: python -m build --wheel
     - name: Install wheel
-      run: pip install ./dist/mne_bids-*.whl
+      run: python -m pip install ./dist/mne_bids-*.whl
     - name: Clean up working directory
       run: rm -rf ./*
     - name: Try importing mne_bids
@@ -90,12 +92,12 @@ jobs:
     - name: Try cli mne_bids
       run: mne_bids --version
     - name: Remove wheel install
-      run: pip uninstall -y mne-bids
+      run: python -m pip uninstall -y mne-bids
 
     - uses: actions/checkout@v3
     - name: Test extras install
       run: |
-        pip install .[full]
+        python -m pip install .[full]
         python -c 'import mne_bids; print(mne_bids.__version__)'
         python -c 'import pybv; print(pybv.__version__)'
         python -c 'import nibabel; print(nibabel.__version__)'
@@ -166,20 +168,20 @@ jobs:
 
     - name: Install Python dependencies using pip
       run: |
-        python -m pip install --upgrade pip wheel
-        pip install -r test_requirements.txt
+        python -m pip install --upgrade pip
+        python -m pip install -r test_requirements.txt
 
     - name: Install MNE (stable)
       if: "matrix.mne-version == 'mne-stable'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.24
-        pip install -e ./mne-python
+        python -m pip install -e ./mne-python
 
     - name: Install MNE (main)
       if: "matrix.mne-version == 'mne-main'"
       run: |
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
-        pip install -e ./mne-python
+        python -m pip install -e ./mne-python
 
     - name: Install BIDS validator (stable)
       if: "matrix.bids-validator-version == 'validator-stable'"
@@ -230,7 +232,7 @@ jobs:
         mne sys_info
 
     - name: Install MNE-BIDS
-      run: pip install -e .
+      run: python -m pip install -e .
 
     - name: Run pytest
       shell: bash
