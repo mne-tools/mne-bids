@@ -1,11 +1,13 @@
+<!--
 Thanks for contributing this pull request (PR).
 If this is your first time, make sure to read
 [CONTRIBUTING.md](https://github.com/mne-tools/mne-bids/blob/main/CONTRIBUTING.md)
+-->
 
 PR Description
 --------------
 
-Describe your PR here
+<!--Describe your PR here-->
 
 Merge checklist
 ---------------
