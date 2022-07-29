@@ -342,8 +342,12 @@ def test_electrodes_io(tmp_path):
         n_entries = len([line for line in sidecar
                          if 'name' not in line])  # don't need the header
         # only eeg chs w/ electrode pos should be written to electrodes.tsv
-        assert n_entries == len(raw.copy().pick_types(eeg=True)
-                                          .info['ch_names'])
+        assert n_entries == len(
+            raw
+            .copy()
+            .pick_types(eeg=True)
+            .ch_names
+        )
 
     # test 2
     with pytest.warns(RuntimeWarning) as record:
