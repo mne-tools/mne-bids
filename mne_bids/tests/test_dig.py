@@ -333,7 +333,8 @@ def test_electrodes_io(tmp_path):
     raw.pick_types(eeg=True, stim=True)  # we don't need meg channels
     bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
-    (bids_root / 'sub-01' / 'ses-01' / 'eeg').mkdir(exist_ok=True)
+    (bids_root / 'sub-01' / 'ses-01' / 'eeg').mkdir(parents=True,
+                                                    exist_ok=True)
     write_raw_bids(raw, bids_path)
 
     with open(bids_path.directory /
@@ -343,7 +344,5 @@ def test_electrodes_io(tmp_path):
         # only eeg chs w/ electrode pos should be written to electrodes.tsv
         assert n_entries == len(
             raw
-            .copy()
-            .pick_types(eeg=True)
-            .ch_names
+            .get_channel_types('eeg')
         )
