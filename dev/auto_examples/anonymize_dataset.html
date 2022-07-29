@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>13. Anonymizing a BIDS dataset &#8212; MNE-BIDS 0.11.dev0 documentation</title>
 <script>
@@ -190,98 +190,72 @@
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
   <div class="bd-toc-item active">
-    <ul class="nav bd-sidenav">
+    <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="read_bids_datasets.html">
    01. Read BIDS datasets
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_mne_sample.html">
    02. Convert MNE sample data to BIDS format
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="mark_bad_channels.html">
    03. Interactive data inspection and bad channel selection
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_eeg_to_bids.html">
    04. Convert EEG data to BIDS format
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_group_studies.html">
    05. BIDS conversion for group studies
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="rename_brainvision_files.html">
    06. Rename BrainVision EEG data files
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_mri_and_trans.html">
    07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_ieeg_to_bids.html">
    08. Convert iEEG data to BIDS format
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_empty_room.html">
    09. Manually storing empty room data
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="bidspath.html">
    10. An introduction to BIDSPath
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="create_bids_folder.html">
    11. Creating BIDS-compatible folder names and filenames
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="update_bids_datasets.html">
    12. Updating BIDS datasets
   </a>
  </li>
-</ul>
-<ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
    13. Anonymizing a BIDS dataset
   </a>
  </li>
-</ul>
-<ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="convert_nirs_to_bids.html">
    13. Convert NIRS data to BIDS format
@@ -452,7 +426,6 @@ tests and example runs, we simply delete it.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BIDSPath(
 root: /home/circleci/mne_data/MNE-sample-data-bids
 datatype: anat
@@ -465,14 +438,13 @@ basename: sub-ABC123_T1w.nii.gz)
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.anonymize_dataset.html#mne_bids.anonymize_dataset" title="mne_bids.anonymize_dataset" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">anonymize_dataset</span></a><span class="p">(</span><span class="n">bids_root_in</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">bids_root_out</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Anonymizing BIDS dataset
 Determining &quot;daysback&quot; for anonymization.
 
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 33105 days (90.7 years).
+Shifting recording dates by 35031 days (96.0 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-1
@@ -480,10 +452,10 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/5 [00:00&lt;?,       ?it/s]
- 20%|##        | Anonymizing : 1/5 [00:00&lt;00:01,    3.45it/s]
- 40%|####      | Anonymizing : 2/5 [00:02&lt;00:03,    1.18s/it]
+ 20%|##        | Anonymizing : 1/5 [00:00&lt;00:01,    3.73it/s]
+ 40%|####      | Anonymizing : 2/5 [00:02&lt;00:03,    1.16s/it]
  60%|######    | Anonymizing : 3/5 [00:03&lt;00:02,    1.02s/it]
-100%|##########| Anonymizing : 5/5 [00:03&lt;00:00,    1.64it/s]
+100%|##########| Anonymizing : 5/5 [00:03&lt;00:00,    1.65it/s]
 </pre></div>
 </div>
 <p>That’s it! Let’s have a look at directory structure of the anonymized
@@ -491,7 +463,6 @@ dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -511,12 +482,12 @@ dataset.</p>
 |--------- sub-1_task-audiovisual_meg.fif
 |--------- sub-1_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19120417/
-|--------- sub-emptyroom_ses-19120417_scans.tsv
+|------ ses-19070108/
+|--------- sub-emptyroom_ses-19070108_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19120417_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19120417_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19120417_task-noise_meg.json
+|------------ sub-emptyroom_ses-19070108_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19070108_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19070108_task-noise_meg.json
 </pre></div>
 </div>
 <p>You can see that the subject ID was changed to a number (in this case, the
@@ -541,7 +512,6 @@ argument. The parameter can be a string (e.g., <code class="docutils literal not
 <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Anonymizing BIDS dataset
 
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
@@ -555,8 +525,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/1 [00:00&lt;?,       ?it/s]
-100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.01s/it]
-100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.01s/it]
+100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.04s/it]
+100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.04s/it]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -585,7 +555,6 @@ back in time via the <code class="docutils literal notranslate"><span class="pre
 <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a> <span class="o">/</span> <span class="s1">&#39;sub-emptyroom&#39;</span><span class="p">)</span>  <span class="c1"># Easy to see effects here</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Anonymizing BIDS dataset
 
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
@@ -599,9 +568,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.43it/s]
- 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.95it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.91it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.61it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.96it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.94it/s]
 |sub-emptyroom/
 |--- ses-20021126/
 |------ sub-emptyroom_ses-20021126_scans.tsv
@@ -636,14 +605,13 @@ accepts a list of original IDs and returns such a dictionary.</p>
 <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Anonymizing BIDS dataset
 Determining &quot;daysback&quot; for anonymization.
 
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 35432 days (97.1 years).
+Shifting recording dates by 30939 days (84.8 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-anonymous
@@ -651,9 +619,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.45it/s]
- 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.96it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.93it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.47it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.95it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.92it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -670,12 +638,12 @@ Using the following subject ID anonymization mapping:
 |--------- sub-anonymous_task-audiovisual_meg.fif
 |--------- sub-anonymous_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19051203/
-|--------- sub-emptyroom_ses-19051203_scans.tsv
+|------ ses-19180323/
+|--------- sub-emptyroom_ses-19180323_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19051203_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19051203_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19051203_task-noise_meg.json
+|------------ sub-emptyroom_ses-19180323_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19180323_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19180323_task-noise_meg.json
 </pre></div>
 </div>
 </section>
@@ -715,7 +683,6 @@ anonymize the entire dataset again.</p>
     <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root_anon</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Run 1
 
 
@@ -733,9 +700,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.35it/s]
- 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.94it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.90it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.27it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.90it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.81it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -777,9 +744,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.54it/s]
- 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:01,    1.98it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.98it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:01,    2.74it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.71it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.43it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -804,8 +771,8 @@ Using the following subject ID anonymization mapping:
 |------------ sub-emptyroom_ses-19221211_task-noise_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.807 seconds)</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.029 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/anonymize_dataset.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
 </div>
@@ -859,13 +826,13 @@ Using the following subject ID anonymization mapping:
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-07-21.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-07-29.<br>
 </p>
   </div>
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
 </p>
   </div>
   
