@@ -328,8 +328,7 @@ def test_convert_montage():
 
 
 def test_electrodes_io(tmp_path):
-    '''test that only channels with associated electrodes were written to
-       electrodes sidecar.'''
+    """Ensure only electrodes end up in *_electrodes.json."""
     raw = _load_raw()
     raw.pick_types(eeg=True, stim=True)  # we don't need meg channels
     bids_root = tmp_path / 'bids1'
