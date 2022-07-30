@@ -485,7 +485,7 @@ functional MRI paths.</p>
 <p class="rubric">Examples</p>
 <p>Generate a BIDSPath object and inspect it</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                     <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.edf&#39;</span><span class="p">)</span>
+<span class="gp">... </span>                     <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span>

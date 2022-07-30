@@ -234,7 +234,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">,</span> <span class="n">ALLOWED_FILENAME_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="p">,</span> <span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="p">,</span>
-    <span class="n">ALLOWED_DATATYPES</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
+    <span class="n">ALLOWED_DATATYPES</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_SPACES</span><span class="p">,</span>
     <span class="n">reader</span><span class="p">,</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_key_val</span><span class="p">,</span> <span class="n">_check_empty_room_basename</span><span class="p">,</span>
@@ -263,10 +263,6 @@
                          <span class="s1">&#39;date set. Cannot get matching empty-room file.&#39;</span><span class="p">)</span>
 
     <span class="n">ref_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-        <span class="c1"># for MNE &lt; v0.20</span>
-        <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-
     <span class="n">emptyroom_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">directory</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -307,6 +303,7 @@
         <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">er_fname</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">er_bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="s1">&#39;emptyroom&#39;</span>  <span class="c1"># er subject entity is different</span>
         <span class="n">er_bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">bids_root</span>
+        <span class="n">er_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
         <span class="n">er_meas_date</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Try to extract date from filename.</span>
@@ -441,7 +438,7 @@
 <span class="sd">    Generate a BIDSPath object and inspect it</span>
 
 <span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;,</span>
-<span class="sd">    ...                      suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
+<span class="sd">    ...                      suffix=&#39;ieeg&#39;, extension=&#39;.edf&#39;, datatype=&#39;ieeg&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">    sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="sd">    &gt;&gt;&gt; bids_path</span>
@@ -945,11 +942,6 @@
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
-        <span class="c1"># infer datatype if suffix is uniquely the datatype</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
-
         <span class="c1"># Perform a check of the entities and revert changes if check fails</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
@@ -1111,7 +1103,11 @@
                              <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
                              <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
 
-        <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+            <span class="c1"># needed to deal with inheritance principle</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+            <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span>
+        <span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
@@ -1449,14 +1445,15 @@
     <span class="k">return</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span>
 
 
-<span class="k">def</span> <span class="nf">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
     <span class="c1"># get the parent</span>
-    <span class="n">datatype</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span>
-
-    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">]]):</span>
-        <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">datatype</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">]]):</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">fname</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">):</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">datatype</span>

@@ -297,7 +297,8 @@
 <span class="sd">    &gt;&gt;&gt; from pathlib import Path</span>
 <span class="sd">    &gt;&gt;&gt; root = Path(&#39;./mne_bids/tests/data/tiny_bids&#39;).absolute()</span>
 <span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, task=&#39;rest&#39;, session=&#39;eeg&#39;,</span>
-<span class="sd">    ...                      suffix=&#39;eeg&#39;, extension=&#39;.json&#39;, root=root)</span>
+<span class="sd">    ...                      suffix=&#39;eeg&#39;, extension=&#39;.json&#39;, datatype=&#39;eeg&#39;,</span>
+<span class="sd">    ...                      root=root)</span>
 <span class="sd">    &gt;&gt;&gt; entries = {&#39;PowerLineFrequency&#39;: 60}</span>
 <span class="sd">    &gt;&gt;&gt; update_sidecar_json(bids_path, entries, verbose=False)</span>
 
