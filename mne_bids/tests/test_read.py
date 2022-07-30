@@ -120,16 +120,19 @@ def test_read_participants_data(tmp_path):
     subject_info = {
         'hand': 1,
         'sex': 2,
+        'weight': 70.5,
+        'height': 180.5
     }
     raw.info['subject_info'] = subject_info
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
-    print(raw.info['subject_info'])
     assert raw.info['subject_info']['hand'] == 1
-    assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
     assert raw.info['subject_info']['his_id'] == f'sub-{bids_path.subject}'
     assert 'participant_id' not in raw.info['subject_info']
+    # weight and height are currently not getting stored in participants.tsv
+    assert 'weight' not in raw.info['subject_info']
+    assert 'height' not in raw.info['subject_info']
 
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = tmp_path / 'participants.tsv'
@@ -140,11 +143,17 @@ def test_read_participants_data(tmp_path):
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
+    # weight and height are currently not getting stored in participants.tsv
+    assert 'weight' not in raw.info['subject_info']
+    assert 'height' not in raw.info['subject_info']
 
     # make sure things are read even if the entries don't make sense
     participants_tsv = _from_tsv(participants_tsv_fpath)
     participants_tsv['hand'][0] = 'righty'
     participants_tsv['sex'][0] = 'malesy'
+    # 'n/a' values should get omitted
+    participants_tsv['weight'] = ['n/a']
+    participants_tsv['height'] = ['n/a']
 
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match='Unable to map'):
@@ -152,6 +161,8 @@ def test_read_participants_data(tmp_path):
 
     assert 'hand' not in raw.info['subject_info']
     assert 'sex' not in raw.info['subject_info']
+    assert 'weight' not in raw.info['subject_info']
+    assert 'height' not in raw.info['subject_info']
 
     # test reading if participants.tsv is missing
     raw = _read_raw_fif(raw_fname, verbose=False)

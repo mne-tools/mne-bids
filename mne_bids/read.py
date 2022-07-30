@@ -215,7 +215,10 @@ def _handle_participants_reading(participants_fname, raw, subject):
             except ValueError:
                 value = None
         else:
-            value = value[row_ind]
+            if value[row_ind] == 'n/a':
+                value = None
+            else:
+                value = value[row_ind]
 
         # add data into raw.Info
         key = 'his_id' if col_name == 'participant_id' else col_name
