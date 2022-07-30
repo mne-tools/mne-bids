@@ -145,19 +145,22 @@ def test_read_participants_data(tmp_path):
     participants_tsv = _from_tsv(participants_tsv_fpath)
     participants_tsv['hand'][0] = 'righty'
     participants_tsv['sex'][0] = 'malesy'
+
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match='Unable to map'):
         raw = read_raw_bids(bids_path=bids_path)
-        assert raw.info['subject_info']['hand'] is None
-        assert raw.info['subject_info']['sex'] is None
 
-    # make sure to read in if no participants file
+    assert 'hand' not in raw.info['subject_info']
+    assert 'sex' not in raw.info['subject_info']
+
+    # test reading if participants.tsv is missing
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
-    os.remove(participants_tsv_fpath)
+    participants_tsv_fpath.unlink()
     with pytest.warns(RuntimeWarning, match='participants.tsv file not found'):
         raw = read_raw_bids(bids_path=bids_path)
-        assert raw.info['subject_info'] is None
+
+    assert raw.info['subject_info'] == dict()
 
 
 @pytest.mark.parametrize(
