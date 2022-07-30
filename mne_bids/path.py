@@ -1622,7 +1622,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     References
     ----------
-    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
+    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#entities  # noqa: E501
 
     """
     root = _check_fname(
