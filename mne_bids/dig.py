@@ -138,9 +138,15 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
     # create list of channel coordinates and names
     x, y, z, names = list(), list(), list(), list()
     for ch in raw.info['chs']:
-        if ch['kind'] == FIFF.FIFFV_STIM_CH:
-            logger.debug(f"Not writing stim chan {ch['ch_name']} "
-                         f"to electrodes.tsv")
+        if ch['kind'] in (
+                FIFF.FIFFV_STIM_CH,
+                FIFF.FIFFV_EMG_CH,
+                FIFF.FIFFV_EOG_CH,
+                FIFF.FIFFV_ECG_CH
+            ):
+            logger.debug(
+                f"Not writing channel {ch['ch_name']} to electrodes.tsv"
+            )
             continue
         elif (
             np.isnan(ch['loc'][:3]).any() or
