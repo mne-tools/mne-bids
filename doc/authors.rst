@@ -33,3 +33,5 @@
 .. _Simon Kern: https://github.com/skjerns
 .. _Yorguin Mantilla: https://github.com/yjmantilla
 .. _Swastika Gupta: https://swastyy.github.io
+.. _Mathieu Scheltienne: https://github.com/mscheltienne
+.. _Scott Huberty: https://github.com/scott-huberty
