@@ -330,7 +330,11 @@ def test_convert_montage():
 def test_electrodes_io(tmp_path):
     """Ensure only electrodes end up in *_electrodes.json."""
     raw = _load_raw()
-    raw.pick_types(eeg=True, stim=True)  # we don't need meg channels
+    raw.pick_types(eeg=True, eog=True, stim=True)  # we don't need meg channels
+    # fake some EMG/ECG channels
+    raw.del_proj()
+    raw.set_channel_types({"EEG 059": "ecg", "EEG 060": "emg"})
+    raw.rename_channels({"EEG 059": "ECG", "EEG 060": "EMG"})
     bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
     write_raw_bids(raw=raw, bids_path=bids_path)
