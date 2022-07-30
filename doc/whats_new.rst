@@ -76,6 +76,8 @@ Detailed list of changes
 
 - :func:`~mne_bids.write_raw_bids` now correctly excludes stim channels when writing to electrodes.tsv, by `Scott Huberty_` (:gh:`1023`)
 
+- :func:`~mne_bids.read_raw_bids` doesn't populate ``raw.info['subject_info']`` with invalid values anymore, preventing users from writing the data to disk again, by `Richard Höchenberger`_ (:gh:`1031`)
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst
