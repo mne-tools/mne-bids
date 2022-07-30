@@ -197,7 +197,7 @@ def _handle_participants_reading(participants_fname, raw, subject):
 
     # set data from participants tsv into subject_info
     for col_name, value in participants_tsv.items():
-        if col_name == 'sex' or col_name == 'hand':
+        if col_name in ('sex', 'hand'):
             value = _map_options(what=col_name, key=value[row_ind],
                                  fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
@@ -208,13 +208,21 @@ def _handle_participants_reading(participants_fname, raw, subject):
                     info_str = 'subject handedness'
                 warn(f'Unable to map `{col_name}` value to MNE. '
                      f'Not setting {info_str}.')
+        elif col_name in ('height', 'weight'):
+            try:
+                value = float(value[row_ind])
+            except ValueError:
+                value = None
         else:
             value = value[row_ind]
+
         # add data into raw.Info
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
         key = 'his_id' if col_name == 'participant_id' else col_name
-        raw.info['subject_info'][key] = value
+
+        if value is not None:
+            raw.info['subject_info'][key] = value
 
     return raw
 
