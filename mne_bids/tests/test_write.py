@@ -446,7 +446,7 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
     _bids_validate(bids_root)
 
     eeg_json_fpath = (bids_path.copy()
-                      .update(suffix='eeg', extension='.json')
+                      .update(suffix='eeg', datatype='eeg', extension='.json')
                       .fpath)
     with open(eeg_json_fpath, 'r', encoding='utf-8') as fin:
         eeg_json = json.load(fin)
@@ -916,7 +916,7 @@ def test_kit(_bids_validate, tmp_path):
     # ensure the marker file is produced in the right place
     marker_fname = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='markers', extension='.sqd',
+        suffix='markers', extension='.sqd', datatype='meg',
         root=bids_root)
     assert op.exists(marker_fname)
 
