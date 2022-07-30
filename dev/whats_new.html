@@ -334,6 +334,7 @@
 <li><p>The MNE-BIDS Inspector didn’t work if <code class="docutils literal notranslate"><span class="pre">mne-qt-browser</span></code> was installed and used as the default plotting backend, as the Inspector currently only supports the Matplotlib backend, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1007">#1007</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-func docutils literal notranslate"><span class="pre">copyfile_brainvision()</span></code></a> can now deal with <code class="docutils literal notranslate"><span class="pre">.dat</span></code> file extension, by <a class="reference external" href="https://github.com/dominikwelke">Dominik Welke</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1008">#1008</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">print_dir_tree()</span></code></a> now correctly expands <code class="docutils literal notranslate"><span class="pre">~</span></code> to the user’s home directory, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1013">#1013</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> now correctly excludes stim channels when writing to electrodes.tsv, by <em class="xref py py-obj">Scott Huberty_</em> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1023">#1023</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -380,7 +381,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-07-29.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-07-30.<br>
 </p>
   </div>
   

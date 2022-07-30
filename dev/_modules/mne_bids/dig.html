@@ -350,7 +350,11 @@
     <span class="c1"># create list of channel coordinates and names</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="p">(</span>
+        <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_STIM_CH</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not writing stim chan </span><span class="si">{</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;to electrodes.tsv&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="p">(</span>
             <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">][:</span><span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span>
             <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">][:</span><span class="mi">3</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
         <span class="p">):</span>
@@ -981,7 +985,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-07-29.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-07-30.<br>
 </p>
   </div>
   
