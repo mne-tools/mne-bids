@@ -142,8 +142,8 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
                 FIFF.FIFFV_STIM_CH,
                 FIFF.FIFFV_EMG_CH,
                 FIFF.FIFFV_EOG_CH,
-                FIFF.FIFFV_ECG_CH
-            ):
+                FIFF.FIFFV_ECG_CH,
+        ):
             logger.debug(
                 f"Not writing channel {ch['ch_name']} to electrodes.tsv"
             )
