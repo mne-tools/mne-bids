@@ -85,7 +85,8 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     >>> from pathlib import Path
     >>> root = Path('./mne_bids/tests/data/tiny_bids').absolute()
     >>> bids_path = BIDSPath(subject='01', task='rest', session='eeg',
-    ...                      suffix='eeg', extension='.json', root=root)
+    ...                      suffix='eeg', extension='.json', datatype='eeg',
+    ...                      root=root)
     >>> entries = {'PowerLineFrequency': 60}
     >>> update_sidecar_json(bids_path, entries, verbose=False)
 

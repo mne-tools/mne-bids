@@ -107,7 +107,7 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
                        ('SEEGChannelCount', None, 0)]
 
     # get the sidecar json
-    sidecar_path = bids_path.copy().update(extension='.json')
+    sidecar_path = bids_path.copy().update(extension='.json', datatype='meg')
     sidecar_fpath = sidecar_path.fpath
     with open(sidecar_fpath, 'r', encoding='utf-8') as fin:
         sidecar_json = json.load(fin)
@@ -211,11 +211,6 @@ def test_update_anat_landmarks(tmp_path):
     bids_path_mri_no_ext = bids_path_mri.copy().update(extension=None)
     update_anat_landmarks(bids_path=bids_path_mri_no_ext,
                           landmarks=landmarks_new)
-
-    # Check without datatytpe provided
-    bids_path_mri_no_datatype = bids_path_mri.copy().update(datatype=None)
-    update_anat_landmarks(bids_path=bids_path_mri_no_datatype,
-                          landmarks=landmarks)
 
     # Check handling of invalid input
     bids_path_invalid = bids_path_mri.copy().update(datatype='meg')
