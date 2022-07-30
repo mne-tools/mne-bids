@@ -470,7 +470,7 @@ def _participants_json(fname, overwrite=False):
         'sex': {
             'Description': 'Biological sex of the participant',
             'Levels': {
-                'F':'female',
+                'F': 'female',
                 'M': 'male'
             }
         },
