@@ -325,3 +325,28 @@ def test_convert_montage():
     assert pos['coord_frame'] == 'mri'
     assert_almost_equal(pos['ch_pos']['EEG 001'],
                         [-0.0313669, 0.0540269, 0.0949191])
+
+
+def test_electrodes_io(tmp_path):
+    """Ensure only electrodes end up in *_electrodes.json."""
+    raw = _load_raw()
+    raw.pick_types(eeg=True, stim=True)  # we don't need meg channels
+    bids_root = tmp_path / 'bids1'
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+    write_raw_bids(raw=raw, bids_path=bids_path)
+
+    electrodes_path = (
+        bids_path.copy()
+        .update(
+            task=None,
+            run=None,
+            space='CapTrak',
+            suffix='electrodes',
+            extension='.tsv'
+        )
+    )
+    with open(electrodes_path, encoding='utf-8') as sidecar:
+        n_entries = len([line for line in sidecar
+                         if 'name' not in line])  # don't need the header
+        # only eeg chs w/ electrode pos should be written to electrodes.tsv
+        assert n_entries == len(raw.get_channel_types('eeg'))
