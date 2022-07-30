@@ -45,6 +45,8 @@ Detailed list of changes
 
 - You can now write raw data and an associated empty-room recording with just a single call to :func:`mne_bids.write_raw_bids`: the ``empty_room`` parameter now also accepts an :class:`mne.io.Raw` data object. The empty-room session name will be derived from the recording date automatically, by `Richard Höchenberger`_ (:gh:`998`)
 
+- :func:`~mne_bids.write_raw_bids` now stores participant weight and height in ``participants.tsv``, by `Richard Höchenberger`_ (:gh:`1031`)
+
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
