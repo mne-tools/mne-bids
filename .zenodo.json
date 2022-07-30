@@ -113,7 +113,7 @@
       "orcid": "0000-0002-4606-4179"
      },
      {
-      "name": "Franziska von Albedyll",
+      "name": "Franziska von Albedyll"
      },
      {
       "affiliation": "",
@@ -146,9 +146,9 @@
       "orcid": "0000-0002-9050-9040"
      },
      {
-      "affiliation": "",
+      "affiliation": "Korea Advanced Institute of Science and Technology",
       "name": "Sin Kim",
-      "orcid": ""
+      "orcid": "0000-0003-4652-3758"
      },
      {
       "affiliation": "",
@@ -169,6 +169,16 @@
       "affiliation": "Grupo Neuropsicología y Conducta, Universidad de Antioquia, Medellín, Colombia",
       "name": "Yorguin José Mantilla Ramos",
       "orcid": "0000-0003-4473-0876"
+     },
+     {
+      "affiliation": "McGill University, Montréal, QC, Canada",
+      "name": "Scott Huberty",
+      "orcid": "0000-0003-2637-031X"
+     },
+     {
+      "affiliation": "Human Neuroscience Platform, Fondation Campus Biotech Geneva, Geneva, Switzerland",
+      "name": "Mathieu Scheltienne",
+      "orcid": "0000-0001-8316-7436"
      },
     {
       "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
