@@ -374,7 +374,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         else:
             subject_age = "n/a"
 
-        # add weight
+        # add weight and height
         weight = subject_info.get('weight', 'n/a')
         height = subject_info.get('height', 'n/a')
 
