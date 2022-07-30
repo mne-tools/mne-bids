@@ -260,10 +260,8 @@ def test_parse_ext():
 @pytest.mark.parametrize('fname', [
     'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
     'sub-01_ses-02_task-test_run-3_split-01',
-    ('/bids_root/sub-01/ses-02/meg/' +
-     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
-    ('sub-01/ses-02/meg/' +
-     'sub-01_ses-02_task-test_run-3_split-01_meg.fif')
+    '/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif',  # noqa: E501
+    'sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif'
 ])
 def test_get_bids_path_from_fname(fname):
     bids_path = get_bids_path_from_fname(fname)
@@ -598,7 +596,7 @@ def test_bids_path(return_bids_test_dir):
     # ... but raises an error with check=True
     match = r'space \(foo\) is not valid for datatype \(eeg\)'
     with pytest.raises(ValueError, match=match):
-        BIDSPath(subject=subject_id, space='foo', suffix='eeg')
+        BIDSPath(subject=subject_id, space='foo', suffix='eeg', datatype='eeg')
 
     # error check on space for datatypes that do not support space
     match = 'space entity is not valid for datatype anat'
@@ -612,7 +610,8 @@ def test_bids_path(return_bids_test_dir):
         bids_path_tmpcopy.update(space='CapTrak', check=True)
 
     # making a valid space update works
-    bids_path_tmpcopy.update(suffix='eeg', space="CapTrak", check=True)
+    bids_path_tmpcopy.update(suffix='eeg', datatype='eeg',
+                             space="CapTrak", check=True)
 
     # suffix won't be error checks if initial check was false
     bids_path.update(suffix=suffix)
@@ -628,7 +627,7 @@ def test_bids_path(return_bids_test_dir):
 
     # test repr
     bids_path = BIDSPath(subject='01', session='02',
-                         task='03', suffix='ieeg',
+                         task='03', suffix='ieeg', datatype='ieeg',
                          extension='.edf')
     assert repr(bids_path) == ('BIDSPath(\n'
                                'root: None\n'
@@ -680,7 +679,8 @@ def test_make_filenames():
     # All keys work
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run=1, processing='six',
-                       recording='seven', suffix='ieeg', extension='.json')
+                       recording='seven', suffix='ieeg', extension='.json',
+                       datatype='ieeg')
     expected_str = ('sub-one_ses-two_task-three_acq-four_run-01_proc-six_'
                     'rec-seven_ieeg.json')
     assert BIDSPath(**prefix_data).basename == expected_str
@@ -974,7 +974,7 @@ def test_find_emptyroom_ties(tmp_path):
                         'sample_audvis_trunc_raw.fif')
 
     bids_root = str(tmp_path)
-    bids_path = _bids_path.copy().update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     session = '20010101'
     er_dir_path = BIDSPath(subject='emptyroom', session=session,
                            datatype='meg', root=bids_root)
