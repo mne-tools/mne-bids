@@ -341,10 +341,13 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         False, an error will be raised.
 
     """
-    subject_age = "n/a"
-    sex = "n/a"
+    subject_age = 'n/a'
+    sex = 'n/a'
     hand = 'n/a'
+    weight = 'n/a'
+    height = 'n/a'
     subject_info = raw.info.get('subject_info', None)
+
     if subject_id != 'emptyroom' and subject_info is not None:
         # add sex
         sex = _map_options(what='sex', key=subject_info.get('sex', 0),
@@ -371,18 +374,34 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         else:
             subject_age = "n/a"
 
+        # add weight
+        weight = subject_info.get('weight', 'n/a')
+        height = subject_info.get('height', 'n/a')
+
     subject_id = 'sub-' + subject_id
     data = OrderedDict(participant_id=[subject_id])
-    data.update({'age': [subject_age], 'sex': [sex], 'hand': [hand]})
+    data.update({
+        'age': [subject_age],
+        'sex': [sex],
+        'hand': [hand],
+        'weight': [weight],
+        'height': [height]
+    })
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
         # whether the new data exists identically in the previous data
-        exact_included = _contains_row(orig_data,
-                                       {'participant_id': subject_id,
-                                        'age': subject_age,
-                                        'sex': sex,
-                                        'hand': hand})
+        exact_included = _contains_row(
+            data=orig_data,
+            row_data={
+                'participant_id': subject_id,
+                'age': subject_age,
+                'sex': sex,
+                'hand': hand,
+                'weight': weight,
+                'height': height
+            }
+        )
         # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing
@@ -440,26 +459,53 @@ def _participants_json(fname, overwrite=False):
         an error will be raised.
 
     """
-    cols = OrderedDict()
-    cols['participant_id'] = {'Description': 'Unique participant identifier'}
-    cols['age'] = {'Description': 'Age of the participant at time of testing',
-                   'Units': 'years'}
-    cols['sex'] = {'Description': 'Biological sex of the participant',
-                   'Levels': {'F': 'female', 'M': 'male'}}
-    cols['hand'] = {'Description': 'Handedness of the participant',
-                    'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
+    data = {
+        'participant_id': {
+            'Description': 'Unique participant identifier'
+        },
+        'age': {
+            'Description': 'Age of the participant at time of testing',
+            'Units': 'years'
+        },
+        'sex': {
+            'Description': 'Biological sex of the participant',
+            'Levels': {
+                'F':'female',
+                'M': 'male'
+            }
+        },
+        'hand': {
+            'Description': 'Handedness of the participant',
+            'Levels': {
+                'R': 'right',
+                'L': 'left',
+                'A': 'ambidextrous'
+            }
+        },
+        'weight': {
+            'Description': 'Body weight of the participant',
+            'Units': 'kg'
+        },
+        'height': {
+            'Description': 'Body height of the participant',
+            'Units': 'm'
+        }
+    }
 
     # make sure to append any JSON fields added by the user
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
-    if op.exists(fname):
-        with open(fname, 'r', encoding='utf-8-sig') as fin:
-            orig_cols = json.load(fin, object_pairs_hook=OrderedDict)
+    fname = Path(fname)
+    if fname.exists():
+        orig_cols = json.loads(
+            fname.read_text(encoding='utf-8'),
+            object_pairs_hook=OrderedDict
+        )
         for key, val in orig_cols.items():
-            if key not in cols:
-                cols[key] = val
+            if key not in data:
+                data[key] = val
 
-    _write_json(fname, cols, overwrite)
+    _write_json(fname, data, overwrite)
 
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):

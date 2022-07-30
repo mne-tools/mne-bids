@@ -127,12 +127,11 @@ def test_read_participants_data(tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['subject_info']['hand'] == 1
+    assert raw.info['subject_info']['weight'] == 70.5
+    assert raw.info['subject_info']['height'] == 180.5
     assert raw.info['subject_info'].get('birthday', None) is None
     assert raw.info['subject_info']['his_id'] == f'sub-{bids_path.subject}'
     assert 'participant_id' not in raw.info['subject_info']
-    # weight and height are currently not getting stored in participants.tsv
-    assert 'weight' not in raw.info['subject_info']
-    assert 'height' not in raw.info['subject_info']
 
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = tmp_path / 'participants.tsv'
@@ -142,10 +141,9 @@ def test_read_participants_data(tmp_path):
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 2
+    assert raw.info['subject_info']['weight'] == 70.5
+    assert raw.info['subject_info']['height'] == 180.5
     assert raw.info['subject_info'].get('birthday', None) is None
-    # weight and height are currently not getting stored in participants.tsv
-    assert 'weight' not in raw.info['subject_info']
-    assert 'height' not in raw.info['subject_info']
 
     # make sure things are read even if the entries don't make sense
     participants_tsv = _from_tsv(participants_tsv_fpath)
@@ -153,7 +151,7 @@ def test_read_participants_data(tmp_path):
     participants_tsv['sex'][0] = 'malesy'
     # 'n/a' values should get omitted
     participants_tsv['weight'] = ['n/a']
-    participants_tsv['height'] = ['n/a']
+    participants_tsv['height'] = ['tall']
 
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match='Unable to map'):
