@@ -76,8 +76,6 @@ Detailed list of changes
 
 - :func:`~mne_bids.write_raw_bids` now correctly excludes stim channels when writing to electrodes.tsv, by `Scott Huberty`_ (:gh:`1023`)
 
-- :func:`~mne_bids.write_raw_bids` now correctly excludes eog, ecg, emg channels when writing to electrodes.tsv, by `Mathieu Scheltienne`_ (:gh:`1032`)
-
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst
