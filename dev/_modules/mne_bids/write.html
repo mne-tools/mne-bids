@@ -1263,7 +1263,7 @@
     <span class="c1"># ensuring that int16 can represent the data in original units.</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span> <span class="o">!=</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Encountered data in &quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="si">}</span><span class="s1">&quot; format. &#39;</span>
-             <span class="sa">f</span><span class="s1">&#39;Converting to float32.&#39;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+             <span class="s1">&#39;Converting to float32.&#39;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
 
     <span class="c1"># Writing to float32 µV with 0.1 resolution are the pybv defaults,</span>
     <span class="c1"># which guarantees accurate roundtrip for values &gt;= 1e-7 µV</span>
@@ -1280,7 +1280,7 @@
                       <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
                       <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
                       <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
-                      <span class="n">meas_date</span><span class="o">=</span><span class="n">meas_date</span><span class="p">)</span>
+                      <span class="n">meas_date</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
