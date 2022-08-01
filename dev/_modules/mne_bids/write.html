@@ -553,10 +553,13 @@
 <span class="sd">        False, an error will be raised.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">subject_age</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
-    <span class="n">sex</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
+    <span class="n">subject_age</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+    <span class="n">sex</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
     <span class="n">hand</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
     <span class="n">subject_info</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject_info&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">subject_id</span> <span class="o">!=</span> <span class="s1">&#39;emptyroom&#39;</span> <span class="ow">and</span> <span class="n">subject_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># add sex</span>
         <span class="n">sex</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
@@ -583,18 +586,34 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">subject_age</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
 
+        <span class="c1"># add weight and height</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+
     <span class="n">subject_id</span> <span class="o">=</span> <span class="s1">&#39;sub-&#39;</span> <span class="o">+</span> <span class="n">subject_id</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">participant_id</span><span class="o">=</span><span class="p">[</span><span class="n">subject_id</span><span class="p">])</span>
-    <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">subject_age</span><span class="p">],</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">sex</span><span class="p">],</span> <span class="s1">&#39;hand&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">hand</span><span class="p">]})</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">subject_age</span><span class="p">],</span>
+        <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">sex</span><span class="p">],</span>
+        <span class="s1">&#39;hand&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">hand</span><span class="p">],</span>
+        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">weight</span><span class="p">],</span>
+        <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">height</span><span class="p">]</span>
+    <span class="p">})</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
         <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
         <span class="c1"># whether the new data exists identically in the previous data</span>
-        <span class="n">exact_included</span> <span class="o">=</span> <span class="n">_contains_row</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span>
-                                       <span class="p">{</span><span class="s1">&#39;participant_id&#39;</span><span class="p">:</span> <span class="n">subject_id</span><span class="p">,</span>
-                                        <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="n">subject_age</span><span class="p">,</span>
-                                        <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="n">sex</span><span class="p">,</span>
-                                        <span class="s1">&#39;hand&#39;</span><span class="p">:</span> <span class="n">hand</span><span class="p">})</span>
+        <span class="n">exact_included</span> <span class="o">=</span> <span class="n">_contains_row</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">orig_data</span><span class="p">,</span>
+            <span class="n">row_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;participant_id&#39;</span><span class="p">:</span> <span class="n">subject_id</span><span class="p">,</span>
+                <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="n">subject_age</span><span class="p">,</span>
+                <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="n">sex</span><span class="p">,</span>
+                <span class="s1">&#39;hand&#39;</span><span class="p">:</span> <span class="n">hand</span><span class="p">,</span>
+                <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">weight</span><span class="p">,</span>
+                <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="n">height</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
         <span class="c1"># whether the subject id is in the previous data</span>
         <span class="n">sid_included</span> <span class="o">=</span> <span class="n">subject_id</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span>
         <span class="c1"># if the subject data provided is different to the currently existing</span>
@@ -652,26 +671,53 @@
 <span class="sd">        an error will be raised.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cols</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-    <span class="n">cols</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Unique participant identifier&#39;</span><span class="p">}</span>
-    <span class="n">cols</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Age of the participant at time of testing&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="s1">&#39;years&#39;</span><span class="p">}</span>
-    <span class="n">cols</span><span class="p">[</span><span class="s1">&#39;sex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Biological sex of the participant&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;Levels&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="s1">&#39;female&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">:</span> <span class="s1">&#39;male&#39;</span><span class="p">}}</span>
-    <span class="n">cols</span><span class="p">[</span><span class="s1">&#39;hand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Handedness of the participant&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;Levels&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="s1">&#39;ambidextrous&#39;</span><span class="p">}}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;participant_id&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Unique participant identifier&#39;</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Age of the participant at time of testing&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="s1">&#39;years&#39;</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Biological sex of the participant&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Levels&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;F&#39;</span><span class="p">:</span> <span class="s1">&#39;female&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;M&#39;</span><span class="p">:</span> <span class="s1">&#39;male&#39;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;hand&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Handedness of the participant&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Levels&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="s1">&#39;ambidextrous&#39;</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Body weight of the participant&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="s1">&#39;kg&#39;</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Body height of the participant&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 
     <span class="c1"># make sure to append any JSON fields added by the user</span>
     <span class="c1"># Note: mne-bids will overwrite age, sex and hand fields</span>
     <span class="c1"># if `overwrite` is True</span>
-    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
-            <span class="n">orig_cols</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">orig_cols</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+            <span class="n">fname</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
+            <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">orig_cols</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
-                <span class="n">cols</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">keep_source</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
