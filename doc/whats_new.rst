@@ -74,7 +74,7 @@ Detailed list of changes
 
 - :func:`~mne_bids.print_dir_tree` now correctly expands ``~`` to the user's home directory, by `Richard Höchenberger`_ (:gh:`1013`)
 
-- :func:`~mne_bids.write_raw_bids` now correctly excludes stim channels when writing to electrodes.tsv, by `Scott Huberty_` (:gh:`1023`)
+- :func:`~mne_bids.write_raw_bids` now correctly excludes stim channels when writing to electrodes.tsv, by `Scott Huberty`_ (:gh:`1023`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
