@@ -120,13 +120,15 @@ def test_read_participants_data(tmp_path):
     subject_info = {
         'hand': 1,
         'sex': 2,
+        'weight': 70.5,
+        'height': 180.5
     }
     raw.info['subject_info'] = subject_info
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
-    print(raw.info['subject_info'])
     assert raw.info['subject_info']['hand'] == 1
-    assert raw.info['subject_info']['sex'] == 2
+    assert raw.info['subject_info']['weight'] == 70.5
+    assert raw.info['subject_info']['height'] == 180.5
     assert raw.info['subject_info'].get('birthday', None) is None
     assert raw.info['subject_info']['his_id'] == f'sub-{bids_path.subject}'
     assert 'participant_id' not in raw.info['subject_info']
@@ -139,25 +141,35 @@ def test_read_participants_data(tmp_path):
     raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 2
+    assert raw.info['subject_info']['weight'] == 70.5
+    assert raw.info['subject_info']['height'] == 180.5
     assert raw.info['subject_info'].get('birthday', None) is None
 
     # make sure things are read even if the entries don't make sense
     participants_tsv = _from_tsv(participants_tsv_fpath)
     participants_tsv['hand'][0] = 'righty'
     participants_tsv['sex'][0] = 'malesy'
+    # 'n/a' values should get omitted
+    participants_tsv['weight'] = ['n/a']
+    participants_tsv['height'] = ['tall']
+
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match='Unable to map'):
         raw = read_raw_bids(bids_path=bids_path)
-        assert raw.info['subject_info']['hand'] is None
-        assert raw.info['subject_info']['sex'] is None
 
-    # make sure to read in if no participants file
+    assert 'hand' not in raw.info['subject_info']
+    assert 'sex' not in raw.info['subject_info']
+    assert 'weight' not in raw.info['subject_info']
+    assert 'height' not in raw.info['subject_info']
+
+    # test reading if participants.tsv is missing
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
-    os.remove(participants_tsv_fpath)
+    participants_tsv_fpath.unlink()
     with pytest.warns(RuntimeWarning, match='participants.tsv file not found'):
         raw = read_raw_bids(bids_path=bids_path)
-        assert raw.info['subject_info'] is None
+
+    assert raw.info['subject_info'] == dict()
 
 
 @pytest.mark.parametrize(

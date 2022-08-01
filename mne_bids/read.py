@@ -194,10 +194,11 @@ def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
     row_ind = subjects.index(subject)
+    raw.info['subject_info'] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
     for col_name, value in participants_tsv.items():
-        if col_name == 'sex' or col_name == 'hand':
+        if col_name in ('sex', 'hand'):
             value = _map_options(what=col_name, key=value[row_ind],
                                  fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
@@ -206,15 +207,24 @@ def _handle_participants_reading(participants_fname, raw, subject):
                     info_str = 'subject sex'
                 else:
                     info_str = 'subject handedness'
-                warn(f'Unable to map `{col_name}` value to MNE. '
+                warn(f'Unable to map "{col_name}" value "{value}" to MNE. '
                      f'Not setting {info_str}.')
+        elif col_name in ('height', 'weight'):
+            try:
+                value = float(value[row_ind])
+            except ValueError:
+                value = None
         else:
-            value = value[row_ind]
+            if value[row_ind] == 'n/a':
+                value = None
+            else:
+                value = value[row_ind]
+
         # add data into raw.Info
-        if raw.info['subject_info'] is None:
-            raw.info['subject_info'] = dict()
         key = 'his_id' if col_name == 'participant_id' else col_name
-        raw.info['subject_info'][key] = value
+        if value is not None:
+            assert key not in raw.info['subject_info']
+            raw.info['subject_info'][key] = value
 
     return raw
 
@@ -763,6 +773,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         )
     else:
         warn(f"participants.tsv file not found for {raw_path}")
+        raw.info['subject_info'] = dict()
 
     assert raw.annotations.orig_time == raw.info['meas_date']
     return raw
