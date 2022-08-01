@@ -84,7 +84,9 @@ warning_str = dict(
                  'Setting to None.',
     cnt_warning2='ignore:.*Could not define the number of bytes automatically.'
                  ' Defaulting to 2.',
-    no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne'
+    no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne',
+    no_montage=r'ignore:Not setting position of.*channel found in '
+               r'montage.*:RuntimeWarning:mne',
 )
 
 
@@ -108,6 +110,7 @@ _read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
 _read_raw_nihon = _wrap_read_raw(mne.io.read_raw_nihon)
 _read_raw_cnt = _wrap_read_raw(mne.io.read_raw_cnt)
 _read_raw_snirf = _wrap_read_raw(mne.io.read_raw_snirf)
+_read_raw_egi = _wrap_read_raw(mne.io.read_raw_egi)
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
@@ -115,6 +118,7 @@ test_eegieeg_data = [
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'scan41_short.cnt', _read_raw_cnt),
+    ('EGI', 'test_egi.mff', _read_raw_egi),
 ]
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
@@ -1204,6 +1208,7 @@ def test_vhdr(_bids_validate, tmp_path):
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
     warning_str['no_hand'],
+    warning_str['no_montage'],
 )
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
@@ -1215,6 +1220,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
+    raw.set_montage(None)  # remove montage
     events, _ = mne.events_from_annotations(raw, event_id=None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
@@ -1228,6 +1234,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            bids_output_path = write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                bids_output_path = write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1276,6 +1292,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1305,6 +1331,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1371,6 +1407,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1422,6 +1468,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                               match='Encountered data in "int" format. '
                               'Converting to float32.'):
                 write_raw_bids(**kwargs)
+        elif dir_name == 'EGI':
+            if check_version("mne", "1.1"):
+                write_raw_bids(**kwargs)
+            else:
+                with pytest.warns(
+                    RuntimeWarning,
+                    match=r'Encountered data in "float" format. '
+                          r'Converting to float32.'
+                ):
+                    write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "short" format'):
@@ -1459,6 +1515,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1501,6 +1567,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1554,6 +1630,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1612,11 +1698,25 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                               'Converting to float32.'):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / 'c', raw, bids_path)
+        elif dir_name == 'EGI':
+            if check_version("mne", "1.1"):
+                write_raw_bids(**kwargs)
+                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
+            else:
+                with pytest.warns(
+                    RuntimeWarning,
+                    match=r'Encountered data in "float" format. '
+                          r'Converting to float32.'
+                ):
+                    write_raw_bids(**kwargs)
+                    output_path = _test_anonymize(
+                        tmp_path / 'd', raw, bids_path
+                    )
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
                 write_raw_bids(**kwargs)  # Converts.
-                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
+                output_path = _test_anonymize(tmp_path / 'e', raw, bids_path)
         _bids_validate(output_path)
 
 

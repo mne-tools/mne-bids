@@ -54,7 +54,8 @@ eeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                      '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden',
-                     '.cnt': 'Neuroscan', '.CNT': 'Neuroscan'}
+                     '.cnt': 'Neuroscan', '.CNT': 'Neuroscan',
+                     '.bin': 'EGI'}
 
 ieeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                       '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
@@ -73,6 +74,7 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
           '.EEG': io.read_raw_nihon,
           '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt,
+          '.bin': io.read_raw_egi,
           '.snirf': io.read_raw_snirf}
 
 
@@ -124,7 +126,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
     allowed_extensions_ieeg + allowed_extensions_nirs + \
-    ['.lay', '.EEG', '.cnt', '.CNT']
+    ['.lay', '.EEG', '.cnt', '.CNT', '.bin']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)

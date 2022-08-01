@@ -1051,7 +1051,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != 'single':
         warn(f'Encountered data in "{raw.orig_format}" format. '
-             f'Converting to float32.', RuntimeWarning)
+             'Converting to float32.', RuntimeWarning)
 
     # Writing to float32 µV with 0.1 resolution are the pybv defaults,
     # which guarantees accurate roundtrip for values >= 1e-7 µV
@@ -1068,7 +1068,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
                       resolution=resolution,
                       unit=unit,
                       fmt=fmt,
-                      meas_date=meas_date)
+                      meas_date=None)
 
 
 def _write_raw_edf(raw, bids_fname, overwrite):
