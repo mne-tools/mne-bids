@@ -1685,12 +1685,15 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         elif dir_name == 'EGI':
             if check_version("mne", "1.1"):
                 write_raw_bids(**kwargs)
+                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
             else:
                 with pytest.warns(RuntimeWarning,
                                   match=r'Encountered data in "float" '
                                   'format. Converting to float32.'):
                     write_raw_bids(**kwargs)
-            output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
+                    output_path = _test_anonymize(
+                        tmp_path / 'd', raw, bids_path
+                    )
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
