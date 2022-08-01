@@ -85,7 +85,8 @@ warning_str = dict(
     cnt_warning2='ignore:.*Could not define the number of bytes automatically.'
                  ' Defaulting to 2.',
     no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne',
-    no_montage='ignore:Not setting position of*found in montage*:RuntimeWarning:mne',
+    no_montage='ignore:Not setting position of*channel found in '
+               'montage*:RuntimeWarning:mne',
 )
 
 
