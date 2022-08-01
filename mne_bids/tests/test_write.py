@@ -1238,9 +1238,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         if check_version("mne", "1.1"):
             bids_output_path = write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match=r'Encountered data in "float" '
-                              'format. Converting to float32.'):
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1294,9 +1296,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         if check_version("mne", "1.1"):
             write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match=r'Encountered data in "float" '
-                              'format. Converting to float32.'):
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
                 write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1331,9 +1335,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         if check_version("mne", "1.1"):
             write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match=r'Encountered data in "float" '
-                              'format. Converting to float32.'):
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
                 write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1405,9 +1411,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         if check_version("mne", "1.1"):
             write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match=r'Encountered data in "float" '
-                              'format. Converting to float32.'):
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
                 write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1464,9 +1472,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             if check_version("mne", "1.1"):
                 write_raw_bids(**kwargs)
             else:
-                with pytest.warns(RuntimeWarning,
-                                  match=r'Encountered data in "float" '
-                                  'format. Converting to float32.'):
+                with pytest.warns(
+                    RuntimeWarning,
+                    match=r'Encountered data in "float" format. '
+                          r'Converting to float32.'
+                ):
                     write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
@@ -1509,9 +1519,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         if check_version("mne", "1.1"):
             write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match=r'Encountered data in "float" '
-                              'format. Converting to float32.'):
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
                 write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1559,9 +1571,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         if check_version("mne", "1.1"):
             write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match=r'Encountered data in "float" '
-                              'format. Converting to float32.'):
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
                 write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1620,9 +1634,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         if check_version("mne", "1.1"):
             write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match=r'Encountered data in "float" '
-                              'format. Converting to float32.'):
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
                 write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
@@ -1687,9 +1703,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
             else:
-                with pytest.warns(RuntimeWarning,
-                                  match=r'Encountered data in "float" '
-                                  'format. Converting to float32.'):
+                with pytest.warns(
+                    RuntimeWarning,
+                    match=r'Encountered data in "float" format. '
+                          r'Converting to float32.'
+                ):
                     write_raw_bids(**kwargs)
                     output_path = _test_anonymize(
                         tmp_path / 'd', raw, bids_path
