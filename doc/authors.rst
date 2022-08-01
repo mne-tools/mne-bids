@@ -34,3 +34,5 @@
 .. _Yorguin Mantilla: https://github.com/yjmantilla
 .. _Swastika Gupta: https://swastyy.github.io
 .. _Scott Huberty: https://github.com/scott-huberty
+.. _Anand Saini: https://github.com/anandsaini024
+.. _Mathieu Scheltienne: https://github.com/mscheltienne
