@@ -84,7 +84,8 @@ warning_str = dict(
                  'Setting to None.',
     cnt_warning2='ignore:.*Could not define the number of bytes automatically.'
                  ' Defaulting to 2.',
-    no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne'
+    no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne',
+    no_montage='ignore:Not setting position of*found in montage*:RuntimeWarning:mne',
 )
 
 
@@ -1206,6 +1207,7 @@ def test_vhdr(_bids_validate, tmp_path):
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
     warning_str['no_hand'],
+    warning_str['no_montage'],
 )
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
