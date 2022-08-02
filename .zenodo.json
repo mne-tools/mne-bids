@@ -8,63 +8,63 @@
       "orcid": "0000-0001-8002-0877"
     },
     {
-     "affiliation": "Department of Cognitive Sciences, Macquarie University, Sydney, Australia",
+      "affiliation": "Department of Cognitive Sciences, Macquarie University, Sydney, Australia",
       "name": "Sanderson, Matthew",
       "orcid": "0000-0002-4645-8979"
     },
     {
-     "affiliation": "Mozilla",
-      "name":"Brooks, Teon L ",
+      "affiliation": "Mozilla",
+      "name":"Brooks, Teon L.",
       "orcid": "0000-0001-7344-3230"
     },
     {
-     "affiliation": "Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland",
+      "affiliation": "Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland",
       "name": "van Vliet, Marijn",
       "orcid": "0000-0002-6537-6899"
     },
     {
-     "affiliation": "Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892",
+      "affiliation": "Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892",
       "name": "Quentin, Romain",
       "orcid": "0000-0001-7659-3605"
     },
     {
-     "affiliation": "UC Berkeley, Project Jupyter",
+      "affiliation": "UC Berkeley, Project Jupyter",
       "name": "Holdgraf, Chris",
       "orcid": "0000-0002-2391-0678"
     },
     {
-     "affiliation": "Institut du cerveau et de la moelle épinière (ICM), Paris, France",
+      "affiliation": "Institut du cerveau et de la moelle épinière (ICM), Paris, France",
       "name": "Chaumon, Maximilien",
       "orcid": "0000-0001-9664-8861"
     },
     {
-     "affiliation": "Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy",
+      "affiliation": "Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy",
       "name": "Mikulan, Ezequiel",
       "orcid": "0000-0001-7259-6120"
     },
     {
-     "affiliation": "Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA",
+      "affiliation": "Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA",
       "name": "Tavabi, Kambiz",
       "orcid": "0000-0003-1881-892X"
     },
     {
-     "affiliation": "Institute of Neuroscience and Medicine (INM-3), Research Center Jülich, Germany",
-      "name": "Richard Höchenberger",
+      "affiliation": "Institute of Neuroscience and Medicine (INM-3), Research Center Jülich, Germany",
+      "name": "Höchenberger, Richard",
       "orcid": "0000-0002-0380-4798"
     },
     {
-     "affiliation": "Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany",
+      "affiliation": "Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany",
       "name": "Welke, Dominik",
       "orcid": "0000-0002-5529-1998"
     },
     {
-     "affiliation": "Institute of Psychology, University of Graz, Austria",
+      "affiliation": "Institute of Psychology, University of Graz, Austria",
       "name": "Brunner, Clemens",
       "orcid": "0000-0002-6030-2233"
     },
     {
-     "affiliation": "University of Oregon, Eugene OR, USA",
-      "name": "Rockhill, Alexander P",
+      "affiliation": "University of Oregon, Eugene OR, USA",
+      "name": "Rockhill, Alexander P.",
       "orcid": "0000-0003-3868-7453"
     },
     {
@@ -78,7 +78,107 @@
       "orcid": "0000-0001-8421-365X"
     },
     {
-     "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
+      "affiliation": "Department of Psychology, University of Washington, Seattle WA, USA",
+      "name": "Rokem, Ariel",
+      "orcid": "0000-0003-0679-1985"
+     },
+     {
+      "affiliation": "Institute for Learning & Brain Sciences, University of Washington, Seattle WA, USA",
+      "name": "McCloy, Daniel",
+      "orcid": "0000-0002-7572-3241"
+     },
+     {
+      "affiliation": "Dalhousie University, Halifax, Nova Scotia",
+      "name": "Hurst, Austin J.",
+      "orcid": "0000-0002-0219-4131"
+     },
+     {
+      "affiliation": "Institut d'Investigacions Biomèdiques August Pi i Sunyer (IDIBAPS), Barcelona, Spain",
+      "name": "Lozano-Soldevilla, Diego",
+      "orcid": "0000-0003-1794-8204"
+     },
+     {
+      "affiliation": "Institute of Experimental Psychology, Heinrich Heine University Düsseldorf, Germany",
+      "name": "Ort, Eduard",
+      "orcid": "0000-0001-5546-3561"
+     },
+     {
+      "affiliation": "Medical Research Council Cognition & Brain Sciences Unit, University of Cambridge",
+      "name": "Knights, Ethan",
+      "orcid": "0000-0001-6078-9160"
+     },
+     {
+      "affiliation": "HSE University, Centre for Cognition and Decision Making, Institute for Cognitive Neuroscience, National Research University Higher School of Economics, Russian Federation",
+      "name": "Kalenkovich, Evgenii",
+      "orcid": "0000-0002-4606-4179"
+     },
+     {
+      "name": "von Albedyll, Franziska"
+     },
+     {
+      "name": "Wong, Fu-Te"
+     },
+     {
+      "affiliation": "Facebook AI Research, Paris, France",
+      "name": "King, Jean-Rémi",
+      "orcid": "0000-0002-2121-170X"
+     },
+     {
+      "affiliation": "Psychological & Brain Sciences, Indiana University, Bloomington, IN, USA",
+      "name": "Niso Galán, Julia Guiomar",
+      "orcid": "0000-0001-5872-8924"
+     },
+     {
+      "name": "Koehler, Richard",
+      "orcid": "0000-0002-5219-1289"
+     },
+     {
+      "name": "Luke, Robert",
+      "orcid": "0000-0002-4930-8351"
+     },
+     {
+      "affiliation": "Central Institute of Mental Health, Mannheim, Germany",
+      "name": "Kern, Simon",
+      "orcid": "0000-0002-9050-9040"
+     },
+     {
+      "affiliation": "Korea Advanced Institute of Science and Technology",
+      "name": "Kim, Sin",
+      "orcid": "0000-0003-4652-3758"
+     },
+     {
+      "affiliation": "NeuroSpin, CEA, DRF/Joliot, INSERM, Cognitive Neuroimaging Unit, Université Paris-Saclay, 91191Gif/Yvette, France",
+      "name": "Herbst, Sophie",
+      "orcid": "0000-0001-8502-0366"
+     },
+     {
+      "name": "Gupta, Swastika"
+     },
+     {
+      "affiliation": "Department of Biomedical Engineering, Columbia University",
+      "name": "Donoghue, Thomas",
+      "orcid": "0000-0001-5911-0472"
+     },
+     {
+      "affiliation": "Grupo Neuropsicología y Conducta, Universidad de Antioquia, Medellín, Colombia",
+      "name": "Mantilla Ramos, Yorguin José",
+      "orcid": "0000-0003-4473-0876"
+     },
+     {
+      "affiliation": "McGill University, Montréal, QC, Canada",
+      "name": "Huberty, Scott",
+      "orcid": "0000-0003-2637-031X"
+     },
+     {
+      "affiliation": "Human Neuroscience Platform, Fondation Campus Biotech Geneva, Geneva, Switzerland",
+      "name": "Scheltienne, Mathieu",
+      "orcid": "0000-0001-8316-7436"
+     },
+     {
+      "name": "Saini, Anand"
+     },
+    {
+      "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
       "name": "Gramfort, Alexandre",
       "orcid": "0000-0001-9791-4404"
     },
