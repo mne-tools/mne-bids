@@ -372,12 +372,12 @@ def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782,
-                                     tzinfo=timezone.utc))
+    assert (meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782,
+                                      tzinfo=timezone.utc))
     meas_date = (1346981585,)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0,
-                                     tzinfo=timezone.utc))
+    assert (meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0,
+                                      tzinfo=timezone.utc))
 
 
 def test_get_anonymization_daysback():
