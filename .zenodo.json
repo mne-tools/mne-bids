@@ -88,12 +88,12 @@
       "orcid": "0000-0002-7572-3241"
      },
      {
-      "affiliation": "",
-      "name": "Hurst, Austin",
+      "affiliation": "Dalhousie University, Halifax, Nova Scotia",
+      "name": "Hurst, Austin J.",
       "orcid": "0000-0002-0219-4131"
      },
      {
-      "affiliation": "",
+      "affiliation": "Institut d'Investigacions Biomèdiques August Pi i Sunyer (IDIBAPS), Barcelona, Spain",
       "name": "Lozano-Soldevilla, Diego",
       "orcid": "0000-0003-1794-8204"
      },
@@ -108,7 +108,7 @@
       "orcid": "0000-0001-6078-9160"
      },
      {
-      "affiliation": "",
+      "affiliation": "HSE University, Centre for Cognition and Decision Making, Institute for Cognitive Neuroscience, National Research University Higher School of Economics, Russian Federation",
       "name": "Kalenkovich, Evgenii",
       "orcid": "0000-0002-4606-4179"
      },
@@ -116,12 +116,10 @@
       "name": "von Albedyll, Franziska"
      },
      {
-      "affiliation": "",
-      "name": "Wong, Fu-Te",
-      "orcid": ""
+      "name": "Wong, Fu-Te"
      },
      {
-      "affiliation": "",
+      "affiliation": "Facebook AI Research, Paris, France",
       "name": "King, Jean-Rémi",
       "orcid": "0000-0002-2121-170X"
      },
@@ -131,12 +129,10 @@
       "orcid": "0000-0001-5872-8924"
      },
      {
-      "affiliation": "",
       "name": "Koehler, Richard",
       "orcid": "0000-0002-5219-1289"
      },
      {
-      "affiliation": "",
       "name": "Luke, Robert",
       "orcid": "0000-0002-4930-8351"
      },
@@ -151,14 +147,12 @@
       "orcid": "0000-0003-4652-3758"
      },
      {
-      "affiliation": "",
+      "affiliation": "NeuroSpin, CEA, DRF/Joliot, INSERM, Cognitive Neuroimaging Unit, Université Paris-Saclay, 91191Gif/Yvette, France",
       "name": "Herbst, Sophie",
       "orcid": "0000-0001-8502-0366"
      },
      {
-      "affiliation": "",
-      "name": "Gupta, Swastika",
-      "orcid": ""
+      "name": "Gupta, Swastika"
      },
      {
       "affiliation": "Department of Biomedical Engineering, Columbia University",
@@ -179,6 +173,9 @@
       "affiliation": "Human Neuroscience Platform, Fondation Campus Biotech Geneva, Geneva, Switzerland",
       "name": "Scheltienne, Mathieu",
       "orcid": "0000-0001-8316-7436"
+     },
+     {
+      "name": "Saini, Anand"
      },
     {
       "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
