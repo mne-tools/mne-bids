@@ -240,6 +240,10 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     else:
         acq_times = ['n/a'] * len(fnames)
 
+    # There are three possible extensions for BrainVision
+    if fname.split('.')[1] in ('vhdr', 'eeg', 'vmrk'):
+        ext = fnames[0].split('.')[1]
+        data_fname = f"{data_fname.split('.')[0]}.{ext}"
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
