@@ -162,8 +162,8 @@ def copyfile_ctf(src, dest):
     bids_folder_name = op.splitext(op.split(dest)[-1])[0]
     for fname in fnames:
         ext = op.splitext(fname)[-1]
-        os.rename(op.join(dest, fname),
-                  op.join(dest, bids_folder_name + ext))
+        os.replace(op.join(dest, fname),
+                   op.join(dest, bids_folder_name + ext))
 
 
 def copyfile_kit(src, dest, subject_id, session_id,
