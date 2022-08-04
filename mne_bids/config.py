@@ -155,7 +155,7 @@ ALLOWED_FILENAME_EXTENSIONS = (
     ['.mrk']  # KIT/Yokogawa/Ricoh marker coil
 )
 
-# allowed BIDS path entities
+# allowed BIDSPath entities
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
                          'acquisition', 'split',
