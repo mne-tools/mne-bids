@@ -1,24 +1,31 @@
 """Make BIDS report from dataset and sidecar files."""
 # Authors: Adam Li <adam2392@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import json
 import os.path as op
 import textwrap
 from pathlib import Path
 
 import numpy as np
-from mne.externals.tempita import Template
-from mne.utils import warn
+import jinja2
+from mne.utils import warn, logger, verbose
 
 from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (get_datatypes, get_entity_vals, BIDSPath,
-                           _parse_ext, _find_matching_sidecar,
-                           get_entities_from_fname)
+from mne_bids.path import (get_bids_path_from_fname, get_datatypes,
+                           get_entity_vals, BIDSPath,
+                           _parse_ext, _find_matching_sidecar)
 
-# functions to be used inside Template strings
-FUNCTION_TEMPLATE = """{{py:
+
+jinja_env = jinja2.Environment(
+    loader=jinja2.PackageLoader(
+        package_name='mne_bids.report',
+        package_path='templates'
+    )
+)
+
+
 def _pretty_str(listed):
     # make strings a sequence of ',' and 'and'
     if not isinstance(listed, list):
@@ -28,6 +35,7 @@ def _pretty_str(listed):
         return ','.join(listed)
     return '{}, and {}'.format(', '.join(listed[:-1]), listed[-1])
 
+
 def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
     if minval == 'n/a':
         return 'ages all unknown'
@@ -36,14 +44,18 @@ def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
         unknown_str = f'; {n_unknown} with unknown {type}'
     else:
         unknown_str = ''
-    return f'ages ranged from {round(minval, 2)} to {round(maxval, 2)} '\
-           f'(mean = {round(meanval, 2)}, std = {round(stdval, 2)}{unknown_str})'
+    return (
+        f'ages ranged from {round(minval, 2)} to {round(maxval, 2)} '
+        f'(mean = {round(meanval, 2)}, std = {round(stdval, 2)}{unknown_str})'
+    )
+
 
 def _summarize_participant_hand(hands):
     n_unknown = len([hand for hand in hands if hand == 'n/a'])
 
     if n_unknown == len(hands):
-        return f'handedness were all unknown'
+        return 'handedness were all unknown'
+
     n_rhand = len([hand for hand in hands if hand.upper() == 'R'])
     n_lhand = len([hand for hand in hands if hand.upper() == 'L'])
     n_ambidex = len([hand for hand in hands if hand.upper() == 'A'])
@@ -51,15 +63,18 @@ def _summarize_participant_hand(hands):
     return f'comprised of {n_rhand} right hand, {n_lhand} left hand ' \
            f'and {n_ambidex} ambidextrous'
 
+
 def _summarize_participant_sex(sexs):
     n_unknown = len([sex for sex in sexs if sex == 'n/a'])
 
     if n_unknown == len(sexs):
-        return f'sex were all unknown'
+        return 'sex were all unknown'
+
     n_males = len([sex for sex in sexs if sex.upper() == 'M'])
     n_females = len([sex for sex in sexs if sex.upper() == 'F'])
 
     return f'comprised of {n_males} male and {n_females} female participants'
+
 
 def _length_recording_str(length_recordings):
     import numpy as np
@@ -72,10 +87,14 @@ def _length_recording_str(length_recordings):
     std_record_length = round(np.std(length_recordings), 2)
     total_record_length = round(sum(length_recordings), 2)
 
-    return f' Recording durations ranged from {min_record_length} to {max_record_length} seconds '\
-           f'(mean = {mean_record_length}, std = {std_record_length}), '\
-           f'for a total of {total_record_length} seconds of data recorded '\
-           f'over all scans.'
+    return (
+        f'Recording durations ranged from {min_record_length} to '
+        f'{max_record_length} seconds '
+        f'(mean = {mean_record_length}, std = {std_record_length}), '
+        f'for a total of {total_record_length} seconds of data recorded '
+        f'over all scans.'
+    )
+
 
 def _summarize_software_filters(software_filters):
     if software_filters in [{}, 'n/a']:
@@ -94,33 +113,6 @@ def _summarize_software_filters(software_filters):
                 msg += ' with parameters '
                 msg += ', '.join(parameters)
     return msg
-
-}}"""  # noqa
-
-BIDS_DATASET_TEMPLATE = \
-    """{{if name == 'n/a'}}This{{else}}The {{name}}{{endif}}
-dataset was created by {{_pretty_str(authors)}} and conforms to BIDS version
-{{bids_version}}. This report was generated with
-MNE-BIDS ({{mne_bids_doi}}). """
-BIDS_DATASET_TEMPLATE += \
-    """The dataset consists of
-{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}) {{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """  # noqa
-
-PARTICIPANTS_TEMPLATE = \
-    """{{_summarize_participant_sex(sexs)}};
-{{_summarize_participant_hand(hands)}}; {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}"""  # noqa
-
-DATATYPE_AGNOSTIC_TEMPLATE = \
-    """Data was recorded using a {{_pretty_str(system)}} system
-{{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
-sampled at {{_pretty_str(sfreq)}} Hz
-with line noise at {{_pretty_str(powerlinefreq)}} Hz{{if _summarize_software_filters(software_filters)}} using
-{{_summarize_software_filters(software_filters)}}.{{else}}.{{endif}}
-{{if n_scans > 1}}There were {{n_scans}} scans in total.
-{{else}}There was {{n_scans}} scan in total.{{endif}}{{_length_recording_str(length_recordings)}}
-For each dataset, there were on average {{mean_chs}} (std = {{std_chs}}) recording channels per scan,
-out of which {{mean_good_chs}} (std = {{std_good_chs}}) were used in analysis
-({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis). """  # noqa
 
 
 def _pretty_dict(template_dict):
@@ -143,7 +135,7 @@ def _summarize_dataset(root):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
 
     Returns
@@ -168,21 +160,19 @@ def _summarize_dataset(root):
         'name': name,
         'bids_version': bids_version,
         'mne_bids_doi': DOI,
-        'authors': authors,
+        'authors': _pretty_str(authors),
     }
     _pretty_dict(template_dict)
     return template_dict
 
 
-def _summarize_participants_tsv(root, verbose=True):
+def _summarize_participants_tsv(root):
     """Summarize `participants.tsv` file in BIDS root directory.
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
-    verbose: bool
-        Set verbose output to true or false.
 
     Returns
     -------
@@ -195,8 +185,7 @@ def _summarize_participants_tsv(root, verbose=True):
 
     participants_tsv = _from_tsv(str(participants_tsv_fpath))
     p_ids = participants_tsv['participant_id']
-    if verbose:
-        print(f'Summarizing participants.tsv {participants_tsv_fpath}...')
+    logger.info(f'Summarizing participants.tsv {participants_tsv_fpath}...')
 
     # summarize sex count statistics
     keys = ['M', 'F', 'n/a']
@@ -226,7 +215,7 @@ def _summarize_participants_tsv(root, verbose=True):
     p_ages = participants_tsv.get('age')
     min_age, max_age = 'n/a', 'n/a'
     mean_age, std_age = 'n/a', 'n/a'
-    n_age_unknown = len(p_ages)
+    n_age_unknown = len(p_ages) if p_ages else len(p_ids)
     if p_ages:
         # only summarize age if they are numerics
         if all([age.isnumeric() for age in p_ages if age != 'n/a']):
@@ -237,35 +226,33 @@ def _summarize_participants_tsv(root, verbose=True):
                 mean_age, std_age = np.mean(age_list), np.std(age_list)
 
     template_dict = {
-        'sexs': sexs,
-        'hands': hands,
-        'n_age_unknown': n_age_unknown,
-        'mean_age': mean_age,
-        'std_age': std_age,
-        'min_age': min_age,
-        'max_age': max_age,
+        'sexs': _summarize_participant_sex(sexs),
+        'hands': _summarize_participant_hand(hands),
+        'ages': _range_str(
+            min_age, max_age, mean_age, std_age, n_age_unknown,
+            'age'
+        )
     }
     return template_dict
 
 
-def _summarize_scans(root, session=None, verbose=True):
+def _summarize_scans(root, session=None):
     """Summarize scans in BIDS root directory.
 
     Summarizes scans only if there is a *_scans.tsv file.
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     session : str, optional
         The session for a item. Corresponds to "ses".
-    verbose : bool
-        Set verbose output to true or false.
 
     Returns
     -------
     template_dict : dict
         A dictionary of values for various template strings.
+
     """
     root = Path(root)
     if session is None:
@@ -279,14 +266,11 @@ def _summarize_scans(root, session=None, verbose=True):
              'we do not generate a report without the scans.tsv files.')
         return dict()
 
-    if verbose:
-        print(f'Summarizing scans.tsv files {scans_fpaths}...')
+    logger.info(f'Summarizing scans.tsv files {scans_fpaths}...')
 
     # summarize sidecar.json, channels.tsv template
-    sidecar_dict = _summarize_sidecar_json(root, scans_fpaths,
-                                           verbose=verbose)
-    channels_dict = _summarize_channels_tsv(root, scans_fpaths,
-                                            verbose=verbose)
+    sidecar_dict = _summarize_sidecar_json(root, scans_fpaths)
+    channels_dict = _summarize_channels_tsv(root, scans_fpaths)
     template_dict = dict()
     template_dict.update(**sidecar_dict)
     template_dict.update(**channels_dict)
@@ -294,23 +278,22 @@ def _summarize_scans(root, session=None, verbose=True):
     return template_dict
 
 
-def _summarize_sidecar_json(root, scans_fpaths, verbose=True):
+def _summarize_sidecar_json(root, scans_fpaths):
     """Summarize scans in BIDS root directory.
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     scans_fpaths : list
         A list of all *_scans.tsv files in ``root``. The summary
         will occur for all scans listed in the *_scans.tsv files.
-    verbose : bool
-        Set verbose output to true or false.
 
     Returns
     -------
     template_dict : dict
         A dictionary of values for various template strings.
+
     """
     n_scans = 0
     powerlinefreqs, sfreqs = set(), set()
@@ -333,8 +316,9 @@ def _summarize_sidecar_json(root, scans_fpaths, verbose=True):
             n_scans += 1
 
             # convert to BIDS Path
-            params = get_entities_from_fname(bids_path)
-            bids_path = BIDSPath(root=root, **params)
+            if not isinstance(bids_path, BIDSPath):
+                bids_path = get_bids_path_from_fname(bids_path)
+            bids_path.root = root
 
             # XXX: improve to allow emptyroom
             if bids_path.subject == 'emptyroom':
@@ -370,16 +354,16 @@ def _summarize_sidecar_json(root, scans_fpaths, verbose=True):
 
     template_dict = {
         'n_scans': n_scans,
-        'manufacturer': list(manufacturers),
-        'sfreq': sfreqs,
-        'powerlinefreq': powerlinefreqs,
-        'software_filters': software_filters,
-        'length_recordings': length_recordings,
+        'manufacturer': _pretty_str(manufacturers),
+        'sfreq': _pretty_str(sfreqs),
+        'powerlinefreq': _pretty_str(powerlinefreqs),
+        'software_filters': _summarize_software_filters(software_filters),
+        'length_recordings': _length_recording_str(length_recordings),
     }
     return template_dict
 
 
-def _summarize_channels_tsv(root, scans_fpaths, verbose=True):
+def _summarize_channels_tsv(root, scans_fpaths):
     """Summarize channels.tsv data in BIDS root directory.
 
     Currently, summarizes all REQUIRED components of channels
@@ -387,12 +371,11 @@ def _summarize_channels_tsv(root, scans_fpaths, verbose=True):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     scans_fpaths : list
         A list of all *_scans.tsv files in ``root``. The summary
         will occur for all scans listed in the *_scans.tsv files.
-    verbose : bool
 
     Returns
     -------
@@ -419,8 +402,9 @@ def _summarize_channels_tsv(root, scans_fpaths, verbose=True):
                 continue
 
             # convert to BIDS Path
-            params = get_entities_from_fname(bids_path)
-            bids_path = BIDSPath(root=root, **params)
+            if not isinstance(bids_path, BIDSPath):
+                bids_path = get_bids_path_from_fname(bids_path)
+            bids_path.root = root
 
             # XXX: improve to allow emptyroom
             if bids_path.subject == 'emptyroom':
@@ -452,7 +436,8 @@ def _summarize_channels_tsv(root, scans_fpaths, verbose=True):
     return template_dict
 
 
-def make_report(root, session=None, verbose=True):
+@verbose
+def make_report(root, session=None, verbose=None):
     """Create a methods paragraph string from BIDS dataset.
 
     Summarizes the REQUIRED components in the BIDS specification
@@ -466,12 +451,11 @@ def make_report(root, session=None, verbose=True):
 
     Parameters
     ----------
-    root : str | pathlib.Path
+    root : path-like
         The path of the root of the BIDS compatible folder.
     session : str | None
             The (optional) session for a item. Corresponds to "ses".
-    verbose : bool | None
-        Set verbose output to true or false.
+    %(verbose)s
 
     Returns
     -------
@@ -501,48 +485,53 @@ def make_report(root, session=None, verbose=True):
     participant_summary = _summarize_participants_tsv(root)
 
     # RECOMMENDED: scans summary
-    scans_summary = _summarize_scans(root, session=session,
-                                     verbose=verbose)
+    scans_summary = _summarize_scans(root, session=session)
+
+    dataset_agnostic_summary = scans_summary.copy()
+    dataset_agnostic_summary['system'] = _pretty_str(modalities)
 
     # turn off 'recommended' report summary
     # if files are not available to summarize
     if not participant_summary:
-        participant_template = ''
+        participants_info = ''
     else:
-        content = f'{FUNCTION_TEMPLATE}{PARTICIPANTS_TEMPLATE}'
-        participant_template = Template(content=content)
-        participant_template = participant_template.substitute(
-            **participant_summary)
-        if verbose:
-            print(f'The participant template found: {participant_template}')
-
-    dataset_summary['PARTICIPANTS_TEMPLATE'] = str(participant_template)
+        particpants_info_template = jinja_env.get_template(
+            'participants.jinja'
+        )
+        participants_info = particpants_info_template.render(
+            **participant_summary
+        )
+        logger.info(f'The participant template found: {participants_info}')
 
     if not scans_summary:
-        datatype_agnostic_template = ''
+        datatype_agnostic_info = ''
     else:
-        datatype_agnostic_template = DATATYPE_AGNOSTIC_TEMPLATE
+        datatype_agnostic_template = jinja_env.get_template(
+            'datatype_agnostic.jinja'
+        )
+        datatype_agnostic_info = datatype_agnostic_template.render(
+            **dataset_agnostic_summary
+        )
 
     dataset_summary.update({
-        'system': modalities,
         'n_subjects': len(subjects),
+        'participants_info': participants_info,
         'n_sessions': len(sessions),
-        'sessions': sessions,
+        'sessions': _pretty_str(sessions),
     })
 
     # XXX: add channel summary for modalities (ieeg, meg, eeg)
     # create the content and mne Template
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".
-    content = f'{FUNCTION_TEMPLATE}{BIDS_DATASET_TEMPLATE}' \
-              f'{datatype_agnostic_template}'
 
-    paragraph = Template(content=content)
-    paragraph = paragraph.substitute(**dataset_summary,
-                                     **scans_summary)
+    dataset_summary_template = jinja_env.get_template('dataset_summary.jinja')
+    dataset_summary_info = dataset_summary_template.render(**dataset_summary)
 
-    # Clean paragraph
+    # Concatenate info and clean the paragraph
+    paragraph = f'{dataset_summary_info}\n{datatype_agnostic_info}'
     paragraph = paragraph.replace('\n', ' ')
-    paragraph = paragraph.replace('  ', ' ')
+    while '  ' in paragraph:
+        paragraph = paragraph.replace('  ', ' ')
 
     return '\n'.join(textwrap.wrap(paragraph, width=80))

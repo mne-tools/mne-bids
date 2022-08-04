@@ -5,10 +5,9 @@
 #          Chris Holdgraf <choldgraf@berkeley.edu>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import os.path as op
 from pathlib import Path
-import glob
 import json
 import re
 import warnings
@@ -18,7 +17,9 @@ import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
-from mne.utils import has_nibabel, logger, warn, get_subjects_dir
+from mne.utils import (
+    has_nibabel, logger, warn, get_subjects_dir, check_version
+)
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -27,33 +28,44 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              ANNOTATIONS_TO_KEEP,
                              reader, _map_options)
-from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
+from mne_bids.utils import _get_ch_type_mapping, verbose
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
-                           _infer_datatype)
+                           _infer_datatype, get_bids_path_from_fname)
 
 
-def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
-              allow_maxshield=False, config=None, verbose=None, **kwargs):
+def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
+              allow_maxshield=False, config_path=None, **kwargs):
     """Read a raw file into MNE, making inferences based on extension."""
-    _, ext = _parse_ext(raw_fpath)
+    _, ext = _parse_ext(raw_path)
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-        raw = io.read_raw_kit(raw_fpath, elp=electrode, hsp=hsp,
+        raw = io.read_raw_kit(raw_path, elp=electrode, hsp=hsp,
                               mrk=hpi, preload=False, **kwargs)
 
     # BTi systems
     elif ext == '.pdf':
-        raw = io.read_raw_bti(raw_fpath, config_fname=config,
-                              head_shape_fname=hsp,
-                              preload=False, verbose=verbose,
-                              **kwargs)
+        raw = io.read_raw_bti(
+            pdf_fname=str(raw_path),  # FIXME MNE should accept Path!
+            config_fname=str(config_path),  # FIXME MNE should accept Path!
+            head_shape_fname=hsp,
+            preload=False,
+            **kwargs
+        )
 
     elif ext == '.fif':
-        raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
+        raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf']:
-        raw = reader[ext](raw_fpath, **kwargs)
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
+        if (
+            ext == '.snirf' and
+            not check_version('mne', '1.0')
+        ):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+        raw_path = Path(raw_path)
+        raw = reader[ext](raw_path, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
@@ -70,12 +82,12 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     return raw
 
 
-def _read_events(events_data, event_id, raw, verbose=None):
+def _read_events(events_data, event_id, raw, bids_path=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
     ----------
-    events_data : str | np.ndarray | None
+    events_data : path-like | np.ndarray | None
         If a string, a path to an events file. If an array, an MNE events array
         (shape n_events, 3). If None, events will be generated from
         ``raw.annotations``.
@@ -84,8 +96,10 @@ def _read_events(events_data, event_id, raw, verbose=None):
         mapping a description key to an integer-valued event code.
     raw : mne.io.Raw
         The data as MNE-Python Raw object.
-    verbose : bool | str | int | None
-        If not None, override default verbose level (see :func:`mne.verbose`).
+    bids_path : BIDSPath | None
+        Can be used to determine if the data is a resting-state or empty-room
+        recording, and will suppress a warning about missing events in this
+        case.
 
     Returns
     -------
@@ -102,9 +116,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
 
     """
     # get events from events_data
-    if isinstance(events_data, str):
-        events = read_events(events_data, verbose=verbose).astype(int)
-    elif isinstance(events_data, np.ndarray):
+    if isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
             raise ValueError('Events must have two dimensions, '
                              f'found {events_data.ndim}')
@@ -112,8 +124,10 @@ def _read_events(events_data, event_id, raw, verbose=None):
             raise ValueError('Events must have second dimension of length 3, '
                              f'found {events_data.shape[1]}')
         events = events_data
-    else:
+    elif events_data is None:
         events = np.empty(shape=(0, 3), dtype=int)
+    else:
+        events = read_events(events_data).astype(int)
 
     if events.size > 0:
         # Only keep events for which we have an ID <> description mapping.
@@ -136,7 +150,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
         # care of this shift automatically.
         new_annotations = mne.annotations_from_events(
             events=events, sfreq=raw.info['sfreq'], event_desc=id_to_desc_map,
-            orig_time=raw.annotations.orig_time, verbose=verbose)
+            orig_time=raw.annotations.orig_time)
 
         raw = raw.copy()  # Don't alter the original.
         annotations = raw.annotations.copy()
@@ -151,28 +165,40 @@ def _read_events(events_data, event_id, raw, verbose=None):
     all_events, all_desc = events_from_annotations(
         raw,
         event_id=event_id,
-        regexp=None,  # Include `BAD_` and `EDGE_` Annotations, too.
-        verbose=verbose
+        regexp=None  # Include `BAD_` and `EDGE_` Annotations, too.
     )
     all_dur = raw.annotations.duration
-    if all_events.size == 0 and 'rest' not in raw.filenames[0]:
-        warn('No events found or provided. Please add annotations '
-             'to the raw data, or provide the events_data and '
-             'event_id parameters. If this is resting state data '
-             'it is recommended to name the task "rest".')
+
+    # Warn about missing events if not rest or empty-room data
+    if (
+        (
+            all_events.size == 0 and
+            bids_path.task is not None
+        ) and (
+            not bids_path.task.startswith('rest') or
+            not (
+                bids_path.subject == 'emptyroom' and
+                bids_path.task == 'noise'
+            )
+        )
+    ):
+        warn('No events found or provided. Please add annotations to the raw '
+             'data, or provide the events_data and event_id parameters. For '
+             'resting state data, BIDS recommends naming the task using '
+             'labels beginning with "rest".')
 
     return all_events, all_dur, all_desc
 
 
-def _handle_participants_reading(participants_fname, raw,
-                                 subject, verbose=None):
+def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
     row_ind = subjects.index(subject)
+    raw.info['subject_info'] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
     for col_name, value in participants_tsv.items():
-        if col_name == 'sex' or col_name == 'hand':
+        if col_name in ('sex', 'hand'):
             value = _map_options(what=col_name, key=value[row_ind],
                                  fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
@@ -181,20 +207,29 @@ def _handle_participants_reading(participants_fname, raw,
                     info_str = 'subject sex'
                 else:
                     info_str = 'subject handedness'
-                warn(f'Unable to map `{col_name}` value to MNE. '
+                warn(f'Unable to map "{col_name}" value "{value}" to MNE. '
                      f'Not setting {info_str}.')
+        elif col_name in ('height', 'weight'):
+            try:
+                value = float(value[row_ind])
+            except ValueError:
+                value = None
         else:
-            value = value[row_ind]
+            if value[row_ind] == 'n/a':
+                value = None
+            else:
+                value = value[row_ind]
+
         # add data into raw.Info
-        if raw.info['subject_info'] is None:
-            raw.info['subject_info'] = dict()
         key = 'his_id' if col_name == 'participant_id' else col_name
-        raw.info['subject_info'][key] = value
+        if value is not None:
+            assert key not in raw.info['subject_info']
+            raw.info['subject_info'][key] = value
 
     return raw
 
 
-def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
+def _handle_scans_reading(scans_fname, raw, bids_path):
     """Read associated scans.tsv and set meas_date."""
     scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
@@ -212,6 +247,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         acq_times = scans_tsv['acq_time']
     else:
         acq_times = ['n/a'] * len(fnames)
+
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
@@ -239,9 +275,8 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
         acq_time = datetime.strptime(acq_time, '%Y-%m-%dT%H:%M:%S.%fZ')
         acq_time = acq_time.replace(tzinfo=timezone.utc)
 
-        if verbose:
-            logger.debug(f'Loaded {scans_fname} scans file to set '
-                         f'acq_time as {acq_time}.')
+        logger.debug(f'Loaded {scans_fname} scans file to set '
+                     f'acq_time as {acq_time}.')
         # First set measurement date to None and then call call anonymize() to
         # remove any traces of the measurement date we wish
         # to replace – it might lurk out in more places than just
@@ -267,7 +302,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path, verbose=False):
     return raw
 
 
-def _handle_info_reading(sidecar_fname, raw, verbose=None):
+def _handle_info_reading(sidecar_fname, raw):
     """Read associated sidecar JSON and populate raw.
 
     Handle PowerLineFrequency of recording.
@@ -275,26 +310,34 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
     with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
 
-    # read in the sidecar JSON's line frequency
-    line_freq = sidecar_json.get("PowerLineFrequency")
-    if line_freq == "n/a":
-        line_freq = None
+    # read in the sidecar JSON's and raw object's line frequency
+    json_linefreq = sidecar_json.get("PowerLineFrequency")
+    raw_linefreq = raw.info["line_freq"]
 
-    if raw.info["line_freq"] is not None and line_freq is None:
-        line_freq = raw.info["line_freq"]  # take from file is present
+    # If both are defined, warn if there is a conflict, else all is fine
+    if (json_linefreq is not None) and (raw_linefreq is not None):
+        if json_linefreq != raw_linefreq:
 
-    if raw.info["line_freq"] is not None and line_freq is not None:
-        # if both have a set Power Line Frequency, then
-        # check that they are the same, else there is a
-        # discrepancy in the metadata of the dataset.
-        if raw.info["line_freq"] != line_freq:
-            raise ValueError("Line frequency in sidecar json does "
-                             "not match the info datastructure of "
-                             "the mne.Raw. "
-                             "Raw is -> {} ".format(raw.info["line_freq"]),
-                             "Sidecar JSON is -> {} ".format(line_freq))
+            msg = (
+                f"Line frequency in sidecar JSON does not match the info "
+                f"data structure of the mne.Raw object:\n"
+                f"Sidecar JSON is -> {json_linefreq}\n"
+                f"Raw is -> {raw_linefreq}\n\n")
 
-    raw.info["line_freq"] = line_freq
+            if json_linefreq == "n/a":
+                msg += "Defaulting to the info from mne.Raw object."
+                raw.info["line_freq"] = raw_linefreq
+            else:
+                msg += "Defaulting to the info from sidecar JSON."
+                raw.info["line_freq"] = json_linefreq
+
+            warn(msg)
+
+    # Else, try to use JSON, fall back on mne.Raw
+    elif (json_linefreq is not None) and (json_linefreq != "n/a"):
+        raw.info["line_freq"] = json_linefreq
+    else:
+        pass  # line freq is either defined or None in mne.Raw
 
     # get cHPI info
     chpi = sidecar_json.get('ContinuousHeadLocalization')
@@ -305,6 +348,9 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
         from mne.io.ctf import RawCTF
         from mne.io.kit.kit import RawKIT
 
+        msg = ('Cannot verify that the cHPI frequencies from '
+               'the MEG JSON sidecar file correspond to the raw data{}')
+
         if isinstance(raw, RawCTF):
             # Pick channels corresponding to the cHPI positions
             hpi_picks = pick_channels_regexp(raw.info['ch_names'],
@@ -314,37 +360,39 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
                     f'Could not find all cHPI channels that we expected for '
                     f'CTF data. Expected: 9, found: {len(hpi_picks)}'
                 )
-            logger.info('Cannot verify that the cHPI frequencies provided in '
-                        'the MEG JSON sidecar file correspond to the raw data '
-                        'for CTF files.')
+            logger.info(msg.format(" for CTF files."))
+
         elif isinstance(raw, RawKIT):
-            logger.info('Cannot verify that the cHPI information provided in '
-                        'the MEG JSON sidecar file corresponds to the raw '
-                        'data for KIT files.')
-        else:
+            logger.info(msg.format(" for KIT files."))
+
+        elif 'HeadCoilFrequency' in sidecar_json:
             hpi_freqs_json = sidecar_json['HeadCoilFrequency']
             try:
                 hpi_freqs_raw, _, _ = mne.chpi.get_chpi_info(raw.info)
             except ValueError:
-                logger.info(
-                    'Cannot verify that the cHPI frequencies provided in '
-                    'the MEG JSON sidecar file correspond to those in the '
-                    'raw data. (Was it converted from another format?)'
-                )
+                logger.info(msg.format("."))
             else:
+                # XXX: Set chpi info in mne.Raw to what is in the sidecar
                 if not np.allclose(hpi_freqs_json, hpi_freqs_raw):
-                    raise ValueError(
+                    warn(
                         f'The cHPI coil frequencies in the sidecar file '
-                        f'{sidecar_fname}:\n    {hpi_freqs_json}\ndiffer from'
-                        f' what is stored in the raw data:\n'
-                        f'    {hpi_freqs_raw}\nCannot proceed.'
+                        f'{sidecar_fname}:\n    {hpi_freqs_json}\n '
+                        f'differ from what is stored in the raw data:\n'
+                        f'    {hpi_freqs_raw}.\n'
+                        f'Defaulting to the info from mne.Raw object.'
                     )
+        else:
+            addmsg = (".\n(Because no 'HeadCoilFrequency' data "
+                      "was found in the sidecar.)")
+            logger.info(msg.format(addmsg))
+
     else:
         if raw.info['hpi_subsystem']:
             logger.info('Dropping cHPI information stored in raw data, '
                         'following specification in sidecar file')
-        raw.info['hpi_subsystem'] = None
-        raw.info['hpi_meas'] = []
+        with raw.info._unlock():
+            raw.info['hpi_subsystem'] = None
+            raw.info['hpi_meas'] = []
 
     return raw
 
@@ -387,7 +435,9 @@ def _handle_events_reading(events_fname, raw):
                         f'The event "{trial_type}" refers to multiple event '
                         f'values. Creating hierarchical event names.')
                     for ii in idx:
-                        new_name = f'{trial_type}/{values[ii]}'
+                        value = values[ii]
+                        value = 'na' if value == 'n/a' else value
+                        new_name = f'{trial_type}/{value}'
                         logger.info(f'    Renaming event: {trial_type} -> '
                                     f'{new_name}')
                         trial_types[ii] = new_name
@@ -540,7 +590,8 @@ def _handle_channels_reading(channels_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_path, extra_params=None, verbose=True):
+@verbose
+def read_raw_bids(bids_path, extra_params=None, verbose=None):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -548,7 +599,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
+    bids_path : BIDSPath
         The file to read. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. The ``.datatype`` attribute
         **may** be set. If ``.datatype`` is not set and only one data type
@@ -565,8 +616,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         Note that the ``exclude`` parameter, which is supported by some
         MNE-Python readers, is not supported; instead, you need to subset
         your channels **after** reading.
-    verbose : bool
-        The verbosity level.
+    %(verbose)s
 
     Returns
     -------
@@ -613,23 +663,36 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     if suffix is None:
         bids_path.update(suffix=datatype)
 
-    data_dir = bids_path.directory
-    bids_fname = bids_path.fpath.name
-
-    if op.splitext(bids_fname)[1] == '.pdf':
-        bids_raw_folder = op.join(data_dir, f'{bids_path.basename}')
-        bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
-        config = op.join(bids_raw_folder, 'config')
+    if bids_path.fpath.suffix == '.pdf':
+        bids_raw_folder = bids_path.directory / f'{bids_path.basename}'
+        raw_path = list(bids_raw_folder.glob('c,rf*'))[0]
+        config_path = bids_raw_folder / 'config'
     else:
-        bids_fpath = op.join(data_dir, bids_fname)
+        raw_path = bids_path.fpath
         # Resolve for FIFF files
-        if (bids_fpath.endswith('.fif') and bids_path.split is None and
-                op.islink(bids_fpath)):
-            target_path = op.realpath(bids_fpath)
+        if (
+            raw_path.suffix == '.fif' and
+            bids_path.split is None and
+            raw_path.is_symlink()
+        ):
+            target_path = raw_path.resolve()
             logger.info(f'Resolving symbolic link: '
-                        f'{bids_fpath} -> {target_path}')
-            bids_fpath = target_path
-        config = None
+                        f'{raw_path} -> {target_path}')
+            raw_path = target_path
+        config_path = None
+
+    # Special-handle EDF filenames: we accept upper- and lower-case extensions
+    if raw_path.suffix.lower() == '.edf':
+        for extension in ('.edf', '.EDF'):
+            candidate_path = raw_path.with_suffix(extension)
+            if candidate_path.exists():
+                raw_path = candidate_path
+                break
+
+    if not raw_path.exists():
+        raise FileNotFoundError(f'File does not exist: {raw_path}')
+    if config_path is not None and not config_path.exists():
+        raise FileNotFoundError(f'config directory not found: {config_path}')
 
     if extra_params is None:
         extra_params = dict()
@@ -637,11 +700,10 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
         del extra_params['exclude']
         logger.info('"exclude" parameter is not supported by read_raw_bids')
 
-    if bids_fname.endswith('.fif') and 'allow_maxshield' not in extra_params:
+    if raw_path.suffix == '.fif' and 'allow_maxshield' not in extra_params:
         extra_params['allow_maxshield'] = True
-
-    raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, verbose=None, **extra_params)
+    raw = _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
+                    config_path=config_path, **extra_params)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
@@ -679,7 +741,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                f"{bids_path.basename}")
         if datatype in ['meg', 'eeg', 'ieeg']:
             _read_dig_bids(electrodes_fname, coordsystem_fname,
-                           raw=raw, datatype=datatype, verbose=verbose)
+                           raw=raw, datatype=datatype)
 
     # Try to find an associated sidecar .json to get information about the
     # recording snapshot
@@ -688,7 +750,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                            extension='.json',
                                            on_error='warn')
     if sidecar_fname is not None:
-        raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
+        raw = _handle_info_reading(sidecar_fname, raw)
 
     # read in associated scans filename
     scans_fname = BIDSPath(
@@ -698,25 +760,29 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     ).fpath
 
     if scans_fname.exists():
-        raw = _handle_scans_reading(scans_fname, raw, bids_path,
-                                    verbose=verbose)
+        raw = _handle_scans_reading(scans_fname, raw, bids_path)
 
     # read in associated subject info from participants.tsv
-    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    participants_tsv_path = bids_root / 'participants.tsv'
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_fpath):
-        raw = _handle_participants_reading(participants_tsv_fpath, raw,
-                                           subject, verbose=verbose)
+    if op.exists(participants_tsv_path):
+        raw = _handle_participants_reading(
+            participants_fname=participants_tsv_path,
+            raw=raw,
+            subject=subject
+        )
     else:
-        warn("Participants file not found for {}... Not reading "
-             "in any particpants.tsv data.".format(bids_fname))
+        warn(f"participants.tsv file not found for {raw_path}")
+        raw.info['subject_info'] = dict()
 
     assert raw.annotations.orig_time == raw.info['meas_date']
     return raw
 
 
+@verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None):
+                       fs_subject=None, fs_subjects_dir=None, *, kind=None,
+                       verbose=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -730,12 +796,17 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
 
     Parameters
     ----------
-    bids_path : mne_bids.BIDSPath
-        The path of the electrophysiology recording.
+    bids_path : BIDSPath
+        The path of the electrophysiology recording. If ``datatype`` and
+        ``suffix`` are not present, they will be set to ``'meg'``, and a
+        warning will be raised.
+
+        .. versionchanged:: 0.10
+           A warning is raised it ``datatype`` or ``suffix`` are not set.
     extra_params : None | dict
         Extra parameters to be passed to :func:`mne.io.read_raw` when reading
         the MEG file.
-    t1_bids_path : mne_bids.BIDSPath | None
+    t1_bids_path : BIDSPath | None
         If ``None`` (default), will try to discover the T1-weighted MRI file
         based on the name and location of the MEG recording specified via the
         ``bids_path`` parameter. Alternatively, you explicitly specify which
@@ -744,14 +815,28 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         Use this parameter e.g. if the T1 scan was recorded during a different
         session than the MEG. It is even possible to point to a T1 image stored
         in an entirely different BIDS dataset than the MEG data.
-    fs_subject : str | None
-        The subject identifier used for FreeSurfer. If ``None``, defaults to
-        the ``subject`` entity in ``bids_path``.
-    fs_subjects_dir : str | pathlib.Path | None
+    fs_subject : str
+        The subject identifier used for FreeSurfer.
+
+        .. versionchanged:: 0.10
+           Does not default anymore to ``bids_path.subject`` if ``None``.
+    fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
+    kind : str | None
+        The suffix of the anatomical landmark names in the JSON sidecar.
+        A suffix might be present e.g. to distinguish landmarks between
+        sessions. If provided, should not include a leading underscore ``_``.
+        For example, if the landmark names in the JSON sidecar file are
+        ``LPA_ses-1``, ``RPA_ses-1``, ``NAS_ses-1``, you should pass
+        ``'ses-1'`` here.
+        If ``None``, no suffix is appended, the landmarks named
+        ``Nasion`` (or ``NAS``), ``LPA``, and ``RPA`` will be used.
+
+        .. versionadded:: 0.10
+    %(verbose)s
 
     Returns
     -------
@@ -774,30 +859,67 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # only get this for MEG data
-    meg_bids_path.update(datatype='meg', suffix='meg')
+    # if the bids_path is underspecified, only get info for MEG data
+    if meg_bids_path.datatype is None:
+        meg_bids_path.datatype = 'meg'
+        warn('bids_path did not have a datatype set. Assuming "meg". This '
+             'will raise an exception in the future.', module='mne_bids',
+             category=DeprecationWarning)
+    if meg_bids_path.suffix is None:
+        meg_bids_path.suffix = 'meg'
+        warn('bids_path did not have a suffix set. Assuming "meg". This '
+             'will raise an exception in the future.', module='mne_bids',
+             category=DeprecationWarning)
 
     # Get the sidecar file for MRI landmarks
-    match_bids_path = meg_bids_path if t1_bids_path is None else t1_bids_path
-    t1w_path = _find_matching_sidecar(
-        match_bids_path, suffix='T1w', extension='.nii.gz')
+    t1w_bids_path = (
+        (meg_bids_path if t1_bids_path is None else t1_bids_path)
+        .copy()
+        .update(
+            datatype='anat',
+            suffix='T1w',
+            task=None
+        )
+    )
     t1w_json_path = _find_matching_sidecar(
-        match_bids_path, suffix='T1w', extension='.json')
+        bids_path=t1w_bids_path, extension='.json', on_error='ignore'
+    )
+    del t1_bids_path
+
+    if t1w_json_path is not None:
+        t1w_json_path = Path(t1w_json_path)
+
+    if t1w_json_path is None or not t1w_json_path.exists():
+        raise FileNotFoundError(
+            f'Did not find T1w JSON sidecar file, tried location: '
+            f'{t1w_json_path}'
+        )
+    for extension in ('.nii', '.nii.gz'):
+        t1w_path_candidate = t1w_json_path.with_suffix(extension)
+        if t1w_path_candidate.exists():
+            t1w_bids_path = get_bids_path_from_fname(fname=t1w_path_candidate)
+            break
+
+    if not t1w_bids_path.fpath.exists():
+        raise FileNotFoundError(
+            f'Did not find T1w recording file, tried location: '
+            f'{t1w_path_candidate.name.replace(".nii.gz", "")}[.nii, .nii.gz]'
+        )
 
     # Get MRI landmarks from the JSON sidecar
-    with open(t1w_json_path, 'r', encoding='utf-8') as f:
-        t1w_json = json.load(f)
+    t1w_json = json.loads(t1w_json_path.read_text(encoding='utf-8'))
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
+    suffix = f"_{kind}" if kind is not None else ""
     mri_landmarks = np.full((3, 3), np.nan)
     for landmark_name, coords in mri_coords_dict.items():
-        if landmark_name.upper() == 'LPA':
+        if landmark_name.upper() == ('LPA' + suffix).upper():
             mri_landmarks[0, :] = coords
-        elif landmark_name.upper() == 'RPA':
+        elif landmark_name.upper() == ('RPA' + suffix).upper():
             mri_landmarks[2, :] = coords
-        elif (landmark_name.upper() == 'NAS' or
-              landmark_name.lower() == 'nasion'):
+        elif (landmark_name.upper() == ('NAS' + suffix).upper() or
+              landmark_name.lower() == ('nasion' + suffix).lower()):
             mri_landmarks[1, :] = coords
         else:
             continue
@@ -813,19 +935,23 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
             f'{mri_coords_dict}'
         )
 
-    # The MRI landmarks are in "voxels". We need to convert the to the
-    # neuromag RAS coordinate system in order to compare the with MEG landmarks
-    # see also: `mne_bids.write.write_anat`
+    # The MRI landmarks are in "voxels". We need to convert them to the
+    # Neuromag RAS coordinate system in order to compare them with MEG
+    # landmarks. See also: `mne_bids.write.write_anat`
     if fs_subject is None:
+        warn('Passing "fs_subject=None" has been deprecated and will raise '
+             'an error in future versions. Please explicitly specify the '
+             'FreeSurfer subject name.', DeprecationWarning)
         fs_subject = f'sub-{meg_bids_path.subject}'
+
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
-    fs_t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
-    if not fs_t1_fname.exists():
+    fs_t1_path = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
+    if not fs_t1_path.exists():
         raise ValueError(
-            f"Could not find {fs_t1_fname}. Consider running FreeSurfer's "
+            f"Could not find {fs_t1_path}. Consider running FreeSurfer's "
             f"'recon-all` for subject {fs_subject}.")
-    fs_t1_mgh = nib.load(str(fs_t1_fname))
-    t1_nifti = nib.load(str(t1w_path))
+    fs_t1_mgh = nib.load(str(fs_t1_path))
+    t1_nifti = nib.load(str(t1w_bids_path.fpath))
 
     # Convert to MGH format to access vox2ras method
     t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
@@ -846,13 +972,23 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     if extra_params is None:
         extra_params = dict()
     if ext == '.fif':
-        extra_params['allow_maxshield'] = True
+        extra_params['allow_maxshield'] = 'yes'
 
     raw = read_raw_bids(bids_path=meg_bids_path, extra_params=extra_params)
-    meg_coords_dict = _extract_landmarks(raw.info['dig'])
-    meg_landmarks = np.asarray((meg_coords_dict['LPA'],
-                                meg_coords_dict['NAS'],
-                                meg_coords_dict['RPA']))
+
+    if (raw.get_montage() is None or
+        raw.get_montage().get_positions() is None or
+        any([raw.get_montage().get_positions()[fid_key] is None
+             for fid_key in ('nasion', 'lpa', 'rpa')])):
+        raise RuntimeError(
+            f'Could not extract fiducial points from ``raw`` file: '
+            f'{meg_bids_path}\n\n'
+            f'The ``raw`` file SHOULD contain digitization points '
+            'for the nasion and left and right pre-auricular points '
+            'but none were found'
+        )
+    pos = raw.get_montage().get_positions()
+    meg_landmarks = np.asarray((pos['lpa'], pos['nasion'], pos['rpa']))
 
     # Given the two sets of points, fit the transform
     trans_fitted = fit_matched_points(src_pts=meg_landmarks,

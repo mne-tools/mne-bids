@@ -7,7 +7,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 # Authors: Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 import mne_bids
 from mne_bids import write_raw_bids, BIDSPath
 from mne_bids.read import _read_raw
@@ -72,10 +72,10 @@ def run():
 
     allow_maxshield = False
     if opt.raw_fname.endswith('.fif'):
-        allow_maxshield = True
+        allow_maxshield = 'yes'
 
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
-                    hsp=opt.hsp, config=opt.config,
+                    hsp=opt.hsp, config_path=opt.config,
                     allow_maxshield=allow_maxshield)
     if opt.line_freq is not None:
         line_freq = None if opt.line_freq == "None" else opt.line_freq

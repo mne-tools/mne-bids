@@ -50,11 +50,19 @@ numpydoc_xref_param_type = True
 numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
 numpydoc_xref_aliases = {
+    'BIDSPath': ':class:`BIDSPath <mne_bids.BIDSPath>`',
+    'path-like': ':term:`path-like <mne:path-like>`',
+    'array-like': ':term:`array-like <mne:array-like>`',
+    'int': ':class:`int <python:int>`',
+    'bool': ':class:`bool <python:bool>`',
+    'float': ':class:`float <python:float>`',
+    'list': ':class:`list <python:list>`',
+    'tuple': ':class:`tuple <python:tuple>`',
     'NibabelImageObject': 'nibabel.spatialimages.SpatialImage',
 }
 numpydoc_xref_ignore = {
     # words
-    'of',
+    'instance', 'instances', 'of'
 }
 
 
@@ -67,6 +75,9 @@ default_role = 'autolink'  # XXX silently allows bad syntax, someone should fix
 # https://sphinx-doc.org/en/master/usage/configuration.html?#options-for-the-linkcheck-builder
 linkcheck_retries = 2
 linkcheck_rate_limit_timeout = 15.0
+linkcheck_ignore = [
+    r'https://www.researchgate.net/profile/.*',
+]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -127,12 +138,16 @@ html_theme_options = {
     'use_edit_page_button': False,
     'navigation_with_keys': False,
     'show_toc_level': 1,
+    'navbar_end': ['version-switcher', 'navbar-icon-links'],
 }
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.8 (devel)',
-        'stable': 'v0.7 (stable)',
+        'dev': 'v0.11 (devel)',
+        'stable': 'v0.10 (stable)',
+        'v0.9': 'v0.9',
+        'v0.8': 'v0.8',
+        'v0.7': 'v0.7',
         'v0.6': 'v0.6',
         'v0.5': 'v0.5',
         'v0.4': 'v0.4',
@@ -151,7 +166,7 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'nilearn': ('https://nilearn.github.io', None),
+    'nilearn': ('http://nilearn.github.io/stable', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
     'nibabel': ('https://nipy.org/nibabel', None),
 }

@@ -1,3 +1,4 @@
+"""Configure tests."""
 import os
 import platform
 

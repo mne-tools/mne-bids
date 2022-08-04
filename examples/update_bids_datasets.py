@@ -1,7 +1,7 @@
 """
-========================
-12. Update BIDS datasets
-========================
+==========================
+12. Updating BIDS datasets
+==========================
 
 When working with electrophysiological data in the BIDS format, we usually
 do not have all the metadata stored in the ``Raw`` mne-python object.
@@ -13,7 +13,7 @@ modify BIDS-formatted data.
 # Authors: Adam Li <adam2392@gmail.com>
 #          mne-bids developers
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # Imports

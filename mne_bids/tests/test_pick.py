@@ -1,20 +1,13 @@
 """Test for the coil type picking function."""
 # Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 import os.path as op
 
-# This is here to handle mne-python <0.20
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne  # noqa: F401
-
 from mne.datasets import testing
 from mne.io import read_raw_fif
+
 from mne_bids.pick import coil_type
 
 

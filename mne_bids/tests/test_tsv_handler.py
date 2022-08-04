@@ -1,25 +1,18 @@
 """Test for the tsv handling functions."""
 # Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 
 from collections import OrderedDict as odict
 
-# This is here to handle mne-python <0.20
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne  # noqa: F401
+import pytest
 
 from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine_rows, _drop,
                                   _contains_row, _tsv_to_str)
-import pytest
 
 
-def test_tsv_handler(tmpdir):
+def test_tsv_handler(tmp_path):
     """Test the TSV handling."""
     # create some dummy data
     d = odict(a=[1, 2, 3, 4], b=['five', 'six', 'seven', 'eight'])
@@ -36,7 +29,7 @@ def test_tsv_handler(tmpdir):
     assert 'nine' not in d['b']
     print(_tsv_to_str(d))
 
-    d_path = tmpdir / 'output.tsv'
+    d_path = tmp_path / 'output.tsv'
 
     # write the data to an output tsv file
     _to_tsv(d, d_path)
@@ -64,6 +57,11 @@ def test_tsv_handler(tmpdir):
     d = _combine_rows(d, d2)
     assert d['b'] == ['three', 'four', 'n/a']
     assert _contains_row(d, {'a': 5})
+
+    # test reading a single column
+    _to_tsv(odict(a=[1, 2, 3, 4]), d_path)
+    d = _from_tsv(d_path)
+    assert d['a'] == ['1', '2', '3', '4']
 
 
 def test_contains_row_different_types():

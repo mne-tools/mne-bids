@@ -1,22 +1,31 @@
 """
 .. _ex-convert-empty-room:
 
-==========================================
-09. Storing empty room data in BIDS format
-==========================================
+====================================
+09. Manually storing empty room data
+====================================
 
-This example demonstrates how to store empty room data in BIDS format
-and how to retrieve them.
+This example demonstrates how to store empty room data "manually" in the BIDS
+format and how to retrieve them.
 """
 
 # Authors: Mainak Jas <mainakjas@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 # %%
 # We are dealing with MEG data, which is often accompanied by so-called
 # "empty room" recordings for noise modeling. Below we show that we can use
 # MNE-BIDS to also save such a recording with the just converted data.
+#
+# .. note::
+#    The steps described below should only be followed if you intend to store
+#    empty-room and experimental data in **separate** steps for some reason.
+#    Otherwise, we recommend you store both with a **single** call to
+#    :func:`mne_bids.write_raw_bids` by passing the empty-room raw data via the
+#    ``empty_room`` parameter, as demonstrated in :ref:`ex-convert-mne-sample`.
+#    What is described in the example below is targeted towards advanced users
+#    only.
 #
 # Let us first import mne_bids.
 

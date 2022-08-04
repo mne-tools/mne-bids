@@ -7,7 +7,7 @@ $ mne_bids inspect --subject_id=01 --task=experiment --session=test \
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
-# License: BSD (3-clause)
+# License: BSD-3-Clause
 
 from mne.utils import logger
 
@@ -16,7 +16,7 @@ from mne_bids import BIDSPath, inspect_dataset
 
 
 def run():
-    """Run the mark_bad_channels command."""
+    """Run the mark_channels command."""
     from mne.commands.utils import get_optparser
 
     parser = get_optparser(__file__, usage="usage: %prog options args",
