@@ -10,7 +10,6 @@ import os.path as op
 from pathlib import Path
 import json
 import re
-import warnings
 from datetime import datetime, timezone
 
 import numpy as np
@@ -18,7 +17,7 @@ import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
 from mne.utils import (
-    has_nibabel, logger, warn, get_subjects_dir, check_version
+    has_nibabel, logger, warn, get_subjects_dir
 )
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
@@ -57,13 +56,6 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
-        if (
-            ext == '.snirf' and
-            not check_version('mne', '1.0')
-        ):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 
@@ -286,17 +278,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         # by the MNE documentation, and in fact we cannot load e.g. OpenNeuro
         # ds003392 without this combination.
         raw.set_meas_date(None)
-        with warnings.catch_warnings():
-            # This is to silence a warning emitted by MNE-Python < 0.24. The
-            # warnings filter can be safely removed once we drop support for
-            # MNE-Python 0.23 and older.
-            warnings.filterwarnings(
-                action='ignore',
-                message="Input info has 'meas_date' set to None",
-                category=RuntimeWarning,
-                module='mne'
-            )
-            raw.anonymize(daysback=None, keep_his=True)
+        raw.anonymize(daysback=None, keep_his=True)
         raw.set_meas_date(acq_time)
 
     return raw
