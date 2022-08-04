@@ -20,5 +20,5 @@ If applicable:
 - [ ] All CIs are happy
 - [ ] PR title starts with [MRG]
 - [ ] [whats_new.rst](https://github.com/mne-tools/mne-bids/blob/main/doc/whats_new.rst) is updated
-- [ ] New contributors have been added to [.zenodo.json](https://github.com/mne-tools/mne-bids/blob/main/.zenodo.json)
+- [ ] New contributors have been added to [CITATION.cff](https://github.com/mne-tools/mne-bids/blob/main/CITATION.cff)
 - [ ] PR description includes phrase "closes <#issue-number>"
