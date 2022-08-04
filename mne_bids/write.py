@@ -1481,11 +1481,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     If you need to add more data there, or overwrite it, then you should
     call :func:`mne_bids.make_dataset_description` directly.
 
-    If the file paths of ``raw`` and ``bids_path`` are the same, then
-    an error will occur because MNE-BIDS will inherently delete the
-    source file otherwise. This can lead to errors, so the user must
-    specify a different data path, or explicitly set ``format``.
-
     When writing EDF or BDF files, all file extensions are forced to be
     lower-case, in compliance with the BIDS specification.
 
