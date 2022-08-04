@@ -63,6 +63,8 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
+- MNE-BIDS now requires MNE-Python 1.0 or newer.
+
 - Writing BrainVision files now requires ``pybv`` version ``0.7.3``, by `Stefan Appelhoff`_ (:gh:`1011`)
 
 🪲 Bug fixes
