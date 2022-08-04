@@ -539,10 +539,7 @@ def test_fif(_bids_validate, tmp_path):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype='eeg')
-    if check_version('mne', '0.24'):
-        with pytest.warns(RuntimeWarning, match='Not setting position'):
-            raw2 = read_raw_bids(bids_path=bids_path)
-    else:
+    with pytest.warns(RuntimeWarning, match='Not setting position'):
         raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
@@ -1723,10 +1720,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 @pytest.mark.skipif(
     os.environ.get('BIDS_VALIDATOR_BRANCH') != 'NIRS',
     reason="requires Rob's NIRS branch of bids-validator"
-)
-@pytest.mark.skipif(
-    not check_version('mne', '1.0'),
-    reason='requires MNE-Python 1.0'
 )
 def test_snirf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for SNIRF data."""

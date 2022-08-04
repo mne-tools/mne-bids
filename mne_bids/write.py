@@ -147,11 +147,6 @@ def _channels_tsv(raw, fname, overwrite=False):
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
     if 'fnirs_cw_amplitude' in raw:
-        if not check_version('mne', '1.0'):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
-
         ch_data["wavelength_nominal"] = [raw.info["chs"][i]["loc"][9] for i in
                                          range(len(raw.ch_names))]
 
@@ -912,10 +907,6 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     elif datatype == 'ieeg':
         append_datatype_json = ch_info_json_ieeg
     elif datatype == 'nirs':
-        if not check_version('mne', '1.0'):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
         append_datatype_json = ch_info_json_nirs
         ch_info_ch_counts.extend(ch_info_ch_counts_nirs)
 
@@ -1780,14 +1771,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                                 datatype=bids_path.datatype,
                                 overwrite=overwrite)
     elif bids_path.datatype in ['eeg', 'ieeg', 'nirs']:
-        if (
-            bids_path.datatype == 'nirs' and
-            not check_version('mne', '1.0')
-        ):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
-
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if montage is not None or \
@@ -1889,7 +1872,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 bids_path.fpath.unlink()
         else:
             raise FileExistsError(
-                f'"{bids_path.fpath}" already exists. '  # noqa: F821
+                f'"{bids_path.fpath}" already exists. '
                 'Please set overwrite to True.')
 
     # File saving branching logic
@@ -1940,6 +1923,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                      bids_path.session, bids_path.task, bids_path.run,
                      raw._init_kwargs)
     else:
+        # ext may be .snirf
         shutil.copyfile(raw_fname, bids_path)
 
     # write to the scans.tsv file the output file written

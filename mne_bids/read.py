@@ -56,13 +56,6 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
-        if (
-            ext == '.snirf' and
-            not check_version('mne', '1.0')
-        ):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 
