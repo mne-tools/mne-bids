@@ -86,6 +86,8 @@ Detailed list of changes
 
 - :func:`~mne_bids.read_raw_bids` doesn't populate ``raw.info['subject_info']`` with invalid values anymore, preventing users from writing the data to disk again, by `Richard Höchenberger`_ (:gh:`1031`)
 
+- Writing EEGLAB files was sometimes broken when ``.set`` and ``.fdt`` pairs were supplied. This is now fixed in :func:`~mne_bids.copyfile_eeglab`, by `Stefan Appelhoff`_ (:gh:`1039`)
+
 - Writing and copying CTF files now works on Windows when files already exist (``overwrite=True``), by `Stefan Appelhoff`_ (:gh:`1035`)
 
 - Instead of deleting files and raising cryptic errors, an intentional error message is now sent when calling :func:`~mne_bids.write_raw_bids` with the source file identical to the destination file, unless ``format`` is specified, by `Adam Li`_ and `Stefan Appelhoff`_ (:gh:`889`)
