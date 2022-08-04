@@ -65,7 +65,7 @@ def test_tsv_handler(tmp_path):
 
     # test an empty tsv (just headers)
     _to_tsv(odict(onset=[], duration=[], trial_type=[]), d_path)
-    with pytest.warns(UserWarning, match="TSV file is empty"):
+    with pytest.warns(RuntimeWarning, match="TSV file is empty"):
         d = _from_tsv(d_path)
     d = _drop(d, "n/a", "trial_type")
 
