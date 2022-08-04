@@ -229,7 +229,7 @@
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">make_standard_montage</span>
 <span class="kn">from</span> <span class="nn">mne.io.kit.kit</span> <span class="kn">import</span> <span class="n">get_kit_info</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">pick_types</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">check_version</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_to_tsv</span>
 
@@ -340,10 +340,6 @@
         <span class="k">if</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
             <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;eeg&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;fnirs_cw_amplitude&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="s1">&#39;fNIRS support in MNE-BIDS requires MNE-Python version 1.0&#39;</span>
-                <span class="p">)</span>
             <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nirs&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">datatypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No MEG, EEG or iEEG channels found in data. &#39;</span>

@@ -222,7 +222,6 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -230,7 +229,7 @@
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span><span class="p">,</span> <span class="n">read_events</span><span class="p">,</span> <span class="n">events_from_annotations</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">pick_channels_regexp</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">check_version</span>
+    <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">get_subjects_dir</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.coreg</span> <span class="kn">import</span> <span class="n">fit_matched_points</span>
 <span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">apply_trans</span>
@@ -269,13 +268,6 @@
         <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.EDF&#39;</span><span class="p">,</span> <span class="s1">&#39;.snirf&#39;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.snirf&#39;</span> <span class="ow">and</span>
-            <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0&#39;</span><span class="p">)</span>
-        <span class="p">):</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="s1">&#39;fNIRS support in MNE-BIDS requires MNE-Python version 1.0&#39;</span>
-            <span class="p">)</span>
         <span class="n">raw_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw_path</span><span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -498,17 +490,7 @@
         <span class="c1"># by the MNE documentation, and in fact we cannot load e.g. OpenNeuro</span>
         <span class="c1"># ds003392 without this combination.</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_meas_date</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-            <span class="c1"># This is to silence a warning emitted by MNE-Python &lt; 0.24. The</span>
-            <span class="c1"># warnings filter can be safely removed once we drop support for</span>
-            <span class="c1"># MNE-Python 0.23 and older.</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
-                <span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Input info has &#39;meas_date&#39; set to None&quot;</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span>
-                <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span>
-            <span class="p">)</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">anonymize</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">anonymize</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_meas_date</span><span class="p">(</span><span class="n">acq_time</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">raw</span>

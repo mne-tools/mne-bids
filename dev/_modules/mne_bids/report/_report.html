@@ -527,7 +527,7 @@
 
             <span class="n">n_scans</span> <span class="o">+=</span> <span class="mi">1</span>
 
-            <span class="c1"># convert to BIDS Path</span>
+            <span class="c1"># convert to BIDSPath</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
                 <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
@@ -613,7 +613,7 @@
             <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># convert to BIDS Path</span>
+            <span class="c1"># convert to BIDSPath</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
                 <span class="n">bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>

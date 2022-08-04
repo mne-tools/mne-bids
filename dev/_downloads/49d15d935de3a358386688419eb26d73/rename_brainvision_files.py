@@ -26,13 +26,7 @@ repair of the internal file links
 For the command line version of this tool, see the :code:`cp` tool in the docs
 for the :ref:`Python Command Line Interface <python_cli>`.
 
-References
-----------
-.. [1] Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS, an
-       extension to the brain imaging data structure for
-       electroencephalography. Sci Data 6, 103 (2019).
-       https://doi.org/10.1038/s41597-019-0104-8
-.. _BrainVision data format: https://www.brainproducts.com/productdetails.php?id=21&tab=5
+.. _BrainVision data format: https://www.brainproducts.com/support-resources/brainvision-core-data-format-1-0/
 """  # noqa:E501
 
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
@@ -100,3 +94,10 @@ raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
 #
 # .. _`pybv`: https://github.com/bids-standard/pybv
 # .. _`bv-validator`: https://github.com/sappelhoff/brainvision-validator
+#
+# References
+# ----------
+# .. [1] Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS, an
+#        extension to the brain imaging data structure for
+#        electroencephalography. Sci Data 6, 103 (2019).
+#        https://doi.org/10.1038/s41597-019-0104-8

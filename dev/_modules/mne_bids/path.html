@@ -780,7 +780,7 @@
             <span class="c1"># else, return the relative path with the basename</span>
             <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> \
                     <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># get matching BIDS paths inside the bids root</span>
+                <span class="c1"># get matching BIDSPaths inside the bids root</span>
                 <span class="n">matching_paths</span> <span class="o">=</span> \
                     <span class="n">_get_matching_bidspaths_from_filesystem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -857,7 +857,7 @@
 <span class="sd">            the existing ``.check`` attribute instead, which is set upon</span>
 <span class="sd">            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.</span>
 <span class="sd">        **kwargs : dict</span>
-<span class="sd">            It can contain updates for valid BIDS path entities:</span>
+<span class="sd">            It can contain updates for valid BIDSPath entities:</span>
 <span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;, &#39;processing&#39;, &#39;run&#39;,</span>
 <span class="sd">            &#39;recording&#39;, &#39;space&#39;, &#39;suffix&#39;, &#39;split&#39;, &#39;extension&#39;,</span>
 <span class="sd">            or updates for &#39;root&#39; or &#39;datatype&#39;.</span>
@@ -1193,7 +1193,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_matching_bidspaths_from_filesystem</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get matching file paths for a BIDS path.</span>
+    <span class="sd">&quot;&quot;&quot;Get matching file paths for a BIDSPath.</span>
 
 <span class="sd">    Assumes suffix and/or extension is not provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1476,7 +1476,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bids_path : BIDSPath</span>
-<span class="sd">        The BIDS path object.</span>
+<span class="sd">        The BIDSPath object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
