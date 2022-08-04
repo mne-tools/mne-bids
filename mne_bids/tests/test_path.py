@@ -853,8 +853,6 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
                         'sample_audvis_trunc_raw.fif')
     bids_root = tmp_path / "bids"
     bids_root.mkdir()
-    tmp_dir = tmp_path / "tmp"
-    tmp_dir.mkdir()
 
     raw = _read_raw_fif(raw_fname)
     bids_path = BIDSPath(subject='01', session='01',
@@ -870,6 +868,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     # The testing data has no "noise" recording, so save the actual data
     # as named as if it were noise. We first need to write the FIFF file
     # before reading it back in.
+    tmp_dir = tmp_path / "tmp"
+    tmp_dir.mkdir()
     er_raw_fname = op.join(tmp_dir, 'ernoise_raw.fif')
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
@@ -910,13 +910,12 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     raw = read_raw_bids(bids_path=bids_path)
     raw.set_meas_date(None)
     anonymize_info(raw.info)
-    write_raw_bids(raw, bids_path, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True, format="FIF")
     with pytest.raises(ValueError, match='The provided recording does not '
                                          'have a measurement date set'):
         bids_path.find_empty_room()
 
     # test that the `AssociatedEmptyRoom` key in MEG sidecar is respected
-
     bids_root = tmp_path / 'associated-empty-room'
     bids_root.mkdir()
     raw = _read_raw_fif(raw_fname)
