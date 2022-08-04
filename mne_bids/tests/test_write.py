@@ -3774,5 +3774,5 @@ def test_repeat_write_location(tmpdir):
     raw = read_raw_bids(bids_path, verbose=False)
 
     # Re-writing with src == dest should error
-    with pytest.raises(RuntimeError, match='Desired output BIDSPath'):
+    with pytest.raises(FileExistsError, match='Desired output BIDSPath'):
         write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
