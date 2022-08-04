@@ -1,7 +1,9 @@
 """Private functions to handle tabular data."""
-import numpy as np
 from collections import OrderedDict
 from copy import deepcopy
+from warnings import warn
+
+import numpy as np
 
 
 def _combine_rows(data1, data2, drop_column=None):
@@ -109,7 +111,10 @@ def _drop(data, values, column):
     # Cast `values` to the same dtype as `new_data_col` to avoid a NumPy
     # FutureWarning, see
     # https://github.com/mne-tools/mne-bids/pull/372
-    values = np.array(values, dtype=new_data_col.dtype)
+    dtype = new_data_col.dtype
+    if new_data_col.shape == (0,):
+        dtype = np.array(values).dtype
+    values = np.array(values, dtype=dtype)
 
     mask = np.in1d(new_data_col, values, invert=True)
     for key in new_data.keys():
@@ -147,8 +152,16 @@ def _from_tsv(fname, dtypes=None):
     if not len(dtypes) == info.shape[1]:
         raise ValueError('dtypes length mismatch. Provided: {0}, '
                          'Expected: {1}'.format(len(dtypes), info.shape[1]))
+    empty_cols = 0
     for i, name in enumerate(column_names):
-        data_dict[name] = info[:, i].astype(dtypes[i]).tolist()
+        values = info[:, i].astype(dtypes[i]).tolist()
+        data_dict[name] = values
+        if len(values) == 0:
+            empty_cols += 1
+
+    if empty_cols == len(column_names):
+        warn(f"TSV file is empty: '{fname}'")
+
     return data_dict
 
 
