@@ -17,7 +17,7 @@ data. Specifically, we will follow these steps:
 
 .. currentmodule:: mne_bids
 
-.. _BrainVision format: https://www.brainproducts.com/productdetails.php?id=21&tab=5
+.. _BrainVision format: https://www.brainproducts.com/support-resources/brainvision-core-data-format-1-0/
 .. _CapTrak: https://www.fieldtriptoolbox.org/faq/coordsys/#details-of-the-captrak-coordinate-system
 
 """  # noqa: E501
