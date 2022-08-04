@@ -539,10 +539,7 @@ def test_fif(_bids_validate, tmp_path):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype='eeg')
-    if check_version('mne', '0.24'):
-        with pytest.warns(RuntimeWarning, match='Not setting position'):
-            raw2 = read_raw_bids(bids_path=bids_path)
-    else:
+    with pytest.warns(RuntimeWarning, match='Not setting position'):
         raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
@@ -1216,7 +1213,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -1723,10 +1720,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 @pytest.mark.skipif(
     os.environ.get('BIDS_VALIDATOR_BRANCH') != 'NIRS',
     reason="requires Rob's NIRS branch of bids-validator"
-)
-@pytest.mark.skipif(
-    not check_version('mne', '1.0'),
-    reason='requires MNE-Python 1.0'
 )
 def test_snirf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for SNIRF data."""
@@ -2751,7 +2744,7 @@ def test_coordsystem_json_compliance(
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root,
                                          datatype=datatype)
 
@@ -3067,7 +3060,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -3144,7 +3137,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -3200,7 +3193,7 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
 
     raw = reader(raw_fname)
@@ -3239,7 +3232,7 @@ def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     # test conversion to BrainVision/FIF
@@ -3300,7 +3293,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
     new_raw_fname = op.join(data_path, new_fname)
     os.rename(raw_fname, new_raw_fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     raw = reader(new_raw_fname)
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
     write_raw_bids(raw, bids_path)
@@ -3764,3 +3757,22 @@ def test_anonymize_dataset_daysback(tmpdir):
         rng=np.random.default_rng(),
         show_progress_thresh=20
     )
+
+
+def test_repeat_write_location(tmpdir):
+    """Test error writing BIDS dataset to the same location."""
+    # Get test data
+    raw_fname = testing.data_path() / "EDF" / "test_reduced.edf"
+    raw = _read_raw_edf(raw_fname)
+
+    # Write as BIDS
+    bids_root = tmpdir.mkdir('bids2')
+    bids_path = _bids_path.copy().update(root=bids_root)
+    bids_path = write_raw_bids(raw, bids_path, verbose=False)
+
+    # Read back in
+    raw = read_raw_bids(bids_path, verbose=False)
+
+    # Re-writing with src == dest should error
+    with pytest.raises(FileExistsError, match='Desired output BIDSPath'):
+        write_raw_bids(raw, bids_path, overwrite=True, verbose=False)

@@ -17,7 +17,7 @@ import numpy as np
 from mne.channels import make_standard_montage
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import warn, logger, verbose, check_version
+from mne.utils import warn, logger, verbose
 
 from mne_bids.tsv_handler import _to_tsv
 
@@ -128,10 +128,6 @@ def _handle_datatype(raw, datatype):
         if 'eeg' in raw:
             datatypes.append('eeg')
         if 'fnirs_cw_amplitude' in raw:
-            if not check_version('mne', '1.0'):  # pragma: no cover
-                raise RuntimeError(
-                    'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-                )
             datatypes.append('nirs')
         if len(datatypes) == 0:
             raise ValueError('No MEG, EEG or iEEG channels found in data. '
