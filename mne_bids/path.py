@@ -142,7 +142,7 @@ def _find_matched_empty_room(bids_path):
 
 
 class BIDSPath(object):
-    """A BIDSPath object.
+    """A BIDS path object.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
@@ -213,7 +213,7 @@ class BIDSPath(object):
     basename : str
         The basename of the file path. Similar to `os.path.basename(fpath)`.
     root : pathlib.Path
-        The root of the BIDSPath.
+        The root of the BIDS path.
     directory : pathlib.Path
         The directory path.
     fpath : pathlib.Path
@@ -523,7 +523,7 @@ class BIDSPath(object):
         return deepcopy(self)
 
     def mkdir(self, exist_ok=True):
-        """Create the directory structure of the BIDSPath.
+        """Create the directory structure of the BIDS path.
 
         Parameters
         ----------
