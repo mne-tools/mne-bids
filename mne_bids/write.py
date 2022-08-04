@@ -147,11 +147,6 @@ def _channels_tsv(raw, fname, overwrite=False):
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
     if 'fnirs_cw_amplitude' in raw:
-        if not check_version('mne', '1.0'):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
-
         ch_data["wavelength_nominal"] = [raw.info["chs"][i]["loc"][9] for i in
                                          range(len(raw.ch_names))]
 
@@ -341,10 +336,13 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         False, an error will be raised.
 
     """
-    subject_age = "n/a"
-    sex = "n/a"
+    subject_age = 'n/a'
+    sex = 'n/a'
     hand = 'n/a'
+    weight = 'n/a'
+    height = 'n/a'
     subject_info = raw.info.get('subject_info', None)
+
     if subject_id != 'emptyroom' and subject_info is not None:
         # add sex
         sex = _map_options(what='sex', key=subject_info.get('sex', 0),
@@ -371,18 +369,34 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         else:
             subject_age = "n/a"
 
+        # add weight and height
+        weight = subject_info.get('weight', 'n/a')
+        height = subject_info.get('height', 'n/a')
+
     subject_id = 'sub-' + subject_id
     data = OrderedDict(participant_id=[subject_id])
-    data.update({'age': [subject_age], 'sex': [sex], 'hand': [hand]})
+    data.update({
+        'age': [subject_age],
+        'sex': [sex],
+        'hand': [hand],
+        'weight': [weight],
+        'height': [height]
+    })
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
         # whether the new data exists identically in the previous data
-        exact_included = _contains_row(orig_data,
-                                       {'participant_id': subject_id,
-                                        'age': subject_age,
-                                        'sex': sex,
-                                        'hand': hand})
+        exact_included = _contains_row(
+            data=orig_data,
+            row_data={
+                'participant_id': subject_id,
+                'age': subject_age,
+                'sex': sex,
+                'hand': hand,
+                'weight': weight,
+                'height': height
+            }
+        )
         # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing
@@ -440,26 +454,53 @@ def _participants_json(fname, overwrite=False):
         an error will be raised.
 
     """
-    cols = OrderedDict()
-    cols['participant_id'] = {'Description': 'Unique participant identifier'}
-    cols['age'] = {'Description': 'Age of the participant at time of testing',
-                   'Units': 'years'}
-    cols['sex'] = {'Description': 'Biological sex of the participant',
-                   'Levels': {'F': 'female', 'M': 'male'}}
-    cols['hand'] = {'Description': 'Handedness of the participant',
-                    'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
+    data = {
+        'participant_id': {
+            'Description': 'Unique participant identifier'
+        },
+        'age': {
+            'Description': 'Age of the participant at time of testing',
+            'Units': 'years'
+        },
+        'sex': {
+            'Description': 'Biological sex of the participant',
+            'Levels': {
+                'F': 'female',
+                'M': 'male'
+            }
+        },
+        'hand': {
+            'Description': 'Handedness of the participant',
+            'Levels': {
+                'R': 'right',
+                'L': 'left',
+                'A': 'ambidextrous'
+            }
+        },
+        'weight': {
+            'Description': 'Body weight of the participant',
+            'Units': 'kg'
+        },
+        'height': {
+            'Description': 'Body height of the participant',
+            'Units': 'm'
+        }
+    }
 
     # make sure to append any JSON fields added by the user
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
-    if op.exists(fname):
-        with open(fname, 'r', encoding='utf-8-sig') as fin:
-            orig_cols = json.load(fin, object_pairs_hook=OrderedDict)
+    fname = Path(fname)
+    if fname.exists():
+        orig_cols = json.loads(
+            fname.read_text(encoding='utf-8'),
+            object_pairs_hook=OrderedDict
+        )
         for key, val in orig_cols.items():
-            if key not in cols:
-                cols[key] = val
+            if key not in data:
+                data[key] = val
 
-    _write_json(fname, cols, overwrite)
+    _write_json(fname, data, overwrite)
 
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
@@ -866,10 +907,6 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     elif datatype == 'ieeg':
         append_datatype_json = ch_info_json_ieeg
     elif datatype == 'nirs':
-        if not check_version('mne', '1.0'):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
         append_datatype_json = ch_info_json_nirs
         ch_info_ch_counts.extend(ch_info_ch_counts_nirs)
 
@@ -1005,7 +1042,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != 'single':
         warn(f'Encountered data in "{raw.orig_format}" format. '
-             f'Converting to float32.', RuntimeWarning)
+             'Converting to float32.', RuntimeWarning)
 
     # Writing to float32 µV with 0.1 resolution are the pybv defaults,
     # which guarantees accurate roundtrip for values >= 1e-7 µV
@@ -1022,7 +1059,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
                       resolution=resolution,
                       unit=unit,
                       fmt=fmt,
-                      meas_date=meas_date)
+                      meas_date=None)
 
 
 def _write_raw_edf(raw, bids_fname, overwrite):
@@ -1560,7 +1597,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 'https://github.com/mne-tools/mne-bids/issues')
         raise ValueError(msg)
 
-    # Initialize BIDS path
+    # Initialize BIDSPath
     datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = (bids_path.copy()
                  .update(datatype=datatype, suffix=datatype, extension=ext))
@@ -1734,14 +1771,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                                 datatype=bids_path.datatype,
                                 overwrite=overwrite)
     elif bids_path.datatype in ['eeg', 'ieeg', 'nirs']:
-        if (
-            bids_path.datatype == 'nirs' and
-            not check_version('mne', '1.0')
-        ):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
-
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if montage is not None or \
@@ -1776,19 +1805,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
-
-    if os.path.exists(bids_path.fpath):
-        if overwrite:
-            # Need to load data before removing its source
-            raw.load_data()
-            if bids_path.fpath.is_dir():
-                shutil.rmtree(bids_path.fpath)
-            else:
-                bids_path.fpath.unlink()
-        else:
-            raise FileExistsError(
-                f'"{bids_path.fpath}" already exists. '  # noqa: F821
-                'Please set overwrite to True.')
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
@@ -1834,6 +1850,30 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                              f'accepted input format for {datatype} datatype. '
                              f'Please use one of {CONVERT_FORMATS[datatype]} '
                              f'for {datatype} datatype.')
+
+    # raise error when trying to copy files (copyfile_*) into same location
+    # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
+    if bids_path.fpath.exists() and not convert and \
+            bids_path.fpath.as_posix() == Path(raw_fname).as_posix():
+        raise FileExistsError(
+            f'Desired output BIDSPath ("{bids_path.fpath}") is the source'
+            ' file. Please pass a different output BIDSPath, or set'
+            ' `format` to something other than "auto".')
+
+    # otherwise if the BIDSPath currently exists, check if we
+    # would like to overwrite the existing dataset
+    if bids_path.fpath.exists():
+        if overwrite:
+            # Need to load data before removing its source
+            raw.load_data()
+            if bids_path.fpath.is_dir():
+                shutil.rmtree(bids_path.fpath)
+            else:
+                bids_path.fpath.unlink()
+        else:
+            raise FileExistsError(
+                f'"{bids_path.fpath}" already exists. '
+                'Please set overwrite to True.')
 
     # File saving branching logic
     if convert:
@@ -1883,6 +1923,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                      bids_path.session, bids_path.task, bids_path.run,
                      raw._init_kwargs)
     else:
+        # ext may be .snirf
         shutil.copyfile(raw_fname, bids_path)
 
     # write to the scans.tsv file the output file written

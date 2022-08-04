@@ -22,7 +22,7 @@ from mne.utils import warn, logger, _validate_type, verbose, _check_fname
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
-    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES, ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
@@ -51,10 +51,6 @@ def _find_matched_empty_room(bids_path):
                          'date set. Cannot get matching empty-room file.')
 
     ref_date = raw.info['meas_date']
-    if not isinstance(ref_date, datetime):  # pragma: no cover
-        # for MNE < v0.20
-        ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
-
     emptyroom_dir = BIDSPath(root=bids_root, subject='emptyroom').directory
 
     if not emptyroom_dir.exists():
@@ -95,6 +91,7 @@ def _find_matched_empty_room(bids_path):
         er_bids_path = get_bids_path_from_fname(er_fname, check=False)
         er_bids_path.subject = 'emptyroom'  # er subject entity is different
         er_bids_path.root = bids_root
+        er_bids_path.datatype = 'meg'
         er_meas_date = None
 
         # Try to extract date from filename.
@@ -229,7 +226,7 @@ class BIDSPath(object):
     Generate a BIDSPath object and inspect it
 
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
-    ...                      suffix='ieeg', extension='.edf')
+    ...                      suffix='ieeg', extension='.edf', datatype='ieeg')
     >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_path
@@ -571,7 +568,7 @@ class BIDSPath(object):
             # else, return the relative path with the basename
             if (self.suffix is None or self.extension is None) and \
                     self.root is not None:
-                # get matching BIDS paths inside the bids root
+                # get matching BIDSPaths inside the bids root
                 matching_paths = \
                     _get_matching_bidspaths_from_filesystem(self)
 
@@ -648,7 +645,7 @@ class BIDSPath(object):
             the existing ``.check`` attribute instead, which is set upon
             `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
-            It can contain updates for valid BIDS path entities:
+            It can contain updates for valid BIDSPath entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
             'recording', 'space', 'suffix', 'split', 'extension',
             or updates for 'root' or 'datatype'.
@@ -732,11 +729,6 @@ class BIDSPath(object):
             old_kwargs[key] = \
                 getattr(self, f'{key}') if hasattr(self, f'_{key}') else None
             setattr(self, f'_{key}', val)
-
-        # infer datatype if suffix is uniquely the datatype
-        if self.datatype is None and \
-                self.suffix in SUFFIX_TO_DATATYPE:
-            self._datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # Perform a check of the entities and revert changes if check fails
         try:
@@ -899,7 +891,11 @@ class BIDSPath(object):
                              'Please use `bids_path.update(root="<root>")` '
                              'to set the root of the BIDS folder to read.')
 
-        sidecar_fname = _find_matching_sidecar(self, extension='.json')
+        sidecar_fname = _find_matching_sidecar(
+            # needed to deal with inheritance principle
+            self.copy().update(datatype=None),
+            extension='.json'
+        )
         with open(sidecar_fname, 'r', encoding='utf-8') as f:
             sidecar_json = json.load(f)
 
@@ -985,7 +981,7 @@ class BIDSPath(object):
 
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
-    """Get matching file paths for a BIDS path.
+    """Get matching file paths for a BIDSPath.
 
     Assumes suffix and/or extension is not provided.
     """
@@ -1237,14 +1233,15 @@ def _parse_ext(raw_fname):
     return fname, ext
 
 
-def _infer_datatype_from_path(fname):
+def _infer_datatype_from_path(fname: Path):
     # get the parent
-    datatype = Path(fname).parent.name
-
-    if any([datatype.startswith(entity) for entity in ['sub', 'ses']]):
-        datatype = None
-
-    if not datatype:
+    if fname.exists():
+        datatype = fname.parent.name
+        if any([datatype.startswith(entity) for entity in ['sub', 'ses']]):
+            datatype = None
+    elif fname.stem.split('_')[-1] in ('meg', 'eeg', 'ieeg'):
+        datatype = fname.stem.split('_')[-1]
+    else:
         datatype = None
 
     return datatype
@@ -1267,7 +1264,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     Returns
     -------
     bids_path : BIDSPath
-        The BIDS path object.
+        The BIDSPath object.
     """
     fpath = Path(fname)
     fname = fpath.name

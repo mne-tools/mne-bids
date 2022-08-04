@@ -10,7 +10,6 @@ import os.path as op
 from pathlib import Path
 import json
 import re
-import warnings
 from datetime import datetime, timezone
 
 import numpy as np
@@ -18,7 +17,7 @@ import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
 from mne.utils import (
-    has_nibabel, logger, warn, get_subjects_dir, check_version
+    has_nibabel, logger, warn, get_subjects_dir
 )
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
@@ -57,13 +56,6 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
-        if (
-            ext == '.snirf' and
-            not check_version('mne', '1.0')
-        ):  # pragma: no cover
-            raise RuntimeError(
-                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
-            )
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 
@@ -194,10 +186,11 @@ def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
     row_ind = subjects.index(subject)
+    raw.info['subject_info'] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
     for col_name, value in participants_tsv.items():
-        if col_name == 'sex' or col_name == 'hand':
+        if col_name in ('sex', 'hand'):
             value = _map_options(what=col_name, key=value[row_ind],
                                  fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
@@ -206,15 +199,24 @@ def _handle_participants_reading(participants_fname, raw, subject):
                     info_str = 'subject sex'
                 else:
                     info_str = 'subject handedness'
-                warn(f'Unable to map `{col_name}` value to MNE. '
+                warn(f'Unable to map "{col_name}" value "{value}" to MNE. '
                      f'Not setting {info_str}.')
+        elif col_name in ('height', 'weight'):
+            try:
+                value = float(value[row_ind])
+            except ValueError:
+                value = None
         else:
-            value = value[row_ind]
+            if value[row_ind] == 'n/a':
+                value = None
+            else:
+                value = value[row_ind]
+
         # add data into raw.Info
-        if raw.info['subject_info'] is None:
-            raw.info['subject_info'] = dict()
         key = 'his_id' if col_name == 'participant_id' else col_name
-        raw.info['subject_info'][key] = value
+        if value is not None:
+            assert key not in raw.info['subject_info']
+            raw.info['subject_info'][key] = value
 
     return raw
 
@@ -276,17 +278,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         # by the MNE documentation, and in fact we cannot load e.g. OpenNeuro
         # ds003392 without this combination.
         raw.set_meas_date(None)
-        with warnings.catch_warnings():
-            # This is to silence a warning emitted by MNE-Python < 0.24. The
-            # warnings filter can be safely removed once we drop support for
-            # MNE-Python 0.23 and older.
-            warnings.filterwarnings(
-                action='ignore',
-                message="Input info has 'meas_date' set to None",
-                category=RuntimeWarning,
-                module='mne'
-            )
-            raw.anonymize(daysback=None, keep_his=True)
+        raw.anonymize(daysback=None, keep_his=True)
         raw.set_meas_date(acq_time)
 
     return raw
@@ -763,6 +755,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         )
     else:
         warn(f"participants.tsv file not found for {raw_path}")
+        raw.info['subject_info'] = dict()
 
     assert raw.annotations.orig_time == raw.info['meas_date']
     return raw

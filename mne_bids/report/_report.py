@@ -315,7 +315,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
 
             n_scans += 1
 
-            # convert to BIDS Path
+            # convert to BIDSPath
             if not isinstance(bids_path, BIDSPath):
                 bids_path = get_bids_path_from_fname(bids_path)
             bids_path.root = root
@@ -401,7 +401,7 @@ def _summarize_channels_tsv(root, scans_fpaths):
             if datatype not in ['meg', 'eeg', 'ieeg']:
                 continue
 
-            # convert to BIDS Path
+            # convert to BIDSPath
             if not isinstance(bids_path, BIDSPath):
                 bids_path = get_bids_path_from_fname(bids_path)
             bids_path.root = root

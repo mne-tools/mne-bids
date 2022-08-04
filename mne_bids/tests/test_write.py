@@ -84,7 +84,9 @@ warning_str = dict(
                  'Setting to None.',
     cnt_warning2='ignore:.*Could not define the number of bytes automatically.'
                  ' Defaulting to 2.',
-    no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne'
+    no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne',
+    no_montage=r'ignore:Not setting position of.*channel found in '
+               r'montage.*:RuntimeWarning:mne',
 )
 
 
@@ -108,6 +110,7 @@ _read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
 _read_raw_nihon = _wrap_read_raw(mne.io.read_raw_nihon)
 _read_raw_cnt = _wrap_read_raw(mne.io.read_raw_cnt)
 _read_raw_snirf = _wrap_read_raw(mne.io.read_raw_snirf)
+_read_raw_egi = _wrap_read_raw(mne.io.read_raw_egi)
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
@@ -115,6 +118,7 @@ test_eegieeg_data = [
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'scan41_short.cnt', _read_raw_cnt),
+    ('EGI', 'test_egi.mff', _read_raw_egi),
 ]
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
@@ -368,12 +372,12 @@ def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782,
-                                     tzinfo=timezone.utc))
+    assert (meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782,
+                                      tzinfo=timezone.utc))
     meas_date = (1346981585,)
     meas_datetime = _stamp_to_dt(meas_date)
-    assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0,
-                                     tzinfo=timezone.utc))
+    assert (meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0,
+                                      tzinfo=timezone.utc))
 
 
 def test_get_anonymization_daysback():
@@ -446,7 +450,7 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
     _bids_validate(bids_root)
 
     eeg_json_fpath = (bids_path.copy()
-                      .update(suffix='eeg', extension='.json')
+                      .update(suffix='eeg', datatype='eeg', extension='.json')
                       .fpath)
     with open(eeg_json_fpath, 'r', encoding='utf-8') as fin:
         eeg_json = json.load(fin)
@@ -535,10 +539,7 @@ def test_fif(_bids_validate, tmp_path):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype='eeg')
-    if check_version('mne', '0.24'):
-        with pytest.warns(RuntimeWarning, match='Not setting position'):
-            raw2 = read_raw_bids(bids_path=bids_path)
-    else:
+    with pytest.warns(RuntimeWarning, match='Not setting position'):
         raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
@@ -916,7 +917,7 @@ def test_kit(_bids_validate, tmp_path):
     # ensure the marker file is produced in the right place
     marker_fname = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='markers', extension='.sqd',
+        suffix='markers', extension='.sqd', datatype='meg',
         root=bids_root)
     assert op.exists(marker_fname)
 
@@ -1204,6 +1205,7 @@ def test_vhdr(_bids_validate, tmp_path):
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
     warning_str['no_hand'],
+    warning_str['no_montage'],
 )
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
@@ -1211,10 +1213,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
+    raw.set_montage(None)  # remove montage
     events, _ = mne.events_from_annotations(raw, event_id=None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
@@ -1228,6 +1231,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            bids_output_path = write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                bids_output_path = write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1276,6 +1289,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1305,6 +1328,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1371,6 +1404,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1422,6 +1465,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                               match='Encountered data in "int" format. '
                               'Converting to float32.'):
                 write_raw_bids(**kwargs)
+        elif dir_name == 'EGI':
+            if check_version("mne", "1.1"):
+                write_raw_bids(**kwargs)
+            else:
+                with pytest.warns(
+                    RuntimeWarning,
+                    match=r'Encountered data in "float" format. '
+                          r'Converting to float32.'
+                ):
+                    write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "short" format'):
@@ -1459,6 +1512,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1501,6 +1564,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1554,6 +1627,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "int" format. '
                           'Converting to float32.'):
             write_raw_bids(**kwargs)
+    elif dir_name == 'EGI':
+        if check_version("mne", "1.1"):
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning,
+                match=r'Encountered data in "float" format. '
+                      r'Converting to float32.'
+            ):
+                write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1612,21 +1695,31 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                               'Converting to float32.'):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / 'c', raw, bids_path)
+        elif dir_name == 'EGI':
+            if check_version("mne", "1.1"):
+                write_raw_bids(**kwargs)
+                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
+            else:
+                with pytest.warns(
+                    RuntimeWarning,
+                    match=r'Encountered data in "float" format. '
+                          r'Converting to float32.'
+                ):
+                    write_raw_bids(**kwargs)
+                    output_path = _test_anonymize(
+                        tmp_path / 'd', raw, bids_path
+                    )
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
                 write_raw_bids(**kwargs)  # Converts.
-                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
+                output_path = _test_anonymize(tmp_path / 'e', raw, bids_path)
         _bids_validate(output_path)
 
 
 @pytest.mark.skipif(
     os.environ.get('BIDS_VALIDATOR_BRANCH') != 'NIRS',
     reason="requires Rob's NIRS branch of bids-validator"
-)
-@pytest.mark.skipif(
-    not check_version('mne', '1.0'),
-    reason='requires MNE-Python 1.0'
 )
 def test_snirf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for SNIRF data."""
@@ -2651,7 +2744,7 @@ def test_coordsystem_json_compliance(
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root,
                                          datatype=datatype)
 
@@ -2967,7 +3060,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -3044,7 +3137,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -3100,7 +3193,7 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
 
     raw = reader(raw_fname)
@@ -3139,7 +3232,7 @@ def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     # test conversion to BrainVision/FIF
@@ -3200,7 +3293,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
     new_raw_fname = op.join(data_path, new_fname)
     os.rename(raw_fname, new_raw_fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     raw = reader(new_raw_fname)
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
     write_raw_bids(raw, bids_path)
@@ -3664,3 +3757,22 @@ def test_anonymize_dataset_daysback(tmpdir):
         rng=np.random.default_rng(),
         show_progress_thresh=20
     )
+
+
+def test_repeat_write_location(tmpdir):
+    """Test error writing BIDS dataset to the same location."""
+    # Get test data
+    raw_fname = testing.data_path() / "EDF" / "test_reduced.edf"
+    raw = _read_raw_edf(raw_fname)
+
+    # Write as BIDS
+    bids_root = tmpdir.mkdir('bids2')
+    bids_path = _bids_path.copy().update(root=bids_root)
+    bids_path = write_raw_bids(raw, bids_path, verbose=False)
+
+    # Read back in
+    raw = read_raw_bids(bids_path, verbose=False)
+
+    # Re-writing with src == dest should error
+    with pytest.raises(FileExistsError, match='Desired output BIDSPath'):
+        write_raw_bids(raw, bids_path, overwrite=True, verbose=False)

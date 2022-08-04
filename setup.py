@@ -1,4 +1,5 @@
 """Setup MNE-BIDS."""
+import os
 import sys
 
 from setuptools import setup
@@ -9,7 +10,7 @@ SETUP_REQUIRES = ["setuptools >= 46.4.0"]
 SETUP_REQUIRES += ["wheel"] if "bdist_wheel" in sys.argv else []
 
 version = None
-with open('mne_bids/__init__.py', 'r') as fid:
+with open(os.path.join('mne_bids', '__init__.py'), 'r') as fid:
     for line in fid:
         line = line.strip()
         if line.startswith('__version__ = '):

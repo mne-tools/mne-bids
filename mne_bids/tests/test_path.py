@@ -1,4 +1,4 @@
-"""Test for the MNE BIDS path functions."""
+"""Test for the MNE BIDSPath functions."""
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD-3-Clause
@@ -260,10 +260,8 @@ def test_parse_ext():
 @pytest.mark.parametrize('fname', [
     'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
     'sub-01_ses-02_task-test_run-3_split-01',
-    ('/bids_root/sub-01/ses-02/meg/' +
-     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
-    ('sub-01/ses-02/meg/' +
-     'sub-01_ses-02_task-test_run-3_split-01_meg.fif')
+    '/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif',  # noqa: E501
+    'sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif'
 ])
 def test_get_bids_path_from_fname(fname):
     bids_path = get_bids_path_from_fname(fname)
@@ -492,7 +490,7 @@ def test_bids_path(return_bids_test_dir):
                                   f'ses-{session_id}', 'meg')
     assert str(bids_path.fpath.parent) == expected_parent_dir
 
-    # test bids path without bids_root, suffix, extension
+    # test BIDSPath without bids_root, suffix, extension
     # basename and fpath should be the same
     expected_basename = f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}'  # noqa
     assert (op.basename(bids_path.fpath) ==
@@ -598,7 +596,7 @@ def test_bids_path(return_bids_test_dir):
     # ... but raises an error with check=True
     match = r'space \(foo\) is not valid for datatype \(eeg\)'
     with pytest.raises(ValueError, match=match):
-        BIDSPath(subject=subject_id, space='foo', suffix='eeg')
+        BIDSPath(subject=subject_id, space='foo', suffix='eeg', datatype='eeg')
 
     # error check on space for datatypes that do not support space
     match = 'space entity is not valid for datatype anat'
@@ -612,7 +610,8 @@ def test_bids_path(return_bids_test_dir):
         bids_path_tmpcopy.update(space='CapTrak', check=True)
 
     # making a valid space update works
-    bids_path_tmpcopy.update(suffix='eeg', space="CapTrak", check=True)
+    bids_path_tmpcopy.update(suffix='eeg', datatype='eeg',
+                             space="CapTrak", check=True)
 
     # suffix won't be error checks if initial check was false
     bids_path.update(suffix=suffix)
@@ -628,7 +627,7 @@ def test_bids_path(return_bids_test_dir):
 
     # test repr
     bids_path = BIDSPath(subject='01', session='02',
-                         task='03', suffix='ieeg',
+                         task='03', suffix='ieeg', datatype='ieeg',
                          extension='.edf')
     assert repr(bids_path) == ('BIDSPath(\n'
                                'root: None\n'
@@ -680,7 +679,8 @@ def test_make_filenames():
     # All keys work
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run=1, processing='six',
-                       recording='seven', suffix='ieeg', extension='.json')
+                       recording='seven', suffix='ieeg', extension='.json',
+                       datatype='ieeg')
     expected_str = ('sub-one_ses-two_task-three_acq-four_run-01_proc-six_'
                     'rec-seven_ieeg.json')
     assert BIDSPath(**prefix_data).basename == expected_str
@@ -853,8 +853,6 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
                         'sample_audvis_trunc_raw.fif')
     bids_root = tmp_path / "bids"
     bids_root.mkdir()
-    tmp_dir = tmp_path / "tmp"
-    tmp_dir.mkdir()
 
     raw = _read_raw_fif(raw_fname)
     bids_path = BIDSPath(subject='01', session='01',
@@ -870,6 +868,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     # The testing data has no "noise" recording, so save the actual data
     # as named as if it were noise. We first need to write the FIFF file
     # before reading it back in.
+    tmp_dir = tmp_path / "tmp"
+    tmp_dir.mkdir()
     er_raw_fname = op.join(tmp_dir, 'ernoise_raw.fif')
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
@@ -910,13 +910,12 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     raw = read_raw_bids(bids_path=bids_path)
     raw.set_meas_date(None)
     anonymize_info(raw.info)
-    write_raw_bids(raw, bids_path, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True, format="FIF")
     with pytest.raises(ValueError, match='The provided recording does not '
                                          'have a measurement date set'):
         bids_path.find_empty_room()
 
     # test that the `AssociatedEmptyRoom` key in MEG sidecar is respected
-
     bids_root = tmp_path / 'associated-empty-room'
     bids_root.mkdir()
     raw = _read_raw_fif(raw_fname)
@@ -974,7 +973,7 @@ def test_find_emptyroom_ties(tmp_path):
                         'sample_audvis_trunc_raw.fif')
 
     bids_root = str(tmp_path)
-    bids_path = _bids_path.copy().update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     session = '20010101'
     er_dir_path = BIDSPath(subject='emptyroom', session=session,
                            datatype='meg', root=bids_root)
