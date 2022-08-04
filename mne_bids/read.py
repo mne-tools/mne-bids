@@ -17,7 +17,7 @@ import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
 from mne.utils import (
-    has_nibabel, logger, warn, get_subjects_dir, check_version
+    has_nibabel, logger, warn, get_subjects_dir
 )
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans

@@ -1854,7 +1854,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
     if bids_path.fpath.exists() and not convert and \
-            bids_path.fpath.as_posix() == raw_fname:
+            bids_path.fpath.as_posix() == Path(raw_fname).as_posix():
         raise RuntimeError(f'Desired output BIDSPath ("{bids_path.fpath}") is'
                            ' the source file. Please pass a different output'
                            ' BIDSPath, or set `format` to something other'

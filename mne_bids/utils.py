@@ -17,7 +17,7 @@ import numpy as np
 from mne.channels import make_standard_montage
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import warn, logger, verbose, check_version
+from mne.utils import warn, logger, verbose
 
 from mne_bids.tsv_handler import _to_tsv
 
