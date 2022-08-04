@@ -47,7 +47,9 @@ Detailed list of changes
 
 - :func:`~mne_bids.write_raw_bids` now stores participant weight and height in ``participants.tsv``, by `Richard Höchenberger`_ (:gh:`1031`)
 
-- :func:`~mne_bids.write_raw_bids` now supports EGI format by `Anand Saini`_, `Scott Huberty`_ and `Mathieu Scheltienne`_ (:gh:`1006`)
+- :func:`~mne_bids.write_raw_bids` now supports EGI format, by `Anand Saini`_, `Scott Huberty`_ and `Mathieu Scheltienne`_ (:gh:`1006`)
+
+- TSV files that are empty (i.e., only a header row is present) are now handled more robustly and a warning is issued, by `Stefan Appelhoff`_ (:gh:`1038`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
