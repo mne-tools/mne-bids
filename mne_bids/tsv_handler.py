@@ -1,8 +1,8 @@
 """Private functions to handle tabular data."""
 from collections import OrderedDict
 from copy import deepcopy
-from warnings import warn
 
+from mne.utils import warn
 import numpy as np
 
 
