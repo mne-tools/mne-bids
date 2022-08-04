@@ -10,7 +10,6 @@ import os.path as op
 from pathlib import Path
 import json
 import re
-import warnings
 from datetime import datetime, timezone
 
 import numpy as np
