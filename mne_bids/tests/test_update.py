@@ -107,7 +107,7 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
                        ('SEEGChannelCount', None, 0)]
 
     # get the sidecar json
-    sidecar_path = bids_path.copy().update(extension='.json')
+    sidecar_path = bids_path.copy().update(extension='.json', datatype='meg')
     sidecar_fpath = sidecar_path.fpath
     with open(sidecar_fpath, 'r', encoding='utf-8') as fin:
         sidecar_json = json.load(fin)
@@ -177,12 +177,30 @@ def test_update_anat_landmarks(tmp_path):
     )
 
     # Remove JSON sidecar; updating the anatomical landmarks should re-create
-    # the file
+    # the file unless `on_missing` is `'raise'`
     bids_path_mri_json.fpath.unlink()
-    update_anat_landmarks(bids_path=bids_path_mri, landmarks=landmarks_new)
+    with pytest.raises(
+        KeyError,
+        match='No AnatomicalLandmarkCoordinates section found'
+    ):
+        update_anat_landmarks(bids_path=bids_path_mri, landmarks=landmarks_new)
 
-    with bids_path_mri_json.fpath.open(encoding='utf-8') as f:
-        mri_json = json.load(f)
+    update_anat_landmarks(
+        bids_path=bids_path_mri, landmarks=landmarks_new, on_missing='ignore'
+    )
+
+    with pytest.raises(KeyError, match='landmark not found'):
+        update_anat_landmarks(
+            bids_path=bids_path_mri, landmarks=landmarks_new, kind='ses-1'
+        )
+    update_anat_landmarks(
+        bids_path=bids_path_mri, landmarks=landmarks_new, kind='ses-1',
+        on_missing='ignore'
+    )
+
+    mri_json = json.loads(bids_path_mri_json.fpath.read_text(encoding='utf-8'))
+    assert 'NAS' in mri_json['AnatomicalLandmarkCoordinates']
+    assert 'NAS_ses-1' in mri_json['AnatomicalLandmarkCoordinates']
 
     assert np.allclose(
         landmarks_new.dig[1]['r'],
@@ -193,11 +211,6 @@ def test_update_anat_landmarks(tmp_path):
     bids_path_mri_no_ext = bids_path_mri.copy().update(extension=None)
     update_anat_landmarks(bids_path=bids_path_mri_no_ext,
                           landmarks=landmarks_new)
-
-    # Check without datatytpe provided
-    bids_path_mri_no_datatype = bids_path_mri.copy().update(datatype=None)
-    update_anat_landmarks(bids_path=bids_path_mri_no_datatype,
-                          landmarks=landmarks)
 
     # Check handling of invalid input
     bids_path_invalid = bids_path_mri.copy().update(datatype='meg')
@@ -233,3 +246,30 @@ def test_update_anat_landmarks(tmp_path):
                        match='did not contain all required cardinal points'):
         update_anat_landmarks(bids_path=bids_path_mri,
                               landmarks=landmarks_invalid)
+
+    # Test with path-like landmarks
+    fiducials_path = (data_path / 'subjects' / 'sample' / 'bem' /
+                      'sample-fiducials.fif')
+
+    update_anat_landmarks(
+        bids_path=bids_path_mri,
+        landmarks=fiducials_path,
+        fs_subject='sample',
+        fs_subjects_dir=data_path / 'subjects'
+    )
+    expected_coords_in_voxels = np.array(
+        [[68.38202,  45.24057,  43.439808],  # noqa: E241
+         [42.27006,  30.758774, 74.09837 ],  # noqa: E202, E241
+         [17.044853, 46.586075, 42.618504]]
+    )
+    mri_json = json.loads(
+        bids_path_mri_json.fpath.read_text(encoding='utf-8')
+    )
+    for landmark, expected_coords in zip(
+        ('LPA', 'NAS', 'RPA'),
+        expected_coords_in_voxels
+    ):
+        assert np.allclose(
+            mri_json['AnatomicalLandmarkCoordinates'][landmark],
+            expected_coords
+        )

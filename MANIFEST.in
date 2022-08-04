@@ -23,7 +23,7 @@ exclude tools
 prune .circleci
 prune paper
 
-exclude .zenodo.json
+exclude CITATION.cff
 exclude Makefile
 exclude CONTRIBUTING.md
 exclude *.yml

@@ -1,5 +1,5 @@
 .. _Mainak Jas: https://jasmainak.github.io/
-.. _Teon Brooks: https://teonbrooks.github.io/
+.. _Teon Brooks: https://teonbrooks.com
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
 .. _Matt Sanderson: https://github.com/monkeyman192
 .. _Stefan Appelhoff: https://stefanappelhoff.com/
@@ -29,4 +29,10 @@
 .. _Eric Larson: https://github.com/larsoner
 .. _Clemens Brunner: https://github.com/cbrnr
 .. _Kambiz Tavabi: https://github.com/ktavabi
-.. _Franziska von Albedyll: https://github.com/fravona2211
+.. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
+.. _Simon Kern: https://github.com/skjerns
+.. _Yorguin Mantilla: https://github.com/yjmantilla
+.. _Swastika Gupta: https://swastyy.github.io
+.. _Scott Huberty: https://github.com/scott-huberty
+.. _Anand Saini: https://github.com/anandsaini024
+.. _Mathieu Scheltienne: https://github.com/mscheltienne

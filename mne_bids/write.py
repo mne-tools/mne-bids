@@ -9,6 +9,7 @@
 # License: BSD-3-Clause
 from typing import List
 import json
+import re
 import sys
 import os
 import os.path as op
@@ -25,12 +26,12 @@ import mne
 from mne.transforms import (_get_trans, apply_trans, rotation, translation)
 from mne import Epochs
 from mne.io.constants import FIFF
-from mne.io.pick import channel_type
+from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
-                       deprecated, ProgressBar)
+                       ProgressBar)
 import mne.preprocessing
 
 from mne_bids.pick import coil_type
@@ -54,7 +55,11 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
-                             ANONYMIZED_JSON_KEY_WHITELIST)
+                             ANONYMIZED_JSON_KEY_WHITELIST, PYBV_VERSION,
+                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
+
+
+_FIFF_SPLIT_SIZE = '2GB'  # MNE-Python default; can be altered during debugging
 
 
 def _is_numeric(n):
@@ -95,7 +100,9 @@ def _channels_tsv(raw, fname, overwrite=False):
                     misc='Miscellaneous',
                     bio='Biological',
                     ias='Internal Active Shielding',
-                    dbs='Deep Brain Stimulation')
+                    dbs='Deep Brain Stimulation',
+                    fnirs_cw_amplitude='Near Infrared Spectroscopy '
+                                       '(continuous wave)',)
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
@@ -139,6 +146,37 @@ def _channels_tsv(raw, fname, overwrite=False):
     ])
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
+    if 'fnirs_cw_amplitude' in raw:
+        if not check_version('mne', '1.0'):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+
+        ch_data["wavelength_nominal"] = [raw.info["chs"][i]["loc"][9] for i in
+                                         range(len(raw.ch_names))]
+
+        picks = _picks_to_idx(raw.info, 'fnirs', exclude=[], allow_empty=True)
+
+        sources = np.empty(picks.shape, dtype="<U20")
+        detectors = np.empty(picks.shape, dtype="<U20")
+        for ii in picks:
+            # NIRS channel names take a specific form in MNE-Python.
+            # The channel names always reflect the source and detector
+            # pair, followed by the wavelength frequency.
+            # The following code extracts the source and detector
+            # numbers from the channel name.
+            ch1_name_info = re.match(r'S(\d+)_D(\d+) (\d+)',
+                                     raw.info['chs'][ii]['ch_name'])
+            sources[ii] = "S" + str(ch1_name_info.groups()[0])
+            detectors[ii] = "D" + str(ch1_name_info.groups()[1])
+        ch_data["source"] = sources
+        ch_data["detector"] = detectors
+        ch_data.move_to_end('wavelength_nominal', last=False)
+        ch_data.move_to_end('detector', last=False)
+        ch_data.move_to_end('source', last=False)
+        ch_data.move_to_end('type', last=False)
+        ch_data.move_to_end('name', last=False)
+
     _write_tsv(fname, ch_data, overwrite)
 
 
@@ -149,13 +187,13 @@ _cardinal_ident_mapping = {
 }
 
 
-def _get_fid_coords(dig, raise_error=True):
+def _get_fid_coords(dig_points, raise_error=True):
     """Get the fiducial coordinates from a DigMontage.
 
     Parameters
     ----------
-    dig : mne.channels.DigMontage
-        The dig montage with the fiducial coordinates.
+    dig_points : array-like of DigPoint
+        The digitization points of the fiducial coordinates.
     raise_error : bool
         Whether to raise an error if the coordinates are missing or
         incorrectly formatted
@@ -170,7 +208,7 @@ def _get_fid_coords(dig, raise_error=True):
     fid_coords = Bunch(nasion=None, lpa=None, rpa=None)
     fid_coord_frames = dict()
 
-    for d in dig:
+    for d in dig_points:
         if d['kind'] == FIFF.FIFFV_POINT_CARDINAL:
             key = _cardinal_ident_mapping[d['ident']]
             fid_coords[key] = d['r']
@@ -303,14 +341,14 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         False, an error will be raised.
 
     """
-    subject_id = 'sub-' + subject_id
-    data = OrderedDict(participant_id=[subject_id])
-
-    subject_age = "n/a"
-    sex = "n/a"
+    subject_age = 'n/a'
+    sex = 'n/a'
     hand = 'n/a'
+    weight = 'n/a'
+    height = 'n/a'
     subject_info = raw.info.get('subject_info', None)
-    if subject_info is not None:
+
+    if subject_id != 'emptyroom' and subject_info is not None:
         # add sex
         sex = _map_options(what='sex', key=subject_info.get('sex', 0),
                            fro='mne', to='bids')
@@ -336,16 +374,34 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         else:
             subject_age = "n/a"
 
-    data.update({'age': [subject_age], 'sex': [sex], 'hand': [hand]})
+        # add weight and height
+        weight = subject_info.get('weight', 'n/a')
+        height = subject_info.get('height', 'n/a')
+
+    subject_id = 'sub-' + subject_id
+    data = OrderedDict(participant_id=[subject_id])
+    data.update({
+        'age': [subject_age],
+        'sex': [sex],
+        'hand': [hand],
+        'weight': [weight],
+        'height': [height]
+    })
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
         # whether the new data exists identically in the previous data
-        exact_included = _contains_row(orig_data,
-                                       {'participant_id': subject_id,
-                                        'age': subject_age,
-                                        'sex': sex,
-                                        'hand': hand})
+        exact_included = _contains_row(
+            data=orig_data,
+            row_data={
+                'participant_id': subject_id,
+                'age': subject_age,
+                'sex': sex,
+                'hand': hand,
+                'weight': weight,
+                'height': height
+            }
+        )
         # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing
@@ -403,29 +459,56 @@ def _participants_json(fname, overwrite=False):
         an error will be raised.
 
     """
-    cols = OrderedDict()
-    cols['participant_id'] = {'Description': 'Unique participant identifier'}
-    cols['age'] = {'Description': 'Age of the participant at time of testing',
-                   'Units': 'years'}
-    cols['sex'] = {'Description': 'Biological sex of the participant',
-                   'Levels': {'F': 'female', 'M': 'male'}}
-    cols['hand'] = {'Description': 'Handedness of the participant',
-                    'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
+    data = {
+        'participant_id': {
+            'Description': 'Unique participant identifier'
+        },
+        'age': {
+            'Description': 'Age of the participant at time of testing',
+            'Units': 'years'
+        },
+        'sex': {
+            'Description': 'Biological sex of the participant',
+            'Levels': {
+                'F': 'female',
+                'M': 'male'
+            }
+        },
+        'hand': {
+            'Description': 'Handedness of the participant',
+            'Levels': {
+                'R': 'right',
+                'L': 'left',
+                'A': 'ambidextrous'
+            }
+        },
+        'weight': {
+            'Description': 'Body weight of the participant',
+            'Units': 'kg'
+        },
+        'height': {
+            'Description': 'Body height of the participant',
+            'Units': 'm'
+        }
+    }
 
     # make sure to append any JSON fields added by the user
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
-    if op.exists(fname):
-        with open(fname, 'r', encoding='utf-8-sig') as fin:
-            orig_cols = json.load(fin, object_pairs_hook=OrderedDict)
+    fname = Path(fname)
+    if fname.exists():
+        orig_cols = json.loads(
+            fname.read_text(encoding='utf-8'),
+            object_pairs_hook=OrderedDict
+        )
         for key, val in orig_cols.items():
-            if key not in cols:
-                cols[key] = val
+            if key not in data:
+                data[key] = val
 
-    _write_json(fname, cols, overwrite)
+    _write_json(fname, data, overwrite)
 
 
-def _scans_tsv(raw, raw_fname, fname, overwrite=False):
+def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     """Create a scans.tsv file and save it.
 
     Parameters
@@ -436,6 +519,8 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
+    keep_source : bool
+        Wehter to store``raw.filenames`` in the ``source`` column.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -447,10 +532,6 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
     meas_date = raw.info['meas_date']
     if meas_date is None:
         acq_time = 'n/a'
-    # The "Z" indicates UTC time
-    elif isinstance(meas_date, (tuple, list, np.ndarray)):  # pragma: no cover
-        # for MNE < v0.20
-        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     elif isinstance(meas_date, datetime):
         # for MNE >= v0.20
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
@@ -478,6 +559,24 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
           for raw_f in raw_fnames]),
             ('acq_time', [acq_time] * len(raw_fnames))])
 
+    # add source filename if desired
+    if keep_source:
+        data['source'] = [Path(src_fname).name for src_fname in raw.filenames]
+
+        # write out a sidecar JSON if not exists
+        sidecar_json_path = Path(fname).with_suffix('.json')
+        sidecar_json_path = get_bids_path_from_fname(sidecar_json_path)
+        sidecar_json = {
+            'source': {
+                'Description': 'Original source filename.'
+            }
+        }
+
+        if sidecar_json_path.fpath.exists():
+            update_sidecar_json(sidecar_json_path, sidecar_json)
+        else:
+            _write_json(sidecar_json_path, sidecar_json)
+
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
         # if the file name is already in the file raise an error
@@ -485,6 +584,14 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False):
             raise FileExistsError(f'"{raw_fname}" already exists in '
                                   f'the scans list. Please set '
                                   f'overwrite to True.')
+
+        for key in data.keys():
+            if key in orig_data:
+                continue
+
+            # add 'n/a' if any missing columns
+            orig_data[key] = ['n/a'] * len(next(iter(data.values())))
+
         # otherwise add the new data
         data = _combine_rows(orig_data, data, 'filename')
 
@@ -554,9 +661,10 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
         The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
-    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-    ras2vox_tkr = linalg.inv(vox2ras_tkr)
-    vox_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    vox2ras_tkr_t = t1_mgh.header.get_vox2ras_tkr()
+    ras_tkr2vox_t = linalg.inv(vox2ras_tkr_t)
+    vox_landmarks = apply_trans(ras_tkr2vox_t, mri_landmarks)
+
     return vox_landmarks
 
 
@@ -682,6 +790,13 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
     n_dbschan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_DBS_CH])
+    nirs_channels = [ch for ch in raw.info['chs'] if
+                     ch['kind'] == FIFF.FIFFV_FNIRS_CH]
+    n_nirscwchan = len(nirs_channels)
+    n_nirscwsrc = len(np.unique([ch["ch_name"].split(" ")[0].split("_")[0]
+                                 for ch in nirs_channels]))
+    n_nirscwdet = len(np.unique([ch["ch_name"].split(" ")[0].split("_")[1]
+                                 for ch in nirs_channels]))
 
     # Set DigitizedLandmarks to True if any of LPA, RPA, NAS are found
     # Set DigitizedHeadPoints to True if any "Extra" points are found
@@ -769,6 +884,11 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('iEEGReference', 'n/a'),
         ('ECOGChannelCount', n_ecogchan),
         ('SEEGChannelCount', n_seegchan + n_dbschan)]
+
+    ch_info_json_nirs = [
+        ('Manufacturer', manufacturer)
+    ]
+
     ch_info_ch_counts = [
         ('EEGChannelCount', n_eegchan),
         ('EOGChannelCount', n_eogchan),
@@ -776,6 +896,12 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('EMGChannelCount', n_emgchan),
         ('MiscChannelCount', n_miscchan),
         ('TriggerChannelCount', n_stimchan)]
+
+    ch_info_ch_counts_nirs = [
+        ('NIRSChannelCount', n_nirscwchan),
+        ('NIRSSourceOptodeCount', n_nirscwsrc),
+        ('NIRSDetectorOptodeCount', n_nirscwdet)
+    ]
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
@@ -785,6 +911,13 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         append_datatype_json = ch_info_json_eeg
     elif datatype == 'ieeg':
         append_datatype_json = ch_info_json_ieeg
+    elif datatype == 'nirs':
+        if not check_version('mne', '1.0'):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+        append_datatype_json = ch_info_json_nirs
+        ch_info_ch_counts.extend(ch_info_ch_counts_nirs)
 
     ch_info_json += append_datatype_json
     ch_info_json += ch_info_ch_counts
@@ -867,8 +1000,10 @@ def _write_raw_fif(raw, bids_fname):
         should be saved.
 
     """
-    raw.save(bids_fname, fmt=raw.orig_format, split_naming='bids',
-             overwrite=True)
+    raw.save(
+        bids_fname, fmt=raw.orig_format, split_size=_FIFF_SPLIT_SIZE,
+        split_naming='bids', overwrite=True
+    )
 
 
 def _write_raw_brainvision(raw, bids_fname, events, overwrite):
@@ -886,9 +1021,9 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     overwrite : bool
         Whether or not to overwrite existing files.
     """
-    if not check_version('pybv', '0.6'):  # pragma: no cover
-        raise ImportError('pybv >=0.6 is required for converting '
-                          'file to BrainVision format')
+    if not check_version('pybv', PYBV_VERSION):  # pragma: no cover
+        raise ImportError(f'pybv >= {PYBV_VERSION} is required for converting'
+                          ' file to BrainVision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
     # the first available data point and ignores the raw.first_samp
@@ -916,7 +1051,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != 'single':
         warn(f'Encountered data in "{raw.orig_format}" format. '
-             f'Converting to float32.', RuntimeWarning)
+             'Converting to float32.', RuntimeWarning)
 
     # Writing to float32 µV with 0.1 resolution are the pybv defaults,
     # which guarantees accurate roundtrip for values >= 1e-7 µV
@@ -933,10 +1068,10 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
                       resolution=resolution,
                       unit=unit,
                       fmt=fmt,
-                      meas_date=meas_date)
+                      meas_date=None)
 
 
-def _write_raw_edf(raw, bids_fname):
+def _write_raw_edf(raw, bids_fname, overwrite):
     """Store data as EDF.
 
     Parameters
@@ -945,23 +1080,27 @@ def _write_raw_edf(raw, bids_fname):
         Raw data to save.
     bids_fname : str
         The output filename.
+    overwrite : bool
+        Whether to overwrite an existing file or not.
     """
     assert str(bids_fname).endswith('.edf')
-    raw.export(bids_fname)
+    raw.export(bids_fname, overwrite=overwrite)
 
 
 @verbose
-def make_dataset_description(path, name, data_license=None,
+def make_dataset_description(*, path, name, hed_version=None,
+                             dataset_type='raw', data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
-                             references_and_links=None, doi=None,
-                             dataset_type='raw',
+                             ethics_approvals=None, references_and_links=None,
+                             doi=None, generated_by=None, source_datasets=None,
                              overwrite=False, verbose=None):
-    """Create json for a dataset description.
+    """Create a dataset_description.json file for a BIDS dataset.
 
-    BIDS datasets may have one or more fields, this function allows you to
-    specify which you wish to include in the description. See the BIDS
-    documentation for information about what each field means.
+    The dataset_description.json file is required in BIDS and describes
+    several general aspects of the dataset. You can use this function
+    to freely add metadata fields to this file. See the BIDS specification
+    for information about what each metadata field means.
 
     Parameters
     ----------
@@ -969,30 +1108,45 @@ def make_dataset_description(path, name, data_license=None,
         A path to a folder where the description will be created.
     name : str
         The name of this BIDS dataset.
+    hed_version : str
+        If HED tags are used: The version of the HED schema used to validate
+        HED tags for study.
+    dataset_type : str
+        Must be either "raw" or "derivative". Defaults to "raw".
     data_license : str | None
         The license under which this dataset is published.
     authors : list | str | None
         List of individuals who contributed to the creation/curation of the
-        dataset. Must be a list of str or a single comma separated str
-        like ['a', 'b', 'c'].
-    acknowledgements : list | str | None
-        Either a str acknowledging individuals who contributed to the
-        creation/curation of this dataset OR a list of the individuals'
-        names as str.
-    how_to_acknowledge : list | str | None
-        Either a str describing how to acknowledge this dataset OR a list of
-        publications that should be cited.
+        dataset. Must be a list of str (e.g., ['a', 'b', 'c']) or a single
+        comma-separated str (e.g., 'a, b, c').
+    acknowledgements : str | None
+        A str acknowledging individuals who contributed to the
+        creation/curation of this dataset.
+    how_to_acknowledge : str | None
+        A str describing how to acknowledge this dataset.
     funding : list | str | None
         List of sources of funding (e.g., grant numbers). Must be a list of
-        str or a single comma separated str like ['a', 'b', 'c'].
+        str (e.g., ['a', 'b', 'c']) or a single comma-separated str
+        (e.g., 'a, b, c').
+    ethics_approvals : list | str | None
+        List of ethics committee approvals of the research protocols
+        and/or protocol identifiers. Must be a list of str (e.g.,
+        ['a', 'b', 'c']) or a single comma-separated str (e.g., 'a, b, c').
     references_and_links : list | str | None
         List of references to publication that contain information on the
-        dataset, or links.  Must be a list of str or a single comma
-        separated str like ['a', 'b', 'c'].
+        dataset, or links.  Must be a list of str (e.g., ['a', 'b', 'c'])
+        or a single comma-separated str (e.g., 'a, b, c').
     doi : str | None
-        The DOI for the dataset.
-    dataset_type : str
-        Must be either "raw" or "derivative". Defaults to "raw".
+        The Digital Object Identifier of the dataset (not the corresponding
+        paper). Must be of the form ``doi:<insert_doi>`` (e.g.,
+        doi:10.5281/zenodo.3686061).
+    generated_by : list of dict | None
+        Used to specify provenance of the dataset. See BIDS specification
+        for details.
+    source_datasets : list of dict | None
+        Used to specify the locations and relevant attributes of all source
+        datasets. Each dict in the list represents one source dataset and
+        may contain the following keys: ``URL``, ``DOI``, ``Version``.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1003,32 +1157,76 @@ def make_dataset_description(path, name, data_license=None,
 
     Notes
     -----
-    The required field BIDSVersion will be automatically filled by mne_bids.
+    The required metadata field ``BIDSVersion`` will be automatically filled in
+    by mne_bids.
 
     """
-    # Put potential string input into list of strings
-    if isinstance(authors, str):
-        authors = authors.split(', ')
-    if isinstance(funding, str):
-        funding = funding.split(', ')
-    if isinstance(references_and_links, str):
-        references_and_links = references_and_links.split(', ')
+    # Convert potential string input into list of strings
+    convert_vars = [authors, funding, references_and_links, ethics_approvals]
+    convert_vars = [[i.strip() for i in var.split(',')]
+                    if isinstance(var, str) else var
+                    for var in convert_vars]
+    authors, funding, references_and_links, ethics_approvals = convert_vars
+
+    # Perform input checks
     if dataset_type not in ['raw', 'derivative']:
         raise ValueError('`dataset_type` must be either "raw" or '
                          '"derivative."')
+    if isinstance(doi, str):
+        if not doi.startswith('doi:'):
+            warn('The `doi` field in dataset_description should be of the '
+                 'form `doi:<insert_doi>`')
 
+    # check generated_by and source_datasets
+    msg_type = '{} must be a list of dicts or None.'
+    msg_key = 'found unexpected key(s) in dict: {}'
+
+    generated_by_keys = set([
+        "Name", "Version", "Description", "CodeURL", "Container"])
+    if isinstance(generated_by, list):
+        if not all([isinstance(i, dict) for i in generated_by]):
+            raise ValueError(msg_type.format('generated_by'))
+        for i in generated_by:
+            if 'Name' not in i:
+                raise ValueError(
+                    '"Name" is a required field for each dict in '
+                    'generated_by')
+            if not set(i.keys()).issubset(generated_by_keys):
+                raise ValueError(msg_key.format(i.keys() - generated_by_keys))
+    else:
+        if generated_by is not None:
+            raise ValueError(msg_type.format('generated_by'))
+
+    source_ds_keys = set(["URL", "DOI", "Version"])
+    if isinstance(source_datasets, list):
+        if not all([isinstance(i, dict) for i in source_datasets]):
+            raise ValueError(msg_type.format('source_datasets'))
+        for i in source_datasets:
+            if not set(i.keys()).issubset(source_ds_keys):
+                raise ValueError(msg_key.format(i.keys() - source_ds_keys))
+    else:
+        if source_datasets is not None:
+            raise ValueError(msg_type.format('source_datasets'))
+
+    # Prepare dataset_description.json
     fname = op.join(path, 'dataset_description.json')
     description = OrderedDict([
         ('Name', name),
         ('BIDSVersion', BIDS_VERSION),
+        ('HEDVersion', hed_version),
         ('DatasetType', dataset_type),
         ('License', data_license),
         ('Authors', authors),
         ('Acknowledgements', acknowledgements),
         ('HowToAcknowledge', how_to_acknowledge),
         ('Funding', funding),
+        ('EthicsApprovals', ethics_approvals),
         ('ReferencesAndLinks', references_and_links),
-        ('DatasetDOI', doi)])
+        ('DatasetDOI', doi),
+        ('GeneratedBy', generated_by),
+        ('SourceDatasets', source_datasets)])
+
+    # Handle potentially existing file contents
     if op.isfile(fname):
         with open(fname, 'r', encoding='utf-8-sig') as fin:
             orig_cols = json.load(fin)
@@ -1040,12 +1238,14 @@ def make_dataset_description(path, name, data_license=None,
         for key in description:
             if description[key] is None or not overwrite:
                 description[key] = orig_cols.get(key, None)
+
     # default author to make dataset description BIDS compliant
     # if the user passed an author don't overwrite,
     # if there was an author there, only overwrite if `overwrite=True`
     if authors is None and (description['Authors'] is None or overwrite):
         description['Authors'] = ["[Unspecified]"]
 
+    # Only write data that is not None
     pop_keys = [key for key, val in description.items() if val is None]
     for key in pop_keys:
         description.pop(key)
@@ -1154,8 +1354,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         ``keep_his`` : bool
             If ``False`` (default), all subject information next to the
-            recording date will be overwritten as well. If True, keep subject
-            information apart from the recording date.
+            recording date will be overwritten as well. If ``True``, keep
+            subject information apart from the recording date.
+
+        ``keep_source`` : bool
+            Whether to store the name of the ``raw`` input file in the
+            ``source`` column of ``scans.tsv``. By default, this information
+            is not stored.
 
     format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
         Controls the file format of the data after BIDS conversion. If
@@ -1180,12 +1385,19 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
            Symlinks are currently only supported on macOS and Linux. We will
            add support for Windows 10 at a later time.
 
-    empty_room : BIDSPath | None
+    empty_room : mne.io.Raw | BIDSPath | None
         The empty-room recording to be associated with this file. This is
-        only supported for MEG data, and only if the ``root`` attributes of
-        ``bids_path`` and ``empty_room`` are the same. Pass ``None``
-        (default) if you do not wish to specify an associated empty-room
-        recording.
+        only supported for MEG data.
+        If :class:`~mne.io.Raw`, you may pass raw data that was not preloaded
+        (otherwise, pass ``allow_preload=True``); i.e., it behaves similar to
+        the ``raw`` parameter. The session name will be automatically generated
+        from the raw object's ``info['meas_date']``.
+        If a :class:`~mne_bids.BIDSPath`, the ``root`` attribute must be the
+        same as in ``bids_path``. Pass ``None`` (default) if you do not wish to
+        specify an associated empty-room recording.
+
+        .. versionchanged:: 0.11
+           Accepts :class:`~mne.io.Raw` data.
     allow_preload : bool
         If ``True``, allow writing of preloaded raw objects (i.e.,
         ``raw.preload`` is ``True``). Because the original file is ignored, you
@@ -1228,6 +1440,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     bids_path : BIDSPath
         The path of the created data file.
 
+        .. note::
+           If you passed empty-room raw data via ``empty_room``, the
+           :class:`~mne_bids.BIDSPath` of the empty-room recording can be
+           retrieved via ``bids_path.find_empty_room(use_sidecar_only=True)``.
+
     Notes
     -----
     You should ensure that ``raw.info['subject_info']`` and
@@ -1268,6 +1485,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     an error will occur because MNE-BIDS will inherently delete the
     source file otherwise. This can lead to errors, so the user must
     specify a different data path, or explicitly set ``format``.
+
+    When writing EDF or BDF files, all file extensions are forced to be
+    lower-case, in compliance with the BIDS specification.
 
     See Also
     --------
@@ -1327,7 +1547,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                            'array. You need to pass both, or neither.')
 
     _validate_type(item=empty_room, item_name='empty_room',
-                   types=(BIDSPath, None))
+                   types=(mne.io.BaseRaw, BIDSPath, None))
     _validate_type(montage, (mne.channels.DigMontage, None), 'montage')
     _validate_type(acpc_aligned, bool, 'acpc_aligned')
 
@@ -1344,6 +1564,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raw_fname = raw_fname.replace('.fdt', '.set')
         raw_fname = raw_fname.replace('.dat', '.lay')
         _, ext = _parse_ext(raw_fname)
+
+        # force all EDF/BDF files with upper-case extension to be written as
+        # lower case
+        if ext == '.EDF':
+            ext = '.edf'
+        elif ext == '.BDF':
+            ext = '.bdf'
 
         if ext not in ALLOWED_INPUT_EXTENSIONS:
             raise ValueError(f'Unrecognized file format {ext}')
@@ -1417,7 +1644,38 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 )
 
     associated_er_path = None
-    if empty_room is not None:
+
+    if isinstance(empty_room, mne.io.BaseRaw):
+        er_date = empty_room.info['meas_date']
+        if not er_date:
+            raise ValueError(
+                'The empty-room raw data must have a valid measurement date '
+                'set. Please update its info["meas_date"] field.'
+            )
+        er_session = er_date.strftime("%Y%m%d")
+        er_bids_path = bids_path.copy().update(
+            subject='emptyroom',
+            session=er_session,
+            task='noise',
+            run=None
+        )
+        write_raw_bids(
+            raw=empty_room,
+            bids_path=er_bids_path,
+            events_data=None,
+            event_id=None,
+            anonymize=anonymize,
+            format=format,
+            symlink=symlink,
+            allow_preload=allow_preload,
+            montage=montage,
+            acpc_aligned=acpc_aligned,
+            overwrite=overwrite,
+            verbose=verbose
+        )
+        associated_er_path = er_bids_path.fpath
+        del er_bids_path, er_date, er_session
+    elif isinstance(empty_room, BIDSPath):
         if bids_path.datatype != 'meg':
             raise ValueError('"empty_room" is only supported for '
                              'MEG data.')
@@ -1427,15 +1685,16 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         if bids_path.root != empty_room.root:
             raise ValueError('The MEG data and its associated empty-room '
                              'recording must share the same BIDS root.')
-
         associated_er_path = empty_room.fpath
+
+    if associated_er_path is not None:
         if not associated_er_path.exists():
             raise FileNotFoundError(f'Empty-room data file not found: '
                                     f'{associated_er_path}')
 
         # Turn it into a path relative to the BIDS root
         associated_er_path = Path(str(associated_er_path)
-                                  .replace(str(empty_room.root), ''))
+                                  .replace(str(bids_path.root), ''))
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 
@@ -1471,8 +1730,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         suffix='channels', extension='.tsv')
 
     # Anonymize
+    keep_source = False
     if anonymize is not None:
-        daysback, keep_his = _check_anonymize(anonymize, raw, ext)
+        daysback, keep_his, keep_source = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his)
 
         if bids_path.datatype == 'meg' and ext != '.fif':
@@ -1485,7 +1745,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                      'for anonymization')
                 convert = True
                 bids_path.update(extension='.vhdr')
-
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
     unit = UNITS.get(ext, 'n/a')
@@ -1497,18 +1756,43 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     _readme(bids_path.datatype, readme_fname, False)
 
     # save all participants meta data
-    _participants_tsv(raw, bids_path.subject, participants_tsv_fname,
-                      overwrite)
+    _participants_tsv(
+        raw=raw, subject_id=bids_path.subject, fname=participants_tsv_fname,
+        overwrite=overwrite
+    )
     _participants_json(participants_json_fname, True)
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not data_is_emptyroom:
+        if bids_path.space is None:
+            sensor_coord_system = orient
+        elif orient == 'n/a':
+            sensor_coord_system = bids_path.space
+        elif bids_path.space in BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS:
+            sensor_coord_system = bids_path.space
+        elif orient != bids_path.space:
+            raise ValueError(f'BIDSPath.space {bids_path.space} conflicts '
+                             f'with filetype {ext} which has coordinate '
+                             f'frame {orient}')
         _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
-                                sensor_coord_system=orient,
+                                sensor_coord_system=sensor_coord_system,
                                 fname=coordsystem_path.fpath,
                                 datatype=bids_path.datatype,
                                 overwrite=overwrite)
-    elif bids_path.datatype in ['eeg', 'ieeg']:
+        _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
+                                sensor_coord_system=sensor_coord_system,
+                                fname=coordsystem_path.fpath,
+                                datatype=bids_path.datatype,
+                                overwrite=overwrite)
+    elif bids_path.datatype in ['eeg', 'ieeg', 'nirs']:
+        if (
+            bids_path.datatype == 'nirs' and
+            not check_version('mne', '1.0')
+        ):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
+
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if montage is not None or \
@@ -1534,7 +1818,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # already exist. Always set overwrite to False here. If users
     # want to edit their dataset_description, they can directly call
     # this function.
-    make_dataset_description(bids_path.root, name=" ", overwrite=False)
+    make_dataset_description(path=bids_path.root, name=" ", overwrite=False)
 
     _sidecar_json(raw, task=bids_path.task, manufacturer=manufacturer,
                   fname=sidecar_path.fpath, datatype=bids_path.datatype,
@@ -1620,7 +1904,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                       if ext == '.pdf' else bids_path.fpath))
         elif bids_path.datatype in ['eeg', 'ieeg'] and format == 'EDF':
             warn('Converting data files to EDF format')
-            _write_raw_edf(raw, bids_path.fpath)
+            _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn('Converting data files to BrainVision format')
             bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
@@ -1640,7 +1924,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
-    elif ext in ['.edf', '.EDF', '.bdf']:
+    elif ext in ['.edf', '.EDF', '.bdf', '.BDF']:
         if anonymize is not None:
             warn("EDF/EDF+/BDF files contain two fields for recording dates."
                  "Due to file format limitations, one of these fields only "
@@ -1664,7 +1948,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     # write to the scans.tsv file the output file written
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
-    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite)
+    _scans_tsv(raw, raw_fname=scan_relative_fpath,
+               fname=scans_path.fpath, keep_source=keep_source,
+               overwrite=overwrite)
     logger.info(f'Wrote {scans_path.fpath} entry with '
                 f'{scan_relative_fpath}.')
 
@@ -1688,14 +1974,12 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
         The measurement information from an electrophysiology recording of
         the subject with the anatomical landmarks stored in its
         :class:`mne.channels.DigMontage`.
-    trans : mne.transforms.Transform | str
+    trans : mne.transforms.Transform | path-like
         The transformation matrix from head to MRI coordinates. Can
         also be a string pointing to a ``.trans`` file containing the
-        transformation matrix. If ``None`` and no ``landmarks`` parameter is
-        passed, no sidecar JSON file will be created.
+        transformation matrix.
     fs_subject : str
-        The subject identifier used for FreeSurfer. If ``None``, defaults to
-        the ``subject`` entity in ``bids_path``. Must be provided to write
+        The subject identifier used for FreeSurfer. Must be provided to write
         the anatomical landmarks if they are not provided in MRI voxel space.
         This is because the head coordinate of a
         :class:`mne.channels.DigMontage` is aligned using FreeSurfer surfaces.
@@ -1719,9 +2003,38 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     landmarks = np.asarray((coords_dict['lpa'],
                             coords_dict['nasion'],
                             coords_dict['rpa']))
+
     # get trans and ensure it is from head to MRI
     trans, _ = _get_trans(trans, fro='head', to='mri')
     landmarks = _meg_landmarks_to_mri_landmarks(landmarks, trans)
+
+    # Get FS T1 image in MGH format
+    t1w_mgh = _get_t1w_mgh(fs_subject, fs_subjects_dir)
+
+    # FS MGH image: go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
+    landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
+
+    # FS MGH image: go to T1 scanner space from T1 voxel space
+    landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
+
+    # Input image: go to T1 voxel space from T1 scanner space
+    if isinstance(image, BIDSPath):
+        image = image.fpath
+    img_nii = _load_image(image, name='image')
+    img_mgh = nib.MGHImage(img_nii.dataobj, img_nii.affine)
+    landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)
+
+    landmarks = mne.channels.make_dig_montage(
+        lpa=landmarks[0], nasion=landmarks[1], rpa=landmarks[2],
+        coord_frame='mri_voxel')
+
+    return landmarks
+
+
+def _get_t1w_mgh(fs_subject, fs_subjects_dir):
+    """Return the T1w image in MGH format."""
+    import nibabel as nib
+
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=True)
     t1_fname = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not t1_fname.exists():
@@ -1730,19 +2043,43 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
                          f'got {Path(fs_subjects_dir) / fs_subject}')
     t1w_img = _load_image(str(t1_fname), name='T1.mgz')
     t1w_mgh = nib.MGHImage(t1w_img.dataobj, t1w_img.affine)
-    # go to T1 voxel space from surface RAS/TkReg RAS/freesurfer
-    landmarks = _mri_landmarks_to_mri_voxels(landmarks, t1w_mgh)
-    # go to T1 scanner space from T1 voxel space
-    landmarks = _mri_voxels_to_mri_scanner_ras(landmarks, t1w_mgh)
-    if isinstance(image, BIDSPath):
-        image = image.fpath
-    img_nii = _load_image(image, name='image')
-    img_mgh = nib.MGHImage(img_nii.dataobj, img_nii.affine)
-    landmarks = _mri_scanner_ras_to_mri_voxels(landmarks, img_mgh)
-    landmarks = mne.channels.make_dig_montage(
-        lpa=landmarks[0], nasion=landmarks[1], rpa=landmarks[2],
-        coord_frame='mri_voxel')
-    return landmarks
+    return t1w_mgh
+
+
+def _get_landmarks(landmarks, image_nii, kind=''):
+    import nibabel as nib
+    if isinstance(landmarks, (str, Path)):
+        landmarks, coord_frame = read_fiducials(landmarks)
+        landmarks = np.array([landmark['r'] for landmark in
+                              landmarks], dtype=float)  # unpack
+    else:
+        # Prepare to write the sidecar JSON, extract MEG landmarks
+        coords_dict, coord_frame = _get_fid_coords(landmarks.dig)
+        landmarks = np.asarray((coords_dict['lpa'],
+                                coords_dict['nasion'],
+                                coords_dict['rpa']))
+
+    # check if coord frame is supported
+    if coord_frame not in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+                           FIFF.FIFFV_MNE_COORD_RAS):
+        raise ValueError(f'Coordinate frame not supported: {coord_frame}')
+
+    # convert to voxels from scanner RAS to voxels
+    if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
+        # Make MGH image for header properties
+        img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
+        landmarks = _mri_scanner_ras_to_mri_voxels(
+            landmarks * 1e3, img_mgh)
+
+    suffix = f"_{kind}" if kind else ""
+
+    # Write sidecar.json
+    img_json = {
+        'LPA' + suffix: list(landmarks[0, :]),
+        'NAS' + suffix: list(landmarks[1, :]),
+        'RPA' + suffix: list(landmarks[2, :])
+    }
+    return img_json, landmarks
 
 
 @verbose
@@ -1771,16 +2108,23 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be ``'T1w'`` if not present. It can
         also be ``'FLASH'``, for example, to indicate FLASH MRI.
-    landmarks : mne.channels.DigMontage | str | None
+    landmarks : mne.channels.DigMontage | path-like | dict | None
         The montage or path to a montage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
-        from the MRI using freeview.  If ``None`` and no ``trans`` parameter
-        is passed, no sidecar JSON file will be created.
+        from the MRI using ``freeview``.  If a dictionary is passed, then the
+        values must be instances of :class:`~mne.channels.DigMontage` or
+        path-like objects pointing to a :class:`~mne.channels.DigMontage`
+        stored on disk, and the keys of the must be strings
+        (e.g. ``'session-1'``) which will be used as naming suffix for the
+        landmarks in the sidecar JSON file. If ``None``, no sidecar JSON file
+        will be created.
     deface : bool | dict
         If False, no defacing is performed.
-        If True, deface with default parameters.
-        `trans` and `raw` must not be `None` if True.
+        If ``True``, deface with default parameters using the provided
+        ``landmarks``. If multiple landmarks are provided, will
+        use the ones with the suffix ``'deface'``; if no landmarks with this
+        suffix exist, will use the first ones in the ``landmarks`` dictionary.
         If dict, accepts the following keys:
 
         - `inset`: how far back in voxels to start defacing
@@ -1847,35 +2191,14 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if write_sidecar:
-        if isinstance(landmarks, str):
-            landmarks, coord_frame = read_fiducials(landmarks)
-            landmarks = np.array([landmark['r'] for landmark in
-                                  landmarks], dtype=float)  # unpack
-        else:
-            # Prepare to write the sidecar JSON, extract MEG landmarks
-            coords_dict, coord_frame = _get_fid_coords(landmarks.dig)
-            landmarks = np.asarray((coords_dict['lpa'],
-                                    coords_dict['nasion'],
-                                    coords_dict['rpa']))
-
-        # check if coord frame is supported
-        if coord_frame not in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
-                               FIFF.FIFFV_MNE_COORD_RAS):
-            raise ValueError(f'Coordinate frame not supported: {coord_frame}')
-
-        # convert to voxels from scanner RAS to voxels
-        if coord_frame == FIFF.FIFFV_MNE_COORD_RAS:
-            # Make MGH image for header properties
-            img_mgh = nib.MGHImage(image_nii.dataobj, image_nii.affine)
-            landmarks = _mri_scanner_ras_to_mri_voxels(
-                landmarks * 1e3, img_mgh)
-
-        # Write sidecar.json
-        img_json = dict()
-        img_json['AnatomicalLandmarkCoordinates'] = \
-            {'LPA': list(landmarks[0, :]),
-             'NAS': list(landmarks[1, :]),
-             'RPA': list(landmarks[2, :])}
+        if not isinstance(landmarks, dict):
+            landmarks = {"": landmarks}
+        img_json = {}
+        for kind, this_landmarks in landmarks.items():
+            img_json.update(
+                _get_landmarks(this_landmarks, image_nii, kind=kind)[0]
+            )
+        img_json = {'AnatomicalLandmarkCoordinates': img_json}
         fname = bids_path.copy().update(extension='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
@@ -1884,7 +2207,12 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
         _write_json(fname, img_json, overwrite)
 
         if deface:
-            image_nii = _deface(image_nii, landmarks, deface)
+            landmarks_deface = landmarks.get("deface")
+            if landmarks_deface is None:
+                # Take first one if none is specified for defacing.
+                landmarks_deface = next(iter(landmarks.items()))[1]
+            _, landmarks_deface = _get_landmarks(landmarks_deface, image_nii)
+            image_nii = _deface(image_nii, landmarks_deface, deface)
 
     # Save anatomical data
     if op.exists(bids_path):
@@ -1897,49 +2225,6 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
     nib.save(image_nii, bids_path.fpath)
 
     return bids_path
-
-
-@deprecated(extra='mark_bad_channels is deprecated in favor of mark_channels '
-                  'and will be removed in v0.10.')
-@verbose
-def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
-                      overwrite=False, verbose=None):
-    """Update which channels are marked as "bad" in an existing BIDS dataset.
-
-    This modifies entries in the ``channels.tsv`` file in a BIDS dataset.
-
-    Parameters
-    ----------
-    ch_names : str | list of str
-        The names of the channel(s) to mark as bad. Pass an empty list in
-        combination with ``overwrite=True`` to mark all channels as good.
-    descriptions : None | str | list of str
-        Descriptions of the reasons that lead to the exclusion of the
-        channel(s). If a list, it must match the length of ``ch_names``.
-        If ``None``, no descriptions are added.
-    bids_path : BIDSPath
-        The recording to update. The :class:`mne_bids.BIDSPath` instance passed
-        here **must** have the ``.root`` attribute set. The ``.datatype``
-        attribute **may** be set. If ``.datatype`` is not set and only one data
-        type (e.g., only EEG or MEG data) is present in the dataset, it will be
-        selected automatically.
-    overwrite : bool
-        If ``False``, only update the information of the channels passed via
-        ``ch_names``, and leave the rest untouched. If ``True``, update the
-        information of **all** channels: mark the channels passed via
-        ``ch_names`` as bad, and all remaining channels as good, also
-        discarding their descriptions.
-    %(verbose)s
-    """
-    # if overwrite, first mark all channels as good and overwrite
-    # their descriptions
-    if overwrite:
-        mark_channels(bids_path=bids_path, ch_names=[], status='good',
-                      descriptions='n/a', verbose=verbose)
-
-    # now mark the channels that we want as bad
-    mark_channels(bids_path=bids_path, ch_names=ch_names, status='bad',
-                  descriptions=descriptions, verbose=verbose)
 
 
 @verbose
@@ -2566,7 +2851,8 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
                 bids_path=bp_out,
                 anonymize={
                     'daysback': daysback,
-                    'keep_his': False
+                    'keep_his': False,
+                    'keep_source': False,
                 },
                 empty_room=bp_er_out,
                 verbose='error'
@@ -2575,7 +2861,10 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
         # Enrich sidecars
         bp_in_json = bp_in.copy().update(extension='.json')
         bp_out_json = bp_out.copy().update(extension='.json')
+        bp_in_events = bp_in.copy().update(suffix='events', extension='.tsv')
+        bp_out_events = bp_out.copy().update(suffix='events', extension='.tsv')
 
+        # Enrich the JSON file
         if bp_in_json.fpath.exists():
             json_in = json.loads(
                 bp_in_json.fpath.read_text(encoding='utf-8')
@@ -2592,18 +2881,33 @@ def anonymize_dataset(bids_root_in, bids_root_out, daysback='auto',
 
         # Only transfer data that we believe doesn't contain any personally
         # identifiable information
-        updates = dict()
+        json_updates = dict()
         for key, value in json_in.items():
             if key in ANONYMIZED_JSON_KEY_WHITELIST and key not in json_out:
-                updates[key] = value
+                json_updates[key] = value
         del json_in, json_out
 
-        if updates:
+        if json_updates:
             bp_out_json.fpath.touch(exist_ok=True)
             update_sidecar_json(
                 bids_path=bp_out_json,
-                entries=updates,
-                verbose=False
+                entries=json_updates,
+                verbose='error'
+            )
+
+        # Transfer trigger codes from original *_events.tsv file
+        if bp_in_events.fpath.exists():
+            assert bp_out_events.fpath.exists()
+            events_tsv_in = _from_tsv(bp_in_events)
+            events_tsv_out = _from_tsv(bp_out_events)
+
+            assert events_tsv_in['trial_type'] == events_tsv_out['trial_type']
+            events_tsv_out['value'] = events_tsv_in['value']
+            _write_tsv(
+                fname=bp_out_events.fpath,
+                dictionary=events_tsv_out,
+                overwrite=True,
+                verbose='error'
             )
 
     # Copy some additional files

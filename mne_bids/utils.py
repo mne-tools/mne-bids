@@ -15,10 +15,9 @@ from os import path as op
 
 import numpy as np
 from mne.channels import make_standard_montage
-from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import warn, logger, verbose
+from mne.utils import warn, logger, verbose, check_version
 
 from mne_bids.tsv_handler import _to_tsv
 
@@ -68,6 +67,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
         mapping = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                        ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
                        resp='RESP', bio='MISC', dbs='DBS',
+                       fnirs_cw_amplitude='NIRSCWAMPLITUDE',
                        # MEG channels
                        meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
                        megrefgradaxial='MEGREFGRADAXIAL',
@@ -77,7 +77,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     elif fro == 'bids' and to == 'mne':
         mapping = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
                        ECOG='ecog', SEEG='seeg', EOG='eog', ECG='ecg',
-                       RESP='resp',
+                       RESP='resp', NIRS='fnirs_cw_amplitude',
                        # No MEG channels for now
                        # Many to one mapping
                        VEOG='eog', HEOG='eog', DBS='dbs')
@@ -127,6 +127,12 @@ def _handle_datatype(raw, datatype):
             datatypes.append('meg')
         if 'eeg' in raw:
             datatypes.append('eeg')
+        if 'fnirs_cw_amplitude' in raw:
+            if not check_version('mne', '1.0'):  # pragma: no cover
+                raise RuntimeError(
+                    'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+                )
+            datatypes.append('nirs')
         if len(datatypes) == 0:
             raise ValueError('No MEG, EEG or iEEG channels found in data. '
                              'Please use raw.set_channel_types to set the '
@@ -193,7 +199,8 @@ def _write_json(fname, dictionary, overwrite=False):
     logger.info(f"Writing '{fname}'...")
 
 
-def _write_tsv(fname, dictionary, overwrite=False):
+@verbose
+def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
@@ -271,21 +278,6 @@ def _infer_eeg_placement_scheme(raw):
     return placement_scheme
 
 
-def _extract_landmarks(dig):
-    """Extract NAS, LPA, and RPA from raw.info['dig']."""
-    coords = dict()
-    landmarks = {d['ident']: d for d in dig
-                 if d['kind'] == FIFF.FIFFV_POINT_CARDINAL}
-    if landmarks:
-        if FIFF.FIFFV_POINT_NASION in landmarks:
-            coords['NAS'] = landmarks[FIFF.FIFFV_POINT_NASION]['r'].tolist()
-        if FIFF.FIFFV_POINT_LPA in landmarks:
-            coords['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['r'].tolist()
-        if FIFF.FIFFV_POINT_RPA in landmarks:
-            coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
-    return coords
-
-
 def _scale_coord_to_meters(coord, unit):
     """Scale units to meters (mne-python default)."""
     if unit == 'cm':
@@ -331,7 +323,9 @@ def _check_anonymize(anonymize, raw, ext):
                              'is able to store in FIF format, must '
                              f'be less than {daysback_max}')
     keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
-    return daysback, keep_his
+    keep_source = anonymize['keep_source'] if 'keep_source' in \
+        anonymize else False
+    return daysback, keep_his, keep_source
 
 
 def _get_anonymization_daysback(raw):
@@ -436,7 +430,7 @@ def _check_datatype(raw, datatype):
     -------
     None
     """
-    supported_types = ('meg', 'eeg', 'ieeg')
+    supported_types = ('meg', 'eeg', 'ieeg', 'nirs')
     if datatype not in supported_types:
         raise ValueError(
             f'The specified datatype {datatype} is currently not supported. '
@@ -447,6 +441,8 @@ def _check_datatype(raw, datatype):
     if datatype == 'eeg' and datatype in raw:
         datatype_matches = True
     elif datatype == 'meg' and datatype in raw:
+        datatype_matches = True
+    elif datatype == 'nirs' and 'fnirs_cw_amplitude' in raw:
         datatype_matches = True
     elif datatype == 'ieeg':
         ieeg_types = ('seeg', 'ecog', 'dbs')

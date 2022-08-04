@@ -16,7 +16,7 @@ an entire existing dataset can be cumbersome and error-prone.
 
 MNE-BIDS provides a dedicated function, :func:`mne_bids.anonymize_dataset`,
 to do the heavy lifting for you, automatically.
-"""
+"""  # noqa: D400 D205
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
 # License: BSD-3-Clause

@@ -22,7 +22,7 @@ from mne.utils import warn, logger, _validate_type, verbose, _check_fname
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
-    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES, ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
@@ -51,10 +51,6 @@ def _find_matched_empty_room(bids_path):
                          'date set. Cannot get matching empty-room file.')
 
     ref_date = raw.info['meas_date']
-    if not isinstance(ref_date, datetime):  # pragma: no cover
-        # for MNE < v0.20
-        ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
-
     emptyroom_dir = BIDSPath(root=bids_root, subject='emptyroom').directory
 
     if not emptyroom_dir.exists():
@@ -95,6 +91,7 @@ def _find_matched_empty_room(bids_path):
         er_bids_path = get_bids_path_from_fname(er_fname, check=False)
         er_bids_path.subject = 'emptyroom'  # er subject entity is different
         er_bids_path.root = bids_root
+        er_bids_path.datatype = 'meg'
         er_meas_date = None
 
         # Try to extract date from filename.
@@ -111,7 +108,7 @@ def _find_matched_empty_room(bids_path):
             _, ext = _parse_ext(er_fname)
             extra_params = None
             if ext == '.fif':
-                extra_params = dict(allow_maxshield=True)
+                extra_params = dict(allow_maxshield='yes')
 
             er_raw = read_raw_bids(bids_path=er_bids_path,
                                    extra_params=extra_params)
@@ -229,7 +226,7 @@ class BIDSPath(object):
     Generate a BIDSPath object and inspect it
 
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
-    ...                      suffix='ieeg', extension='.edf')
+    ...                      suffix='ieeg', extension='.edf', datatype='ieeg')
     >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_path
@@ -714,6 +711,7 @@ class BIDSPath(object):
                 kwargs['extension'] = f'.{extension}'
 
         # error check entities
+        old_kwargs = dict()
         for key, val in kwargs.items():
 
             # check if there are any characters not allowed
@@ -728,15 +726,19 @@ class BIDSPath(object):
             # set entity value, ensuring `root` is a Path
             if val is not None and key == 'root':
                 val = Path(val).expanduser()
+            old_kwargs[key] = \
+                getattr(self, f'{key}') if hasattr(self, f'_{key}') else None
             setattr(self, f'_{key}', val)
 
-        # infer datatype if suffix is uniquely the datatype
-        if self.datatype is None and \
-                self.suffix in SUFFIX_TO_DATATYPE:
-            self._datatype = SUFFIX_TO_DATATYPE[self.suffix]
-
-        # Perform a check of the entities.
-        self._check()
+        # Perform a check of the entities and revert changes if check fails
+        try:
+            self._check()
+        except Exception as e:
+            old_check = self.check
+            self.check = False
+            self.update(**old_kwargs)
+            self.check = old_check
+            raise e
         return self
 
     def match(self, check=False):
@@ -889,7 +891,11 @@ class BIDSPath(object):
                              'Please use `bids_path.update(root="<root>")` '
                              'to set the root of the BIDS folder to read.')
 
-        sidecar_fname = _find_matching_sidecar(self, extension='.json')
+        sidecar_fname = _find_matching_sidecar(
+            # needed to deal with inheritance principle
+            self.copy().update(datatype=None),
+            extension='.json'
+        )
         with open(sidecar_fname, 'r', encoding='utf-8') as f:
             sidecar_json = json.load(f)
 
@@ -1164,9 +1170,13 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
         If `return_str` is ``True``, the directory tree is returned as a
         string. Else, ``None`` is returned and the directory tree is printed.
     """
-    if not op.exists(folder):
-        raise ValueError('Directory does not exist: {}'.format(folder))
-
+    folder = _check_fname(
+        fname=folder,
+        overwrite='read',
+        must_exist=True,
+        name='Folder',
+        need_dir=True
+    )
     max_depth = _check_max_depth(max_depth)
 
     _validate_type(return_str, bool, 'return_str')
@@ -1223,14 +1233,15 @@ def _parse_ext(raw_fname):
     return fname, ext
 
 
-def _infer_datatype_from_path(fname):
+def _infer_datatype_from_path(fname: Path):
     # get the parent
-    datatype = Path(fname).parent.name
-
-    if any([datatype.startswith(entity) for entity in ['sub', 'ses']]):
-        datatype = None
-
-    if not datatype:
+    if fname.exists():
+        datatype = fname.parent.name
+        if any([datatype.startswith(entity) for entity in ['sub', 'ses']]):
+            datatype = None
+    elif fname.stem.split('_')[-1] in ('meg', 'eeg', 'ieeg'):
+        datatype = fname.stem.split('_')[-1]
+    else:
         datatype = None
 
     return datatype
@@ -1409,7 +1420,9 @@ def _find_matching_sidecar(bids_path, suffix=None,
 
     # search suffix is BIDS-suffix and extension
     search_suffix = ''
-    if suffix is not None:
+    if suffix is None and bids_path.suffix is not None:
+        search_suffix = bids_path.suffix
+    elif suffix is not None:
         search_suffix = suffix
 
         # do not search for suffix if suffix is explicitly passed
@@ -1417,7 +1430,9 @@ def _find_matching_sidecar(bids_path, suffix=None,
         bids_path.check = False
         bids_path.update(suffix=None)
 
-    if extension is not None:
+    if extension is None and bids_path.extension is not None:
+        search_suffix = search_suffix + bids_path.extension
+    elif extension is not None:
         search_suffix = search_suffix + extension
 
         # do not search for extension if extension is explicitly passed
@@ -1505,7 +1520,7 @@ def get_datatypes(root, verbose=None):
     # (Appendix in BIDS spec)
     # https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html  # noqa
     datatype_list = ('anat', 'func', 'dwi', 'fmap', 'beh',
-                     'meg', 'eeg', 'ieeg')
+                     'meg', 'eeg', 'ieeg', 'nirs')
     datatypes = list()
     for root, dirs, files in os.walk(root):
         for dir in dirs:
@@ -1604,7 +1619,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     References
     ----------
-    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
+    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#entities  # noqa: E501
 
     """
     root = _check_fname(

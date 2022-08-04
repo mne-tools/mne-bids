@@ -9,8 +9,17 @@ from pathlib import Path
 import numpy as np
 
 import mne
-from mne.preprocessing import annotate_flat
+
 from mne.utils import logger, verbose
+from mne.fixes import _compare_version
+from mne.viz import use_browser_backend
+
+if _compare_version(mne.__version__, '<', '1.0.dev0'):  # pragma: no cover
+    from mne.preprocessing import annotate_flat
+    _annotate_flat_func = annotate_flat
+else:
+    from mne.preprocessing import annotate_amplitude
+    _annotate_flat_func = annotate_amplitude
 
 from mne_bids import read_raw_bids, mark_channels
 from mne_bids.read import _from_tsv, _read_events
@@ -56,8 +65,10 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
         will be marked as ``bad`` in ``*_channels.tsv``.
 
         .. note::
-            This function calls :func:`mne.preprocessing.annotate_flat` and
-            will only consider segments of at least **50 ms consecutive
+            This function calls ``mne.preprocessing.annotate_amplitude``
+            (MNE-Python 1.0 or newer) or ``mne.preprocessing.annotate_flat``
+            (older versions of MNE-Python)
+            and will only consider segments of at least **50 ms consecutive
             flatness** as "flat" (deviating from MNE-Python's default of 5 ms).
             If more than 5 percent of a channel's data has been marked as flat,
             the entire channel will be added to the list of bad channels. Only
@@ -118,14 +129,25 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
 
     extra_params = dict()
     if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = True
+        extra_params['allow_maxshield'] = 'yes'
     raw = read_raw_bids(bids_path, extra_params=extra_params, verbose='error')
     old_bads = raw.info['bads'].copy()
     old_annotations = raw.annotations.copy()
 
     if find_flat:
         raw.load_data()  # Speeds up processing dramatically
-        flat_annot, flat_chans = annotate_flat(raw=raw, min_duration=0.05)
+        if _annotate_flat_func.__name__ == 'annotate_amplitude':
+            flat_annot, flat_chans = annotate_amplitude(
+                raw=raw,
+                flat=0,
+                min_duration=0.05,
+                bad_percent=5
+            )
+        else:  # pragma: no cover
+            flat_annot, flat_chans = annotate_flat(
+                raw=raw,
+                min_duration=0.05
+            )
         new_annot = raw.annotations + flat_annot
         raw.set_annotations(new_annot)
         raw.info['bads'] = list(set(raw.info['bads'] + flat_chans))
@@ -134,10 +156,14 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
         flat_chans = []
 
     show_options = bids_path.datatype == 'meg'
-    fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-                   highpass=l_freq, lowpass=h_freq,
-                   show_options=show_options,
-                   block=False, show=False, verbose='warning')
+
+    with use_browser_backend('matplotlib'):
+        fig = raw.plot(
+            title=f'{bids_path.root.name}: {bids_path.basename}',
+            highpass=l_freq, lowpass=h_freq,
+            show_options=show_options,
+            block=False, show=False, verbose='warning'
+        )
 
     # Add our own event handlers so that when the MNE Raw Browser is being
     # closed, our dialog box will pop up, asking whether to save changes.
@@ -208,7 +234,7 @@ def _save_annotations(*, annotations, bids_path):
     # to events, which will be stored in the *_events.tsv sidecar.
     extra_params = dict()
     if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = True
+        extra_params['allow_maxshield'] = 'yes'
 
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
                         verbose='warning')

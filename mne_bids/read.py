@@ -17,7 +17,9 @@ import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
-from mne.utils import has_nibabel, logger, warn, get_subjects_dir
+from mne.utils import (
+    has_nibabel, logger, warn, get_subjects_dir, check_version
+)
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -26,7 +28,7 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              ANNOTATIONS_TO_KEEP,
                              reader, _map_options)
-from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping, verbose
+from mne_bids.utils import _get_ch_type_mapping, verbose
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype, get_bids_path_from_fname)
 
@@ -54,7 +56,14 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
     elif ext == '.fif':
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF']:
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
+        if (
+            ext == '.snirf' and
+            not check_version('mne', '1.0')
+        ):  # pragma: no cover
+            raise RuntimeError(
+                'fNIRS support in MNE-BIDS requires MNE-Python version 1.0'
+            )
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 
@@ -185,10 +194,11 @@ def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
     row_ind = subjects.index(subject)
+    raw.info['subject_info'] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
     for col_name, value in participants_tsv.items():
-        if col_name == 'sex' or col_name == 'hand':
+        if col_name in ('sex', 'hand'):
             value = _map_options(what=col_name, key=value[row_ind],
                                  fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
@@ -197,15 +207,24 @@ def _handle_participants_reading(participants_fname, raw, subject):
                     info_str = 'subject sex'
                 else:
                     info_str = 'subject handedness'
-                warn(f'Unable to map `{col_name}` value to MNE. '
+                warn(f'Unable to map "{col_name}" value "{value}" to MNE. '
                      f'Not setting {info_str}.')
+        elif col_name in ('height', 'weight'):
+            try:
+                value = float(value[row_ind])
+            except ValueError:
+                value = None
         else:
-            value = value[row_ind]
+            if value[row_ind] == 'n/a':
+                value = None
+            else:
+                value = value[row_ind]
+
         # add data into raw.Info
-        if raw.info['subject_info'] is None:
-            raw.info['subject_info'] = dict()
         key = 'his_id' if col_name == 'participant_id' else col_name
-        raw.info['subject_info'][key] = value
+        if value is not None:
+            assert key not in raw.info['subject_info']
+            raw.info['subject_info'][key] = value
 
     return raw
 
@@ -229,14 +248,6 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     else:
         acq_times = ['n/a'] * len(fnames)
 
-    # check if the filename is an EDF file
-    if data_fname.lower().endswith('.edf'):
-        # check first if lower-case is in the filename
-        lower_case_ext = Path(data_fname).with_suffix('.edf').as_posix()
-        if lower_case_ext not in fnames:
-            data_fname = Path(data_fname).with_suffix('.EDF').as_posix()
-        else:
-            data_fname = lower_case_ext
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
@@ -424,7 +435,9 @@ def _handle_events_reading(events_fname, raw):
                         f'The event "{trial_type}" refers to multiple event '
                         f'values. Creating hierarchical event names.')
                     for ii in idx:
-                        new_name = f'{trial_type}/{values[ii]}'
+                        value = values[ii]
+                        value = 'na' if value == 'n/a' else value
+                        new_name = f'{trial_type}/{value}'
                         logger.info(f'    Renaming event: {trial_type} -> '
                                     f'{new_name}')
                         trial_types[ii] = new_name
@@ -760,6 +773,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         )
     else:
         warn(f"participants.tsv file not found for {raw_path}")
+        raw.info['subject_info'] = dict()
 
     assert raw.annotations.orig_time == raw.info['meas_date']
     return raw
@@ -767,7 +781,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
 @verbose
 def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
-                       fs_subject=None, fs_subjects_dir=None, verbose=None):
+                       fs_subject=None, fs_subjects_dir=None, *, kind=None,
+                       verbose=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -782,7 +797,12 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     Parameters
     ----------
     bids_path : BIDSPath
-        The path of the electrophysiology recording.
+        The path of the electrophysiology recording. If ``datatype`` and
+        ``suffix`` are not present, they will be set to ``'meg'``, and a
+        warning will be raised.
+
+        .. versionchanged:: 0.10
+           A warning is raised it ``datatype`` or ``suffix`` are not set.
     extra_params : None | dict
         Extra parameters to be passed to :func:`mne.io.read_raw` when reading
         the MEG file.
@@ -795,14 +815,27 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
         Use this parameter e.g. if the T1 scan was recorded during a different
         session than the MEG. It is even possible to point to a T1 image stored
         in an entirely different BIDS dataset than the MEG data.
-    fs_subject : str | None
-        The subject identifier used for FreeSurfer. If ``None``, defaults to
-        the ``subject`` entity in ``bids_path``.
+    fs_subject : str
+        The subject identifier used for FreeSurfer.
+
+        .. versionchanged:: 0.10
+           Does not default anymore to ``bids_path.subject`` if ``None``.
     fs_subjects_dir : path-like | None
         The FreeSurfer subjects directory. If ``None``, defaults to the
         ``SUBJECTS_DIR`` environment variable.
 
         .. versionadded:: 0.8
+    kind : str | None
+        The suffix of the anatomical landmark names in the JSON sidecar.
+        A suffix might be present e.g. to distinguish landmarks between
+        sessions. If provided, should not include a leading underscore ``_``.
+        For example, if the landmark names in the JSON sidecar file are
+        ``LPA_ses-1``, ``RPA_ses-1``, ``NAS_ses-1``, you should pass
+        ``'ses-1'`` here.
+        If ``None``, no suffix is appended, the landmarks named
+        ``Nasion`` (or ``NAS``), ``LPA``, and ``RPA`` will be used.
+
+        .. versionadded:: 0.10
     %(verbose)s
 
     Returns
@@ -826,8 +859,17 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # only get this for MEG data
-    meg_bids_path.update(datatype='meg', suffix='meg')
+    # if the bids_path is underspecified, only get info for MEG data
+    if meg_bids_path.datatype is None:
+        meg_bids_path.datatype = 'meg'
+        warn('bids_path did not have a datatype set. Assuming "meg". This '
+             'will raise an exception in the future.', module='mne_bids',
+             category=DeprecationWarning)
+    if meg_bids_path.suffix is None:
+        meg_bids_path.suffix = 'meg'
+        warn('bids_path did not have a suffix set. Assuming "meg". This '
+             'will raise an exception in the future.', module='mne_bids',
+             category=DeprecationWarning)
 
     # Get the sidecar file for MRI landmarks
     t1w_bids_path = (
@@ -869,14 +911,15 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
 
     # landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]
+    suffix = f"_{kind}" if kind is not None else ""
     mri_landmarks = np.full((3, 3), np.nan)
     for landmark_name, coords in mri_coords_dict.items():
-        if landmark_name.upper() == 'LPA':
+        if landmark_name.upper() == ('LPA' + suffix).upper():
             mri_landmarks[0, :] = coords
-        elif landmark_name.upper() == 'RPA':
+        elif landmark_name.upper() == ('RPA' + suffix).upper():
             mri_landmarks[2, :] = coords
-        elif (landmark_name.upper() == 'NAS' or
-              landmark_name.lower() == 'nasion'):
+        elif (landmark_name.upper() == ('NAS' + suffix).upper() or
+              landmark_name.lower() == ('nasion' + suffix).lower()):
             mri_landmarks[1, :] = coords
         else:
             continue
@@ -892,11 +935,15 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
             f'{mri_coords_dict}'
         )
 
-    # The MRI landmarks are in "voxels". We need to convert the to the
-    # neuromag RAS coordinate system in order to compare the with MEG landmarks
-    # see also: `mne_bids.write.write_anat`
+    # The MRI landmarks are in "voxels". We need to convert them to the
+    # Neuromag RAS coordinate system in order to compare them with MEG
+    # landmarks. See also: `mne_bids.write.write_anat`
     if fs_subject is None:
+        warn('Passing "fs_subject=None" has been deprecated and will raise '
+             'an error in future versions. Please explicitly specify the '
+             'FreeSurfer subject name.', DeprecationWarning)
         fs_subject = f'sub-{meg_bids_path.subject}'
+
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
     fs_t1_path = Path(fs_subjects_dir) / fs_subject / 'mri' / 'T1.mgz'
     if not fs_t1_path.exists():
@@ -925,13 +972,23 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     if extra_params is None:
         extra_params = dict()
     if ext == '.fif':
-        extra_params['allow_maxshield'] = True
+        extra_params['allow_maxshield'] = 'yes'
 
     raw = read_raw_bids(bids_path=meg_bids_path, extra_params=extra_params)
-    meg_coords_dict = _extract_landmarks(raw.info['dig'])
-    meg_landmarks = np.asarray((meg_coords_dict['LPA'],
-                                meg_coords_dict['NAS'],
-                                meg_coords_dict['RPA']))
+
+    if (raw.get_montage() is None or
+        raw.get_montage().get_positions() is None or
+        any([raw.get_montage().get_positions()[fid_key] is None
+             for fid_key in ('nasion', 'lpa', 'rpa')])):
+        raise RuntimeError(
+            f'Could not extract fiducial points from ``raw`` file: '
+            f'{meg_bids_path}\n\n'
+            f'The ``raw`` file SHOULD contain digitization points '
+            'for the nasion and left and right pre-auricular points '
+            'but none were found'
+        )
+    pos = raw.get_montage().get_positions()
+    meg_landmarks = np.asarray((pos['lpa'], pos['nasion'], pos['rpa']))
 
     # Given the two sets of points, fit the transform
     trans_fitted = fit_matched_points(src_pts=meg_landmarks,

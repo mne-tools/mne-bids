@@ -1,5 +1,5 @@
 nilearn
-sphinx <4.3
+sphinx
 sphinx_gallery
 sphinx-copybutton
 pydata-sphinx-theme
@@ -8,3 +8,5 @@ matplotlib
 pillow
 pandas
 setuptools
+https://github.com/mne-tools/mne-nirs/archive/main.zip
+seaborn

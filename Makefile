@@ -56,3 +56,8 @@ build-doc:
 	make -C doc/ clean
 	make -C doc/ html
 	cd doc/ && make view
+
+dist-build:
+	@echo "Building dist"
+	rm -rf dist
+	@python -m build

@@ -1,4 +1,6 @@
 """
+.. _ieeg-example:
+
 .. currentmodule:: mne_bids
 
 ====================================
@@ -16,7 +18,7 @@ data. Specifically, we will follow these steps:
 
 4. Cite MNE-BIDS.
 
-5. Repeat the process for the ``fsaverage`` template coordinate frame.
+5. Repeat the process for the ``fsaverage`` template coordinate space.
 
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
@@ -48,14 +50,18 @@ refer to the `iEEG part of the BIDS specification`_.
 # %%
 
 import os.path as op
+import numpy as np
 import shutil
 
+import nibabel as nib
 from nilearn.plotting import plot_anat
 
 import mne
 from mne_bids import (BIDSPath, write_raw_bids, write_anat,
                       get_anat_landmarks, read_raw_bids,
-                      search_folder_for_text, print_dir_tree)
+                      search_folder_for_text, print_dir_tree,
+                      template_to_head, convert_montage_to_ras,
+                      convert_montage_to_mri)
 
 # %%
 # Step 1: Download the data
@@ -93,9 +99,10 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
 
 # %%
-# Now let's convert the montage to "mri"
+# Now let's convert the montage to "ras"
 montage = raw.get_montage()
 montage.apply_trans(trans)  # head->mri
+convert_montage_to_ras(montage, 'sample_seeg', subjects_dir)  # mri->ras
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -111,13 +118,12 @@ montage.apply_trans(trans)  # head->mri
 # - `background on FreeSurfer`_
 # - `MNE-Python coordinate frames`_
 #
-# Currently, MNE-Python supports the ``mni_tal`` and ``mri`` coordinate frames,
+# MNE-Python supports using ``mni_tal`` and ``mri`` coordinate frames,
 # corresponding to the ``fsaverage`` and ``ACPC`` (for an ACPC-aligned T1) BIDS
 # coordinate systems respectively. All other coordinate coordinate frames in
-# MNE-Python if written with :func:`mne_bids.write_raw_bids` are written with
-# coordinate system ``'Other'``. Note, then we suggest using
-# :func:`mne_bids.update_sidecar_json` to update the sidecar
-# ``*_coordsystem.json`` file to add additional information.
+# MNE-Python, if written with :func:`mne_bids.write_raw_bids`, must have
+# an :attr:`mne_bids.BIDSPath.space` specified, and will be read in with
+# the montage channel locations set to the coordinate frame 'unknown'.
 #
 # Step 2: Formatting as BIDS
 # --------------------------
@@ -195,7 +201,7 @@ T1_bids_path = write_anat(T1_fname, bids_path, deface=True,
 #
 # `acpc_aligned=True` affirms that our MRI is aligned to ACPC
 # if this is not true, convert to `fsaverage` (see below)!
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
                montage=montage, acpc_aligned=True, overwrite=True)
 
 # check our output
@@ -203,7 +209,7 @@ print_dir_tree(bids_root)
 
 # %%
 # MNE-BIDS has created a suitable directory structure for us, and among other
-# meta data files, it started an ``events.tsv``` and ``channels.tsv`` file,
+# meta data files, it started an ``events.tsv`` and ``channels.tsv`` file,
 # and created an initial ``dataset_description.json`` file on top!
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
@@ -213,6 +219,7 @@ print_dir_tree(bids_root)
 
 search_folder_for_text('n/a', bids_root)
 
+# %%
 # Remember that there is a convenient JavaScript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
 # command line tool:
@@ -229,25 +236,44 @@ search_folder_for_text('n/a', bids_root)
 # :func:`read_raw_bids` to read in the data.
 
 # read in the BIDS dataset to plot the coordinates
-raw = read_raw_bids(bids_path=bids_path)
-
-# compare with standard
-print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
-          recovered=raw.info['chs'][0]['loc'][:3],
-          saved=montage.dig[0]['r']))
+raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
-# Now we have to go back to "head" coordinates with the head->mri transform.
+# Now we have to go back to "head" coordinates.
 #
 # .. note:: If you were downloading this from ``OpenNeuro``, you would
 #           have to run the Freesurfer ``recon-all`` to get the transforms.
 
-montage = raw.get_montage()
+montage2 = raw2.get_montage()
+
+# we need to go from scanner RAS back to surface RAS (requires recon-all)
+convert_montage_to_mri(montage2, 'sample_seeg', subjects_dir=subjects_dir)
+
 # this uses Freesurfer recon-all subject directory
-montage.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
+montage2.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
+
+# get head->mri trans, invert from mri->head
+trans2 = mne.transforms.invert_transform(
+    mne.channels.compute_native_head_t(montage2))
+
 # now the montage is properly in "head" and ready for analysis in MNE
-raw.set_montage(montage)
+raw2.set_montage(montage2)
+
+# get the monage, apply the trans and make sure it's the same
+# note: the head coordinates may differ because they are defined by
+# the fiducials which are estimated; as long as the head->mri trans
+# is computed with the same fiducials, the coordinates will be the same
+# in ACPC space which is what matters
+montage = raw.get_montage()  # the original montage in 'head' coordinates
+montage.apply_trans(trans)
+montage2 = raw2.get_montage()  # the recovered montage in 'head' coordinates
+montage2.apply_trans(trans2)
+
+# compare with standard
+print('Recovered coordinate: {recovered}\n'
+      'Saved coordinate:     {saved}'.format(
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
+          saved=montage.get_positions()['ch_pos']['LENT 1']))
 
 # %%
 # Step 4: Cite mne-bids
@@ -270,8 +296,23 @@ print(text)
 # Here we'll use the MNI Talairach transform to get to ``fsaverage`` space
 # from "mri" aka surface RAS space.
 # ``fsaverage`` is very useful for group analysis as shown in
-# `Working with SEEG
-# <https://mne.tools/stable/auto_tutorials/misc/plot_seeg.html>`_.
+# :ref:`tut-working-with-seeg`. Note, this is only a linear transform and so
+# one loses quite a bit of accuracy relative to the needs of intracranial
+# researchers so it is quite suboptimal. A better option is to use a
+# symmetric diffeomorphic transform to create a one-to-one mapping of brain
+# voxels from the individual's brain to the template as shown in
+# :ref:`tut-ieeg-localize`. Even so, it's better to provide the coordinates
+# in the individual's brain space, as was done above, so that the researcher
+# who uses the coordinates has the ability to tranform them to a template
+# of their choice.
+#
+# .. note::
+#
+#     For ``fsaverage``, the template coordinate system was defined
+#     so that ``scanner RAS`` is equivalent to ``surface RAS``.
+#     BIDS requires that template data be in ``scanner RAS`` so for
+#     coordinate frames where this is not the case, the coordinates
+#     must be converted (see below).
 
 # ensure the output path doesn't contain any leftover files from previous
 # tests and example runs
@@ -293,32 +334,173 @@ montage.apply_trans(trans)  # head->mri
 montage.apply_trans(mri_mni_t)
 
 # write to BIDS, this time with a template coordinate system
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
                montage=montage, overwrite=True)
 
 # read in the BIDS dataset
-raw = read_raw_bids(bids_path=bids_path)
-
-# check that we can recover the coordinates
-print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
-          recovered=raw.info['chs'][0]['loc'][:3],
-          saved=montage.dig[0]['r']))
+raw2 = read_raw_bids(bids_path=bids_path)
 
 # %%
-# Now we should go back to "head" coordinates. We do this with ``fsaverage``
-# fiducials which are in MNI space. In this case, you would not need to run
-# the Freesurfer ``recon-all`` for the subject, you would just need a
-# ``subjects_dir`` with ``fsaverage`` in it, which is accessible using
-# :func:`mne.datasets.fetch_fsaverage`.
+# MNE-Python uses ``head`` coordinates with a ``head -> mri`` ``trans`` so we
+# need to make sure to get our data in this form. As shown below, the montage
+# is in the ``mni_tal`` coordinate frame but doesn't have fiducials. The
+# ``head`` coordinate frame is defined based on the fiducial points so we need
+# to add these. Fortunately, there is a convenient function
+# (:func:`mne_bids.template_to_head`) that loads stored fiducials and takes
+# care of the transformations. Once this function is applied, you can use
+# the ``raw`` object and the ``trans`` as in any MNE example
+# (e.g. :ref:`tut-working-with-seeg`).
 
-montage = raw.get_montage()
-# add fiducials for "mni_tal" (which is the coordinate frame fsaverage is in)
-# so that it can properly be set to "head"
-montage.add_mni_fiducials(subjects_dir=subjects_dir)
+# use `coord_frame='mri'` to indicate that the montage is in surface RAS
+# and `unit='m'` to indicate that the units are in meters
+trans2 = template_to_head(
+    raw2.info, space='fsaverage', coord_frame='mri', unit='m')[1]
+# this a bit confusing since we transformed from mri->mni and now we're
+# saying we're back in 'mri' but that is because we were in the surface RAS
+# coordinate frame of `sample_seeg` and transformed to 'mni_tal', which is the
+# surface RAS coordinate frame for `fsaverage`: since MNE denotes surface RAS
+# as 'mri', both coordinate frames are 'mri', it's just that 'mni_tal' is 'mri'
+# when the subject is 'fsaverage'
 
-# Many other templates are included in the Freesurfer installation,
-# so, for those, the fiducials can be estimated with
-# ``montage.add_estimated_fiducials(template, os.environ['FREESURFER_HOME'])``
-# where ``template`` maybe be ``cvs_avg35_inMNI152`` for instance
-raw.set_montage(montage)
+# %%
+# Let's check that we can recover the original coordinates from the BIDS
+# dataset now that we are working in the ``head`` coordinate frame with a
+# ``head -> mri`` ``trans`` which is the setup MNE-Python is designed around.
+
+# check that we can recover the coordinates
+print('Recovered coordinate head: {recovered}\n'
+      'Original coordinate head:  {original}'.format(
+          recovered=raw2.info['chs'][0]['loc'][:3],
+          original=raw.info['chs'][0]['loc'][:3]))
+
+# check difference in trans
+print('Recovered trans:\n{recovered}\n'
+      'Original trans:\n{original}'.format(
+          recovered=trans2['trans'].round(3),
+          # combine head->mri with mri->mni to get head->mni
+          # and then invert to get mni->head
+          original=np.linalg.inv(np.dot(trans['trans'], mri_mni_t['trans'])
+                                 ).round(3)))
+
+# ensure that the data in MNI coordinates is exactly the same
+# (within computer precision)
+montage2 = raw2.get_montage()  # get montage after transformed back to head
+montage2.apply_trans(trans2)
+print('Recovered coordinate: {recovered}\n'
+      'Original coordinate:  {original}'.format(
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
+          original=montage.get_positions()['ch_pos']['LENT 1']))
+
+# %%
+# As you can see the coordinates stored in the ``raw`` object are slightly off.
+# This is because the ``head`` coordinate frame is defined by the fiducials
+# (nasion, left and right pre-auricular points), and, in the first case,
+# the fiducials were found on the individual anatomy and then transformed
+# to MNI space, whereas, in the second case, they were found directly on
+# the template brain (this was done once for the template so that we could
+# just load it from a file). This difference means that there are slightly
+# different head->mri transforms. Once these transforms are applied, however,
+# the positions are the same in MNI coordinates which is what is important.
+#
+# As a final step, let's go over how to assign coordinate systems that are
+# not recognized by MNE-Python. Many template coordinate systems are allowed by
+# BIDS but are not used in MNE-Python. For these templates, the fiducials have
+# been found and the transformations have been pre-computed so that we can
+# get our coordinates in the ``head`` coordinate frame that MNE-Python uses.
+#
+# .. note::
+#     As of this writing, BIDS accepts channel coordinates in reference to the
+#     the following template spaces: ``ICBM452AirSpace``,
+#     ``ICBM452Warp5Space``, ``IXI549Space``, ``fsaverage``, ``fsaverageSym``,
+#     ``fsLR``, ``MNIColin27``, ``MNI152Lin``,
+#     ``MNI152NLin2009[a-c][Sym|Asym]``, ``MNI152NLin6Sym``,
+#     ``MNI152NLin6ASym``, ``MNI305``, ``NIHPD``, ``OASIS30AntsOASISAnts``,
+#     ``OASIS30Atropos``, ``Talairach`` and ``UNCInfant``. As discussed above,
+#     it is recommended to share the coordinates in the individual subject's
+#     anatomical reference frame so that researchers who use the data can
+#     transform the coordinates to any of these templates that they choose.
+#
+# BIDS requires that the template be stored in ``scanner RAS`` coordinates
+# so first we'll convert our original data to ``scanner RAS`` and then
+# convert it back. Just in case the template electrode coordinates are
+# provided in voxels or the unit is not specified, these options are able
+# to be overridden in :func:`mne_bids.template_to_head` for ease of use.
+#
+# .. warning::
+#
+#     If no coordinate frame is passed to :func:`mne_bids.template_to_head`
+#     it will infer ``voxels`` if the coordinates are only positive and
+#     ``scanner RAS`` otherwise. Be sure not to use the wrong coordinate
+#     frame! ``surface RAS`` and ``scanner RAS`` are quite similar which
+#     is especially confusing, but, fortunately, in most of the Freesurfer
+#     template coordinate systems ``surface RAS`` is identical to
+#     ``scanner RAS``. ``surface RAS`` is a Freesurfer coordinate frame so
+#     it is most likely to be used with Freesurfer template coordinate
+#     systems). This is the case for ``fsaverage``, ``MNI305`` and
+#     ``fsaverageSym`` but not ``fsLR``.
+
+# %%
+# The template should be in scanner RAS:
+
+# ensure the output path doesn't contain any leftover files from previous
+# tests and example runs
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+# get a template mgz image to transform the montage to voxel coordinates
+subjects_dir = op.join(mne.datasets.sample.data_path(), 'subjects')
+template_T1 = nib.load(op.join(subjects_dir, 'fsaverage', 'mri', 'T1.mgz'))
+
+# get voxels to surface RAS and scanner RAS transforms
+vox_mri_t = template_T1.header.get_vox2ras_tkr()  # surface RAS
+vox_ras_t = template_T1.header.get_vox2ras()  # scanner RAS
+
+raw = mne.io.read_raw_fif(op.join(  # load our raw data again
+    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
+montage = raw.get_montage()  # get the original montage
+montage.apply_trans(trans)  # head->mri
+montage.apply_trans(mri_mni_t)  # mri->mni
+pos = montage.get_positions()
+ch_pos = np.array(list(pos['ch_pos'].values()))  # get an array of positions
+# mri -> vox and m -> mm
+ch_pos = mne.transforms.apply_trans(np.linalg.inv(vox_mri_t), ch_pos * 1000)
+ch_pos = mne.transforms.apply_trans(vox_ras_t, ch_pos)
+
+montage_ras = mne.channels.make_dig_montage(
+    ch_pos=dict(zip(pos['ch_pos'].keys(), ch_pos)), coord_frame='ras')
+
+# specify our standard template coordinate system space
+bids_path.update(datatype='ieeg', space='fsaverage')
+
+# write to BIDS, this time with a template coordinate system in voxels
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
+               montage=montage_ras, overwrite=True)
+
+# %%
+# Now, let's load our data and convert our montage to ``head``.
+
+raw2 = read_raw_bids(bids_path=bids_path)
+trans2 = template_to_head(  # unit='auto' automatically determines it's in mm
+    raw2.info, space='fsaverage', coord_frame='ras', unit='auto')[1]
+
+# %%
+# Let's check to make sure again that the original coordinates from the BIDS
+# dataset were recovered.
+
+montage2 = raw2.get_montage()  # get montage after transformed back to head
+montage2.apply_trans(trans2)  # apply trans to go back to 'mri'
+print('Recovered coordinate: {recovered}\n'
+      'Original coordinate:  {original}'.format(
+          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
+          original=montage.get_positions()['ch_pos']['LENT 1']))
+
+# %%
+# In summary, as we saw, these standard template spaces that are allowable by
+# BIDS are quite complicated. We therefore only cover these cases because
+# datasets are allowed to be in these coordinate systems, and we want to be
+# able to analyze them with MNE-Python. BIDS data in a template coordinate
+# space doesn't allow you to convert to a template of your choosing so it is
+# better to save the raw data in the individual's ACPC space. Thus, we
+# recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
+# corresponding to the individual subject's brain, not in a template
+# coordinate frame.

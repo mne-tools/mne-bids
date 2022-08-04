@@ -18,13 +18,14 @@ import os
 import os.path as op
 import re
 import shutil as sh
+from pathlib import Path
 
 from scipy.io import loadmat, savemat
 
 import mne
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
-from mne.utils import logger, verbose
+from mne.utils import logger, verbose, warn
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
@@ -72,7 +73,7 @@ def _get_brainvision_encoding(vhdr_file):
 
 
 def _get_brainvision_paths(vhdr_path):
-    """Get the .eeg and .vmrk file paths from a BrainVision header file.
+    """Get the .eeg/.dat and .vmrk file paths from a BrainVision header file.
 
     Parameters
     ----------
@@ -82,7 +83,7 @@ def _get_brainvision_paths(vhdr_path):
     Returns
     -------
     paths : tuple
-        Paths to the .eeg file at index 0 and the .vmrk file at index 1 of
+        Paths to the .eeg/.dat file at index 0 and the .vmrk file at index 1 of
         the returned tuple.
 
     """
@@ -99,10 +100,11 @@ def _get_brainvision_paths(vhdr_path):
     with open(vhdr_path, 'r', encoding=enc) as f:
         lines = f.readlines()
 
-    # Try to find data file .eeg
-    eeg_file_match = re.search(r'DataFile=(.*\.eeg)', ' '.join(lines))
+    # Try to find data file .eeg/.dat
+    eeg_file_match = re.search(r'DataFile=(.*\.(eeg|dat))', ' '.join(lines))
+
     if not eeg_file_match:
-        raise ValueError('Could not find a .eeg file link in'
+        raise ValueError('Could not find a .eeg or .dat file link in'
                          f' {vhdr_path}')
     else:
         eeg_file = eeg_file_match.groups()[0]
@@ -153,15 +155,15 @@ def copyfile_ctf(src, dest):
     """
     _copytree(src, dest)
     # list of file types to rename
-    file_types = ('.acq', '.eeg', '.hc', '.hist', '.infods', '.bak',
+    file_types = ('.acq', '.eeg', '.dat', '.hc', '.hist', '.infods', '.bak',
                   '.meg4', '.newds', '.res4')
     # Rename files in dest with the name of the dest directory
     fnames = [f for f in os.listdir(dest) if f.endswith(file_types)]
     bids_folder_name = op.splitext(op.split(dest)[-1])[0]
     for fname in fnames:
         ext = op.splitext(fname)[-1]
-        os.rename(op.join(dest, fname),
-                  op.join(dest, bids_folder_name + ext))
+        os.replace(op.join(dest, fname),
+                   op.join(dest, bids_folder_name + ext))
 
 
 def copyfile_kit(src, dest, subject_id, session_id,
@@ -265,10 +267,11 @@ def _anonymize_brainvision(vhdr_file, date):
 def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     """Copy a BrainVision file triplet to a new location and repair links.
 
-    The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
-    The .eeg and .vmrk files associated with the .vhdr file will be given names
-    as in `vhdr_dest` with adjusted extensions. Internal file pointers will be
-    fixed.
+    The BrainVision file format consists of three files:
+    .vhdr, .eeg/.dat, and .vmrk
+    The .eeg/.dat and .vmrk files associated with the .vhdr file will be
+    given names as in `vhdr_dest` with adjusted extensions. Internal file
+    pointers will be fixed.
 
     Parameters
     ----------
@@ -318,17 +321,27 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     # extract encoding from brainvision header file, or default to utf-8
     enc = _get_brainvision_encoding(vhdr_src)
 
-    # Copy data .eeg ... no links to repair
+    # raise warning if binary file has .dat extension
+    if '.dat' in eeg_file_path:
+        warn("The file extension of your binary EEG data file is .dat, while "
+             "the expected extension for raw data is .eeg. "
+             "This might imply it's preprocessed or processed data: "
+             "We copied the files and changed the extension to .eeg, "
+             "but please ensure that this is actually BIDS compatible data!")
+
+    # Copy data .eeg/.dat ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
 
     # Write new header and marker files, fixing the file pointer links
     # For that, we need to replace an old "basename" with a new one
-    # assuming that all .eeg, .vhdr, .vmrk share one basename
+    # assuming that all .eeg/.dat, .vhdr, .vmrk share one basename
     __, basename_src = op.split(fname_src)
-    assert basename_src + '.eeg' == op.split(eeg_file_path)[-1]
+    assert op.split(eeg_file_path)[-1] in [
+        basename_src + '.eeg', basename_src + '.dat']
     assert basename_src + '.vmrk' == op.split(vmrk_file_path)[-1]
     __, basename_dest = op.split(fname_dest)
     search_lines = ['DataFile=' + basename_src + '.eeg',
+                    'DataFile=' + basename_src + '.dat',
                     'MarkerFile=' + basename_src + '.vmrk']
 
     with open(vhdr_src, 'r', encoding=enc) as fin:
@@ -347,7 +360,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
 
     if anonymize is not None:
         raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
-        daysback, keep_his = _check_anonymize(anonymize, raw, '.vhdr')
+        daysback, keep_his, _ = _check_anonymize(anonymize, raw, '.vhdr')
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
         _anonymize_brainvision(fname_dest + '.vhdr',
@@ -422,16 +435,23 @@ def copyfile_edf(src, dest, anonymize=None):
     # Ensure source & destination extensions are the same
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
-    if ext_src != ext_dest:
+
+    if ext_src.lower() != ext_dest.lower():
         raise ValueError(f'Need to move data with same extension, '
                          f' but got "{ext_src}" and "{ext_dest}"')
+
+    if ext_dest in ['.EDF', '.BDF']:
+        warn('Upper-case extension for EDF/BDF files is not supported '
+             'in BIDS. Converting destination extension to lower-case.')
+        ext_dest = ext_dest.lower()
+        dest = Path(dest).with_suffix(ext_dest)
 
     # Copy data prior to any anonymization
     sh.copyfile(src, dest)
 
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
-        if ext_src == '.bdf':
+        if ext_src in ['.bdf', '.BDF']:
             raw = read_raw_bdf(dest, preload=False, verbose=0)
         elif ext_src in ['.edf', '.EDF']:
             raw = read_raw_edf(dest, preload=False, verbose=0)
@@ -453,7 +473,7 @@ def copyfile_edf(src, dest, anonymize=None):
         start_date, admin_code, tech, equip = rec_info.split(' ')[1:5]
 
         # Try to anonymize the recording date
-        daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
+        daysback, keep_his, _ = _check_anonymize(anonymize, raw, '.edf')
         anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         start_date = '01-JAN-1985'
         meas_date = '01.01.85'

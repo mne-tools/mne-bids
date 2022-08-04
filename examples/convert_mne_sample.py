@@ -11,7 +11,9 @@ In this example we will use MNE-BIDS to organize the MNE sample data according
 to the BIDS standard.
 In a second step we will read the organized dataset using MNE-BIDS.
 
-"""
+.. _BIDS dataset_description.json definition: https://bids-specification.readthedocs.io/en/stable/03-modality-agnostic-files.html#dataset-description
+.. _ds000248 dataset_description.json: https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json
+"""  # noqa: D400 D205 E501
 
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
@@ -25,14 +27,17 @@ In a second step we will read the organized dataset using MNE-BIDS.
 # First we import some basic Python libraries, followed by MNE-Python and its
 # sample data, and then finally the MNE-BIDS functions we need for this example
 
+import json
 import os.path as op
+from pprint import pprint
 import shutil
 
 import mne
 from mne.datasets import sample
 
 from mne_bids import (write_raw_bids, read_raw_bids, write_meg_calibration,
-                      write_meg_crosstalk, BIDSPath, print_dir_tree)
+                      write_meg_crosstalk, BIDSPath, print_dir_tree,
+                      make_dataset_description)
 from mne_bids.stats import count_events
 
 # %%
@@ -47,6 +52,7 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
             'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+er_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')  # empty room
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
@@ -72,23 +78,43 @@ if op.exists(output_path):
 #   *not* guess and you will have to update your BIDS fields manually.
 #
 # Based on our path definitions above, we read the raw data file, define
-# a new BIDS name for it, and then run the automatic BIDS conversion.
+# a new BIDS name for it, and then run the automatic BIDS conversion for both
+# the experimental data and its associated empty-room recording.
 
-raw = mne.io.read_raw_fif(raw_fname)
-raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+raw = mne.io.read_raw(raw_fname)
+raw_er = mne.io.read_raw(er_fname)
 
-bids_path = BIDSPath(subject='01', session='01',
-                     task='audiovisual', run='01', root=output_path)
-write_raw_bids(raw, bids_path, events_data=events_data,
-               event_id=event_id, overwrite=True)
+# specify power line frequency as required by BIDS
+raw.info['line_freq'] = 60
+raw_er.info['line_freq'] = 60
+
+task = 'audiovisual'
+bids_path = BIDSPath(
+    subject='01',
+    session='01',
+    task=task,
+    run='1',
+    root=output_path
+)
+write_raw_bids(
+    raw=raw,
+    bids_path=bids_path,
+    events_data=events_data,
+    event_id=event_id,
+    empty_room=raw_er,
+    overwrite=True
+)
 
 # %%
 # Let's pause and check that the information that we've written out to the
 # sidecar files that describe our data is correct.
 
 # Get the sidecar ``.json`` file
-print(bids_path.copy().update(extension='.json').fpath.read_text(
-    encoding='utf-8-sig'))
+sidecar_json_bids_path = bids_path.copy().update(extension='.json')
+sidecar_json_content = sidecar_json_bids_path.fpath.read_text(
+    encoding='utf-8-sig'
+)
+print(sidecar_json_content)
 
 # %%
 # The sample MEG dataset comes with fine-calibration and crosstalk files that
@@ -128,6 +154,15 @@ epochs = mne.Epochs(raw, events, event_id)
 epochs['Auditory'].average().plot()
 
 # %%
+# We can easily get the :class:`mne_bids.BIDSPath` of the empty-room recording
+# that was associated with the experimental data while writing. The empty-room
+# data can then be loaded with :func:`read_raw_bids`.
+
+er_bids_path = bids_path.find_empty_room(use_sidecar_only=True)
+er_data = read_raw_bids(er_bids_path)
+er_data
+
+# %%
 # It is trivial to retrieve the path of the fine-calibration and crosstalk
 # files, too.
 
@@ -142,3 +177,57 @@ readme = op.join(output_path, 'README')
 with open(readme, 'r', encoding='utf-8-sig') as fid:
     text = fid.read()
 print(text)
+
+# %%
+# It is also generally a good idea to add a description of your dataset,
+# see the `BIDS dataset_description.json definition`_ for more information.
+
+how_to_acknowledge = """\
+If you reference this dataset in a publication, please acknowledge its \
+authors and cite MNE papers: A. Gramfort, M. Luessi, E. Larson, D. Engemann, \
+D. Strohmeier, C. Brodbeck, L. Parkkonen, M. Hämäläinen, \
+MNE software for processing MEG and EEG data, NeuroImage, Volume 86, \
+1 February 2014, Pages 446-460, ISSN 1053-8119 \
+and \
+A. Gramfort, M. Luessi, E. Larson, D. Engemann, D. Strohmeier, C. Brodbeck, \
+R. Goj, M. Jas, T. Brooks, L. Parkkonen, M. Hämäläinen, MEG and EEG data \
+analysis with MNE-Python, Frontiers in Neuroscience, Volume 7, 2013, \
+ISSN 1662-453X"""
+
+make_dataset_description(
+    path=bids_path.root,
+    name=task,
+    authors=["Alexandre Gramfort", "Matti Hämäläinen"],
+    how_to_acknowledge=how_to_acknowledge,
+    acknowledgements="""\
+Alexandre Gramfort, Mainak Jas, and Stefan Appelhoff prepared and updated the \
+data in BIDS format.""",
+    data_license='CC0',
+    ethics_approvals=['Human Subjects Division at the University of Washington'],  # noqa: E501
+    funding=[
+        "NIH 5R01EB009048",
+        "NIH 1R01EB009048",
+        "NIH R01EB006385",
+        "NIH 1R01HD40712",
+        "NIH 1R01NS44319",
+        "NIH 2R01NS37462",
+        "NIH P41EB015896",
+        "ANR-11-IDEX-0003-02",
+        "ERC-StG-263584",
+        "ERC-StG-676943",
+        "ANR-14-NEUC-0002-01"
+    ],
+    references_and_links=[
+        "https://doi.org/10.1016/j.neuroimage.2014.02.017",
+        "https://doi.org/10.3389/fnins.2013.00267",
+        "https://mne.tools/stable/overview/datasets_index.html#sample"
+    ],
+    doi="doi:10.18112/openneuro.ds000248.v1.2.4",
+    overwrite=True
+)
+desc_json_path = bids_path.root / 'dataset_description.json'
+with open(desc_json_path, 'r', encoding='utf-8-sig') as fid:
+    pprint(json.loads(fid.read()))
+
+# %%
+# This should be very similar to the `ds000248 dataset_description.json`_!

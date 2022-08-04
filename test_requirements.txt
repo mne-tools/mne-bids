@@ -4,13 +4,15 @@ mne>=0.24
 matplotlib>=3.1
 pandas>=0.24.0
 nibabel>=2.5
-pybv>=0.6
-openneuro-py>=2021.8
-EDFlib-Python>=1.0.2
+pybv>=0.7.3
+openneuro-py>=2022.1
+EDFlib-Python>=1.0.6
+pymatreader>=0.0.29
 pytest
 pytest-cov
 pytest-sugar
 check-manifest
 pydocstyle
 flake8
-pooch
+pooch  # Can be removed once we drop support for MNE 0.24
+jinja2

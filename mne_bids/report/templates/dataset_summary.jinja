@@ -1,0 +1,13 @@
+{% if name == 'n/a' %}This
+{% else %}
+The {{ name }}
+{% endif %}
+dataset was created by {{ authors }} and conforms to BIDS version
+{{ bids_version }}. This report was generated with
+MNE-BIDS ({{ mne_bids_doi }}). The dataset consists of
+{{ n_subjects }} participants ({{ participants_info }})
+{% if n_sessions %}
+and {{ n_sessions }} recording sessions:
+{{ sessions }}.
+{% else %}.
+{% endif %}
