@@ -1611,7 +1611,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 'https://github.com/mne-tools/mne-bids/issues')
         raise ValueError(msg)
 
-    # Initialize BIDS path
+    # Initialize BIDSPath
     datatype = _handle_datatype(raw, bids_path.datatype)
     bids_path = (bids_path.copy()
                  .update(datatype=datatype, suffix=datatype, extension=ext))
@@ -1877,11 +1877,11 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # location, which mne-bids will not do
     if bids_path.fpath.exists() and not convert and \
             bids_path.fpath.as_posix() == raw_fname:
-        raise RuntimeError(f'Desired output BIDs path {bids_path.fpath} is '
+        raise RuntimeError(f'Desired output BIDSPath {bids_path.fpath} is '
                            f'the source file. Please pass a different output '
-                           f'BIDS path, or set `format` explicitly.')
+                           f'BIDSPath, or set `format` explicitly.')
 
-    # otherwise if the BIDS path currently exists, check if we
+    # otherwise if the BIDSPath currently exists, check if we
     # would like to overwrite the existing dataset
     if bids_path.fpath.exists():
         if overwrite:

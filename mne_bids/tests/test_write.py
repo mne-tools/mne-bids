@@ -1216,7 +1216,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -2751,7 +2751,7 @@ def test_coordsystem_json_compliance(
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root,
                                          datatype=datatype)
 
@@ -3067,7 +3067,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -3144,7 +3144,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     raw = reader(raw_fname)
@@ -3200,7 +3200,7 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
 
     raw = reader(raw_fname)
@@ -3239,7 +3239,7 @@ def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     # test conversion to BrainVision/FIF
@@ -3300,7 +3300,7 @@ def test_write_extension_case_insensitive(_bids_validate, tmp_path, datatype):
     new_raw_fname = op.join(data_path, new_fname)
     os.rename(raw_fname, new_raw_fname)
 
-    # the BIDS path for test datasets to get written to
+    # the BIDSPath for test datasets to get written to
     raw = reader(new_raw_fname)
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
     write_raw_bids(raw, bids_path)
@@ -3768,21 +3768,18 @@ def test_anonymize_dataset_daysback(tmpdir):
 
 def test_repeat_write_location(tmpdir):
     """Test error writing BIDS dataset to the same location."""
-    # write the file first to disc
-    dir_name = 'EDF'
-    fname = 'test_reduced.edf'
+    # Get test data
+    raw_fname = testing.data_path() / "EDF" / "test_reduced.edf"
+    raw = _read_raw_edf(raw_fname)
+
+    # Write as BIDS
     bids_root = tmpdir.mkdir('bids2')
     bids_path = _bids_path.copy().update(root=bids_root)
-    data_path = op.join(testing.data_path(), dir_name)
-    raw_fname = op.join(data_path, fname)
-    raw = _read_raw_edf(raw_fname)
     bids_path = write_raw_bids(raw, bids_path, verbose=False)
 
-    # read in the dataset
+    # Read back in
     raw = read_raw_bids(bids_path, verbose=False)
 
-    with pytest.raises(RuntimeError,
-                       match='Desired output BIDs path'):
-        # try to write to the same path again
-        write_raw_bids(raw, bids_path, overwrite=True,
-                       verbose=False)
+    # Re-writing with src == dest should error
+    with pytest.raises(RuntimeError, match='Desired output BIDSPath'):
+        write_raw_bids(raw, bids_path, overwrite=True, verbose=False)

@@ -1,4 +1,4 @@
-"""Test for the MNE BIDS path functions."""
+"""Test for the MNE BIDSPath functions."""
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD-3-Clause
@@ -490,7 +490,7 @@ def test_bids_path(return_bids_test_dir):
                                   f'ses-{session_id}', 'meg')
     assert str(bids_path.fpath.parent) == expected_parent_dir
 
-    # test bids path without bids_root, suffix, extension
+    # test BIDSPath without bids_root, suffix, extension
     # basename and fpath should be the same
     expected_basename = f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}'  # noqa
     assert (op.basename(bids_path.fpath) ==

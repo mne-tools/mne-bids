@@ -142,7 +142,7 @@ def _find_matched_empty_room(bids_path):
 
 
 class BIDSPath(object):
-    """A BIDS path object.
+    """A BIDSPath object.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
@@ -213,7 +213,7 @@ class BIDSPath(object):
     basename : str
         The basename of the file path. Similar to `os.path.basename(fpath)`.
     root : pathlib.Path
-        The root of the BIDS path.
+        The root of the BIDSPath.
     directory : pathlib.Path
         The directory path.
     fpath : pathlib.Path
@@ -523,7 +523,7 @@ class BIDSPath(object):
         return deepcopy(self)
 
     def mkdir(self, exist_ok=True):
-        """Create the directory structure of the BIDS path.
+        """Create the directory structure of the BIDSPath.
 
         Parameters
         ----------
@@ -568,7 +568,7 @@ class BIDSPath(object):
             # else, return the relative path with the basename
             if (self.suffix is None or self.extension is None) and \
                     self.root is not None:
-                # get matching BIDS paths inside the bids root
+                # get matching BIDSPaths inside the bids root
                 matching_paths = \
                     _get_matching_bidspaths_from_filesystem(self)
 
@@ -645,7 +645,7 @@ class BIDSPath(object):
             the existing ``.check`` attribute instead, which is set upon
             `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
-            It can contain updates for valid BIDS path entities:
+            It can contain updates for valid BIDSPath entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
             'recording', 'space', 'suffix', 'split', 'extension',
             or updates for 'root' or 'datatype'.
@@ -981,7 +981,7 @@ class BIDSPath(object):
 
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
-    """Get matching file paths for a BIDS path.
+    """Get matching file paths for a BIDSPath.
 
     Assumes suffix and/or extension is not provided.
     """
@@ -1264,7 +1264,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     Returns
     -------
     bids_path : BIDSPath
-        The BIDS path object.
+        The BIDSPath object.
     """
     fpath = Path(fname)
     fname = fpath.name
