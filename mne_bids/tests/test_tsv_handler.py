@@ -63,6 +63,12 @@ def test_tsv_handler(tmp_path):
     d = _from_tsv(d_path)
     assert d['a'] == ['1', '2', '3', '4']
 
+    # test an empty tsv (just headers)
+    _to_tsv(odict(onset=[], duration=[], trial_type=[]), d_path)
+    with pytest.warns(RuntimeWarning, match="TSV file is empty"):
+        d = _from_tsv(d_path)
+    d = _drop(d, "n/a", "trial_type")
+
 
 def test_contains_row_different_types():
     """Test that _contains_row() can handle different dtypes without warning.
