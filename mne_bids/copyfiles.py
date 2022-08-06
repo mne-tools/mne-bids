@@ -496,12 +496,11 @@ def copyfile_edf(src, dest, anonymize=None):
 
 
 def copyfile_eeglab(src, dest):
-    """Copy an EEGLAB file to a new location and adjust .fdt pointer in file.
+    """Copy an EEGLAB file to a new location.
 
-    Sometimes an EEGLAB .set file comes with a .fdt binary file that contains
-    the data. When moving a .set file, we need to check for an associated .fdt
-    file and move it to an appropriate location as well as update an internal
-    pointer within the .set file.
+    If the EEGLAB ``.set`` file comes with an accompanying ``.fdt`` binary file
+    that contains the actual data, this function will copy this file, too, and
+    update all internal pointers in the new ``.set`` file.
 
     Parameters
     ----------
