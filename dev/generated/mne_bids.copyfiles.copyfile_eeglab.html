@@ -397,11 +397,10 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.copyfiles.copyfile_eeglab">
 <span class="sig-prename descclassname"><span class="pre">mne_bids.copyfiles.</span></span><span class="sig-name descname"><span class="pre">copyfile_eeglab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_eeglab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_eeglab" title="Permalink to this definition">#</a></dt>
-<dd><p>Copy a EEGLAB files to a new location and adjust pointer to ‘.fdt’ file.</p>
-<p>Some EEGLAB .set files come with a .fdt binary file that contains the data.
-When moving a .set file, we need to check for an associated .fdt file and
-move it to an appropriate location as well as update an internal pointer
-within the .set file.</p>
+<dd><p>Copy an EEGLAB file to a new location.</p>
+<p>If the EEGLAB <code class="docutils literal notranslate"><span class="pre">.set</span></code> file comes with an accompanying <code class="docutils literal notranslate"><span class="pre">.fdt</span></code> binary file
+that contains the actual data, this function will copy this file, too, and
+update all internal pointers in the new <code class="docutils literal notranslate"><span class="pre">.set</span></code> file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
@@ -465,7 +464,7 @@ within the .set file.</p>
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-04.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-06.<br>
 </p>
   </div>
   
