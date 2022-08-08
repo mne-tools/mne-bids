@@ -3,10 +3,12 @@
 #
 # License: BSD-3-Clause
 import json
+from io import StringIO
 import os
 import os.path as op
 import pathlib
 from datetime import datetime, timezone
+from typing import OrderedDict
 
 import pytest
 import shutil as sh
@@ -23,7 +25,7 @@ from mne_bids import BIDSPath
 from mne_bids.config import (MNE_STR_TO_FRAME, BIDS_SHARED_COORDINATE_FRAMES,
                              BIDS_TO_MNE_FRAMES)
 from mne_bids.read import (read_raw_bids, _read_raw, get_head_mri_trans,
-                           _handle_events_reading)
+                           _handle_events_reading, _handle_scans_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_write_json)
 from mne_bids.sidecar_updates import _update_sidecar
@@ -55,6 +57,10 @@ somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
 
 # Data with cHPI info
 raw_fname_chpi = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
+
+# Tiny BIDS testing dataset
+mne_bids_root = os.sep.join(mne_bids.__file__.split("/")[:-2])
+tiny_bids = op.join(mne_bids_root, "mne_bids", "tests", "data", "tiny_bids")
 
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
@@ -565,6 +571,37 @@ def test_handle_scans_reading(tmp_path):
     new_acq_time = new_acq_time.replace(tzinfo=timezone.utc)
     assert raw_02.info['meas_date'] == new_acq_time
     assert new_acq_time != raw_01.info['meas_date']
+
+def test_handle_scans_reading_brainvision(tmp_path):
+    """Test stability of BrainVision's different file extensions"""
+    suffix = "eeg"
+
+    test_scan_eeg = OrderedDict(
+        [('filename', ['eeg/sub-01_ses-eeg_task-rest_eeg.eeg']),
+        ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
+    )
+    test_scan_vmrk = OrderedDict(
+        [('filename', ['eeg/sub-01_ses-eeg_task-rest_eeg.vmrk']),
+        ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
+    )
+    test_scan_edf = OrderedDict(
+        [('filename', ['eeg/sub-01_ses-eeg_task-rest_eeg.edf']),
+        ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
+    )
+    for test_scan in [test_scan_eeg, test_scan_vmrk, test_scan_edf]:
+        _to_tsv(test_scan, tmp_path / test_scan['filename'][0])
+
+    bids_path = BIDSPath(subject='01', session='eeg', task='rest',
+                         datatype='eeg', root=tiny_bids)
+    raw = read_raw_bids(bids_path)
+    
+    for test_scan in [test_scan_eeg, test_scan_vmrk]:
+        _handle_scans_reading(tmp_path / test_scan['filename'][0],
+                              raw, bids_path)
+    
+    with pytest.raises(ValueError, match="is not in list"):
+        _handle_scans_reading(tmp_path / test_scan_edf['filename'][0],
+                              raw, bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

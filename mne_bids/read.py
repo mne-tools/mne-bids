@@ -241,7 +241,12 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         acq_times = ['n/a'] * len(fnames)
 
     # There are three possible extensions for BrainVision
-    if Path(data_fname).suffix in ('.vhdr', '.eeg', '.vmrk'):
+    # First gather all the possible extensions
+    acq_suffixes = set(Path(fname).suffix for fname in fnames)
+    # Add the filename extension for the bids folder
+    acq_suffixes.add(Path(data_fname).suffix)
+    
+    if all(suffix in ('.vhdr', '.eeg', '.vmrk') for suffix in acq_suffixes):
         ext = Path(fnames[0]).suffix
         data_fname = str(Path(data_fname).with_suffix(ext))
     row_ind = fnames.index(data_fname)
