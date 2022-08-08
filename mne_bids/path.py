@@ -667,9 +667,13 @@ class BIDSPath(object):
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
         >>> bids_path.update(acquisition='test', suffix='ieeg',
-        ...                              extension='.vhdr', task=None)
+        ...                  extension='.vhdr', task=None)
+        BIDSPath(
+        root: None
+        datatype: ieeg
+        basename: sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_path.basename)
-        sub-test_ses-two_acq-test_ieeg.vhdr
+        sub-test_ses-two_acq-test_ieeg.vhdr    
         """
         # Update .check attribute
         if check is not None:
