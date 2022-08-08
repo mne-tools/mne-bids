@@ -29,6 +29,7 @@ from mne.utils import logger, verbose, warn
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
+import numpy as np
 
 
 def _copytree(src, dst, **kwargs):
@@ -495,12 +496,11 @@ def copyfile_edf(src, dest, anonymize=None):
 
 
 def copyfile_eeglab(src, dest):
-    """Copy a EEGLAB files to a new location and adjust pointer to '.fdt' file.
+    """Copy an EEGLAB file to a new location.
 
-    Some EEGLAB .set files come with a .fdt binary file that contains the data.
-    When moving a .set file, we need to check for an associated .fdt file and
-    move it to an appropriate location as well as update an internal pointer
-    within the .set file.
+    If the EEGLAB ``.set`` file comes with an accompanying ``.fdt`` binary file
+    that contains the actual data, this function will copy this file, too, and
+    update all internal pointers in the new ``.set`` file.
 
     Parameters
     ----------
@@ -529,27 +529,40 @@ def copyfile_eeglab(src, dest):
                          f' but got {ext_src}, {ext_dest}')
 
     # Load the EEG struct
+    # NOTE: do *not* simplify cells, because this changes the underlying
+    # structure and potentially breaks re-reading of the file
     uint16_codec = None
-    eeg = loadmat(file_name=src, simplify_cells=True,
+    eeg = loadmat(file_name=src, simplify_cells=False,
                   appendmat=False, uint16_codec=uint16_codec)
     oldstyle = False
     if 'EEG' in eeg:
         eeg = eeg['EEG']
         oldstyle = True
 
-    if isinstance(eeg['data'], str):
+    try:
         # If the data field is a string, it points to a .fdt file in src dir
-        fdt_fname = eeg['data']
-        assert fdt_fname.endswith('.fdt')
-        head, tail = op.split(src)
+        if isinstance(eeg['data'][0, 0][0], str):
+            has_fdt_link = True
+    except IndexError:
+        has_fdt_link = False
+
+    if has_fdt_link:
+        fdt_fname = eeg['data'][0, 0][0]
+
+        assert fdt_fname.endswith('.fdt'), f'Unexpected fdt name: {fdt_fname}'
+        head, _ = op.split(src)
         fdt_path = op.join(head, fdt_fname)
 
         # Copy the .fdt file and give it a new name
-        sh.copyfile(fdt_path, fname_dest + '.fdt')
+        fdt_name_new = fname_dest + '.fdt'
+        sh.copyfile(fdt_path, fdt_name_new)
 
         # Now adjust the pointer in the .set file
-        head, tail = op.split(fname_dest + '.fdt')
-        eeg['data'] = tail
+        # NOTE: Clunky numpy code is to match MATLAB structure for "savemat"
+        _, tail = op.split(fdt_name_new)
+        new_value = np.empty((1, 1), dtype=object)
+        new_value[0, 0] = np.atleast_1d(np.array(tail))
+        eeg['data'] = new_value
 
         # Save the EEG dictionary as a Matlab struct again
         mdict = dict(EEG=eeg) if oldstyle else eeg

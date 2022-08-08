@@ -11,7 +11,6 @@ from pathlib import Path
 import pytest
 
 import mne
-from mne.fixes import _compare_version
 from mne.datasets import testing
 from mne_bids import BIDSPath
 from mne_bids.path import _parse_ext
@@ -198,16 +197,10 @@ def test_copyfile_edfbdf_uppercase(tmp_path):
                           'test_raw_2021.set'))
 def test_copyfile_eeglab(tmp_path, fname):
     """Test the copying of EEGlab set and fdt files."""
-    if (
-        fname == 'test_raw_chanloc.set' and
-        _compare_version(testing.get_version(), '<', '0.112')
-    ):
-        return
-
     bids_root = str(tmp_path)
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, fname)
-    new_name = op.join(bids_root, 'tested_conversion.set')
+    new_name = op.join(bids_root, f'CONVERTED_{fname}.set')
 
     # IO error testing
     with pytest.raises(ValueError, match="Need to move data with same ext"):
