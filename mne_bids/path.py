@@ -673,7 +673,7 @@ class BIDSPath(object):
         datatype: ieeg
         basename: sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_path.basename)
-        sub-test_ses-two_acq-test_ieeg.vhdr    
+        sub-test_ses-two_acq-test_ieeg.vhdr
         """
         # Update .check attribute
         if check is not None:
