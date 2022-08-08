@@ -667,6 +667,7 @@ class BIDSPath(object):
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
         >>> bids_path.update(acquisition='test', suffix='ieeg',
+        ...                  datatype='ieeg',
         ...                  extension='.vhdr', task=None)
         BIDSPath(
         root: None
