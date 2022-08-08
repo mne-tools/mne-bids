@@ -3,10 +3,9 @@
 #
 # License: BSD-3-Clause
 import json
-from io import StringIO
 import os
 import os.path as op
-import pathlib
+from pathlib import Path
 from datetime import datetime, timezone
 from typing import OrderedDict
 
@@ -572,33 +571,34 @@ def test_handle_scans_reading(tmp_path):
     assert raw_02.info['meas_date'] == new_acq_time
     assert new_acq_time != raw_01.info['meas_date']
 
+
 def test_handle_scans_reading_brainvision(tmp_path):
     """Test stability of BrainVision's different file extensions"""
-    suffix = "eeg"
-
     test_scan_eeg = OrderedDict(
-        [('filename', ['eeg/sub-01_ses-eeg_task-rest_eeg.eeg']),
-        ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
+        [('filename', [Path('eeg/sub-01_ses-eeg_task-rest_eeg.eeg')]),
+         ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
     )
     test_scan_vmrk = OrderedDict(
-        [('filename', ['eeg/sub-01_ses-eeg_task-rest_eeg.vmrk']),
-        ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
+        [('filename', [Path('eeg/sub-01_ses-eeg_task-rest_eeg.vmrk')]),
+         ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
     )
     test_scan_edf = OrderedDict(
-        [('filename', ['eeg/sub-01_ses-eeg_task-rest_eeg.edf']),
-        ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
+        [('filename', [Path('eeg/sub-01_ses-eeg_task-rest_eeg.edf')]),
+         ('acq_time', ['2000-01-01T12:00:00.000000Z'])]
     )
+    os.mkdir(tmp_path / 'eeg')
     for test_scan in [test_scan_eeg, test_scan_vmrk, test_scan_edf]:
         _to_tsv(test_scan, tmp_path / test_scan['filename'][0])
 
     bids_path = BIDSPath(subject='01', session='eeg', task='rest',
                          datatype='eeg', root=tiny_bids)
-    raw = read_raw_bids(bids_path)
-    
+    with pytest.warns(RuntimeWarning, match='Not setting positions'):
+        raw = read_raw_bids(bids_path)
+
     for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _handle_scans_reading(tmp_path / test_scan['filename'][0],
                               raw, bids_path)
-    
+
     with pytest.raises(ValueError, match="is not in list"):
         _handle_scans_reading(tmp_path / test_scan_edf['filename'][0],
                               raw, bids_path)
@@ -624,7 +624,7 @@ def test_handle_info_reading(tmp_path):
     bids_fname.update(datatype=suffix)
     sidecar_fname = _find_matching_sidecar(bids_fname, suffix=suffix,
                                            extension='.json')
-    sidecar_fname = pathlib.Path(sidecar_fname)
+    sidecar_fname = Path(sidecar_fname)
 
     # assert that we get the same line frequency set
     raw = read_raw_bids(bids_path=bids_path)
@@ -1108,7 +1108,7 @@ def test_write_read_fif_split_file(tmp_path, monkeypatch):
     n_times = int(2.5e6 / n_channels)  # enough to produce a 10MB split
     data = np.empty((n_channels, n_times), dtype=np.float32)
     raw = mne.io.RawArray(data, raw.info)
-    big_fif_fname = pathlib.Path(tmp_dir) / 'test_raw.fif'
+    big_fif_fname = Path(tmp_dir) / 'test_raw.fif'
 
     split_size = '10MB'
     raw.save(big_fif_fname, split_size=split_size)
