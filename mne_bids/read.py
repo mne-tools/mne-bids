@@ -577,6 +577,13 @@ def _handle_channels_reading(channels_fname, raw):
 
         raw.info['bads'] = bads_avail
 
+    if 'units' in channels_dict:
+        for k, (ch_type, ch_unit) in enumerate(zip(
+                channels_dict['type'],
+                channels_dict['units'])):
+            scaling = mne.io.base._get_scaling(ch_type.lower(), ch_unit)
+            raw._raw_extras[0]['units'][k] /= scaling
+
     return raw
 
 
