@@ -92,7 +92,7 @@ Detailed list of changes
 
 - Instead of deleting files and raising cryptic errors, an intentional error message is now sent when calling :func:`~mne_bids.write_raw_bids` with the source file identical to the destination file, unless ``format`` is specified, by `Adam Li`_ and `Stefan Appelhoff`_ (:gh:`889`)
 
-- Internal helper function to :func:`~mne.read_raw_bids` would reject BrainVision data if `_scans.tsv` listed a `.eeg` file instead of `.vhdr`, by `Teon Brooks`_ (:gh:`1034`)
+- Internal helper function to :func:`~mne_bids.read_raw_bids` would reject BrainVision data if ``_scans.tsv`` listed a ``.eeg`` file instead of ``.vhdr``, by `Teon Brooks`_ (:gh:`1034`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
