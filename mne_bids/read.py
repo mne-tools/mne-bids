@@ -248,7 +248,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
 
     if all(suffix in ('.vhdr', '.eeg', '.vmrk') for suffix in acq_suffixes):
         ext = Path(fnames[0]).suffix
-        data_fname = str(Path(data_fname).with_suffix(ext))
+        data_fname = Path(data_fname).with_suffix(ext).as_posix()
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
