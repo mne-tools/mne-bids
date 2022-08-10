@@ -80,7 +80,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
                        RESP='resp', NIRS='fnirs_cw_amplitude',
                        DBS='dbs',
                        # No MEG channels for now
-                       # Many to one mappings
+                       # Many-to-one mappings
                        EOG='eog', VEOG='eog', HEOG='eog',
                        TEMP='misc', GSR='misc',)
     else:
