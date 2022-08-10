@@ -260,7 +260,9 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
                              bids_path.basename[:split_idx] +
                              r'split-\d+_' + bids_path.datatype +
                              bids_path.fpath.suffix)
-        split_fnames = list(filter(pattern.match, fnames))
+        split_fnames = list(filter(
+            lambda x: pattern.match(str(x)), fnames
+        ))
         split_acq_times = []
         for split_f in split_fnames:
             split_acq_times.append(acq_times[fnames.index(split_f)])
