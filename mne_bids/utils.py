@@ -82,8 +82,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
                        # No MEG channels for now
                        # Many to one mappings
                        EOG='eog', VEOG='eog', HEOG='eog',
-                       TEMP='misc', GSR='misc',
-                    )
+                       TEMP='misc', GSR='misc',)
     else:
         raise ValueError('Only two types of mappings are currently supported: '
                          'from mne to bids, or from bids to mne. However, '
