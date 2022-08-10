@@ -233,8 +233,9 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     # get the row corresponding to the file
     # use string concatenation instead of os.path
     # to work nicely with windows
-    data_fname = bids_path.datatype + '/' + fname
+    data_fname = Path(bids_path.datatype) / fname
     fnames = scans_tsv['filename']
+    fnames = [Path(fname) for fname in fnames]
     if 'acq_time' in scans_tsv:
         acq_times = scans_tsv['acq_time']
     else:
@@ -242,13 +243,13 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
 
     # There are three possible extensions for BrainVision
     # First gather all the possible extensions
-    acq_suffixes = set(Path(fname).suffix for fname in fnames)
+    acq_suffixes = set(fname.suffix for fname in fnames)
     # Add the filename extension for the bids folder
     acq_suffixes.add(Path(data_fname).suffix)
 
     if all(suffix in ('.vhdr', '.eeg', '.vmrk') for suffix in acq_suffixes):
-        ext = Path(fnames[0]).suffix
-        data_fname = Path(data_fname).with_suffix(ext).as_posix()
+        ext = fnames[0].suffix
+        data_fname = Path(data_fname).with_suffix(ext)
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
