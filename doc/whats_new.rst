@@ -92,7 +92,7 @@ Detailed list of changes
 
 - Instead of deleting files and raising cryptic errors, an intentional error message is now sent when calling :func:`~mne_bids.write_raw_bids` with the source file identical to the destination file, unless ``format`` is specified, by `Adam Li`_ and `Stefan Appelhoff`_ (:gh:`889`)
 
-- Correctly handle "TEMP" and "GSR" channel types in :func:`~mne_bids.write_raw_bids`, by `Richard Höchenberger`_ (:gh:`xxx`)
+- Correctly handle "TEMP" and "GSR" channel types in :func:`~mne_bids.read_raw_bids`, by `Richard Höchenberger`_ (:gh:`xxx`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
