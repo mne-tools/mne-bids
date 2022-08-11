@@ -261,7 +261,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
                              r'split-\d+_' + bids_path.datatype +
                              bids_path.fpath.suffix)
         split_fnames = list(filter(
-            lambda x: pattern.match(str(x)), fnames
+            lambda x: pattern.match(x.as_posix()), fnames
         ))
         split_acq_times = []
         for split_f in split_fnames:
