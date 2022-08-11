@@ -445,13 +445,23 @@
     <span class="c1"># get the row corresponding to the file</span>
     <span class="c1"># use string concatenation instead of os.path</span>
     <span class="c1"># to work nicely with windows</span>
-    <span class="n">data_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">fname</span>
+    <span class="n">data_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
     <span class="n">fnames</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">]</span>
     <span class="k">if</span> <span class="s1">&#39;acq_time&#39;</span> <span class="ow">in</span> <span class="n">scans_tsv</span><span class="p">:</span>
         <span class="n">acq_times</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;acq_time&#39;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">acq_times</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span>
 
+    <span class="c1"># There are three possible extensions for BrainVision</span>
+    <span class="c1"># First gather all the possible extensions</span>
+    <span class="n">acq_suffixes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">suffix</span> <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">)</span>
+    <span class="c1"># Add the filename extension for the bids folder</span>
+    <span class="n">acq_suffixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.vmrk&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">acq_suffixes</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">suffix</span>
+        <span class="n">data_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
     <span class="n">row_ind</span> <span class="o">=</span> <span class="n">fnames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span>
 
     <span class="c1"># check whether all split files have the same acq_time</span>
@@ -462,7 +472,9 @@
                              <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">[:</span><span class="n">split_idx</span><span class="p">]</span> <span class="o">+</span>
                              <span class="sa">r</span><span class="s1">&#39;split-\d+_&#39;</span> <span class="o">+</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span>
                              <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
-        <span class="n">split_fnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">fnames</span><span class="p">))</span>
+        <span class="n">split_fnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()),</span> <span class="n">fnames</span>
+        <span class="p">))</span>
         <span class="n">split_acq_times</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">split_f</span> <span class="ow">in</span> <span class="n">split_fnames</span><span class="p">:</span>
             <span class="n">split_acq_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acq_times</span><span class="p">[</span><span class="n">fnames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">split_f</span><span class="p">)])</span>
@@ -1215,7 +1227,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-08.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-11.<br>
 </p>
   </div>
   

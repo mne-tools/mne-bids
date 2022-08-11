@@ -25,6 +25,7 @@ data. Specifically, we will follow these steps:
 # %%
 # We are importing everything we need for this example:
 import os.path as op
+import pathlib
 import shutil
 
 import mne
@@ -43,7 +44,7 @@ from mne_bids.stats import count_events
 # We will use the MNE-NIRS package which includes convenient functions to
 # download openly available datasets.
 
-data_dir = mne_nirs.datasets.fnirs_motor_group.data_path()
+data_dir = pathlib.Path(mne_nirs.datasets.fnirs_motor_group.data_path())
 
 # Let's see whether the data has been downloaded using a quick visualization
 # of the directory tree.
