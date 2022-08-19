@@ -94,6 +94,8 @@ Detailed list of changes
 
 - Internal helper function to :func:`~mne_bids.read_raw_bids` would reject BrainVision data if ``_scans.tsv`` listed a ``.eeg`` file instead of ``.vhdr``, by `Teon Brooks`_ (:gh:`1034`)
 
+- Whenever :func:`~mne_bids.read_raw_bids` encounters a channel type that currently doesn't translate into an appropriate MNE channel type, the channel type will now be set to ``'misc``. Previously, seemingly arbitrary channel types would be applied, e.g. ``'eeg'`` for GSR and temperature channels, by `Richard Höchenberger`_ (:gh:`1052`)
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst

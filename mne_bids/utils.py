@@ -78,7 +78,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
         mapping = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
                        ECOG='ecog', SEEG='seeg', EOG='eog', ECG='ecg',
                        RESP='resp', NIRS='fnirs_cw_amplitude',
-                       # No MEG channels for now
+                       # No MEG channels for now (see Notes above)
                        # Many to one mapping
                        VEOG='eog', HEOG='eog', DBS='dbs')
     else:
