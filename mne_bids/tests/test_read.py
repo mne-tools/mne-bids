@@ -1070,6 +1070,36 @@ def test_handle_channel_type_casing(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_handle_non_mne_channel_type(tmp_path):
+    """Test that channel types not known to MNE will be read as 'misc'."""
+    bids_path = _bids_path.copy().update(root=tmp_path)
+    raw = _read_raw_fif(raw_fname, verbose=False)
+
+    write_raw_bids(raw, bids_path, overwrite=True,
+                   verbose=False)
+
+    channels_tsv_path = bids_path.copy().update(
+        root=tmp_path,
+        datatype='meg',
+        suffix='channels',
+        extension='.tsv'
+    ).fpath
+
+    channels_data = _from_tsv(channels_tsv_path)
+    # Violates BIDS, but ensures we won't have an appropriate
+    # BIDS -> MNE mapping.
+    ch_idx = -1
+    channels_data['type'][ch_idx] = 'FOOBAR'
+    _to_tsv(data=channels_data, fname=channels_tsv_path)
+
+    with pytest.warns(RuntimeWarning, match='will be set to \"misc\"'):
+        raw = read_raw_bids(bids_path)
+
+    # Should be a 'misc' channel.
+    assert raw.get_channel_types([channels_data['name'][ch_idx]]) == ['misc']
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_bads_reading(tmp_path):
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
     bads_raw = ['MEG 0112', 'MEG 0113']

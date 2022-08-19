@@ -507,12 +507,19 @@ def _handle_channels_reading(channels_fname, raw):
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
     # types in the raw data using a mapping between channel types
-    channel_type_dict = dict()
+    channel_type_bids_mne_map = dict()
 
     # Get the best mapping we currently have from BIDS to MNE nomenclature
     bids_to_mne_ch_types = _get_ch_type_mapping(fro='bids', to='mne')
     ch_types_json = channels_dict['type']
     for ch_name, ch_type in zip(ch_names_tsv, ch_types_json):
+        # We don't map MEG channels for now, as there's no clear 1:1 mapping
+        # from BIDS to MNE coil types.
+        if ch_type.upper() in (
+            'MEGGRADAXIAL', 'MEGMAG', 'MEGREFGRADAXIAL', 'MEGGRADPLANAR',
+            'MEGREFMAG', 'MEGOTHER'
+        ):
+            continue
 
         # Try to map from BIDS nomenclature to MNE, leave channel type
         # untouched if we are uncertain
@@ -530,8 +537,16 @@ def _handle_channels_reading(channels_fname, raw):
                        'will raise an error in the future.')
                 warn(msg)
 
-        if updated_ch_type is not None:
-            channel_type_dict[ch_name] = updated_ch_type
+        if updated_ch_type is None:
+            # We don't have an appropriate mapping, so make it a "misc" channel
+            channel_type_bids_mne_map[ch_name] = 'misc'
+            warn(
+                f'No BIDS -> MNE mapping found for channel type "{ch_type}". '
+                f'Type of channel "{ch_name}" will be set to "misc".'
+            )
+        else:
+            # We found a mapping, so use it
+            channel_type_bids_mne_map[ch_name] = updated_ch_type
 
     # Special handling for (synthesized) stimulus channel
     synthesized_stim_ch_name = 'STI 014'
@@ -556,16 +571,19 @@ def _handle_channels_reading(channels_fname, raw):
                 raw.rename_channels({raw_ch_name: bids_ch_name})
 
     # Set the channel types in the raw data according to channels.tsv
-    ch_type_map_avail = {
+    channel_type_bids_mne_map_available_channels = {
         ch_name: ch_type
-        for ch_name, ch_type in channel_type_dict.items()
+        for ch_name, ch_type in channel_type_bids_mne_map.items()
         if ch_name in raw.ch_names
     }
-    ch_diff = set(channel_type_dict.keys()) - set(ch_type_map_avail.keys())
+    ch_diff = (
+        set(channel_type_bids_mne_map.keys()) -
+        set(channel_type_bids_mne_map_available_channels.keys())
+    )
     if ch_diff:
         warn(f'Cannot set channel type for the following channels, as they '
              f'are missing in the raw data: {", ".join(sorted(ch_diff))}')
-    raw.set_channel_types(ch_type_map_avail)
+    raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 
     # Set bad channels based on _channels.tsv sidecar
     if 'status' in channels_dict:
