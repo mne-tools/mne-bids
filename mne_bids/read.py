@@ -515,7 +515,7 @@ def _handle_channels_reading(channels_fname, raw):
     for ch_name, ch_type in zip(ch_names_tsv, ch_types_json):
         # We don't map MEG channels for now, as there's no clear 1:1 mapping
         # from BIDS to MNE coil types.
-        if ch_type in (
+        if ch_type.upper() in (
             'MEGGRADAXIAL', 'MEGMAG', 'MEGREFGRADAXIAL', 'MEGGRADPLANAR',
             'MEGREFMAG', 'MEGOTHER'
         ):
