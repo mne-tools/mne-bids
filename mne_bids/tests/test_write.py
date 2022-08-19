@@ -3156,32 +3156,32 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
         write_raw_bids(**kwargs, overwrite=True)
 
 
-@requires_version('mne', '0.22')
-@pytest.mark.parametrize(
-    'dir_name, format, fname, reader', test_converteeg_data)
-@pytest.mark.filterwarnings(
-    warning_str['channel_unit_changed'],
-    warning_str['cnt_warning1'],
-    warning_str['cnt_warning2'],
-    warning_str['no_hand'],
-)
-def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmp_path):
-    """Test error writing as BrainVision EEG data for MEG."""
-    bids_root = tmp_path / 'bids1'
-    data_path = op.join(testing.data_path(), dir_name)
-    raw_fname = op.join(data_path, fname)
+def test_error_write_wrong_format(tmp_path):
+    """Don't allow using unsuitable extensions for a given datatype."""
+    data_path = testing.data_path()
+    bids_root = tmp_path / 'bids_root'
+    bids_path = (_bids_path.copy()
+                 .update(root=bids_root, datatype='eeg', extension='.vhdr'))
 
-    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg',
-                                         extension='.vhdr')
-    raw = reader(raw_fname)
-    kwargs = dict(raw=raw, format='auto',
-                  bids_path=bids_path.update(datatype='meg'))
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw = _read_raw_fif(raw_path)
 
-    # if we accidentally add MEG channels, then an error will occur
-    raw.set_channel_types({raw.info['ch_names'][0]: 'mag'})
-    with pytest.raises(ValueError, match='Got file extension .*'
-                                         'for MEG data'):
-        write_raw_bids(**kwargs)
+    # EEG data BIDSPath with an MEG-only extension
+    bids_path.update(datatype='eeg', suffix='eeg', extension='.fif')
+    with pytest.raises(
+        ValueError,
+        match=r'You requested to write eeg data with extension .fif'
+    ):
+        write_raw_bids(raw=raw, bids_path=bids_path)
+
+    # MEG data BIDSPath with an EEG-only extension
+    bids_path.update(datatype='meg', suffix='meg', extension='.vhdr')
+    with pytest.raises(
+        ValueError,
+        match=r'You requested to write meg data with extension .vhdr'
+    ):
+        write_raw_bids(raw=raw, bids_path=bids_path)
+
 
 
 @pytest.mark.parametrize(

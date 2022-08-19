@@ -1524,6 +1524,20 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             '"bids_path.task = <task>"'
         )
 
+    if (
+        (bids_path.datatype is not None and
+         bids_path.extension is not None) and
+        (bids_path.extension not in
+         ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype])
+    ):
+        allowed_extensions = ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
+        raise ValueError(
+            f'You requested to write {bids_path.datatype} data with '
+            f'extension {bids_path.extension} (as specified in bids_path), '
+            f'but this is not allowed. '
+            f'Please use one of: {", ".join(allowed_extensions)}'
+        )
+
     if events_data is not None and event_id is None:
         raise RuntimeError('You passed events_data, but no event_id '
                            'dictionary. You need to pass both, or neither.')
@@ -1818,13 +1832,6 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 'However, this is not possible since you set symlink=True. '
                 'Deactivate symbolic links by passing symlink=False to allow '
                 'file format conversion.')
-
-    # check if there is an BIDS-unsupported MEG format
-    if bids_path.datatype == 'meg' and convert and not anonymize:
-        raise ValueError(
-            f"Got file extension {ext} for MEG data, "
-            f"expected one of "
-            f"{', '.join(sorted(ALLOWED_DATATYPE_EXTENSIONS['meg']))}")
 
     if not convert:
         logger.info(f'Copying data files to {bids_path.fpath.name}')
