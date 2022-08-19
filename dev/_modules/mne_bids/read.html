@@ -719,12 +719,19 @@
     <span class="c1"># Now we can do some work.</span>
     <span class="c1"># The &quot;type&quot; column is mandatory in BIDS. We can use it to set channel</span>
     <span class="c1"># types in the raw data using a mapping between channel types</span>
-    <span class="n">channel_type_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">channel_type_bids_mne_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
     <span class="c1"># Get the best mapping we currently have from BIDS to MNE nomenclature</span>
     <span class="n">bids_to_mne_ch_types</span> <span class="o">=</span> <span class="n">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
     <span class="n">ch_types_json</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">ch_types_json</span><span class="p">):</span>
+        <span class="c1"># We don&#39;t map MEG channels for now, as there&#39;s no clear 1:1 mapping</span>
+        <span class="c1"># from BIDS to MNE coil types.</span>
+        <span class="k">if</span> <span class="n">ch_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGOTHER&#39;</span>
+        <span class="p">):</span>
+            <span class="k">continue</span>
 
         <span class="c1"># Try to map from BIDS nomenclature to MNE, leave channel type</span>
         <span class="c1"># untouched if we are uncertain</span>
@@ -742,8 +749,16 @@
                        <span class="s1">&#39;will raise an error in the future.&#39;</span><span class="p">)</span>
                 <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">channel_type_dict</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
+        <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># We don&#39;t have an appropriate mapping, so make it a &quot;misc&quot; channel</span>
+            <span class="n">channel_type_bids_mne_map</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;misc&#39;</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;No BIDS -&gt; MNE mapping found for channel type &quot;</span><span class="si">{</span><span class="n">ch_type</span><span class="si">}</span><span class="s1">&quot;. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Type of channel &quot;</span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s1">&quot; will be set to &quot;misc&quot;.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># We found a mapping, so use it</span>
+            <span class="n">channel_type_bids_mne_map</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
 
     <span class="c1"># Special handling for (synthesized) stimulus channel</span>
     <span class="n">synthesized_stim_ch_name</span> <span class="o">=</span> <span class="s1">&#39;STI 014&#39;</span>
@@ -768,16 +783,19 @@
                 <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">({</span><span class="n">raw_ch_name</span><span class="p">:</span> <span class="n">bids_ch_name</span><span class="p">})</span>
 
     <span class="c1"># Set the channel types in the raw data according to channels.tsv</span>
-    <span class="n">ch_type_map_avail</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">channel_type_bids_mne_map_available_channels</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">ch_name</span><span class="p">:</span> <span class="n">ch_type</span>
-        <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="n">channel_type_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="n">channel_type_bids_mne_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span>
     <span class="p">}</span>
-    <span class="n">ch_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_type_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">ch_type_map_avail</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">ch_diff</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">set</span><span class="p">(</span><span class="n">channel_type_bids_mne_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span>
+        <span class="nb">set</span><span class="p">(</span><span class="n">channel_type_bids_mne_map_available_channels</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">ch_diff</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot set channel type for the following channels, as they &#39;</span>
              <span class="sa">f</span><span class="s1">&#39;are missing in the raw data: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">ch_type_map_avail</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">channel_type_bids_mne_map_available_channels</span><span class="p">)</span>
 
     <span class="c1"># Set bad channels based on _channels.tsv sidecar</span>
     <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
@@ -1227,7 +1245,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-11.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-19.<br>
 </p>
   </div>
   
