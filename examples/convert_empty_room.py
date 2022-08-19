@@ -59,8 +59,7 @@ if op.exists(bids_root):
     shutil.rmtree(bids_root)
 
 # %%
-# Specify the raw_file and events_data and run the BIDS conversion, and write
-# the BIDS data.
+# Specify the raw file and write the BIDS data.
 
 raw = mne.io.read_raw_fif(raw_fname)
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
