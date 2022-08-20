@@ -56,7 +56,7 @@ Detailed list of changes
 
 - :func:`~mne_bids.write_raw_bids` now expects all but the first four parameters to be passed as keyword arguments, by `Richard Höchenberger`_ (:gh:`1054`)
 
-- The ``events_data`` parameter of :func:`~mne_bids.write_raw_bids` has been deprecated in favor of a new parameter named ``events``. This ensures more consistency between the MNE-BIDS and MNE-Python APIs. You may continue using the ``events_data`` parameter for now, but a ``FutureWarning`` will be raised. ``events_data`` will be removed in a future release, by `Richard Höchenberger`_ (:gh:`1054`)
+- The ``events_data`` parameter of :func:`~mne_bids.write_raw_bids` has been deprecated in favor of a new parameter named ``events``. This ensures more consistency between the MNE-BIDS and MNE-Python APIs. You may continue using the ``events_data`` parameter for now, but a ``FutureWarning`` will be raised. ``events_data`` will be removed in MNE-BIDS 0.14, by `Richard Höchenberger`_ (:gh:`1054`)
 
 - In many places, we used to infer the ``datatype`` of a :class:`~mne_bids.BIDSPath` from the ``suffix``, if not explicitly provided. However, this has lead to trouble in certain edge cases. In an effort to reduce the amount of implicit behavior in MNE-BIDS, we now require users to explicitly specify a ``datatype`` whenever the invoked functions or methods expect one, by `Richard Höchenberger`_ (:gh:`1030`)
 

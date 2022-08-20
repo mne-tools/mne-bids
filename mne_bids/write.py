@@ -1507,8 +1507,8 @@ def write_raw_bids(
             message='The events_data parameter has been deprecated in favor '
                     'the new events parameter, to ensure better consistency  '
                     'with MNE-Python. The events_data parameter will be '
-                    'removed in a future release of MNE-BIDS. Please use the '
-                    'events parameter instead.',
+                    'removed in MNE-BIDS 0.14. Please use the events '
+                    'parameter instead.',
             category=FutureWarning
         )
         events = events_data
