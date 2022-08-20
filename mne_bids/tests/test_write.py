@@ -3776,3 +3776,17 @@ def test_repeat_write_location(tmpdir):
     # Re-writing with src == dest should error
     with pytest.raises(FileExistsError, match='Desired output BIDSPath'):
         write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+
+def test_events_data_deprecation(tmp_path):
+    """Test that passing events_data raises a FutureWarning."""
+    bids_root = tmp_path / 'bids'
+    bids_path = _bids_path.copy().update(root=bids_root)
+    data_path = testing.data_path()
+    raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    events_path = (data_path / 'MEG' / 'sample' /
+                   'sample_audvis_trunc_raw-eve.fif')
+
+    raw = _read_raw_fif(raw_path)
+    with pytest.raises(FutureWarning, match='will be removed'):
+        write_raw_bids(raw=raw, bids_path=bids_path, events_data=events_path)
