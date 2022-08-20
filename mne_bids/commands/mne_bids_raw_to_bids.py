@@ -82,8 +82,10 @@ def run():
     if opt.line_freq is not None:
         line_freq = None if opt.line_freq == "None" else opt.line_freq
         raw.info['line_freq'] = line_freq
+
+    events = opt.events if opt.events else opt.events_data
     write_raw_bids(raw, bids_path, event_id=opt.event_id,
-                   events=opt.events, overwrite=opt.overwrite,
+                   events=events, overwrite=opt.overwrite,
                    verbose=True)
 
 
