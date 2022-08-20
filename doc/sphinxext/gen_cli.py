@@ -14,6 +14,7 @@ from os import path as op
 import subprocess
 import sys
 
+import sphinx.util
 from mne.utils import run_subprocess, _replace_md5
 
 
@@ -57,7 +58,6 @@ command_rst = """
 
 def generate_cli_rst(app=None):
     """Generate the command line interface docs."""
-    from sphinx_gallery import sphinx_compatibility
     out_dir = op.abspath(op.join(op.dirname(__file__), '..', 'generated'))
     if not op.isdir(out_dir):
         os.mkdir(out_dir)
@@ -68,7 +68,7 @@ def generate_cli_rst(app=None):
     fnames = sorted([
         op.basename(fname)
         for fname in glob.glob(op.join(cli_path, 'mne_bids*.py'))])
-    iterator = sphinx_compatibility.status_iterator(
+    iterator = sphinx.util.status_iterator(
         fnames, 'generating MNE-BIDS cli help ... ', length=len(fnames))
     with open(out_fname, 'w', encoding='utf-8') as f:
         f.write(header)
