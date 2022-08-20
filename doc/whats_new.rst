@@ -54,7 +54,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- :func:`~mne_bids.write_raw_bids` now expects all but the first two parameters to be passed as keyword arguments, by `Richard Höchenberger`_ (:gh:`1054`)
+- :func:`~mne_bids.write_raw_bids` now expects all but the first four parameters to be passed as keyword arguments, by `Richard Höchenberger`_ (:gh:`1054`)
 
 - The ``events_data`` parameter of :func:`~mne_bids.write_raw_bids` has been deprecated in favor of a new parameter named ``events``. This ensures more consistency between the MNE-BIDS and MNE-Python APIs. You may continue using the ``events_data`` parameter for now, but a ``FutureWarning`` will be raised. ``events_data`` will be removed in a future release, by `Richard Höchenberger`_ (:gh:`1054`)
 

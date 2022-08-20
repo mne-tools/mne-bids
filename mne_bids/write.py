@@ -1247,10 +1247,9 @@ def make_dataset_description(*, path, name, hed_version=None,
 def write_raw_bids(
     raw,
     bids_path,
-    *,
     events=None,
-    events_data=None,
     event_id=None,
+    *,
     anonymize=None,
     format='auto',
     symlink=False,
@@ -1259,6 +1258,7 @@ def write_raw_bids(
     montage=None,
     acpc_aligned=False,
     overwrite=False,
+    events_data=None,
     verbose=None
 ):
     """Save raw data to a BIDS-compliant folder structure.
@@ -1335,10 +1335,6 @@ def write_raw_bids(
         .. note::
            Descriptions of all event codes must be specified via the
            ``event_id`` parameter.
-
-    events_data
-        .. deprecated:: 0.11
-           Use ``events`` instead.
 
     event_id : dict | None
         Descriptions or names describing the event codes, if you passed
@@ -1440,6 +1436,10 @@ def write_raw_bids(
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
+    events_data
+        .. deprecated:: 0.11
+           Use ``events`` instead.
+
     %(verbose)s
 
     Returns
