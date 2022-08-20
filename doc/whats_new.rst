@@ -66,6 +66,8 @@ Detailed list of changes
 
 - :func:`mne_bids.print_dir_tree` now raises a :py:class:`FileNotFoundError` instead of a :py:class:`ValueError` if the directory does not exist, by `Richard Höchenberger`_ (:gh:`1013`)
 
+- Passing only one of ``events`` and ``event_id`` to :func:`~mne_bids.write_raw_bids` now raises a ``ValueError`` instead of a ``RuntimeError``, by `Richard Höchenberger`_ (:gh:`1054`)
+
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 

@@ -1556,12 +1556,12 @@ def write_raw_bids(
         )
 
     if events is not None and event_id is None:
-        raise RuntimeError('You passed events, but no event_id '
-                           'dictionary. You need to pass both, or neither.')
+        raise ValueError('You passed events, but no event_id '
+                         'dictionary. You need to pass both, or neither.')
 
     if event_id is not None and events is None:
-        raise RuntimeError('You passed event_id, but no events NumPy '
-                           'array. You need to pass both, or neither.')
+        raise ValueError('You passed event_id, but no events. '
+                         'You need to pass both, or neither.')
 
     _validate_type(item=empty_room, item_name='empty_room',
                    types=(mne.io.BaseRaw, BIDSPath, None))

@@ -1249,11 +1249,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
-    with pytest.raises(RuntimeError,
+    with pytest.raises(ValueError,
                        match='You passed events, but no event_id '):
         write_raw_bids(raw, bids_path, events=events)
 
-    with pytest.raises(RuntimeError,
+    with pytest.raises(ValueError,
                        match='You passed event_id, but no events'):
         write_raw_bids(raw, bids_path, event_id=event_id)
 
