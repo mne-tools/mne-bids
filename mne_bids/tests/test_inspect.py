@@ -47,7 +47,7 @@ def setup_bids_test_dir(bids_root):
     events = events[events[:, 2] != 0]
 
     bids_path = _bids_path.copy().update(root=bids_root)
-    write_raw_bids(raw, bids_path=bids_path, events_data=events,
+    write_raw_bids(raw, bids_path=bids_path, events=events,
                    event_id=event_id, overwrite=True)
     write_meg_calibration(cal_fname, bids_path=bids_path)
     write_meg_crosstalk(crosstalk_fname, bids_path=bids_path)

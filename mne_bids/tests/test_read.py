@@ -229,7 +229,7 @@ def test_get_head_mri_trans(tmp_path):
     bids_path = _bids_path.copy().update(
         root=tmp_path, datatype='meg', suffix='meg'
     )
-    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+    write_raw_bids(raw, bids_path, events=events, event_id=event_id,
                    overwrite=False)
 
     # We cannot recover trans if no MRI has yet been written
@@ -293,7 +293,7 @@ def test_get_head_mri_trans(tmp_path):
     # test we are permissive for different casings of landmark names in the
     # sidecar, and also accept "nasion" instead of just "NAS"
     raw = _read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+    write_raw_bids(raw, bids_path, events=events, event_id=event_id,
                    overwrite=True)  # overwrite with new acq
     t1w_bids_path = write_anat(
         t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks, overwrite=True

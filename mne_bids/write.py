@@ -1244,11 +1244,23 @@ def make_dataset_description(*, path, name, hed_version=None,
 
 
 @verbose
-def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
-                   anonymize=None, format='auto', symlink=False,
-                   empty_room=None, allow_preload=False,
-                   montage=None, acpc_aligned=False,
-                   overwrite=False, verbose=None):
+def write_raw_bids(
+    raw,
+    bids_path,
+    events=None,
+    event_id=None,
+    *,
+    anonymize=None,
+    format='auto',
+    symlink=False,
+    empty_room=None,
+    allow_preload=False,
+    montage=None,
+    acpc_aligned=False,
+    overwrite=False,
+    events_data=None,
+    verbose=None
+):
     """Save raw data to a BIDS-compliant folder structure.
 
     .. warning:: * The original file is simply copied over if the original
@@ -1288,7 +1300,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_acq-01_coordsystem.json
 
-        and the following one if ``events_data`` is not ``None``::
+        and the following one if ``events`` is not ``None``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
 
@@ -1299,37 +1311,37 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         Note that the extension is automatically inferred from the raw
         object.
-    events_data : path-like | np.ndarray | None
+    events : path-like | np.ndarray | None
         Use this parameter to specify events to write to the ``*_events.tsv``
-        sidecar file, additionally to the object's `mne.Annotations` (which
-        are always written).
-        If a path, specifies the location of an MNE events file.
+        sidecar file, additionally to the object's :class:`~mne.Annotations`
+        (which are always written).
+        If ``path-like``, specifies the location of an MNE events file.
         If an array, the MNE events array (shape: ``(n_events, 3)``).
         If a path or an array and ``raw.annotations`` exist, the union of
-        ``event_data`` and ``raw.annotations`` will be written.
-        Corresponding descriptions for all event IDs (listed in the third
+        ``events`` and ``raw.annotations`` will be written.
+        Corresponding descriptions for all event codes (listed in the third
         column of the MNE events array) must be specified via the ``event_id``
         parameter; otherwise, an exception is raised.
-        If ``None``, events will only be inferred from the the raw object's
-        `mne.Annotations`.
+        If ``None``, events will only be inferred from the raw object's
+        :class:`~mne.Annotations`.
 
         .. note::
-           If ``not None``, writes the union of ``events_data`` and
+           If ``not None``, writes the union of ``events`` and
            ``raw.annotations``. If you wish to **only** write
-           ``raw.annotations``, pass ``events_data=None``. If you want to
+           ``raw.annotations``, pass ``events=None``. If you want to
            **exclude** the events in ``raw.annotations`` from being written,
            call ``raw.set_annotations(None)`` before invoking this function.
 
         .. note::
-           Descriptions of all event IDs must be specified via the ``event_id``
-           parameter.
+           Descriptions of all event codes must be specified via the
+           ``event_id`` parameter.
 
     event_id : dict | None
-        Descriptions of all event IDs, if you passed ``events_data``.
-        The descriptions will be written to the ``trial_type`` column in
-        ``*_events.tsv``. The dictionary keys correspond to the event
-        descriptions and the values to the event IDs. You must specify a
-        description for all event IDs in ``events_data``.
+        Descriptions or names describing the event codes, if you passed
+        ``events``. The descriptions will be written to the ``trial_type``
+        column in ``*_events.tsv``. The dictionary keys correspond to the event
+        description,s and the values to the event codes. You must specify a
+        description for all event codes appearing in ``events``.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1424,6 +1436,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
+    events_data
+        .. deprecated:: 0.11
+           Use ``events`` instead.
+
     %(verbose)s
 
     Returns
@@ -1445,7 +1461,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     This function will convert existing `mne.Annotations` from
     ``raw.annotations`` to events. Additionally, any events supplied via
-    ``events_data`` will be written too. To avoid writing of annotations,
+    ``events`` will be written too. To avoid writing of annotations,
     remove them from the raw file via ``raw.set_annotations(None)`` before
     invoking ``write_raw_bids``.
 
@@ -1454,7 +1470,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     ..
         events = mne.find_events(raw, min_duration=0.002)
-        write_raw_bids(..., events_data=events)
+        write_raw_bids(..., events=events)
 
     See the documentation of :func:`mne.find_events` for more information on
     event extraction from ``STIM`` channels.
@@ -1483,6 +1499,21 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     mne.events_from_annotations
 
     """
+    if events_data is not None and events is not None:
+        raise ValueError('Only one of events and events_data can be passed.')
+
+    if events_data is not None:
+        warn(
+            message='The events_data parameter has been deprecated in favor '
+                    'the new events parameter, to ensure better consistency  '
+                    'with MNE-Python. The events_data parameter will be '
+                    'removed in MNE-BIDS 0.14. Please use the events '
+                    'parameter instead.',
+            category=FutureWarning
+        )
+        events = events_data
+        del events_data
+
     if not isinstance(raw, BaseRaw):
         raise ValueError('raw_file must be an instance of BaseRaw, '
                          'got %s' % type(raw))
@@ -1495,8 +1526,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
 
-    _validate_type(events_data, types=('path-like', np.ndarray, None),
-                   item_name='events_data',
+    _validate_type(events, types=('path-like', np.ndarray, None),
+                   item_name='events',
                    type_name='path-like, NumPy array, or None')
 
     if symlink and sys.platform in ('win32', 'cygwin'):
@@ -1524,13 +1555,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             '"bids_path.task = <task>"'
         )
 
-    if events_data is not None and event_id is None:
-        raise RuntimeError('You passed events_data, but no event_id '
-                           'dictionary. You need to pass both, or neither.')
+    if events is not None and event_id is None:
+        raise ValueError('You passed events, but no event_id '
+                         'dictionary. You need to pass both, or neither.')
 
-    if event_id is not None and events_data is None:
-        raise RuntimeError('You passed event_id, but no events_data NumPy '
-                           'array. You need to pass both, or neither.')
+    if event_id is not None and events is None:
+        raise ValueError('You passed event_id, but no events. '
+                         'You need to pass both, or neither.')
 
     _validate_type(item=empty_room, item_name='empty_room',
                    types=(mne.io.BaseRaw, BIDSPath, None))
@@ -1648,7 +1679,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         write_raw_bids(
             raw=empty_room,
             bids_path=er_bids_path,
-            events_data=None,
+            events=None,
             event_id=None,
             anonymize=anonymize,
             format=format,
@@ -1784,13 +1815,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events_data, event_id, raw, bids_path=bids_path)
+            events, event_id, raw, bids_path=bids_path)
         if events_array.size != 0:
             _events_tsv(events=events_array, durations=event_dur, raw=raw,
                         fname=events_path.fpath, trial_type=event_desc_id_map,
                         overwrite=overwrite)
         # Kepp events_array around for BrainVision writing below.
-        del event_desc_id_map, events_data, event_id, event_dur
+        del event_desc_id_map, events, event_id, event_dur
 
     # make dataset description and add template data if it does not
     # already exist. Always set overwrite to False here. If users

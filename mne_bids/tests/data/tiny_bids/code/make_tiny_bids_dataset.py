@@ -46,7 +46,7 @@ event_id = {"start_experiment": 1, "show_stimulus": 2}
 # %%
 
 write_raw_bids(
-    raw, bids_path, events_data=events, event_id=event_id, overwrite=True
+    raw, bids_path, events=events, event_id=event_id, overwrite=True
 )
 
 # %%

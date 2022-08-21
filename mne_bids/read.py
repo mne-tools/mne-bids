@@ -74,12 +74,12 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
     return raw
 
 
-def _read_events(events_data, event_id, raw, bids_path=None):
+def _read_events(events, event_id, raw, bids_path=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
     ----------
-    events_data : path-like | np.ndarray | None
+    events : path-like | np.ndarray | None
         If a string, a path to an events file. If an array, an MNE events array
         (shape n_events, 3). If None, events will be generated from
         ``raw.annotations``.
@@ -107,19 +107,19 @@ def _read_events(events_data, event_id, raw, bids_path=None):
         the values to the event IDs.
 
     """
-    # get events from events_data
-    if isinstance(events_data, np.ndarray):
-        if events_data.ndim != 2:
+    # retrieve events
+    if isinstance(events, np.ndarray):
+        if events.ndim != 2:
             raise ValueError('Events must have two dimensions, '
-                             f'found {events_data.ndim}')
-        if events_data.shape[1] != 3:
+                             f'found {events.ndim}')
+        if events.shape[1] != 3:
             raise ValueError('Events must have second dimension of length 3, '
-                             f'found {events_data.shape[1]}')
-        events = events_data
-    elif events_data is None:
+                             f'found {events.shape[1]}')
+        events = events
+    elif events is None:
         events = np.empty(shape=(0, 3), dtype=int)
     else:
-        events = read_events(events_data).astype(int)
+        events = read_events(events).astype(int)
 
     if events.size > 0:
         # Only keep events for which we have an ID <> description mapping.
@@ -129,7 +129,7 @@ def _read_events(events_data, event_id, raw, bids_path=None):
                 f'No description was specified for the following event(s): '
                 f'{", ".join([str(x) for x in sorted(ids_without_desc)])}. '
                 f'Please add them to the event_id dictionary, or drop them '
-                f'from the events_data array.'
+                f'from the events array.'
             )
         del ids_without_desc
         mask = [e in list(event_id.values()) for e in events[:, 2]]
@@ -175,7 +175,7 @@ def _read_events(events_data, event_id, raw, bids_path=None):
         )
     ):
         warn('No events found or provided. Please add annotations to the raw '
-             'data, or provide the events_data and event_id parameters. For '
+             'data, or provide the events and event_id parameters. For '
              'resting state data, BIDS recommends naming the task using '
              'labels beginning with "rest".')
 
