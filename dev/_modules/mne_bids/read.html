@@ -286,12 +286,12 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<span class="k">def</span> <span class="nf">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_read_events</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve events (for use in *_events.tsv) from FIFF/array &amp; Annotations.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    events_data : path-like | np.ndarray | None</span>
+<span class="sd">    events : path-like | np.ndarray | None</span>
 <span class="sd">        If a string, a path to an events file. If an array, an MNE events array</span>
 <span class="sd">        (shape n_events, 3). If None, events will be generated from</span>
 <span class="sd">        ``raw.annotations``.</span>
@@ -319,19 +319,19 @@
 <span class="sd">        the values to the event IDs.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># get events from events_data</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="c1"># retrieve events</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have two dimensions, &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">events_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have second dimension of length 3, &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">events</span> <span class="o">=</span> <span class="n">events_data</span>
-    <span class="k">elif</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">events</span>
+    <span class="k">elif</span> <span class="n">events</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">events</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="n">events</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Only keep events for which we have an ID &lt;&gt; description mapping.</span>
@@ -341,7 +341,7 @@
                 <span class="sa">f</span><span class="s1">&#39;No description was specified for the following event(s): &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ids_without_desc</span><span class="p">)])</span><span class="si">}</span><span class="s1">. &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;Please add them to the event_id dictionary, or drop them &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;from the events_data array.&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;from the events array.&#39;</span>
             <span class="p">)</span>
         <span class="k">del</span> <span class="n">ids_without_desc</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]]</span>
@@ -387,7 +387,7 @@
         <span class="p">)</span>
     <span class="p">):</span>
         <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No events found or provided. Please add annotations to the raw &#39;</span>
-             <span class="s1">&#39;data, or provide the events_data and event_id parameters. For &#39;</span>
+             <span class="s1">&#39;data, or provide the events and event_id parameters. For &#39;</span>
              <span class="s1">&#39;resting state data, BIDS recommends naming the task using &#39;</span>
              <span class="s1">&#39;labels beginning with &quot;rest&quot;.&#39;</span><span class="p">)</span>
 
@@ -1245,7 +1245,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-20.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-21.<br>
 </p>
   </div>
   

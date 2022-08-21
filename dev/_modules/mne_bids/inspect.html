@@ -451,7 +451,7 @@
     <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span>
                         <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
-    <span class="n">events</span><span class="p">,</span> <span class="n">durs</span><span class="p">,</span> <span class="n">descrs</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">events</span><span class="p">,</span> <span class="n">durs</span><span class="p">,</span> <span class="n">descrs</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                         <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># Write sidecar – or remove it if no events are left.</span>
@@ -671,7 +671,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-20.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-21.<br>
 </p>
   </div>
   

@@ -503,7 +503,7 @@ which are however optional. The required inputs are:</p>
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_acq-01_coordsystem.json
 
-        and the following one if ``events_data`` is not ``None``::
+        and the following one if ``events`` is not ``None``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
 
@@ -514,37 +514,37 @@ which are however optional. The required inputs are:</p>
 
         Note that the extension is automatically inferred from the raw
         object.
-    events_data : path-like | np.ndarray | None
+    events : path-like | np.ndarray | None
         Use this parameter to specify events to write to the ``*_events.tsv``
-        sidecar file, additionally to the object&#39;s `mne.Annotations` (which
-        are always written).
-        If a path, specifies the location of an MNE events file.
+        sidecar file, additionally to the object&#39;s :class:`~mne.Annotations`
+        (which are always written).
+        If ``path-like``, specifies the location of an MNE events file.
         If an array, the MNE events array (shape: ``(n_events, 3)``).
         If a path or an array and ``raw.annotations`` exist, the union of
-        ``event_data`` and ``raw.annotations`` will be written.
-        Corresponding descriptions for all event IDs (listed in the third
+        ``events`` and ``raw.annotations`` will be written.
+        Corresponding descriptions for all event codes (listed in the third
         column of the MNE events array) must be specified via the ``event_id``
         parameter; otherwise, an exception is raised.
-        If ``None``, events will only be inferred from the the raw object&#39;s
-        `mne.Annotations`.
+        If ``None``, events will only be inferred from the raw object&#39;s
+        :class:`~mne.Annotations`.
 
         .. note::
-           If ``not None``, writes the union of ``events_data`` and
+           If ``not None``, writes the union of ``events`` and
            ``raw.annotations``. If you wish to **only** write
-           ``raw.annotations``, pass ``events_data=None``. If you want to
+           ``raw.annotations``, pass ``events=None``. If you want to
            **exclude** the events in ``raw.annotations`` from being written,
            call ``raw.set_annotations(None)`` before invoking this function.
 
         .. note::
-           Descriptions of all event IDs must be specified via the ``event_id``
-           parameter.
+           Descriptions of all event codes must be specified via the
+           ``event_id`` parameter.
 
     event_id : dict | None
-        Descriptions of all event IDs, if you passed ``events_data``.
-        The descriptions will be written to the ``trial_type`` column in
-        ``*_events.tsv``. The dictionary keys correspond to the event
-        descriptions and the values to the event IDs. You must specify a
-        description for all event IDs in ``events_data``.
+        Descriptions or names describing the event codes, if you passed
+        ``events``. The descriptions will be written to the ``trial_type``
+        column in ``*_events.tsv``. The dictionary keys correspond to the event
+        description,s and the values to the event codes. You must specify a
+        description for all event codes appearing in ``events``.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -639,6 +639,10 @@ which are however optional. The required inputs are:</p>
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
+    events_data
+        .. deprecated:: 0.11
+           Use ``events`` instead.
+
 
     verbose : bool | str | int | None
         Control verbosity of the logging output. If ``None``, use the default
@@ -665,7 +669,7 @@ which are however optional. The required inputs are:</p>
 
     This function will convert existing `mne.Annotations` from
     ``raw.annotations`` to events. Additionally, any events supplied via
-    ``events_data`` will be written too. To avoid writing of annotations,
+    ``events`` will be written too. To avoid writing of annotations,
     remove them from the raw file via ``raw.set_annotations(None)`` before
     invoking ``write_raw_bids``.
 
@@ -674,7 +678,7 @@ which are however optional. The required inputs are:</p>
 
     ..
         events = mne.find_events(raw, min_duration=0.002)
-        write_raw_bids(..., events_data=events)
+        write_raw_bids(..., events=events)
 
     See the documentation of :func:`mne.find_events` for more information on
     event extraction from ``STIM`` channels.
@@ -770,7 +774,7 @@ step is required.</p>
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/mne_bids/write.py:1730: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1761: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -782,7 +786,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1888: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1919: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -994,7 +998,7 @@ Ready.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/mne_bids/write.py:1730: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1761: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1006,7 +1010,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1888: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1919: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -1169,7 +1173,7 @@ Ready.
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/mne_bids/write.py:1730: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/mne_bids/write.py:1761: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1181,7 +1185,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv&#39;...
-/home/circleci/project/mne_bids/write.py:1888: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1919: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr.
@@ -1228,7 +1232,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.144 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.164 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1283,7 +1287,7 @@ coordinate frame.</p>
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-20.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-21.<br>
 </p>
   </div>
   

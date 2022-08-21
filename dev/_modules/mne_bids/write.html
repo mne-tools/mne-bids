@@ -1456,11 +1456,23 @@
 
 
 <div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">symlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="n">empty_room</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span>
+    <span class="n">raw</span><span class="p">,</span>
+    <span class="n">bids_path</span><span class="p">,</span>
+    <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+    <span class="n">symlink</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">empty_room</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">allow_preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
 
 <span class="sd">    .. warning:: * The original file is simply copied over if the original</span>
@@ -1500,7 +1512,7 @@
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv</span>
 <span class="sd">            sub-01_ses-01_acq-01_coordsystem.json</span>
 
-<span class="sd">        and the following one if ``events_data`` is not ``None``::</span>
+<span class="sd">        and the following one if ``events`` is not ``None``::</span>
 
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_events.tsv</span>
 
@@ -1511,37 +1523,37 @@
 
 <span class="sd">        Note that the extension is automatically inferred from the raw</span>
 <span class="sd">        object.</span>
-<span class="sd">    events_data : path-like | np.ndarray | None</span>
+<span class="sd">    events : path-like | np.ndarray | None</span>
 <span class="sd">        Use this parameter to specify events to write to the ``*_events.tsv``</span>
-<span class="sd">        sidecar file, additionally to the object&#39;s `mne.Annotations` (which</span>
-<span class="sd">        are always written).</span>
-<span class="sd">        If a path, specifies the location of an MNE events file.</span>
+<span class="sd">        sidecar file, additionally to the object&#39;s :class:`~mne.Annotations`</span>
+<span class="sd">        (which are always written).</span>
+<span class="sd">        If ``path-like``, specifies the location of an MNE events file.</span>
 <span class="sd">        If an array, the MNE events array (shape: ``(n_events, 3)``).</span>
 <span class="sd">        If a path or an array and ``raw.annotations`` exist, the union of</span>
-<span class="sd">        ``event_data`` and ``raw.annotations`` will be written.</span>
-<span class="sd">        Corresponding descriptions for all event IDs (listed in the third</span>
+<span class="sd">        ``events`` and ``raw.annotations`` will be written.</span>
+<span class="sd">        Corresponding descriptions for all event codes (listed in the third</span>
 <span class="sd">        column of the MNE events array) must be specified via the ``event_id``</span>
 <span class="sd">        parameter; otherwise, an exception is raised.</span>
-<span class="sd">        If ``None``, events will only be inferred from the the raw object&#39;s</span>
-<span class="sd">        `mne.Annotations`.</span>
+<span class="sd">        If ``None``, events will only be inferred from the raw object&#39;s</span>
+<span class="sd">        :class:`~mne.Annotations`.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">           If ``not None``, writes the union of ``events_data`` and</span>
+<span class="sd">           If ``not None``, writes the union of ``events`` and</span>
 <span class="sd">           ``raw.annotations``. If you wish to **only** write</span>
-<span class="sd">           ``raw.annotations``, pass ``events_data=None``. If you want to</span>
+<span class="sd">           ``raw.annotations``, pass ``events=None``. If you want to</span>
 <span class="sd">           **exclude** the events in ``raw.annotations`` from being written,</span>
 <span class="sd">           call ``raw.set_annotations(None)`` before invoking this function.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">           Descriptions of all event IDs must be specified via the ``event_id``</span>
-<span class="sd">           parameter.</span>
+<span class="sd">           Descriptions of all event codes must be specified via the</span>
+<span class="sd">           ``event_id`` parameter.</span>
 
 <span class="sd">    event_id : dict | None</span>
-<span class="sd">        Descriptions of all event IDs, if you passed ``events_data``.</span>
-<span class="sd">        The descriptions will be written to the ``trial_type`` column in</span>
-<span class="sd">        ``*_events.tsv``. The dictionary keys correspond to the event</span>
-<span class="sd">        descriptions and the values to the event IDs. You must specify a</span>
-<span class="sd">        description for all event IDs in ``events_data``.</span>
+<span class="sd">        Descriptions or names describing the event codes, if you passed</span>
+<span class="sd">        ``events``. The descriptions will be written to the ``trial_type``</span>
+<span class="sd">        column in ``*_events.tsv``. The dictionary keys correspond to the event</span>
+<span class="sd">        description,s and the values to the event codes. You must specify a</span>
+<span class="sd">        description for all event codes appearing in ``events``.</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If `None` (default), no anonymization is performed.</span>
 <span class="sd">        If a dictionary, data will be anonymized depending on the dictionary</span>
@@ -1636,6 +1648,10 @@
 <span class="sd">        and ``participants.tsv`` by a user will be retained.</span>
 <span class="sd">        If ``False``, no existing data will be overwritten or</span>
 <span class="sd">        replaced.</span>
+<span class="sd">    events_data</span>
+<span class="sd">        .. deprecated:: 0.11</span>
+<span class="sd">           Use ``events`` instead.</span>
+
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
@@ -1657,7 +1673,7 @@
 
 <span class="sd">    This function will convert existing `mne.Annotations` from</span>
 <span class="sd">    ``raw.annotations`` to events. Additionally, any events supplied via</span>
-<span class="sd">    ``events_data`` will be written too. To avoid writing of annotations,</span>
+<span class="sd">    ``events`` will be written too. To avoid writing of annotations,</span>
 <span class="sd">    remove them from the raw file via ``raw.set_annotations(None)`` before</span>
 <span class="sd">    invoking ``write_raw_bids``.</span>
 
@@ -1666,7 +1682,7 @@
 
 <span class="sd">    ..</span>
 <span class="sd">        events = mne.find_events(raw, min_duration=0.002)</span>
-<span class="sd">        write_raw_bids(..., events_data=events)</span>
+<span class="sd">        write_raw_bids(..., events=events)</span>
 
 <span class="sd">    See the documentation of :func:`mne.find_events` for more information on</span>
 <span class="sd">    event extraction from ``STIM`` channels.</span>
@@ -1695,6 +1711,21 @@
 <span class="sd">    mne.events_from_annotations</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only one of events and events_data can be passed.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="s1">&#39;The events_data parameter has been deprecated in favor &#39;</span>
+                    <span class="s1">&#39;the new events parameter, to ensure better consistency  &#39;</span>
+                    <span class="s1">&#39;with MNE-Python. The events_data parameter will be &#39;</span>
+                    <span class="s1">&#39;removed in MNE-BIDS 0.14. Please use the events &#39;</span>
+                    <span class="s1">&#39;parameter instead.&#39;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span>
+        <span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">events_data</span>
+        <span class="k">del</span> <span class="n">events_data</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;raw_file must be an instance of BaseRaw, &#39;</span>
                          <span class="s1">&#39;got </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
@@ -1707,8 +1738,8 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
                            <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
 
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;path-like&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                   <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;events_data&#39;</span><span class="p">,</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;path-like&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                   <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span>
                    <span class="n">type_name</span><span class="o">=</span><span class="s1">&#39;path-like, NumPy array, or None&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">symlink</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;win32&#39;</span><span class="p">,</span> <span class="s1">&#39;cygwin&#39;</span><span class="p">):</span>
@@ -1736,13 +1767,13 @@
             <span class="s1">&#39;&quot;bids_path.task = &lt;task&gt;&quot;&#39;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;You passed events_data, but no event_id &#39;</span>
-                           <span class="s1">&#39;dictionary. You need to pass both, or neither.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You passed events, but no event_id &#39;</span>
+                         <span class="s1">&#39;dictionary. You need to pass both, or neither.&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;You passed event_id, but no events_data NumPy &#39;</span>
-                           <span class="s1">&#39;array. You need to pass both, or neither.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">events</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You passed event_id, but no events. &#39;</span>
+                         <span class="s1">&#39;You need to pass both, or neither.&#39;</span><span class="p">)</span>
 
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;empty_room&#39;</span><span class="p">,</span>
                    <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -1860,7 +1891,7 @@
         <span class="n">write_raw_bids</span><span class="p">(</span>
             <span class="n">raw</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span>
             <span class="n">bids_path</span><span class="o">=</span><span class="n">er_bids_path</span><span class="p">,</span>
-            <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">anonymize</span><span class="o">=</span><span class="n">anonymize</span><span class="p">,</span>
             <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
@@ -1996,13 +2027,13 @@
     <span class="c1"># Write events.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
         <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
-            <span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">events_array</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">event_dur</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
                         <span class="n">fname</span><span class="o">=</span><span class="n">events_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">trial_type</span><span class="o">=</span><span class="n">event_desc_id_map</span><span class="p">,</span>
                         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
-        <span class="k">del</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_dur</span>
+        <span class="k">del</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_dur</span>
 
     <span class="c1"># make dataset description and add template data if it does not</span>
     <span class="c1"># already exist. Always set overwrite to False here. If users</span>
@@ -3139,7 +3170,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-20.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-21.<br>
 </p>
   </div>
   
