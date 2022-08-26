@@ -3,7 +3,9 @@ name: Feature request
 # See the json schema to help you create / update this form
 # https://json.schemastore.org/github-issue-forms.json
 
-description: Suggest an idea for this project
+description: 🛠️ Suggest an idea for this project
+
+labels: ["enhancement"]
 
 body:
 
