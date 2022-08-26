@@ -878,8 +878,13 @@
 <span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="sd">        &gt;&gt;&gt; # Then, one can update this `BIDSPath` object in place</span>
-<span class="sd">        &gt;&gt;&gt; bids_path = bids_path.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
-<span class="sd">        ...                              extension=&#39;.vhdr&#39;, task=None)</span>
+<span class="sd">        &gt;&gt;&gt; bids_path.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
+<span class="sd">        ...                  datatype=&#39;ieeg&#39;,</span>
+<span class="sd">        ...                  extension=&#39;.vhdr&#39;, task=None)</span>
+<span class="sd">        BIDSPath(</span>
+<span class="sd">        root: None</span>
+<span class="sd">        datatype: ieeg</span>
+<span class="sd">        basename: sub-test_ses-two_acq-test_ieeg.vhdr)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_acq-test_ieeg.vhdr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2101,7 +2106,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-21.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-26.<br>
 </p>
   </div>
   

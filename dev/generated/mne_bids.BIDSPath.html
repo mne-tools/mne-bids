@@ -879,8 +879,13 @@ or updates for ‘root’ or ‘datatype’.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Then, one can update this `BIDSPath` object in place</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
-<span class="gp">... </span>                             <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">BIDSPath(</span>
+<span class="go">root: None</span>
+<span class="go">datatype: ieeg</span>
+<span class="go">basename: sub-test_ses-two_acq-test_ieeg.vhdr)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_acq-test_ieeg.vhdr</span>
 </pre></div>
@@ -972,7 +977,7 @@ or updates for ‘root’ or ‘datatype’.</p>
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-21.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-08-26.<br>
 </p>
   </div>
   
