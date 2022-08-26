@@ -74,12 +74,12 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
     return raw
 
 
-def _read_events(events_data, event_id, raw, bids_path=None):
+def _read_events(events, event_id, raw, bids_path=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
     ----------
-    events_data : path-like | np.ndarray | None
+    events : path-like | np.ndarray | None
         If a string, a path to an events file. If an array, an MNE events array
         (shape n_events, 3). If None, events will be generated from
         ``raw.annotations``.
@@ -107,19 +107,19 @@ def _read_events(events_data, event_id, raw, bids_path=None):
         the values to the event IDs.
 
     """
-    # get events from events_data
-    if isinstance(events_data, np.ndarray):
-        if events_data.ndim != 2:
+    # retrieve events
+    if isinstance(events, np.ndarray):
+        if events.ndim != 2:
             raise ValueError('Events must have two dimensions, '
-                             f'found {events_data.ndim}')
-        if events_data.shape[1] != 3:
+                             f'found {events.ndim}')
+        if events.shape[1] != 3:
             raise ValueError('Events must have second dimension of length 3, '
-                             f'found {events_data.shape[1]}')
-        events = events_data
-    elif events_data is None:
+                             f'found {events.shape[1]}')
+        events = events
+    elif events is None:
         events = np.empty(shape=(0, 3), dtype=int)
     else:
-        events = read_events(events_data).astype(int)
+        events = read_events(events).astype(int)
 
     if events.size > 0:
         # Only keep events for which we have an ID <> description mapping.
@@ -129,7 +129,7 @@ def _read_events(events_data, event_id, raw, bids_path=None):
                 f'No description was specified for the following event(s): '
                 f'{", ".join([str(x) for x in sorted(ids_without_desc)])}. '
                 f'Please add them to the event_id dictionary, or drop them '
-                f'from the events_data array.'
+                f'from the events array.'
             )
         del ids_without_desc
         mask = [e in list(event_id.values()) for e in events[:, 2]]
@@ -175,7 +175,7 @@ def _read_events(events_data, event_id, raw, bids_path=None):
         )
     ):
         warn('No events found or provided. Please add annotations to the raw '
-             'data, or provide the events_data and event_id parameters. For '
+             'data, or provide the events and event_id parameters. For '
              'resting state data, BIDS recommends naming the task using '
              'labels beginning with "rest".')
 
@@ -233,13 +233,23 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     # get the row corresponding to the file
     # use string concatenation instead of os.path
     # to work nicely with windows
-    data_fname = bids_path.datatype + '/' + fname
+    data_fname = Path(bids_path.datatype) / fname
     fnames = scans_tsv['filename']
+    fnames = [Path(fname) for fname in fnames]
     if 'acq_time' in scans_tsv:
         acq_times = scans_tsv['acq_time']
     else:
         acq_times = ['n/a'] * len(fnames)
 
+    # There are three possible extensions for BrainVision
+    # First gather all the possible extensions
+    acq_suffixes = set(fname.suffix for fname in fnames)
+    # Add the filename extension for the bids folder
+    acq_suffixes.add(Path(data_fname).suffix)
+
+    if all(suffix in ('.vhdr', '.eeg', '.vmrk') for suffix in acq_suffixes):
+        ext = fnames[0].suffix
+        data_fname = Path(data_fname).with_suffix(ext)
     row_ind = fnames.index(data_fname)
 
     # check whether all split files have the same acq_time
@@ -250,7 +260,9 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
                              bids_path.basename[:split_idx] +
                              r'split-\d+_' + bids_path.datatype +
                              bids_path.fpath.suffix)
-        split_fnames = list(filter(pattern.match, fnames))
+        split_fnames = list(filter(
+            lambda x: pattern.match(x.as_posix()), fnames
+        ))
         split_acq_times = []
         for split_f in split_fnames:
             split_acq_times.append(acq_times[fnames.index(split_f)])
@@ -495,12 +507,19 @@ def _handle_channels_reading(channels_fname, raw):
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
     # types in the raw data using a mapping between channel types
-    channel_type_dict = dict()
+    channel_type_bids_mne_map = dict()
 
     # Get the best mapping we currently have from BIDS to MNE nomenclature
     bids_to_mne_ch_types = _get_ch_type_mapping(fro='bids', to='mne')
     ch_types_json = channels_dict['type']
     for ch_name, ch_type in zip(ch_names_tsv, ch_types_json):
+        # We don't map MEG channels for now, as there's no clear 1:1 mapping
+        # from BIDS to MNE coil types.
+        if ch_type.upper() in (
+            'MEGGRADAXIAL', 'MEGMAG', 'MEGREFGRADAXIAL', 'MEGGRADPLANAR',
+            'MEGREFMAG', 'MEGOTHER'
+        ):
+            continue
 
         # Try to map from BIDS nomenclature to MNE, leave channel type
         # untouched if we are uncertain
@@ -518,8 +537,16 @@ def _handle_channels_reading(channels_fname, raw):
                        'will raise an error in the future.')
                 warn(msg)
 
-        if updated_ch_type is not None:
-            channel_type_dict[ch_name] = updated_ch_type
+        if updated_ch_type is None:
+            # We don't have an appropriate mapping, so make it a "misc" channel
+            channel_type_bids_mne_map[ch_name] = 'misc'
+            warn(
+                f'No BIDS -> MNE mapping found for channel type "{ch_type}". '
+                f'Type of channel "{ch_name}" will be set to "misc".'
+            )
+        else:
+            # We found a mapping, so use it
+            channel_type_bids_mne_map[ch_name] = updated_ch_type
 
     # Special handling for (synthesized) stimulus channel
     synthesized_stim_ch_name = 'STI 014'
@@ -544,16 +571,19 @@ def _handle_channels_reading(channels_fname, raw):
                 raw.rename_channels({raw_ch_name: bids_ch_name})
 
     # Set the channel types in the raw data according to channels.tsv
-    ch_type_map_avail = {
+    channel_type_bids_mne_map_available_channels = {
         ch_name: ch_type
-        for ch_name, ch_type in channel_type_dict.items()
+        for ch_name, ch_type in channel_type_bids_mne_map.items()
         if ch_name in raw.ch_names
     }
-    ch_diff = set(channel_type_dict.keys()) - set(ch_type_map_avail.keys())
+    ch_diff = (
+        set(channel_type_bids_mne_map.keys()) -
+        set(channel_type_bids_mne_map_available_channels.keys())
+    )
     if ch_diff:
         warn(f'Cannot set channel type for the following channels, as they '
              f'are missing in the raw data: {", ".join(sorted(ch_diff))}')
-    raw.set_channel_types(ch_type_map_avail)
+    raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 
     # Set bad channels based on _channels.tsv sidecar
     if 'status' in channels_dict:

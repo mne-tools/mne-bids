@@ -36,8 +36,8 @@ def _make_dataset(root, subjects, tasks=(None,), runs=(None,),
         bids_path = BIDSPath(
             subject=subject, session=session, run=run, task=task, root=root,
         )
-        write_raw_bids(raw, bids_path, events, event_id, overwrite=True,
-                       verbose=False)
+        write_raw_bids(raw, bids_path, events=events, event_id=event_id,
+                       overwrite=True, verbose=False)
 
     return root, events, event_id
 

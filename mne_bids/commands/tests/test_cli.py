@@ -257,8 +257,8 @@ def test_count_events(tmp_path):
                 'visual/right': 4, 'face': 5, 'button': 32}
 
     bids_path = BIDSPath(subject='01', root=output_path, task='foo')
-    write_raw_bids(raw, bids_path, events, event_id, overwrite=True,
-                   verbose=False)
+    write_raw_bids(raw, bids_path, events=events, event_id=event_id,
+                   overwrite=True, verbose=False)
 
     with ArgvSetter(('--bids_root', output_path)):
         mne_bids_count_events.run()

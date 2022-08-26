@@ -54,6 +54,10 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+- :func:`~mne_bids.write_raw_bids` now expects all but the first four parameters to be passed as keyword arguments, by `Richard Höchenberger`_ (:gh:`1054`)
+
+- The ``events_data`` parameter of :func:`~mne_bids.write_raw_bids` has been deprecated in favor of a new parameter named ``events``. This ensures more consistency between the MNE-BIDS and MNE-Python APIs. You may continue using the ``events_data`` parameter for now, but a ``FutureWarning`` will be raised. ``events_data`` will be removed in MNE-BIDS 0.14, by `Richard Höchenberger`_ (:gh:`1054`)
+
 - In many places, we used to infer the ``datatype`` of a :class:`~mne_bids.BIDSPath` from the ``suffix``, if not explicitly provided. However, this has lead to trouble in certain edge cases. In an effort to reduce the amount of implicit behavior in MNE-BIDS, we now require users to explicitly specify a ``datatype`` whenever the invoked functions or methods expect one, by `Richard Höchenberger`_ (:gh:`1030`)
 
 - :func:`mne_bids.make_dataset_description` now accepts keyword arguments only, and can now also write the following metadata: ``HEDVersion``, ``EthicsApprovals``, ``GeneratedBy``, and ``SourceDatasets``, by `Stefan Appelhoff`_ (:gh:`406`)
@@ -61,6 +65,8 @@ Detailed list of changes
 - The deprecated function ``mne_bids.mark_bad_channels`` has been removed in favor of :func:`mne_bids.mark_channels`, by `Richard Höchenberger`_ (:gh:`1009`)
 
 - :func:`mne_bids.print_dir_tree` now raises a :py:class:`FileNotFoundError` instead of a :py:class:`ValueError` if the directory does not exist, by `Richard Höchenberger`_ (:gh:`1013`)
+
+- Passing only one of ``events`` and ``event_id`` to :func:`~mne_bids.write_raw_bids` now raises a ``ValueError`` instead of a ``RuntimeError``, by `Richard Höchenberger`_ (:gh:`1054`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -91,6 +97,10 @@ Detailed list of changes
 - Writing and copying CTF files now works on Windows when files already exist (``overwrite=True``), by `Stefan Appelhoff`_ (:gh:`1035`)
 
 - Instead of deleting files and raising cryptic errors, an intentional error message is now sent when calling :func:`~mne_bids.write_raw_bids` with the source file identical to the destination file, unless ``format`` is specified, by `Adam Li`_ and `Stefan Appelhoff`_ (:gh:`889`)
+
+- Internal helper function to :func:`~mne_bids.read_raw_bids` would reject BrainVision data if ``_scans.tsv`` listed a ``.eeg`` file instead of ``.vhdr``, by `Teon Brooks`_ (:gh:`1034`)
+
+- Whenever :func:`~mne_bids.read_raw_bids` encounters a channel type that currently doesn't translate into an appropriate MNE channel type, the channel type will now be set to ``'misc``. Previously, seemingly arbitrary channel types would be applied, e.g. ``'eeg'`` for GSR and temperature channels, by `Richard Höchenberger`_ (:gh:`1052`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

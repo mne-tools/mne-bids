@@ -239,7 +239,7 @@ def _save_annotations(*, annotations, bids_path):
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
                         verbose='warning')
     raw.set_annotations(annotations)
-    events, durs, descrs = _read_events(events_data=None, event_id=None,
+    events, durs, descrs = _read_events(events=None, event_id=None,
                                         bids_path=bids_path, raw=raw)
 
     # Write sidecar – or remove it if no events are left.
