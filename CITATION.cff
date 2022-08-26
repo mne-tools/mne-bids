@@ -143,6 +143,10 @@ authors:
       orcid: 'https://orcid.org/0000-0001-8316-7436'
     - given-names: Anand
       family-names: Saini
+    - given-names: Bruno
+      family-names: Hebling Vieira
+      affiliation: 'Methods of Plasticity Research, Department of Psychology, University of Zurich, Zurich, Switzerland'
+      orcid: 'https://orcid.org/0000-0002-8770-7396'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
