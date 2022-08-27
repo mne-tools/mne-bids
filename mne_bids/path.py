@@ -182,6 +182,8 @@ class BIDSPath(object):
         This corresponds to the BIDS entity  ``desc``. It is used to provide
         additional information for  derivative data, e.g., preprocessed data
         may be assigned ``description='cleaned'``.
+
+        .. versionadded:: 0.11
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
@@ -1599,10 +1601,10 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
     ignore_descriptions : str | array-like of str | None
         Description(s) to ignore. If ``None``, include all descriptions.
-    ignore_splits : str | array-like of str | None
-        Split(s) to ignore. If ``None``, include all splits.
 
         .. versionadded:: 0.11
+    ignore_splits : str | array-like of str | None
+        Split(s) to ignore. If ``None``, include all splits.
     ignore_modalities : str | array-like of str | None
         Modalities(s) to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
