@@ -180,7 +180,7 @@ class BIDSPath(object):
         of BIDS keywords as described in the BIDS specification.
     description : str | None
         This corresponds to the BIDS entity ``desc``. It is used to provide
-        additional information for  derivative data, e.g., preprocessed data
+        additional information for derivative data, e.g., preprocessed data
         may be assigned ``description='cleaned'``.
 
         .. versionadded:: 0.11
