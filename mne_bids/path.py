@@ -1368,6 +1368,7 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 'processing': None, \
 'space': None, \
 'recording': None, \
+'description': None, \
 'split': None}
     """
     if on_error not in ('warn', 'raise', 'ignore'):
