@@ -1720,8 +1720,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         if ignore_acquisitions and any([f'_acq-{a}_' in filename.stem
                                         for a in ignore_acquisitions]):
             continue
-        if ignore_descriptions and any([f'_desc-{a}_' in filename.stem
-                                        for a in ignore_acquisitions]):
+        if ignore_descriptions and any([f'_desc-{d}_' in filename.stem
+                                        for d in ignore_descriptions]):
             continue
         if ignore_splits and any([f'_split-{s}_' in filename.stem
                                   for s in ignore_splits]):
