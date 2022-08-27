@@ -1,9 +1,9 @@
-name: Bug report
+name: 🐛 Bug report
 
 # See the json schema to help you create / update this form
 # https://json.schemastore.org/github-issue-forms.json
 
-description: 🐛 Create a report to help us improve
+description: Create a report to help us improve
 
 labels: ["bug"]
 
