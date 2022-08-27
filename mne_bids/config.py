@@ -158,12 +158,13 @@ ALLOWED_FILENAME_EXTENSIONS = (
 # allowed BIDSPath entities
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
-                         'acquisition', 'split',
+                         'acquisition', 'description', 'split',
                          'suffix', 'extension')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
                                'space': 'space', 'rec': 'recording',
+                               'desc': 'description',
                                'split': 'split'}
 
 # Annotations to never remove during reading or writing
@@ -245,6 +246,7 @@ ENTITY_VALUE_TYPE = {
     'recording': 'label',
     'space': 'label',
     'acquisition': 'label',
+    'description': 'label',
     'split': 'index',
     'suffix': 'label',
     'extension': 'label'
