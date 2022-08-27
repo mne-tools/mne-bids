@@ -8,7 +8,6 @@ import os
 import re
 from io import StringIO
 import shutil as sh
-from collections import OrderedDict
 from copy import deepcopy
 from os import path as op
 from pathlib import Path
