@@ -1675,7 +1675,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     ignore_spaces = _ensure_tuple(ignore_spaces)
     ignore_acquisitions = _ensure_tuple(ignore_acquisitions)
     ignore_splits = _ensure_tuple(ignore_splits)
-    ignore_splits = _ensure_tuple(ignore_splits)
+    ignore_descriptions = _ensure_tuple(ignore_descriptions)
     ignore_modalities = _ensure_tuple(ignore_modalities)
 
     ignore_dirs = _ensure_tuple(ignore_dirs)
