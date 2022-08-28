@@ -178,15 +178,15 @@ class BIDSPath(object):
         Corresponds to "space".
         Note that valid values for ``space`` must come from a list
         of BIDS keywords as described in the BIDS specification.
+    split : int | None
+        The split of the continuous recording file for ``.fif`` data.
+        Corresponds to "split".
     description : str | None
         This corresponds to the BIDS entity ``desc``. It is used to provide
         additional information for derivative data, e.g., preprocessed data
         may be assigned ``description='cleaned'``.
 
         .. versionadded:: 0.11
-    split : int | None
-        The split of the continuous recording file for ``.fif`` data.
-        Corresponds to "split".
     suffix : str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -210,8 +210,8 @@ class BIDSPath(object):
     entities : dict
         A dictionary of the BIDS entities and their values:
         ``subject``, ``session``, ``task``, ``acquisition``,
-        ``run``, ``processing``, ``space``, ``recording``, ``description``,
-        ``split``, ``suffix``, and ``extension``.
+        ``run``, ``processing``, ``space``, ``recording``,
+        ``split``, ``description``, ``suffix``, and ``extension``.
     datatype : str | None
         The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
         ``'anat'``.
@@ -293,8 +293,8 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, description=None,
-                 split=None, root=None, suffix=None, extension=None,
+                 recording=None, space=None, split=None, description=None,
+                 root=None, suffix=None, extension=None,
                  datatype=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
@@ -306,9 +306,9 @@ class BIDSPath(object):
 
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
-                    recording=recording, space=space, description=description,
-                    split=split, root=root, datatype=datatype, suffix=suffix,
-                    extension=extension)
+                    recording=recording, space=space, split=split,
+                    description=description, root=root, datatype=datatype,
+                    suffix=suffix, extension=extension)
 
     @property
     def entities(self):
@@ -322,8 +322,8 @@ class BIDSPath(object):
             'processing': self.processing,
             'space': self.space,
             'recording': self.recording,
-            'description': self.description,
             'split': self.split,
+            'description': self.description,
         }
 
     @property
@@ -1368,8 +1368,8 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 'processing': None, \
 'space': None, \
 'recording': None, \
-'description': None, \
-'split': None}
+'split': None, \
+'description': None}
     """
     if on_error not in ('warn', 'raise', 'ignore'):
         raise ValueError(f'Acceptable values for on_error are: warn, raise, '
@@ -1555,8 +1555,8 @@ def get_datatypes(root, verbose=None):
 def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_sessions=None, ignore_tasks=None, ignore_runs=None,
                     ignore_processings=None, ignore_spaces=None,
-                    ignore_acquisitions=None, ignore_descriptions=None,
-                    ignore_splits=None, ignore_modalities=None,
+                    ignore_acquisitions=None, ignore_splits=None,
+                    ignore_descriptions=None, ignore_modalities=None,
                     ignore_datatypes=None,
                     ignore_dirs=('derivatives', 'sourcedata'), with_key=False,
                     verbose=None):
@@ -1600,12 +1600,12 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         Space(s) to ignore. If ``None``, include all spaces.
     ignore_acquisitions : str | array-like of str | None
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
+    ignore_splits : str | array-like of str | None
+        Split(s) to ignore. If ``None``, include all splits.
     ignore_descriptions : str | array-like of str | None
         Description(s) to ignore. If ``None``, include all descriptions.
 
         .. versionadded:: 0.11
-    ignore_splits : str | array-like of str | None
-        Split(s) to ignore. If ``None``, include all splits.
     ignore_modalities : str | array-like of str | None
         Modalities(s) to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
@@ -1658,9 +1658,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     root = Path(root).expanduser()
 
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
-                'acquisition', 'description', 'split', 'suffix')
+                'acquisition', 'split', 'description', 'suffix')
     entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
-                     'desc', 'split', 'suffix')
+                     'split', 'desc', 'suffix')
     entity_long_abbr_map = dict(zip(entities, entities_abbr))
 
     if entity_key not in entities:
@@ -1721,11 +1721,11 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         if ignore_acquisitions and any([f'_acq-{a}_' in filename.stem
                                         for a in ignore_acquisitions]):
             continue
-        if ignore_descriptions and any([f'_desc-{d}_' in filename.stem
-                                        for d in ignore_descriptions]):
-            continue
         if ignore_splits and any([f'_split-{s}_' in filename.stem
                                   for s in ignore_splits]):
+            continue
+        if ignore_descriptions and any([f'_desc-{d}_' in filename.stem
+                                        for d in ignore_descriptions]):
             continue
         if ignore_modalities and any([f'_{k}' in filename.stem
                                       for k in ignore_modalities]):
@@ -1852,7 +1852,7 @@ def _path_to_str(var):
 
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
-                   space=None, description=None, split=None, suffix=None,
+                   space=None, split=None, description=None, suffix=None,
                    extension=None):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
@@ -1874,8 +1874,8 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     proc_str = f'_proc-{processing}' if processing else r'(|_proc-([^_]+))'
     rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
-    desc_str = f'_desc-{space}' if description else r'(|_desc-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
+    desc_str = f'_desc-{space}' if description else r'(|_desc-([^_]+))'
     suffix_str = (f'_{suffix}' if suffix
                   else r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'

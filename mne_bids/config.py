@@ -158,14 +158,13 @@ ALLOWED_FILENAME_EXTENSIONS = (
 # allowed BIDSPath entities
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
-                         'acquisition', 'description', 'split',
+                         'acquisition', 'split', 'description',
                          'suffix', 'extension')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
                                'space': 'space', 'rec': 'recording',
-                               'desc': 'description',
-                               'split': 'split'}
+                               'split': 'split', 'desc': 'description'}
 
 # Annotations to never remove during reading or writing
 ANNOTATIONS_TO_KEEP = ('BAD_ACQ_SKIP',)
@@ -246,10 +245,10 @@ ENTITY_VALUE_TYPE = {
     'recording': 'label',
     'space': 'label',
     'acquisition': 'label',
-    'description': 'label',
     'split': 'index',
+    'description': 'label',
     'suffix': 'label',
-    'extension': 'label'
+    'extension': 'label',
 }
 
 # mapping from supported BIDs coordinate frames -> MNE

@@ -279,11 +279,11 @@ def test_get_bids_path_from_fname(fname):
 
 
 @pytest.mark.parametrize('fname', [
-    'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
-    'sub-01_ses-02_task-test_run-3_split-01.fif',
-    'sub-01_ses-02_task-test_run-3_split-01',
+    'sub-01_ses-02_task-test_run-3_split-01_desc-filtered_meg.fif',
+    'sub-01_ses-02_task-test_run-3_split-01_desc-filtered.fif',
+    'sub-01_ses-02_task-test_run-3_split-01_desc-filtered',
     ('/bids_root/sub-01/ses-02/meg/' +
-     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
+     'sub-01_ses-02_task-test_run-3_split-01_desc-filtered_meg.fif'),
 ])
 def test_get_entities_from_fname(fname):
     """Test parsing entities from a bids filename."""
@@ -292,25 +292,28 @@ def test_get_entities_from_fname(fname):
     assert params['session'] == '02'
     assert params['run'] == '3'
     assert params['task'] == 'test'
+    assert params['description'] == 'filtered'
     assert params['split'] == '01'
-    assert list(params.keys()) == ['subject', 'session', 'task',
-                                   'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split']
+    assert list(params.keys()) == [
+        'subject', 'session', 'task',
+        'acquisition', 'run', 'processing',
+        'space', 'recording', 'split', 'description',
+    ]
 
 
 @pytest.mark.parametrize('fname', [
     'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
     ('/bids_root/sub-01/ses-02/meg/'
      'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
-    'sub-01_ses-02_task-test_run-3_split-01_desc-tfr_meg.fif',
+    'sub-01_ses-02_task-test_run-3_split-01_foo-tfr_meg.fif',
 ])
 def test_get_entities_from_fname_errors(fname):
     """Test parsing entities from bids filename.
 
     Extends utility for not supported BIDS entities, such
-    as 'description'.
+    as 'foo'.
     """
-    if 'desc' in fname:
+    if 'foo' in fname:
         with pytest.raises(KeyError, match='Unexpected entity'):
             params = get_entities_from_fname(fname, on_error='raise')
         with pytest.warns(RuntimeWarning, match='Unexpected entity'):
@@ -321,16 +324,16 @@ def test_get_entities_from_fname_errors(fname):
 
     expected_keys = ['subject', 'session', 'task',
                      'acquisition', 'run', 'processing',
-                     'space', 'recording', 'split']
+                     'space', 'recording', 'split', 'description']
 
     assert params['subject'] == '01'
     assert params['session'] == '02'
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
-    if 'desc' in fname:
-        assert params['desc'] == 'tfr'
-        expected_keys.append('desc')
+    if 'foo' in fname:
+        assert params['foo'] == 'tfr'
+        expected_keys.append('foo')
     assert list(params.keys()) == expected_keys
 
 
