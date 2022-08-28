@@ -59,7 +59,7 @@ raw_fname_chpi = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
 
 # Tiny BIDS testing dataset
 mne_bids_root = Path(mne_bids.__file__).parent.parent
-tiny_bids = op.join(mne_bids_root, "mne_bids", "tests", "data", "tiny_bids")
+tiny_bids_root = mne_bids_root / "mne_bids" / "tests" / "data" / "tiny_bids"
 
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
@@ -591,7 +591,7 @@ def test_handle_scans_reading_brainvision(tmp_path):
         _to_tsv(test_scan, tmp_path / test_scan['filename'][0])
 
     bids_path = BIDSPath(subject='01', session='eeg', task='rest',
-                         datatype='eeg', root=tiny_bids)
+                         datatype='eeg', root=tiny_bids_root)
     with pytest.warns(RuntimeWarning, match='Not setting positions'):
         raw = read_raw_bids(bids_path)
 
@@ -1272,3 +1272,15 @@ def test_file_not_found(tmp_path):
     bp.extension = None
     with pytest.raises(FileNotFoundError, match='File does not exist'):
         read_raw_bids(bids_path=bp)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_gsr_and_temp_reading():
+    """Test GSR and temperature channels are handled correctly."""
+    bids_path = BIDSPath(
+        subject='01', session='eeg', task='rest', datatype='eeg',
+        root=tiny_bids_root
+    )
+    raw = read_raw_bids(bids_path)
+    assert raw.get_channel_types(['GSR']) == ['gsr']
+    assert raw.get_channel_types(['Temperature']) == ['temperature']

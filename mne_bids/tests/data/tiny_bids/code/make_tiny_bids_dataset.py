@@ -1,8 +1,7 @@
 """Code used to generate the tiny_bids dataset."""
+
 # %%
 import json
-import os
-import os.path as op
 from pathlib import Path
 
 import mne
@@ -12,17 +11,20 @@ import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
 
 data_path = mne.datasets.testing.data_path()
-vhdr_fname = op.join(data_path, "montage", "bv_dig_test.vhdr")
-captrak_path = op.join(data_path, "montage", "captrak_coords.bvct")
+vhdr_path = data_path / "montage" / "bv_dig_test.vhdr"
+captrak_path = data_path / "montage" / "captrak_coords.bvct"
 
-mne_bids_root = Path(mne_bids.__file__).parent.parent
-tiny_bids = op.join(mne_bids_root, "mne_bids", "tests", "data", "tiny_bids")
-os.makedirs(tiny_bids, exist_ok=True)
+mne_bids_root = Path(mne_bids.__file__).parents[1]
+tiny_bids_root = mne_bids_root / "mne_bids" / "tests" / "data" / "tiny_bids"
+tiny_bids_root.mkdir(exist_ok=True)
 
-bids_path = BIDSPath(subject="01", task="rest", session="eeg", root=tiny_bids)
+bids_path = BIDSPath(
+    subject="01", task="rest", session="eeg", suffix="eeg", extension=".vhdr",
+    datatype="eeg", root=tiny_bids_root
+)
 
 # %%
-raw = mne.io.read_raw_brainvision(vhdr_fname)
+raw = mne.io.read_raw_brainvision(vhdr_path, preload=True)
 montage = mne.channels.read_dig_captrak(captrak_path)
 
 raw.set_channel_types(dict(ECG="ecg", HEOG="eog", VEOG="eog"))
@@ -39,25 +41,58 @@ raw.info["subject_info"] = {
     "hand": 3,
 }
 
-raw.set_annotations(None)
-events = np.array([[0, 0, 1], [1000, 0, 2]])
-event_id = {"start_experiment": 1, "show_stimulus": 2}
+# %%
+# Add GSR and temperature channels
+gsr_data = np.array([2.1e-6] * len(raw.times))
+temperature_data = np.array([36.5] * len(raw.times))
+
+gsr_and_temp_data = np.concatenate([
+    np.atleast_2d(gsr_data),
+    np.atleast_2d(temperature_data),
+])
+gsr_and_temp_info = mne.create_info(
+    ch_names=['GSR', 'Temperature'],
+    sfreq=raw.info['sfreq'],
+    ch_types=['gsr', 'temperature'],
+)
+gsr_and_temp_info['line_freq'] = raw.info['line_freq']
+with gsr_and_temp_info._unlock():
+    gsr_and_temp_info['lowpass'] = raw.info['lowpass']
+    gsr_and_temp_info['highpass'] = raw.info['highpass']
+gsr_and_temp_raw = mne.io.RawArray(
+    data=gsr_and_temp_data,
+    info=gsr_and_temp_info,
+    first_samp=raw.first_samp,
+)
+raw.add_channels([gsr_and_temp_raw])
+del gsr_and_temp_raw, gsr_and_temp_data, gsr_and_temp_info
 
 # %%
+raw.set_annotations(None)
+events = np.array([
+    [0, 0, 1],
+    [1000, 0, 2]
+])
+event_id = {
+    "start_experiment": 1,
+    "show_stimulus": 2
+}
 
+# %%
 write_raw_bids(
-    raw, bids_path, events=events, event_id=event_id, overwrite=True
+    raw, bids_path, events=events, event_id=event_id, overwrite=True,
+    allow_preload=True, format='BrainVision',
 )
 
 # %%
-
-dataset_description_json = op.join(tiny_bids, "dataset_description.json")
-with open(dataset_description_json, "r") as fin:
-    ds_json = json.load(fin)
+dataset_description_json_path = tiny_bids_root / "dataset_description.json"
+ds_json = json.loads(
+    dataset_description_json_path.read_text(encoding="utf-8")
+)
 
 ds_json["Name"] = "tiny_bids"
 ds_json["Authors"] = ["MNE-BIDS Developers", "And Friends"]
 
-with open(dataset_description_json, "w") as fout:
-    json.dump(ds_json, fout, indent=4)
+with open(dataset_description_json_path, "w", encoding='utf-8') as fout:
+    json.dump(ds_json, fout, indent=2)
     fout.write("\n")

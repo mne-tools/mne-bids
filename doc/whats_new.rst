@@ -51,6 +51,8 @@ Detailed list of changes
 
 - TSV files that are empty (i.e., only a header row is present) are now handled more robustly and a warning is issued, by `Stefan Appelhoff`_ (:gh:`1038`)
 
+- Added support for ``GSR`` (galvanic skin response / electrodermal activity, EDA) and ``TEMP`` (temperaute) channel types, by `Richard Höchenberger`_ (:gh:`xxx`)
+
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

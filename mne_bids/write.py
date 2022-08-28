@@ -102,7 +102,10 @@ def _channels_tsv(raw, fname, overwrite=False):
                     ias='Internal Active Shielding',
                     dbs='Deep Brain Stimulation',
                     fnirs_cw_amplitude='Near Infrared Spectroscopy '
-                                       '(continuous wave)',)
+                                       '(continuous wave)',
+                    resp='Respiration',
+                    gsr='Galvanic skin response (electrodermal activity, EDA)',
+                    temp='Temperature',)
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
