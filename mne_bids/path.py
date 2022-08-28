@@ -1883,7 +1883,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     regexp = (
         leading_path_str +
         sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-        rec_str + space_str + desc_str + split_str + suffix_str + ext_str
+        rec_str + space_str + split_str + desc_str + suffix_str + ext_str
     )
 
     # Convert to str so we can apply the regexp ...
