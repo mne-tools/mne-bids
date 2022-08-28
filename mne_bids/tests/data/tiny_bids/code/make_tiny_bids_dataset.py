@@ -51,14 +51,15 @@ gsr_and_temp_data = np.concatenate([
     np.atleast_2d(temperature_data),
 ])
 gsr_and_temp_info = mne.create_info(
-    ch_names=['GSR', 'Temperature'],
-    sfreq=raw.info['sfreq'],
-    ch_types=['gsr', 'temperature'],
+    ch_names=["GSR", "Temperature"],
+    sfreq=raw.info["sfreq"],
+    ch_types=["gsr", "temperature"],
 )
-gsr_and_temp_info['line_freq'] = raw.info['line_freq']
+gsr_and_temp_info["line_freq"] = raw.info["line_freq"]
+gsr_and_temp_info["subject_info"] = raw.info["subject_info"]
 with gsr_and_temp_info._unlock():
-    gsr_and_temp_info['lowpass'] = raw.info['lowpass']
-    gsr_and_temp_info['highpass'] = raw.info['highpass']
+    gsr_and_temp_info["lowpass"] = raw.info["lowpass"]
+    gsr_and_temp_info["highpass"] = raw.info["highpass"]
 gsr_and_temp_raw = mne.io.RawArray(
     data=gsr_and_temp_data,
     info=gsr_and_temp_info,
@@ -81,7 +82,7 @@ event_id = {
 # %%
 write_raw_bids(
     raw, bids_path, events=events, event_id=event_id, overwrite=True,
-    allow_preload=True, format='BrainVision',
+    allow_preload=True, format="BrainVision",
 )
 
 # %%
@@ -93,6 +94,6 @@ ds_json = json.loads(
 ds_json["Name"] = "tiny_bids"
 ds_json["Authors"] = ["MNE-BIDS Developers", "And Friends"]
 
-with open(dataset_description_json_path, "w", encoding='utf-8') as fout:
+with open(dataset_description_json_path, "w", encoding="utf-8") as fout:
     json.dump(ds_json, fout, indent=4)
     fout.write("\n")
