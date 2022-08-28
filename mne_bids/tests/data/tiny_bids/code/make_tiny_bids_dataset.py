@@ -94,5 +94,5 @@ ds_json["Name"] = "tiny_bids"
 ds_json["Authors"] = ["MNE-BIDS Developers", "And Friends"]
 
 with open(dataset_description_json_path, "w", encoding='utf-8') as fout:
-    json.dump(ds_json, fout, indent=2)
+    json.dump(ds_json, fout, indent=4)
     fout.write("\n")

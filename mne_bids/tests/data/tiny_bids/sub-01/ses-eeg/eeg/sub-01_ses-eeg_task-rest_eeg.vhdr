@@ -87,8 +87,8 @@ Ch64=PO8,,0.1,µV
 Ch65=ECG,,0.1,µV
 Ch66=HEOG,,0.1,µV
 Ch67=VEOG,,0.1,µV
-Ch68=GSR,,0.1,n/a
-Ch69=Temperature,,0.1,n/a
+Ch68=GSR,,0.1,S
+Ch69=Temperature,,0.1,C
 
 [Comment]
 
