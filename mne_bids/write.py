@@ -147,6 +147,11 @@ def _channels_tsv(raw, fname, overwrite=False):
         units = [_unit2human.get(ch_i['unit'], 'n/a')
                  for ch_i in raw.info['chs']]
         units = [u if u not in ['NA'] else 'n/a' for u in units]
+
+    # Handle degrees Celsius: BIDS uses oC
+    units = ['oC' if u == 'C' else u
+             for u in units]
+
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
