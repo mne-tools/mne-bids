@@ -8,7 +8,6 @@ import os
 import re
 from io import StringIO
 import shutil as sh
-from collections import OrderedDict
 from copy import deepcopy
 from os import path as op
 from pathlib import Path
@@ -182,6 +181,12 @@ class BIDSPath(object):
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
+    description : str | None
+        This corresponds to the BIDS entity ``desc``. It is used to provide
+        additional information for derivative data, e.g., preprocessed data
+        may be assigned ``description='cleaned'``.
+
+        .. versionadded:: 0.11
     suffix : str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -203,10 +208,10 @@ class BIDSPath(object):
     Attributes
     ----------
     entities : dict
-        The dictionary of the BIDS entities and their values:
+        A dictionary of the BIDS entities and their values:
         ``subject``, ``session``, ``task``, ``acquisition``,
-        ``run``, ``processing``, ``space``, ``recording``, ``split``,
-        ``suffix``, and ``extension``.
+        ``run``, ``processing``, ``space``, ``recording``,
+        ``split``, ``description``, ``suffix``, and ``extension``.
     datatype : str | None
         The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
         ``'anat'``.
@@ -288,12 +293,13 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, split=None, root=None,
-                 suffix=None, extension=None, datatype=None, check=True):
+                 recording=None, space=None, split=None, description=None,
+                 root=None, suffix=None, extension=None,
+                 datatype=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, root, suffix,
-                                     extension]):
+                                     recording, space, description,
+                                     root, suffix, extension]):
             raise ValueError("At least one parameter must be given.")
 
         self.check = check
@@ -301,23 +307,24 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    root=root, datatype=datatype,
+                    description=description, root=root, datatype=datatype,
                     suffix=suffix, extension=extension)
 
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
-        return OrderedDict([
-            ('subject', self.subject),
-            ('session', self.session),
-            ('task', self.task),
-            ('acquisition', self.acquisition),
-            ('run', self.run),
-            ('processing', self.processing),
-            ('space', self.space),
-            ('recording', self.recording),
-            ('split', self.split)
-        ])
+        return {
+            'subject': self.subject,
+            'session': self.session,
+            'task': self.task,
+            'acquisition': self.acquisition,
+            'run': self.run,
+            'processing': self.processing,
+            'space': self.space,
+            'recording': self.recording,
+            'split': self.split,
+            'description': self.description,
+        }
 
     @property
     def basename(self):
@@ -441,6 +448,15 @@ class BIDSPath(object):
     @space.setter
     def space(self, value):
         self.update(space=value)
+
+    @property
+    def description(self) -> Optional[str]:
+        """The description entity."""
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self.update(description=value)
 
     @property
     def suffix(self) -> Optional[str]:
@@ -617,9 +633,8 @@ class BIDSPath(object):
     def update(self, *, check=None, **kwargs):
         """Update inplace BIDS entity key/value pairs in object.
 
-        ``run`` and ``split`` are auto-parsed to have two
-        numbers when passed in. For example, if ``run=1``, then it will
-        become ``run='01'``.
+        ``run`` and ``split`` are auto-converted to have two
+        digits. For example, if ``run=1``, then it will nbecome ``run='01'``.
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
@@ -1353,7 +1368,8 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 'processing': None, \
 'space': None, \
 'recording': None, \
-'split': None}
+'split': None, \
+'description': None}
     """
     if on_error not in ('warn', 'raise', 'ignore'):
         raise ValueError(f'Acceptable values for on_error are: warn, raise, '
@@ -1540,7 +1556,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_sessions=None, ignore_tasks=None, ignore_runs=None,
                     ignore_processings=None, ignore_spaces=None,
                     ignore_acquisitions=None, ignore_splits=None,
-                    ignore_modalities=None, ignore_datatypes=None,
+                    ignore_descriptions=None, ignore_modalities=None,
+                    ignore_datatypes=None,
                     ignore_dirs=('derivatives', 'sourcedata'), with_key=False,
                     verbose=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
@@ -1585,6 +1602,10 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
     ignore_splits : str | array-like of str | None
         Split(s) to ignore. If ``None``, include all splits.
+    ignore_descriptions : str | array-like of str | None
+        Description(s) to ignore. If ``None``, include all descriptions.
+
+        .. versionadded:: 0.11
     ignore_modalities : str | array-like of str | None
         Modalities(s) to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
@@ -1637,9 +1658,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     root = Path(root).expanduser()
 
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
-                'acquisition', 'split', 'suffix')
+                'acquisition', 'split', 'description', 'suffix')
     entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
-                     'split', 'suffix')
+                     'split', 'desc', 'suffix')
     entity_long_abbr_map = dict(zip(entities, entities_abbr))
 
     if entity_key not in entities:
@@ -1654,6 +1675,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     ignore_spaces = _ensure_tuple(ignore_spaces)
     ignore_acquisitions = _ensure_tuple(ignore_acquisitions)
     ignore_splits = _ensure_tuple(ignore_splits)
+    ignore_descriptions = _ensure_tuple(ignore_descriptions)
     ignore_modalities = _ensure_tuple(ignore_modalities)
 
     ignore_dirs = _ensure_tuple(ignore_dirs)
@@ -1701,6 +1723,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
             continue
         if ignore_splits and any([f'_split-{s}_' in filename.stem
                                   for s in ignore_splits]):
+            continue
+        if ignore_descriptions and any([f'_desc-{d}_' in filename.stem
+                                        for d in ignore_descriptions]):
             continue
         if ignore_modalities and any([f'_{k}' in filename.stem
                                       for k in ignore_modalities]):
@@ -1827,7 +1852,8 @@ def _path_to_str(var):
 
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
-                   space=None, split=None, suffix=None, extension=None):
+                   space=None, split=None, description=None, suffix=None,
+                   extension=None):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
     Parameters
@@ -1849,6 +1875,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
+    desc_str = f'_desc-{description}' if description else r'(|_desc-([^_]+))'
     suffix_str = (f'_{suffix}' if suffix
                   else r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'
@@ -1856,7 +1883,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     regexp = (
         leading_path_str +
         sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-        rec_str + space_str + split_str + suffix_str + ext_str
+        rec_str + space_str + split_str + desc_str + suffix_str + ext_str
     )
 
     # Convert to str so we can apply the regexp ...
