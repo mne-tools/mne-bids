@@ -1145,3 +1145,22 @@ def test_update_fail_check_no_change():
     except Exception:
         pass
     assert bids_path.suffix is None
+
+
+def test_setting_entities():
+    """Test setting entities via assignment."""
+    bids_path = BIDSPath(subject='test', check=False)
+    for entity_name in bids_path.entities:
+        if entity_name in ['dataype', 'suffix']:
+            continue
+
+        if entity_name in ['run', 'split']:
+            value = '1'
+        else:
+            value = 'foo'
+
+        setattr(bids_path, entity_name, value)
+        assert getattr(bids_path, entity_name) == value
+
+        setattr(bids_path, entity_name, None)
+        assert getattr(bids_path, entity_name) is None
