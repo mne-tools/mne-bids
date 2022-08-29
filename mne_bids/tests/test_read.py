@@ -572,6 +572,7 @@ def test_handle_scans_reading(tmp_path):
     assert new_acq_time != raw_01.info['meas_date']
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_scans_reading_brainvision(tmp_path):
     """Test stability of BrainVision's different file extensions"""
     test_scan_eeg = OrderedDict(
@@ -592,8 +593,8 @@ def test_handle_scans_reading_brainvision(tmp_path):
 
     bids_path = BIDSPath(subject='01', session='eeg', task='rest',
                          datatype='eeg', root=tiny_bids_root)
-    with pytest.warns(RuntimeWarning, match='Not setting positions'):
-        raw = read_raw_bids(bids_path)
+
+    raw = read_raw_bids(bids_path)
 
     for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _handle_scans_reading(tmp_path / test_scan['filename'][0],
