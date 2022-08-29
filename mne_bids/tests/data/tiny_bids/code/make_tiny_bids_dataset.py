@@ -85,6 +85,13 @@ write_raw_bids(
     raw, bids_path, events=events, event_id=event_id, overwrite=True,
     allow_preload=True, format="BrainVision",
 )
+mne_bids.mark_channels(
+    bids_path=bids_path,
+    ch_names=['C3', 'C4', 'PO10', 'GSR', 'Temperature'],
+    status=['good', 'good', 'bad', 'good', 'good'],
+    descriptions=['resected', 'resected', 'continuously flat',
+                  'left index finger', 'left ear']
+)
 
 # %%
 dataset_description_json_path = tiny_bids_root / "dataset_description.json"
