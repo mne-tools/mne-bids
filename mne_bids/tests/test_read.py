@@ -531,7 +531,6 @@ def test_keep_essential_annotations(tmp_path):
             raw.annotations[0]['description'])
 
 
-@requires_version('mne', '1.2')  # tiny_bids contains GSR & temperature chans
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_scans_reading(tmp_path):
     """Test reading data from a BIDS scans.tsv file."""
@@ -573,6 +572,7 @@ def test_handle_scans_reading(tmp_path):
     assert new_acq_time != raw_01.info['meas_date']
 
 
+@requires_version('mne', '1.2')  # tiny_bids contains GSR & temperature chans
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_scans_reading_brainvision(tmp_path):
     """Test stability of BrainVision's different file extensions"""
