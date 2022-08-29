@@ -66,5 +66,5 @@ PO8	EEG	µV	0.015915494309189534	1000.0	ElectroEncephaloGram	5000.0	good	n/a
 ECG	ECG	µV	0.015915494309189534	1000.0	ElectroCardioGram	5000.0	good	n/a
 HEOG	EOG	µV	0.015915494309189534	1000.0	ElectroOculoGram	5000.0	good	n/a
 VEOG	EOG	µV	0.015915494309189534	1000.0	ElectroOculoGram	5000.0	good	n/a
-GSR	GSR	n/a	0.015915494309189534	1000.0	Galvanic skin response (electrodermal activity, EDA)	5000.0	good	n/a
-Temperature	TEMP	n/a	0.015915494309189534	1000.0	Other type of channel	5000.0	good	n/a
+GSR	GSR	S	0.015915494309189534	1000.0	Galvanic skin response (electrodermal activity, EDA)	5000.0	good	n/a
+Temperature	TEMP	C	0.015915494309189534	1000.0	Other type of channel	5000.0	good	n/a

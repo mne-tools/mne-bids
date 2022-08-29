@@ -58,7 +58,7 @@ somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
 raw_fname_chpi = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
 
 # Tiny BIDS testing dataset
-mne_bids_root = Path(mne_bids.__file__).parent.parent
+mne_bids_root = Path(mne_bids.__file__).parents[1]
 tiny_bids_root = mne_bids_root / "mne_bids" / "tests" / "data" / "tiny_bids"
 
 warning_str = dict(
