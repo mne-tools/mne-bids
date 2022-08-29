@@ -43,30 +43,31 @@ raw.info["subject_info"] = {
 
 # %%
 # Add GSR and temperature channels
-gsr_data = np.array([2.1e-6] * len(raw.times))
-temperature_data = np.array([36.5] * len(raw.times))
+if 'GSR' not in raw.ch_names and 'Temperature' not in raw.ch_names:
+    gsr_data = np.array([2.1e-6] * len(raw.times))
+    temperature_data = np.array([36.5] * len(raw.times))
 
-gsr_and_temp_data = np.concatenate([
-    np.atleast_2d(gsr_data),
-    np.atleast_2d(temperature_data),
-])
-gsr_and_temp_info = mne.create_info(
-    ch_names=["GSR", "Temperature"],
-    sfreq=raw.info["sfreq"],
-    ch_types=["gsr", "temperature"],
-)
-gsr_and_temp_info["line_freq"] = raw.info["line_freq"]
-gsr_and_temp_info["subject_info"] = raw.info["subject_info"]
-with gsr_and_temp_info._unlock():
-    gsr_and_temp_info["lowpass"] = raw.info["lowpass"]
-    gsr_and_temp_info["highpass"] = raw.info["highpass"]
-gsr_and_temp_raw = mne.io.RawArray(
-    data=gsr_and_temp_data,
-    info=gsr_and_temp_info,
-    first_samp=raw.first_samp,
-)
-raw.add_channels([gsr_and_temp_raw])
-del gsr_and_temp_raw, gsr_and_temp_data, gsr_and_temp_info
+    gsr_and_temp_data = np.concatenate([
+        np.atleast_2d(gsr_data),
+        np.atleast_2d(temperature_data),
+    ])
+    gsr_and_temp_info = mne.create_info(
+        ch_names=["GSR", "Temperature"],
+        sfreq=raw.info["sfreq"],
+        ch_types=["gsr", "temperature"],
+    )
+    gsr_and_temp_info["line_freq"] = raw.info["line_freq"]
+    gsr_and_temp_info["subject_info"] = raw.info["subject_info"]
+    with gsr_and_temp_info._unlock():
+        gsr_and_temp_info["lowpass"] = raw.info["lowpass"]
+        gsr_and_temp_info["highpass"] = raw.info["highpass"]
+    gsr_and_temp_raw = mne.io.RawArray(
+        data=gsr_and_temp_data,
+        info=gsr_and_temp_info,
+        first_samp=raw.first_samp,
+    )
+    raw.add_channels([gsr_and_temp_raw])
+    del gsr_and_temp_raw, gsr_and_temp_data, gsr_and_temp_info
 
 # %%
 raw.set_annotations(None)
