@@ -690,7 +690,6 @@ def test_handle_info_reading(tmp_path):
         assert raw.info['line_freq'] == 55
 
 
-@requires_version('mne', '0.24')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_handle_chpi_reading(tmp_path):
@@ -1274,6 +1273,7 @@ def test_file_not_found(tmp_path):
         read_raw_bids(bids_path=bp)
 
 
+@requires_version('mne', '1.2')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_gsr_and_temp_reading():
     """Test GSR and temperature channels are handled correctly."""
