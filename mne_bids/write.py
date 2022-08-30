@@ -106,7 +106,7 @@ def _channels_tsv(raw, fname, overwrite=False):
                                        '(continuous wave)',
                     resp='Respiration',
                     gsr='Galvanic skin response (electrodermal activity, EDA)',
-                    temp='Temperature',)
+                    temperature='Temperature',)
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
