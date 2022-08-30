@@ -124,26 +124,8 @@ def _channels_tsv(raw, fname, overwrite=False):
         ch_type.append(map_chs[_channel_type])
         description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
-    if (
-        raw._orig_units is not None and
-        len(raw._orig_units) == len(raw.ch_names)
-    ):
+    if raw._orig_units is not None:
         units = [raw._orig_units.get(ch, 'n/a') for ch in raw.ch_names]
-    elif (
-        raw._orig_units is not None and
-        len(raw._orig_units) < len(raw.ch_names)
-    ):
-        # Some orig_units are missing, e.g. after running add_channels()
-        # Use those that are available, and infer the rest.
-        units = []
-        for ch_idx, ch_name in enumerate(raw.ch_names):
-            if ch_name in raw._orig_units:
-                unit = raw._orig_units[ch_name]
-            else:
-                unit = _unit2human.get(raw.info['chs'][ch_idx]['unit'], 'NA')
-                unit = 'n/a' if unit == 'NA' else unit
-            units.append(unit)
-            del unit
     else:
         units = [_unit2human.get(ch_i['unit'], 'n/a')
                  for ch_i in raw.info['chs']]
