@@ -535,6 +535,8 @@ def test_fif(_bids_validate, tmp_path):
     for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
                     'eeg.vmrk', 'events.tsv']:
         suffix, extension = sidecar.split('.')
+        extension = f'.{extension}'
+
         sidecar_basename.update(suffix=suffix, extension=extension)
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 

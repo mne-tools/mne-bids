@@ -726,9 +726,21 @@ class BIDSPath(object):
 
         # ensure extension starts with a '.'
         extension = kwargs.get('extension')
-        if extension is not None:
-            if not extension.startswith('.'):
-                kwargs['extension'] = f'.{extension}'
+        if extension is not None and not extension.startswith('.'):
+            warn(
+                f'extension should start with a period ".", but got: '
+                f'"{extension}". Prepending "." to form: ".{extension}". '
+                f'This will raise an exception starting with MNE-BIDS 0.12.',
+                category=FutureWarning
+            )
+            kwargs['extension'] = f'.{extension}'
+            # Uncomment in 0.12, and remove above code:
+            #
+            # raise ValueError(
+            #     f'Extension must start wie a period ".", but got: '
+            #     f'{extension}'
+            # )
+        del extension
 
         # error check entities
         old_kwargs = dict()
@@ -1298,9 +1310,12 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
         suffix, extension = _get_bids_suffix_and_ext(suffix)
     else:
         suffix = None
-        extension = Path(fname).suffix
+        extension = Path(fname).suffix  # already starts with a period
         if extension == '':
             extension = None
+
+    if extension is not None:
+        assert extension.startswith('.')  # better safe than sorry
 
     datatype = _infer_datatype_from_path(fpath)
 
@@ -1517,6 +1532,7 @@ def _get_bids_suffix_and_ext(str_suffix):
         split_str = str_suffix.split('.')
         suffix = split_str[0]
         ext = '.'.join(split_str[1:])
+        ext = f'.{ext}'  # prepend period
     return suffix, ext
 
 

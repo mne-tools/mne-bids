@@ -53,7 +53,7 @@ Detailed list of changes
 
 - :class:`~mne_bids.BIDSPath` now supports the BIDS "description" entity ``desc``, used in derivative data, by `Richard Höchenberger`_ (:gh:`1049`)
 
-- Added support for ``GSR`` (galvanic skin response / electrodermal activity, EDA) and ``TEMP`` (temperature) channel types, by `Richard Höchenberger`_ (:gh:`xxx`)
+- Added support for ``GSR`` (galvanic skin response / electrodermal activity, EDA) and ``TEMP`` (temperature) channel types, by `Richard Höchenberger`_ (:gh:`1059`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -71,6 +71,8 @@ Detailed list of changes
 - :func:`mne_bids.print_dir_tree` now raises a :py:class:`FileNotFoundError` instead of a :py:class:`ValueError` if the directory does not exist, by `Richard Höchenberger`_ (:gh:`1013`)
 
 - Passing only one of ``events`` and ``event_id`` to :func:`~mne_bids.write_raw_bids` now raises a ``ValueError`` instead of a ``RuntimeError``, by `Richard Höchenberger`_ (:gh:`1054`)
+
+- Until now, :class:`mne_bids.BIDSPath` prepends extensions with a period "." automatically. We intend to remove this undocumented side-effect and now emit a ``FutureWarning`` if an ``extension`` that does not start with a ``.`` is provided. Starting with MNE-BIDS 0.12, an exception will be raised in this case, by `Richard Höchenberger`_ (:gh:`1061`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^

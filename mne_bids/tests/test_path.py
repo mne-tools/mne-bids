@@ -510,7 +510,7 @@ def test_bids_path(return_bids_test_dir):
 
     # without bids_root and with suffix/extension
     # basename and fpath should be the same
-    bids_path.update(suffix='ieeg', extension='vhdr')
+    bids_path.update(suffix='ieeg', extension='.vhdr')
     expected_basename2 = expected_basename + '_ieeg.vhdr'
     assert (bids_path.basename == expected_basename2)
     bids_path.update(extension='.vhdr')
@@ -1165,3 +1165,9 @@ def test_setting_entities():
 
         setattr(bids_path, entity_name, None)
         assert getattr(bids_path, entity_name) is None
+
+
+def test_deprecation():
+    """Test deprecated behavior."""
+    with pytest.warns(FutureWarning, match='This will raise an exception'):
+        BIDSPath(extension='vhdr')  # no leading period
