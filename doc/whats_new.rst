@@ -72,7 +72,7 @@ Detailed list of changes
 
 - Passing only one of ``events`` and ``event_id`` to :func:`~mne_bids.write_raw_bids` now raises a ``ValueError`` instead of a ``RuntimeError``, by `Richard Höchenberger`_ (:gh:`1054`)
 
-- Until now, :class:`mne_bids.BIDSPath` prepends extensions with a period "." automatically. We intend to remove this undocumented side-effect and now emit a ``FutureWarning`` if an ``extension`` that does not start with a ``.`` is provided. Starting with MNE-BIDS 0.12, an exeption will be raised in this case, by `Richard Höchenberger`_ (:gh:`xxx`)
+- Until now, :class:`mne_bids.BIDSPath` prepends extensions with a period "." automatically. We intend to remove this undocumented side-effect and now emit a ``FutureWarning`` if an ``extension`` that does not start with a ``.`` is provided. Starting with MNE-BIDS 0.12, an exception will be raised in this case, by `Richard Höchenberger`_ (:gh:`1061`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
