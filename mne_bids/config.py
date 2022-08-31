@@ -31,12 +31,16 @@ ORIENTATION = {
     '.sqd': 'KitYokogawa',
 }
 
-UNITS = {
+EXT_TO_UNIT_MAP = {
     '.con': 'm',
     '.ds': 'cm',
     '.fif': 'm',
     '.pdf': 'm',
     '.sqd': 'm'
+}
+
+UNITS_MNE_TO_BIDS_MAP = {
+    'C': 'oC',  # temperature in deg. C
 }
 
 meg_manufacturers = {

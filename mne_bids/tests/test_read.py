@@ -58,8 +58,8 @@ somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
 raw_fname_chpi = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
 
 # Tiny BIDS testing dataset
-mne_bids_root = Path(mne_bids.__file__).parent.parent
-tiny_bids = op.join(mne_bids_root, "mne_bids", "tests", "data", "tiny_bids")
+mne_bids_root = Path(mne_bids.__file__).parents[1]
+tiny_bids_root = mne_bids_root / "mne_bids" / "tests" / "data" / "tiny_bids"
 
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
@@ -572,6 +572,8 @@ def test_handle_scans_reading(tmp_path):
     assert new_acq_time != raw_01.info['meas_date']
 
 
+@requires_version('mne', '1.2')  # tiny_bids contains GSR & temperature chans
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_scans_reading_brainvision(tmp_path):
     """Test stability of BrainVision's different file extensions"""
     test_scan_eeg = OrderedDict(
@@ -591,9 +593,9 @@ def test_handle_scans_reading_brainvision(tmp_path):
         _to_tsv(test_scan, tmp_path / test_scan['filename'][0])
 
     bids_path = BIDSPath(subject='01', session='eeg', task='rest',
-                         datatype='eeg', root=tiny_bids)
-    with pytest.warns(RuntimeWarning, match='Not setting positions'):
-        raw = read_raw_bids(bids_path)
+                         datatype='eeg', root=tiny_bids_root)
+
+    raw = read_raw_bids(bids_path)
 
     for test_scan in [test_scan_eeg, test_scan_vmrk]:
         _handle_scans_reading(tmp_path / test_scan['filename'][0],
@@ -690,7 +692,6 @@ def test_handle_info_reading(tmp_path):
         assert raw.info['line_freq'] == 55
 
 
-@requires_version('mne', '0.24')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_handle_chpi_reading(tmp_path):
@@ -1272,3 +1273,16 @@ def test_file_not_found(tmp_path):
     bp.extension = None
     with pytest.raises(FileNotFoundError, match='File does not exist'):
         read_raw_bids(bids_path=bp)
+
+
+@requires_version('mne', '1.2')
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_gsr_and_temp_reading():
+    """Test GSR and temperature channels are handled correctly."""
+    bids_path = BIDSPath(
+        subject='01', session='eeg', task='rest', datatype='eeg',
+        root=tiny_bids_root
+    )
+    raw = read_raw_bids(bids_path)
+    assert raw.get_channel_types(['GSR']) == ['gsr']
+    assert raw.get_channel_types(['Temperature']) == ['temperature']

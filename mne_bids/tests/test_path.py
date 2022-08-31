@@ -145,22 +145,23 @@ def test_search_folder_for_text(capsys):
     test_dir = op.dirname(__file__)
     search_folder_for_text('n/a', test_dir)
     captured = capsys.readouterr()
-    assert 'sub-01_ses-eeg_electrodes.tsv' in captured.out
-    assert '    1    name      x         y         z         impedance' in \
-        captured.out.split('\n')
-    assert '    66   ECG       n/a       n/a       n/a       n/a' in \
-        captured.out.split('\n')
-
+    assert 'sub-01_ses-eeg_task-rest_eeg.json' in captured.out
+    assert (
+        '    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n'  # noqa: E501
+        '    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a'          # noqa: E501
+    ) in captured.out
     # test if pathlib.Path object
     search_folder_for_text('n/a', Path(test_dir))
 
     # test returning a string and without line numbers
     out = search_folder_for_text(
-        'n/a', test_dir, line_numbers=False, return_str=True)
-    assert 'sub-01_ses-eeg_electrodes.tsv' in out
-    assert '    name      x         y         z         impedance' in \
-        out.split('\n')
-    assert '    ECG       n/a       n/a       n/a       n/a' in out.split('\n')
+        'n/a', test_dir, line_numbers=False, return_str=True
+    )
+    assert 'sub-01_ses-eeg_task-rest_eeg.json' in out
+    assert (
+        '    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n'  # noqa: E501
+        '    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a'          # noqa: E501
+    ) in out
 
 
 def test_print_dir_tree(capsys):

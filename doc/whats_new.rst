@@ -53,6 +53,8 @@ Detailed list of changes
 
 - :class:`~mne_bids.BIDSPath` now supports the BIDS "description" entity ``desc``, used in derivative data, by `Richard Höchenberger`_ (:gh:`1049`)
 
+- Added support for ``GSR`` (galvanic skin response / electrodermal activity, EDA) and ``TEMP`` (temperature) channel types, by `Richard Höchenberger`_ (:gh:`xxx`)
+
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

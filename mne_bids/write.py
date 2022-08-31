@@ -51,12 +51,13 @@ from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
 
-from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
+from mne_bids.config import (ORIENTATION, EXT_TO_UNIT_MAP, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
                              ANONYMIZED_JSON_KEY_WHITELIST, PYBV_VERSION,
-                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
+                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
+                             UNITS_MNE_TO_BIDS_MAP,)
 
 
 _FIFF_SPLIT_SIZE = '2GB'  # MNE-Python default; can be altered during debugging
@@ -102,7 +103,10 @@ def _channels_tsv(raw, fname, overwrite=False):
                     ias='Internal Active Shielding',
                     dbs='Deep Brain Stimulation',
                     fnirs_cw_amplitude='Near Infrared Spectroscopy '
-                                       '(continuous wave)',)
+                                       '(continuous wave)',
+                    resp='Respiration',
+                    gsr='Galvanic skin response (electrodermal activity, EDA)',
+                    temperature='Temperature',)
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
@@ -120,12 +124,19 @@ def _channels_tsv(raw, fname, overwrite=False):
         ch_type.append(map_chs[_channel_type])
         description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
-    if raw._orig_units:
+    if raw._orig_units is not None:
         units = [raw._orig_units.get(ch, 'n/a') for ch in raw.ch_names]
     else:
         units = [_unit2human.get(ch_i['unit'], 'n/a')
                  for ch_i in raw.info['chs']]
         units = [u if u not in ['NA'] else 'n/a' for u in units]
+
+    # Translate from MNE to BIDS unit naming
+    for idx, mne_unit in enumerate(units):
+        if mne_unit in UNITS_MNE_TO_BIDS_MAP:
+            bids_unit = UNITS_MNE_TO_BIDS_MAP[mne_unit]
+            units[idx] = bids_unit
+
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
@@ -1764,7 +1775,7 @@ def write_raw_bids(
                 bids_path.update(extension='.vhdr')
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
-    unit = UNITS.get(ext, 'n/a')
+    unit = EXT_TO_UNIT_MAP.get(ext, 'n/a')
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save readme file unless it already exists
