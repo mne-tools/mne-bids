@@ -1165,3 +1165,9 @@ def test_setting_entities():
 
         setattr(bids_path, entity_name, None)
         assert getattr(bids_path, entity_name) is None
+
+
+def test_deprecation():
+    """Test deprecated behavior."""
+    with pytest.warns(FutureWarning, match='This will raise an exception'):
+        BIDSPath(extension='vhdr')  # no leading period

@@ -1310,11 +1310,12 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
         suffix, extension = _get_bids_suffix_and_ext(suffix)
     else:
         suffix = None
-        extension = Path(fname).suffix
+        extension = Path(fname).suffix  # already starts with a period
         if extension == '':
             extension = None
-        else:
-            extension = f'.{extension}'  # prepend period
+
+    if extension is not None:
+        assert extension.startswith('.')  # better safe than sorry
 
     datatype = _infer_datatype_from_path(fpath)
 
