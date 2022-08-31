@@ -442,7 +442,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">bids_path</span> <span class="o">=</span> <span class="n">root_or_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;tsv&#39;</span><span class="p">)</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 
     <span class="n">datatypes</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
     <span class="n">this_datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">datatypes</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">EPHY_ALLOWED_DATATYPES</span><span class="p">))</span>
