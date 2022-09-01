@@ -1719,10 +1719,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         _bids_validate(output_path)
 
 
-@pytest.mark.skipif(
-    os.environ.get('BIDS_VALIDATOR_BRANCH') != 'NIRS',
-    reason="requires Rob's NIRS branch of bids-validator"
-)
 def test_snirf(_bids_validate, tmp_path):
     """Test write_raw_bids conversion for SNIRF data."""
     raw_fname = op.join(testing.data_path(), 'SNIRF', 'MNE-NIRS', '20220217',
