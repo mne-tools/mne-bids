@@ -108,6 +108,8 @@ Detailed list of changes
 
 - Whenever :func:`~mne_bids.read_raw_bids` encounters a channel type that currently doesn't translate into an appropriate MNE channel type, the channel type will now be set to ``'misc``. Previously, seemingly arbitrary channel types would be applied, e.g. ``'eeg'`` for GSR and temperature channels, by `Richard Höchenberger`_ (:gh:`1052`)
 
+- Fix the ``basename`` of :class:`~mne_bids.BIDSPath` when the path only consists of a filename extension. Previously, the ``basename`` would be empty, by `Richard Höchenberger`_ (:gh:`1062`)
+
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
 .. include:: authors.rst

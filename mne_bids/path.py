@@ -329,7 +329,7 @@ class BIDSPath(object):
     @property
     def basename(self):
         """Path basename."""
-        basename = []
+        basename_components = []
         for key, val in self.entities.items():
             if val is not None and key != 'datatype':
                 # convert certain keys to shorthand
@@ -338,15 +338,23 @@ class BIDSPath(object):
                     in ALLOWED_PATH_ENTITIES_SHORT.items()
                 }
                 key = long_to_short_entity[key]
-                basename.append(f'{key}-{val}')
+                basename_components.append(f'{key}-{val}')
 
         if self.suffix is not None:
-            if self.extension is not None:
-                basename.append(f'{self.suffix}{self.extension}')
-            else:
-                basename.append(self.suffix)
+            basename_components.append(self.suffix)
 
-        basename = '_'.join(basename)
+        basename = '_'.join(basename_components)
+
+        # We're almost done! Now just append an extension if we have it.
+        if self.extension is not None:
+            if self.extension.startswith('.'):
+                ext = self.extension
+            else:
+                ext = f'.{self.extension}'
+
+            basename += ext
+            del ext
+
         return basename
 
     @property
