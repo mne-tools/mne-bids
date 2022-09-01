@@ -124,22 +124,6 @@ jobs:
             mne-version: mne-main
             bids-validator-version: validator-main
 
-          # Tests with the NIRS branch of bids-validator
-          - os: ubuntu-latest
-            python-version: "3.10"
-            mne-version: mne-main
-            bids-validator-version: validator-NIRS
-
-          - os: macos-latest
-            python-version: "3.10"
-            mne-version: mne-main
-            bids-validator-version: validator-NIRS
-
-          - os: windows-latest
-            python-version: "3.10"
-            mne-version: mne-main
-            bids-validator-version: validator-NIRS
-
     env:
       TZ: Europe/Berlin
       FORCE_COLOR: true
@@ -197,16 +181,8 @@ jobs:
         popd
         echo "BIDS_VALIDATOR_BRANCH=main" >> $GITHUB_ENV
 
-    - name: Download BIDS validator (NIRS)
-      if: "matrix.bids-validator-version == 'validator-NIRS'"
-      run: |
-        pushd ..
-        git clone --depth 1 --branch nirs https://github.com/rob-luke/bids-validator.git
-        popd
-        echo "BIDS_VALIDATOR_BRANCH=NIRS" >> $GITHUB_ENV
-
-    - name: Install BIDS validator (main or NIRS)
-      if: ${{ (matrix.bids-validator-version == 'validator-main') || (matrix.bids-validator-version == 'validator-NIRS') }}
+    - name: Install BIDS validator (main)
+      if: "matrix.bids-validator-version == 'validator-main'"
       run: |
         pushd ..
         cd bids-validator
