@@ -23,7 +23,7 @@
 .. _Eduard Ort: https://github.com/eort
 .. _Tom Donoghue: https://github.com/TomDonoghue
 .. _Richard Köhler: https://github.com/richardkoehler
-.. _Sin Kim: https://github.com/AKSoo
+.. _Sin Kim: https://ohbm.github.io/osr2020/volunteers/sin_kim.html
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
 .. _Eric Larson: https://github.com/larsoner
