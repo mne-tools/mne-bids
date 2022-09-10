@@ -189,7 +189,7 @@ def _verbose_list_index(lst, val, *, allow_all=False):
     try:
         return lst.index(val)
     except ValueError as exc:
-        extra = get_close_matches(lst, val)
+        extra = get_close_matches(str(val), [str(ll) for ll in lst])
         if allow_all and not extra:
             extra = lst
         extra = f'. Did you mean one of {extra}?' if extra else ''
