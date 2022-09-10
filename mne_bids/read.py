@@ -11,6 +11,7 @@ from pathlib import Path
 import json
 import re
 from datetime import datetime, timezone
+from difflib import get_close_matches
 
 import numpy as np
 import mne
@@ -182,10 +183,21 @@ def _read_events(events, event_id, raw, bids_path=None):
     return all_events, all_dur, all_desc
 
 
+def _safe_index(lst, val, *, allow_all=False):
+    try:
+        return lst.index(val)
+    except ValueError as exc:
+        extra = get_close_matches(lst, val)
+        if allow_all and not extra:
+            extra = lst
+        extra = f'. Did you mean one of {extra}?' if extra else ''
+        raise ValueError(f'{exc}{extra}') from None
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
-    row_ind = subjects.index(subject)
+    row_ind = _safe_index(subjects, subject, allow_all=True)
     raw.info['subject_info'] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
@@ -250,7 +262,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     if all(suffix in ('.vhdr', '.eeg', '.vmrk') for suffix in acq_suffixes):
         ext = fnames[0].suffix
         data_fname = Path(data_fname).with_suffix(ext)
-    row_ind = fnames.index(data_fname)
+    row_ind = _safe_index(fnames, data_fname)
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
@@ -265,7 +277,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         ))
         split_acq_times = []
         for split_f in split_fnames:
-            split_acq_times.append(acq_times[fnames.index(split_f)])
+            split_acq_times.append(acq_times[_safe_index(fnames, split_f)])
         if len(set(split_acq_times)) != 1:
             raise ValueError("Split files must have the same acq_time.")
 
