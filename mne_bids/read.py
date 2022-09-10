@@ -184,11 +184,12 @@ def _read_events(events, event_id, raw, bids_path=None):
 
 
 def _verbose_list_index(lst, val, *, allow_all=False):
-    # try to "return lst.index(val)" but be more informative/verbose when
-    # it fails
+    # try to "return lst.index(val)" for list of str, but be more
+    # informative/verbose when it fails
     try:
         return lst.index(val)
     except ValueError as exc:
+        # Use str cast here to deal with pathlib.Path instances
         extra = get_close_matches(str(val), [str(ll) for ll in lst])
         if allow_all and not extra:
             extra = lst
