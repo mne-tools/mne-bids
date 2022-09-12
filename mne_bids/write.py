@@ -846,10 +846,14 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
             except (RuntimeError, ValueError):
                 logger.info('Could not find cHPI information in raw data.')
         else:
-            hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
-                                                     on_missing='ignore')
-            if hpi_freqs.size > 0:
-                chpi = True
+            n_active_hpi = mne.chpi.get_active_chpi(raw)
+            chpi = n_active_hpi.sum() > 0
+            if chpi:
+                hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
+                                                         on_missing='ignore')
+            else:
+                hpi_freqs = None
+
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '
                     'information: requires MNE-Python >= 0.24')
