@@ -852,7 +852,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
                                                          on_missing='ignore')
             else:
-                hpi_freqs = None
+                hpi_freqs = []
 
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '
