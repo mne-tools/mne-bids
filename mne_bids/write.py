@@ -29,7 +29,7 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
-from mne.chpi import (get_active_chpi, get_chpi_info)
+from mne.chpi import get_chpi_info
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
                        ProgressBar)
@@ -848,13 +848,15 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 logger.info('Could not find cHPI information in raw data.')
         else:
             if parse_version(mne.__version__) > parse_version('1.1'):
-                n_active_hpi = get_active_chpi(raw)
+                n_active_hpi = mne.chpi.get_active_chpi(raw)
                 chpi = n_active_hpi.sum() > 0
                 if chpi:
                     hpi_freqs, _, _ = get_chpi_info(info=raw.info,
                                                     on_missing='ignore')
                 else:
                     hpi_freqs = []
+            # XXX: Remove this when support for mne <1.2 is dropped and
+            # also remove the version check above
             else:
                 chpi = None
                 hpi_freqs = None
