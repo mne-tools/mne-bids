@@ -780,11 +780,10 @@ def test_chpi(_bids_validate, tmp_path, format):
     elif format == 'kit':
         # no cHPI info is contained in the sample data
         assert meg_json_data['ContinuousHeadLocalization'] is False
-        assert meg_json_data['HeadCoilFrequency'] == []
+        assert meg_json_data['HeadCoilFrequency'] is None
     elif format == 'ctf':
         assert meg_json_data['ContinuousHeadLocalization'] is True
-        assert_array_equal(meg_json_data['HeadCoilFrequency'],
-                           np.array([]))
+        assert meg_json_data['HeadCoilFrequency'] is None
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

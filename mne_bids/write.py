@@ -829,8 +829,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     from mne.io.ctf import RawCTF
     from mne.io.kit.kit import RawKIT
 
-    chpi = False
-    hpi_freqs = np.array([])
+    chpi = None
+    hpi_freqs = None
     if (datatype == 'meg' and
             parse_version(mne.__version__) > parse_version('0.23')):
         # We need to handle different data formats differently
@@ -847,24 +847,20 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
             except (RuntimeError, ValueError):
                 logger.info('Could not find cHPI information in raw data.')
         else:
+            # XXX: Remove this version check when support for mne <1.2
+            # is dropped
             if parse_version(mne.__version__) > parse_version('1.1'):
                 n_active_hpi = mne.chpi.get_active_chpi(raw)
                 chpi = n_active_hpi.sum() > 0
                 if chpi:
-                    hpi_freqs, _, _ = get_chpi_info(info=raw.info,
-                                                    on_missing='ignore')
+                    hpi_freqs, _, _ = list(get_chpi_info(info=raw.info,
+                                                         on_missing='ignore'))
                 else:
                     hpi_freqs = []
-            # XXX: Remove this when support for mne <1.2 is dropped and
-            # also remove the version check above
-            else:
-                chpi = None
-                hpi_freqs = None
 
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '
                     'information: requires MNE-Python >= 0.24')
-        chpi = None
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
@@ -884,9 +880,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('MEGREFChannelCount', n_megrefchan),
         ('SoftwareFilters', software_filters)]
 
-    if chpi is not None:
-        ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
-        ch_info_json_meg.append(('HeadCoilFrequency', list(hpi_freqs)))
+    ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
+    ch_info_json_meg.append(('HeadCoilFrequency', hpi_freqs))
 
     if emptyroom_fname is not None:
         ch_info_json_meg.append(('AssociatedEmptyRoom', str(emptyroom_fname)))
