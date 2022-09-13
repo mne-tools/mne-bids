@@ -29,6 +29,7 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human
+from mne.chpi import (get_active_chpi, get_chpi_info)
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
                        ProgressBar)
@@ -846,13 +847,17 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
             except (RuntimeError, ValueError):
                 logger.info('Could not find cHPI information in raw data.')
         else:
-            n_active_hpi = mne.chpi.get_active_chpi(raw)
-            chpi = n_active_hpi.sum() > 0
-            if chpi:
-                hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
-                                                         on_missing='ignore')
+            if parse_version(mne.__version__) > parse_version('1.1'):
+                n_active_hpi = get_active_chpi(raw)
+                chpi = n_active_hpi.sum() > 0
+                if chpi:
+                    hpi_freqs, _, _ = get_chpi_info(info=raw.info,
+                                                    on_missing='ignore')
+                else:
+                    hpi_freqs = []
             else:
-                hpi_freqs = []
+                chpi = None
+                hpi_freqs = None
 
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '

@@ -731,7 +731,6 @@ def test_fif(_bids_validate, tmp_path):
 def test_chpi(_bids_validate, tmp_path, format):
     """Test writing of cHPI information."""
     data_path = testing.data_path()
-    kit_data_path = op.join(base_path, 'kit', 'tests', 'data')
 
     if format == 'fif_no_chpi':
         fif_raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -744,6 +743,7 @@ def test_chpi(_bids_validate, tmp_path, format):
         ctf_raw_fname = op.join(data_path, 'CTF', 'testdata_ctf.ds')
         raw = _read_raw_ctf(ctf_raw_fname)
     elif format == 'kit':
+        kit_data_path = op.join(base_path, 'kit', 'tests', 'data')
         kit_raw_fname = op.join(kit_data_path, 'test.sqd')
         kit_hpi_fname = op.join(kit_data_path, 'test_mrk.sqd')
         kit_electrode_fname = op.join(kit_data_path, 'test.elp')
@@ -763,14 +763,24 @@ def test_chpi(_bids_validate, tmp_path, format):
     if parse_version(mne.__version__) <= parse_version('0.23'):
         assert 'ContinuousHeadLocalization' not in meg_json_data
         assert 'HeadCoilFrequency' not in meg_json_data
-    elif format in ['fif_no_chpi', 'kit']:
+
+    elif format in ['fif_no_chpi', 'fif']:
+        if parse_version(mne.__version__) <= parse_version('1.1'):
+            assert meg_json_data['ContinuousHeadLocalization'] is None
+            assert meg_json_data['HeadCoilFrequency'] is None
+        else:
+            if format == 'fif_no_chpi':
+                assert meg_json_data['ContinuousHeadLocalization'] is False
+                assert meg_json_data['HeadCoilFrequency'] == []
+            elif format == 'fif':
+                assert meg_json_data['ContinuousHeadLocalization'] is True
+                assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
+                                          [83., 143., 203., 263., 323.])
+
+    elif format == 'kit':
         # no cHPI info is contained in the sample data
         assert meg_json_data['ContinuousHeadLocalization'] is False
         assert meg_json_data['HeadCoilFrequency'] == []
-    elif format == 'fif':
-        assert meg_json_data['ContinuousHeadLocalization'] is True
-        assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
-                                  [83., 143., 203., 263., 323.])
     elif format == 'ctf':
         assert meg_json_data['ContinuousHeadLocalization'] is True
         assert_array_equal(meg_json_data['HeadCoilFrequency'],
