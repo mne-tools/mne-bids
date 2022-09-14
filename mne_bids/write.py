@@ -839,6 +839,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 mne.chpi.extract_chpi_locs_ctf(raw)
                 chpi = True
             except RuntimeError:
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
         elif isinstance(raw, RawKIT):
             try:

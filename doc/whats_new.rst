@@ -36,6 +36,7 @@ The following authors had contributed before. Thank you for sticking around! �
 * `Robert Luke`_
 * `Stefan Appelhoff`_
 * `Dominik Welke`_
+* `Eduard Ort`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,6 +75,7 @@ Detailed list of changes
 
 - Until now, :class:`mne_bids.BIDSPath` prepends extensions with a period "." automatically. We intend to remove this undocumented side-effect and now emit a ``FutureWarning`` if an ``extension`` that does not start with a ``.`` is provided. Starting with MNE-BIDS 0.12, an exception will be raised in this case, by `Richard Höchenberger`_ (:gh:`1061`)
 
+
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
@@ -107,6 +109,9 @@ Detailed list of changes
 - Internal helper function to :func:`~mne_bids.read_raw_bids` would reject BrainVision data if ``_scans.tsv`` listed a ``.eeg`` file instead of ``.vhdr``, by `Teon Brooks`_ (:gh:`1034`)
 
 - Whenever :func:`~mne_bids.read_raw_bids` encounters a channel type that currently doesn't translate into an appropriate MNE channel type, the channel type will now be set to ``'misc``. Previously, seemingly arbitrary channel types would be applied, e.g. ``'eeg'`` for GSR and temperature channels, by `Richard Höchenberger`_ (:gh:`1052`)
+
+- Fix the incorrect setting of the fields `ContinuousHeadLocalization` and `HeadCoilFrequency` for Neuromag meg recordings, by `Eduard Ort`_ (:gh:`1067`)
+
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

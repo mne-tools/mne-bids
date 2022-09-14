@@ -724,10 +724,8 @@ def test_fif(_bids_validate, tmp_path):
     assert 'GradientOrder' in software_filters['SpatialCompensation']
     assert (software_filters['SpatialCompensation']['GradientOrder'] ==
             raw.compensation_grade)
-from IPython import embed as shell
-shell()
-tmp_path = 'Desktop'
-format='fif'
+
+
 @pytest.mark.parametrize('format', ('fif_no_chpi', 'fif', 'ctf', 'kit'))
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_chpi(_bids_validate, tmp_path, format):
@@ -753,7 +751,7 @@ def test_chpi(_bids_validate, tmp_path, format):
         raw = _read_raw_kit(kit_raw_fname, mrk=kit_hpi_fname,
                             elp=kit_electrode_fname, hsp=kit_headshape_fname)
 
-    bids_root = tmp_path + '/bids'
+    bids_root = tmp_path / 'bids'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
 
     write_raw_bids(raw, bids_path)
