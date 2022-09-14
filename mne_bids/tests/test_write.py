@@ -724,8 +724,10 @@ def test_fif(_bids_validate, tmp_path):
     assert 'GradientOrder' in software_filters['SpatialCompensation']
     assert (software_filters['SpatialCompensation']['GradientOrder'] ==
             raw.compensation_grade)
-
-
+from IPython import embed as shell
+shell()
+tmp_path = 'Desktop'
+format='fif'
 @pytest.mark.parametrize('format', ('fif_no_chpi', 'fif', 'ctf', 'kit'))
 @pytest.mark.filterwarnings(warning_str['maxshield'])
 def test_chpi(_bids_validate, tmp_path, format):
@@ -751,7 +753,7 @@ def test_chpi(_bids_validate, tmp_path, format):
         raw = _read_raw_kit(kit_raw_fname, mrk=kit_hpi_fname,
                             elp=kit_electrode_fname, hsp=kit_headshape_fname)
 
-    bids_root = tmp_path / 'bids'
+    bids_root = tmp_path + '/bids'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
 
     write_raw_bids(raw, bids_path)
@@ -766,8 +768,8 @@ def test_chpi(_bids_validate, tmp_path, format):
 
     elif format in ['fif_no_chpi', 'fif']:
         if parse_version(mne.__version__) <= parse_version('1.1'):
-            assert meg_json_data['ContinuousHeadLocalization'] is True
-            assert meg_json_data['HeadCoilFrequency'] is False
+            assert 'ContinuousHeadLocalization' not in meg_json_data
+            assert 'HeadCoilFrequency' not in meg_json_data
         else:
             if format == 'fif_no_chpi':
                 assert meg_json_data['ContinuousHeadLocalization'] is False
@@ -780,10 +782,10 @@ def test_chpi(_bids_validate, tmp_path, format):
     elif format == 'kit':
         # no cHPI info is contained in the sample data
         assert meg_json_data['ContinuousHeadLocalization'] is False
-        assert meg_json_data['HeadCoilFrequency'] == "n/a"
+        assert meg_json_data['HeadCoilFrequency'] == []
     elif format == 'ctf':
         assert meg_json_data['ContinuousHeadLocalization'] is True
-        assert meg_json_data['HeadCoilFrequency'] == "n/a"
+        assert meg_json_data['HeadCoilFrequency'] == []
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

@@ -845,6 +845,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 mne.chpi.extract_chpi_locs_kit(raw)
                 chpi = True
             except (RuntimeError, ValueError):
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
         else:
             # XXX: Remove this version check when support for mne <1.2
