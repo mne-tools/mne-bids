@@ -766,8 +766,8 @@ def test_chpi(_bids_validate, tmp_path, format):
 
     elif format in ['fif_no_chpi', 'fif']:
         if parse_version(mne.__version__) <= parse_version('1.1'):
-            assert meg_json_data['ContinuousHeadLocalization'] is None
-            assert meg_json_data['HeadCoilFrequency'] is None
+            assert meg_json_data['ContinuousHeadLocalization'] is True
+            assert meg_json_data['HeadCoilFrequency'] is False
         else:
             if format == 'fif_no_chpi':
                 assert meg_json_data['ContinuousHeadLocalization'] is False
@@ -780,10 +780,10 @@ def test_chpi(_bids_validate, tmp_path, format):
     elif format == 'kit':
         # no cHPI info is contained in the sample data
         assert meg_json_data['ContinuousHeadLocalization'] is False
-        assert meg_json_data['HeadCoilFrequency'] is None
+        assert meg_json_data['HeadCoilFrequency'] == "n/a"
     elif format == 'ctf':
         assert meg_json_data['ContinuousHeadLocalization'] is True
-        assert meg_json_data['HeadCoilFrequency'] is None
+        assert meg_json_data['HeadCoilFrequency'] == "n/a"
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
