@@ -763,7 +763,6 @@ def test_chpi(_bids_validate, tmp_path, format):
     if parse_version(mne.__version__) <= parse_version('0.23'):
         assert 'ContinuousHeadLocalization' not in meg_json_data
         assert 'HeadCoilFrequency' not in meg_json_data
-
     elif format in ['fif_no_chpi', 'fif']:
         if parse_version(mne.__version__) <= parse_version('1.1'):
             assert 'ContinuousHeadLocalization' not in meg_json_data
