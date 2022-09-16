@@ -14,6 +14,8 @@ import shutil as sh
 import numpy as np
 from numpy.testing import assert_almost_equal
 
+from pkg_resources import parse_version
+
 import mne
 from mne.io.constants import FIFF
 from mne.utils import requires_nibabel, object_diff, requires_version
@@ -715,8 +717,8 @@ def test_handle_chpi_reading(tmp_path):
     # cHPI frequency mismatch
     if parse_version(mne.__version__) <= parse_version('1.1'):
         assert 'ContinuousHeadLocalization' not in meg_json_data
-        assert 'HeadCoilFrequency' not in meg_json_data 
-    else:       
+        assert 'HeadCoilFrequency' not in meg_json_data
+    else:
         meg_json_data_freq_mismatch = meg_json_data.copy()
         meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
         _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
