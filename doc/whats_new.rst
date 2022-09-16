@@ -110,7 +110,7 @@ Detailed list of changes
 
 - Whenever :func:`~mne_bids.read_raw_bids` encounters a channel type that currently doesn't translate into an appropriate MNE channel type, the channel type will now be set to ``'misc``. Previously, seemingly arbitrary channel types would be applied, e.g. ``'eeg'`` for GSR and temperature channels, by `Richard Höchenberger`_ (:gh:`1052`)
 
-- Fix the incorrect setting of the fields `ContinuousHeadLocalization` and `HeadCoilFrequency` for Neuromag meg recordings, by `Eduard Ort`_ (:gh:`1067`)
+- Fix the incorrect setting of the fields ``ContinuousHeadLocalization`` and ``HeadCoilFrequency`` for Neuromag MEG recordings, by `Eduard Ort`_ (:gh:`1067`)
 
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
