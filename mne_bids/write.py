@@ -852,7 +852,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
             # XXX: Remove this version check when support for mne <1.2
             # is dropped
             if parse_version(mne.__version__) > parse_version('1.1'):
-                n_active_hpi = mne.chpi.get_active_chpi(raw)
+                n_active_hpi = mne.chpi.get_active_chpi(raw,
+                                                        on_missing='ignore')
                 chpi = bool(n_active_hpi.sum() > 0)
                 if chpi:
                     hpi_freqs, _, _ = get_chpi_info(info=raw.info,
