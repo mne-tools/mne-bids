@@ -28,7 +28,8 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
-from mne.channels.channels import _unit2human
+from mne.channels.channels import (_unit2human, _get_meg_system)
+from mne.chpi import get_chpi_info
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
                        ProgressBar)
@@ -825,35 +826,41 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     }
 
     # Compile cHPI information, if any.
-    from mne.io.ctf import RawCTF
-    from mne.io.kit.kit import RawKIT
-
-    chpi = False
-    hpi_freqs = np.array([])
+    system, _ = _get_meg_system(raw.info)
+    chpi = None
+    hpi_freqs = []
     if (datatype == 'meg' and
             parse_version(mne.__version__) > parse_version('0.23')):
         # We need to handle different data formats differently
-        if isinstance(raw, RawCTF):
+        if system == 'CTF_275':
             try:
                 mne.chpi.extract_chpi_locs_ctf(raw)
                 chpi = True
             except RuntimeError:
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
-        elif isinstance(raw, RawKIT):
+        elif system == 'KIT':
             try:
                 mne.chpi.extract_chpi_locs_kit(raw)
                 chpi = True
             except (RuntimeError, ValueError):
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
-        else:
-            hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
-                                                     on_missing='ignore')
-            if hpi_freqs.size > 0:
-                chpi = True
+        elif system in ['122m', '306m']:
+            # XXX: Remove this version check when support for mne <1.2
+            # is dropped
+            if parse_version(mne.__version__) > parse_version('1.1'):
+                n_active_hpi = mne.chpi.get_active_chpi(raw,
+                                                        on_missing='ignore')
+                chpi = bool(n_active_hpi.sum() > 0)
+                if chpi:
+                    hpi_freqs, _, _ = get_chpi_info(info=raw.info,
+                                                    on_missing='ignore')
+                    hpi_freqs = list(hpi_freqs)
+
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '
                     'information: requires MNE-Python >= 0.24')
-        chpi = None
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
@@ -875,7 +882,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
 
     if chpi is not None:
         ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
-        ch_info_json_meg.append(('HeadCoilFrequency', list(hpi_freqs)))
+        ch_info_json_meg.append(('HeadCoilFrequency', hpi_freqs))
 
     if emptyroom_fname is not None:
         ch_info_json_meg.append(('AssociatedEmptyRoom', str(emptyroom_fname)))

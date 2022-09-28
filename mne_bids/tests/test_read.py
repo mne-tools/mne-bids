@@ -14,6 +14,8 @@ import shutil as sh
 import numpy as np
 from numpy.testing import assert_almost_equal
 
+from pkg_resources import parse_version
+
 import mne
 from mne.io.constants import FIFF
 from mne.utils import requires_nibabel, object_diff, requires_version
@@ -713,21 +715,26 @@ def test_handle_chpi_reading(tmp_path):
         meg_json_data = json.load(f)
 
     # cHPI frequency mismatch
-    meg_json_data_freq_mismatch = meg_json_data.copy()
-    meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
-    _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
+    if parse_version(mne.__version__) <= parse_version('1.1'):
+        assert 'ContinuousHeadLocalization' not in meg_json_data
+        assert 'HeadCoilFrequency' not in meg_json_data
+    else:
+        meg_json_data_freq_mismatch = meg_json_data.copy()
+        meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
+        _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
-    with pytest.warns(RuntimeWarning, match='Defaulting to .* mne.Raw object'):
+        with pytest.warns(RuntimeWarning,
+                          match='Defaulting to .* mne.Raw object'):
+            raw_read = read_raw_bids(bids_path)
+
+        # cHPI "off" according to sidecar, but present in the data
+        meg_json_data_chpi_mismatch = meg_json_data.copy()
+        meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
+        _write_json(meg_json_path, meg_json_data_chpi_mismatch, overwrite=True)
+
         raw_read = read_raw_bids(bids_path)
-
-    # cHPI "off" according to sidecar, but present in the data
-    meg_json_data_chpi_mismatch = meg_json_data.copy()
-    meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
-    _write_json(meg_json_path, meg_json_data_chpi_mismatch, overwrite=True)
-
-    raw_read = read_raw_bids(bids_path)
-    assert raw_read.info['hpi_subsystem'] is None
-    assert raw_read.info['hpi_meas'] == []
+        assert raw_read.info['hpi_subsystem'] is None
+        assert raw_read.info['hpi_meas'] == []
 
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
