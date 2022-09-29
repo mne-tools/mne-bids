@@ -50,6 +50,8 @@ Detailed list of changes
 
 - :func:`~mne_bids.write_raw_bids` now supports EGI format, by `Anand Saini`_, `Scott Huberty`_ and `Mathieu Scheltienne`_ (:gh:`1006`)
 
+- When a given subject cannot be found, valid suggestions are now printed, by `Eric Larson`_ (:gh:`1066`)
+
 - TSV files that are empty (i.e., only a header row is present) are now handled more robustly and a warning is issued, by `Stefan Appelhoff`_ (:gh:`1038`)
 
 - :class:`~mne_bids.BIDSPath` now supports the BIDS "description" entity ``desc``, used in derivative data, by `Richard Höchenberger`_ (:gh:`1049`)
