@@ -158,13 +158,14 @@ jobs:
     - name: Install MNE (stable)
       if: "matrix.mne-version == 'mne-stable'"
       run: |
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/1.0
+        git clone --depth 1 --single-branch --branch maint/1.0 https://github.com/mne-tools/mne-python.git -b maint/1.0
         python -m pip install -e ./mne-python
 
     - name: Install MNE (main)
       if: "matrix.mne-version == 'mne-main'"
       run: |
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
+        # git clone --depth 1 --single-branch --branch main https://github.com/mne-tools/mne-python.git -b main
+        git clone --depth 1 --single-branch --branch nodl https://github.com/larsoner/mne-python.git -b nodl
         python -m pip install -e ./mne-python
 
     - name: Install BIDS validator (stable)
