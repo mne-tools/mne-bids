@@ -213,7 +213,7 @@ jobs:
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
       run: make test
-      if: ${{ matrix.mne-version == 'mne-main' }}
+      if: ${{ matrix.python-version == '3.10' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh
