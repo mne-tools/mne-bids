@@ -217,8 +217,7 @@ jobs:
       if: matrix.python_version == '3.10' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main'
 
     # Get testing data
-    - shell: bash -el {0}
-      run: ./tools/get_testing_version.sh
+    - run: ./tools/get_testing_version.sh
       working-directory: mne-python
       name: 'Get testing version'
 
@@ -228,8 +227,7 @@ jobs:
         path: ~/mne_data
       name: 'Cache testing data'
 
-    - shell: bash -el {0}
-      run: ./tools/github_actions_download.sh
+    - run: ./tools/github_actions_download.sh
       working-directory: mne-python
 
     - name: Run pytest
