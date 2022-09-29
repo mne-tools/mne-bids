@@ -2782,7 +2782,7 @@
 
 
 <div class="viewcode-block" id="write_meg_calibration"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.</span>
 
 <span class="sd">    Parameters</span>
@@ -2799,11 +2799,11 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; data_path = mne.datasets.testing.data_path(download=False)</span>
-<span class="sd">    &gt;&gt;&gt; calibration_fname = op.join(data_path, &#39;SSS&#39;, &#39;sss_cal_3053.dat&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; calibration_fname = op.join(data_path, &#39;SSS&#39;, &#39;sss_cal_3053.dat&#39;) # doctest: +SKIP</span>
 <span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;test&#39;,</span>
-<span class="sd">    ...                      root=op.join(data_path, &#39;mne_bids&#39;))</span>
-<span class="sd">    &gt;&gt;&gt; write_meg_calibration(calibration_fname, bids_path) # doctest: +ELLIPSIS</span>
+<span class="sd">    ...                      root=op.join(data_path, &#39;mne_bids&#39;)) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; write_meg_calibration(calibration_fname, bids_path) # doctest: +SKIP</span>
 <span class="sd">    Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2855,13 +2855,13 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; data_path = mne.datasets.testing.data_path(download=False)</span>
-<span class="sd">    &gt;&gt;&gt; crosstalk_fname = op.join(data_path, &#39;SSS&#39;, &#39;ct_sparse.fif&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; crosstalk_fname = op.join(data_path, &#39;SSS&#39;, &#39;ct_sparse.fif&#39;) # doctest: +SKIP</span>
 <span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;test&#39;,</span>
-<span class="sd">    ...                      root=op.join(data_path, &#39;mne_bids&#39;))</span>
-<span class="sd">    &gt;&gt;&gt; write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +ELLIPSIS</span>
+<span class="sd">    ...                      root=op.join(data_path, &#39;mne_bids&#39;)) # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +SKIP</span>
 <span class="sd">    Writing crosstalk file to ...sub-01_ses-test_acq-crosstalk_meg.fif</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;bids_path must have root and subject set.&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">):</span>
