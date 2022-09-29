@@ -103,7 +103,9 @@ allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
 allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
-                          '.set',  # EEGLAB, potentially accompanied by .fdt
+                          '.set',  # EEGLAB, potentially accompanied by .fdt,
+                          '.dat',  # Curry 7
+                          '.cdt'   # Curry 8
                           ]
 
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg

@@ -112,6 +112,7 @@ _read_raw_nihon = _wrap_read_raw(mne.io.read_raw_nihon)
 _read_raw_cnt = _wrap_read_raw(mne.io.read_raw_cnt)
 _read_raw_snirf = _wrap_read_raw(mne.io.read_raw_snirf)
 _read_raw_egi = _wrap_read_raw(mne.io.read_raw_egi)
+_read_raw_curry = _wrap_read_raw(mne.io.read_raw_curry)
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
@@ -137,7 +138,9 @@ test_converteeg_data = [
     ('CNT', 'BrainVision', 'scan41_short.cnt', _read_raw_cnt),
     ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
-    ('CNT', 'EDF', 'scan41_short.cnt', _read_raw_cnt)
+    ('CNT', 'EDF', 'scan41_short.cnt', _read_raw_cnt),
+    ('curry', 'curry7', 'test_bdf_stim_channel Curry 7.dat', _read_raw_curry),
+    ('curry', 'curry8', 'test_bdf_stim_channel Curry 8.cdt', _read_raw_curry)
 ]
 
 data_path = testing.data_path(download=False)
