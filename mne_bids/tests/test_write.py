@@ -121,6 +121,7 @@ test_eegieeg_data = [
     ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'scan41_short.cnt', _read_raw_cnt),
     ('EGI', 'test_egi.mff', _read_raw_egi),
+    ('curry', 'test_bdf_stim_channel Curry 8.cdt', _read_raw_curry),
 ]
 test_convert_data = test_eegieeg_data.copy()
 test_convert_data.append(('CTF', 'testdata_ctf.ds', _read_raw_ctf))
@@ -136,11 +137,11 @@ test_converteeg_data = [
     ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'BrainVision', 'scan41_short.cnt', _read_raw_cnt),
+    ('curry', 'BrainVision', 'test_bdf_stim_channel Curry 8.cdt', _read_raw_curry),
     ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'EDF', 'scan41_short.cnt', _read_raw_cnt),
-    ('curry', 'curry7', 'test_bdf_stim_channel Curry 7.dat', _read_raw_curry),
-    ('curry', 'curry8', 'test_bdf_stim_channel Curry 8.cdt', _read_raw_curry)
+    ('curry', 'EDF', 'test_bdf_stim_channel Curry 8.cdt', _read_raw_curry)
 ]
 
 data_path = testing.data_path(download=False)
@@ -1242,6 +1243,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'curry':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
+            bids_output_path = write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
@@ -1300,6 +1306,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'curry':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
+            write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
@@ -1339,6 +1350,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'curry':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
+            write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
@@ -1415,6 +1431,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'curry':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
+            write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
@@ -1476,6 +1497,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
             with pytest.warns(RuntimeWarning, match=match):
                 write_raw_bids(**kwargs)
+        elif dir_name == 'curry':
+            with pytest.warns(RuntimeWarning,
+                            match='Encountered data in "int" format. '
+                            'Converting to float32.'):
+                write_raw_bids(**kwargs)
         elif dir_name == 'Persyst':
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
@@ -1523,6 +1549,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'curry':
+        with pytest.warns(RuntimeWarning,
+                        match='Encountered data in "int" format. '
+                        'Converting to float32.'):
+            write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
@@ -1575,6 +1606,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'curry':
+        with pytest.warns(RuntimeWarning,
+                        match='Encountered data in "int" format. '
+                        'Converting to float32.'):
+            write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
@@ -1638,6 +1674,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     kwargs.update(montage=ecog_montage, acpc_aligned=True)
     if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'curry':
+        with pytest.warns(RuntimeWarning,
+                        match='Encountered data in "int" format. '
+                        'Converting to float32.'):
+            write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "short" format'):
@@ -1729,6 +1770,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                     output_path = _test_anonymize(
                         tmp_path / 'd', raw, bids_path
                     )
+        elif dir_name == 'curry':
+            with pytest.warns(RuntimeWarning,
+                            match='Encountered data in "int" format. '
+                            'Converting to float32.'):
+                write_raw_bids(**kwargs)
+                output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
@@ -3094,6 +3141,11 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
                               match='Encountered data in "int" format. '
                               'Converting to float32.'):
                 bids_output_path = write_raw_bids(**kwargs)
+        elif dir_name == 'curry':
+            with pytest.warns(RuntimeWarning,
+                            match='Encountered data in "int" format. '
+                            'Converting to float32.'):
+                write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
