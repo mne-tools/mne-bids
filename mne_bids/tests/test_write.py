@@ -84,6 +84,7 @@ warning_str = dict(
                  'Setting to None.',
     cnt_warning2='ignore:.*Could not define the number of bytes automatically.'
                  ' Defaulting to 2.',
+    cnt_warning3='ignore:.*Coordinate frame could not be inferred.*',
     no_hand='ignore:.*Not setting subject handedness.:RuntimeWarning:mne',
     no_montage=r'ignore:Not setting position of.*channel found in '
                r'montage.*:RuntimeWarning:mne',
@@ -3228,6 +3229,7 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
     warning_str['channel_unit_changed'],
     warning_str['cnt_warning1'],
     warning_str['cnt_warning2'],
+    warning_str['cnt_warning3'],
     warning_str['no_hand'],
 )
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
