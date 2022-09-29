@@ -27,7 +27,7 @@ _bids_path = BIDSPath(
 )
 
 # Get the MNE testing sample data
-data_path = testing.data_path()
+data_path = testing.data_path(download=False)
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
 
@@ -37,6 +37,7 @@ warning_str = dict(
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_report(tmp_path):
     """Test that report generated works as intended."""
     bids_root = str(tmp_path)
@@ -65,6 +66,7 @@ analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_report_no_participant_information(tmp_path):
     """Test report with participants.tsv with participant_id column only."""
     bids_root = tmp_path

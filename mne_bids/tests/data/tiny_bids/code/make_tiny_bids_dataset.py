@@ -10,7 +10,8 @@ import numpy as np
 import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
 
-data_path = mne.datasets.testing.data_path()
+data_path = mne.datasets.testing.data_path(download=False)
+assert mne.datasets.has_dataset('testing'), 'Download testing data'
 vhdr_path = data_path / "montage" / "bv_dig_test.vhdr"
 captrak_path = data_path / "montage" / "captrak_coords.bvct"
 

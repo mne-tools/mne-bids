@@ -9,7 +9,6 @@ from matplotlib.backend_bases import KeyEvent
 
 import mne
 from mne.datasets import testing
-from mne.utils import requires_version
 from mne.utils._testing import requires_module
 from mne.viz.utils import _fake_click
 
@@ -25,11 +24,11 @@ requires_matplotlib = partial(requires_module, name='matplotlib',
 
 _bids_path = BIDSPath(subject='01', session='01', run='01', task='testing',
                       datatype='meg')
+data_path = testing.data_path(download=False)
 
 
 def setup_bids_test_dir(bids_root):
     """Return path to a written test BIDS dir."""
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -57,7 +56,7 @@ def setup_bids_test_dir(bids_root):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_single_file(tmp_path, save_changes):
@@ -105,7 +104,7 @@ def test_inspect_single_file(tmp_path, save_changes):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_multiple_files(tmp_path):
     """Test inspecting a dataset consisting of more than one file."""
@@ -134,7 +133,7 @@ def test_inspect_multiple_files(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_set_and_unset_bads(tmp_path):
     """Test marking channels as bad and later marking them as good again."""
@@ -216,7 +215,7 @@ def _add_annotation(raw_fig):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_annotations(tmp_path):
     """Test inspection of Annotations."""
@@ -277,7 +276,7 @@ def test_inspect_annotations(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_annotations_remove_all(tmp_path):
     """Test behavior if all Annotations are removed by the user."""
@@ -346,7 +345,7 @@ def test_inspect_annotations_remove_all(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_dont_show_annotations(tmp_path):
     """Test if show_annotations=False works."""
@@ -363,7 +362,7 @@ def test_inspect_dont_show_annotations(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_bads_and_annotations(tmp_path):
     """Test adding bads and Annotations in one go."""
@@ -406,7 +405,7 @@ def test_inspect_bads_and_annotations(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_auto_flats(tmp_path, save_changes):
@@ -466,7 +465,7 @@ def test_inspect_auto_flats(tmp_path, save_changes):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.parametrize(('l_freq', 'h_freq'),
                          [(None, None),
                           (1, None),

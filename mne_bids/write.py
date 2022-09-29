@@ -2379,7 +2379,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None,
 
 
 @verbose
-def write_meg_calibration(calibration, bids_path, verbose=None):
+def write_meg_calibration(calibration, bids_path, *, verbose=None):
     """Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.
 
     Parameters
@@ -2396,11 +2396,11 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
 
     Examples
     --------
-    >>> data_path = mne.datasets.testing.data_path(download=False)
-    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat')
+    >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
+    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat') # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids'))
-    >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +ELLIPSIS
+    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +SKIP
     Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...
     """  # noqa: E501
     if bids_path.root is None or bids_path.subject is None:
@@ -2452,13 +2452,13 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
 
     Examples
     --------
-    >>> data_path = mne.datasets.testing.data_path(download=False)
-    >>> crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif')
+    >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
+    >>> crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif') # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids'))
-    >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +ELLIPSIS
+    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +SKIP
     Writing crosstalk file to ...sub-01_ses-test_acq-crosstalk_meg.fif
-    """
+    """  # noqa: E501
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError('bids_path must have root and subject set.')
     if bids_path.datatype not in (None, 'meg'):

@@ -3,8 +3,6 @@
 #
 # License: BSD-3-Clause
 
-
-from pathlib import Path
 import itertools
 
 import pytest
@@ -19,12 +17,12 @@ from mne_bids.stats import count_events
 from mne_bids.read import _from_tsv
 from mne_bids.write import _write_tsv
 
+data_path = testing.data_path(download=False)
+
 
 def _make_dataset(root, subjects, tasks=(None,), runs=(None,),
                   sessions=(None,)):
-    data_path = testing.data_path()
-    raw_fname = \
-        Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw_fname = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     raw = mne.io.read_raw(raw_fname)
     raw.info['line_freq'] = 60.
     events = mne.find_events(raw)
@@ -85,6 +83,7 @@ def _check_counts(counts, events, event_id, subjects,
     ]
 )
 @requires_pandas
+@testing.requires_testing_data
 def test_count_events(tmp_path, subjects, tasks, runs, sessions):
     """Test the event counts."""
     root, events, event_id = _make_dataset(tmp_path, subjects, tasks, runs,
@@ -96,6 +95,7 @@ def test_count_events(tmp_path, subjects, tasks, runs, sessions):
 
 
 @requires_pandas
+@testing.requires_testing_data
 def test_count_events_bids_path(tmp_path):
     """Test the event counts passing a BIDSPath."""
     root, events, event_id = \
@@ -112,11 +112,10 @@ def test_count_events_bids_path(tmp_path):
 
 
 @requires_pandas
+@testing.requires_testing_data
 def test_count_no_events_file(tmp_path):
     """Test count_events with no event present."""
-    data_path = testing.data_path()
-    raw_fname = \
-        Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw_fname = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     raw = mne.io.read_raw(raw_fname)
     raw.info['line_freq'] = 60.
     root = str(tmp_path)
@@ -131,6 +130,7 @@ def test_count_no_events_file(tmp_path):
 
 
 @requires_pandas
+@testing.requires_testing_data
 def test_count_no_events_column(tmp_path):
     """Test case where events.tsv doesn't contain [stim,trial]_type column."""
     subject, task, run, session, datatype = '01', 'task1', '01', '01', 'meg'

@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import ArgvSetter, requires_pandas, requires_version
+from mne.utils import ArgvSetter, requires_pandas
 from mne.utils._testing import requires_module
 
 from mne_bids.commands import (mne_bids_raw_to_bids,
@@ -34,7 +34,7 @@ from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 requires_matplotlib = partial(requires_module, name='matplotlib',
                               call='import matplotlib')
 
-
+data_path = testing.data_path(download=False)
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
 task = 'testing'
@@ -52,10 +52,10 @@ def check_usage(module, force_help=False):
         assert 'Usage: ' in out.stdout.getvalue()
 
 
+@testing.requires_testing_data
 def test_raw_to_bids(tmp_path):
     """Test mne_bids raw_to_bids."""
     output_path = str(tmp_path)
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     # Check that help is printed
@@ -87,6 +87,7 @@ def test_raw_to_bids(tmp_path):
             mne_bids_cp.run()
 
 
+@testing.requires_testing_data
 def test_cp(tmp_path):
     """Test mne_bids cp."""
     output_path = str(tmp_path)
@@ -107,6 +108,7 @@ def test_cp(tmp_path):
             mne_bids_cp.run()
 
 
+@testing.requires_testing_data
 def test_mark_bad_chanels_single_file(tmp_path):
     """Test mne_bids mark_channels."""
     # Check that help is printed
@@ -114,7 +116,6 @@ def test_mark_bad_chanels_single_file(tmp_path):
 
     # Create test dataset.
     output_path = str(tmp_path)
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
@@ -159,6 +160,7 @@ def test_mark_bad_chanels_single_file(tmp_path):
     assert raw.info['bads'] == []
 
 
+@testing.requires_testing_data
 def test_mark_bad_chanels_multiple_files(tmp_path):
     """Test mne_bids mark_channels."""
     # Check that help is printed
@@ -166,7 +168,6 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
 
     # Create test dataset.
     output_path = str(tmp_path)
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
@@ -200,13 +201,13 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
         assert set(old_bads + ch_names) == set(raw.info['bads'])
 
 
+@testing.requires_testing_data
 def test_calibration_to_bids(tmp_path):
     """Test mne_bids calibration_to_bids."""
     # Check that help is printed
     check_usage(mne_bids_calibration_to_bids)
 
     output_path = str(tmp_path)
-    data_path = Path(testing.data_path())
     fine_cal_fname = data_path / 'SSS' / 'sss_cal_mgh.dat'
     bids_path = BIDSPath(subject=subject_id, root=output_path)
 
@@ -219,13 +220,13 @@ def test_calibration_to_bids(tmp_path):
     assert bids_path.meg_calibration_fpath.exists()
 
 
+@testing.requires_testing_data
 def test_crosstalk_to_bids(tmp_path):
     """Test mne_bids crosstalk_to_bids."""
     # Check that help is printed
     check_usage(mne_bids_crosstalk_to_bids)
 
     output_path = str(tmp_path)
-    data_path = Path(testing.data_path())
     crosstalk_fname = data_path / 'SSS' / 'ct_sparse.fif'
     bids_path = BIDSPath(subject=subject_id, root=output_path)
 
@@ -239,6 +240,7 @@ def test_crosstalk_to_bids(tmp_path):
 
 
 @requires_pandas
+@testing.requires_testing_data
 def test_count_events(tmp_path):
     """Test mne_bids count_events."""
     # Check that help is printed
@@ -246,7 +248,6 @@ def test_count_events(tmp_path):
 
     # Create test dataset.
     output_path = str(tmp_path)
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -282,7 +283,7 @@ def test_count_events(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 def test_inspect(tmp_path):
     """Test mne_bids inspect."""
     # Check that help is printed
@@ -290,7 +291,6 @@ def test_inspect(tmp_path):
 
     # Create test dataset.
     bids_root = str(tmp_path)
-    data_path = testing.data_path()
     subject = '01'
     task = 'test'
     datatype = 'meg'
