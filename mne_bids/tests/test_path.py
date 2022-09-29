@@ -33,6 +33,7 @@ run = '01'
 acq = None
 task = 'testing'
 
+data_path = testing.data_path(download=False)
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
@@ -42,7 +43,6 @@ _bids_path = BIDSPath(
 def return_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp('mnebids_utils_test_bids_ds'))
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -72,6 +72,7 @@ def return_bids_test_dir(tmp_path_factory):
     return bids_root
 
 
+@testing.requires_testing_data
 def test_get_keys(return_bids_test_dir):
     """Test getting the datatypes (=modalities) of a dir."""
     modalities = get_datatypes(return_bids_test_dir)
@@ -95,6 +96,7 @@ def test_get_keys(return_bids_test_dir):
                           ('task', [], dict(ignore_tasks=task)),
                           ('run', [run, '02'], dict(ignore_runs=['bogus'])),
                           ('run', [], dict(ignore_datatypes=['meg']))])
+@testing.requires_testing_data
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
@@ -360,6 +362,7 @@ def test_find_best_candidates(candidate_list, best_candidates):
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
+@testing.requires_testing_data
 def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = return_bids_test_dir
@@ -445,6 +448,7 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     assert Path(s).name == 'sub-test_task-task_events.tsv'
 
 
+@testing.requires_testing_data
 def test_bids_path_inference(return_bids_test_dir):
     """Test usage of BIDSPath object and fpath."""
     bids_root = return_bids_test_dir
@@ -482,6 +486,7 @@ def test_bids_path_inference(return_bids_test_dir):
     shutil.rmtree(Path(extra_file).parent)
 
 
+@testing.requires_testing_data
 def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
@@ -758,6 +763,7 @@ def test_filter_fnames(entities, expected_n_matches):
     assert len(output) == expected_n_matches
 
 
+@testing.requires_testing_data
 def test_match(return_bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = Path(return_bids_test_dir)
@@ -850,9 +856,9 @@ def test_match(return_bids_test_dir):
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_find_empty_room(return_bids_test_dir, tmp_path):
     """Test reading of empty room data."""
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     bids_root = tmp_path / "bids"
@@ -970,9 +976,9 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_find_emptyroom_ties(tmp_path):
     """Test that we receive a warning on a date tie."""
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -1008,9 +1014,9 @@ def test_find_emptyroom_ties(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_find_emptyroom_no_meas_date(tmp_path):
     """Test that we warn if measurement date can be read or inferred."""
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -1056,6 +1062,7 @@ def test_bids_path_label_vs_index_entity():
     BIDSPath(subject='01', split=1)  # ok as <index> entity
 
 
+@testing.requires_testing_data
 def test_meg_calibration_fpath(return_bids_test_dir):
     bids_root = return_bids_test_dir
 
@@ -1087,6 +1094,7 @@ def test_meg_calibration_fpath(return_bids_test_dir):
     assert bids_path_.meg_calibration_fpath is None
 
 
+@testing.requires_testing_data
 def test_meg_crosstalk_fpath(return_bids_test_dir):
     bids_root = return_bids_test_dir
 
@@ -1118,6 +1126,7 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
     assert bids_path.meg_crosstalk_fpath is None
 
 
+@testing.requires_testing_data
 def test_datasetdescription_with_bidspath(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed'):
         bids_path = BIDSPath(
