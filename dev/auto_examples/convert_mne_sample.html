@@ -40,6 +40,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/convert_mne_sample';</script>
@@ -818,7 +819,7 @@ into MNE-Python can easily be done using <a class="reference internal" href="../
 Ready.
 Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-1_channels.tsv.
-/home/circleci/project/mne_bids/read.py:586: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:602: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 </pre></div>
 </div>
@@ -837,7 +838,7 @@ Applying baseline correction (mode: mean)
 Created an SSP operator (subspace dimension = 3)
 3 projection items activated
 
-&lt;Figure size 640x500 with 3 Axes&gt;
+&lt;Figure size 640x500 with 6 Axes&gt;
 </pre></div>
 </div>
 <p>We can easily get the <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> of the empty-room recording
@@ -862,7 +863,7 @@ Ready.
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/meg/sub-emptyroom_ses-20021206*events.tsv&quot;
   warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_channels.tsv.
-/home/circleci/project/mne_bids/read.py:586: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:602: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 </pre></div>
 </div>
@@ -940,7 +941,7 @@ Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-
 
     <tr>
         <th>Duration</th>
-        <td>00:01:49 (HH:MM:SS)</td>
+        <td>00:01:50 (HH:MM:SS)</td>
     </tr>
 </table>
 </div>
@@ -1059,7 +1060,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
 </pre></div>
 </div>
 <p>This should be very similar to the <a class="reference external" href="https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json">ds000248 dataset_description.json</a>!</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.800 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.330 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mne-sample-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mne_sample.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1138,7 +1139,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-09-04.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-09-29.<br>
 
 </p>
 
@@ -1147,7 +1148,7 @@ see the <a class="reference external" href="https://bids-specification.readthedo
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.2.<br>
 </p>
 
   </div>

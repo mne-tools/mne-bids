@@ -40,6 +40,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.BIDSPath';</script>
@@ -1162,6 +1163,251 @@ or updates for ‘root’ or ‘datatype’.</p>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#mne_bids.BIDSPath">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     BIDSPath
+    </span>
+   </code>
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.__hash__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.__hash__
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.acquisition">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.acquisition
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.basename">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.basename
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.copy">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.copy()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.datatype">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.datatype
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.description">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.description
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.directory">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.directory
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.entities">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.entities
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.extension">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.extension
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.find_empty_room">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.find_empty_room()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.fpath">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.fpath
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.match">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.match()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.meg_calibration_fpath">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.meg_calibration_fpath
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.meg_crosstalk_fpath">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.meg_crosstalk_fpath
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.mkdir">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.mkdir()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.processing">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.processing
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.recording">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.recording
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.root">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.root
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.run">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.run
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.session">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.session
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.space">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.space
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.split">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.split
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.subject">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.subject
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.suffix">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.suffix
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.task">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.task
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.update">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.update()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#examples-using-mne-bids-bidspath">
    Examples using
    <code class="docutils literal notranslate">
@@ -1209,7 +1455,7 @@ or updates for ‘root’ or ‘datatype’.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-09-04.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-09-29.<br>
 
 </p>
 
@@ -1218,7 +1464,7 @@ or updates for ‘root’ or ‘datatype’.</p>
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.2.<br>
 </p>
 
   </div>
