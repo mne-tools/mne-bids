@@ -52,7 +52,7 @@ numpydoc_attributes_as_param_list = True
 numpydoc_xref_aliases = {
     'BIDSPath': ':class:`BIDSPath <mne_bids.BIDSPath>`',
     'path-like': ':term:`path-like <mne:path-like>`',
-    'array-like': ':term:`array-like <mne:array-like>`',
+    'array-like': ':term:`array_like <numpy:array_like>`',
     'int': ':class:`int <python:int>`',
     'bool': ':class:`bool <python:bool>`',
     'float': ':class:`float <python:float>`',
