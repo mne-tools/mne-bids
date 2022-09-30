@@ -528,7 +528,7 @@
         <span class="n">ch_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_chs</span><span class="p">[</span><span class="n">_channel_type</span><span class="p">])</span>
         <span class="n">description</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_desc</span><span class="p">[</span><span class="n">_channel_type</span><span class="p">])</span>
     <span class="n">low_cutoff</span><span class="p">,</span> <span class="n">high_cutoff</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;highpass&#39;</span><span class="p">],</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;lowpass&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="p">:</span>
         <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">_orig_units</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">_unit2human</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_i</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">],</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
@@ -3404,7 +3404,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-09-29.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-09-30.<br>
 
 </p>
 
