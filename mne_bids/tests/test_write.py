@@ -137,7 +137,7 @@ test_converteeg_data = [
     ('Persyst', 'BrainVision', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'BrainVision', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'BrainVision', 'scan41_short.cnt', _read_raw_cnt),
-    ('curry', 'BrainVision', 'test_bdf_stim_channel Curry 8.cdt', _read_raw_curry),
+    ('curry', 'BrainVision', 'test_bdf_stim_channel Curry 8.cdt', _read_raw_curry),  # noqa
     ('Persyst', 'EDF', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
     ('NihonKohden', 'EDF', 'MB0400FU.EEG', _read_raw_nihon),
     ('CNT', 'EDF', 'scan41_short.cnt', _read_raw_cnt),
@@ -1499,8 +1499,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                 write_raw_bids(**kwargs)
         elif dir_name == 'curry':
             with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. '
-                            'Converting to float32.'):
+                              match='Encountered data in "int" format. '
+                              'Converting to float32.'):
                 write_raw_bids(**kwargs)
         elif dir_name == 'Persyst':
             with pytest.warns(RuntimeWarning,
@@ -1551,8 +1551,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         write_raw_bids(**kwargs)
     elif dir_name == 'curry':
         with pytest.warns(RuntimeWarning,
-                        match='Encountered data in "int" format. '
-                        'Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
@@ -3143,9 +3143,9 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
                 bids_output_path = write_raw_bids(**kwargs)
         elif dir_name == 'curry':
             with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. '
-                            'Converting to float32.'):
-                write_raw_bids(**kwargs)
+                              match='Encountered data in "int" format. '
+                              'Converting to float32.'):
+                bids_output_path = write_raw_bids(**kwargs)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
