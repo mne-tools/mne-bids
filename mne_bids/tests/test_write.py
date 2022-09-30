@@ -1772,8 +1772,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                     )
         elif dir_name == 'curry':
             with pytest.warns(RuntimeWarning,
-                            match='Encountered data in "int" format. '
-                            'Converting to float32.'):
+                              match='Encountered data in "int" format. '
+                              'Converting to float32.'):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / 'd', raw, bids_path)
         else:
