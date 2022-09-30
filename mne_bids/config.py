@@ -60,7 +60,7 @@ eeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                      '.EEG': 'Nihon Kohden',
                      '.cnt': 'Neuroscan', '.CNT': 'Neuroscan',
                      '.bin': 'EGI',
-                     '.cdt': 'n/a', '.dat': 'n/a'}
+                     '.cdt': 'n/a'}
 
 ieeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                       '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
@@ -81,7 +81,6 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt,
           '.bin': io.read_raw_egi,
           '.snirf': io.read_raw_snirf,
-          '.dat': io.read_raw_curry,
           '.cdt': io.read_raw_curry}
 
 
@@ -133,7 +132,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
     allowed_extensions_ieeg + allowed_extensions_nirs + \
-    ['.lay', '.EEG', '.cnt', '.CNT', '.bin', '.cdt', '.dat']
+    ['.lay', '.EEG', '.cnt', '.CNT', '.bin', '.cdt']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
