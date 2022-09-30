@@ -27,6 +27,7 @@ run = '01'
 acq = None
 task = 'testing'
 
+data_path = testing.data_path(download=False)
 bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
@@ -36,7 +37,6 @@ bids_path = BIDSPath(
 def _get_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp('mnebids_utils_test_bids_ds'))
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -86,8 +86,7 @@ def _get_sidecar_json_update_file(_get_bids_test_dir):
     return sidecar_fpath
 
 
-@pytest.mark.usefixtures('_get_bids_test_dir', '_bids_validate',
-                         '_get_sidecar_json_update_file')
+@testing.requires_testing_data
 def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
                               _get_sidecar_json_update_file):
     """Test updating sidecar JSON files."""
@@ -138,9 +137,9 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
 
 
 @requires_nibabel()
+@testing.requires_testing_data
 def test_update_anat_landmarks(tmp_path):
     """Test updating the anatomical landmarks of an MRI scan."""
-    data_path = Path(testing.data_path())
     raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     trans_path = Path(str(raw_path).replace('_raw.fif', '-trans.fif'))
     t1_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
