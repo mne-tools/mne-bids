@@ -1608,8 +1608,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         write_raw_bids(**kwargs)
     elif dir_name == 'curry':
         with pytest.warns(RuntimeWarning,
-                        match='Encountered data in "int" format. '
-                        'Converting to float32.'):
+                          match='Encountered data in "int" format. '
+                          'Converting to float32.'):
             write_raw_bids(**kwargs)
     elif dir_name == 'NihonKohden':
         with pytest.warns(RuntimeWarning,
