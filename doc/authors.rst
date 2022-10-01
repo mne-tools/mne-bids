@@ -36,3 +36,4 @@
 .. _Scott Huberty: https://github.com/scott-huberty
 .. _Anand Saini: https://github.com/anandsaini024
 .. _Mathieu Scheltienne: https://github.com/mscheltienne
+.. _Denis Engemann: https://github.com/dengemann

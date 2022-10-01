@@ -59,7 +59,8 @@ eeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden',
                      '.cnt': 'Neuroscan', '.CNT': 'Neuroscan',
-                     '.bin': 'EGI'}
+                     '.bin': 'EGI',
+                     '.cdt': 'Curry'}
 
 ieeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                       '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
@@ -79,7 +80,8 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.EEG': io.read_raw_nihon,
           '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt,
           '.bin': io.read_raw_egi,
-          '.snirf': io.read_raw_snirf}
+          '.snirf': io.read_raw_snirf,
+          '.cdt': io.read_raw_curry}
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -130,7 +132,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
     allowed_extensions_ieeg + allowed_extensions_nirs + \
-    ['.lay', '.EEG', '.cnt', '.CNT', '.bin']
+    ['.lay', '.EEG', '.cnt', '.CNT', '.bin', '.cdt']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)

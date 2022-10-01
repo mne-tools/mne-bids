@@ -248,6 +248,10 @@ preferred-citation:
       family-names: Jas
       affiliation: 'Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA'
       orcid: 'https://orcid.org/0000-0002-3199-9027'
+    - given-names: Denis
+      family-names: Engemann
+      affiliation: 'Roche Pharma Research and Early Development (pRED), Basel, Switzerland'
+      orcid: 'https://orcid.org/0000-0002-7223-1014'
 identifiers:
   - description: "Code archive on Zenodo"
     type: doi

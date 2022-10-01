@@ -24,7 +24,7 @@ Version 0.11 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* ...
+* `Denis Engemann`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -57,6 +57,8 @@ Detailed list of changes
 - :class:`~mne_bids.BIDSPath` now supports the BIDS "description" entity ``desc``, used in derivative data, by `Richard Höchenberger`_ (:gh:`1049`)
 
 - Added support for ``GSR`` (galvanic skin response / electrodermal activity, EDA) and ``TEMP`` (temperature) channel types, by `Richard Höchenberger`_ (:gh:`1059`)
+
+- Added support for reading EEG files in Curry 8 format ('.cdt' extension) by `Denis Engemann`_ (:gh:`1072`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

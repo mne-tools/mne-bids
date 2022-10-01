@@ -56,7 +56,8 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
     elif ext == '.fif':
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf',
+                 '.cdt']:
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 
