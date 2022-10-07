@@ -1623,8 +1623,15 @@ def write_raw_bids(
         elif format == 'FIF':
             ext = '.fif'
         else:
-            raise ValueError('For preloaded data, you must specify a valid '
-                             'format. See "allow_preload".')
+            msg = (
+                'For preloaded data, you must set the "format" parameter '
+                'to one of: BrainVision, EDF, or FIF'
+            )
+            if format != 'auto':  # the default was changed
+                msg += f', but got: "{format}"'
+
+            raise ValueError(msg)
+
         raw_orig = raw
 
     # Check times
@@ -1635,15 +1642,15 @@ def write_raw_bids(
         else:
             msg = ("The raw data you want to write contains {comp} time "
                    "points than the raw data on disk. It is possible that you "
-                   "{guess} your data, which write_raw_bids() won't accept.")
+                   "{guess} your data.")
             if len(raw.times) < len(raw_orig.times):
                 msg = msg.format(comp='fewer', guess='cropped')
             elif len(raw.times) > len(raw_orig.times):
                 msg = msg.format(comp='more', guess='concatenated')
 
-        msg += (' If you believe you have a valid use case that should be '
-                'supported, please reach out to the developers at '
-                'https://github.com/mne-tools/mne-bids/issues')
+        msg += (' To write the data, please preload it and pass '
+                '"allow_preload=True" and the "format" parameter to '
+                'write_raw_bids().')
         raise ValueError(msg)
 
     # Initialize BIDSPath

@@ -79,6 +79,7 @@ Detailed list of changes
 
 - Until now, :class:`mne_bids.BIDSPath` prepends extensions with a period "." automatically. We intend to remove this undocumented side-effect and now emit a ``FutureWarning`` if an ``extension`` that does not start with a ``.`` is provided. Starting with MNE-BIDS 0.12, an exception will be raised in this case, by `Richard Höchenberger`_ (:gh:`1061`)
 
+- Provide a more helpful error message when trying to write non-preloaded concatenated data, by `Richard Höchenberger`_ (:gh:`#1075`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
