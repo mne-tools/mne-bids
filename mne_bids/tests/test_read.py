@@ -40,6 +40,7 @@ session_id = '01'
 run = '01'
 acq = '01'
 task = 'testing'
+fids_added = check_version('mne', '1.2')
 
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
@@ -287,7 +288,11 @@ def test_get_head_mri_trans(tmp_path):
     raw_test.set_montage(montage)
     raw_test.save(bids_path.fpath, overwrite=True)
 
-    with pytest.raises(RuntimeError, match='Could not extract fiducial'):
+    if fids_added:
+        ctx = nullcontext()
+    else:
+        ctx = pytest.raises(RuntimeError, match='Could not extract fiducial')
+    with ctx:
         get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
                            fs_subjects_dir=subjects_dir)
 
@@ -767,7 +772,6 @@ def test_handle_eeg_coords_reading(tmp_path):
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="unknown")
     raw.set_montage(montage)
-    fids_added = check_version('mne', '1.2')
     if fids_added:
         ctx = nullcontext()
     else:
