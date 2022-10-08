@@ -9,15 +9,21 @@ What's new?
 
 .. _changes_0_11:
 
-Version 0.11 (unreleased)
+Version 0.11 (2022-10-08)
 -------------------------
 
-...
+This release includes a number of bug fixes as well as several smaller enhancements.
+Please note some behavior changes and updated requirements, as listed in the details below.
 
 📝 Notable changes
 ~~~~~~~~~~~~~~~~~~
 
-- ...
+- Support for new channel types is available: temperature and galvanic skin response
+
+- MNE-BIDS now supports the BIDS "description" entity (``desc``)
+
+- It's now possible to store Curry (CDT) files and EGI files with MNE-BIDS.
+
 
 👩🏽‍💻 Authors
 ~~~~~~~~~~~~~~~
