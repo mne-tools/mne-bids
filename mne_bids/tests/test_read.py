@@ -2,6 +2,7 @@
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
+from contextlib import nullcontext
 import json
 import os
 import os.path as op
@@ -20,7 +21,7 @@ import mne
 from mne.datasets import testing
 from mne.io.constants import FIFF
 from mne.utils import requires_nibabel, object_diff, requires_version
-from mne.utils import assert_dig_allclose
+from mne.utils import assert_dig_allclose, check_version
 
 from mne_bids import BIDSPath
 from mne_bids.config import (MNE_STR_TO_FRAME, BIDS_SHARED_COORDINATE_FRAMES,
@@ -39,6 +40,7 @@ session_id = '01'
 run = '01'
 acq = '01'
 task = 'testing'
+fids_added = check_version('mne', '1.2')
 
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
@@ -286,7 +288,11 @@ def test_get_head_mri_trans(tmp_path):
     raw_test.set_montage(montage)
     raw_test.save(bids_path.fpath, overwrite=True)
 
-    with pytest.raises(RuntimeError, match='Could not extract fiducial'):
+    if fids_added:
+        ctx = nullcontext()
+    else:
+        ctx = pytest.raises(RuntimeError, match='Could not extract fiducial')
+    with ctx:
         get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
                            fs_subjects_dir=subjects_dir)
 
@@ -766,8 +772,12 @@ def test_handle_eeg_coords_reading(tmp_path):
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="unknown")
     raw.set_montage(montage)
-    with pytest.raises(RuntimeError, match="'head' coordinate frame "
-                                           "must contain"):
+    if fids_added:
+        ctx = nullcontext()
+    else:
+        ctx = pytest.raises(
+            RuntimeError, match="'head' coordinate frame must contain")
+    with ctx:
         write_raw_bids(raw, bids_path, overwrite=True)
 
     bids_path.update(root=tmp_path)
@@ -779,24 +789,33 @@ def test_handle_eeg_coords_reading(tmp_path):
                                               suffix='electrodes',
                                               extension='.tsv',
                                               on_error='warn')
-    assert coordsystem_fname is None
-    assert electrodes_fname is None
+    if fids_added:
+        assert coordsystem_fname is not None
+        assert electrodes_fname is not None
+    else:
+        assert coordsystem_fname is None
+        assert electrodes_fname is None
 
     # create montage in head frame and set should result in
     # an error if landmarks are not set
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="head")
     raw.set_montage(montage)
-    with pytest.raises(RuntimeError, match="'head' coordinate frame "
-                                           "must contain"):
+    if fids_added:
+        ctx = nullcontext()
+    else:
+        ctx = pytest.raises(
+            RuntimeError, match="'head' coordinate frame must contain")
+    with ctx:
         write_raw_bids(raw, bids_path, overwrite=True)
 
-    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                            coord_frame="head",
-                                            nasion=[1, 0, 0],
-                                            lpa=[0, 1, 0],
-                                            rpa=[0, 0, 1])
-    raw.set_montage(montage)
+    if not fids_added:  # only need to rerun if the last one failed
+        montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                coord_frame="head",
+                                                nasion=[1, 0, 0],
+                                                lpa=[0, 1, 0],
+                                                rpa=[0, 0, 1])
+        raw.set_montage(montage)
     write_raw_bids(raw, bids_path, overwrite=True)
 
     # obtain the sensor positions and assert ch_coords are same
