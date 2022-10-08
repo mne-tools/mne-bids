@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.11.dev0 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.11 documentation</title>
   <script>
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
@@ -106,7 +106,7 @@
 
   
   
-    <p class="title logo__title">MNE-BIDS 0.11.dev0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.11 documentation</p>
   
 </a>
     
@@ -189,12 +189,13 @@
       <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.11.dev0
+        v0.11
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.11 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.10 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.12 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.11 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.10/index.html">v0.10</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.9/index.html">v0.9</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.8/index.html">v0.8</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.7/index.html">v0.7</a>
@@ -337,12 +338,13 @@
       <div class="navbar-end-item">
         <div class="dropdown">
     <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
-        v0.11.dev0
+        v0.11
         <span class="caret"></span>
     </button>
     <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.11 (devel)</a>
-        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.10 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/dev/index.html">v0.12 (devel)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/stable/index.html">v0.11 (stable)</a>
+        <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.10/index.html">v0.10</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.9/index.html">v0.9</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.8/index.html">v0.8</a>
         <a class="list-group-item list-group-item-action py-1" href="https://mne.tools/mne-bids/v0.7/index.html">v0.7</a>
@@ -411,32 +413,41 @@
               
   <section id="what-s-new">
 <span id="whats-new"></span><h1>What’s new?<a class="headerlink" href="#what-s-new" title="Permalink to this heading">#</a></h1>
-<section id="version-0-11-unreleased">
-<span id="changes-0-11"></span><h2>Version 0.11 (unreleased)<a class="headerlink" href="#version-0-11-unreleased" title="Permalink to this heading">#</a></h2>
-<p>…</p>
+<section id="version-0-11-2022-10-08">
+<span id="changes-0-11"></span><h2>Version 0.11 (2022-10-08)<a class="headerlink" href="#version-0-11-2022-10-08" title="Permalink to this heading">#</a></h2>
+<p>This release includes a number of bug fixes as well as several smaller enhancements.
+Please note some behavior changes and updated requirements, as listed in the details below.</p>
 <section id="notable-changes">
 <h3>📝 Notable changes<a class="headerlink" href="#notable-changes" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>Support for new channel types is available: temperature and galvanic skin response</p></li>
+<li><p>MNE-BIDS now supports the BIDS “description” entity (<code class="docutils literal notranslate"><span class="pre">desc</span></code>)</p></li>
+<li><p>It’s now possible to store Curry (CDT) files and EGI files with MNE-BIDS.</p></li>
 </ul>
 </section>
 <section id="authors">
 <h3>👩🏽‍💻 Authors<a class="headerlink" href="#authors" title="Permalink to this heading">#</a></h3>
 <p>The following authors contributed for the first time. Thank you so much! 🤩</p>
 <ul class="simple">
+<li><p><a class="reference external" href="https://github.com/anandsaini024">Anand Saini</a></p></li>
+<li><p><a class="reference external" href="https://bhvieira.github.io/">Bruno Hebling Vieira</a></p></li>
+<li><p><a class="reference external" href="http://dan.mccloy.info">Daniel McCloy</a></p></li>
 <li><p><a class="reference external" href="https://github.com/dengemann">Denis Engemann</a></p></li>
+<li><p><a class="reference external" href="https://github.com/mscheltienne">Mathieu Scheltienne</a></p></li>
+<li><p><a class="reference external" href="https://github.com/scott-huberty">Scott Huberty</a></p></li>
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
 <li><p><a class="reference external" href="https://github.com/alexrockhill">Alex Rockhill</a></p></li>
 <li><p><a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a></p></li>
+<li><p><a class="reference external" href="https://github.com/dominikwelke">Dominik Welke</a></p></li>
+<li><p><a class="reference external" href="https://github.com/eort">Eduard Ort</a></p></li>
 <li><p><a class="reference external" href="https://github.com/larsoner">Eric Larson</a></p></li>
 <li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
 <li><p><a class="reference external" href="https://github.com/rob-luke">Robert Luke</a></p></li>
 <li><p><a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
-<li><p><a class="reference external" href="https://github.com/dominikwelke">Dominik Welke</a></p></li>
-<li><p><a class="reference external" href="https://github.com/eort">Eduard Ort</a></p></li>
+<li><p><a class="reference external" href="https://teonbrooks.com">Teon Brooks</a></p></li>
 </ul>
 </section>
 <section id="detailed-list-of-changes">
@@ -537,8 +548,8 @@
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#version-0-11-unreleased">
-   Version 0.11 (unreleased)
+  <a class="reference internal nav-link" href="#version-0-11-2022-10-08">
+   Version 0.11 (2022-10-08)
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
