@@ -13,8 +13,8 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
 
   
   <link rel="stylesheet"
@@ -23,6 +23,8 @@
     href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
     href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -33,7 +35,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -75,7 +77,7 @@
     <div class="search-button__search-container">
       
 <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
+  <i class="fa-solid fa-magnifying-glass"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
@@ -85,7 +87,7 @@
   
   <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fas fa-bars"></span>
+      <span class="fa-solid fa-bars"></span>
   </label>
   <div id="navbar-start">
     
@@ -124,35 +126,35 @@
         
                 <li class="nav-item">
                     <a class="nav-link" href="../whats_new.html">
-                        What’s new?
+                        News
                     </a>
                 </li>
                 
 
                 <li class="nav-item">
                     <a class="nav-link" href="../install.html">
-                        Installation
+                        Install
                     </a>
                 </li>
                 
 
                 <li class="nav-item current active">
                     <a class="nav-link" href="../use.html">
-                        Using MNE-BIDS
+                        Use
                     </a>
                 </li>
                 
 
                 <li class="nav-item">
                     <a class="nav-link" href="../api.html">
-                        API Documentation
+                        API
                     </a>
                 </li>
                 
 
                 <li class="nav-item">
                     <a class="nav-link" href="../generated/cli.html">
-                        MNE-BIDS Command Line Interface (CLI)
+                        CLI
                     </a>
                 </li>
                 
@@ -164,7 +166,7 @@
                     
                 <li class="nav-item">
                     <a class="nav-link" href="../contribute.html">
-                        Contributing to MNE-BIDS
+                        Contribute
                     </a>
                 </li>
                 
@@ -180,8 +182,8 @@
     <div id="navbar-end">
       <div class="navbar-end-item navbar-end__search-button-container">
         
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
       </div>
       
@@ -216,7 +218,8 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -226,7 +229,8 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-discourse"></i></span>
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-discourse"></i></span>
             <label class="sr-only">Discourse</label></a>
         </li>
       </ul>
@@ -238,14 +242,14 @@
 
   
   <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
-  <i class="fas fa-search"></i>
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
 </button>
   </div>
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
-      <span class="fas fa-outdent"></span>
+      <span class="fa-solid fa-outdent"></span>
   </label>
   
 
@@ -273,35 +277,35 @@
         
                 <li class="nav-item">
                     <a class="nav-link" href="../whats_new.html">
-                        What’s new?
+                        News
                     </a>
                 </li>
                 
 
                 <li class="nav-item">
                     <a class="nav-link" href="../install.html">
-                        Installation
+                        Install
                     </a>
                 </li>
                 
 
                 <li class="nav-item current active">
                     <a class="nav-link" href="../use.html">
-                        Using MNE-BIDS
+                        Use
                     </a>
                 </li>
                 
 
                 <li class="nav-item">
                     <a class="nav-link" href="../api.html">
-                        API Documentation
+                        API
                     </a>
                 </li>
                 
 
                 <li class="nav-item">
                     <a class="nav-link" href="../generated/cli.html">
-                        MNE-BIDS Command Line Interface (CLI)
+                        CLI
                     </a>
                 </li>
                 
@@ -313,7 +317,7 @@
                     
                 <li class="nav-item">
                     <a class="nav-link" href="../contribute.html">
-                        Contributing to MNE-BIDS
+                        Contribute
                     </a>
                 </li>
                 
@@ -362,7 +366,8 @@
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github-square"></i></span>
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -372,7 +377,8 @@
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-discourse"></i></span>
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-discourse"></i></span>
             <label class="sr-only">Discourse</label></a>
         </li>
       </ul>
@@ -390,76 +396,20 @@
   </p>
   <div class="bd-toc-item navbar-nav">
     <ul class="current nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="read_bids_datasets.html">
-   01. Read BIDS datasets
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="convert_mne_sample.html">
-   02. Convert MNE sample data to BIDS format
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="mark_bad_channels.html">
-   03. Interactive data inspection and bad channel selection
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="convert_eeg_to_bids.html">
-   04. Convert EEG data to BIDS format
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="convert_group_studies.html">
-   05. BIDS conversion for group studies
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="rename_brainvision_files.html">
-   06. Rename BrainVision EEG data files
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="convert_mri_and_trans.html">
-   07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="convert_ieeg_to_bids.html">
-   08. Convert iEEG data to BIDS format
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="convert_empty_room.html">
-   09. Manually storing empty room data
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="bidspath.html">
-   10. An introduction to BIDSPath
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="create_bids_folder.html">
-   11. Creating BIDS-compatible folder names and filenames
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="update_bids_datasets.html">
-   12. Updating BIDS datasets
-  </a>
- </li>
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   13. Anonymizing a BIDS dataset
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="convert_nirs_to_bids.html">
-   13. Convert NIRS data to BIDS format
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="read_bids_datasets.html">01. Read BIDS datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_mne_sample.html">02. Convert MNE sample data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mark_bad_channels.html">03. Interactive data inspection and bad channel selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_eeg_to_bids.html">04. Convert EEG data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_group_studies.html">05. BIDS conversion for group studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rename_brainvision_files.html">06. Rename BrainVision EEG data files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_mri_and_trans.html">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_ieeg_to_bids.html">08. Convert iEEG data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_empty_room.html">09. Manually storing empty room data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bidspath.html">10. An introduction to BIDSPath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">11. Creating BIDS-compatible folder names and filenames</a></li>
+<li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">12. Updating BIDS datasets</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">13. Anonymizing a BIDS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_nirs_to_bids.html">13. Convert NIRS data to BIDS format</a></li>
 </ul>
 
   </div>
@@ -603,7 +553,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 29293 days (80.3 years).
+Shifting recording dates by 31458 days (86.2 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-1
@@ -611,10 +561,10 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/5 [00:00&lt;?,       ?it/s]
- 20%|##        | Anonymizing : 1/5 [00:00&lt;00:01,    2.51it/s]
- 40%|####      | Anonymizing : 2/5 [00:03&lt;00:04,    1.59s/it]
- 60%|######    | Anonymizing : 3/5 [00:04&lt;00:02,    1.39s/it]
-100%|##########| Anonymizing : 5/5 [00:04&lt;00:00,    1.21it/s]
+ 20%|##        | Anonymizing : 1/5 [00:00&lt;00:00,    4.12it/s]
+ 40%|####      | Anonymizing : 2/5 [00:02&lt;00:03,    1.12s/it]
+ 60%|######    | Anonymizing : 3/5 [00:02&lt;00:01,    1.03it/s]
+100%|##########| Anonymizing : 5/5 [00:02&lt;00:00,    1.73it/s]
 </pre></div>
 </div>
 <p>That’s it! Let’s have a look at directory structure of the anonymized
@@ -641,12 +591,12 @@ dataset.</p>
 |--------- sub-1_task-audiovisual_meg.fif
 |--------- sub-1_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19220924/
-|--------- sub-emptyroom_ses-19220924_scans.tsv
+|------ ses-19161020/
+|--------- sub-emptyroom_ses-19161020_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19220924_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19220924_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19220924_task-noise_meg.json
+|------------ sub-emptyroom_ses-19161020_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19161020_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19161020_task-noise_meg.json
 </pre></div>
 </div>
 <p>You can see that the subject ID was changed to a number (in this case, the
@@ -684,8 +634,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/1 [00:00&lt;?,       ?it/s]
-100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.73s/it]
-100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.73s/it]
+100%|##########| Anonymizing : 1/1 [00:01&lt;00:00,    1.96s/it]
+100%|##########| Anonymizing : 1/1 [00:01&lt;00:00,    1.96s/it]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -727,9 +677,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:01,    2.69it/s]
- 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.42it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    2.85it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    4.04it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:00,    2.09it/s]
+100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.20it/s]
 |sub-emptyroom/
 |--- ses-20021126/
 |------ sub-emptyroom_ses-20021126_scans.tsv
@@ -770,7 +720,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 32867 days (90.0 years).
+Shifting recording dates by 29464 days (80.7 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-anonymous
@@ -778,9 +728,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:01,    2.65it/s]
- 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.43it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    2.86it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    4.10it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:00,    2.11it/s]
+100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.23it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -797,12 +747,12 @@ Using the following subject ID anonymization mapping:
 |--------- sub-anonymous_task-audiovisual_meg.fif
 |--------- sub-anonymous_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19121211/
-|--------- sub-emptyroom_ses-19121211_scans.tsv
+|------ ses-19220406/
+|--------- sub-emptyroom_ses-19220406_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19121211_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19121211_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19121211_task-noise_meg.json
+|------------ sub-emptyroom_ses-19220406_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19220406_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19220406_task-noise_meg.json
 </pre></div>
 </div>
 </section>
@@ -859,9 +809,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:01,    2.52it/s]
- 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.40it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    2.81it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.93it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:00,    2.09it/s]
+100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.19it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -903,9 +853,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:01,    2.71it/s]
- 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.43it/s]
-100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    2.87it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.96it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:00,    2.09it/s]
+100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.19it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -930,7 +880,7 @@ Using the following subject ID anonymization mapping:
 |------------ sub-emptyroom_ses-19221211_task-noise_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.797 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.267 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/anonymize_dataset.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -955,7 +905,7 @@ Using the following subject ID anonymization mapping:
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
   <a class='left-prev' id="prev-link" href="update_bids_datasets.html" title="previous page">
-      <i class="fas fa-angle-left"></i>
+      <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
           <p class="prev-next-title">12. Updating BIDS datasets</p>
@@ -966,7 +916,7 @@ Using the following subject ID anonymization mapping:
       <p class="prev-next-subtitle">next</p>
       <p class="prev-next-title">13. Convert NIRS data to BIDS format</p>
   </div>
-  <i class="fas fa-angle-right"></i>
+  <i class="fa-solid fa-angle-right"></i>
   </a>
 </div>
             </footer>
@@ -980,7 +930,7 @@ Using the following subject ID anonymization mapping:
 <div class="toc-item">
   
 <div class="tocsection onthispage">
-    <i class="fas fa-list"></i> On this page
+    <i class="fa-solid fa-list"></i> On this page
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
@@ -1016,6 +966,11 @@ Using the following subject ID anonymization mapping:
 
 <div class="toc-item">
   
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
 </div>
 
 <div class="toc-item">
@@ -1039,7 +994,7 @@ Using the following subject ID anonymization mapping:
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
 
   <footer class="bd-footer"><div class="bd-footer__inner container">
   
@@ -1047,7 +1002,7 @@ Using the following subject ID anonymization mapping:
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-09-30.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-08.<br>
 
 </p>
 
@@ -1056,7 +1011,7 @@ Using the following subject ID anonymization mapping:
   <div class="footer-item">
     
 <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.2.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
 
   </div>
