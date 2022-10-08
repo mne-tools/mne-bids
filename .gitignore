@@ -8,3 +8,5 @@ mne-bids/
 mne_bids.egg-info/
 examples/
 junit-results.xml
+coverage.xml
+.coverage
