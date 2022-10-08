@@ -2032,8 +2032,15 @@
         <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;FIF&#39;</span><span class="p">:</span>
             <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.fif&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;For preloaded data, you must specify a valid &#39;</span>
-                             <span class="s1">&#39;format. See &quot;allow_preload&quot;.&#39;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;For preloaded data, you must set the &quot;format&quot; parameter &#39;</span>
+                <span class="s1">&#39;to one of: BrainVision, EDF, or FIF&#39;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">format</span> <span class="o">!=</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>  <span class="c1"># the default was changed</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;, but got: &quot;</span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
         <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">raw</span>
 
     <span class="c1"># Check times</span>
@@ -2044,15 +2051,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The raw data you want to write contains </span><span class="si">{comp}</span><span class="s2"> time &quot;</span>
                    <span class="s2">&quot;points than the raw data on disk. It is possible that you &quot;</span>
-                   <span class="s2">&quot;</span><span class="si">{guess}</span><span class="s2"> your data, which write_raw_bids() won&#39;t accept.&quot;</span><span class="p">)</span>
+                   <span class="s2">&quot;</span><span class="si">{guess}</span><span class="s2"> your data.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="o">=</span><span class="s1">&#39;fewer&#39;</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="s1">&#39;cropped&#39;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="o">=</span><span class="s1">&#39;more&#39;</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="s1">&#39;concatenated&#39;</span><span class="p">)</span>
 
-        <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39; If you believe you have a valid use case that should be &#39;</span>
-                <span class="s1">&#39;supported, please reach out to the developers at &#39;</span>
-                <span class="s1">&#39;https://github.com/mne-tools/mne-bids/issues&#39;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39; To write the data, please preload it and pass &#39;</span>
+                <span class="s1">&#39;&quot;allow_preload=True&quot; and the &quot;format&quot; parameter to &#39;</span>
+                <span class="s1">&#39;write_raw_bids().&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1"># Initialize BIDSPath</span>
