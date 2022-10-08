@@ -112,7 +112,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-20.04, ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.7", "3.10"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         bids-validator-version: [validator-stable]
@@ -141,10 +141,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Restore cache
-      # Restoring cache on Ubuntu 20.04 seems buggy
-      # only do it on other operating systems
-      # https://stackoverflow.com/q/61875869/5201771
-      if: "matrix.os != 'ubuntu-latest'"
       uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}

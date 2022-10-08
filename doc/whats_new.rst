@@ -9,34 +9,46 @@ What's new?
 
 .. _changes_0_11:
 
-Version 0.11 (unreleased)
+Version 0.11 (2022-10-08)
 -------------------------
 
-...
+This release includes a number of bug fixes as well as several smaller enhancements.
+Please note some behavior changes and updated requirements, as listed in the details below.
 
 📝 Notable changes
 ~~~~~~~~~~~~~~~~~~
 
-- ...
+- Support for new channel types is available: temperature and galvanic skin response
+
+- MNE-BIDS now supports the BIDS "description" entity (``desc``)
+
+- It's now possible to store Curry (CDT) files and EGI files with MNE-BIDS.
+
 
 👩🏽‍💻 Authors
 ~~~~~~~~~~~~~~~
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
+* `Anand Saini`_
+* `Bruno Hebling Vieira`_
+* `Daniel McCloy`_
 * `Denis Engemann`_
+* `Mathieu Scheltienne`_
+* `Scott Huberty`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Adam Li`_
 * `Alex Rockhill`_
 * `Alexandre Gramfort`_
+* `Dominik Welke`_
+* `Eduard Ort`_
 * `Eric Larson`_
 * `Richard Höchenberger`_
 * `Robert Luke`_
 * `Stefan Appelhoff`_
-* `Dominik Welke`_
-* `Eduard Ort`_
+* `Teon Brooks`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
