@@ -20,23 +20,29 @@ Version 0.11 (unreleased)
 - ...
 
 👩🏽‍💻 Authors
-~~~~~~~~~~~~~~~
+~~~~~~~~~~
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
+* `Anand Saini`_
+* `Bruno Hebling Vieira`_
+* `Daniel McCloy`_
 * `Denis Engemann`_
+* `Mathieu Scheltienne`_
+* `Scott Huberty`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Adam Li`_
 * `Alex Rockhill`_
 * `Alexandre Gramfort`_
+* `Dominik Welke`_
+* `Eduard Ort`_
 * `Eric Larson`_
 * `Richard Höchenberger`_
 * `Robert Luke`_
 * `Stefan Appelhoff`_
-* `Dominik Welke`_
-* `Eduard Ort`_
+* `Teon Brooks`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
