@@ -20,7 +20,7 @@ Version 0.11 (unreleased)
 - ...
 
 👩🏽‍💻 Authors
-~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
