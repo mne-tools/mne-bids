@@ -491,7 +491,8 @@ def _handle_events_reading(events_fname, raw):
                                         description=descriptions)
     raw.set_annotations(annot_from_events)
 
-    annot_idx_to_keep = [idx for idx, descr in enumerate(annot_from_raw.description)
+    annot_idx_to_keep = [idx for idx, descr
+                         in enumerate(annot_from_raw.description)
                          if descr in ANNOTATIONS_TO_KEEP]
     annot_to_keep = annot_from_raw[annot_idx_to_keep]
 
