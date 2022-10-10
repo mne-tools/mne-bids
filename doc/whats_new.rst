@@ -7,6 +7,13 @@
 What's new?
 ===========
 
+.. _changes_0_11_1:
+
+Version 0.11.1 (2022-10-21)
+---------------------------
+
+- Speed up :func:`mne_bids.read_raw_bids` when lots of events are present by `Alexandre Gramfort`_ (:gh:`1079`)
+
 .. _changes_0_11:
 
 Version 0.11 (2022-10-08)
