@@ -969,7 +969,6 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Raises an error if the file is missing
     os.remove(er_associated_bids_path.fpath)
-
     with pytest.raises(FileNotFoundError, match='Empty-room BIDS .* not foun'):
         bids_path.find_empty_room(use_sidecar_only=True)
 
