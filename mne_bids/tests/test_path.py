@@ -960,10 +960,17 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Retrieve empty-room BIDSPath
     assert bids_path.find_empty_room() == er_associated_bids_path
+    assert bids_path.find_empty_room(
+        use_sidecar_only=True) == er_associated_bids_path
 
     # Should only work for MEG
     with pytest.raises(ValueError, match='only supported for MEG'):
         bids_path.copy().update(datatype='eeg').find_empty_room()
+
+    # Raises an error if the file is missing
+    os.remove(er_associated_bids_path.fpath)
+    with pytest.raises(FileNotFoundError, match='Empty-room BIDS .* not foun'):
+        bids_path.find_empty_room(use_sidecar_only=True)
 
     # Don't create `AssociatedEmptyRoom` entry in sidecar – we should now
     # retrieve the empty-room recording closer in time
