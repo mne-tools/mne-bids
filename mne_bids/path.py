@@ -954,7 +954,7 @@ class BIDSPath(object):
             er_bids_path = _find_matched_empty_room(self)
 
         if er_bids_path is not None and not er_bids_path.fpath.exists():
-            raise RuntimeError(
+            raise FileNotFoundError(
                 f'Empty-room BIDS path resolved but not found:\n'
                 f'{er_bids_path}\n'
                 'Check your BIDS dataset for completeness.')
