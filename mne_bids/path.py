@@ -1528,9 +1528,10 @@ def _find_matching_sidecar(bids_path, suffix=None,
                f'associated with {bids_path.basename}.')
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
-        msg = (f'Expected to find a single {suffix} file '
+        msg = (f'Expected to find a single {search_suffix} file '
                f'associated with {bids_path.basename}, '
-               f'but found {len(candidate_list)}: "{candidate_list}".')
+               f'but found {len(candidate_list)}:\n\n' +
+               "\n".join(candidate_list))
     msg += f'\n\nThe search_str was "{search_str_complete}"'
     if on_error == 'raise':
         raise RuntimeError(msg)
