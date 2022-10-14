@@ -949,6 +949,7 @@ class BIDSPath(object):
             er_bids_path = get_bids_path_from_fname(emptytoom_path)
             er_bids_path.root = self.root
             er_bids_path.datatype = 'meg'
+            candidates = None
         elif use_sidecar_only:
             logger.info(
                 'The MEG sidecar file does not contain an '

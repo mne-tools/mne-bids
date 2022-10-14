@@ -985,7 +985,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     # If we enforce searching only via `AssociatedEmptyRoom`, we should get no
     # result
     assert bids_path.find_empty_room(
-        use_sidecar_only=True, return_candidates) == (None, None)
+        use_sidecar_only=True, return_candidates=True) == (None, None)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
