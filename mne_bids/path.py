@@ -53,7 +53,7 @@ def _find_matched_empty_room(bids_path):
     emptyroom_dir = BIDSPath(root=bids_root, subject='emptyroom').directory
 
     if not emptyroom_dir.exists():
-        return None
+        return None, list()
 
     # Find the empty-room recording sessions.
     emptyroom_session_dirs = [x for x in emptyroom_dir.iterdir()
@@ -85,12 +85,14 @@ def _find_matched_empty_room(bids_path):
     date_tie = False
 
     failed_to_get_er_date_count = 0
+    candidates = list()
     for er_fname in candidate_er_fnames:
         # get entities from filenamme
         er_bids_path = get_bids_path_from_fname(er_fname, check=False)
         er_bids_path.subject = 'emptyroom'  # er subject entity is different
         er_bids_path.root = bids_root
         er_bids_path.datatype = 'meg'
+        candidates.append(er_bids_path)
         er_meas_date = None
 
         # Try to extract date from filename.
@@ -137,7 +139,7 @@ def _find_matched_empty_room(bids_path):
                'same recording date. Selecting the first match.')
         warn(msg)
 
-    return best_er_bids_path
+    return best_er_bids_path, candidates
 
 
 class BIDSPath(object):
@@ -893,7 +895,8 @@ class BIDSPath(object):
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
 
     @verbose
-    def find_empty_room(self, use_sidecar_only=False, verbose=None):
+    def find_empty_room(self, use_sidecar_only=False, *,
+                        return_candidates=False, verbose=None):
         """Find the corresponding empty-room file of an MEG recording.
 
         This will only work if the ``.root`` attribute of the
@@ -906,13 +909,21 @@ class BIDSPath(object):
             sidecar JSON file or not. If ``False``, first look for the entry,
             and if unsuccessful, try to find the best-matching empty-room
             recording in the dataset based on the measurement date.
+        return_candidates : bool
+            If True (default False), return candidate filenames checked during
+            the search for the best-matching empty-room recording.
+        %(verbose)s
 
         Returns
         -------
         BIDSPath | None
             The path corresponding to the best-matching empty-room measurement.
             Returns ``None`` if none was found.
-        %(verbose)s
+        list | None
+            The candidates checked during the search for the best-matching
+            empty-room recording. Only returned if ``return_candidates`` is
+            ``True``. Will be None if a sidecar is used to find the empty-room
+            recording.
         """
         if self.datatype not in ('meg', None):
             raise ValueError('Empty-room data is only supported for MEG '
@@ -944,14 +955,14 @@ class BIDSPath(object):
                 '"AssociatedEmptyRoom" entry. Aborting search for an '
                 'empty-room recording, as you passed use_sidecar_only=True'
             )
-            return None
+            return None if not return_candidates else (None, None)
         else:
             logger.info(
                 'The MEG sidecar file does not contain an '
                 '"AssociatedEmptyRoom" entry. Will try to find a matching '
                 'empty-room recording based on the measurement date …'
             )
-            er_bids_path = _find_matched_empty_room(self)
+            er_bids_path, candidates = _find_matched_empty_room(self)
 
         if er_bids_path is not None and not er_bids_path.fpath.exists():
             raise FileNotFoundError(
@@ -959,7 +970,10 @@ class BIDSPath(object):
                 f'{er_bids_path}\n'
                 'Check your BIDS dataset for completeness.')
 
-        return er_bids_path
+        out = er_bids_path
+        if return_candidates:
+            out = (out, candidates)
+        return out
 
     @property
     def meg_calibration_fpath(self):
