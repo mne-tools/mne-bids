@@ -960,8 +960,11 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Retrieve empty-room BIDSPath
     assert bids_path.find_empty_room() == er_associated_bids_path
-    assert bids_path.find_empty_room(
-        use_sidecar_only=True) == er_associated_bids_path
+    for use_sidecar_only in [True, False]:  # same result either way
+        path, candidates = bids_path.find_empty_room(
+            use_sidecar_only=use_sidecar_only, return_candidates=True)
+        assert path == er_associated_bids_path
+        assert candidates is None
 
     # Should only work for MEG
     with pytest.raises(ValueError, match='only supported for MEG'):
@@ -975,11 +978,14 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     # Don't create `AssociatedEmptyRoom` entry in sidecar – we should now
     # retrieve the empty-room recording closer in time
     write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
-    assert bids_path.find_empty_room() == er_matching_date_bids_path
+    path, candidates = bids_path.find_empty_room(return_candidates=True)
+    assert path == er_matching_date_bids_path
+    assert er_matching_date_bids_path in candidates
 
     # If we enforce searching only via `AssociatedEmptyRoom`, we should get no
     # result
-    assert bids_path.find_empty_room(use_sidecar_only=True) is None
+    assert bids_path.find_empty_room(
+        use_sidecar_only=True, return_candidates=True) == (None, None)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
