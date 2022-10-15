@@ -615,7 +615,7 @@ different properties look like for our object:</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Copy the instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_empty_room</span></code></a>([use_sidecar_only, verbose])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_empty_room</span></code></a>([use_sidecar_only, ...])</p></td>
 <td><p>Find the corresponding empty-room file of an MEG recording.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>([check])</p></td>
@@ -707,7 +707,7 @@ directory would be:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.find_empty_room">
-<span class="sig-name descname"><span class="pre">find_empty_room</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_sidecar_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_empty_room"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_empty_room" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">find_empty_room</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_sidecar_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_empty_room"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_empty_room" title="Permalink to this definition">#</a></dt>
 <dd><p>Find the corresponding empty-room file of an MEG recording.</p>
 <p>This will only work if the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute of the
 <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance has been set.</p>
@@ -719,17 +719,25 @@ sidecar JSON file or not. If <code class="docutils literal notranslate"><span cl
 and if unsuccessful, try to find the best-matching empty-room
 recording in the dataset based on the measurement date.</p>
 </dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The path corresponding to the best-matching empty-room measurement.
-Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if none was found.</p>
+<dt><strong>return_candidates</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If True (default False), return candidate filenames checked during
+the search for the best-matching empty-room recording.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.10)"><span class="xref std std-ref">logging documentation</span></a> and
 <a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The path corresponding to the best-matching empty-room measurement.
+Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if none was found.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The candidates checked during the search for the best-matching
+empty-room recording. Only returned if <code class="docutils literal notranslate"><span class="pre">return_candidates</span></code> is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>. Will be None if a sidecar is used to find the empty-room
+recording.</p>
 </dd>
 </dl>
 </dd>
@@ -1340,7 +1348,7 @@ or updates for ‘root’ or ‘datatype’.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-14.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-15.<br>
 
 </p>
 
