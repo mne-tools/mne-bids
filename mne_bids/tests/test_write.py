@@ -1279,10 +1279,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                        match='You passed events, but no event_id '):
         write_raw_bids(raw, bids_path, events=events)
 
-    with pytest.raises(ValueError,
-                       match='You passed event_id, but no events'):
-        write_raw_bids(raw, bids_path, event_id=event_id)
-
     # check events.tsv is written
     events_tsv_fname = bids_output_path.copy().update(suffix='events',
                                                       extension='.tsv')
