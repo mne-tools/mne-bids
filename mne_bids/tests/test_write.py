@@ -1272,9 +1272,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                           match='Encountered data in "double" format'):
             bids_output_path = write_raw_bids(**kwargs)
 
-    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
-
     with pytest.raises(ValueError,
                        match='You passed events, but no event_id '):
         write_raw_bids(raw, bids_path, events=events)
