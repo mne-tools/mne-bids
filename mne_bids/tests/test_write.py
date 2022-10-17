@@ -2704,15 +2704,22 @@ def test_annotations(_bids_validate, bad_segments, tmp_path):
     _bids_validate(bids_root)
 
 
+@pytest.mark.parametrize(
+    'write_events', [True, False]  # whether to pass "events" to write_raw_bids
+)
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @testing.requires_testing_data
-def test_annotations_and_events(_bids_validate, tmp_path):
+def test_annotations_and_events(_bids_validate, tmp_path, write_events):
     """Test combined writing of Annotations and events."""
     bids_root = tmp_path / 'bids'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw_fname = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     events_fname = (
         data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw-eve.fif'
+    )
+    events_tsv_fname = bids_path.copy().update(
+        suffix='events',
+        extension='.tsv',
     )
 
     events = mne.read_events(events_fname)
@@ -2736,16 +2743,40 @@ def test_annotations_and_events(_bids_validate, tmp_path):
     )
     raw.set_annotations(annotations)
 
-    # Jointly write annotations and events
-    write_raw_bids(raw, bids_path=bids_path, events=events, event_id=event_id)
+    # Write annotations while passing event_id
+    # Should raise since annotations descriptions are missing from event_id
+    with pytest.raises(ValueError, match='The following entries are missing'):
+        write_raw_bids(
+            raw,
+            bids_path=bids_path,
+            event_id=event_id,
+            events=events if write_events else None,
+        )
+
+    # Passing a complete mapping should work
+    event_id_with_annots = event_id.copy()
+    event_id_with_annots.update({
+        'BAD_segment': 9999,
+        'EDGE_segment': 10000,
+        'custom': 2000
+    })
+    write_raw_bids(
+        raw,
+        bids_path=bids_path,
+        event_id=event_id_with_annots,
+        events=events if write_events else None,
+    )
     _bids_validate(bids_root)
 
-    events_tsv_fname = bids_path.copy().update(
-        suffix='events',
-        extension='.tsv'
-    )
+    # Ensure all events + annotations were written
     events_tsv = _from_tsv(events_tsv_fname)
-    assert len(events_tsv['trial_type']) == len(events) + len(raw.annotations)
+
+    if write_events:
+        n_events_expected = len(events) + len(raw.annotations)
+    else:
+        n_events_expected = len(raw.annotations)
+
+    assert len(events_tsv['trial_type']) == n_events_expected
 
 
 @pytest.mark.parametrize(
@@ -2755,7 +2786,7 @@ def test_annotations_and_events(_bids_validate, tmp_path):
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @testing.requires_testing_data
 def test_undescribed_events(_bids_validate, drop_undescribed_events, tmp_path):
-    """Test we're behaving correctly if event descriptions are missing."""
+    """Test we're raising if event descriptions are missing."""
     bids_root = tmp_path / 'bids1'
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw_fname = op.join(data_path, 'MEG', 'sample',

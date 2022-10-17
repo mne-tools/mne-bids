@@ -123,8 +123,29 @@ def _read_events(events, event_id, raw, bids_path=None):
     else:
         events = read_events(events).astype(int)
 
+    if raw.annotations:
+        if event_id is None:
+            logger.info(
+                'The provided raw data contains annotations, but you did not '
+                'pass an "event_id" mapping from annotation descriptions to '
+                'event codes. We will generate arbitrary event codes. '
+                'To specify custom event codes, please pass "event_id".'
+            )
+        else:
+            desc_without_id = sorted(
+                set(raw.annotations.description) - set(event_id.keys())
+            )
+            if desc_without_id:
+                raise ValueError(
+                    f'The provided raw data contains annotations, but '
+                    f'"event_id" does not contain entries for all annotation '
+                    f'descriptions. The following entries are missing: '
+                    f'{", ".join(desc_without_id)}'
+                )
+
+    # If we have events, convert them to Annotations so they can be easily
+    # merged with existing Annotations.
     if events.size > 0:
-        # Only keep events for which we have an ID <> description mapping.
         ids_without_desc = set(events[:, 2]) - set(event_id.values())
         if ids_without_desc:
             raise ValueError(
@@ -133,9 +154,6 @@ def _read_events(events, event_id, raw, bids_path=None):
                 f'Please add them to the event_id dictionary, or drop them '
                 f'from the events array.'
             )
-        del ids_without_desc
-        mask = [e in list(event_id.values()) for e in events[:, 2]]
-        events = events[mask]
 
         # Append events to raw.annotations. All event onsets are relative to
         # measurement beginning.
