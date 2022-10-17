@@ -12,6 +12,7 @@ import json
 import re
 from datetime import datetime, timezone
 from difflib import get_close_matches
+import os
 
 import numpy as np
 import mne
@@ -720,7 +721,17 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
                 break
 
     if not raw_path.exists():
-        raise FileNotFoundError(f'File does not exist: {raw_path}')
+        options = os.listdir(bids_path.directory)
+        matches = get_close_matches(bids_path.basename, options)
+        msg = f'File does not exist:\n{raw_path}'
+        if matches:
+            msg += (
+                '\nDid you mean one of:\n' +
+                '\n'.join(matches) +
+                '\ninstead of:\n' +
+                bids_path.basename
+            )
+        raise FileNotFoundError(msg)
     if config_path is not None and not config_path.exists():
         raise FileNotFoundError(f'config directory not found: {config_path}')
 
