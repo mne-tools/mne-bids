@@ -12,7 +12,11 @@ What's new?
 Version 0.11.1 (2022-10-21)
 ---------------------------
 
+Version 0.11.1 is a patch release, all changes are listed below.
+For more complete information on the 0.11 version, see changelog below.
+
 - Speed up :func:`mne_bids.read_raw_bids` when lots of events are present by `Alexandre Gramfort`_ (:gh:`1079`)
+- When writing data via :func:`~mne_bids.write_raw_bids`, it is now possible to specify a custom mapping of :class:`mne.Annotations` descriptions to event codes via the ``event_id`` parameter. Previously, passing this parameter would always require to also pass ``events``, and using a custom event code mapping for annotations was impossible, by `Richard Höchenberger`_ (:gh:`1084`)
 
 .. _changes_0_11:
 
@@ -110,6 +114,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+<<<<<<< HEAD
 - Fix ACPC in ``surface RAS`` instead of ``scanner RAS`` in :ref:`ieeg-example` and add convenience functions :func:`mne_bids.convert_montage_to_ras` and :func:`mne_bids.convert_montage_to_mri` to help, by `Alex Rockhill`_ (:gh:`990`)
 
 - Suppress superfluous warnings about MaxShield in many functions when handling Elekta/Neuromag/MEGIN data, by `Richard Höchenberger`_ (:gh:`1000`)
@@ -135,6 +140,9 @@ Detailed list of changes
 - Whenever :func:`~mne_bids.read_raw_bids` encounters a channel type that currently doesn't translate into an appropriate MNE channel type, the channel type will now be set to ``'misc``. Previously, seemingly arbitrary channel types would be applied, e.g. ``'eeg'`` for GSR and temperature channels, by `Richard Höchenberger`_ (:gh:`1052`)
 
 - Fix the incorrect setting of the fields ``ContinuousHeadLocalization`` and ``HeadCoilFrequency`` for Neuromag MEG recordings, by `Eduard Ort`_ (:gh:`1067`)
+=======
+- When writing data containing :class:`mne.Annotations` **and** passing events to :func:`~mne_bids.write_raw_bids`, previously, annotations whose description did not appear in ``event_id`` were silently dropped. We now raise an exception and request users to specify mappings between descriptions and event codes in this case. It is still possible to omit ``event_id`` if no ``events`` are passed, by `Richard Höchenberger`_ (:gh:`1084`)
+>>>>>>> 46b0a530... MRG: Enforce specification of all annotation descriptions in event_id if event_id is passed to write_raw_bids() (#1086)
 
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
