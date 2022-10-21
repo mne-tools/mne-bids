@@ -526,14 +526,16 @@ If <code class="docutils literal notranslate"><span class="pre">path-like</span>
 If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
 If a path or an array and <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> exist, the union of
 <code class="docutils literal notranslate"><span class="pre">events</span></code> and <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> will be written.
-Corresponding descriptions for all event codes (listed in the third
+Mappings from event names to event codes (listed in the third
 column of the MNE events array) must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
-parameter; otherwise, an exception is raised.
+parameter; otherwise, an exception is raised. If
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a> are present, their descriptions must be
+included in <code class="docutils literal notranslate"><span class="pre">event_id</span></code> as well.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will only be inferred from the raw object’s
 <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">None</span></code>, writes the union of <code class="docutils literal notranslate"><span class="pre">events</span></code> and
+<p>If specified, writes the union of <code class="docutils literal notranslate"><span class="pre">events</span></code> and
 <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code>. If you wish to <strong>only</strong> write
 <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code>, pass <code class="docutils literal notranslate"><span class="pre">events=None</span></code>. If you want to
 <strong>exclude</strong> the events in <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> from being written,
@@ -549,7 +551,10 @@ call <code class="docutils literal notranslate"><span class="pre">raw.set_annota
 <code class="docutils literal notranslate"><span class="pre">events</span></code>. The descriptions will be written to the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code>
 column in <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. The dictionary keys correspond to the event
 description,s and the values to the event codes. You must specify a
-description for all event codes appearing in <code class="docutils literal notranslate"><span class="pre">events</span></code>.</p>
+description for all event codes appearing in <code class="docutils literal notranslate"><span class="pre">events</span></code>. If your data
+contains <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>, you can use this parameter to
+assign event codes to each unique annotation description (mapping from
+description to event code).</p>
 </dd>
 <dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
 If a dictionary, data will be anonymized depending on the dictionary
@@ -838,7 +843,7 @@ lower-case, in compliance with the BIDS specification.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-17.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-21.<br>
 
 </p>
 

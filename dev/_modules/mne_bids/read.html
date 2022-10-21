@@ -535,8 +535,29 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="n">events</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">&#39;The provided raw data contains annotations, but you did not &#39;</span>
+                <span class="s1">&#39;pass an &quot;event_id&quot; mapping from annotation descriptions to &#39;</span>
+                <span class="s1">&#39;event codes. We will generate arbitrary event codes. &#39;</span>
+                <span class="s1">&#39;To specify custom event codes, please pass &quot;event_id&quot;.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">desc_without_id</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">desc_without_id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;The provided raw data contains annotations, but &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;&quot;event_id&quot; does not contain entries for all annotation &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;descriptions. The following entries are missing: &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_without_id</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+
+    <span class="c1"># If we have events, convert them to Annotations so they can be easily</span>
+    <span class="c1"># merged with existing Annotations.</span>
     <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># Only keep events for which we have an ID &lt;&gt; description mapping.</span>
         <span class="n">ids_without_desc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">ids_without_desc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -545,9 +566,6 @@
                 <span class="sa">f</span><span class="s1">&#39;Please add them to the event_id dictionary, or drop them &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;from the events array.&#39;</span>
             <span class="p">)</span>
-        <span class="k">del</span> <span class="n">ids_without_desc</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]]</span>
-        <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
 
         <span class="c1"># Append events to raw.annotations. All event onsets are relative to</span>
         <span class="c1"># measurement beginning.</span>
@@ -1503,7 +1521,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-17.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-21.<br>
 
 </p>
 

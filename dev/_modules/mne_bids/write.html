@@ -1748,14 +1748,16 @@
 <span class="sd">        If an array, the MNE events array (shape: ``(n_events, 3)``).</span>
 <span class="sd">        If a path or an array and ``raw.annotations`` exist, the union of</span>
 <span class="sd">        ``events`` and ``raw.annotations`` will be written.</span>
-<span class="sd">        Corresponding descriptions for all event codes (listed in the third</span>
+<span class="sd">        Mappings from event names to event codes (listed in the third</span>
 <span class="sd">        column of the MNE events array) must be specified via the ``event_id``</span>
-<span class="sd">        parameter; otherwise, an exception is raised.</span>
+<span class="sd">        parameter; otherwise, an exception is raised. If</span>
+<span class="sd">        :class:`~mne.Annotations` are present, their descriptions must be</span>
+<span class="sd">        included in ``event_id`` as well.</span>
 <span class="sd">        If ``None``, events will only be inferred from the raw object&#39;s</span>
 <span class="sd">        :class:`~mne.Annotations`.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">           If ``not None``, writes the union of ``events`` and</span>
+<span class="sd">           If specified, writes the union of ``events`` and</span>
 <span class="sd">           ``raw.annotations``. If you wish to **only** write</span>
 <span class="sd">           ``raw.annotations``, pass ``events=None``. If you want to</span>
 <span class="sd">           **exclude** the events in ``raw.annotations`` from being written,</span>
@@ -1770,7 +1772,10 @@
 <span class="sd">        ``events``. The descriptions will be written to the ``trial_type``</span>
 <span class="sd">        column in ``*_events.tsv``. The dictionary keys correspond to the event</span>
 <span class="sd">        description,s and the values to the event codes. You must specify a</span>
-<span class="sd">        description for all event codes appearing in ``events``.</span>
+<span class="sd">        description for all event codes appearing in ``events``. If your data</span>
+<span class="sd">        contains :class:`~mne.Annotations`, you can use this parameter to</span>
+<span class="sd">        assign event codes to each unique annotation description (mapping from</span>
+<span class="sd">        description to event code).</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If `None` (default), no anonymization is performed.</span>
 <span class="sd">        If a dictionary, data will be anonymized depending on the dictionary</span>
@@ -1986,11 +1991,7 @@
 
     <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You passed events, but no event_id &#39;</span>
-                         <span class="s1">&#39;dictionary. You need to pass both, or neither.&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">events</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You passed event_id, but no events. &#39;</span>
-                         <span class="s1">&#39;You need to pass both, or neither.&#39;</span><span class="p">)</span>
+                         <span class="s1">&#39;dictionary.&#39;</span><span class="p">)</span>
 
     <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;empty_room&#39;</span><span class="p">,</span>
                    <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
@@ -3424,7 +3425,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-17.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-21.<br>
 
 </p>
 

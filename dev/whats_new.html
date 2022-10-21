@@ -430,7 +430,9 @@
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p><a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a></p></li>
+<li><p><a class="reference external" href="https://github.com/larsoner">Eric Larson</a></p></li>
+<li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
 </ul>
 </section>
 <section id="detailed-list-of-changes">
@@ -440,6 +442,7 @@
 <ul class="simple">
 <li><p>Speed up <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> when lots of events are present by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1079">#1079</a>)</p></li>
 <li><p>Add the option <code class="docutils literal notranslate"><span class="pre">return_candidates</span></code> to <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.find_empty_room()</span></code></a> by <a class="reference external" href="https://github.com/larsoner">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1083">#1083</a>)</p></li>
+<li><p>When writing data via <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>, it is now possible to specify a custom mapping of <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> descriptions to event codes via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code> parameter. Previously, passing this parameter would always require to also pass <code class="docutils literal notranslate"><span class="pre">events</span></code>, and using a custom event code mapping for annotations was impossible, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1084">#1084</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -457,7 +460,7 @@
 <section id="bug-fixes">
 <h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>When writing data containing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> <strong>and</strong> passing events to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>, previously, annotations whose description did not appear in <code class="docutils literal notranslate"><span class="pre">event_id</span></code> were silently dropped. We now raise an exception and request users to specify mappings between descriptions and event codes in this case. It is still possible to omit <code class="docutils literal notranslate"><span class="pre">event_id</span></code> if no <code class="docutils literal notranslate"><span class="pre">events</span></code> are passed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1084">#1084</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -590,7 +593,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-17.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-21.<br>
 
 </p>
 
