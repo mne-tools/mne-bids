@@ -7,6 +7,17 @@
 What's new?
 ===========
 
+.. _changes_0_11_1:
+
+Version 0.11.1 (2022-10-21)
+---------------------------
+
+Version 0.11.1 is a patch release, all changes are listed below.
+For more complete information on the 0.11 version, see changelog below.
+
+- Speed up :func:`mne_bids.read_raw_bids` when lots of events are present by `Alexandre Gramfort`_ (:gh:`1079`)
+- When writing data containing :class:`mne.Annotations` **and** passing events to :func:`~mne_bids.write_raw_bids`, previously, annotations whose description did not appear in ``event_id`` were silently dropped. We now raise an exception and request users to specify mappings between descriptions and event codes in this case. It is still possible to omit ``event_id`` if no ``events`` are passed, by `Richard Höchenberger`_ (:gh:`1084`)
+
 .. _changes_0_11:
 
 Version 0.11 (2022-10-08)

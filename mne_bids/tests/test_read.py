@@ -1297,6 +1297,7 @@ def test_channels_tsv_raw_mismatch(tmp_path):
         read_raw_bids(bids_path)
 
 
+@testing.requires_testing_data
 def test_file_not_found(tmp_path):
     """Check behavior if the requested file cannot be found."""
     # First a path with a filename extension.
@@ -1312,6 +1313,15 @@ def test_file_not_found(tmp_path):
     bp.extension = None
     with pytest.raises(FileNotFoundError, match='File does not exist'):
         read_raw_bids(bids_path=bp)
+
+    bp.update(extension='.fif')
+    _read_raw_fif(raw_fname, verbose=False).save(bp.fpath)
+    with pytest.warns(RuntimeWarning, match=r'channels\.tsv'):
+        read_raw_bids(bp)  # smoke test
+
+    bp.update(task=None)
+    with pytest.raises(FileNotFoundError, match='Did you mean'):
+        read_raw_bids(bp)
 
 
 @requires_version('mne', '1.2')

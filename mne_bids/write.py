@@ -1337,14 +1337,16 @@ def write_raw_bids(
         If an array, the MNE events array (shape: ``(n_events, 3)``).
         If a path or an array and ``raw.annotations`` exist, the union of
         ``events`` and ``raw.annotations`` will be written.
-        Corresponding descriptions for all event codes (listed in the third
+        Mappings from event names to event codes (listed in the third
         column of the MNE events array) must be specified via the ``event_id``
-        parameter; otherwise, an exception is raised.
+        parameter; otherwise, an exception is raised. If
+        :class:`~mne.Annotations` are present, their descriptions must be
+        included in ``event_id`` as well.
         If ``None``, events will only be inferred from the raw object's
         :class:`~mne.Annotations`.
 
         .. note::
-           If ``not None``, writes the union of ``events`` and
+           If specified, writes the union of ``events`` and
            ``raw.annotations``. If you wish to **only** write
            ``raw.annotations``, pass ``events=None``. If you want to
            **exclude** the events in ``raw.annotations`` from being written,
@@ -1359,7 +1361,10 @@ def write_raw_bids(
         ``events``. The descriptions will be written to the ``trial_type``
         column in ``*_events.tsv``. The dictionary keys correspond to the event
         description,s and the values to the event codes. You must specify a
-        description for all event codes appearing in ``events``.
+        description for all event codes appearing in ``events``. If your data
+        contains :class:`~mne.Annotations`, you can use this parameter to
+        assign event codes to each unique annotation description (mapping from
+        description to event code).
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1575,11 +1580,7 @@ def write_raw_bids(
 
     if events is not None and event_id is None:
         raise ValueError('You passed events, but no event_id '
-                         'dictionary. You need to pass both, or neither.')
-
-    if event_id is not None and events is None:
-        raise ValueError('You passed event_id, but no events. '
-                         'You need to pass both, or neither.')
+                         'dictionary.')
 
     _validate_type(item=empty_room, item_name='empty_room',
                    types=(mne.io.BaseRaw, BIDSPath, None))
