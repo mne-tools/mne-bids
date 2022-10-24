@@ -570,14 +570,14 @@ positions, like those that can be obtained from
 <span class="c1"># Rename the montage channel names only for this example, because as said</span>
 <span class="c1"># before, coordinate and EEG data were not actually collected together</span>
 <span class="c1"># Do *not* do this for your own data.</span>
-<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.rename_channels" title="mne.channels.DigMontage.rename_channels" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">rename_channels</span></a><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.ch_names" title="mne.io.BaseRaw.ch_names" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-property"><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">)))</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.rename_channels" title="mne.channels.DigMontage.rename_channels" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">rename_channels</span></a><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)))</span>
 
 <span class="c1"># &quot;attach&quot; the electrode coordinates to the `raw` object</span>
 <span class="c1"># Note that this only works for some channel types (EEG/sEEG/ECoG/DBS/fNIRS)</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_montage" title="mne.io.BaseRaw.set_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">)</span>
 
 <span class="c1"># show the electrode positions</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.plot_sensors" title="mne.io.BaseRaw.plot_sensors" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">plot_sensors</span></a><span class="p">()</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">plot_sensors</span><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../_images/sphx_glr_convert_eeg_to_bids_001.png" srcset="../_images/sphx_glr_convert_eeg_to_bids_001.png" alt="convert eeg to bids" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for testing...
@@ -871,7 +871,7 @@ tests and example runs, we simply delete it.</p>
 </div>
 <p>The data contains annotations; which will be converted to events
 automatically by MNE-BIDS when writing the BIDS data:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.annotations" title="mne.io.BaseRaw.annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-property"><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span></a><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Annotations | 1 segment: T0 (1)&gt;
@@ -1135,7 +1135,7 @@ command line tool:</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-21.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-10-24.<br>
 
 </p>
 
