@@ -76,8 +76,7 @@ def generate_cli_rst(app=None):
             cmd_name = fname[:-3]
             run_name = op.join(cli_path, fname)
             output, _ = run_subprocess([sys.executable, run_name, '--help'],
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE, verbose=False)
+                                       verbose=False)
             output = output.splitlines()
 
             # Swap usage and title lines
