@@ -52,7 +52,7 @@ numpydoc_attributes_as_param_list = True
 numpydoc_xref_aliases = {
     'BIDSPath': ':class:`BIDSPath <mne_bids.BIDSPath>`',
     'path-like': ':term:`path-like <mne:path-like>`',
-    'array-like': ':term:`array-like <mne:array-like>`',
+    'array-like': ':term:`array_like <numpy:array_like>`',
     'int': ':class:`int <python:int>`',
     'bool': ':class:`bool <python:bool>`',
     'float': ':class:`float <python:float>`',
@@ -143,8 +143,9 @@ html_theme_options = {
 
 html_context = {
     'versions_dropdown': {
-        'dev': 'v0.11 (devel)',
-        'stable': 'v0.10 (stable)',
+        'dev': 'v0.12 (devel)',
+        'stable': 'v0.11 (stable)',
+        'v0.10': 'v0.10',
         'v0.9': 'v0.9',
         'v0.8': 'v0.8',
         'v0.7': 'v0.7',

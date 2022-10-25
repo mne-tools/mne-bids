@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 MNE-Python forum
+    url: https://mne.discourse.group/
+    about: Use the [MNE-Python forum](https://mne.discourse.group/) to ask (and answer) concrete technical questions or about usage of MNE-BIDS
+  - name: 📖 BIDS specification
+    url: https://bids-specification.readthedocs.io/en/latest/
+    about: Read the BIDS specification

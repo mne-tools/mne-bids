@@ -37,6 +37,8 @@ def run():
     parser.add_option('--acq', dest='acq',
                       help='acquisition parameter for this dataset')
     parser.add_option('--events_data', dest='events_data',
+                      help='Deprecated. Pass --events instead.')
+    parser.add_option('--events', dest='events',
                       help='events file (events.tsv)')
     parser.add_option('--event_id', dest='event_id',
                       help='event id dict', metavar='eid')
@@ -80,9 +82,10 @@ def run():
     if opt.line_freq is not None:
         line_freq = None if opt.line_freq == "None" else opt.line_freq
         raw.info['line_freq'] = line_freq
+
     write_raw_bids(raw, bids_path, event_id=opt.event_id,
-                   events_data=opt.events_data, overwrite=opt.overwrite,
-                   verbose=True)
+                   events=opt.events, overwrite=opt.overwrite,
+                   events_data=opt.events_data, verbose=True)
 
 
 if __name__ == '__main__':

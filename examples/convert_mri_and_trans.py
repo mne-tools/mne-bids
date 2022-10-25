@@ -62,7 +62,7 @@ data_path = sample.data_path()
 event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
             'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
-events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
+events_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
 fs_subjects_dir = op.join(data_path, 'subjects')  # FreeSurfer subjects dir
 
@@ -88,7 +88,7 @@ task = 'audiovisual'
 run = '01'
 bids_path = BIDSPath(subject=sub, session=ses, task=task,
                      run=run, root=output_path)
-write_raw_bids(raw, bids_path, events_data=events_data,
+write_raw_bids(raw, bids_path, events=events_fname,
                event_id=event_id, overwrite=True)
 
 # %%
