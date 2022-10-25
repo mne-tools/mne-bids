@@ -1243,6 +1243,7 @@ def test_file_not_found(tmp_path):
     with pytest.raises(FileNotFoundError, match='File does not exist'):
         read_raw_bids(bids_path=bp)
 
+
 def test_read_ieeg_coord_frame():
     """Ensure that the iEEG coordinate frame is read correctly."""
     bids_path = BIDSPath(
