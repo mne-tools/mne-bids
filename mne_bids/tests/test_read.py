@@ -2,6 +2,7 @@
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
+from contextlib import nullcontext
 import json
 import os
 import os.path as op
@@ -14,11 +15,13 @@ import shutil as sh
 import numpy as np
 from numpy.testing import assert_almost_equal
 
+from pkg_resources import parse_version
+
 import mne
+from mne.datasets import testing
 from mne.io.constants import FIFF
 from mne.utils import requires_nibabel, object_diff, requires_version
-from mne.utils import assert_dig_allclose
-from mne.datasets import testing, somato
+from mne.utils import assert_dig_allclose, check_version
 
 from mne_bids import BIDSPath
 from mne_bids.config import (MNE_STR_TO_FRAME, BIDS_SHARED_COORDINATE_FRAMES,
@@ -37,6 +40,7 @@ session_id = '01'
 run = '01'
 acq = '01'
 task = 'testing'
+fids_added = check_version('mne', '1.2')
 
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
@@ -45,14 +49,9 @@ _bids_path = BIDSPath(
 _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
-data_path = testing.data_path()
+data_path = testing.data_path(download=False)
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
-
-# Get the MNE somato data - EU
-somato_path = somato.data_path()
-somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
-                           'sub-01_task-somato_meg.fif')
 
 # Data with cHPI info
 raw_fname_chpi = op.join(data_path, 'SSS', 'test_move_anon_raw.fif')
@@ -115,6 +114,7 @@ def test_read_correct_inputs():
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_read_participants_data(tmp_path):
     """Test reading information from a BIDS sidecar.json file."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
@@ -186,6 +186,7 @@ def test_read_participants_data(tmp_path):
      ('l', 2, 'm', 1)]
 )
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
                                                       sex_bids, sex_mne,
                                                       tmp_path):
@@ -210,6 +211,7 @@ def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
 
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_get_head_mri_trans(tmp_path):
     """Test getting a trans object from BIDS data."""
     import nibabel as nib
@@ -286,7 +288,11 @@ def test_get_head_mri_trans(tmp_path):
     raw_test.set_montage(montage)
     raw_test.save(bids_path.fpath, overwrite=True)
 
-    with pytest.raises(RuntimeError, match='Could not extract fiducial'):
+    if fids_added:
+        ctx = nullcontext()
+    else:
+        ctx = pytest.raises(RuntimeError, match='Could not extract fiducial')
+    with ctx:
         get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
                            fs_subjects_dir=subjects_dir)
 
@@ -445,6 +451,7 @@ def test_get_head_mri_trans(tmp_path):
     write_raw_bids(raw=raw, bids_path=bids_path, verbose=False)
 
 
+@testing.requires_testing_data
 def test_handle_events_reading(tmp_path):
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
@@ -510,6 +517,7 @@ def test_handle_events_reading(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_keep_essential_annotations(tmp_path):
     """Test that essential Annotations are not omitted during I/O roundtrip."""
     raw = _read_raw_fif(raw_fname)
@@ -532,6 +540,7 @@ def test_keep_essential_annotations(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_handle_scans_reading(tmp_path):
     """Test reading data from a BIDS scans.tsv file."""
     raw = _read_raw_fif(raw_fname)
@@ -607,6 +616,7 @@ def test_handle_scans_reading_brainvision(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_handle_info_reading(tmp_path):
     """Test reading information from a BIDS sidecar JSON file."""
     # read in USA dataset, so it should find 50 Hz
@@ -694,6 +704,7 @@ def test_handle_info_reading(tmp_path):
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.filterwarnings(warning_str['maxshield'])
+@testing.requires_testing_data
 def test_handle_chpi_reading(tmp_path):
     """Test reading of cHPI information."""
     raw = _read_raw_fif(raw_fname_chpi, allow_maxshield='yes')
@@ -713,33 +724,38 @@ def test_handle_chpi_reading(tmp_path):
         meg_json_data = json.load(f)
 
     # cHPI frequency mismatch
-    meg_json_data_freq_mismatch = meg_json_data.copy()
-    meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
-    _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
+    if parse_version(mne.__version__) <= parse_version('1.1'):
+        assert 'ContinuousHeadLocalization' not in meg_json_data
+        assert 'HeadCoilFrequency' not in meg_json_data
+    else:
+        meg_json_data_freq_mismatch = meg_json_data.copy()
+        meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
+        _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
-    with pytest.warns(RuntimeWarning, match='Defaulting to .* mne.Raw object'):
+        with pytest.warns(RuntimeWarning,
+                          match='Defaulting to .* mne.Raw object'):
+            raw_read = read_raw_bids(bids_path)
+
+        # cHPI "off" according to sidecar, but present in the data
+        meg_json_data_chpi_mismatch = meg_json_data.copy()
+        meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
+        _write_json(meg_json_path, meg_json_data_chpi_mismatch, overwrite=True)
+
         raw_read = read_raw_bids(bids_path)
-
-    # cHPI "off" according to sidecar, but present in the data
-    meg_json_data_chpi_mismatch = meg_json_data.copy()
-    meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
-    _write_json(meg_json_path, meg_json_data_chpi_mismatch, overwrite=True)
-
-    raw_read = read_raw_bids(bids_path)
-    assert raw_read.info['hpi_subsystem'] is None
-    assert raw_read.info['hpi_meas'] == []
+        assert raw_read.info['hpi_subsystem'] is None
+        assert raw_read.info['hpi_meas'] == []
 
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_handle_eeg_coords_reading(tmp_path):
     """Test reading iEEG coordinates from BIDS files."""
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task, root=tmp_path)
 
-    data_path = op.join(testing.data_path(), 'EDF')
-    raw_fname = op.join(data_path, 'test_reduced.edf')
+    raw_fname = op.join(data_path, 'EDF', 'test_reduced.edf')
     raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'eeg' data
@@ -748,7 +764,7 @@ def test_handle_eeg_coords_reading(tmp_path):
 
     # set a `random` montage
     ch_names = raw.ch_names
-    elec_locs = np.random.random((len(ch_names), 3)).astype(float)
+    elec_locs = np.random.RandomState(0).randn(len(ch_names), 3)
     ch_pos = dict(zip(ch_names, elec_locs))
 
     # # create montage in 'unknown' coordinate frame
@@ -756,8 +772,12 @@ def test_handle_eeg_coords_reading(tmp_path):
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="unknown")
     raw.set_montage(montage)
-    with pytest.raises(RuntimeError, match="'head' coordinate frame "
-                                           "must contain"):
+    if fids_added:
+        ctx = nullcontext()
+    else:
+        ctx = pytest.raises(
+            RuntimeError, match="'head' coordinate frame must contain")
+    with ctx:
         write_raw_bids(raw, bids_path, overwrite=True)
 
     bids_path.update(root=tmp_path)
@@ -769,24 +789,33 @@ def test_handle_eeg_coords_reading(tmp_path):
                                               suffix='electrodes',
                                               extension='.tsv',
                                               on_error='warn')
-    assert coordsystem_fname is None
-    assert electrodes_fname is None
+    if fids_added:
+        assert coordsystem_fname is not None
+        assert electrodes_fname is not None
+    else:
+        assert coordsystem_fname is None
+        assert electrodes_fname is None
 
     # create montage in head frame and set should result in
     # an error if landmarks are not set
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="head")
     raw.set_montage(montage)
-    with pytest.raises(RuntimeError, match="'head' coordinate frame "
-                                           "must contain"):
+    if fids_added:
+        ctx = nullcontext()
+    else:
+        ctx = pytest.raises(
+            RuntimeError, match="'head' coordinate frame must contain")
+    with ctx:
         write_raw_bids(raw, bids_path, overwrite=True)
 
-    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                            coord_frame="head",
-                                            nasion=[1, 0, 0],
-                                            lpa=[0, 1, 0],
-                                            rpa=[0, 0, 1])
-    raw.set_montage(montage)
+    if not fids_added:  # only need to rerun if the last one failed
+        montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                coord_frame="head",
+                                                nasion=[1, 0, 0],
+                                                lpa=[0, 1, 0],
+                                                rpa=[0, 0, 1])
+        raw.set_montage(montage)
     write_raw_bids(raw, bids_path, overwrite=True)
 
     # obtain the sensor positions and assert ch_coords are same
@@ -808,10 +837,10 @@ def test_handle_eeg_coords_reading(tmp_path):
                          [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     """Test reading iEEG coordinates from BIDS files."""
-    data_path = op.join(testing.data_path(), 'EDF')
-    raw_fname = op.join(data_path, 'test_reduced.edf')
+    raw_fname = op.join(data_path, 'EDF', 'test_reduced.edf')
     bids_fname = bids_path.copy().update(datatype='ieeg',
                                          suffix='ieeg',
                                          extension='.edf',
@@ -825,7 +854,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     # coordinate frames in mne-python should all map correctly
     # set a `random` montage
     ch_names = raw.ch_names
-    elec_locs = np.random.random((len(ch_names), 3)).astype(float)
+    elec_locs = np.random.RandomState(0).randn(len(ch_names), 3)
     ch_pos = dict(zip(ch_names, elec_locs))
     coordinate_frames = ['mni_tal']
     for coord_frame in coordinate_frames:
@@ -983,11 +1012,12 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.parametrize('fname', ['testdata_ctf.ds', 'catch-alp-good-f.ds'])
+@testing.requires_testing_data
 def test_get_head_mri_trans_ctf(fname, tmp_path):
     """Test getting a trans object from BIDS data in CTF."""
     import nibabel as nib
 
-    ctf_data_path = op.join(testing.data_path(), 'CTF')
+    ctf_data_path = op.join(data_path, 'CTF')
     raw_ctf_fname = op.join(ctf_data_path, fname)
     raw_ctf = _read_raw_ctf(raw_ctf_fname, clean_names=True)
     bids_path = _bids_path.copy().update(
@@ -1019,6 +1049,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_read_raw_bids_pathlike(tmp_path):
     """Test that read_raw_bids() can handle a Path-like bids_root."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
@@ -1028,6 +1059,7 @@ def test_read_raw_bids_pathlike(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_read_raw_datatype(tmp_path):
     """Test that read_raw_bids() can infer the str_suffix if need be."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
@@ -1047,6 +1079,7 @@ def test_read_raw_datatype(tmp_path):
     assert raw_1 == raw_3
 
 
+@testing.requires_testing_data
 def test_handle_channel_type_casing(tmp_path):
     """Test that non-uppercase entries in the `type` column are accepted."""
     bids_path = _bids_path.copy().update(root=tmp_path)
@@ -1071,6 +1104,7 @@ def test_handle_channel_type_casing(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_handle_non_mne_channel_type(tmp_path):
     """Test that channel types not known to MNE will be read as 'misc'."""
     bids_path = _bids_path.copy().update(root=tmp_path)
@@ -1101,6 +1135,7 @@ def test_handle_non_mne_channel_type(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_bads_reading(tmp_path):
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg')
     bads_raw = ['MEG 0112', 'MEG 0113']
@@ -1123,6 +1158,7 @@ def test_bads_reading(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_write_read_fif_split_file(tmp_path, monkeypatch):
     """Test split files are read correctly."""
     # load raw test file, extend it to be larger than 2gb, and save it
@@ -1137,7 +1173,8 @@ def test_write_read_fif_split_file(tmp_path, monkeypatch):
     bids_path.update(acquisition='01')
     n_channels = len(raw.ch_names)
     n_times = int(2.5e6 / n_channels)  # enough to produce a 10MB split
-    data = np.empty((n_channels, n_times), dtype=np.float32)
+    data = np.random.RandomState(0).randn(
+        n_channels, n_times).astype(np.float32)
     raw = mne.io.RawArray(data, raw.info)
     big_fif_fname = Path(tmp_dir) / 'test_raw.fif'
 
@@ -1189,6 +1226,7 @@ def test_write_read_fif_split_file(tmp_path, monkeypatch):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_ignore_exclude_param(tmp_path):
     """Test that extra_params=dict(exclude=...) is being ignored."""
     bids_path = _bids_path.copy().update(root=tmp_path)
@@ -1202,6 +1240,7 @@ def test_ignore_exclude_param(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@testing.requires_testing_data
 def test_channels_tsv_raw_mismatch(tmp_path):
     """Test behavior when channels.tsv contains channels not found in raw."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype='meg',
@@ -1258,6 +1297,7 @@ def test_channels_tsv_raw_mismatch(tmp_path):
         read_raw_bids(bids_path)
 
 
+@testing.requires_testing_data
 def test_file_not_found(tmp_path):
     """Check behavior if the requested file cannot be found."""
     # First a path with a filename extension.
@@ -1273,6 +1313,15 @@ def test_file_not_found(tmp_path):
     bp.extension = None
     with pytest.raises(FileNotFoundError, match='File does not exist'):
         read_raw_bids(bids_path=bp)
+
+    bp.update(extension='.fif')
+    _read_raw_fif(raw_fname, verbose=False).save(bp.fpath)
+    with pytest.warns(RuntimeWarning, match=r'channels\.tsv'):
+        read_raw_bids(bp)  # smoke test
+
+    bp.update(task=None)
+    with pytest.raises(FileNotFoundError, match='Did you mean'):
+        read_raw_bids(bp)
 
 
 @requires_version('mne', '1.2')

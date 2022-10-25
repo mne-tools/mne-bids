@@ -28,7 +28,8 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
-from mne.channels.channels import _unit2human
+from mne.channels.channels import (_unit2human, _get_meg_system)
+from mne.chpi import get_chpi_info
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
                        ProgressBar)
@@ -124,7 +125,7 @@ def _channels_tsv(raw, fname, overwrite=False):
         ch_type.append(map_chs[_channel_type])
         description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
-    if raw._orig_units is not None:
+    if raw._orig_units:
         units = [raw._orig_units.get(ch, 'n/a') for ch in raw.ch_names]
     else:
         units = [_unit2human.get(ch_i['unit'], 'n/a')
@@ -825,35 +826,41 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     }
 
     # Compile cHPI information, if any.
-    from mne.io.ctf import RawCTF
-    from mne.io.kit.kit import RawKIT
-
-    chpi = False
-    hpi_freqs = np.array([])
+    system, _ = _get_meg_system(raw.info)
+    chpi = None
+    hpi_freqs = []
     if (datatype == 'meg' and
             parse_version(mne.__version__) > parse_version('0.23')):
         # We need to handle different data formats differently
-        if isinstance(raw, RawCTF):
+        if system == 'CTF_275':
             try:
                 mne.chpi.extract_chpi_locs_ctf(raw)
                 chpi = True
             except RuntimeError:
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
-        elif isinstance(raw, RawKIT):
+        elif system == 'KIT':
             try:
                 mne.chpi.extract_chpi_locs_kit(raw)
                 chpi = True
             except (RuntimeError, ValueError):
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
-        else:
-            hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
-                                                     on_missing='ignore')
-            if hpi_freqs.size > 0:
-                chpi = True
+        elif system in ['122m', '306m']:
+            # XXX: Remove this version check when support for mne <1.2
+            # is dropped
+            if parse_version(mne.__version__) > parse_version('1.1'):
+                n_active_hpi = mne.chpi.get_active_chpi(raw,
+                                                        on_missing='ignore')
+                chpi = bool(n_active_hpi.sum() > 0)
+                if chpi:
+                    hpi_freqs, _, _ = get_chpi_info(info=raw.info,
+                                                    on_missing='ignore')
+                    hpi_freqs = list(hpi_freqs)
+
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '
                     'information: requires MNE-Python >= 0.24')
-        chpi = None
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
@@ -875,7 +882,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
 
     if chpi is not None:
         ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
-        ch_info_json_meg.append(('HeadCoilFrequency', list(hpi_freqs)))
+        ch_info_json_meg.append(('HeadCoilFrequency', hpi_freqs))
 
     if emptyroom_fname is not None:
         ch_info_json_meg.append(('AssociatedEmptyRoom', str(emptyroom_fname)))
@@ -1330,14 +1337,16 @@ def write_raw_bids(
         If an array, the MNE events array (shape: ``(n_events, 3)``).
         If a path or an array and ``raw.annotations`` exist, the union of
         ``events`` and ``raw.annotations`` will be written.
-        Corresponding descriptions for all event codes (listed in the third
+        Mappings from event names to event codes (listed in the third
         column of the MNE events array) must be specified via the ``event_id``
-        parameter; otherwise, an exception is raised.
+        parameter; otherwise, an exception is raised. If
+        :class:`~mne.Annotations` are present, their descriptions must be
+        included in ``event_id`` as well.
         If ``None``, events will only be inferred from the raw object's
         :class:`~mne.Annotations`.
 
         .. note::
-           If ``not None``, writes the union of ``events`` and
+           If specified, writes the union of ``events`` and
            ``raw.annotations``. If you wish to **only** write
            ``raw.annotations``, pass ``events=None``. If you want to
            **exclude** the events in ``raw.annotations`` from being written,
@@ -1352,7 +1361,10 @@ def write_raw_bids(
         ``events``. The descriptions will be written to the ``trial_type``
         column in ``*_events.tsv``. The dictionary keys correspond to the event
         description,s and the values to the event codes. You must specify a
-        description for all event codes appearing in ``events``.
+        description for all event codes appearing in ``events``. If your data
+        contains :class:`~mne.Annotations`, you can use this parameter to
+        assign event codes to each unique annotation description (mapping from
+        description to event code).
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1568,11 +1580,7 @@ def write_raw_bids(
 
     if events is not None and event_id is None:
         raise ValueError('You passed events, but no event_id '
-                         'dictionary. You need to pass both, or neither.')
-
-    if event_id is not None and events is None:
-        raise ValueError('You passed event_id, but no events. '
-                         'You need to pass both, or neither.')
+                         'dictionary.')
 
     _validate_type(item=empty_room, item_name='empty_room',
                    types=(mne.io.BaseRaw, BIDSPath, None))
@@ -1616,8 +1624,15 @@ def write_raw_bids(
         elif format == 'FIF':
             ext = '.fif'
         else:
-            raise ValueError('For preloaded data, you must specify a valid '
-                             'format. See "allow_preload".')
+            msg = (
+                'For preloaded data, you must set the "format" parameter '
+                'to one of: BrainVision, EDF, or FIF'
+            )
+            if format != 'auto':  # the default was changed
+                msg += f', but got: "{format}"'
+
+            raise ValueError(msg)
+
         raw_orig = raw
 
     # Check times
@@ -1628,15 +1643,15 @@ def write_raw_bids(
         else:
             msg = ("The raw data you want to write contains {comp} time "
                    "points than the raw data on disk. It is possible that you "
-                   "{guess} your data, which write_raw_bids() won't accept.")
+                   "{guess} your data.")
             if len(raw.times) < len(raw_orig.times):
                 msg = msg.format(comp='fewer', guess='cropped')
             elif len(raw.times) > len(raw_orig.times):
                 msg = msg.format(comp='more', guess='concatenated')
 
-        msg += (' If you believe you have a valid use case that should be '
-                'supported, please reach out to the developers at '
-                'https://github.com/mne-tools/mne-bids/issues')
+        msg += (' To write the data, please preload it and pass '
+                '"allow_preload=True" and the "format" parameter to '
+                'write_raw_bids().')
         raise ValueError(msg)
 
     # Initialize BIDSPath
@@ -2372,7 +2387,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None,
 
 
 @verbose
-def write_meg_calibration(calibration, bids_path, verbose=None):
+def write_meg_calibration(calibration, bids_path, *, verbose=None):
     """Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.
 
     Parameters
@@ -2389,11 +2404,11 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
 
     Examples
     --------
-    >>> data_path = mne.datasets.testing.data_path(download=False)
-    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat')
+    >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
+    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat') # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids'))
-    >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +ELLIPSIS
+    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +SKIP
     Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...
     """  # noqa: E501
     if bids_path.root is None or bids_path.subject is None:
@@ -2445,13 +2460,13 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
 
     Examples
     --------
-    >>> data_path = mne.datasets.testing.data_path(download=False)
-    >>> crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif')
+    >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
+    >>> crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif') # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids'))
-    >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +ELLIPSIS
+    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +SKIP
     Writing crosstalk file to ...sub-01_ses-test_acq-crosstalk_meg.fif
-    """
+    """  # noqa: E501
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError('bids_path must have root and subject set.')
     if bids_path.datatype not in (None, 'meg'):

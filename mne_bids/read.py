@@ -11,6 +11,8 @@ from pathlib import Path
 import json
 import re
 from datetime import datetime, timezone
+from difflib import get_close_matches
+import os
 
 import numpy as np
 import mne
@@ -55,7 +57,8 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
     elif ext == '.fif':
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf',
+                 '.cdt']:
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 
@@ -121,8 +124,29 @@ def _read_events(events, event_id, raw, bids_path=None):
     else:
         events = read_events(events).astype(int)
 
+    if raw.annotations:
+        if event_id is None:
+            logger.info(
+                'The provided raw data contains annotations, but you did not '
+                'pass an "event_id" mapping from annotation descriptions to '
+                'event codes. We will generate arbitrary event codes. '
+                'To specify custom event codes, please pass "event_id".'
+            )
+        else:
+            desc_without_id = sorted(
+                set(raw.annotations.description) - set(event_id.keys())
+            )
+            if desc_without_id:
+                raise ValueError(
+                    f'The provided raw data contains annotations, but '
+                    f'"event_id" does not contain entries for all annotation '
+                    f'descriptions. The following entries are missing: '
+                    f'{", ".join(desc_without_id)}'
+                )
+
+    # If we have events, convert them to Annotations so they can be easily
+    # merged with existing Annotations.
     if events.size > 0:
-        # Only keep events for which we have an ID <> description mapping.
         ids_without_desc = set(events[:, 2]) - set(event_id.values())
         if ids_without_desc:
             raise ValueError(
@@ -131,9 +155,6 @@ def _read_events(events, event_id, raw, bids_path=None):
                 f'Please add them to the event_id dictionary, or drop them '
                 f'from the events array.'
             )
-        del ids_without_desc
-        mask = [e in list(event_id.values()) for e in events[:, 2]]
-        events = events[mask]
 
         # Append events to raw.annotations. All event onsets are relative to
         # measurement beginning.
@@ -182,10 +203,24 @@ def _read_events(events, event_id, raw, bids_path=None):
     return all_events, all_dur, all_desc
 
 
+def _verbose_list_index(lst, val, *, allow_all=False):
+    # try to "return lst.index(val)" for list of str, but be more
+    # informative/verbose when it fails
+    try:
+        return lst.index(val)
+    except ValueError as exc:
+        # Use str cast here to deal with pathlib.Path instances
+        extra = get_close_matches(str(val), [str(ll) for ll in lst])
+        if allow_all and not extra:
+            extra = lst
+        extra = f'. Did you mean one of {extra}?' if extra else ''
+        raise ValueError(f'{exc}{extra}') from None
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
-    row_ind = subjects.index(subject)
+    row_ind = _verbose_list_index(subjects, subject, allow_all=True)
     raw.info['subject_info'] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
@@ -250,7 +285,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     if all(suffix in ('.vhdr', '.eeg', '.vmrk') for suffix in acq_suffixes):
         ext = fnames[0].suffix
         data_fname = Path(data_fname).with_suffix(ext)
-    row_ind = fnames.index(data_fname)
+    row_ind = _verbose_list_index(fnames, data_fname)
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
@@ -265,7 +300,8 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         ))
         split_acq_times = []
         for split_f in split_fnames:
-            split_acq_times.append(acq_times[fnames.index(split_f)])
+            split_acq_times.append(
+                acq_times[_verbose_list_index(fnames, split_f)])
         if len(set(split_acq_times)) != 1:
             raise ValueError("Split files must have the same acq_time.")
 
@@ -474,8 +510,9 @@ def _handle_events_reading(events_fname, raw):
                                         description=descriptions)
     raw.set_annotations(annot_from_events)
 
-    annot_idx_to_keep = [idx for idx, annot in enumerate(annot_from_raw)
-                         if annot['description'] in ANNOTATIONS_TO_KEEP]
+    annot_idx_to_keep = [idx for idx, descr
+                         in enumerate(annot_from_raw.description)
+                         if descr in ANNOTATIONS_TO_KEEP]
     annot_to_keep = annot_from_raw[annot_idx_to_keep]
 
     if len(annot_to_keep):
@@ -702,7 +739,17 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
                 break
 
     if not raw_path.exists():
-        raise FileNotFoundError(f'File does not exist: {raw_path}')
+        options = os.listdir(bids_path.directory)
+        matches = get_close_matches(bids_path.basename, options)
+        msg = f'File does not exist:\n{raw_path}'
+        if matches:
+            msg += (
+                '\nDid you mean one of:\n' +
+                '\n'.join(matches) +
+                '\ninstead of:\n' +
+                bids_path.basename
+            )
+        raise FileNotFoundError(msg)
     if config_path is not None and not config_path.exists():
         raise FileNotFoundError(f'config directory not found: {config_path}')
 

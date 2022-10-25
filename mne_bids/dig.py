@@ -10,7 +10,6 @@ from collections import OrderedDict
 from pathlib import Path
 import re
 import warnings
-from importlib_resources import files
 
 import mne
 import numpy as np
@@ -28,6 +27,8 @@ from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_scale_coord_to_meters, _write_json, _write_tsv,
                             verbose)
 from mne_bids.path import BIDSPath
+
+data_dir = Path(__file__).parent / 'data'
 
 
 def _handle_electrodes_reading(electrodes_fname, coord_frame,
@@ -633,7 +634,6 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
     if coord_frame == 'auto':
         coord_frame = 'mri_voxel' if locs.min() >= 0 else 'ras'
     # transform montage to head
-    data_dir = files('mne_bids.data')
     # set to the right coordinate frame as specified by the user
     for d in montage.dig:  # ensure same coordinate frame
         d['coord_frame'] = MNE_STR_TO_FRAME[coord_frame]
