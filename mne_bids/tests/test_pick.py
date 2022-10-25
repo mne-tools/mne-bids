@@ -10,10 +10,12 @@ from mne.io import read_raw_fif
 
 from mne_bids.pick import coil_type
 
+data_path = testing.data_path(download=False)
 
+
+@testing.requires_testing_data
 def test_coil_type():
     """Test the correct coil type is retrieved."""
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     raw = read_raw_fif(raw_fname)

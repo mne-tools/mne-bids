@@ -1,0 +1,259 @@
+# YAML 1.2
+---
+# Metadata for citation of this software according to the CFF format (https://citation-file-format.github.io/)
+cff-version: 1.2.0
+title: 'MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis'
+abstract: 'MNE-BIDS is a Python library to facilitate the analysis of MEG, EEG, and iEEG data with MNE-Python for data conforming to the BIDS (Brain Imaging Data Structure) format. More information about BIDS and MNE-Python can be found at <a href="https://bids.neuroimaging.io">bids.neuroimaging.io</a> and <a href="https://mne.tools">mne.tools</a>, respectively.'
+authors:
+    - given-names: Stefan
+      family-names: Appelhoff
+      affiliation: 'Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany'
+      orcid: 'https://orcid.org/0000-0001-8002-0877'
+    - given-names: Matthew
+      family-names: Sanderson
+      affiliation: 'Department of Cognitive Sciences, Macquarie University, Sydney, Australia'
+      orcid: 'https://orcid.org/0000-0002-4645-8979'
+    - given-names: Teon L.
+      family-names: Brooks
+      affiliation: 'Mozilla'
+      orcid: 'https://orcid.org/0000-0001-7344-3230'
+    - given-names: Marijn
+      family-names: van Vliet
+      affiliation: 'Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland'
+      orcid: 'https://orcid.org/0000-0002-6537-6899'
+    - given-names: Romain
+      family-names: Quentin
+      affiliation: 'Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892'
+      orcid: 'https://orcid.org/0000-0001-7659-3605'
+    - given-names: Chris
+      family-names: Holdgraf
+      affiliation: 'UC Berkeley, Project Jupyter'
+      orcid: 'https://orcid.org/0000-0002-2391-0678'
+    - given-names: Maximilien
+      family-names: Chaumon
+      affiliation: 'Institut du cerveau et de la moelle épinière (ICM), Paris, France'
+      orcid: 'https://orcid.org/0000-0001-9664-8861'
+    - given-names: Ezequiel
+      family-names: Mikulan
+      affiliation: "Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy"
+      orcid: 'https://orcid.org/0000-0001-7259-6120'
+    - given-names: Kambiz
+      family-names: Tavabi
+      affiliation: 'Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA'
+      orcid: 'https://orcid.org/0000-0003-1881-892X'
+    - given-names: Richard
+      family-names: Höchenberger
+      affiliation: 'Institute of Neuroscience and Medicine (INM-3), Research Center Jülich, Germany'
+      orcid: 'https://orcid.org/0000-0002-0380-4798'
+    - given-names: Dominik
+      family-names: Welke
+      affiliation: 'Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany'
+      orcid: 'https://orcid.org/0000-0002-5529-1998'
+    - given-names: Clemens
+      family-names: Brunner
+      affiliation: 'Institute of Psychology, University of Graz, Austria'
+      orcid: 'https://orcid.org/0000-0002-6030-2233'
+    - given-names: Alexander P.
+      family-names: Rockhill
+      affiliation: 'University of Oregon, Eugene OR, USA'
+      orcid: 'https://orcid.org/0000-0003-3868-7453'
+    - given-names: Eric
+      family-names: Larson
+      affiliation: 'Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA'
+      orcid: 'https://orcid.org/0000-0003-4782-5360'
+    - given-names: Adam
+      family-names: Li
+      affiliation: 'Institute for Computational Medicine, Johns Hopkins University, Baltimore, MD, USA'
+      orcid: 'https://orcid.org/0000-0001-8421-365X'
+    - given-names: Ariel
+      family-names: Rokem
+      affiliation: 'Department of Psychology, University of Washington, Seattle WA, USA'
+      orcid: 'https://orcid.org/0000-0003-0679-1985'
+    - given-names: Daniel
+      family-names: McCloy
+      affiliation: 'Institute for Learning & Brain Sciences, University of Washington, Seattle WA, USA'
+      orcid: 'https://orcid.org/0000-0002-7572-3241'
+    - given-names: Austin J.
+      family-names: Hurst
+      affiliation: 'Dalhousie University, Halifax, Nova Scotia'
+      orcid: 'https://orcid.org/0000-0002-0219-4131'
+    - given-names: Diego
+      family-names: Lozano-Soldevilla
+      affiliation: "Institut d'Investigacions Biomèdiques August Pi i Sunyer (IDIBAPS), Barcelona, Spain"
+      orcid: 'https://orcid.org/0000-0003-1794-8204'
+    - given-names: Eduard
+      family-names: Ort
+      affiliation: 'Institute of Experimental Psychology, Heinrich Heine University Düsseldorf, Germany'
+      orcid: 'https://orcid.org/0000-0001-5546-3561'
+    - given-names: Ethan
+      family-names: Knights
+      affiliation: 'Medical Research Council Cognition & Brain Sciences Unit, University of Cambridge'
+      orcid: 'https://orcid.org/0000-0001-6078-9160'
+    - given-names: Evgenii
+      family-names: Kalenkovich
+      affiliation: 'HSE University, Centre for Cognition and Decision Making, Institute for Cognitive Neuroscience, National Research University Higher School of Economics, Russian Federation'
+      orcid: 'https://orcid.org/0000-0002-4606-4179'
+    - given-names: Franziska
+      family-names: von Albedyll
+    - given-names: Fu-Te
+      family-names: Wong
+    - given-names: Jean-Rémi
+      family-names: King
+      affiliation: 'Facebook AI Research, Paris, France'
+      orcid: 'https://orcid.org/0000-0002-2121-170X'
+    - given-names: Julia Guiomar
+      family-names: Niso Galán
+      affiliation: 'Psychological & Brain Sciences, Indiana University, Bloomington, IN, USA'
+      orcid: 'https://orcid.org/0000-0001-5872-8924'
+    - given-names: Richard
+      family-names: Koehler
+      orcid: 'https://orcid.org/0000-0002-5219-1289'
+    - given-names: Robert
+      family-names: Luke
+      orcid: 'https://orcid.org/0000-0002-4930-8351'
+    - given-names: Simon
+      family-names: Kern
+      affiliation: 'Central Institute of Mental Health, Mannheim, Germany'
+      orcid: 'https://orcid.org/0000-0002-9050-9040'
+    - given-names: Sin
+      family-names: Kim
+      affiliation: 'Korea Advanced Institute of Science and Technology'
+      orcid: 'https://orcid.org/0000-0003-4652-3758'
+    - given-names: Sophie
+      family-names: Herbst
+      affiliation: 'NeuroSpin, CEA, DRF/Joliot, INSERM, Cognitive Neuroimaging Unit, Université Paris-Saclay, 91191Gif/Yvette, France'
+      orcid: 'https://orcid.org/0000-0001-8502-0366'
+    - given-names: Swastika
+      family-names: Gupta
+    - given-names: Thomas
+      family-names: Donoghue
+      affiliation: 'Department of Biomedical Engineering, Columbia University'
+      orcid: 'https://orcid.org/0000-0001-5911-0472'
+    - given-names: Yorguin José
+      family-names: Mantilla Ramos
+      affiliation: 'Grupo Neuropsicología y Conducta, Universidad de Antioquia, Medellín, Colombia'
+      orcid: 'https://orcid.org/0000-0003-4473-0876'
+    - given-names: Scott
+      family-names: Huberty
+      affiliation: 'McGill University, Montréal, QC, Canada'
+      orcid: 'https://orcid.org/0000-0003-2637-031X'
+    - given-names: Mathieu
+      family-names: Scheltienne
+      affiliation: 'Human Neuroscience Platform, Fondation Campus Biotech Geneva, Geneva, Switzerland'
+      orcid: 'https://orcid.org/0000-0001-8316-7436'
+    - given-names: Anand
+      family-names: Saini
+    - given-names: Bruno
+      family-names: Hebling Vieira
+      affiliation: 'Methods of Plasticity Research, Department of Psychology, University of Zurich, Zurich, Switzerland'
+      orcid: 'https://orcid.org/0000-0002-8770-7396'
+    - given-names: Denis
+      family-names: Engemann
+      affiliation: 'Roche Pharma Research and Early Development (pRED), Basel, Switzerland'
+      orcid: 'https://orcid.org/0000-0002-7223-1014'
+    - given-names: Alexandre
+      family-names: Gramfort
+      affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
+      orcid: 'https://orcid.org/0000-0001-9791-4404'
+    - given-names: Mainak
+      family-names: Jas
+      affiliation: 'Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA'
+      orcid: 'https://orcid.org/0000-0002-3199-9027'
+type: software
+repository-code: 'https://github.com/mne-tools/mne-bids'
+license: BSD-3-Clause
+keywords:
+  - BIDS
+  - brain imaging data structure
+  - neuroscience
+  - neuroimaging
+  - mne
+  - python
+  - magnetoencephalography
+  - meg
+  - electroencephalography
+  - eeg
+  - ieeg
+message: >-
+  Please cite this software using the metadata from
+  'preferred-citation' in the CITATION.cff file.
+preferred-citation:
+  title: >-
+    MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis
+  journal: Journal of Open Source Software
+  type: article
+  year: 2019
+  volume: 4
+  issue: 44
+  start: 1896
+  doi: 10.21105/joss.01896
+  authors:
+    - given-names: Stefan
+      family-names: Appelhoff
+      affiliation: 'Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany'
+      orcid: 'https://orcid.org/0000-0001-8002-0877'
+    - given-names: Matthew
+      family-names: Sanderson
+      affiliation: 'Department of Cognitive Sciences, Macquarie University, Sydney, Australia'
+      orcid: 'https://orcid.org/0000-0002-4645-8979'
+    - given-names: Teon L.
+      family-names: Brooks
+      affiliation: 'Mozilla'
+      orcid: 'https://orcid.org/0000-0001-7344-3230'
+    - given-names: Marijn
+      family-names: van Vliet
+      affiliation: 'Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland'
+      orcid: 'https://orcid.org/0000-0002-6537-6899'
+    - given-names: Romain
+      family-names: Quentin
+      affiliation: 'Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892'
+      orcid: 'https://orcid.org/0000-0001-7659-3605'
+    - given-names: Chris
+      family-names: Holdgraf
+      affiliation: 'UC Berkeley, Project Jupyter'
+      orcid: 'https://orcid.org/0000-0002-2391-0678'
+    - given-names: Maximilien
+      family-names: Chaumon
+      affiliation: 'Institut du cerveau et de la moelle épinière (ICM), Paris, France'
+      orcid: 'https://orcid.org/0000-0001-9664-8861'
+    - given-names: Ezequiel
+      family-names: Mikulan
+      affiliation: "Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy"
+      orcid: 'https://orcid.org/0000-0001-7259-6120'
+    - given-names: Kambiz
+      family-names: Tavabi
+      affiliation: 'Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA'
+      orcid: 'https://orcid.org/0000-0003-1881-892X'
+    - given-names: Richard
+      family-names: Höchenberger
+      affiliation: 'Institute of Neuroscience and Medicine (INM-3), Research Center Jülich, Germany'
+      orcid: 'https://orcid.org/0000-0002-0380-4798'
+    - given-names: Dominik
+      family-names: Welke
+      affiliation: 'Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany'
+      orcid: 'https://orcid.org/0000-0002-5529-1998'
+    - given-names: Clemens
+      family-names: Brunner
+      affiliation: 'Institute of Psychology, University of Graz, Austria'
+      orcid: 'https://orcid.org/0000-0002-6030-2233'
+    - given-names: Alexander P.
+      family-names: Rockhill
+      affiliation: 'University of Oregon, Eugene OR, USA'
+      orcid: 'https://orcid.org/0000-0003-3868-7453'
+    - given-names: Eric
+      family-names: Larson
+      affiliation: 'Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA'
+      orcid: 'https://orcid.org/0000-0003-4782-5360'
+    - given-names: Alexandre
+      family-names: Gramfort
+      affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
+      orcid: 'https://orcid.org/0000-0001-9791-4404'
+    - given-names: Mainak
+      family-names: Jas
+      affiliation: 'Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA'
+      orcid: 'https://orcid.org/0000-0002-3199-9027'
+identifiers:
+  - description: "Code archive on Zenodo"
+    type: doi
+    value: 10.5281/zenodo.3580272
+...

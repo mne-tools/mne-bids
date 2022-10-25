@@ -27,6 +27,7 @@ run = '01'
 acq = None
 task = 'testing'
 
+data_path = testing.data_path(download=False)
 bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
@@ -36,7 +37,6 @@ bids_path = BIDSPath(
 def _get_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp('mnebids_utils_test_bids_ds'))
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -58,7 +58,7 @@ def _get_bids_test_dir(tmp_path_factory):
     # Write multiple runs for test_purposes
     for run_idx in [run, '02']:
         name = bids_path.copy().update(run=run_idx)
-        write_raw_bids(raw, name, events_data=events,
+        write_raw_bids(raw, name, events=events,
                        event_id=event_id, overwrite=True)
 
     write_meg_calibration(cal_fname, bids_path=bids_path)
@@ -86,8 +86,7 @@ def _get_sidecar_json_update_file(_get_bids_test_dir):
     return sidecar_fpath
 
 
-@pytest.mark.usefixtures('_get_bids_test_dir', '_bids_validate',
-                         '_get_sidecar_json_update_file')
+@testing.requires_testing_data
 def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
                               _get_sidecar_json_update_file):
     """Test updating sidecar JSON files."""
@@ -107,7 +106,7 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
                        ('SEEGChannelCount', None, 0)]
 
     # get the sidecar json
-    sidecar_path = bids_path.copy().update(extension='.json')
+    sidecar_path = bids_path.copy().update(extension='.json', datatype='meg')
     sidecar_fpath = sidecar_path.fpath
     with open(sidecar_fpath, 'r', encoding='utf-8') as fin:
         sidecar_json = json.load(fin)
@@ -138,9 +137,9 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
 
 
 @requires_nibabel()
+@testing.requires_testing_data
 def test_update_anat_landmarks(tmp_path):
     """Test updating the anatomical landmarks of an MRI scan."""
-    data_path = Path(testing.data_path())
     raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
     trans_path = Path(str(raw_path).replace('_raw.fif', '-trans.fif'))
     t1_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
@@ -211,11 +210,6 @@ def test_update_anat_landmarks(tmp_path):
     bids_path_mri_no_ext = bids_path_mri.copy().update(extension=None)
     update_anat_landmarks(bids_path=bids_path_mri_no_ext,
                           landmarks=landmarks_new)
-
-    # Check without datatytpe provided
-    bids_path_mri_no_datatype = bids_path_mri.copy().update(datatype=None)
-    update_anat_landmarks(bids_path=bids_path_mri_no_datatype,
-                          landmarks=landmarks)
 
     # Check handling of invalid input
     bids_path_invalid = bids_path_mri.copy().update(datatype='meg')

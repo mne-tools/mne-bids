@@ -7,9 +7,9 @@
 What's new?
 ===========
 
-.. _changes_0_11:
+.. _changes_0_12:
 
-Version 0.11 (unreleased)
+Version 0.12 (unreleased)
 -------------------------
 
 ...
@@ -28,14 +28,9 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* `Adam Li`_
-* `Alex Rockhill`_
 * `Alexandre Gramfort`_
 * `Eric Larson`_
 * `Richard Höchenberger`_
-* `Robert Luke`_
-* `Stefan Appelhoff`_
-* `Dominik Welke`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,34 +38,25 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- You can now write raw data and an associated empty-room recording with just a single call to :func:`mne_bids.write_raw_bids`: the ``empty_room`` parameter now also accepts an :class:`mne.io.Raw` data object. The empty-room session name will be derived from the recording date automatically, by `Richard Höchenberger`_ (:gh:`998`)
+- Speed up :func:`mne_bids.read_raw_bids` when lots of events are present by `Alexandre Gramfort`_ (:gh:`1079`)
+- Add the option ``return_candidates`` to :meth:`mne_bids.BIDSPath.find_empty_room` by `Eric Larson`_ (:gh:`1083`)
+- When writing data via :func:`~mne_bids.write_raw_bids`, it is now possible to specify a custom mapping of :class:`mne.Annotations` descriptions to event codes via the ``event_id`` parameter. Previously, passing this parameter would always require to also pass ``events``, and using a custom event code mapping for annotations was impossible, by `Richard Höchenberger`_ (:gh:`1084`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- :func:`mne_bids.make_dataset_description` now accepts keyword arguments only, and can now also write the following metadata: ``HEDVersion``, ``EthicsApprovals``, ``GeneratedBy``, and ``SourceDatasets``, by `Stefan Appelhoff`_ (:gh:`406`)
-
-- The deprecated function ``mne_bids.mark_bad_channels`` has been removed in favor of :func:`mne_bids.mark_channels`, by `Richard Höchenberger`_ (:gh:`1009`)
-
-- :func:`mne_bids.print_dir_tree` now raises a :py:class:`FileNotFoundError` instead of a :py:class:`ValueError` if the directory does not exist, by `Richard Höchenberger`_ (:gh:`1013`)
+- ...
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- Writing BrainVision files now requires ``pybv`` version ``0.7.3``, by `Stefan Appelhoff`_ (:gh:`1011`)
+- ...
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Fix ACPC in ``surface RAS`` instead of ``scanner RAS`` in :ref:`ieeg-example` and add convenience functions :func:`mne_bids.convert_montage_to_ras` and :func:`mne_bids.convert_montage_to_mri` to help, by `Alex Rockhill`_ (:gh:`990`)
+- When writing data containing :class:`mne.Annotations` **and** passing events to :func:`~mne_bids.write_raw_bids`, previously, annotations whose description did not appear in ``event_id`` were silently dropped. We now raise an exception and request users to specify mappings between descriptions and event codes in this case. It is still possible to omit ``event_id`` if no ``events`` are passed, by `Richard Höchenberger`_ (:gh:`1084`)
 
-- Suppress superfluous warnings about MaxShield in many functions when handling Elekta/Neuromag/MEGIN data, by `Richard Höchenberger`_ (:gh:`1000`)
-
-- The MNE-BIDS Inspector didn't work if ``mne-qt-browser`` was installed and used as the default plotting backend, as the Inspector currently only supports the Matplotlib backend, by `Richard Höchenberger`_ (:gh:`1007`)
-
-- :func:`~mne_bids.copyfiles.copyfile_brainvision` can now deal with ``.dat`` file extension, by `Dominik Welke`_ (:gh:`1008`)
-
-- :func:`~mne_bids.print_dir_tree` now correctly expands ``~`` to the user's home directory, by `Richard Höchenberger`_ (:gh:`1013`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

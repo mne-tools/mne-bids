@@ -25,7 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - uses: actions/cache@v3
@@ -51,24 +51,26 @@ jobs:
         os: [ubuntu-latest]
         python-version: ["3.7", "3.10"]  # Oldest and newest supported versions
     steps:
-    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
     - uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: build-0-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+        key: build-1-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
 
-    - name: Update pip, wheel, and setuptools
-      run: python -m pip install --upgrade pip wheel setuptools
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install wheel setuptools build
 
+    - uses: actions/checkout@v3
     - name: Build sdist
-      run: python setup.py sdist
+      run: python -m build --sdist
     - name: Install sdist
-      run: pip install ./dist/mne-bids-*
+      run: python -m pip install ./dist/mne-bids-*
     - name: Clean up working directory
       run: rm -rf ./*
     - name: Try importing mne_bids
@@ -76,13 +78,13 @@ jobs:
     - name: Try cli mne_bids
       run: mne_bids --version
     - name: Remove sdist install
-      run: pip uninstall -y mne-bids
+      run: python -m pip uninstall -y mne-bids
 
     - uses: actions/checkout@v3
     - name: Build wheel
-      run: python setup.py bdist_wheel
+      run: python -m build --wheel
     - name: Install wheel
-      run: pip install ./dist/mne_bids-*.whl
+      run: python -m pip install ./dist/mne_bids-*.whl
     - name: Clean up working directory
       run: rm -rf ./*
     - name: Try importing mne_bids
@@ -90,12 +92,12 @@ jobs:
     - name: Try cli mne_bids
       run: mne_bids --version
     - name: Remove wheel install
-      run: pip uninstall -y mne-bids
+      run: python -m pip uninstall -y mne-bids
 
     - uses: actions/checkout@v3
     - name: Test extras install
       run: |
-        pip install .[full]
+        python -m pip install .[full]
         python -c 'import mne_bids; print(mne_bids.__version__)'
         python -c 'import pybv; print(pybv.__version__)'
         python -c 'import nibabel; print(nibabel.__version__)'
@@ -110,7 +112,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-20.04, ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.7", "3.10"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         bids-validator-version: [validator-stable]
@@ -121,22 +123,6 @@ jobs:
             python-version: "3.10"
             mne-version: mne-main
             bids-validator-version: validator-main
-
-          # Tests with the NIRS branch of bids-validator
-          - os: ubuntu-latest
-            python-version: "3.10"
-            mne-version: mne-main
-            bids-validator-version: validator-NIRS
-
-          - os: macos-latest
-            python-version: "3.10"
-            mne-version: mne-main
-            bids-validator-version: validator-NIRS
-
-          - os: windows-latest
-            python-version: "3.10"
-            mne-version: mne-main
-            bids-validator-version: validator-NIRS
 
     env:
       TZ: Europe/Berlin
@@ -150,15 +136,11 @@ jobs:
         node-version: 16
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
     - name: Restore cache
-      # Restoring cache on Ubuntu 20.04 seems buggy
-      # only do it on other operating systems
-      # https://stackoverflow.com/q/61875869/5201771
-      if: "matrix.os != 'ubuntu-latest'"
       uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
@@ -166,20 +148,20 @@ jobs:
 
     - name: Install Python dependencies using pip
       run: |
-        python -m pip install --upgrade pip wheel
-        pip install -r test_requirements.txt
+        python -m pip install --upgrade pip
+        python -m pip install -r test_requirements.txt
 
     - name: Install MNE (stable)
       if: "matrix.mne-version == 'mne-stable'"
       run: |
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.24
-        pip install -e ./mne-python
+        git clone --depth 1 --single-branch --branch maint/1.0 https://github.com/mne-tools/mne-python.git -b maint/1.0
+        python -m pip install -e ./mne-python
 
     - name: Install MNE (main)
       if: "matrix.mne-version == 'mne-main'"
       run: |
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b main
-        pip install -e ./mne-python
+        git clone --depth 1 --single-branch --branch main https://github.com/mne-tools/mne-python.git -b main
+        python -m pip install -e ./mne-python
 
     - name: Install BIDS validator (stable)
       if: "matrix.bids-validator-version == 'validator-stable'"
@@ -195,16 +177,8 @@ jobs:
         popd
         echo "BIDS_VALIDATOR_BRANCH=main" >> $GITHUB_ENV
 
-    - name: Download BIDS validator (NIRS)
-      if: "matrix.bids-validator-version == 'validator-NIRS'"
-      run: |
-        pushd ..
-        git clone --depth 1 --branch nirs https://github.com/rob-luke/bids-validator.git
-        popd
-        echo "BIDS_VALIDATOR_BRANCH=NIRS" >> $GITHUB_ENV
-
-    - name: Install BIDS validator (main or NIRS)
-      if: ${{ (matrix.bids-validator-version == 'validator-main') || (matrix.bids-validator-version == 'validator-NIRS') }}
+    - name: Install BIDS validator (main)
+      if: "matrix.bids-validator-version == 'validator-main'"
       run: |
         pushd ..
         cd bids-validator
@@ -230,7 +204,28 @@ jobs:
         mne sys_info
 
     - name: Install MNE-BIDS
-      run: pip install -e .
+      run: python -m pip install -e .
+
+    # Only run on a limited set of jobs
+    - name: Run pytest without testing data
+      run: make test
+      if: ${{ matrix.python-version == '3.10' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
+
+    # Get testing data
+    - run: ./tools/get_testing_version.sh
+      working-directory: mne-python
+      shell: bash
+      name: 'Get testing version'
+
+    - uses: actions/cache@v3
+      with:
+        key: ${{ env.TESTING_VERSION }}
+        path: ~/mne_data
+      name: 'Cache testing data'
+
+    - run: ./tools/github_actions_download.sh
+      shell: bash
+      working-directory: mne-python
 
     - name: Run pytest
       shell: bash

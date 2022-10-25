@@ -23,7 +23,7 @@
 .. _Eduard Ort: https://github.com/eort
 .. _Tom Donoghue: https://github.com/TomDonoghue
 .. _Richard Köhler: https://github.com/richardkoehler
-.. _Sin Kim: https://github.com/AKSoo
+.. _Sin Kim: https://ohbm.github.io/osr2020/volunteers/sin_kim.html
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
 .. _Eric Larson: https://github.com/larsoner
@@ -33,3 +33,9 @@
 .. _Simon Kern: https://github.com/skjerns
 .. _Yorguin Mantilla: https://github.com/yjmantilla
 .. _Swastika Gupta: https://swastyy.github.io
+.. _Scott Huberty: https://github.com/scott-huberty
+.. _Anand Saini: https://github.com/anandsaini024
+.. _Mathieu Scheltienne: https://github.com/mscheltienne
+.. _Denis Engemann: https://github.com/dengemann
+.. _Bruno Hebling Vieira: https://bhvieira.github.io/
+.. _Daniel McCloy: http://dan.mccloy.info

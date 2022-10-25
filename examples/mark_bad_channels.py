@@ -57,7 +57,7 @@ if op.exists(bids_root):
 
 raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
-write_raw_bids(raw, bids_path=bids_path, events_data=events_fname,
+write_raw_bids(raw, bids_path=bids_path, events=events_fname,
                event_id=event_id, overwrite=True, verbose=False)
 
 # %%

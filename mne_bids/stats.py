@@ -40,7 +40,7 @@ def count_events(root_or_path, datatype='auto'):
     else:
         bids_path = root_or_path.copy()
 
-    bids_path.update(suffix='events', extension='tsv')
+    bids_path.update(suffix='events', extension='.tsv')
 
     datatypes = get_datatypes(bids_path.root)
     this_datatypes = list(set(datatypes).intersection(EPHY_ALLOWED_DATATYPES))

@@ -31,12 +31,16 @@ ORIENTATION = {
     '.sqd': 'KitYokogawa',
 }
 
-UNITS = {
+EXT_TO_UNIT_MAP = {
     '.con': 'm',
     '.ds': 'cm',
     '.fif': 'm',
     '.pdf': 'm',
     '.sqd': 'm'
+}
+
+UNITS_MNE_TO_BIDS_MAP = {
+    'C': 'oC',  # temperature in deg. C
 }
 
 meg_manufacturers = {
@@ -54,7 +58,9 @@ eeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                      '.set': 'n/a', '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
                      '.EEG': 'Nihon Kohden',
-                     '.cnt': 'Neuroscan', '.CNT': 'Neuroscan'}
+                     '.cnt': 'Neuroscan', '.CNT': 'Neuroscan',
+                     '.bin': 'EGI',
+                     '.cdt': 'Curry'}
 
 ieeg_manufacturers = {'.vhdr': 'Brain Products', '.eeg': 'Brain Products',
                       '.edf': 'n/a', '.EDF': 'n/a', '.set': 'n/a',
@@ -73,7 +79,9 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
           '.EEG': io.read_raw_nihon,
           '.cnt': io.read_raw_cnt, '.CNT': io.read_raw_cnt,
-          '.snirf': io.read_raw_snirf}
+          '.bin': io.read_raw_egi,
+          '.snirf': io.read_raw_snirf,
+          '.cdt': io.read_raw_curry}
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
@@ -124,7 +132,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
     allowed_extensions_ieeg + allowed_extensions_nirs + \
-    ['.lay', '.EEG', '.cnt', '.CNT']
+    ['.lay', '.EEG', '.cnt', '.CNT', '.bin', '.cdt']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
@@ -153,16 +161,16 @@ ALLOWED_FILENAME_EXTENSIONS = (
     ['.mrk']  # KIT/Yokogawa/Ricoh marker coil
 )
 
-# allowed BIDS path entities
+# allowed BIDSPath entities
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
-                         'acquisition', 'split',
+                         'acquisition', 'split', 'description',
                          'suffix', 'extension')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
                                'space': 'space', 'rec': 'recording',
-                               'split': 'split'}
+                               'split': 'split', 'desc': 'description'}
 
 # Annotations to never remove during reading or writing
 ANNOTATIONS_TO_KEEP = ('BAD_ACQ_SKIP',)
@@ -244,8 +252,9 @@ ENTITY_VALUE_TYPE = {
     'space': 'label',
     'acquisition': 'label',
     'split': 'index',
+    'description': 'label',
     'suffix': 'label',
-    'extension': 'label'
+    'extension': 'label',
 }
 
 # mapping from supported BIDs coordinate frames -> MNE

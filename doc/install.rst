@@ -12,7 +12,7 @@ Dependencies
 
 Required:
 
-* ``mne`` (>=0.24)
+* ``mne`` (>=1.0)
 * ``numpy`` (>=1.16.0)
 * ``scipy`` (>=1.2.0, or >=1.5.0 for certain operations with EEGLAB data)
 * ``setuptools`` (>=46.4.0)

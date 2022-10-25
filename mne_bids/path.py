@@ -8,7 +8,6 @@ import os
 import re
 from io import StringIO
 import shutil as sh
-from collections import OrderedDict
 from copy import deepcopy
 from os import path as op
 from pathlib import Path
@@ -22,7 +21,7 @@ from mne.utils import warn, logger, _validate_type, verbose, _check_fname
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
-    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES, ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
@@ -51,14 +50,10 @@ def _find_matched_empty_room(bids_path):
                          'date set. Cannot get matching empty-room file.')
 
     ref_date = raw.info['meas_date']
-    if not isinstance(ref_date, datetime):  # pragma: no cover
-        # for MNE < v0.20
-        ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
-
     emptyroom_dir = BIDSPath(root=bids_root, subject='emptyroom').directory
 
     if not emptyroom_dir.exists():
-        return None
+        return None, list()
 
     # Find the empty-room recording sessions.
     emptyroom_session_dirs = [x for x in emptyroom_dir.iterdir()
@@ -90,11 +85,14 @@ def _find_matched_empty_room(bids_path):
     date_tie = False
 
     failed_to_get_er_date_count = 0
+    candidates = list()
     for er_fname in candidate_er_fnames:
         # get entities from filenamme
         er_bids_path = get_bids_path_from_fname(er_fname, check=False)
         er_bids_path.subject = 'emptyroom'  # er subject entity is different
         er_bids_path.root = bids_root
+        er_bids_path.datatype = 'meg'
+        candidates.append(er_bids_path)
         er_meas_date = None
 
         # Try to extract date from filename.
@@ -141,7 +139,7 @@ def _find_matched_empty_room(bids_path):
                'same recording date. Selecting the first match.')
         warn(msg)
 
-    return best_er_bids_path
+    return best_er_bids_path, candidates
 
 
 class BIDSPath(object):
@@ -185,6 +183,12 @@ class BIDSPath(object):
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
+    description : str | None
+        This corresponds to the BIDS entity ``desc``. It is used to provide
+        additional information for derivative data, e.g., preprocessed data
+        may be assigned ``description='cleaned'``.
+
+        .. versionadded:: 0.11
     suffix : str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
@@ -206,10 +210,10 @@ class BIDSPath(object):
     Attributes
     ----------
     entities : dict
-        The dictionary of the BIDS entities and their values:
+        A dictionary of the BIDS entities and their values:
         ``subject``, ``session``, ``task``, ``acquisition``,
-        ``run``, ``processing``, ``space``, ``recording``, ``split``,
-        ``suffix``, and ``extension``.
+        ``run``, ``processing``, ``space``, ``recording``,
+        ``split``, ``description``, ``suffix``, and ``extension``.
     datatype : str | None
         The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
         ``'anat'``.
@@ -229,7 +233,7 @@ class BIDSPath(object):
     Generate a BIDSPath object and inspect it
 
     >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
-    ...                      suffix='ieeg', extension='.edf')
+    ...                      suffix='ieeg', extension='.edf', datatype='ieeg')
     >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_path
@@ -291,12 +295,13 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, split=None, root=None,
-                 suffix=None, extension=None, datatype=None, check=True):
+                 recording=None, space=None, split=None, description=None,
+                 root=None, suffix=None, extension=None,
+                 datatype=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, root, suffix,
-                                     extension]):
+                                     recording, space, description,
+                                     root, suffix, extension]):
             raise ValueError("At least one parameter must be given.")
 
         self.check = check
@@ -304,23 +309,24 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    root=root, datatype=datatype,
+                    description=description, root=root, datatype=datatype,
                     suffix=suffix, extension=extension)
 
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
-        return OrderedDict([
-            ('subject', self.subject),
-            ('session', self.session),
-            ('task', self.task),
-            ('acquisition', self.acquisition),
-            ('run', self.run),
-            ('processing', self.processing),
-            ('space', self.space),
-            ('recording', self.recording),
-            ('split', self.split)
-        ])
+        return {
+            'subject': self.subject,
+            'session': self.session,
+            'task': self.task,
+            'acquisition': self.acquisition,
+            'run': self.run,
+            'processing': self.processing,
+            'space': self.space,
+            'recording': self.recording,
+            'split': self.split,
+            'description': self.description,
+        }
 
     @property
     def basename(self):
@@ -444,6 +450,15 @@ class BIDSPath(object):
     @space.setter
     def space(self, value):
         self.update(space=value)
+
+    @property
+    def description(self) -> Optional[str]:
+        """The description entity."""
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self.update(description=value)
 
     @property
     def suffix(self) -> Optional[str]:
@@ -571,7 +586,7 @@ class BIDSPath(object):
             # else, return the relative path with the basename
             if (self.suffix is None or self.extension is None) and \
                     self.root is not None:
-                # get matching BIDS paths inside the bids root
+                # get matching BIDSPaths inside the bids root
                 matching_paths = \
                     _get_matching_bidspaths_from_filesystem(self)
 
@@ -620,9 +635,8 @@ class BIDSPath(object):
     def update(self, *, check=None, **kwargs):
         """Update inplace BIDS entity key/value pairs in object.
 
-        ``run`` and ``split`` are auto-parsed to have two
-        numbers when passed in. For example, if ``run=1``, then it will
-        become ``run='01'``.
+        ``run`` and ``split`` are auto-converted to have two
+        digits. For example, if ``run=1``, then it will nbecome ``run='01'``.
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
@@ -648,7 +662,7 @@ class BIDSPath(object):
             the existing ``.check`` attribute instead, which is set upon
             `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
-            It can contain updates for valid BIDS path entities:
+            It can contain updates for valid BIDSPath entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
             'recording', 'space', 'suffix', 'split', 'extension',
             or updates for 'root' or 'datatype'.
@@ -669,8 +683,13 @@ class BIDSPath(object):
         >>> print(bids_path.basename)
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_path = bids_path.update(acquisition='test', suffix='ieeg',
-        ...                              extension='.vhdr', task=None)
+        >>> bids_path.update(acquisition='test', suffix='ieeg',
+        ...                  datatype='ieeg',
+        ...                  extension='.vhdr', task=None)
+        BIDSPath(
+        root: None
+        datatype: ieeg
+        basename: sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
@@ -709,9 +728,21 @@ class BIDSPath(object):
 
         # ensure extension starts with a '.'
         extension = kwargs.get('extension')
-        if extension is not None:
-            if not extension.startswith('.'):
-                kwargs['extension'] = f'.{extension}'
+        if extension is not None and not extension.startswith('.'):
+            warn(
+                f'extension should start with a period ".", but got: '
+                f'"{extension}". Prepending "." to form: ".{extension}". '
+                f'This will raise an exception starting with MNE-BIDS 0.12.',
+                category=FutureWarning
+            )
+            kwargs['extension'] = f'.{extension}'
+            # Uncomment in 0.12, and remove above code:
+            #
+            # raise ValueError(
+            #     f'Extension must start wie a period ".", but got: '
+            #     f'{extension}'
+            # )
+        del extension
 
         # error check entities
         old_kwargs = dict()
@@ -732,11 +763,6 @@ class BIDSPath(object):
             old_kwargs[key] = \
                 getattr(self, f'{key}') if hasattr(self, f'_{key}') else None
             setattr(self, f'_{key}', val)
-
-        # infer datatype if suffix is uniquely the datatype
-        if self.datatype is None and \
-                self.suffix in SUFFIX_TO_DATATYPE:
-            self._datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # Perform a check of the entities and revert changes if check fails
         try:
@@ -869,7 +895,8 @@ class BIDSPath(object):
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
 
     @verbose
-    def find_empty_room(self, use_sidecar_only=False, verbose=None):
+    def find_empty_room(self, use_sidecar_only=False, *,
+                        return_candidates=False, verbose=None):
         """Find the corresponding empty-room file of an MEG recording.
 
         This will only work if the ``.root`` attribute of the
@@ -882,13 +909,21 @@ class BIDSPath(object):
             sidecar JSON file or not. If ``False``, first look for the entry,
             and if unsuccessful, try to find the best-matching empty-room
             recording in the dataset based on the measurement date.
+        return_candidates : bool
+            If True (default False), return candidate filenames checked during
+            the search for the best-matching empty-room recording.
+        %(verbose)s
 
         Returns
         -------
         BIDSPath | None
             The path corresponding to the best-matching empty-room measurement.
             Returns ``None`` if none was found.
-        %(verbose)s
+        list | None
+            The candidates checked during the search for the best-matching
+            empty-room recording. Only returned if ``return_candidates`` is
+            ``True``. Will be None if a sidecar is used to find the empty-room
+            recording.
         """
         if self.datatype not in ('meg', None):
             raise ValueError('Empty-room data is only supported for MEG '
@@ -899,7 +934,11 @@ class BIDSPath(object):
                              'Please use `bids_path.update(root="<root>")` '
                              'to set the root of the BIDS folder to read.')
 
-        sidecar_fname = _find_matching_sidecar(self, extension='.json')
+        sidecar_fname = _find_matching_sidecar(
+            # needed to deal with inheritance principle
+            self.copy().update(datatype=None),
+            extension='.json'
+        )
         with open(sidecar_fname, 'r', encoding='utf-8') as f:
             sidecar_json = json.load(f)
 
@@ -910,25 +949,32 @@ class BIDSPath(object):
             er_bids_path = get_bids_path_from_fname(emptytoom_path)
             er_bids_path.root = self.root
             er_bids_path.datatype = 'meg'
+            candidates = None
         elif use_sidecar_only:
             logger.info(
                 'The MEG sidecar file does not contain an '
                 '"AssociatedEmptyRoom" entry. Aborting search for an '
                 'empty-room recording, as you passed use_sidecar_only=True'
             )
-            return None
+            return None if not return_candidates else (None, None)
         else:
             logger.info(
                 'The MEG sidecar file does not contain an '
                 '"AssociatedEmptyRoom" entry. Will try to find a matching '
                 'empty-room recording based on the measurement date …'
             )
-            er_bids_path = _find_matched_empty_room(self)
+            er_bids_path, candidates = _find_matched_empty_room(self)
 
-        if er_bids_path is not None:
-            assert er_bids_path.fpath.exists()
+        if er_bids_path is not None and not er_bids_path.fpath.exists():
+            raise FileNotFoundError(
+                f'Empty-room BIDS path resolved but not found:\n'
+                f'{er_bids_path}\n'
+                'Check your BIDS dataset for completeness.')
 
-        return er_bids_path
+        out = er_bids_path
+        if return_candidates:
+            out = (out, candidates)
+        return out
 
     @property
     def meg_calibration_fpath(self):
@@ -985,7 +1031,7 @@ class BIDSPath(object):
 
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
-    """Get matching file paths for a BIDS path.
+    """Get matching file paths for a BIDSPath.
 
     Assumes suffix and/or extension is not provided.
     """
@@ -1237,14 +1283,15 @@ def _parse_ext(raw_fname):
     return fname, ext
 
 
-def _infer_datatype_from_path(fname):
+def _infer_datatype_from_path(fname: Path):
     # get the parent
-    datatype = Path(fname).parent.name
-
-    if any([datatype.startswith(entity) for entity in ['sub', 'ses']]):
-        datatype = None
-
-    if not datatype:
+    if fname.exists():
+        datatype = fname.parent.name
+        if any([datatype.startswith(entity) for entity in ['sub', 'ses']]):
+            datatype = None
+    elif fname.stem.split('_')[-1] in ('meg', 'eeg', 'ieeg'):
+        datatype = fname.stem.split('_')[-1]
+    else:
         datatype = None
 
     return datatype
@@ -1267,7 +1314,7 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     Returns
     -------
     bids_path : BIDSPath
-        The BIDS path object.
+        The BIDSPath object.
     """
     fpath = Path(fname)
     fname = fpath.name
@@ -1281,9 +1328,12 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
         suffix, extension = _get_bids_suffix_and_ext(suffix)
     else:
         suffix = None
-        extension = Path(fname).suffix
+        extension = Path(fname).suffix  # already starts with a period
         if extension == '':
             extension = None
+
+    if extension is not None:
+        assert extension.startswith('.')  # better safe than sorry
 
     datatype = _infer_datatype_from_path(fpath)
 
@@ -1351,7 +1401,8 @@ def get_entities_from_fname(fname, on_error='raise', verbose=None):
 'processing': None, \
 'space': None, \
 'recording': None, \
-'split': None}
+'split': None, \
+'description': None}
     """
     if on_error not in ('warn', 'raise', 'ignore'):
         raise ValueError(f'Acceptable values for on_error are: warn, raise, '
@@ -1477,9 +1528,10 @@ def _find_matching_sidecar(bids_path, suffix=None,
                f'associated with {bids_path.basename}.')
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
-        msg = (f'Expected to find a single {suffix} file '
+        msg = (f'Expected to find a single {search_suffix} file '
                f'associated with {bids_path.basename}, '
-               f'but found {len(candidate_list)}: "{candidate_list}".')
+               f'but found {len(candidate_list)}:\n\n' +
+               "\n".join(candidate_list))
     msg += f'\n\nThe search_str was "{search_str_complete}"'
     if on_error == 'raise':
         raise RuntimeError(msg)
@@ -1499,6 +1551,7 @@ def _get_bids_suffix_and_ext(str_suffix):
         split_str = str_suffix.split('.')
         suffix = split_str[0]
         ext = '.'.join(split_str[1:])
+        ext = f'.{ext}'  # prepend period
     return suffix, ext
 
 
@@ -1538,7 +1591,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_sessions=None, ignore_tasks=None, ignore_runs=None,
                     ignore_processings=None, ignore_spaces=None,
                     ignore_acquisitions=None, ignore_splits=None,
-                    ignore_modalities=None, ignore_datatypes=None,
+                    ignore_descriptions=None, ignore_modalities=None,
+                    ignore_datatypes=None,
                     ignore_dirs=('derivatives', 'sourcedata'), with_key=False,
                     verbose=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
@@ -1583,6 +1637,10 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
     ignore_splits : str | array-like of str | None
         Split(s) to ignore. If ``None``, include all splits.
+    ignore_descriptions : str | array-like of str | None
+        Description(s) to ignore. If ``None``, include all descriptions.
+
+        .. versionadded:: 0.11
     ignore_modalities : str | array-like of str | None
         Modalities(s) to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
@@ -1622,7 +1680,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     References
     ----------
-    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
+    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#entities  # noqa: E501
 
     """
     root = _check_fname(
@@ -1635,9 +1693,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     root = Path(root).expanduser()
 
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
-                'acquisition', 'split', 'suffix')
+                'acquisition', 'split', 'description', 'suffix')
     entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
-                     'split', 'suffix')
+                     'split', 'desc', 'suffix')
     entity_long_abbr_map = dict(zip(entities, entities_abbr))
 
     if entity_key not in entities:
@@ -1652,6 +1710,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     ignore_spaces = _ensure_tuple(ignore_spaces)
     ignore_acquisitions = _ensure_tuple(ignore_acquisitions)
     ignore_splits = _ensure_tuple(ignore_splits)
+    ignore_descriptions = _ensure_tuple(ignore_descriptions)
     ignore_modalities = _ensure_tuple(ignore_modalities)
 
     ignore_dirs = _ensure_tuple(ignore_dirs)
@@ -1699,6 +1758,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
             continue
         if ignore_splits and any([f'_split-{s}_' in filename.stem
                                   for s in ignore_splits]):
+            continue
+        if ignore_descriptions and any([f'_desc-{d}_' in filename.stem
+                                        for d in ignore_descriptions]):
             continue
         if ignore_modalities and any([f'_{k}' in filename.stem
                                       for k in ignore_modalities]):
@@ -1825,7 +1887,8 @@ def _path_to_str(var):
 
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
-                   space=None, split=None, suffix=None, extension=None):
+                   space=None, split=None, description=None, suffix=None,
+                   extension=None):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
     Parameters
@@ -1847,6 +1910,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
+    desc_str = f'_desc-{description}' if description else r'(|_desc-([^_]+))'
     suffix_str = (f'_{suffix}' if suffix
                   else r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'
@@ -1854,7 +1918,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     regexp = (
         leading_path_str +
         sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-        rec_str + space_str + split_str + suffix_str + ext_str
+        rec_str + space_str + split_str + desc_str + suffix_str + ext_str
     )
 
     # Convert to str so we can apply the regexp ...
