@@ -28,7 +28,8 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
-from mne.channels.channels import _unit2human
+from mne.channels.channels import (_unit2human, _get_meg_system)
+from mne.chpi import get_chpi_info
 from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
                        _validate_type, get_subjects_dir, verbose,
                        ProgressBar)
@@ -51,12 +52,13 @@ from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
 
-from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
+from mne_bids.config import (ORIENTATION, EXT_TO_UNIT_MAP, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _map_options, reader,
                              ALLOWED_INPUT_EXTENSIONS, CONVERT_FORMATS,
                              ANONYMIZED_JSON_KEY_WHITELIST, PYBV_VERSION,
-                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
+                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
+                             UNITS_MNE_TO_BIDS_MAP,)
 
 
 _FIFF_SPLIT_SIZE = '2GB'  # MNE-Python default; can be altered during debugging
@@ -102,7 +104,10 @@ def _channels_tsv(raw, fname, overwrite=False):
                     ias='Internal Active Shielding',
                     dbs='Deep Brain Stimulation',
                     fnirs_cw_amplitude='Near Infrared Spectroscopy '
-                                       '(continuous wave)',)
+                                       '(continuous wave)',
+                    resp='Respiration',
+                    gsr='Galvanic skin response (electrodermal activity, EDA)',
+                    temperature='Temperature',)
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
@@ -126,6 +131,13 @@ def _channels_tsv(raw, fname, overwrite=False):
         units = [_unit2human.get(ch_i['unit'], 'n/a')
                  for ch_i in raw.info['chs']]
         units = [u if u not in ['NA'] else 'n/a' for u in units]
+
+    # Translate from MNE to BIDS unit naming
+    for idx, mne_unit in enumerate(units):
+        if mne_unit in UNITS_MNE_TO_BIDS_MAP:
+            bids_unit = UNITS_MNE_TO_BIDS_MAP[mne_unit]
+            units[idx] = bids_unit
+
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
@@ -814,35 +826,41 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
     }
 
     # Compile cHPI information, if any.
-    from mne.io.ctf import RawCTF
-    from mne.io.kit.kit import RawKIT
-
-    chpi = False
-    hpi_freqs = np.array([])
+    system, _ = _get_meg_system(raw.info)
+    chpi = None
+    hpi_freqs = []
     if (datatype == 'meg' and
             parse_version(mne.__version__) > parse_version('0.23')):
         # We need to handle different data formats differently
-        if isinstance(raw, RawCTF):
+        if system == 'CTF_275':
             try:
                 mne.chpi.extract_chpi_locs_ctf(raw)
                 chpi = True
             except RuntimeError:
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
-        elif isinstance(raw, RawKIT):
+        elif system == 'KIT':
             try:
                 mne.chpi.extract_chpi_locs_kit(raw)
                 chpi = True
             except (RuntimeError, ValueError):
+                chpi = False
                 logger.info('Could not find cHPI information in raw data.')
-        else:
-            hpi_freqs, _, _ = mne.chpi.get_chpi_info(info=raw.info,
-                                                     on_missing='ignore')
-            if hpi_freqs.size > 0:
-                chpi = True
+        elif system in ['122m', '306m']:
+            # XXX: Remove this version check when support for mne <1.2
+            # is dropped
+            if parse_version(mne.__version__) > parse_version('1.1'):
+                n_active_hpi = mne.chpi.get_active_chpi(raw,
+                                                        on_missing='ignore')
+                chpi = bool(n_active_hpi.sum() > 0)
+                if chpi:
+                    hpi_freqs, _, _ = get_chpi_info(info=raw.info,
+                                                    on_missing='ignore')
+                    hpi_freqs = list(hpi_freqs)
+
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '
                     'information: requires MNE-Python >= 0.24')
-        chpi = None
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
@@ -864,7 +882,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
 
     if chpi is not None:
         ch_info_json_meg.append(('ContinuousHeadLocalization', chpi))
-        ch_info_json_meg.append(('HeadCoilFrequency', list(hpi_freqs)))
+        ch_info_json_meg.append(('HeadCoilFrequency', hpi_freqs))
 
     if emptyroom_fname is not None:
         ch_info_json_meg.append(('AssociatedEmptyRoom', str(emptyroom_fname)))
@@ -1244,11 +1262,23 @@ def make_dataset_description(*, path, name, hed_version=None,
 
 
 @verbose
-def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
-                   anonymize=None, format='auto', symlink=False,
-                   empty_room=None, allow_preload=False,
-                   montage=None, acpc_aligned=False,
-                   overwrite=False, verbose=None):
+def write_raw_bids(
+    raw,
+    bids_path,
+    events=None,
+    event_id=None,
+    *,
+    anonymize=None,
+    format='auto',
+    symlink=False,
+    empty_room=None,
+    allow_preload=False,
+    montage=None,
+    acpc_aligned=False,
+    overwrite=False,
+    events_data=None,
+    verbose=None
+):
     """Save raw data to a BIDS-compliant folder structure.
 
     .. warning:: * The original file is simply copied over if the original
@@ -1288,7 +1318,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_acq-01_coordsystem.json
 
-        and the following one if ``events_data`` is not ``None``::
+        and the following one if ``events`` is not ``None``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
 
@@ -1299,37 +1329,42 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
         Note that the extension is automatically inferred from the raw
         object.
-    events_data : path-like | np.ndarray | None
+    events : path-like | np.ndarray | None
         Use this parameter to specify events to write to the ``*_events.tsv``
-        sidecar file, additionally to the object's `mne.Annotations` (which
-        are always written).
-        If a path, specifies the location of an MNE events file.
+        sidecar file, additionally to the object's :class:`~mne.Annotations`
+        (which are always written).
+        If ``path-like``, specifies the location of an MNE events file.
         If an array, the MNE events array (shape: ``(n_events, 3)``).
         If a path or an array and ``raw.annotations`` exist, the union of
-        ``event_data`` and ``raw.annotations`` will be written.
-        Corresponding descriptions for all event IDs (listed in the third
+        ``events`` and ``raw.annotations`` will be written.
+        Mappings from event names to event codes (listed in the third
         column of the MNE events array) must be specified via the ``event_id``
-        parameter; otherwise, an exception is raised.
-        If ``None``, events will only be inferred from the the raw object's
-        `mne.Annotations`.
+        parameter; otherwise, an exception is raised. If
+        :class:`~mne.Annotations` are present, their descriptions must be
+        included in ``event_id`` as well.
+        If ``None``, events will only be inferred from the raw object's
+        :class:`~mne.Annotations`.
 
         .. note::
-           If ``not None``, writes the union of ``events_data`` and
+           If specified, writes the union of ``events`` and
            ``raw.annotations``. If you wish to **only** write
-           ``raw.annotations``, pass ``events_data=None``. If you want to
+           ``raw.annotations``, pass ``events=None``. If you want to
            **exclude** the events in ``raw.annotations`` from being written,
            call ``raw.set_annotations(None)`` before invoking this function.
 
         .. note::
-           Descriptions of all event IDs must be specified via the ``event_id``
-           parameter.
+           Descriptions of all event codes must be specified via the
+           ``event_id`` parameter.
 
     event_id : dict | None
-        Descriptions of all event IDs, if you passed ``events_data``.
-        The descriptions will be written to the ``trial_type`` column in
-        ``*_events.tsv``. The dictionary keys correspond to the event
-        descriptions and the values to the event IDs. You must specify a
-        description for all event IDs in ``events_data``.
+        Descriptions or names describing the event codes, if you passed
+        ``events``. The descriptions will be written to the ``trial_type``
+        column in ``*_events.tsv``. The dictionary keys correspond to the event
+        description,s and the values to the event codes. You must specify a
+        description for all event codes appearing in ``events``. If your data
+        contains :class:`~mne.Annotations`, you can use this parameter to
+        assign event codes to each unique annotation description (mapping from
+        description to event code).
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1424,6 +1459,10 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
+    events_data
+        .. deprecated:: 0.11
+           Use ``events`` instead.
+
     %(verbose)s
 
     Returns
@@ -1445,7 +1484,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     This function will convert existing `mne.Annotations` from
     ``raw.annotations`` to events. Additionally, any events supplied via
-    ``events_data`` will be written too. To avoid writing of annotations,
+    ``events`` will be written too. To avoid writing of annotations,
     remove them from the raw file via ``raw.set_annotations(None)`` before
     invoking ``write_raw_bids``.
 
@@ -1454,7 +1493,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
 
     ..
         events = mne.find_events(raw, min_duration=0.002)
-        write_raw_bids(..., events_data=events)
+        write_raw_bids(..., events=events)
 
     See the documentation of :func:`mne.find_events` for more information on
     event extraction from ``STIM`` channels.
@@ -1483,6 +1522,21 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     mne.events_from_annotations
 
     """
+    if events_data is not None and events is not None:
+        raise ValueError('Only one of events and events_data can be passed.')
+
+    if events_data is not None:
+        warn(
+            message='The events_data parameter has been deprecated in favor '
+                    'the new events parameter, to ensure better consistency  '
+                    'with MNE-Python. The events_data parameter will be '
+                    'removed in MNE-BIDS 0.14. Please use the events '
+                    'parameter instead.',
+            category=FutureWarning
+        )
+        events = events_data
+        del events_data
+
     if not isinstance(raw, BaseRaw):
         raise ValueError('raw_file must be an instance of BaseRaw, '
                          'got %s' % type(raw))
@@ -1495,8 +1549,8 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
 
-    _validate_type(events_data, types=('path-like', np.ndarray, None),
-                   item_name='events_data',
+    _validate_type(events, types=('path-like', np.ndarray, None),
+                   item_name='events',
                    type_name='path-like, NumPy array, or None')
 
     if symlink and sys.platform in ('win32', 'cygwin'):
@@ -1524,13 +1578,9 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
             '"bids_path.task = <task>"'
         )
 
-    if events_data is not None and event_id is None:
-        raise RuntimeError('You passed events_data, but no event_id '
-                           'dictionary. You need to pass both, or neither.')
-
-    if event_id is not None and events_data is None:
-        raise RuntimeError('You passed event_id, but no events_data NumPy '
-                           'array. You need to pass both, or neither.')
+    if events is not None and event_id is None:
+        raise ValueError('You passed events, but no event_id '
+                         'dictionary.')
 
     _validate_type(item=empty_room, item_name='empty_room',
                    types=(mne.io.BaseRaw, BIDSPath, None))
@@ -1574,8 +1624,15 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         elif format == 'FIF':
             ext = '.fif'
         else:
-            raise ValueError('For preloaded data, you must specify a valid '
-                             'format. See "allow_preload".')
+            msg = (
+                'For preloaded data, you must set the "format" parameter '
+                'to one of: BrainVision, EDF, or FIF'
+            )
+            if format != 'auto':  # the default was changed
+                msg += f', but got: "{format}"'
+
+            raise ValueError(msg)
+
         raw_orig = raw
 
     # Check times
@@ -1586,15 +1643,15 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         else:
             msg = ("The raw data you want to write contains {comp} time "
                    "points than the raw data on disk. It is possible that you "
-                   "{guess} your data, which write_raw_bids() won't accept.")
+                   "{guess} your data.")
             if len(raw.times) < len(raw_orig.times):
                 msg = msg.format(comp='fewer', guess='cropped')
             elif len(raw.times) > len(raw_orig.times):
                 msg = msg.format(comp='more', guess='concatenated')
 
-        msg += (' If you believe you have a valid use case that should be '
-                'supported, please reach out to the developers at '
-                'https://github.com/mne-tools/mne-bids/issues')
+        msg += (' To write the data, please preload it and pass '
+                '"allow_preload=True" and the "format" parameter to '
+                'write_raw_bids().')
         raise ValueError(msg)
 
     # Initialize BIDSPath
@@ -1648,7 +1705,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
         write_raw_bids(
             raw=empty_room,
             bids_path=er_bids_path,
-            events_data=None,
+            events=None,
             event_id=None,
             anonymize=anonymize,
             format=format,
@@ -1733,7 +1790,7 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                 bids_path.update(extension='.vhdr')
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
-    unit = UNITS.get(ext, 'n/a')
+    unit = EXT_TO_UNIT_MAP.get(ext, 'n/a')
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save readme file unless it already exists
@@ -1784,13 +1841,13 @@ def write_raw_bids(raw, bids_path, events_data=None, event_id=None,
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events_data, event_id, raw, bids_path=bids_path)
+            events, event_id, raw, bids_path=bids_path)
         if events_array.size != 0:
             _events_tsv(events=events_array, durations=event_dur, raw=raw,
                         fname=events_path.fpath, trial_type=event_desc_id_map,
                         overwrite=overwrite)
         # Kepp events_array around for BrainVision writing below.
-        del event_desc_id_map, events_data, event_id, event_dur
+        del event_desc_id_map, events, event_id, event_dur
 
     # make dataset description and add template data if it does not
     # already exist. Always set overwrite to False here. If users
@@ -2330,7 +2387,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None,
 
 
 @verbose
-def write_meg_calibration(calibration, bids_path, verbose=None):
+def write_meg_calibration(calibration, bids_path, *, verbose=None):
     """Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.
 
     Parameters
@@ -2347,11 +2404,11 @@ def write_meg_calibration(calibration, bids_path, verbose=None):
 
     Examples
     --------
-    >>> data_path = mne.datasets.testing.data_path(download=False)
-    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat')
+    >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
+    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat') # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids'))
-    >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +ELLIPSIS
+    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +SKIP
     Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...
     """  # noqa: E501
     if bids_path.root is None or bids_path.subject is None:
@@ -2403,13 +2460,13 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
 
     Examples
     --------
-    >>> data_path = mne.datasets.testing.data_path(download=False)
-    >>> crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif')
+    >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
+    >>> crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif') # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids'))
-    >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +ELLIPSIS
+    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +SKIP
     Writing crosstalk file to ...sub-01_ses-test_acq-crosstalk_meg.fif
-    """
+    """  # noqa: E501
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError('bids_path must have root and subject set.')
     if bids_path.datatype not in (None, 'meg'):

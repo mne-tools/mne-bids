@@ -34,7 +34,7 @@ _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
-data_path = testing.data_path()
+data_path = testing.data_path(download=False)
 
 
 def _load_raw():
@@ -47,6 +47,7 @@ def _load_raw():
     return raw
 
 
+@testing.requires_testing_data
 def test_dig_io(tmp_path):
     """Test passing different coordinate frames give proper warnings."""
     bids_root = tmp_path / 'bids1'
@@ -83,6 +84,7 @@ def test_dig_io(tmp_path):
         write_raw_bids(raw, bids_path)
 
 
+@testing.requires_testing_data
 def test_dig_pixels(tmp_path):
     """Test dig stored correctly for the Pixels coordinate frame."""
     bids_root = tmp_path / 'bids1'
@@ -118,6 +120,7 @@ def test_dig_pixels(tmp_path):
 
 
 @pytest.mark.filterwarnings('ignore:The unit for chann*.:RuntimeWarning:mne')
+@testing.requires_testing_data
 def test_dig_template(tmp_path):
     """Test that eeg and ieeg dig are stored properly."""
     bids_root = tmp_path / 'bids1'
@@ -203,6 +206,7 @@ def _test_montage_trans(raw, montage, pos_test, space='fsaverage',
         np.array(list(montage_test.get_positions()['ch_pos'].values())))
 
 
+@testing.requires_testing_data
 def test_template_to_head():
     """Test transforming a template montage to head."""
     # test no montage
@@ -295,6 +299,7 @@ def test_template_to_head():
                         coord_frame='ras', unit='auto')
 
 
+@testing.requires_testing_data
 def test_convert_montage():
     """Test the montage RAS conversion."""
     raw = _load_raw()
@@ -327,6 +332,7 @@ def test_convert_montage():
                         [-0.0313669, 0.0540269, 0.0949191])
 
 
+@testing.requires_testing_data
 def test_electrodes_io(tmp_path):
     """Ensure only electrodes end up in *_electrodes.json."""
     raw = _load_raw()

@@ -11,6 +11,8 @@ from pathlib import Path
 import json
 import re
 from datetime import datetime, timezone
+from difflib import get_close_matches
+import os
 
 import numpy as np
 import mne
@@ -55,7 +57,8 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
     elif ext == '.fif':
         raw = reader[ext](raw_path, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf']:
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf', '.EDF', '.snirf',
+                 '.cdt']:
         raw_path = Path(raw_path)
         raw = reader[ext](raw_path, **kwargs)
 
@@ -74,12 +77,12 @@ def _read_raw(raw_path, electrode=None, hsp=None, hpi=None,
     return raw
 
 
-def _read_events(events_data, event_id, raw, bids_path=None):
+def _read_events(events, event_id, raw, bids_path=None):
     """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
     ----------
-    events_data : path-like | np.ndarray | None
+    events : path-like | np.ndarray | None
         If a string, a path to an events file. If an array, an MNE events array
         (shape n_events, 3). If None, events will be generated from
         ``raw.annotations``.
@@ -107,33 +110,51 @@ def _read_events(events_data, event_id, raw, bids_path=None):
         the values to the event IDs.
 
     """
-    # get events from events_data
-    if isinstance(events_data, np.ndarray):
-        if events_data.ndim != 2:
+    # retrieve events
+    if isinstance(events, np.ndarray):
+        if events.ndim != 2:
             raise ValueError('Events must have two dimensions, '
-                             f'found {events_data.ndim}')
-        if events_data.shape[1] != 3:
+                             f'found {events.ndim}')
+        if events.shape[1] != 3:
             raise ValueError('Events must have second dimension of length 3, '
-                             f'found {events_data.shape[1]}')
-        events = events_data
-    elif events_data is None:
+                             f'found {events.shape[1]}')
+        events = events
+    elif events is None:
         events = np.empty(shape=(0, 3), dtype=int)
     else:
-        events = read_events(events_data).astype(int)
+        events = read_events(events).astype(int)
 
+    if raw.annotations:
+        if event_id is None:
+            logger.info(
+                'The provided raw data contains annotations, but you did not '
+                'pass an "event_id" mapping from annotation descriptions to '
+                'event codes. We will generate arbitrary event codes. '
+                'To specify custom event codes, please pass "event_id".'
+            )
+        else:
+            desc_without_id = sorted(
+                set(raw.annotations.description) - set(event_id.keys())
+            )
+            if desc_without_id:
+                raise ValueError(
+                    f'The provided raw data contains annotations, but '
+                    f'"event_id" does not contain entries for all annotation '
+                    f'descriptions. The following entries are missing: '
+                    f'{", ".join(desc_without_id)}'
+                )
+
+    # If we have events, convert them to Annotations so they can be easily
+    # merged with existing Annotations.
     if events.size > 0:
-        # Only keep events for which we have an ID <> description mapping.
         ids_without_desc = set(events[:, 2]) - set(event_id.values())
         if ids_without_desc:
             raise ValueError(
                 f'No description was specified for the following event(s): '
                 f'{", ".join([str(x) for x in sorted(ids_without_desc)])}. '
                 f'Please add them to the event_id dictionary, or drop them '
-                f'from the events_data array.'
+                f'from the events array.'
             )
-        del ids_without_desc
-        mask = [e in list(event_id.values()) for e in events[:, 2]]
-        events = events[mask]
 
         # Append events to raw.annotations. All event onsets are relative to
         # measurement beginning.
@@ -175,17 +196,31 @@ def _read_events(events_data, event_id, raw, bids_path=None):
         )
     ):
         warn('No events found or provided. Please add annotations to the raw '
-             'data, or provide the events_data and event_id parameters. For '
+             'data, or provide the events and event_id parameters. For '
              'resting state data, BIDS recommends naming the task using '
              'labels beginning with "rest".')
 
     return all_events, all_dur, all_desc
 
 
+def _verbose_list_index(lst, val, *, allow_all=False):
+    # try to "return lst.index(val)" for list of str, but be more
+    # informative/verbose when it fails
+    try:
+        return lst.index(val)
+    except ValueError as exc:
+        # Use str cast here to deal with pathlib.Path instances
+        extra = get_close_matches(str(val), [str(ll) for ll in lst])
+        if allow_all and not extra:
+            extra = lst
+        extra = f'. Did you mean one of {extra}?' if extra else ''
+        raise ValueError(f'{exc}{extra}') from None
+
+
 def _handle_participants_reading(participants_fname, raw, subject):
     participants_tsv = _from_tsv(participants_fname)
     subjects = participants_tsv['participant_id']
-    row_ind = subjects.index(subject)
+    row_ind = _verbose_list_index(subjects, subject, allow_all=True)
     raw.info['subject_info'] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
@@ -250,7 +285,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     if all(suffix in ('.vhdr', '.eeg', '.vmrk') for suffix in acq_suffixes):
         ext = fnames[0].suffix
         data_fname = Path(data_fname).with_suffix(ext)
-    row_ind = fnames.index(data_fname)
+    row_ind = _verbose_list_index(fnames, data_fname)
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
@@ -265,7 +300,8 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         ))
         split_acq_times = []
         for split_f in split_fnames:
-            split_acq_times.append(acq_times[fnames.index(split_f)])
+            split_acq_times.append(
+                acq_times[_verbose_list_index(fnames, split_f)])
         if len(set(split_acq_times)) != 1:
             raise ValueError("Split files must have the same acq_time.")
 
@@ -474,8 +510,9 @@ def _handle_events_reading(events_fname, raw):
                                         description=descriptions)
     raw.set_annotations(annot_from_events)
 
-    annot_idx_to_keep = [idx for idx, annot in enumerate(annot_from_raw)
-                         if annot['description'] in ANNOTATIONS_TO_KEEP]
+    annot_idx_to_keep = [idx for idx, descr
+                         in enumerate(annot_from_raw.description)
+                         if descr in ANNOTATIONS_TO_KEEP]
     annot_to_keep = annot_from_raw[annot_idx_to_keep]
 
     if len(annot_to_keep):
@@ -507,12 +544,19 @@ def _handle_channels_reading(channels_fname, raw):
     # Now we can do some work.
     # The "type" column is mandatory in BIDS. We can use it to set channel
     # types in the raw data using a mapping between channel types
-    channel_type_dict = dict()
+    channel_type_bids_mne_map = dict()
 
     # Get the best mapping we currently have from BIDS to MNE nomenclature
     bids_to_mne_ch_types = _get_ch_type_mapping(fro='bids', to='mne')
     ch_types_json = channels_dict['type']
     for ch_name, ch_type in zip(ch_names_tsv, ch_types_json):
+        # We don't map MEG channels for now, as there's no clear 1:1 mapping
+        # from BIDS to MNE coil types.
+        if ch_type.upper() in (
+            'MEGGRADAXIAL', 'MEGMAG', 'MEGREFGRADAXIAL', 'MEGGRADPLANAR',
+            'MEGREFMAG', 'MEGOTHER'
+        ):
+            continue
 
         # Try to map from BIDS nomenclature to MNE, leave channel type
         # untouched if we are uncertain
@@ -530,8 +574,16 @@ def _handle_channels_reading(channels_fname, raw):
                        'will raise an error in the future.')
                 warn(msg)
 
-        if updated_ch_type is not None:
-            channel_type_dict[ch_name] = updated_ch_type
+        if updated_ch_type is None:
+            # We don't have an appropriate mapping, so make it a "misc" channel
+            channel_type_bids_mne_map[ch_name] = 'misc'
+            warn(
+                f'No BIDS -> MNE mapping found for channel type "{ch_type}". '
+                f'Type of channel "{ch_name}" will be set to "misc".'
+            )
+        else:
+            # We found a mapping, so use it
+            channel_type_bids_mne_map[ch_name] = updated_ch_type
 
     # Special handling for (synthesized) stimulus channel
     synthesized_stim_ch_name = 'STI 014'
@@ -556,16 +608,19 @@ def _handle_channels_reading(channels_fname, raw):
                 raw.rename_channels({raw_ch_name: bids_ch_name})
 
     # Set the channel types in the raw data according to channels.tsv
-    ch_type_map_avail = {
+    channel_type_bids_mne_map_available_channels = {
         ch_name: ch_type
-        for ch_name, ch_type in channel_type_dict.items()
+        for ch_name, ch_type in channel_type_bids_mne_map.items()
         if ch_name in raw.ch_names
     }
-    ch_diff = set(channel_type_dict.keys()) - set(ch_type_map_avail.keys())
+    ch_diff = (
+        set(channel_type_bids_mne_map.keys()) -
+        set(channel_type_bids_mne_map_available_channels.keys())
+    )
     if ch_diff:
         warn(f'Cannot set channel type for the following channels, as they '
              f'are missing in the raw data: {", ".join(sorted(ch_diff))}')
-    raw.set_channel_types(ch_type_map_avail)
+    raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 
     # Set bad channels based on _channels.tsv sidecar
     if 'status' in channels_dict:
@@ -684,7 +739,17 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
                 break
 
     if not raw_path.exists():
-        raise FileNotFoundError(f'File does not exist: {raw_path}')
+        options = os.listdir(bids_path.directory)
+        matches = get_close_matches(bids_path.basename, options)
+        msg = f'File does not exist:\n{raw_path}'
+        if matches:
+            msg += (
+                '\nDid you mean one of:\n' +
+                '\n'.join(matches) +
+                '\ninstead of:\n' +
+                bids_path.basename
+            )
+        raise FileNotFoundError(msg)
     if config_path is not None and not config_path.exists():
         raise FileNotFoundError(f'config directory not found: {config_path}')
 

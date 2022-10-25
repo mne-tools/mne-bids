@@ -5,10 +5,10 @@ import pytest
 from functools import partial
 
 import numpy as np
+from matplotlib.backend_bases import KeyEvent
 
 import mne
 from mne.datasets import testing
-from mne.utils import requires_version
 from mne.utils._testing import requires_module
 from mne.viz.utils import _fake_click
 
@@ -24,11 +24,11 @@ requires_matplotlib = partial(requires_module, name='matplotlib',
 
 _bids_path = BIDSPath(subject='01', session='01', run='01', task='testing',
                       datatype='meg')
+data_path = testing.data_path(download=False)
 
 
 def setup_bids_test_dir(bids_root):
     """Return path to a written test BIDS dir."""
-    data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
@@ -47,7 +47,7 @@ def setup_bids_test_dir(bids_root):
     events = events[events[:, 2] != 0]
 
     bids_path = _bids_path.copy().update(root=bids_root)
-    write_raw_bids(raw, bids_path=bids_path, events_data=events,
+    write_raw_bids(raw, bids_path=bids_path, events=events,
                    event_id=event_id, overwrite=True)
     write_meg_calibration(cal_fname, bids_path=bids_path)
     write_meg_crosstalk(crosstalk_fname, bids_path=bids_path)
@@ -56,7 +56,7 @@ def setup_bids_test_dir(bids_root):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_single_file(tmp_path, save_changes):
@@ -81,14 +81,18 @@ def test_inspect_single_file(tmp_path, save_changes):
     _click_ch_name(raw_fig, ch_index=4, button=1)
 
     # Closing the window should open a dialog box.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
 
     if save_changes:
         key = 'return'
     else:
         key = 'escape'
-    fig_dialog.canvas.key_press_event(key)
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key=key)
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     new_bads = raw.info['bads'].copy()
@@ -100,7 +104,7 @@ def test_inspect_single_file(tmp_path, save_changes):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_multiple_files(tmp_path):
     """Test inspecting a dataset consisting of more than one file."""
@@ -121,11 +125,15 @@ def test_inspect_multiple_files(tmp_path):
     inspect_dataset(bids_path.copy().update(subject=None))
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     assert raw_fig.mne.info['subject_info']['his_id'] == 'sub-02'
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_set_and_unset_bads(tmp_path):
     """Test marking channels as bad and later marking them as good again."""
@@ -148,9 +156,14 @@ def test_inspect_set_and_unset_bads(tmp_path):
     _click_ch_name(raw_fig, ch_index=4, button=1)
 
     # Close window and save changes.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
-    fig_dialog.canvas.key_press_event('return')
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key='return')
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     # Inspect the data again, click on two of the bad channels to mark them as
     # good.
@@ -160,9 +173,15 @@ def test_inspect_set_and_unset_bads(tmp_path):
     _click_ch_name(raw_fig, ch_index=4, button=1)
 
     # Close window and save changes.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
-    fig_dialog.canvas.key_press_event('return')
+
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key='return')
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     # Check marking the channels as good has actually worked.
     expected_bads = orig_bads + ['MEG 0113']
@@ -174,11 +193,17 @@ def test_inspect_set_and_unset_bads(tmp_path):
 def _add_annotation(raw_fig):
     """Add an Annotation to a Raw plot."""
     data_ax = raw_fig.mne.ax_main
-    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
+
+    key_event = KeyEvent(name='Annotation', canvas=raw_fig.canvas, key='a')
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     ann_fig = raw_fig.mne.fig_annotation
     for key in 'test':  # Annotation will be named: BAD_test
-        ann_fig.canvas.key_press_event(key)
-    ann_fig.canvas.key_press_event('enter')
+        key_event = KeyEvent(name='Bad', canvas=ann_fig.canvas, key=key)
+        ann_fig.canvas.callbacks.process('key_press_event', key_event)
+
+    key_event = KeyEvent(name='Enter', canvas=ann_fig.canvas, key='enter')
+    ann_fig.canvas.callbacks.process('key_press_event', key_event)
 
     # Draw a 4 second long Annotation.
     _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=1,
@@ -190,7 +215,7 @@ def _add_annotation(raw_fig):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_annotations(tmp_path):
     """Test inspection of Annotations."""
@@ -209,9 +234,14 @@ def test_inspect_annotations(tmp_path):
     _add_annotation(raw_fig)
 
     # Close window and save changes.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
-    fig_dialog.canvas.key_press_event('return')
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key='return')
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     # Ensure changes were saved.
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
@@ -223,14 +253,21 @@ def test_inspect_annotations(tmp_path):
     inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
-    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
+
+    key_event = KeyEvent(name='Annotations', canvas=raw_fig.canvas, key='a')
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
     _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=3,
                 kind='press')
 
     # Close window and save changes.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
-    fig_dialog.canvas.key_press_event('return')
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key='return')
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     # Ensure changes were saved.
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
@@ -239,7 +276,7 @@ def test_inspect_annotations(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_annotations_remove_all(tmp_path):
     """Test behavior if all Annotations are removed by the user."""
@@ -271,9 +308,14 @@ def test_inspect_annotations_remove_all(tmp_path):
     _add_annotation(raw_fig)
 
     # Close window and save changes.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
-    fig_dialog.canvas.key_press_event('return')
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key='return')
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     # events.tsv sidecar should have been created.
     assert events_tsv_fpath.exists()
@@ -282,21 +324,28 @@ def test_inspect_annotations_remove_all(tmp_path):
     inspect_dataset(bids_path, find_flat=False)
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     data_ax = raw_fig.mne.ax_main
-    raw_fig.canvas.key_press_event('a')  # Toggle Annotation mode
+
+    key_event = KeyEvent(name='Annotations', canvas=raw_fig.canvas, key='a')
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
     _fake_click(raw_fig, data_ax, [1., 1.], xform='data', button=3,
                 kind='press')
 
     # Close window and save changes.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
-    fig_dialog.canvas.key_press_event('return')
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key='return')
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     # events.tsv sidecar should not exist anymore.
     assert not events_tsv_fpath.exists()
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_dont_show_annotations(tmp_path):
     """Test if show_annotations=False works."""
@@ -313,7 +362,7 @@ def test_inspect_dont_show_annotations(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_bads_and_annotations(tmp_path):
     """Test adding bads and Annotations in one go."""
@@ -338,9 +387,14 @@ def test_inspect_bads_and_annotations(tmp_path):
     _add_annotation(raw_fig)
 
     # Close window and save changes.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
+
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
-    fig_dialog.canvas.key_press_event('return')
+    key_event = KeyEvent(name='Save', canvas=fig_dialog.canvas, key='return')
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     # Check that the changes were saved.
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
@@ -351,7 +405,7 @@ def test_inspect_bads_and_annotations(tmp_path):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect_auto_flats(tmp_path, save_changes):
@@ -380,14 +434,18 @@ def test_inspect_auto_flats(tmp_path, save_changes):
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
 
     # Closing the window should open a dialog box.
-    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+    key_event = KeyEvent(
+        name='Close', canvas=raw_fig.canvas, key=raw_fig.mne.close_key
+    )
+    raw_fig.canvas.callbacks.process('key_press_event', key_event)
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
 
     if save_changes:
         key = 'return'
     else:
         key = 'escape'
-    fig_dialog.canvas.key_press_event(key)
+    key_event = KeyEvent(name='Close', canvas=fig_dialog.canvas, key=key)
+    fig_dialog.canvas.callbacks.process('key_press_event', key_event)
 
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
 
@@ -407,7 +465,7 @@ def test_inspect_auto_flats(tmp_path, save_changes):
 
 
 @requires_matplotlib
-@requires_version('mne', '0.22')
+@testing.requires_testing_data
 @pytest.mark.parametrize(('l_freq', 'h_freq'),
                          [(None, None),
                           (1, None),

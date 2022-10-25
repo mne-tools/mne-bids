@@ -44,7 +44,7 @@ from mne_bids.stats import count_events
 # Now we can read the MNE sample data. We define an `event_id` based on our
 # knowledge of the data, to give meaning to events in the data.
 #
-# With `raw_fname` and `events_data`, we determine where to get the sample data
+# With `raw_fname` and `events`, we determine where to get the sample data
 # from. `output_path` determines where we will write the BIDS conversion to.
 
 data_path = sample.data_path()
@@ -53,7 +53,7 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
 
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 er_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')  # empty room
-events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
+events_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
 # %%
@@ -99,7 +99,7 @@ bids_path = BIDSPath(
 write_raw_bids(
     raw=raw,
     bids_path=bids_path,
-    events_data=events_data,
+    events=events_fname,
     event_id=event_id,
     empty_room=raw_er,
     overwrite=True
