@@ -1810,6 +1810,10 @@ def test_snirf(_bids_validate, tmp_path):
     assert rawbids.annotations.description[2] == 'Control'
     assert raw.times[-1] == rawbids.times[-1]
 
+    with pytest.raises(ValueError,
+                       match='The input "format" FIF is not an accepted.*'):
+        write_raw_bids(raw, bids_path, overwrite=True, format="FIF")
+
     # Test with different optode coordinate frame
     raw = _read_raw_snirf(raw_fname, optode_frame="mri")
     write_raw_bids(raw, bids_path, overwrite=True)
