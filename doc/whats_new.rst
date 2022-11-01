@@ -31,6 +31,7 @@ The following authors had contributed before. Thank you for sticking around! �
 * `Alexandre Gramfort`_
 * `Eric Larson`_
 * `Richard Höchenberger`_
+* `Stefan Appelhoff`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,7 +57,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - When writing data containing :class:`mne.Annotations` **and** passing events to :func:`~mne_bids.write_raw_bids`, previously, annotations whose description did not appear in ``event_id`` were silently dropped. We now raise an exception and request users to specify mappings between descriptions and event codes in this case. It is still possible to omit ``event_id`` if no ``events`` are passed, by `Richard Höchenberger`_ (:gh:`1084`)
-
+- When working with NIRS data, raise the correct error message when a faulty ``format`` argument is passed to :func:`~mne_bids.write_raw_bids`, by `Stefan Appelhoff`_ (:gh:`1092`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
