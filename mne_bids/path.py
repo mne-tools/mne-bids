@@ -933,11 +933,10 @@ class BIDSPath(object):
                              'Please use `bids_path.update(root="<root>")` '
                              'to set the root of the BIDS folder to read.')
 
-        sidecar_fname = _find_matching_sidecar(
-            # needed to deal with inheritance principle
-            self.copy().update(datatype=None),
-            extension='.json'
-        )
+        # needed to deal with inheritance principle
+        sidecar_fname = \
+            self.copy().update(datatype=None).find_matching_sidecar(
+                extension='.json')
         with open(sidecar_fname, 'r', encoding='utf-8') as f:
             sidecar_json = json.load(f)
 
@@ -985,6 +984,35 @@ class BIDSPath(object):
         .. versionadded:: 0.12.0
         """
         return _find_empty_room_candidates(self)
+
+    def find_matching_sidecar(self, suffix=None, extension=None, *,
+                              on_error='raise'):
+        """Get the matching sidecar JSON path.
+
+        Parameters
+        ----------
+        suffix : str | None
+            The filename suffix. This is the entity after the last ``_``
+            before the extension. E.g., ``'ieeg'``.
+        extension : str | None
+            The extension of the filename. E.g., ``'.json'``.
+        on_error : 'raise' | 'warn' | 'ignore'
+            If no matching sidecar file was found and this is set to
+            ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
+            warning, and if ``'ignore'``, neither raise an exception nor a
+            warning, and return ``None`` in both cases.
+
+        Returns
+        -------
+        sidecar_path : pathlib.Path | None
+            The path to the sidecar JSON file.
+        """
+        return _find_matching_sidecar(
+            self,
+            suffix=suffix,
+            extension=extension,
+            on_error=on_error,
+        )
 
     @property
     def meg_calibration_fpath(self):
@@ -1528,7 +1556,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
                                             candidate_list)
     if len(best_candidates) == 1:
         # Success
-        return best_candidates[0]
+        return Path(best_candidates[0])
 
     # We failed. Construct a helpful error message.
     # If this was expected, simply return None, otherwise, raise an exception.
