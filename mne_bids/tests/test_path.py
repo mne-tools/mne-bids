@@ -865,10 +865,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     bids_path = BIDSPath(subject='01', session='01',
                          task='audiovisual', run='01',
                          root=bids_root, suffix='meg')
-    with pytest.warns(RuntimeWarning, match='Did not find any'):
-        assert bids_path.find_matching_sidecar(on_error='warn') is None
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
-    assert bids_path.find_matching_sidecar().is_file()
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
@@ -953,10 +950,13 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Now we write experimental data and associate it with the earlier
     # empty-room recording
+    with pytest.raises(RuntimeError, match='Did not find any'):
+        bids_path.find_matching_sidecar()
     bids_path = (er_matching_date_bids_path.copy()
                  .update(subject='01', session=None, task='task'))
     write_raw_bids(raw, bids_path=bids_path,
                    empty_room=er_associated_bids_path)
+    assert bids_path.find_matching_sidecar().is_file()
 
     # Retrieve empty-room BIDSPath
     assert bids_path.find_empty_room() == er_associated_bids_path
