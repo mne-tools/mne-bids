@@ -19,7 +19,7 @@ from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
                       BIDSPath, write_raw_bids, read_raw_bids,
                       write_meg_calibration, write_meg_crosstalk)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
-                           _find_best_candidates, _find_matching_sidecar,
+                           _find_best_candidates,
                            _filter_fnames, search_folder_for_text,
                            get_bids_path_from_fname)
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
@@ -370,44 +370,42 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     bids_path = _bids_path.copy().update(root=bids_root)
 
     # Now find a sidecar
-    sidecar_fname = _find_matching_sidecar(bids_path,
-                                           suffix='coordsystem',
-                                           extension='.json')
+    sidecar_fname = bids_path.find_matching_sidecar(
+        suffix='coordsystem', extension='.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_coordsystem.json')
-    assert sidecar_fname.endswith(expected_file)
+    assert str(sidecar_fname).endswith(expected_file)
 
     # Find multiple sidecars, tied in score, triggering an error
     with pytest.raises(RuntimeError, match='Expected to find a single'):
-        open(sidecar_fname.replace('coordsystem.json',
-                                   '2coordsystem.json'), 'w').close()
+        open(str(sidecar_fname).replace('coordsystem.json',
+                                        '2coordsystem.json'), 'w').close()
         print_dir_tree(bids_root)
-        _find_matching_sidecar(bids_path,
-                               suffix='coordsystem', extension='.json')
+        bids_path.find_matching_sidecar(
+            suffix='coordsystem', extension='.json')
 
     # Find nothing and raise.
     with pytest.raises(RuntimeError, match='Did not find any'):
-        fname = _find_matching_sidecar(bids_path, suffix='foo',
-                                       extension='.bogus')
+        bids_path.find_matching_sidecar(suffix='foo', extension='.bogus')
 
     # Find nothing and receive None and a warning.
     on_error = 'warn'
     with pytest.warns(RuntimeWarning, match='Did not find any'):
-        fname = _find_matching_sidecar(bids_path, suffix='foo',
-                                       extension='.bogus', on_error=on_error)
+        fname = bids_path.find_matching_sidecar(
+            suffix='foo', extension='.bogus', on_error=on_error)
     assert fname is None
 
     # Find nothing and receive None.
     on_error = 'ignore'
-    fname = _find_matching_sidecar(bids_path, suffix='foo',
-                                   extension='.bogus', on_error=on_error)
+    fname = bids_path.find_matching_sidecar(
+        suffix='foo', extension='.bogus', on_error=on_error)
     assert fname is None
 
     # Invalid on_error.
     on_error = 'hello'
     with pytest.raises(ValueError, match='Acceptable values for on_error are'):
-        _find_matching_sidecar(bids_path, suffix='coordsystem',
-                               extension='.json', on_error=on_error)
+        bids_path.find_matching_sidecar(
+            suffix='coordsystem', extension='.json', on_error=on_error)
 
     # Test behavior of suffix and extension params when suffix and extension
     # are also (not) present in the passed BIDSPath
@@ -429,7 +427,7 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
 
     for bp_suffix in (None, 'eeg'):
         bids_path.suffix = bp_suffix
-        s = _find_matching_sidecar(bids_path=bids_path, suffix='events')
+        s = bids_path.find_matching_sidecar(suffix='events')
         assert Path(s).name == 'sub-test_task-task_events.json'
 
     # extension parameter should always override BIDSPath.extension
@@ -437,15 +435,14 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
 
     for bp_extension in (None, '.json'):
         bids_path.extension = bp_extension
-        s = _find_matching_sidecar(bids_path=bids_path, extension='.tsv')
+        s = bids_path.find_matching_sidecar(extension='.tsv')
         assert Path(s).name == 'sub-test_task-task_events.tsv'
 
     # If suffix and extension parameters are not passed, use BIDSPath
     # attributes
-    bids_path.suffix = 'events'
-    bids_path.extension = '.tsv'
-    s = _find_matching_sidecar(bids_path=bids_path)
-    assert Path(s).name == 'sub-test_task-task_events.tsv'
+    bids_path.update(suffix='events', extension='.tsv')
+    s = bids_path.find_matching_sidecar()
+    assert s.name == 'sub-test_task-task_events.tsv'
 
 
 @testing.requires_testing_data
@@ -953,18 +950,21 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Now we write experimental data and associate it with the earlier
     # empty-room recording
+    with pytest.raises(RuntimeError, match='Did not find any'):
+        bids_path.find_matching_sidecar()
     bids_path = (er_matching_date_bids_path.copy()
                  .update(subject='01', session=None, task='task'))
     write_raw_bids(raw, bids_path=bids_path,
                    empty_room=er_associated_bids_path)
+    assert bids_path.find_matching_sidecar().is_file()
 
     # Retrieve empty-room BIDSPath
     assert bids_path.find_empty_room() == er_associated_bids_path
     for use_sidecar_only in [True, False]:  # same result either way
-        path, candidates = bids_path.find_empty_room(
-            use_sidecar_only=use_sidecar_only, return_candidates=True)
+        path = bids_path.find_empty_room(use_sidecar_only=use_sidecar_only)
         assert path == er_associated_bids_path
-        assert candidates is None
+    candidates = bids_path.get_empty_room_candidates()
+    assert len(candidates) == 2
 
     # Should only work for MEG
     with pytest.raises(ValueError, match='only supported for MEG'):
@@ -978,14 +978,14 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     # Don't create `AssociatedEmptyRoom` entry in sidecar – we should now
     # retrieve the empty-room recording closer in time
     write_raw_bids(raw, bids_path=bids_path, empty_room=None, overwrite=True)
-    path, candidates = bids_path.find_empty_room(return_candidates=True)
+    path = bids_path.find_empty_room()
+    candidates = bids_path.get_empty_room_candidates()
     assert path == er_matching_date_bids_path
     assert er_matching_date_bids_path in candidates
 
     # If we enforce searching only via `AssociatedEmptyRoom`, we should get no
     # result
-    assert bids_path.find_empty_room(
-        use_sidecar_only=True, return_candidates=True) == (None, None)
+    assert bids_path.find_empty_room(use_sidecar_only=True) is None
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

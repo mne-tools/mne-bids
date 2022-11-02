@@ -40,7 +40,8 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - Speed up :func:`mne_bids.read_raw_bids` when lots of events are present by `Alexandre Gramfort`_ (:gh:`1079`)
-- Add the option ``return_candidates`` to :meth:`mne_bids.BIDSPath.find_empty_room` by `Eric Larson`_ (:gh:`1083`)
+- Add :meth:`mne_bids.BIDSPath.get_empty_room_candidates` to get the candidate empty-room files that could be used by :meth:`mne_bids.BIDSPath.find_empty_room` by `Eric Larson`_ (:gh:`1083`, :gh:`1093`)
+- Add :meth:`mne_bids.BIDSPath.find_matching_sidecar` to find the sidecar file associated with a given file path by `Eric Larson`_ (:gh:`1093`)
 - When writing data via :func:`~mne_bids.write_raw_bids`, it is now possible to specify a custom mapping of :class:`mne.Annotations` descriptions to event codes via the ``event_id`` parameter. Previously, passing this parameter would always require to also pass ``events``, and using a custom event code mapping for annotations was impossible, by `Richard Höchenberger`_ (:gh:`1084`)
 
 🧐 API and behavior changes

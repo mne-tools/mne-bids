@@ -2966,12 +2966,12 @@ def test_coordsystem_json_compliance(
         assert coordsystem_json['EEGCoordinateSystemDescription'] == \
             BIDS_COORD_FRAME_DESCRIPTIONS['captrak']
     elif datatype == 'ieeg' and coord_frame == 'mni_tal':
-        assert 'space-fsaverage' in coordsystem_fname
+        assert 'space-fsaverage' in str(coordsystem_fname)
         assert coordsystem_json['iEEGCoordinateSystem'] == 'fsaverage'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
             BIDS_COORD_FRAME_DESCRIPTIONS['fsaverage']
     elif datatype == 'ieeg' and coord_frame == 'mri':
-        assert 'space-ACPC' in coordsystem_fname
+        assert 'space-ACPC' in str(coordsystem_fname)
         assert coordsystem_json['iEEGCoordinateSystem'] == 'ACPC'
         assert coordsystem_json['iEEGCoordinateSystemDescription'] == \
             BIDS_COORD_FRAME_DESCRIPTIONS['acpc']

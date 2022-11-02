@@ -28,7 +28,7 @@ from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             param_regex, _ensure_tuple)
 
 
-def _find_matched_empty_room(bids_path):
+def _find_empty_room_candidates(bids_path):
     """Get matching empty-room file for an MEG recording."""
     # Check whether we have a BIDS root.
     bids_root = bids_path.root
@@ -37,23 +37,15 @@ def _find_matched_empty_room(bids_path):
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    from mne_bids import read_raw_bids  # avoid circular import.
     bids_path = bids_path.copy()
 
     datatype = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_path.update(suffix=datatype,
-                                  root=bids_root).fpath
+    bids_fname = bids_path.update(suffix=datatype).fpath
     _, ext = _parse_ext(bids_fname)
-    raw = read_raw_bids(bids_path=bids_path)
-    if raw.info['meas_date'] is None:
-        raise ValueError('The provided recording does not have a measurement '
-                         'date set. Cannot get matching empty-room file.')
-
-    ref_date = raw.info['meas_date']
     emptyroom_dir = BIDSPath(root=bids_root, subject='emptyroom').directory
 
     if not emptyroom_dir.exists():
-        return None, list()
+        return list()
 
     # Find the empty-room recording sessions.
     emptyroom_session_dirs = [x for x in emptyroom_dir.iterdir()
@@ -78,13 +70,6 @@ def _find_matched_empty_room(bids_path):
                     (not item.suffix and item.is_dir())):  # Hopefully BTi?
                 candidate_er_fnames.append(item.name)
 
-    # Walk through recordings, trying to extract the recording date:
-    # First, from the filename; and if that fails, from `info['meas_date']`.
-    best_er_bids_path = None
-    min_delta_t = np.inf
-    date_tie = False
-
-    failed_to_get_er_date_count = 0
     candidates = list()
     for er_fname in candidate_er_fnames:
         # get entities from filenamme
@@ -93,6 +78,29 @@ def _find_matched_empty_room(bids_path):
         er_bids_path.root = bids_root
         er_bids_path.datatype = 'meg'
         candidates.append(er_bids_path)
+
+    return candidates
+
+
+def _find_matched_empty_room(bids_path):
+    from mne_bids import read_raw_bids  # avoid circular import.
+    candidates = _find_empty_room_candidates(bids_path)
+
+    # Walk through recordings, trying to extract the recording date:
+    # First, from the filename; and if that fails, from `info['meas_date']`.
+    best_er_bids_path = None
+    min_delta_t = np.inf
+    date_tie = False
+    failed_to_get_er_date_count = 0
+    bids_path = bids_path.copy().update(datatype='meg')
+    raw = read_raw_bids(bids_path=bids_path)
+    if raw.info['meas_date'] is None:
+        raise ValueError('The provided recording does not have a measurement '
+                         'date set. Cannot get matching empty-room file.')
+    ref_date = raw.info['meas_date']
+    del bids_path, raw
+    for er_bids_path in candidates:
+        # get entities from filenamme
         er_meas_date = None
 
         # Try to extract date from filename.
@@ -106,7 +114,7 @@ def _find_matched_empty_room(bids_path):
                 pass
 
         if er_meas_date is None:  # No luck so far! Check info['meas_date']
-            _, ext = _parse_ext(er_fname)
+            _, ext = _parse_ext(er_bids_path.fpath)
             extra_params = None
             if ext == '.fif':
                 extra_params = dict(allow_maxshield='yes')
@@ -139,7 +147,7 @@ def _find_matched_empty_room(bids_path):
                'same recording date. Selecting the first match.')
         warn(msg)
 
-    return best_er_bids_path, candidates
+    return best_er_bids_path
 
 
 class BIDSPath(object):
@@ -895,8 +903,7 @@ class BIDSPath(object):
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
 
     @verbose
-    def find_empty_room(self, use_sidecar_only=False, *,
-                        return_candidates=False, verbose=None):
+    def find_empty_room(self, use_sidecar_only=False, *, verbose=None):
         """Find the corresponding empty-room file of an MEG recording.
 
         This will only work if the ``.root`` attribute of the
@@ -909,9 +916,6 @@ class BIDSPath(object):
             sidecar JSON file or not. If ``False``, first look for the entry,
             and if unsuccessful, try to find the best-matching empty-room
             recording in the dataset based on the measurement date.
-        return_candidates : bool
-            If True (default False), return candidate filenames checked during
-            the search for the best-matching empty-room recording.
         %(verbose)s
 
         Returns
@@ -919,11 +923,6 @@ class BIDSPath(object):
         BIDSPath | None
             The path corresponding to the best-matching empty-room measurement.
             Returns ``None`` if none was found.
-        list | None
-            The candidates checked during the search for the best-matching
-            empty-room recording. Only returned if ``return_candidates`` is
-            ``True``. Will be None if a sidecar is used to find the empty-room
-            recording.
         """
         if self.datatype not in ('meg', None):
             raise ValueError('Empty-room data is only supported for MEG '
@@ -934,11 +933,10 @@ class BIDSPath(object):
                              'Please use `bids_path.update(root="<root>")` '
                              'to set the root of the BIDS folder to read.')
 
-        sidecar_fname = _find_matching_sidecar(
-            # needed to deal with inheritance principle
-            self.copy().update(datatype=None),
-            extension='.json'
-        )
+        # needed to deal with inheritance principle
+        sidecar_fname = \
+            self.copy().update(datatype=None).find_matching_sidecar(
+                extension='.json')
         with open(sidecar_fname, 'r', encoding='utf-8') as f:
             sidecar_json = json.load(f)
 
@@ -949,21 +947,20 @@ class BIDSPath(object):
             er_bids_path = get_bids_path_from_fname(emptytoom_path)
             er_bids_path.root = self.root
             er_bids_path.datatype = 'meg'
-            candidates = None
         elif use_sidecar_only:
             logger.info(
                 'The MEG sidecar file does not contain an '
                 '"AssociatedEmptyRoom" entry. Aborting search for an '
                 'empty-room recording, as you passed use_sidecar_only=True'
             )
-            return None if not return_candidates else (None, None)
+            return None
         else:
             logger.info(
                 'The MEG sidecar file does not contain an '
                 '"AssociatedEmptyRoom" entry. Will try to find a matching '
                 'empty-room recording based on the measurement date …'
             )
-            er_bids_path, candidates = _find_matched_empty_room(self)
+            er_bids_path = _find_matched_empty_room(self)
 
         if er_bids_path is not None and not er_bids_path.fpath.exists():
             raise FileNotFoundError(
@@ -971,10 +968,51 @@ class BIDSPath(object):
                 f'{er_bids_path}\n'
                 'Check your BIDS dataset for completeness.')
 
-        out = er_bids_path
-        if return_candidates:
-            out = (out, candidates)
-        return out
+        return er_bids_path
+
+    def get_empty_room_candidates(self):
+        """Get the list of empty-room candidates for the given file.
+
+        Returns
+        -------
+        candidates : list of BIDSPath
+            The candidate files that will be checked if the sidecar does not
+            contain an "AssociatedEmptyRoom" entry.
+
+        Notes
+        -----
+        .. versionadded:: 0.12.0
+        """
+        return _find_empty_room_candidates(self)
+
+    def find_matching_sidecar(self, suffix=None, extension=None, *,
+                              on_error='raise'):
+        """Get the matching sidecar JSON path.
+
+        Parameters
+        ----------
+        suffix : str | None
+            The filename suffix. This is the entity after the last ``_``
+            before the extension. E.g., ``'ieeg'``.
+        extension : str | None
+            The extension of the filename. E.g., ``'.json'``.
+        on_error : 'raise' | 'warn' | 'ignore'
+            If no matching sidecar file was found and this is set to
+            ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a
+            warning, and if ``'ignore'``, neither raise an exception nor a
+            warning, and return ``None`` in both cases.
+
+        Returns
+        -------
+        sidecar_path : pathlib.Path | None
+            The path to the sidecar JSON file.
+        """
+        return _find_matching_sidecar(
+            self,
+            suffix=suffix,
+            extension=extension,
+            on_error=on_error,
+        )
 
     @property
     def meg_calibration_fpath(self):
@@ -1518,7 +1556,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
                                             candidate_list)
     if len(best_candidates) == 1:
         # Success
-        return best_candidates[0]
+        return Path(best_candidates[0])
 
     # We failed. Construct a helpful error message.
     # If this was expected, simply return None, otherwise, raise an exception.
