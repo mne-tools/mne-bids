@@ -615,8 +615,14 @@ different properties look like for our object:</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Copy the instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_empty_room</span></code></a>([use_sidecar_only, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_empty_room</span></code></a>([use_sidecar_only, verbose])</p></td>
 <td><p>Find the corresponding empty-room file of an MEG recording.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_matching_sidecar</span></code></a>([suffix, extension, ...])</p></td>
+<td><p>Get the matching sidecar JSON path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.get_empty_room_candidates" title="mne_bids.BIDSPath.get_empty_room_candidates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_empty_room_candidates</span></code></a>()</p></td>
+<td><p>Get the list of empty-room candidates for the given file.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>([check])</p></td>
 <td><p>Get a list of all matching paths in the root directory.</p></td>
@@ -707,7 +713,7 @@ directory would be:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.find_empty_room">
-<span class="sig-name descname"><span class="pre">find_empty_room</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_sidecar_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_candidates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_empty_room"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_empty_room" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">find_empty_room</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_sidecar_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_empty_room"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_empty_room" title="Permalink to this definition">#</a></dt>
 <dd><p>Find the corresponding empty-room file of an MEG recording.</p>
 <p>This will only work if the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute of the
 <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance has been set.</p>
@@ -718,9 +724,6 @@ directory would be:</p>
 sidecar JSON file or not. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, first look for the entry,
 and if unsuccessful, try to find the best-matching empty-room
 recording in the dataset based on the measurement date.</p>
-</dd>
-<dt><strong>return_candidates</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If True (default False), return candidate filenames checked during
-the search for the best-matching empty-room recording.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.11)"><span class="xref std std-ref">logging documentation</span></a> and
@@ -734,10 +737,33 @@ argument.</p>
 <dt><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The path corresponding to the best-matching empty-room measurement.
 Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if none was found.</p>
 </dd>
-<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>The candidates checked during the search for the best-matching
-empty-room recording. Only returned if <code class="docutils literal notranslate"><span class="pre">return_candidates</span></code> is
-<code class="docutils literal notranslate"><span class="pre">True</span></code>. Will be None if a sidecar is used to find the empty-room
-recording.</p>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_bids.BIDSPath.find_matching_sidecar">
+<span class="sig-name descname"><span class="pre">find_matching_sidecar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_matching_sidecar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_matching_sidecar" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the matching sidecar JSON path.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>suffix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The filename suffix. This is the entity after the last <code class="docutils literal notranslate"><span class="pre">_</span></code>
+before the extension. E.g., <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>.</p>
+</dd>
+<dt><strong>extension</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
+</dd>
+<dt><strong>on_error</strong><span class="classifier">‘raise’ | ‘warn’ | ‘ignore’</span></dt><dd><p>If no matching sidecar file was found and this is set to
+<code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. If <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>, emit a
+warning, and if <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code>, neither raise an exception nor a
+warning, and return <code class="docutils literal notranslate"><span class="pre">None</span></code> in both cases.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>sidecar_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The path to the sidecar JSON file.</p>
 </dd>
 </dl>
 </dd>
@@ -759,6 +785,25 @@ path.</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_bids.BIDSPath.get_empty_room_candidates">
+<span class="sig-name descname"><span class="pre">get_empty_room_candidates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.get_empty_room_candidates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.get_empty_room_candidates" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the list of empty-room candidates for the given file.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>candidates</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The candidate files that will be checked if the sidecar does not
+contain an “AssociatedEmptyRoom” entry.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.12.0.</span></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1150,10 +1195,28 @@ or updates for ‘root’ or ‘datatype’.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.find_matching_sidecar">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.find_matching_sidecar()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#mne_bids.BIDSPath.fpath">
      <code class="docutils literal notranslate">
       <span class="pre">
        BIDSPath.fpath
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#mne_bids.BIDSPath.get_empty_room_candidates">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BIDSPath.get_empty_room_candidates()
       </span>
      </code>
     </a>
@@ -1348,7 +1411,7 @@ or updates for ‘root’ or ‘datatype’.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-01.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-02.<br>
 
 </p>
 

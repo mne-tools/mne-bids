@@ -439,7 +439,7 @@
                             <span class="n">param_regex</span><span class="p">,</span> <span class="n">_ensure_tuple</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_find_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_find_empty_room_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get matching empty-room file for an MEG recording.&quot;&quot;&quot;</span>
     <span class="c1"># Check whether we have a BIDS root.</span>
     <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
@@ -448,23 +448,15 @@
                          <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
                          <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span>  <span class="c1"># avoid circular import.</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>  <span class="c1"># We&#39;re only concerned about MEG data here</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
-                                  <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The provided recording does not have a measurement &#39;</span>
-                         <span class="s1">&#39;date set. Cannot get matching empty-room file.&#39;</span><span class="p">)</span>
-
-    <span class="n">ref_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
     <span class="n">emptyroom_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">directory</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
 
     <span class="c1"># Find the empty-room recording sessions.</span>
     <span class="n">emptyroom_session_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
@@ -489,13 +481,6 @@
                     <span class="p">(</span><span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">is_dir</span><span class="p">())):</span>  <span class="c1"># Hopefully BTi?</span>
                 <span class="n">candidate_er_fnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-    <span class="c1"># Walk through recordings, trying to extract the recording date:</span>
-    <span class="c1"># First, from the filename; and if that fails, from `info[&#39;meas_date&#39;]`.</span>
-    <span class="n">best_er_bids_path</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">min_delta_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-    <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="n">failed_to_get_er_date_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">candidates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">er_fname</span> <span class="ow">in</span> <span class="n">candidate_er_fnames</span><span class="p">:</span>
         <span class="c1"># get entities from filenamme</span>
@@ -504,6 +489,29 @@
         <span class="n">er_bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">bids_root</span>
         <span class="n">er_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
         <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">er_bids_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">candidates</span>
+
+
+<span class="k">def</span> <span class="nf">_find_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span>  <span class="c1"># avoid circular import.</span>
+    <span class="n">candidates</span> <span class="o">=</span> <span class="n">_find_empty_room_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+
+    <span class="c1"># Walk through recordings, trying to extract the recording date:</span>
+    <span class="c1"># First, from the filename; and if that fails, from `info[&#39;meas_date&#39;]`.</span>
+    <span class="n">best_er_bids_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">min_delta_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">failed_to_get_er_date_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The provided recording does not have a measurement &#39;</span>
+                         <span class="s1">&#39;date set. Cannot get matching empty-room file.&#39;</span><span class="p">)</span>
+    <span class="n">ref_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span>
+    <span class="k">for</span> <span class="n">er_bids_path</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+        <span class="c1"># get entities from filenamme</span>
         <span class="n">er_meas_date</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Try to extract date from filename.</span>
@@ -517,7 +525,7 @@
                 <span class="k">pass</span>
 
         <span class="k">if</span> <span class="n">er_meas_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># No luck so far! Check info[&#39;meas_date&#39;]</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">er_bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
             <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
                 <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span>
@@ -550,7 +558,7 @@
                <span class="s1">&#39;same recording date. Selecting the first match.&#39;</span><span class="p">)</span>
         <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">best_er_bids_path</span><span class="p">,</span> <span class="n">candidates</span>
+    <span class="k">return</span> <span class="n">best_er_bids_path</span>
 
 
 <div class="viewcode-block" id="BIDSPath"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath">[docs]</a><span class="k">class</span> <span class="nc">BIDSPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -1306,8 +1314,7 @@
                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BIDSPath.find_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_empty_room">[docs]</a>    <span class="nd">@verbose</span>
-    <span class="k">def</span> <span class="nf">find_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_sidecar_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-                        <span class="n">return_candidates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">find_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_sidecar_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the corresponding empty-room file of an MEG recording.</span>
 
 <span class="sd">        This will only work if the ``.root`` attribute of the</span>
@@ -1320,9 +1327,6 @@
 <span class="sd">            sidecar JSON file or not. If ``False``, first look for the entry,</span>
 <span class="sd">            and if unsuccessful, try to find the best-matching empty-room</span>
 <span class="sd">            recording in the dataset based on the measurement date.</span>
-<span class="sd">        return_candidates : bool</span>
-<span class="sd">            If True (default False), return candidate filenames checked during</span>
-<span class="sd">            the search for the best-matching empty-room recording.</span>
 <span class="sd">        %(verbose)s</span>
 
 <span class="sd">        Returns</span>
@@ -1330,11 +1334,6 @@
 <span class="sd">        BIDSPath | None</span>
 <span class="sd">            The path corresponding to the best-matching empty-room measurement.</span>
 <span class="sd">            Returns ``None`` if none was found.</span>
-<span class="sd">        list | None</span>
-<span class="sd">            The candidates checked during the search for the best-matching</span>
-<span class="sd">            empty-room recording. Only returned if ``return_candidates`` is</span>
-<span class="sd">            ``True``. Will be None if a sidecar is used to find the empty-room</span>
-<span class="sd">            recording.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Empty-room data is only supported for MEG &#39;</span>
@@ -1345,11 +1344,10 @@
                              <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
                              <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
 
-        <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-            <span class="c1"># needed to deal with inheritance principle</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
-            <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span>
-        <span class="p">)</span>
+        <span class="c1"># needed to deal with inheritance principle</span>
+        <span class="n">sidecar_fname</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">find_matching_sidecar</span><span class="p">(</span>
+                <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
@@ -1360,21 +1358,20 @@
             <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">emptytoom_path</span><span class="p">)</span>
             <span class="n">er_bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
             <span class="n">er_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
-            <span class="n">candidates</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="n">use_sidecar_only</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s1">&#39;The MEG sidecar file does not contain an &#39;</span>
                 <span class="s1">&#39;&quot;AssociatedEmptyRoom&quot; entry. Aborting search for an &#39;</span>
                 <span class="s1">&#39;empty-room recording, as you passed use_sidecar_only=True&#39;</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">return_candidates</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s1">&#39;The MEG sidecar file does not contain an &#39;</span>
                 <span class="s1">&#39;&quot;AssociatedEmptyRoom&quot; entry. Will try to find a matching &#39;</span>
                 <span class="s1">&#39;empty-room recording based on the measurement date …&#39;</span>
             <span class="p">)</span>
-            <span class="n">er_bids_path</span><span class="p">,</span> <span class="n">candidates</span> <span class="o">=</span> <span class="n">_find_matched_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">_find_matched_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">er_bids_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
@@ -1382,10 +1379,51 @@
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">er_bids_path</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
                 <span class="s1">&#39;Check your BIDS dataset for completeness.&#39;</span><span class="p">)</span>
 
-        <span class="n">out</span> <span class="o">=</span> <span class="n">er_bids_path</span>
-        <span class="k">if</span> <span class="n">return_candidates</span><span class="p">:</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">candidates</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">out</span></div>
+        <span class="k">return</span> <span class="n">er_bids_path</span></div>
+
+<div class="viewcode-block" id="BIDSPath.get_empty_room_candidates"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.get_empty_room_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">get_empty_room_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the list of empty-room candidates for the given file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        candidates : list of BIDSPath</span>
+<span class="sd">            The candidate files that will be checked if the sidecar does not</span>
+<span class="sd">            contain an &quot;AssociatedEmptyRoom&quot; entry.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        .. versionadded:: 0.12.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_find_empty_room_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BIDSPath.find_matching_sidecar"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_matching_sidecar">[docs]</a>    <span class="k">def</span> <span class="nf">find_matching_sidecar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                              <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the matching sidecar JSON path.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        suffix : str | None</span>
+<span class="sd">            The filename suffix. This is the entity after the last ``_``</span>
+<span class="sd">            before the extension. E.g., ``&#39;ieeg&#39;``.</span>
+<span class="sd">        extension : str | None</span>
+<span class="sd">            The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
+<span class="sd">        on_error : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
+<span class="sd">            If no matching sidecar file was found and this is set to</span>
+<span class="sd">            ``&#39;raise&#39;``, raise a ``RuntimeError``. If ``&#39;warn&#39;``, emit a</span>
+<span class="sd">            warning, and if ``&#39;ignore&#39;``, neither raise an exception nor a</span>
+<span class="sd">            warning, and return ``None`` in both cases.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sidecar_path : pathlib.Path | None</span>
+<span class="sd">            The path to the sidecar JSON file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
+            <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span>
+            <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">meg_calibration_fpath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1929,7 +1967,7 @@
                                             <span class="n">candidate_list</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># Success</span>
-        <span class="k">return</span> <span class="n">best_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># We failed. Construct a helpful error message.</span>
     <span class="c1"># If this was expected, simply return None, otherwise, raise an exception.</span>
@@ -2397,7 +2435,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-01.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-02.<br>
 
 </p>
 
