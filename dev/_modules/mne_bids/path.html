@@ -424,6 +424,7 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">indent</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -1036,8 +1037,13 @@
                     <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
                 <span class="c1"># if paths still cannot be resolved, then there is an error</span>
                 <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">matching_paths_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">))</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Found more than one matching data file for the &#39;</span>
-                           <span class="s1">&#39;requested recording. Cannot proceed due to the &#39;</span>
+                           <span class="s1">&#39;requested recording. While searching:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                           <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">indent</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                           <span class="sa">f</span><span class="s1">&#39;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">)</span><span class="si">}</span><span class="s1"> paths:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                           <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">indent</span><span class="p">(</span><span class="n">matching_paths_str</span><span class="p">,</span> <span class="s2">&quot;    &quot;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                           <span class="s1">&#39;Cannot proceed due to the &#39;</span>
                            <span class="s1">&#39;ambiguity. This is likely a problem with your &#39;</span>
                            <span class="s1">&#39;BIDS dataset. Please run the BIDS validator on &#39;</span>
                            <span class="s1">&#39;your data.&#39;</span><span class="p">)</span>
@@ -2435,7 +2441,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-02.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-09.<br>
 
 </p>
 
