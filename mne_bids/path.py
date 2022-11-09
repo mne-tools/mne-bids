@@ -13,6 +13,7 @@ from os import path as op
 from pathlib import Path
 from datetime import datetime
 import json
+from textwrap import indent
 from typing import Optional
 
 import numpy as np
@@ -625,8 +626,13 @@ class BIDSPath(object):
                     bids_fpath = op.join(data_path, self.basename)
                 # if paths still cannot be resolved, then there is an error
                 elif len(matching_paths) > 1:
+                    matching_paths_str = "\n".join(sorted(matching_paths))
                     msg = ('Found more than one matching data file for the '
-                           'requested recording. Cannot proceed due to the '
+                           'requested recording. While searching:\n'
+                           f'{indent(repr(self), "    ")}\n'
+                           f'Found {len(matching_paths)} paths:\n'
+                           f'{indent(matching_paths_str, "    ")}\n'
+                           'Cannot proceed due to the '
                            'ambiguity. This is likely a problem with your '
                            'BIDS dataset. Please run the BIDS validator on '
                            'your data.')

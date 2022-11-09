@@ -43,6 +43,7 @@ Detailed list of changes
 - Add :meth:`mne_bids.BIDSPath.get_empty_room_candidates` to get the candidate empty-room files that could be used by :meth:`mne_bids.BIDSPath.find_empty_room` by `Eric Larson`_ (:gh:`1083`, :gh:`1093`)
 - Add :meth:`mne_bids.BIDSPath.find_matching_sidecar` to find the sidecar file associated with a given file path by `Eric Larson`_ (:gh:`1093`)
 - When writing data via :func:`~mne_bids.write_raw_bids`, it is now possible to specify a custom mapping of :class:`mne.Annotations` descriptions to event codes via the ``event_id`` parameter. Previously, passing this parameter would always require to also pass ``events``, and using a custom event code mapping for annotations was impossible, by `Richard Höchenberger`_ (:gh:`1084`)
+- Improve error message when :obj:`~mne_bids.BIDSPath.fpath` cannot be uniquely resolved by `Eric Larson`_ (:gh:`1097`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
