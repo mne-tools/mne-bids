@@ -17,7 +17,7 @@ from textwrap import indent
 from typing import Optional
 
 import numpy as np
-from mne.utils import warn, logger, _validate_type, verbose, _check_fname
+from mne.utils import logger, _validate_type, verbose, _check_fname
 
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
@@ -26,7 +26,7 @@ from mne_bids.config import (
     ALLOWED_SPACES,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
-                            param_regex, _ensure_tuple)
+                            param_regex, _ensure_tuple, warn)
 
 
 def _find_empty_room_candidates(bids_path):

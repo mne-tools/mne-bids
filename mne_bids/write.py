@@ -30,7 +30,7 @@ from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import (_unit2human, _get_meg_system)
 from mne.chpi import get_chpi_info
-from mne.utils import (check_version, has_nibabel, logger, warn, Bunch,
+from mne.utils import (check_version, has_nibabel, logger, Bunch,
                        _validate_type, get_subjects_dir, verbose,
                        ProgressBar)
 import mne.preprocessing
@@ -40,7 +40,7 @@ from mne_bids.dig import _write_dig_bids, _write_coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _get_ch_type_mapping, _check_anonymize,
-                            _stamp_to_dt, _handle_datatype)
+                            _stamp_to_dt, _handle_datatype, warn)
 from mne_bids import (BIDSPath, read_raw_bids, get_anonymization_daysback,
                       get_bids_path_from_fname)
 from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str

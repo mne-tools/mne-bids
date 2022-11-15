@@ -17,7 +17,7 @@ import numpy as np
 from mne.channels import make_standard_montage
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import warn, logger, verbose
+from mne.utils import warn as _warn, logger, verbose
 
 from mne_bids.tsv_handler import _to_tsv
 
@@ -456,3 +456,17 @@ def _check_datatype(raw, datatype):
             '`bids_path.update(datatype="<datatype>")` or use '
             'raw.set_channel_types to set the correct channel types in '
             'the raw object.')
+
+
+def warn(message, category=RuntimeWarning, module='mne_bids',
+         ignore_namespaces=('mne', 'mne_bids')):  # noqa: D103
+    _warn(
+        message,
+        category=category,
+        module=module,
+        ignore_namespaces=ignore_namespaces,
+    )
+
+
+# Some of the defaults here will be wrong but it should be close enough
+warn.__doc__ = getattr(_warn, '__doc__', None)
