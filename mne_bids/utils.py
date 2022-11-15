@@ -469,4 +469,4 @@ def warn(message, category=RuntimeWarning, module='mne_bids',
 
 
 # Some of the defaults here will be wrong but it should be close enough
-warn.__doc__ = _warn.__doc__
+warn.__doc__ = getattr(_warn, '__doc__', None)
