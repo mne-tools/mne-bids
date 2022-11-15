@@ -25,10 +25,10 @@ from scipy.io import loadmat, savemat
 import mne
 from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
                     anonymize_info)
-from mne.utils import logger, verbose, warn
+from mne.utils import logger, verbose
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
-from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
+from mne_bids.utils import _get_mrk_meas_date, _check_anonymize, warn
 import numpy as np
 
 

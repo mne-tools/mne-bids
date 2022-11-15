@@ -2,7 +2,6 @@
 from collections import OrderedDict
 from copy import deepcopy
 
-from mne.utils import warn
 import numpy as np
 
 
@@ -140,6 +139,7 @@ def _from_tsv(fname, dtypes=None):
         Keys are the column names, and values are the column data.
 
     """
+    from .utils import warn  # avoid circular import
     data = np.loadtxt(fname, dtype=str, delimiter='\t', ndmin=2,
                       comments=None, encoding='utf-8-sig')
     column_names = data[0, :]

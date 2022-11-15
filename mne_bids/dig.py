@@ -14,7 +14,7 @@ import warnings
 import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.utils import (logger, warn, _validate_type, _check_option,
+from mne.utils import (logger, _validate_type, _check_option,
                        has_nibabel, get_subjects_dir)
 from mne.io.pick import _picks_to_idx
 
@@ -25,7 +25,7 @@ from mne_bids.config import (ALLOWED_SPACES, BIDS_COORDINATE_UNITS,
                              BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_scale_coord_to_meters, _write_json, _write_tsv,
-                            verbose)
+                            verbose, warn)
 from mne_bids.path import BIDSPath
 
 data_dir = Path(__file__).parent / 'data'

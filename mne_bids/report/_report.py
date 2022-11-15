@@ -9,13 +9,14 @@ from pathlib import Path
 
 import numpy as np
 import jinja2
-from mne.utils import warn, logger, verbose
+from mne.utils import logger, verbose
 
 from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.path import (get_bids_path_from_fname, get_datatypes,
                            get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar)
+from mne_bids.utils import warn
 
 
 jinja_env = jinja2.Environment(
