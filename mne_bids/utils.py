@@ -459,10 +459,14 @@ def _check_datatype(raw, datatype):
 
 
 def warn(message, category=RuntimeWarning, module='mne_bids',
-         ignore_namespaces=('mne', 'mne_bids')):
+         ignore_namespaces=('mne', 'mne_bids')):  # noqa: D103
     _warn(
         message,
         category=category,
         module=module,
         ignore_namespaces=ignore_namespaces,
     )
+
+
+# Some of the defaults here will be wrong but it should be close enough
+warn.__doc__ = _warn.__doc__
