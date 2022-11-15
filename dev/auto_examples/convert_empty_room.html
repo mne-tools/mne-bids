@@ -524,8 +524,8 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/par
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
-/home/circleci/project/mne_bids/read.py:198: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events and event_id parameters. For resting state data, BIDS recommends naming the task using labels beginning with &quot;rest&quot;.
-  warn(&#39;No events found or provided. Please add annotations to the raw &#39;
+/home/circleci/project/examples/convert_empty_room.py:69: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events and event_id parameters. For resting state data, BIDS recommends naming the task using labels beginning with &quot;rest&quot;.
+  write_raw_bids(raw, bids_path, overwrite=True)
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv&#39;...
@@ -745,12 +745,12 @@ Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-/home/circleci/project/mne_bids/path.py:1583: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+/home/circleci/project/examples/convert_empty_room.py:117: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
 
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/meg/sub-01_ses-01*events.tsv&quot;
-  warn(msg)
+  er_bids_path = bids_path.find_empty_room()
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-/home/circleci/project/mne_bids/read.py:623: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:621: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif
 </pre></div>
@@ -768,17 +768,17 @@ Isotrak not found
         PCA-v3 (1 x 102)  idle
     Range : 19800 ... 85867 =     32.966 ...   142.965 secs
 Ready.
-/home/circleci/project/mne_bids/path.py:1583: RuntimeWarning: Did not find any events.tsv associated with sub-emptyroom_ses-20021204_task-noise.
+/home/circleci/project/examples/convert_empty_room.py:122: RuntimeWarning: Did not find any events.tsv associated with sub-emptyroom_ses-20021204_task-noise.
 
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/meg/sub-emptyroom_ses-20021204*events.tsv&quot;
-  warn(msg)
+  raw = read_raw_bids(bids_path=er_bids_path)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_channels.tsv.
-/home/circleci/project/mne_bids/read.py:623: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:621: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 &lt;Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~371 kB, data not loaded&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.782 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.084 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_empty_room.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -862,7 +862,7 @@ Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-14.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-15.<br>
 
 </p>
 

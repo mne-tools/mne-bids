@@ -441,7 +441,7 @@
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_unit2human</span><span class="p">,</span> <span class="n">_get_meg_system</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.chpi</span> <span class="kn">import</span> <span class="n">get_chpi_info</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">Bunch</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Bunch</span><span class="p">,</span>
                        <span class="n">_validate_type</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
                        <span class="n">ProgressBar</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">mne.preprocessing</span>
@@ -451,7 +451,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_write_text</span><span class="p">,</span>
                             <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span>
-                            <span class="n">_stamp_to_dt</span><span class="p">,</span> <span class="n">_handle_datatype</span><span class="p">)</span>
+                            <span class="n">_stamp_to_dt</span><span class="p">,</span> <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">get_anonymization_daysback</span><span class="p">,</span>
                       <span class="n">get_bids_path_from_fname</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span>
@@ -3425,7 +3425,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-14.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-15.<br>
 
 </p>
 
