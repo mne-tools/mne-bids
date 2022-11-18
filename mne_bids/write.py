@@ -1542,8 +1542,8 @@ def write_raw_bids(
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
-            'The data has already loaded from disk. To write it to BIDS, pass '
-            '"allow_preload=True".'
+            'The data has already been loaded from disk. To write it to BIDS, '
+            'pass "allow_preload=True" and the "format" parameter.'
         )
 
     if not isinstance(bids_path, BIDSPath):
