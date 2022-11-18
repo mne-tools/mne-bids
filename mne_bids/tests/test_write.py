@@ -681,12 +681,6 @@ def test_fif(_bids_validate, tmp_path):
     for FILE in files:
         assert 'split' in FILE
 
-    # test unknown extension
-    raw = _read_raw_fif(raw_fname)
-    raw._filenames = (raw.filenames[0].replace('.fif', '.foo'),)
-    with pytest.raises(ValueError, match='Unrecognized file format'):
-        write_raw_bids(raw, bids_path)
-
     # test whether extra points in raw.info['dig'] are correctly used
     # to set DigitizedHeadShape in the JSON sidecar
     # unchanged sample data includes extra points
@@ -3948,3 +3942,25 @@ def test_events_data_deprecation(tmp_path):
             raw=raw, bids_path=bids_path, events=events, events_data=events,
             event_id=event_id
         )
+
+
+def test_unknown_extension(_bids_validate, tmp_path):
+    """Write data with unknown extension to BIDS."""
+    bids_root = tmp_path / 'bids'
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    raw_fname = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+
+    raw = _read_raw_fif(raw_fname)
+    raw._filenames = (raw.filenames[0].replace('.fif', '.foo'),)
+
+    # When data is not preloaded, we should raise an exception.
+    with pytest.raises(ValueError, match='file format not supported by BIDS'):
+        write_raw_bids(raw, bids_path)
+
+    # With preloaded data, writing should work.
+    raw._filenames = (raw.filenames[0].replace('.foo', '.fif'),)
+    raw.load_data()
+    raw._filenames = (raw.filenames[0].replace('.fif', '.foo'),)
+
+    write_raw_bids(raw, bids_path, allow_preload=True, format='FIF')
+    _bids_validate(bids_root)
