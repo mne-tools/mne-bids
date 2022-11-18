@@ -112,9 +112,14 @@ def _channels_tsv(raw, fname, overwrite=False):
 
     # get the manufacturer from the file in the Raw object
     _, ext = _parse_ext(raw.filenames[0])
-    manufacturer = MANUFACTURERS[ext]
 
-    ignored_channels = IGNORED_CHANNELS.get(manufacturer, list())
+    manufacturer = MANUFACTURERS.get(ext)
+    if manufacturer is None and raw.preload:
+        ignored_channels = list()
+    elif manufacturer is None:
+        raise KeyError('xxx')
+    else:
+        ignored_channels = IGNORED_CHANNELS.get(manufacturer, list())
 
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
