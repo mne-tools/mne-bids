@@ -1608,7 +1608,11 @@ def write_raw_bids(
             ext = '.bdf'
 
         if ext not in ALLOWED_INPUT_EXTENSIONS:
-            raise ValueError(f'Unrecognized file format {ext}')
+            raise ValueError(
+                f'The input data is in a file format not supported by '
+                f'BIDS: "{ext}". You can try to preload the data and call '
+                f'write_raw_bids() with the "allow_preload=True" parameter.'
+            )
 
         if symlink and ext != '.fif':
             raise NotImplementedError('Symlinks are currently only supported '
