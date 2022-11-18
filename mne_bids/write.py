@@ -1541,8 +1541,10 @@ def write_raw_bids(
                          'got %s' % type(raw))
 
     if raw.preload is not False and not allow_preload:
-        raise ValueError('The data is already loaded from disk and may be '
-                         'altered. See warning for "allow_preload".')
+        raise ValueError(
+            'The data has already loaded from disk. To write it to BIDS, pass '
+            '"allow_preload=True".'
+        )
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
@@ -1611,7 +1613,8 @@ def write_raw_bids(
             raise ValueError(
                 f'The input data is in a file format not supported by '
                 f'BIDS: "{ext}". You can try to preload the data and call '
-                f'write_raw_bids() with the "allow_preload=True" parameter.'
+                f'write_raw_bids() with the "allow_preload=True" and the '
+                f'"format" parameters.'
             )
 
         if symlink and ext != '.fif':
