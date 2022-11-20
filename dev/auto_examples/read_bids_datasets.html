@@ -7,24 +7,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>01. Read BIDS datasets &#8212; MNE-BIDS 0.12.dev0 documentation</title>
-  <script>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -35,7 +35,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -61,6 +62,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -123,39 +128,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../whats_new.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../whats_new.html">
                         News
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../install.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
                         Install
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../use.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../use.html">
                         Use
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../api.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api.html">
                         API
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../generated/cli.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../generated/cli.html">
                         CLI
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -163,11 +168,11 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="../contribute.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../contribute.html">
                         Contribute
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -179,12 +184,14 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
+      
       
       <div class="navbar-end-item">
         <div class="dropdown">
@@ -241,11 +248,13 @@
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -275,39 +284,39 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../whats_new.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../whats_new.html">
                         News
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../install.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../install.html">
                         Install
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../use.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../use.html">
                         Use
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../api.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api.html">
                         API
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../generated/cli.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../generated/cli.html">
                         CLI
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
             <div class="nav-item dropdown">
                 <button class="btn dropdown-toggle nav-item" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -315,11 +324,11 @@
                 </button>
                 <div class="dropdown-menu">
                     
-                <li class="nav-item">
-                    <a class="nav-link" href="../contribute.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../contribute.html">
                         Contribute
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
                 </div>
             </div>
@@ -425,8 +434,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -516,88 +528,90 @@ Hello! This is openneuro-py 2022.2.0. Great to see you!
 Preparing to download ds002778 ...
 
 Traversing directories for ds002778: 0 entities [00:00, ? entities/s]
-Traversing directories for ds002778: 7 entities [00:00, 37.36 entities/s]
-Traversing directories for ds002778: 11 entities [00:00, 26.55 entities/s]
-Traversing directories for ds002778: 14 entities [00:00, 21.60 entities/s]
-Traversing directories for ds002778: 17 entities [00:00, 19.33 entities/s]
-Traversing directories for ds002778: 21 entities [00:00, 20.15 entities/s]
-Traversing directories for ds002778: 24 entities [00:01, 18.87 entities/s]
-Traversing directories for ds002778: 28 entities [00:01, 19.66 entities/s]
+Traversing directories for ds002778: 7 entities [00:00, 32.83 entities/s]
+Traversing directories for ds002778: 11 entities [00:00, 25.31 entities/s]
+Traversing directories for ds002778: 14 entities [00:00, 21.10 entities/s]
+Traversing directories for ds002778: 17 entities [00:00, 19.00 entities/s]
+Traversing directories for ds002778: 21 entities [00:01, 19.15 entities/s]
+Traversing directories for ds002778: 23 entities [00:01, 18.51 entities/s]
+Traversing directories for ds002778: 25 entities [00:01, 18.26 entities/s]
+Traversing directories for ds002778: 28 entities [00:01, 17.64 entities/s]
 Traversing directories for ds002778: 31 entities [00:01, 17.27 entities/s]
-Traversing directories for ds002778: 35 entities [00:01, 18.25 entities/s]
-Traversing directories for ds002778: 37 entities [00:01, 18.52 entities/s]
-Traversing directories for ds002778: 39 entities [00:01, 18.80 entities/s]
-Traversing directories for ds002778: 42 entities [00:02, 17.67 entities/s]
-Traversing directories for ds002778: 44 entities [00:02, 17.76 entities/s]
-Traversing directories for ds002778: 49 entities [00:02, 17.35 entities/s]
-Traversing directories for ds002778: 52 entities [00:02, 16.87 entities/s]
-Traversing directories for ds002778: 56 entities [00:02, 18.16 entities/s]
-Traversing directories for ds002778: 59 entities [00:03, 17.48 entities/s]
-Traversing directories for ds002778: 63 entities [00:03, 18.72 entities/s]
-Traversing directories for ds002778: 66 entities [00:03, 17.97 entities/s]
-Traversing directories for ds002778: 70 entities [00:03, 19.28 entities/s]
-Traversing directories for ds002778: 73 entities [00:03, 18.35 entities/s]
-Traversing directories for ds002778: 77 entities [00:04, 19.29 entities/s]
-Traversing directories for ds002778: 80 entities [00:04, 18.20 entities/s]
-Traversing directories for ds002778: 84 entities [00:04, 18.73 entities/s]
-Traversing directories for ds002778: 86 entities [00:04, 18.93 entities/s]
-Traversing directories for ds002778: 91 entities [00:04, 18.26 entities/s]
-Traversing directories for ds002778: 94 entities [00:05, 17.68 entities/s]
-Traversing directories for ds002778: 98 entities [00:05, 18.64 entities/s]
-Traversing directories for ds002778: 101 entities [00:05, 17.81 entities/s]
-Traversing directories for ds002778: 105 entities [00:05, 19.04 entities/s]
-Traversing directories for ds002778: 108 entities [00:05, 18.01 entities/s]
-Traversing directories for ds002778: 112 entities [00:05, 19.27 entities/s]
-Traversing directories for ds002778: 115 entities [00:06, 18.45 entities/s]
-Traversing directories for ds002778: 119 entities [00:06, 19.39 entities/s]
-Traversing directories for ds002778: 122 entities [00:06, 18.37 entities/s]
-Traversing directories for ds002778: 127 entities [00:06, 20.91 entities/s]
-Traversing directories for ds002778: 133 entities [00:06, 21.30 entities/s]
-Traversing directories for ds002778: 136 entities [00:07, 19.30 entities/s]
-Traversing directories for ds002778: 141 entities [00:07, 21.07 entities/s]
-Traversing directories for ds002778: 147 entities [00:07, 20.71 entities/s]
-Traversing directories for ds002778: 150 entities [00:07, 19.33 entities/s]
-Traversing directories for ds002778: 155 entities [00:08, 21.38 entities/s]
-Traversing directories for ds002778: 161 entities [00:08, 21.47 entities/s]
-Traversing directories for ds002778: 164 entities [00:08, 19.85 entities/s]
-Traversing directories for ds002778: 169 entities [00:08, 22.01 entities/s]
-Traversing directories for ds002778: 175 entities [00:08, 21.83 entities/s]
-Traversing directories for ds002778: 178 entities [00:09, 20.42 entities/s]
-Traversing directories for ds002778: 183 entities [00:09, 22.11 entities/s]
-Traversing directories for ds002778: 189 entities [00:09, 21.98 entities/s]
-Traversing directories for ds002778: 192 entities [00:09, 20.37 entities/s]
-Traversing directories for ds002778: 197 entities [00:09, 22.26 entities/s]
-Traversing directories for ds002778: 203 entities [00:10, 21.94 entities/s]
-Traversing directories for ds002778: 206 entities [00:10, 20.54 entities/s]
-Traversing directories for ds002778: 211 entities [00:10, 22.12 entities/s]
-Traversing directories for ds002778: 217 entities [00:10, 21.98 entities/s]
-Traversing directories for ds002778: 220 entities [00:11, 20.33 entities/s]
-Traversing directories for ds002778: 225 entities [00:11, 22.34 entities/s]
-Traversing directories for ds002778: 231 entities [00:11, 22.27 entities/s]
-Traversing directories for ds002778: 234 entities [00:11, 20.01 entities/s]
-Traversing directories for ds002778: 239 entities [00:11, 21.49 entities/s]
-Traversing directories for ds002778: 245 entities [00:12, 20.93 entities/s]
-Traversing directories for ds002778: 248 entities [00:12, 18.89 entities/s]
-Traversing directories for ds002778: 252 entities [00:12, 22.03 entities/s]
-Traversing directories for ds002778: 255 entities [00:12, 20.03 entities/s]
-Traversing directories for ds002778: 259 entities [00:12, 20.39 entities/s]
-Traversing directories for ds002778: 262 entities [00:13, 19.19 entities/s]
-Traversing directories for ds002778: 266 entities [00:13, 23.01 entities/s]
-Traversing directories for ds002778: 269 entities [00:13, 20.54 entities/s]
-Traversing directories for ds002778: 273 entities [00:13, 20.92 entities/s]
-Traversing directories for ds002778: 276 entities [00:13, 19.55 entities/s]
-Traversing directories for ds002778: 281 entities [00:13, 21.89 entities/s]
-Traversing directories for ds002778: 287 entities [00:14, 21.45 entities/s]
-Traversing directories for ds002778: 290 entities [00:14, 19.96 entities/s]
-Traversing directories for ds002778: 295 entities [00:14, 21.89 entities/s]
-Traversing directories for ds002778: 301 entities [00:14, 21.82 entities/s]
-Traversing directories for ds002778: 304 entities [00:15, 20.39 entities/s]
-Traversing directories for ds002778: 309 entities [00:15, 22.28 entities/s]
-Traversing directories for ds002778: 315 entities [00:15, 21.74 entities/s]
-Traversing directories for ds002778: 318 entities [00:15, 19.95 entities/s]
-Traversing directories for ds002778: 322 entities [00:15, 21.67 entities/s]
-Traversing directories for ds002778: 325 entities [00:16, 20.21 entities/s]
-Traversing directories for ds002778: 328 entities [00:16, 20.36 entities/s]
+Traversing directories for ds002778: 35 entities [00:01, 18.69 entities/s]
+Traversing directories for ds002778: 38 entities [00:01, 17.84 entities/s]
+Traversing directories for ds002778: 42 entities [00:02, 18.54 entities/s]
+Traversing directories for ds002778: 44 entities [00:02, 18.54 entities/s]
+Traversing directories for ds002778: 49 entities [00:02, 17.98 entities/s]
+Traversing directories for ds002778: 51 entities [00:02, 18.01 entities/s]
+Traversing directories for ds002778: 56 entities [00:03, 13.87 entities/s]
+Traversing directories for ds002778: 59 entities [00:03, 14.26 entities/s]
+Traversing directories for ds002778: 63 entities [00:03, 15.60 entities/s]
+Traversing directories for ds002778: 65 entities [00:03, 15.51 entities/s]
+Traversing directories for ds002778: 70 entities [00:04, 15.88 entities/s]
+Traversing directories for ds002778: 73 entities [00:04, 15.63 entities/s]
+Traversing directories for ds002778: 77 entities [00:04, 16.81 entities/s]
+Traversing directories for ds002778: 80 entities [00:04, 16.31 entities/s]
+Traversing directories for ds002778: 84 entities [00:04, 17.02 entities/s]
+Traversing directories for ds002778: 87 entities [00:05, 16.56 entities/s]
+Traversing directories for ds002778: 91 entities [00:05, 17.55 entities/s]
+Traversing directories for ds002778: 94 entities [00:05, 17.25 entities/s]
+Traversing directories for ds002778: 98 entities [00:05, 18.56 entities/s]
+Traversing directories for ds002778: 101 entities [00:05, 15.34 entities/s]
+Traversing directories for ds002778: 105 entities [00:06, 17.03 entities/s]
+Traversing directories for ds002778: 108 entities [00:06, 16.98 entities/s]
+Traversing directories for ds002778: 112 entities [00:06, 18.40 entities/s]
+Traversing directories for ds002778: 115 entities [00:06, 17.63 entities/s]
+Traversing directories for ds002778: 119 entities [00:06, 18.09 entities/s]
+Traversing directories for ds002778: 122 entities [00:07, 16.93 entities/s]
+Traversing directories for ds002778: 126 entities [00:07, 20.65 entities/s]
+Traversing directories for ds002778: 129 entities [00:07, 19.31 entities/s]
+Traversing directories for ds002778: 133 entities [00:07, 19.40 entities/s]
+Traversing directories for ds002778: 136 entities [00:07, 18.52 entities/s]
+Traversing directories for ds002778: 141 entities [00:07, 21.26 entities/s]
+Traversing directories for ds002778: 147 entities [00:08, 20.94 entities/s]
+Traversing directories for ds002778: 150 entities [00:08, 18.30 entities/s]
+Traversing directories for ds002778: 154 entities [00:08, 21.40 entities/s]
+Traversing directories for ds002778: 157 entities [00:08, 18.70 entities/s]
+Traversing directories for ds002778: 161 entities [00:08, 19.46 entities/s]
+Traversing directories for ds002778: 164 entities [00:09, 18.66 entities/s]
+Traversing directories for ds002778: 169 entities [00:09, 21.15 entities/s]
+Traversing directories for ds002778: 172 entities [00:09, 22.75 entities/s]
+Traversing directories for ds002778: 175 entities [00:09, 20.07 entities/s]
+Traversing directories for ds002778: 178 entities [00:09, 18.98 entities/s]
+Traversing directories for ds002778: 183 entities [00:09, 21.78 entities/s]
+Traversing directories for ds002778: 189 entities [00:10, 21.80 entities/s]
+Traversing directories for ds002778: 192 entities [00:10, 20.35 entities/s]
+Traversing directories for ds002778: 197 entities [00:10, 22.68 entities/s]
+Traversing directories for ds002778: 203 entities [00:10, 22.39 entities/s]
+Traversing directories for ds002778: 206 entities [00:11, 20.91 entities/s]
+Traversing directories for ds002778: 211 entities [00:11, 22.83 entities/s]
+Traversing directories for ds002778: 217 entities [00:11, 22.35 entities/s]
+Traversing directories for ds002778: 220 entities [00:11, 18.38 entities/s]
+Traversing directories for ds002778: 225 entities [00:11, 20.53 entities/s]
+Traversing directories for ds002778: 231 entities [00:12, 21.05 entities/s]
+Traversing directories for ds002778: 234 entities [00:12, 20.07 entities/s]
+Traversing directories for ds002778: 239 entities [00:12, 21.98 entities/s]
+Traversing directories for ds002778: 245 entities [00:12, 22.05 entities/s]
+Traversing directories for ds002778: 248 entities [00:13, 20.60 entities/s]
+Traversing directories for ds002778: 253 entities [00:13, 22.54 entities/s]
+Traversing directories for ds002778: 259 entities [00:13, 21.83 entities/s]
+Traversing directories for ds002778: 262 entities [00:13, 20.14 entities/s]
+Traversing directories for ds002778: 267 entities [00:13, 22.17 entities/s]
+Traversing directories for ds002778: 270 entities [00:13, 23.44 entities/s]
+Traversing directories for ds002778: 273 entities [00:14, 20.77 entities/s]
+Traversing directories for ds002778: 276 entities [00:14, 19.20 entities/s]
+Traversing directories for ds002778: 280 entities [00:14, 22.18 entities/s]
+Traversing directories for ds002778: 283 entities [00:14, 20.65 entities/s]
+Traversing directories for ds002778: 287 entities [00:14, 20.81 entities/s]
+Traversing directories for ds002778: 290 entities [00:15, 19.42 entities/s]
+Traversing directories for ds002778: 295 entities [00:15, 22.08 entities/s]
+Traversing directories for ds002778: 301 entities [00:15, 22.01 entities/s]
+Traversing directories for ds002778: 304 entities [00:15, 20.52 entities/s]
+Traversing directories for ds002778: 309 entities [00:15, 22.56 entities/s]
+Traversing directories for ds002778: 315 entities [00:16, 22.41 entities/s]
+Traversing directories for ds002778: 318 entities [00:16, 20.92 entities/s]
+Traversing directories for ds002778: 323 entities [00:16, 22.69 entities/s]
+Traversing directories for ds002778: 328 entities [00:16, 19.79 entities/s]
 Retrieving up to 19 files (5 concurrent downloads).
 
 Skipping participants.json: already downloaded.: 100%|##########| 1.24k/1.24k [00:00&lt;?, ?B/s]
@@ -609,22 +623,23 @@ Skipping participants.tsv: already downloaded.: 100%|##########| 1.62k/1.62k [00
 Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|##########| 75.0/75.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|##########| 10.0/10.0 [00:00&lt;?, ?B/s]
-
-
-Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
 Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|##########| 74.0/74.0 [00:00&lt;?, ?B/s]
 
 
 Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
+
 Re-downloading README: file size mismatch.: 0.00B [00:00, ?B/s]
+
+Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
+
 
 
 
 Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
+
+
+Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|##########| 433/433 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|##########| 10.0/10.0 [00:00&lt;?, ?B/s]
@@ -633,7 +648,7 @@ Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|##########|
 Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|##########| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|##########| 433/433 [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|##########| 471/471 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|##########| 2.22k/2.22k [00:00&lt;?, ?B/s]
@@ -642,19 +657,19 @@ Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|#####
 Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|##########| 51.0/51.0 [00:00&lt;?, ?B/s]
 
 
+Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|##########| 10.0/10.0 [00:00&lt;?, ?B/s]
+
+
 Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|##########| 471/471 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|##########| 471/471 [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|##########| 11.5M/11.5M [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|##########| 66.0/66.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|##########| 17.4M/17.4M [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|##########| 11.5M/11.5M [00:00&lt;?, ?B/s]
 
 Finished downloading ds002778.
 
@@ -718,7 +733,7 @@ consists of 1 participants (comprised of 14 male and 17 female participants;
 comprised of 31 right hand, 0 left hand and 0 ambidextrous; ages ranged from
 47.0 to 82.0 (mean = 63.39, std = 8.69)) and 2 recording sessions: off, and on.
 Data was recorded using an EEG system (Biosemi) sampled at 512.0 Hz with line
-noise at 60, and 50 Hz. There were 2 scans in total. Recording durations ranged
+noise at 50, and 60 Hz. There were 2 scans in total. Recording durations ranged
 from 191.0 to 289.0 seconds (mean = 240.0, std = 49.0), for a total of 480.0
 seconds of data recorded over all scans. For each dataset, there were on average
 41.0 (std = 0.0) recording channels per scan, out of which 41.0 (std = 0.0) were
@@ -867,7 +882,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.389 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  17.785 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -981,7 +996,8 @@ metadata.</p>
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
   <footer class="bd-footer"><div class="bd-footer__inner container">
   
@@ -989,10 +1005,20 @@ metadata.</p>
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-15.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-11-20.<br>
 
 </p>
 
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
   </div>
   
   <div class="footer-item">
