@@ -3944,6 +3944,7 @@ def test_events_data_deprecation(tmp_path):
         )
 
 
+@testing.requires_testing_data
 def test_unknown_extension(_bids_validate, tmp_path):
     """Write data with unknown extension to BIDS."""
     bids_root = tmp_path / 'bids'
