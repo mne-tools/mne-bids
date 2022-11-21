@@ -2004,3 +2004,126 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     # ... and return Paths.
     fnames_filtered = [Path(f) for f in fnames_filtered]
     return fnames_filtered
+
+
+def find_matching_paths(root, subjects=None, sessions=None, tasks=None,
+                        acquisitions=None, runs=None, processings=None,
+                        recordings=None, spaces=None, splits=None,
+                        descriptions=None, suffixes=None, extensions=None,
+                        datatypes=None, check=True):
+    """
+    Get list of all matching paths for all matching entity values.
+
+    Input can be str or list of str. None matches all found values.
+
+    Performs a recursive search, starting in ``.root`` (if set), based on
+    `BIDSPath.entities` object.
+
+    Parameters
+    ----------
+    root : str
+        The root directory of the BIDS dataset.
+    subjects : str | array-like of str | None
+        The subject ID. Corresponds to "sub".
+    sessions : str | array-like of str | None
+        The acquisition session. Corresponds to "ses".
+    tasks : str | array-like of str | None
+        The experimental task. Corresponds to "task".
+    acquisitions: str | array-like of str | None
+        The acquisition parameters. Corresponds to "acq".
+    runs : str | array-like of str | None
+        The run number. Corresponds to "run".
+    processings : str | array-like of str | None
+        The processing label. Corresponds to "proc".
+    recordings : str | array-like of str | None
+        The recording name. Corresponds to "rec".
+    spaces : str | array-like of str | None
+        The coordinate space for anatomical and sensor location
+        files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
+        Corresponds to "space".
+        Note that valid values for ``space`` must come from a list
+        of BIDS keywords as described in the BIDS specification.
+    splits : str | array-like of str | None
+        The split of the continuous recording file for ``.fif`` data.
+        Corresponds to "split".
+    descriptions : str | array-like of str | None
+        This corresponds to the BIDS entity ``desc``. It is used to provide
+        additional information for derivative data, e.g., preprocessed data
+        may be assigned ``description='cleaned'``.
+
+        .. versionadded:: 0.11
+    suffixes : str | array-like of str | None
+        The filename suffix. This is the entity after the
+        last ``_`` before the extension. E.g., ``'channels'``.
+        The following filename suffix's are accepted:
+        'meg', 'markers', 'eeg', 'ieeg', 'T1w',
+        'participants', 'scans', 'electrodes', 'coordsystem',
+        'channels', 'events', 'headshape', 'digitizer',
+        'beh', 'physio', 'stim'
+    extensions : str | array-like of str | None
+        The extension of the filename. E.g., ``'.json'``.
+    datatypes : str | array-like of str | None
+        The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
+        ``'ieeg'``.
+    check : bool
+        If ``True``, only returns paths that conform to BIDS. If ``False``
+        (default), the ``.check`` attribute of the returned
+        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        do conform to BIDS, and to ``False`` for those that don't.
+
+    Returns
+    -------
+    bids_paths : list of mne_bids.BIDSPath
+        The matching paths.
+    """
+    # Allow searching by datatype because datatype is only present in the
+    # bids_path but not in the bids_path basename. All other entities are
+    # present in the file name (without the path) and are filtered below.
+    if datatypes is not None:
+        search_str = f'*/{"|".join(datatypes)}/*'
+    else:
+        search_str = '*.*'
+
+    paths = Path(root).rglob(search_str)
+
+    # Only keep files (not directories).
+    paths = [p for p in paths if p.is_file()]
+
+    paths_filtered = _filter_fnames(paths,
+                                    subject=subjects,
+                                    session=sessions,
+                                    task=tasks,
+                                    acquisition=acquisitions,
+                                    run=runs,
+                                    processing=processings,
+                                    recording=recordings,
+                                    space=spaces,
+                                    split=splits,
+                                    description=descriptions,
+                                    suffix=suffixes,
+                                    extension=extensions)
+
+    bids_paths = []
+    for fname in paths_filtered:
+        # Form the BIDSPath object.
+        # To check whether the BIDSPath is conforming to BIDS if
+        # check=True, we first instantiate without checking and then run
+        # the check manually, allowing us to be more specific about the
+        # exception to catch
+        datatype = _infer_datatype_from_path(fname)
+        bids_path = get_bids_path_from_fname(fname, check=False)
+        bids_path.root = root
+        bids_path.datatype = datatype
+        bids_path.check = True
+
+        try:
+            bids_path._check()
+        except ValueError:
+            # path is not BIDS-compatible
+            if check:  # skip!
+                continue
+            else:
+                bids_path.check = False
+
+        bids_paths.append(bids_path)
+    return bids_paths
