@@ -1956,8 +1956,8 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     acq_str = f'_acq-{acquisition}' if acquisition else r'(|_acq-([^_]+))'
     run_str = f'_run-{run}' if run else r'(|_run-([^_]+))'
     proc_str = f'_proc-{processing}' if processing else r'(|_proc-([^_]+))'
-    rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
+    rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
     desc_str = f'_desc-{description}' if description else r'(|_desc-([^_]+))'
     suffix_str = (f'_{suffix}' if suffix
@@ -1967,7 +1967,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     regexp = (
         leading_path_str +
         sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-        rec_str + space_str + split_str + desc_str + suffix_str + ext_str
+         space_str + rec_str + split_str + desc_str + suffix_str + ext_str
     )
 
     # Convert to str so we can apply the regexp ...
