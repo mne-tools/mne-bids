@@ -112,8 +112,7 @@ def _channels_tsv(raw, fname, overwrite=False):
 
     # get the manufacturer from the file in the Raw object
     _, ext = _parse_ext(raw.filenames[0])
-    manufacturer = MANUFACTURERS[ext]
-
+    manufacturer = MANUFACTURERS.get(ext, '')
     ignored_channels = IGNORED_CHANNELS.get(manufacturer, list())
 
     status, ch_type, description = list(), list(), list()
@@ -1542,8 +1541,10 @@ def write_raw_bids(
                          'got %s' % type(raw))
 
     if raw.preload is not False and not allow_preload:
-        raise ValueError('The data is already loaded from disk and may be '
-                         'altered. See warning for "allow_preload".')
+        raise ValueError(
+            'The data has already been loaded from disk. To write it to BIDS, '
+            'pass "allow_preload=True" and the "format" parameter.'
+        )
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
@@ -1609,7 +1610,12 @@ def write_raw_bids(
             ext = '.bdf'
 
         if ext not in ALLOWED_INPUT_EXTENSIONS:
-            raise ValueError(f'Unrecognized file format {ext}')
+            raise ValueError(
+                f'The input data is in a file format not supported by '
+                f'BIDS: "{ext}". You can try to preload the data and call '
+                f'write_raw_bids() with the "allow_preload=True" and the '
+                f'"format" parameters.'
+            )
 
         if symlink and ext != '.fif':
             raise NotImplementedError('Symlinks are currently only supported '
