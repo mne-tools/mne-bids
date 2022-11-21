@@ -826,7 +826,6 @@ class BIDSPath(object):
         bids_paths = _fnames_to_bidspaths(fnames, self.root, check=check)
         return bids_paths
 
-
     def _check(self):
         """Deep check or not of the instance."""
         self.basename  # run basename to check validity of arguments
@@ -1959,7 +1958,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     regexp = (
         leading_path_str +
         sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-         space_str + rec_str + split_str + desc_str + suffix_str + ext_str
+        space_str + rec_str + split_str + desc_str + suffix_str + ext_str
     )
 
     # Convert to str so we can apply the regexp ...
