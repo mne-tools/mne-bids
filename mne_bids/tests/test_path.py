@@ -21,7 +21,7 @@ from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates,
                            _filter_fnames, search_folder_for_text,
-                           get_bids_path_from_fname)
+                           get_bids_path_from_fname, find_matching_paths)
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 
 from test_read import _read_raw_fif, warning_str
@@ -742,7 +742,8 @@ def test_make_filenames():
         (dict(suffix='meg'), 4),
         (dict(acquisition='lowres'), 1),
         (dict(task='test', processing='ica', suffix='eeg'), 2),
-        (dict(subject='5', task='test', processing='ica', suffix='eeg'), 1)
+        (dict(subject='5', task='test', processing='ica', suffix='eeg'), 1),
+        (dict(subject=['01', '02']), 3),  # test multiple input
     ])
 def test_filter_fnames(entities, expected_n_matches):
     """Test filtering filenames based on BIDS entities works."""
@@ -849,6 +850,67 @@ def test_match(return_bids_test_dir):
 
     assert bids_path_01.match(check=True) == []
     assert bids_path_01.match(check=False)[0].fpath.name == 'sub-01_foo.eeg'
+
+
+@testing.requires_testing_data
+def test_find_matching_paths(return_bids_test_dir):
+    """We test by yielding the same results as BIDSPath.match() which
+    is extensively tested above."""
+    bids_root = Path(return_bids_test_dir)
+
+    # Check a few exemplary entities
+    bids_path_01 = BIDSPath(root=bids_root)
+    paths_match = bids_path_01.match(ignore_json=False)
+    paths_find = find_matching_paths(bids_root)
+    assert paths_match == paths_find
+
+    # Datatype is important because handled differently
+    bids_path_01 = BIDSPath(root=bids_root, datatype="meg")
+    paths_match = bids_path_01.match(ignore_json=False)
+    paths_find = find_matching_paths(bids_root, datatypes="meg")
+    assert paths_match == paths_find
+
+    bids_path_01 = BIDSPath(root=bids_root, run="02")
+    paths_match = bids_path_01.match(ignore_json=False)
+    paths_find = find_matching_paths(bids_root, runs="02")
+    assert paths_match == paths_find
+
+    # Check list of str as input
+    bids_path_01 = BIDSPath(root=bids_root, extension=".tsv")
+    bids_path_02 = BIDSPath(root=bids_root, extension=".json")
+    paths_match1 = bids_path_01.match(ignore_json=False)
+    paths_match2 = bids_path_02.match(ignore_json=False)
+    paths_match = paths_match1 + paths_match2
+    paths_match = sorted([str(f.fpath) for f in paths_match])
+    paths_find = find_matching_paths(bids_root, extensions=[".tsv", ".json"])
+    paths_find = sorted([str(f.fpath) for f in paths_find])
+    assert paths_match == paths_find
+
+    # Test ignore_json parameter
+    bids_path_01 = BIDSPath(root=bids_root)
+    paths_match = bids_path_01.match(ignore_json=True)
+    paths_find = find_matching_paths(bids_root, extensions=[".tsv", ".fif", ".dat"])
+    assert paths_match == paths_find
+
+    # Test `check` parameter
+    bids_path_01 = _bids_path.copy()
+    bids_path_01.update(
+        root=bids_root, session=None, task=None, run=None,
+        suffix='foo', extension='.eeg', check=False
+    )
+    bids_path_01.fpath.touch()
+    paths_match = bids_path_01.match(check=True)
+    paths_find = find_matching_paths(bids_root, sessions=None, tasks=None,
+                                     runs=None, suffixes='foo',
+                                     extensions='.eeg', check=True)
+    assert paths_match == paths_find
+
+    paths_match = bids_path_01.match(check=False)
+    paths_find = find_matching_paths(bids_root, sessions=None, tasks=None,
+                                     runs=None, suffixes='foo',
+                                     extensions='.eeg', check=False)
+    assert paths_match == paths_find
+
 
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])

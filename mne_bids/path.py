@@ -2076,6 +2076,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True):
     root = Path(root)  # if root is str
 
     if datatype is not None:
+        datatype = _ensure_tuple(datatype)
         search_str = f'*/{"|".join(datatype)}/*'
     else:
         search_str = '*.*'
