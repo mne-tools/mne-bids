@@ -1940,6 +1940,8 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    extension=None):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
+    Input can be str or list of str.
+
     Parameters
     ----------
     fnames : iterable of pathlib.Path | iterable of str
@@ -1949,20 +1951,43 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     list of pathlib.Path
 
     """
+    subject = _ensure_tuple(subject)
+    session = _ensure_tuple(session)
+    task = _ensure_tuple(task)
+    acquisition = _ensure_tuple(acquisition)
+    run = _ensure_tuple(run)
+    processing = _ensure_tuple(processing)
+    space = _ensure_tuple(space)
+    recording = _ensure_tuple(recording)
+    split = _ensure_tuple(split)
+    description = _ensure_tuple(description)
+    suffixe = _ensure_tuple(suffix)
+    extension = _ensure_tuple(extension)
+
     leading_path_str = r'.*\/?'  # nothing or something ending with a `/`
-    sub_str = f'sub-{subject}' if subject else r'sub-([^_]+)'
-    ses_str = f'_ses-{session}' if session else r'(|_ses-([^_]+))'
-    task_str = f'_task-{task}' if task else r'(|_task-([^_]+))'
-    acq_str = f'_acq-{acquisition}' if acquisition else r'(|_acq-([^_]+))'
-    run_str = f'_run-{run}' if run else r'(|_run-([^_]+))'
-    proc_str = f'_proc-{processing}' if processing else r'(|_proc-([^_]+))'
-    space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
-    rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
-    split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
-    desc_str = f'_desc-{description}' if description else r'(|_desc-([^_]+))'
-    suffix_str = (f'_{suffix}' if suffix
-                  else r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
-    ext_str = extension if extension else r'.([^_]+)'
+    sub_str = (r'sub-(' + '|'.join(subject) + ')'
+               if subject else r'sub-([^_]+)')
+    ses_str = (r'_ses-(' + '|'.join(session) + ')'
+               if session else r'(|_ses-([^_]+))')
+    task_str = (r'_task-(' + '|'.join(task) + ')'
+                if task else r'(|_task-([^_]+))')
+    acq_str = (r'_acq-(' + '|'.join(acquisition) + ')'
+               if acquisition else r'(|_acq-([^_]+))')
+    run_str = (r'_run-(' + '|'.join(run) + ')'
+               if run else r'(|_run-([^_]+))')
+    proc_str = (r'_proc-(' + '|'.join(processing) + ')'
+                if processing else r'(|_proc-([^_]+))')
+    space_str = (r'_space-(' + '|'.join(space) + ')'
+                 if space else r'(|_space-([^_]+))')
+    rec_str = (r'_rec-(' + '|'.join(recording) + ')'
+               if recording else r'(|_rec-([^_]+))')
+    split_str = (r'_split-(' + '|'.join(split) + ')'
+                 if split else r'(|_split-([^_]+))')
+    desc_str = (r'_desc-(' + '|'.join(description) + ')'
+                if description else r'(|_desc-([^_]+))')
+    suffix_str = (r'_(' + '|'.join(suffixe) + ')' if suffix
+                  else (r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')'))
+    ext_str = r'(' + '|'.join(extension) + ')' if extension else r'.([^_]+)'
 
     regexp = (
         leading_path_str +
