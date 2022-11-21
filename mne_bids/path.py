@@ -797,6 +797,8 @@ class BIDSPath(object):
 
         Parameters
         ----------
+        ignore_json : bool
+            If ``True``, ignores json files. Defaults to ``True``.
         check : bool
             If ``True``, only returns paths that conform to BIDS. If ``False``
             (default), the ``.check`` attribute of the returned
@@ -814,51 +816,16 @@ class BIDSPath(object):
                                'BIDS root directory path to `root` via '
                                'BIDSPath.update().')
 
-        # Allow searching by datatype because datatype is only present in the
-        # bids_path but not in the file name "bids_path.basename".
-        # All other entities are filtered below
-        if self.datatype is not None:
-            search_str = f'*/{self.datatype}/*'
-        else:
-            search_str = '*.*'
+        paths = _return_root_paths(self.root, datatype=self.datatype,
+                                   ignore_json=ignore_json)
 
-        paths = self.root.rglob(search_str)
-        # Only keep files (not directories), and omit the JSON sidecars
-        # if ignore_json is True.
-        if ignore_json:
-            paths = [p for p in paths
-                    if p.is_file() and p.suffix != '.json']
-        else:
-            paths = [p for p in paths if p.is_file()]
         fnames = _filter_fnames(paths, suffix=self.suffix,
                                 extension=self.extension,
                                 **self.entities)
 
-        bids_paths = []
-        for fname in fnames:
-            # Form the BIDSPath object.
-            # To check whether the BIDSPath is conforming to BIDS if
-            # check=True, we first instantiate without checking and then run
-            # the check manually, allowing us to be more specific about the
-            # exception to catch
-            datatype = _infer_datatype_from_path(fname)
-            bids_path = get_bids_path_from_fname(fname, check=False)
-            bids_path.root = self.root
-            bids_path.datatype = datatype
-            bids_path.check = True
-
-            try:
-                bids_path._check()
-            except ValueError:
-                # path is not BIDS-compatible
-                if check:  # skip!
-                    continue
-                else:
-                    bids_path.check = False
-
-            bids_paths.append(bids_path)
-
+        bids_paths = _fnames_to_bidspaths(fnames, self.root, check=check)
         return bids_paths
+
 
     def _check(self):
         """Deep check or not of the instance."""
@@ -2011,8 +1978,7 @@ def find_matching_paths(root, subjects=None, sessions=None, tasks=None,
                         recordings=None, spaces=None, splits=None,
                         descriptions=None, suffixes=None, extensions=None,
                         datatypes=None, check=True):
-    """
-    Get list of all matching paths for all matching entity values.
+    """Get list of all matching paths for all matching entity values.
 
     Input can be str or list of str. None matches all found values.
 
@@ -2021,8 +1987,8 @@ def find_matching_paths(root, subjects=None, sessions=None, tasks=None,
 
     Parameters
     ----------
-    root : str
-        The root directory of the BIDS dataset.
+    root : pathlib.Path | str
+        The root of the BIDS path.
     subjects : str | array-like of str | None
         The subject ID. Corresponds to "sub".
     sessions : str | array-like of str | None
@@ -2075,41 +2041,84 @@ def find_matching_paths(root, subjects=None, sessions=None, tasks=None,
     -------
     bids_paths : list of mne_bids.BIDSPath
         The matching paths.
+
     """
-    # Allow searching by datatype because datatype is only present in the
-    # bids_path but not in the bids_path basename. All other entities are
-    # present in the file name (without the path) and are filtered below.
-    if datatypes is not None:
-        search_str = f'*/{"|".join(datatypes)}/*'
+    fpaths = _return_root_paths(root, datatype=datatypes, ignore_json=False)
+
+    fpaths_filtered = _filter_fnames(fpaths,
+                                     subject=subjects,
+                                     session=sessions,
+                                     task=tasks,
+                                     acquisition=acquisitions,
+                                     run=runs,
+                                     processing=processings,
+                                     recording=recordings,
+                                     space=spaces,
+                                     split=splits,
+                                     description=descriptions,
+                                     suffix=suffixes,
+                                     extension=extensions)
+
+    bids_paths = _fnames_to_bidspaths(fpaths_filtered, root, check=check)
+    return bids_paths
+
+
+def _return_root_paths(root, datatype=None, ignore_json=True):
+    """Allow searching by datatype because datatype is only present in the
+    bids_path but not in the file name "bids_path.basename".
+    All other entities are filtered below.
+    root : pathlib.Path | str
+        The root of the BIDS path.
+    datatype : str | array-like of str | None
+        The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
+        ``'ieeg'``.
+    """
+    root = Path(root)  # if root is str
+
+    if datatype is not None:
+        search_str = f'*/{"|".join(datatype)}/*'
     else:
         search_str = '*.*'
 
-    paths = Path(root).rglob(search_str)
+    paths = root.rglob(search_str)
+    # Only keep files (not directories), and omit the JSON sidecars
+    # if ignore_json is True.
+    if ignore_json:
+        paths = [p for p in paths
+                 if p.is_file() and p.suffix != '.json']
+    else:
+        paths = [p for p in paths if p.is_file()]
 
-    # Only keep files (not directories).
-    paths = [p for p in paths if p.is_file()]
+    return paths
 
-    paths_filtered = _filter_fnames(paths,
-                                    subject=subjects,
-                                    session=sessions,
-                                    task=tasks,
-                                    acquisition=acquisitions,
-                                    run=runs,
-                                    processing=processings,
-                                    recording=recordings,
-                                    space=spaces,
-                                    split=splits,
-                                    description=descriptions,
-                                    suffix=suffixes,
-                                    extension=extensions)
 
+def _fnames_to_bidspaths(fnames, root, check=False):
+    """Make BIDSPaths from file names.
+
+    To check whether the BIDSPath is conforming to BIDS if check=True, we
+    first instantiate without checking and then run the check manually,
+    allowing us to be more specific about the exception to catch.
+
+    Parameters
+    ----------
+    fnames : list of str
+        Filenames as list of strings.
+    root : path-like | None
+        The root directory of the BIDS dataset.
+    check : bool
+        If ``True``, only returns paths that conform to BIDS. If ``False``
+        (default), the ``.check`` attribute of the returned
+        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        do conform to BIDS, and to ``False`` for those that don't.
+
+    Returns
+    -------
+    bids_paths : list of mne_bids.BIDSPath
+        Bids paths.
+
+    """
     bids_paths = []
-    for fname in paths_filtered:
-        # Form the BIDSPath object.
-        # To check whether the BIDSPath is conforming to BIDS if
-        # check=True, we first instantiate without checking and then run
-        # the check manually, allowing us to be more specific about the
-        # exception to catch
+    for fname in fnames:
         datatype = _infer_datatype_from_path(fname)
         bids_path = get_bids_path_from_fname(fname, check=False)
         bids_path.root = root
