@@ -44,6 +44,7 @@ mne_bids
    inspect_dataset
    update_sidecar_json
    anonymize_dataset
+   find_matching_paths
 
 mne_bids.stats
 --------------
