@@ -789,7 +789,7 @@ class BIDSPath(object):
             raise e
         return self
 
-    def match(self, check=False):
+    def match(self, ignore_json=True, check=False):
         """Get a list of all matching paths in the root directory.
 
         Performs a recursive search, starting in ``.root`` (if set), based on
@@ -814,17 +814,22 @@ class BIDSPath(object):
                                'BIDS root directory path to `root` via '
                                'BIDSPath.update().')
 
-        # allow searching by datatype
-        # all other entities are filtered below
+        # Allow searching by datatype because datatype is only present in the
+        # bids_path but not in the file name "bids_path.basename".
+        # All other entities are filtered below
         if self.datatype is not None:
             search_str = f'*/{self.datatype}/*'
         else:
             search_str = '*.*'
 
         paths = self.root.rglob(search_str)
-        # Only keep files (not directories), and omit the JSON sidecars.
-        paths = [p for p in paths
-                 if p.is_file() and p.suffix != '.json']
+        # Only keep files (not directories), and omit the JSON sidecars
+        # if ignore_json is True.
+        if ignore_json:
+            paths = [p for p in paths
+                    if p.is_file() and p.suffix != '.json']
+        else:
+            paths = [p for p in paths if p.is_file()]
         fnames = _filter_fnames(paths, suffix=self.suffix,
                                 extension=self.extension,
                                 **self.entities)
