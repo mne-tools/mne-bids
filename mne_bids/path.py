@@ -2063,9 +2063,10 @@ def find_matching_paths(root, subjects=None, sessions=None, tasks=None,
 
 
 def _return_root_paths(root, datatype=None, ignore_json=True):
-    """Allow searching by datatype because datatype is only present in the
-    bids_path but not in the file name "bids_path.basename".
-    All other entities are filtered below.
+    """Return all paths in root.
+
+    Can be filtered by datatype (which is present in the path but not in
+    the BIDSPath basename). Can also be list of datatypes.
     root : pathlib.Path | str
         The root of the BIDS path.
     datatype : str | array-like of str | None
