@@ -889,8 +889,8 @@ def test_find_matching_paths(return_bids_test_dir):
     # Test ignore_json parameter
     bids_path_01 = BIDSPath(root=bids_root)
     paths_match = bids_path_01.match(ignore_json=True)
-    paths_find = find_matching_paths(bids_root,
-                                     extensions=[".tsv", ".fif", ".dat"])
+    paths_find = find_matching_paths(bids_root, extensions=[".tsv", ".fif",
+                                                            ".dat", ".eeg"])
     assert paths_match == paths_find
 
     # Test `check` parameter

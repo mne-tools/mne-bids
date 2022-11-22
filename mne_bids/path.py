@@ -1976,7 +1976,7 @@ def find_matching_paths(root, subjects=None, sessions=None, tasks=None,
                         acquisitions=None, runs=None, processings=None,
                         recordings=None, spaces=None, splits=None,
                         descriptions=None, suffixes=None, extensions=None,
-                        datatypes=None, check=True):
+                        datatypes=None, check=False):
     """Get list of all matching paths for all matching entity values.
 
     Input can be str or list of str. None matches all found values.
