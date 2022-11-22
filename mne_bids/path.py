@@ -1927,7 +1927,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     recording = _ensure_tuple(recording)
     split = _ensure_tuple(split)
     description = _ensure_tuple(description)
-    suffixe = _ensure_tuple(suffix)
+    suffix = _ensure_tuple(suffix)
     extension = _ensure_tuple(extension)
 
     leading_path_str = r'.*\/?'  # nothing or something ending with a `/`
@@ -1951,8 +1951,8 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                  if split else r'(|_split-([^_]+))')
     desc_str = (r'_desc-(' + '|'.join(description) + ')'
                 if description else r'(|_desc-([^_]+))')
-    suffix_str = (r'_(' + '|'.join(suffixe) + ')' if suffix
-                  else (r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')'))
+    suffix_str = (r'_(' + '|'.join(suffix) + ')' if suffix
+                  else r'_([^_]+)')
     ext_str = r'(' + '|'.join(extension) + ')' if extension else r'.([^_]+)'
 
     regexp = (
