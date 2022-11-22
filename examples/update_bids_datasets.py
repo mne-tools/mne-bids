@@ -63,7 +63,7 @@ print(make_report(bids_root))
 # Search for all matching BIDSPaths in the root directory
 bids_root = somato.data_path()
 suffix = 'meg'
-extension= '.fif'
+extension = '.fif'
 
 bids_paths = find_matching_paths(bids_root, suffixes=suffix,
                                  extensions=extension)
