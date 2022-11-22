@@ -39,7 +39,8 @@ import os.path as op
 import openneuro
 
 from mne.datasets import sample
-from mne_bids import BIDSPath, read_raw_bids, print_dir_tree, make_report
+from mne_bids import (BIDSPath, read_raw_bids, print_dir_tree, make_report,
+                      find_matching_paths, get_entity_vals)
 
 # %%
 # Download a subject's data from an OpenNeuro BIDS dataset
@@ -92,17 +93,24 @@ print(make_report(bids_root))
 # For now, we're interested only in the EEG data in the BIDS root directory
 # of the Parkinson's disease patient dataset. There were two sessions, one
 # where the patients took their regular anti-Parkinsonian medications and
-# one where they abstained for more than twelve hours. Let's start with the
-# off-medication session.
+# one where they abstained for more than twelve hours. For now, we are
+# not interested in the on-medication session.
 
+sessions = get_entity_vals(bids_root, 'session', ignore_sessions='on')
 datatype = 'eeg'
-session = 'off'
-bids_path = BIDSPath(root=bids_root, session=session, datatype=datatype)
+extensions = [".bdf", ".tsv"]  # ignore .json files
+bids_paths = find_matching_paths(bids_root, datatypes=datatype,
+                                 sessions=sessions, extensions=extensions)
 
 # %%
 # We can now retrieve a list of all MEG-related files in the dataset:
+print(bids_paths)
 
-print(bids_path.match())
+# %%
+# Note that this is the same as running:
+session = 'off'
+bids_path = BIDSPath(root=bids_root, session=session, datatype=datatype)
+print(bids_path.match(ignore_json=True))
 
 # %%
 # The returned list contains ``BIDSpaths`` of 3 files:
@@ -127,8 +135,7 @@ print(bids_path.match())
 task = 'rest'
 suffix = 'eeg'
 
-bids_path = BIDSPath(subject=subject, session=session, task=task,
-                     suffix=suffix, datatype=datatype, root=bids_root)
+bids_path = bids_path.update(subject=subject, task=task, suffix=suffix)
 
 # %%
 # Now let's print the contents of ``bids_path``.

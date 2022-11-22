@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>mne_bids.copyfiles.copyfile_edf &#8212; MNE-BIDS 0.12.dev0 documentation</title>
+    <title>mne_bids.find_matching_paths &#8212; MNE-BIDS 0.12.dev0 documentation</title>
   
   
   
@@ -46,11 +46,11 @@
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.copyfiles.copyfile_edf';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.find_matching_paths';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.copyfiles.copyfile_eeglab" href="mne_bids.copyfiles.copyfile_eeglab.html" />
-    <link rel="prev" title="mne_bids.copyfiles.copyfile_brainvision" href="mne_bids.copyfiles.copyfile_brainvision.html" />
+    <link rel="next" title="mne_bids.stats.count_events" href="mne_bids.stats.count_events.html" />
+    <link rel="prev" title="mne_bids.anonymize_dataset" href="mne_bids.anonymize_dataset.html" />
     <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -405,7 +405,7 @@
     Section Navigation
   </p>
   <div class="bd-toc-item navbar-nav">
-    <ul class="nav bd-sidenav">
+    <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_raw_bids.html">mne_bids.write_raw_bids</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.read_raw_bids.html">mne_bids.read_raw_bids</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.write_meg_calibration.html">mne_bids.write_meg_calibration</a></li>
@@ -431,14 +431,14 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.inspect_dataset.html">mne_bids.inspect_dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.update_sidecar_json.html">mne_bids.update_sidecar_json</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.anonymize_dataset.html">mne_bids.anonymize_dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mne_bids.find_matching_paths.html">mne_bids.find_matching_paths</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.find_matching_paths</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.stats.count_events.html">mne_bids.stats.count_events</a></li>
 </ul>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html">mne_bids.copyfiles.copyfile_brainvision</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.copyfiles.copyfile_edf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html">mne_bids.copyfiles.copyfile_edf</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html">mne_bids.copyfiles.copyfile_eeglab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html">mne_bids.copyfiles.copyfile_ctf</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">mne_bids.copyfiles.copyfile_bti</a></li>
@@ -474,76 +474,89 @@
             
             <article class="bd-article" role="main">
               
-  <section id="mne-bids-copyfiles-copyfile-edf">
-<h1>mne_bids.copyfiles.copyfile_edf<a class="headerlink" href="#mne-bids-copyfiles-copyfile-edf" title="Permalink to this heading">#</a></h1>
+  <section id="mne-bids-find-matching-paths">
+<h1>mne_bids.find_matching_paths<a class="headerlink" href="#mne-bids-find-matching-paths" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.copyfiles.copyfile_edf">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.copyfiles.</span></span><span class="sig-name descname"><span class="pre">copyfile_edf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_edf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_edf" title="Permalink to this definition">#</a></dt>
-<dd><p>Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>EDF/EDF+/BDF files contain two fields for recording dates:
-A generic “startdate” field that supports only 2-digit years,
-and a “Startdate” field as part of the “local recording
-identification”, which supports 4-digit years.
-If you want to anonymize your file, MNE-BIDS will set the
-“startdate” field to 85 (i.e., 1985), the earliest possible
-date for that field. However, the “Startdate” field in the
-file’s “local recording identification” and the date in the
-session’s corresponding <code class="docutils literal notranslate"><span class="pre">scans.tsv</span></code> will be set correctly
-according to the argument provided to the <code class="docutils literal notranslate"><span class="pre">anonymize</span></code>
-parameter. Note that it is possible that not all EDF/EDF+/BDF
-reading software parses the accurate recording date, and
-that for some reading software, the wrong year (1985) may
-be parsed.</p>
-</div>
+<dt class="sig sig-object py" id="mne_bids.find_matching_paths">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">find_matching_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subjects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sessions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acquisitions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recordings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffixes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#find_matching_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.find_matching_paths" title="Permalink to this definition">#</a></dt>
+<dd><p>Get list of all matching paths for all matching entity values.</p>
+<p>Input can be str or list of str. None matches all found values.</p>
+<p>Performs a recursive search, starting in <code class="docutils literal notranslate"><span class="pre">.root</span></code> (if set), based on
+<a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code></a> object.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>src</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/glossary.html#term-path-like" title="(in MNE v1.3)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The source path of the .edf or .bdf file to be copied.</p>
+<dt><strong>root</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The root of the BIDS path.</p>
 </dd>
-<dt><strong>dest</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/glossary.html#term-path-like" title="(in MNE v1.3)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The destination path of the .edf or .bdf file.</p>
+<dt><strong>subjects</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The subject ID. Corresponds to “sub”.</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If None (default), no anonymization is performed.
-If dict, data will be anonymized depending on the keys provided with
-the dict: <em class="xref py py-obj">daysback</em> is a required key, <em class="xref py py-obj">keep_his</em> is an optional key.</p>
-<dl class="simple">
-<dt><em class="xref py py-obj">daysback</em><span class="classifier">int</span></dt><dd><p>Number of days by which to move back the recording date in time.
-In studies with multiple subjects the relative recording date
-differences between subjects can be kept by using the same number
-of <em class="xref py py-obj">daysback</em> for all subject anonymizations. <em class="xref py py-obj">daysback</em> should be
-great enough to shift the date prior to 1925 to conform with BIDS
-anonymization rules. Due to limitations of the EDF/BDF format, the
-year of the anonymized date will always be set to 1985 in the
-‘startdate’ field of the file. The correctly-shifted year will be
-written to the ‘local recording identification’ region of the
-file header, which may not be parsed by all EDF/EDF+/BDF reader
-software.</p>
+<dt><strong>sessions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The acquisition session. Corresponds to “ses”.</p>
 </dd>
-<dt><em class="xref py py-obj">keep_his</em><span class="classifier">bool</span></dt><dd><p>By default (False), all subject information next to the recording
-date will be overwritten as well. If True, keep subject information
-apart from the recording date. Participant names and birthdates
-will always be anonymized if present, regardless of this setting.</p>
+<dt><strong>tasks</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The experimental task. Corresponds to “task”.</p>
 </dd>
-</dl>
+<dt><strong>acquisitions: str | array-like of str | None</strong></dt><dd><p>The acquisition parameters. Corresponds to “acq”.</p>
 </dd>
-</dl>
+<dt><strong>runs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The run number. Corresponds to “run”.</p>
 </dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.anonymize_info.html#mne.io.anonymize_info" title="(in MNE v1.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.anonymize_info</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_brainvision</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti" title="mne_bids.copyfiles.copyfile_bti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_bti</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf" title="mne_bids.copyfiles.copyfile_ctf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_ctf</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_eeglab</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit" title="mne_bids.copyfiles.copyfile_kit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_kit</span></code></a></dt><dd></dd>
-</dl>
+<dt><strong>processings</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The processing label. Corresponds to “proc”.</p>
+</dd>
+<dt><strong>recordings</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The recording name. Corresponds to “rec”.</p>
+</dd>
+<dt><strong>spaces</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The coordinate space for anatomical and sensor location
+files (e.g., <code class="docutils literal notranslate"><span class="pre">*_electrodes.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">*_markers.mrk</span></code>).
+Corresponds to “space”.
+Note that valid values for <code class="docutils literal notranslate"><span class="pre">space</span></code> must come from a list
+of BIDS keywords as described in the BIDS specification.</p>
+</dd>
+<dt><strong>splits</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.
+Corresponds to “split”.</p>
+</dd>
+<dt><strong>descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>This corresponds to the BIDS entity <code class="docutils literal notranslate"><span class="pre">desc</span></code>. It is used to provide
+additional information for derivative data, e.g., preprocessed data
+may be assigned <code class="docutils literal notranslate"><span class="pre">description='cleaned'</span></code>.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.11.</span></p>
 </div>
+</dd>
+<dt><strong>suffixes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The filename suffix. This is the entity after the
+last <code class="docutils literal notranslate"><span class="pre">_</span></code> before the extension. E.g., <code class="docutils literal notranslate"><span class="pre">'channels'</span></code>.
+The following filename suffix’s are accepted:
+‘meg’, ‘markers’, ‘eeg’, ‘ieeg’, ‘T1w’,
+‘participants’, ‘scans’, ‘electrodes’, ‘coordsystem’,
+‘channels’, ‘events’, ‘headshape’, ‘digitizer’,
+‘beh’, ‘physio’, ‘stim’</p>
+</dd>
+<dt><strong>extensions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
+</dd>
+<dt><strong>datatypes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://numpy.org/devdocs/glossary.html#term-array_like" title="(in NumPy v1.24.dev0)"><span class="xref std std-term">array_like</span></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The BIDS data type, e.g., <code class="docutils literal notranslate"><span class="pre">'anat'</span></code>, <code class="docutils literal notranslate"><span class="pre">'func'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>.</p>
+</dd>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only returns paths that conform to BIDS. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
+(default), the <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute of the returned
+<a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> object will be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> for paths that
+do conform to BIDS, and to <code class="docutils literal notranslate"><span class="pre">False</span></code> for those that don’t.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>bids_paths</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a></span></dt><dd><p>The matching paths.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
-<span class="target" id="sphx-glr-backreferences-mne-bids-copyfiles-copyfile-edf"></span></section>
+<section id="examples-using-mne-bids-find-matching-paths">
+<span id="sphx-glr-backreferences-mne-bids-find-matching-paths"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.find_matching_paths</span></code><a class="headerlink" href="#examples-using-mne-bids-find-matching-paths" title="Permalink to this heading">#</a></h2>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the `O..."><img alt="01. Read BIDS datasets" src="../_images/sphx_glr_read_bids_datasets_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">01. Read BIDS datasets</span></a></p>
+  <div class="sphx-glr-thumbnail-title">01. Read BIDS datasets</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the ..."><img alt="12. Updating BIDS datasets" src="../_images/sphx_glr_update_bids_datasets_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">12. Updating BIDS datasets</span></a></p>
+  <div class="sphx-glr-thumbnail-title">12. Updating BIDS datasets</div>
+</div></div></section>
+</section>
 
 
             </article>
@@ -553,17 +566,17 @@ will always be anonymized if present, regardless of this setting.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="mne_bids.copyfiles.copyfile_brainvision.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="mne_bids.anonymize_dataset.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">mne_bids.copyfiles.copyfile_brainvision</p>
+          <p class="prev-next-title">mne_bids.anonymize_dataset</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="mne_bids.copyfiles.copyfile_eeglab.html" title="next page">
+  <a class='right-next' id="next-link" href="mne_bids.stats.count_events.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">mne_bids.copyfiles.copyfile_eeglab</p>
+      <p class="prev-next-title">mne_bids.stats.count_events</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -584,10 +597,20 @@ will always be anonymized if present, regardless of this setting.</p>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#mne_bids.copyfiles.copyfile_edf">
+  <a class="reference internal nav-link" href="#mne_bids.find_matching_paths">
    <code class="docutils literal notranslate">
     <span class="pre">
-     copyfile_edf()
+     find_matching_paths()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#examples-using-mne-bids-find-matching-paths">
+   Examples using
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     mne_bids.find_matching_paths
     </span>
    </code>
   </a>

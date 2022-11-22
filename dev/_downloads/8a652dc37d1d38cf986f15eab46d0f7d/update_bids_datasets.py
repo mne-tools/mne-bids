@@ -21,7 +21,7 @@ modify BIDS-formatted data.
 # We are importing everything we need for this example:
 from mne.datasets import somato
 
-from mne_bids import (BIDSPath, read_raw_bids,
+from mne_bids import (read_raw_bids, find_matching_paths,
                       print_dir_tree, make_report, update_sidecar_json)
 
 # %%
@@ -60,20 +60,15 @@ print(make_report(bids_root))
 # ``BIDSPath`` object. We then pass in a dictionary (or JSON file) to update
 # all matching metadata fields within the BIDS dataset.
 
-# create a BIDSPath object
+# Search for all matching BIDSPaths in the root directory
 bids_root = somato.data_path()
-datatype = 'meg'
-subject = '01'
-task = 'somato'
 suffix = 'meg'
+extension = '.fif'
 
-bids_path = BIDSPath(subject=subject, task=task, suffix=suffix,
-                     datatype=datatype, root=bids_root)
-sidecar_path = bids_path.copy().update(extension='.json')
-
+bids_paths = find_matching_paths(bids_root, suffixes=suffix,
+                                 extensions=extension)
 # We can now retrieve a list of all MEG-related files in the dataset:
-# we will specifically now update the sidecar json file.
-print(bids_path.match())
+print(bids_paths)
 
 # Define a sidecar update as a dictionary
 entries = {
@@ -90,6 +85,8 @@ entries = {
 # ``entries``.
 #
 # Now update all sidecar fields according to our updating dictionary
+bids_path = bids_paths[0]
+sidecar_path = bids_path.copy().update(extension='.json')
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 # %%
