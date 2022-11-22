@@ -151,6 +151,10 @@ authors:
       family-names: Engemann
       affiliation: 'Roche Pharma Research and Early Development (pRED), Basel, Switzerland'
       orcid: 'https://orcid.org/0000-0002-7223-1014'
+    - given-names: Moritz
+      family-names: Gerster
+      affiliation: 'Max Planck Institute for Human Cognitive and Brain Sciences, Leipzig, Germany'
+      orcid: 'https://orcid.org/0000-0001-9343-6986'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
