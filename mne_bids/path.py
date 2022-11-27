@@ -1589,7 +1589,7 @@ def get_datatypes(root, verbose=None):
     """
     # Take all possible data types from "entity" table
     # (Appendix in BIDS spec)
-    # https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html  # noqa
+    # https://bids-specification.readthedocs.io/en/stable/appendices/entity-table.html  # noqa
     datatype_list = ('anat', 'func', 'dwi', 'fmap', 'beh',
                      'meg', 'eeg', 'ieeg', 'nirs')
     datatypes = list()
@@ -1695,7 +1695,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
     References
     ----------
-    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#entities  # noqa: E501
+    .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities  # noqa: E501
 
     """
     root = _check_fname(

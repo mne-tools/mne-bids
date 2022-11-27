@@ -243,7 +243,7 @@ ALLOWED_SPACES['ieeg'] = \
 ALLOWED_SPACES['anat'] = None
 ALLOWED_SPACES['beh'] = None
 
-# See: https://bids-specification.readthedocs.io/en/latest/99-appendices/04-entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
+# See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
 ENTITY_VALUE_TYPE = {
     'subject': 'label',
     'session': 'label',

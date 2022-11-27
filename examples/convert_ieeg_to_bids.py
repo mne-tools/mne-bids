@@ -34,8 +34,8 @@ Compared to EEG data, the main differences are within the
 For more information on these files,
 refer to the `iEEG part of the BIDS specification`_.
 
-.. _iEEG part of the BIDS specification: https://bids-specification.readthedocs.io/en/latest/04-modality-specific-files/04-intracranial-electroencephalography.html
-.. _appendix VIII: https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
+.. _iEEG part of the BIDS specification: https://bids-specification.readthedocs.io/en/latest/modality-specific-files/intracranial-electroencephalography.html
+.. _appendix VIII: https://bids-specification.readthedocs.io/en/stable/appendices/coordinate-systems.html
 .. _background on FreeSurfer: https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne
 .. _MNE-Python coordinate frames: https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html
 
