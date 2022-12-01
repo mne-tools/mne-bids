@@ -3909,7 +3909,10 @@ def test_repeat_write_location(tmpdir):
     bids_path = write_raw_bids(raw, bids_path, verbose=False)
 
     # Read back in
-    with pytest.warns(RuntimeWarning, match=".* has changed from NA to V"):
+    if check_version("mne", "1.3"):
+        with pytest.warns(RuntimeWarning, match=".* has changed from NA to V"):
+            raw = read_raw_bids(bids_path, verbose=False)
+    else:
         raw = read_raw_bids(bids_path, verbose=False)
 
     # Re-writing with src == dest should error
