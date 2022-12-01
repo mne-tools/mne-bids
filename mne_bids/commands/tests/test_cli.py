@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import ArgvSetter, requires_pandas
+from mne.utils import ArgvSetter, requires_pandas, check_version
 from mne.utils._testing import requires_module
 
 from mne_bids.commands import (mne_bids_raw_to_bids,
@@ -39,6 +39,9 @@ base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
 task = 'testing'
 datatype = 'meg'
+
+event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+            'Visual/Right': 4, 'Smiley': 5, 'Button': 32, 'Nothing': 0}
 
 
 def check_usage(module, force_help=False):
@@ -109,7 +112,7 @@ def test_cp(tmp_path):
 
 
 @testing.requires_testing_data
-def test_mark_bad_chanels_single_file(tmp_path):
+def test_mark_bad_channels_single_file(tmp_path):
     """Test mne_bids mark_channels."""
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
@@ -118,13 +121,16 @@ def test_mark_bad_chanels_single_file(tmp_path):
     output_path = str(tmp_path)
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
     old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
     bids_path = BIDSPath(subject=subject_id, task=task, root=output_path,
                          datatype=datatype)
 
     with ArgvSetter(('--subject_id', subject_id, '--task', task,
                      '--raw', raw_fname, '--bids_root', output_path,
-                     '--line_freq', 60)):
+                     '--line_freq', 60,
+                     '--events', events_fname, '--event_id', event_id)):
         mne_bids_raw_to_bids.run()
 
     # Update the dataset.
@@ -142,8 +148,11 @@ def test_mark_bad_chanels_single_file(tmp_path):
         mne_bids_mark_channels.run()
 
     # Check the data was properly written
-    with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+    if check_version("mne", "1.3"):
         raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    else:
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert set(old_bads + ch_names) == set(raw.info['bads'])
 
     # Test resetting bad channels.
@@ -155,13 +164,16 @@ def test_mark_bad_chanels_single_file(tmp_path):
     print('Finished running the reset...')
 
     # Check the data was properly written
-    with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+    if check_version("mne", "1.3"):
         raw = read_raw_bids(bids_path=bids_path)
+    else:
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['bads'] == []
 
 
 @testing.requires_testing_data
-def test_mark_bad_chanels_multiple_files(tmp_path):
+def test_mark_bad_channels_multiple_files(tmp_path):
     """Test mne_bids mark_channels."""
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
@@ -170,6 +182,8 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
     output_path = str(tmp_path)
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
     old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
     bids_path = BIDSPath(task=task, root=output_path, datatype=datatype)
 
@@ -177,7 +191,8 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
     for subject in subjects:
         with ArgvSetter(('--subject_id', subject, '--task', task,
                          '--raw', raw_fname, '--bids_root', output_path,
-                         '--line_freq', 60)):
+                         '--line_freq', 60,
+                         '--events', events_fname, '--event_id', event_id)):
             mne_bids_raw_to_bids.run()
 
     # Update the dataset.
@@ -195,9 +210,13 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
 
     # Check the data was properly written
     for subject in subjects:
-        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+        if check_version("mne", "1.3"):
             raw = read_raw_bids(bids_path=bids_path.copy()
                                 .update(subject=subject))
+        else:
+            with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+                raw = read_raw_bids(bids_path=bids_path.copy()
+                                    .update(subject=subject))
         assert set(old_bads + ch_names) == set(raw.info['bads'])
 
 
@@ -254,8 +273,6 @@ def test_count_events(tmp_path):
     raw = mne.io.read_raw(raw_fname)
     raw.info['line_freq'] = 60.
     events = mne.find_events(raw)
-    event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
-                'visual/right': 4, 'face': 5, 'button': 32}
 
     bids_path = BIDSPath(subject='01', root=output_path, task='foo')
     write_raw_bids(raw, bids_path, events=events, event_id=event_id,

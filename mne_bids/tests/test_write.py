@@ -925,7 +925,11 @@ def test_kit(_bids_validate, tmp_path):
 
     _bids_validate(bids_root)
     assert op.exists(bids_root / 'participants.tsv')
-    read_raw_bids(bids_path=kit_bids_path)
+    if check_version("mne", "1.3"):
+        with pytest.warns(RuntimeWarning, match=".* changed from V to NA"):
+            read_raw_bids(bids_path=kit_bids_path)
+    else:
+        read_raw_bids(bids_path=kit_bids_path)
 
     # ensure the marker file is produced in the right place
     marker_fname = BIDSPath(
@@ -1857,7 +1861,11 @@ def test_bdf(_bids_validate, tmp_path):
     # Now read the raw data back from BIDS, with the tampered TSV, to show
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
-    raw = read_raw_bids(bids_path=bids_path)
+    if check_version("mne", "1.3"):
+        with pytest.warns(RuntimeWarning, match="Fp1 has changed from V .*"):
+            raw = read_raw_bids(bids_path=bids_path)
+    else:
+        raw = read_raw_bids(bids_path=bids_path)
     assert coil_type(raw.info, test_ch_idx) == 'misc'
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
@@ -1914,8 +1922,6 @@ def test_set(_bids_validate, tmp_path):
     _bids_validate(bids_root)
 
     # check events.tsv is written
-    # XXX: only from 0.18 onwards because events_from_annotations
-    # is broken for earlier versions
     events_tsv_fname = op.join(bids_root, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
                                bids_path.basename + '_events.tsv')
@@ -3169,7 +3175,6 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
                        raw_read.annotations.description)
 
 
-@requires_version('mne', '0.24')
 @requires_version('pybv', PYBV_VERSION)
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
@@ -3251,7 +3256,6 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
         raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
 
-@requires_version('mne', '0.24')
 @requires_version('pybv', PYBV_VERSION)
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
@@ -3289,7 +3293,6 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader,
         write_raw_bids(**kwargs, overwrite=True)
 
 
-@requires_version('mne', '0.22')
 @pytest.mark.parametrize(
     'dir_name, format, fname, reader', test_converteeg_data)
 @pytest.mark.filterwarnings(
@@ -3906,7 +3909,11 @@ def test_repeat_write_location(tmpdir):
     bids_path = write_raw_bids(raw, bids_path, verbose=False)
 
     # Read back in
-    raw = read_raw_bids(bids_path, verbose=False)
+    if check_version("mne", "1.3"):
+        with pytest.warns(RuntimeWarning, match=".* has changed from NA to V"):
+            raw = read_raw_bids(bids_path, verbose=False)
+    else:
+        raw = read_raw_bids(bids_path, verbose=False)
 
     # Re-writing with src == dest should error
     with pytest.raises(FileExistsError, match='Desired output BIDSPath'):
