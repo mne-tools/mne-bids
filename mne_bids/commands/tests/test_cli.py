@@ -109,7 +109,7 @@ def test_cp(tmp_path):
 
 
 @testing.requires_testing_data
-def test_mark_bad_chanels_single_file(tmp_path):
+def test_mark_bad_channels_single_file(tmp_path):
     """Test mne_bids mark_channels."""
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
@@ -118,13 +118,15 @@ def test_mark_bad_chanels_single_file(tmp_path):
     output_path = str(tmp_path)
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
     old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
     bids_path = BIDSPath(subject=subject_id, task=task, root=output_path,
                          datatype=datatype)
 
     with ArgvSetter(('--subject_id', subject_id, '--task', task,
                      '--raw', raw_fname, '--bids_root', output_path,
-                     '--line_freq', 60)):
+                     '--line_freq', 60, '--events', events_fname)):
         mne_bids_raw_to_bids.run()
 
     # Update the dataset.
@@ -161,7 +163,7 @@ def test_mark_bad_chanels_single_file(tmp_path):
 
 
 @testing.requires_testing_data
-def test_mark_bad_chanels_multiple_files(tmp_path):
+def test_mark_bad_channels_multiple_files(tmp_path):
     """Test mne_bids mark_channels."""
     # Check that help is printed
     check_usage(mne_bids_mark_channels)
@@ -170,6 +172,8 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
     output_path = str(tmp_path)
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
     old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
     bids_path = BIDSPath(task=task, root=output_path, datatype=datatype)
 
@@ -177,7 +181,7 @@ def test_mark_bad_chanels_multiple_files(tmp_path):
     for subject in subjects:
         with ArgvSetter(('--subject_id', subject, '--task', task,
                          '--raw', raw_fname, '--bids_root', output_path,
-                         '--line_freq', 60)):
+                         '--line_freq', 60, '--events', events_fname)):
             mne_bids_raw_to_bids.run()
 
     # Update the dataset.
