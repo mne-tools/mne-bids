@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import ArgvSetter, requires_pandas
+from mne.utils import ArgvSetter, requires_pandas, check_version
 from mne.utils._testing import requires_module
 
 from mne_bids.commands import (mne_bids_raw_to_bids,
@@ -148,7 +148,11 @@ def test_mark_bad_channels_single_file(tmp_path):
         mne_bids_mark_channels.run()
 
     # Check the data was properly written
-    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    if check_version("mne", "1.3"):
+        raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    else:
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert set(old_bads + ch_names) == set(raw.info['bads'])
 
     # Test resetting bad channels.
@@ -160,8 +164,11 @@ def test_mark_bad_channels_single_file(tmp_path):
     print('Finished running the reset...')
 
     # Check the data was properly written
-    with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+    if check_version("mne", "1.3"):
         raw = read_raw_bids(bids_path=bids_path)
+    else:
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['bads'] == []
 
 
@@ -203,8 +210,13 @@ def test_mark_bad_channels_multiple_files(tmp_path):
 
     # Check the data was properly written
     for subject in subjects:
-        raw = read_raw_bids(bids_path=bids_path.copy()
-                            .update(subject=subject))
+        if check_version("mne", "1.3"):
+            raw = read_raw_bids(bids_path=bids_path.copy()
+                                .update(subject=subject))
+        else:
+            with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+                raw = read_raw_bids(bids_path=bids_path.copy()
+                                    .update(subject=subject))
         assert set(old_bads + ch_names) == set(raw.info['bads'])
 
 
