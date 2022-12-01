@@ -3909,7 +3909,8 @@ def test_repeat_write_location(tmpdir):
     bids_path = write_raw_bids(raw, bids_path, verbose=False)
 
     # Read back in
-    raw = read_raw_bids(bids_path, verbose=False)
+    with pytest.warns(RuntimeWarning, match=".* has changed from NA to V"):
+        raw = read_raw_bids(bids_path, verbose=False)
 
     # Re-writing with src == dest should error
     with pytest.raises(FileExistsError, match='Desired output BIDSPath'):

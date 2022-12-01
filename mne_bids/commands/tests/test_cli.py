@@ -148,8 +148,7 @@ def test_mark_bad_channels_single_file(tmp_path):
         mne_bids_mark_channels.run()
 
     # Check the data was properly written
-    with pytest.warns(RuntimeWarning, match='The unit for chann*'):
-        raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert set(old_bads + ch_names) == set(raw.info['bads'])
 
     # Test resetting bad channels.
@@ -204,9 +203,8 @@ def test_mark_bad_channels_multiple_files(tmp_path):
 
     # Check the data was properly written
     for subject in subjects:
-        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
-            raw = read_raw_bids(bids_path=bids_path.copy()
-                                .update(subject=subject))
+        raw = read_raw_bids(bids_path=bids_path.copy()
+                            .update(subject=subject))
         assert set(old_bads + ch_names) == set(raw.info['bads'])
 
 
