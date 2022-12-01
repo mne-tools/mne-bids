@@ -40,6 +40,8 @@ subject_id = '01'
 task = 'testing'
 datatype = 'meg'
 
+event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+            'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
 def check_usage(module, force_help=False):
     """Ensure we print usage."""
@@ -126,7 +128,8 @@ def test_mark_bad_channels_single_file(tmp_path):
 
     with ArgvSetter(('--subject_id', subject_id, '--task', task,
                      '--raw', raw_fname, '--bids_root', output_path,
-                     '--line_freq', 60, '--events', events_fname)):
+                     '--line_freq', 60,
+                     '--events', events_fname, '--event_id', event_id)):
         mne_bids_raw_to_bids.run()
 
     # Update the dataset.
@@ -181,7 +184,8 @@ def test_mark_bad_channels_multiple_files(tmp_path):
     for subject in subjects:
         with ArgvSetter(('--subject_id', subject, '--task', task,
                          '--raw', raw_fname, '--bids_root', output_path,
-                         '--line_freq', 60, '--events', events_fname)):
+                         '--line_freq', 60,
+                         '--events', events_fname, '--event_id', event_id)):
             mne_bids_raw_to_bids.run()
 
     # Update the dataset.
@@ -258,8 +262,6 @@ def test_count_events(tmp_path):
     raw = mne.io.read_raw(raw_fname)
     raw.info['line_freq'] = 60.
     events = mne.find_events(raw)
-    event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
-                'visual/right': 4, 'face': 5, 'button': 32}
 
     bids_path = BIDSPath(subject='01', root=output_path, task='foo')
     write_raw_bids(raw, bids_path, events=events, event_id=event_id,
