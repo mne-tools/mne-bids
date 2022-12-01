@@ -41,7 +41,8 @@ task = 'testing'
 datatype = 'meg'
 
 event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-            'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+            'Visual/Right': 4, 'Smiley': 5, 'Button': 32, 'Nothing': 0}
+
 
 def check_usage(module, force_help=False):
     """Ensure we print usage."""
