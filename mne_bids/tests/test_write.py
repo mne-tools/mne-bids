@@ -925,7 +925,11 @@ def test_kit(_bids_validate, tmp_path):
 
     _bids_validate(bids_root)
     assert op.exists(bids_root / 'participants.tsv')
-    read_raw_bids(bids_path=kit_bids_path)
+    if check_version("mne", "1.3"):
+        with pytest.warns(RuntimeWarning, match=".* changed from V to NA"):
+            read_raw_bids(bids_path=kit_bids_path)
+    else:
+        read_raw_bids(bids_path=kit_bids_path)
 
     # ensure the marker file is produced in the right place
     marker_fname = BIDSPath(
@@ -1858,7 +1862,7 @@ def test_bdf(_bids_validate, tmp_path):
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
     if check_version("mne", "1.3"):
-        with pytest.warns(RuntimeWarning, match="Fp1 has changed from V to NA."):
+        with pytest.warns(RuntimeWarning, match="Fp1 has changed from V .*"):
             raw = read_raw_bids(bids_path=bids_path)
     else:
         raw = read_raw_bids(bids_path=bids_path)
