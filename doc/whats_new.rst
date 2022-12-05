@@ -54,7 +54,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- ...
+- MNE-BIDS now requires Python 3.8 or higher, because Python 3.7 is soon reaching its end of life.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^

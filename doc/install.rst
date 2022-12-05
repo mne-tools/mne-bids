@@ -27,7 +27,7 @@ Optional:
 * ``EDFlib-Python`` (>=1.0.6, for writing EDF data)
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution.
-We require that you **use Python 3.7 or higher**.
+We require that you **use Python 3.8 or higher**.
 You may choose to install ``mne-bids``
 `via pip <#installation-via-pip>`_ or
 `via conda <#installation-via-conda>`_.
