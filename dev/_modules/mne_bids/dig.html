@@ -981,14 +981,6 @@
             <span class="n">d</span><span class="p">[</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MNE_STR_TO_FRAME</span><span class="p">[</span><span class="s1">&#39;unknown&#39;</span><span class="p">]</span>
 
 
-<span class="c1"># Remove once we depend on MNE-Python 1.0+</span>
-<span class="k">def</span> <span class="nf">_get_montage</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s1">&#39;get_montage&#39;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">info</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span>
-    <span class="c1"># workaround</span>
-    <span class="k">return</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;nchan&#39;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">info</span><span class="p">)</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span>
-
-
 <div class="viewcode-block" id="template_to_head"><a class="viewcode-back" href="../../generated/mne_bids.template_to_head.html#mne_bids.template_to_head">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">template_to_head</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
                      <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1036,9 +1028,7 @@
     <span class="n">_check_option</span><span class="p">(</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span>
                   <span class="p">(</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;mri_voxel&#39;</span><span class="p">,</span> <span class="s1">&#39;ras&#39;</span><span class="p">))</span>
     <span class="n">_check_option</span><span class="p">(</span><span class="s1">&#39;unit&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;mm&#39;</span><span class="p">))</span>
-    <span class="c1"># XXX: change to after 0.11 release</span>
-    <span class="c1"># montage = info.get_montage()</span>
-    <span class="n">montage</span> <span class="o">=</span> <span class="n">_get_montage</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+    <span class="n">montage</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;No montage found in the `raw` object&#39;</span><span class="p">)</span>
     <span class="n">montage</span><span class="o">.</span><span class="n">remove_fiducials</span><span class="p">()</span>  <span class="c1"># we will add fiducials so remove any</span>
