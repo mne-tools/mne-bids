@@ -558,14 +558,6 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
             d['coord_frame'] = MNE_STR_TO_FRAME['unknown']
 
 
-# Remove once we depend on MNE-Python 1.0+
-def _get_montage(info):
-    if hasattr(info, 'get_montage'):
-        return info.get_montage()
-    # workaround
-    return mne.io.RawArray(np.zeros((info['nchan'], 1)), info).get_montage()
-
-
 @verbose
 def template_to_head(info, space, coord_frame='auto', unit='auto',
                      verbose=None):
@@ -613,9 +605,7 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
     _check_option('coord_frame', coord_frame,
                   ('auto', 'mri', 'mri_voxel', 'ras'))
     _check_option('unit', unit, ('auto', 'm', 'mm'))
-    # XXX: change to after 0.11 release
-    # montage = info.get_montage()
-    montage = _get_montage(info)
+    montage = info.get_montage()
     if montage is None:
         raise RuntimeError('No montage found in the `raw` object')
     montage.remove_fiducials()  # we will add fiducials so remove any

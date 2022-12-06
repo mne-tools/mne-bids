@@ -846,16 +846,12 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
                 chpi = False
                 logger.info('Could not find cHPI information in raw data.')
         elif system in ['122m', '306m']:
-            # XXX: Remove this version check when support for mne <1.2
-            # is dropped
-            if parse_version(mne.__version__) > parse_version('1.1'):
-                n_active_hpi = mne.chpi.get_active_chpi(raw,
-                                                        on_missing='ignore')
-                chpi = bool(n_active_hpi.sum() > 0)
-                if chpi:
-                    hpi_freqs, _, _ = get_chpi_info(info=raw.info,
-                                                    on_missing='ignore')
-                    hpi_freqs = list(hpi_freqs)
+            n_active_hpi = mne.chpi.get_active_chpi(raw, on_missing='ignore')
+            chpi = bool(n_active_hpi.sum() > 0)
+            if chpi:
+                hpi_freqs, _, _ = get_chpi_info(info=raw.info,
+                                                on_missing='ignore')
+                hpi_freqs = list(hpi_freqs)
 
     elif datatype == 'meg':
         logger.info('Cannot check for & write continuous head localization '
