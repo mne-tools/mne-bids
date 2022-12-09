@@ -34,6 +34,7 @@ def get_coil_types():
                         FIFF.FIFFV_COIL_VV_MAG_T1,
                         FIFF.FIFFV_COIL_VV_MAG_T2,
                         FIFF.FIFFV_COIL_VV_MAG_T3,
+                        FIFF.FIFFV_COIL_NM_122,
                         FIFF.FIFFV_COIL_MAGNES_MAG,
                         FIFF.FIFFV_COIL_BABY_MAG),
                 megrefmag=(FIFF.FIFFV_COIL_KIT_REF_MAG,
