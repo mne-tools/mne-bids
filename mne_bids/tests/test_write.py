@@ -3897,3 +3897,22 @@ def test_unknown_extension(_bids_validate, tmp_path):
 
     write_raw_bids(raw, bids_path, allow_preload=True, format='FIF')
     _bids_validate(bids_root)
+
+
+@testing.requires_testing_data
+def test_write_neuromag122(_bids_validate, tmp_path):
+    """Test writing Neuromag122 data to BIDS."""
+    bids_root = tmp_path / 'bids'
+    raw_fname = data_path / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw = mne.io.read_raw_fif(raw_fname, allow_maxshield=True)
+    raw.info["line_freq"] = 50  # power line frequency as required by BIDS
+    raw.pick('mag')
+    for c in raw.info['chs']:
+        c['coil_type'] = FIFF.FIFFV_COIL_NM_122
+
+    bids_path = BIDSPath(subject="01", task="wordreport", run="01",
+                         root=bids_root,
+                         extension=".fif", datatype="meg")
+    write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True,
+                   format="FIF")
+    _bids_validate(bids_root)
