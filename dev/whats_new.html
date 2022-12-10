@@ -480,6 +480,7 @@
 <li><p>When writing data containing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> <strong>and</strong> passing events to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>, previously, annotations whose description did not appear in <code class="docutils literal notranslate"><span class="pre">event_id</span></code> were silently dropped. We now raise an exception and request users to specify mappings between descriptions and event codes in this case. It is still possible to omit <code class="docutils literal notranslate"><span class="pre">event_id</span></code> if no <code class="docutils literal notranslate"><span class="pre">events</span></code> are passed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1084">#1084</a>)</p></li>
 <li><p>When working with NIRS data, raise the correct error message when a faulty <code class="docutils literal notranslate"><span class="pre">format</span></code> argument is passed to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1092">#1092</a>)</p></li>
 <li><p>Fixed writing data preloaded from a format that’s not supported by BIDS, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1101">#1101</a>)</p></li>
+<li><p>Fixed writing data from neuromag system having 122 sensors, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1109">#1109</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -613,7 +614,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-12-06.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-12-10.<br>
 
 </p>
 
