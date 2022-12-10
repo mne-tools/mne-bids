@@ -144,7 +144,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: test-0-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+        key: test-1-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
 
     - name: Install Python dependencies using pip
       run: |
