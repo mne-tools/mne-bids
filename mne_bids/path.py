@@ -1589,7 +1589,7 @@ def get_datatypes(root, verbose=None):
     """
     # Take all possible data types from "entity" table
     # (Appendix in BIDS spec)
-    # https://bids-specification.readthedocs.io/en/stable/appendices/entity-table.html  # noqa
+    # https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html  # noqa
     datatype_list = ('anat', 'func', 'dwi', 'fmap', 'beh',
                      'meg', 'eeg', 'ieeg', 'nirs')
     datatypes = list()

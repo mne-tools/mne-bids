@@ -568,7 +568,7 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
     %(info_not_none)s The info is modified in place.
     space : str
         The name of the BIDS standard template. See
-        https://bids-specification.readthedocs.io/en/stable/appendices/coordinate-systems.html#standard-template-identifiers
+        https://bids-specification.readthedocs.io/en/latest/appendices/coordinate-systems.html#standard-template-identifiers
         for a list of acceptable spaces.
     coord_frame : 'mri' | 'mri_voxel' | 'ras'
         BIDS template coordinate systems do not specify a coordinate frame,
