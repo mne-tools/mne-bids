@@ -11,7 +11,7 @@ In this example we will use MNE-BIDS to organize the MNE sample data according
 to the BIDS standard.
 In a second step we will read the organized dataset using MNE-BIDS.
 
-.. _BIDS dataset_description.json definition: https://bids-specification.readthedocs.io/en/stable/modality-agnostic-files.html#dataset-description
+.. _BIDS dataset_description.json definition: https://bids-specification.readthedocs.io/en/latest/modality-agnostic-files.html#dataset-description
 .. _ds000248 dataset_description.json: https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json
 """  # noqa: D400 D205 E501
 
