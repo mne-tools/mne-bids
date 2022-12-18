@@ -1,0 +1,20 @@
+a[class^="sphx-glr-backref-module-mne_bids"] {
+  /* make all MNE-BIDS backrefs bold */
+  font-weight: 800;
+}
+
+span.option {
+  /* avoid breaking lines in our command-line parameters */
+  white-space: nowrap;
+}
+
+/* ************************************************* Previous / Next buttons */
+.prev-next-bottom a.left-prev:before {
+  content:"❮\00A0"
+}
+.prev-next-bottom a.right-next:after {
+  content:"\00A0❯"
+}
+.prev-next-bottom a.right-next {
+  text-align: right;
+}
