@@ -9,7 +9,7 @@ What's new?
 
 .. _changes_0_12:
 
-Version 0.12 (unreleased)
+Version 0.12 (2022-12-18)
 -------------------------
 
 This release includes a number of bug fixes as well as several smaller enhancements.
