@@ -12,12 +12,13 @@ What's new?
 Version 0.12 (unreleased)
 -------------------------
 
-...
+This release includes a number of bug fixes as well as several smaller enhancements.
+Please note some updated requirements, as listed in the details below.
 
 📝 Notable changes
 ~~~~~~~~~~~~~~~~~~
 
-- ...
+- Nothing out of the ordinary, see below.
 
 👩🏽‍💻 Authors
 ~~~~~~~~~~~~~~~
@@ -49,7 +50,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ...
+- nothing new!
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
