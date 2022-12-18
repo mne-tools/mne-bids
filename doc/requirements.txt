@@ -8,5 +8,5 @@ matplotlib
 pillow
 pandas
 setuptools
-https://github.com/mne-tools/mne-nirs/zipball/main
+mne-nirs
 seaborn
