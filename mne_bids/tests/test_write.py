@@ -202,21 +202,26 @@ def test_write_participants(_bids_validate, tmp_path):
     data = _from_tsv(participants_tsv)
     assert data['age'][data['participant_id'].index('sub-01')] == '1'
 
-    # if we remove some fields, they should be filled back in upon
-    # re-writing with 'n/a'
+    # Removing some columns from participants.tsv should not prevent us from
+    # writing additional participants later on. Before running this test,
+    # ensure we have at least 2 participants in the dataset already – this is
+    # a regression test for GH-1104.
+    bids_path.update(subject='02')
+    write_raw_bids(raw, bids_path, verbose=False)
     data = _from_tsv(participants_tsv)
     data.pop('hand')
     _to_tsv(data, participants_tsv)
 
     # write in now another subject
-    bids_path.update(subject='02')
+    bids_path.update(subject='03')
     write_raw_bids(raw, bids_path, verbose=False)
     data = _from_tsv(participants_tsv)
 
-    # hand should have been written properly with now 'n/a' for sub-01
-    # but 'L' for sub-02
+    # hand should have been written properly with now 'n/a' for sub-01 and
+    # sub-03, but 'L' for sub-03
     assert data['hand'][data['participant_id'].index('sub-01')] == 'n/a'
-    assert data['hand'][data['participant_id'].index('sub-02')] == 'L'
+    assert data['hand'][data['participant_id'].index('sub-02')] == 'n/a'
+    assert data['hand'][data['participant_id'].index('sub-03')] == 'L'
 
     # check to make sure participant data is overwritten, but keeps the fields
     # if there are extra fields that were user defined
