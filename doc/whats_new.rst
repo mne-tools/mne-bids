@@ -9,7 +9,7 @@ What's new?
 
 .. _changes_0_13:
 
-Version 0.12 (unreleased)
+Version 0.13 (unreleased)
 -------------------------
 
 ...
@@ -28,7 +28,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* ...
+* `Richard Höchenberger`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,7 +51,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- ...
+- Amending a dataset now works in cases where the newly-written data contains additional participant properties (new columns in ``participants.tsv``) not found in the existing dataset, by `Richard Höchenberger`_ (:gh:`1113`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
