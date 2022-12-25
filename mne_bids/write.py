@@ -413,7 +413,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         # if the subject data provided is different to the currently existing
         # data and overwrite is not True raise an error
         if (sid_included and not exact_included) and not overwrite:
-            raise FileExistsError(f'"{subject_id}" already exists in '  # noqa: E501 F821
+            raise FileExistsError(f'"{subject_id}" already exists in '
                                   f'the participant list. Please set '
                                   f'overwrite to True.')
 
@@ -423,7 +423,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             if key in orig_data:
                 continue
 
-            # add 'n/a' if any missing columns
             orig_data[key] = ['n/a'] * len(orig_data['participant_id'])
 
         # Append any additional columns that original data had.
