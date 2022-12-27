@@ -838,34 +838,30 @@
         <span class="c1"># if the subject data provided is different to the currently existing</span>
         <span class="c1"># data and overwrite is not True raise an error</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">sid_included</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact_included</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">subject_id</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>  <span class="c1"># noqa: E501 F821</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">subject_id</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;the participant list. Please set &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;overwrite to True.&#39;</span><span class="p">)</span>
 
-        <span class="c1"># Append any columns the original data did not have</span>
-        <span class="c1"># that mne-bids is trying to write. This handles</span>
-        <span class="c1"># the edge case where users write participants data for</span>
-        <span class="c1"># a subset of `hand`, `age` and `sex`.</span>
+        <span class="c1"># Append any columns the original data did not have, and fill them with</span>
+        <span class="c1"># n/a&#39;s.</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># add &#39;n/a&#39; if any missing columns</span>
-            <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+            <span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">orig_data</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">])</span>
 
         <span class="c1"># Append any additional columns that original data had.</span>
         <span class="c1"># Keep the original order of the data by looping over</span>
         <span class="c1"># the original OrderedDict keys</span>
-        <span class="n">col_name</span> <span class="o">=</span> <span class="s1">&#39;participant_id&#39;</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="c1"># add original value for any user-appended columns</span>
             <span class="c1"># that were not handled by mne-bids</span>
-            <span class="n">p_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">col_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">p_id</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="n">col_name</span><span class="p">]:</span>
-                <span class="n">row_idx</span> <span class="o">=</span> <span class="n">orig_data</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p_id</span><span class="p">)</span>
+            <span class="n">p_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">p_id</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]:</span>
+                <span class="n">row_idx</span> <span class="o">=</span> <span class="n">orig_data</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">p_id</span><span class="p">)</span>
                 <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">orig_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">row_idx</span><span class="p">]]</span>
 
         <span class="c1"># otherwise add the new data as new row</span>
@@ -3442,7 +3438,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-12-18.<br>
+    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-12-27.<br>
 
 </p>
 
