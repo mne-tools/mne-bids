@@ -471,8 +471,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">unknown_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">return</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s1">&#39;ages ranged from </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">maxval</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> &#39;</span>
-        <span class="sa">f</span><span class="s1">&#39;(mean = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">meanval</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">, std = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">stdval</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}{</span><span class="n">unknown_str</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;ages ranged from </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">minval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">maxval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> &#39;</span>
+        <span class="sa">f</span><span class="s1">&#39;(mean = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">meanval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1">, std = </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">stdval</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}{</span><span class="n">unknown_str</span><span class="si">}</span><span class="s1">)&#39;</span>
     <span class="p">)</span>
 
 
@@ -542,14 +542,14 @@
 
 
 <span class="k">def</span> <span class="nf">_pretty_dict</span><span class="p">(</span><span class="n">template_dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove problematic blank spaces.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove problematic blank spaces.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">template_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
             <span class="n">template_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
 
 
 <span class="k">def</span> <span class="nf">_summarize_dataset</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Summarize the dataset_desecription.json file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize the dataset_desecription.json file.</span>
 
 <span class="sd">    Required dataset descriptors include:</span>
 <span class="sd">        - Name</span>
@@ -593,7 +593,7 @@
 
 
 <span class="k">def</span> <span class="nf">_summarize_participants_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Summarize `participants.tsv` file in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize `participants.tsv` file in BIDS root directory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -663,7 +663,7 @@
 
 
 <span class="k">def</span> <span class="nf">_summarize_scans</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
 
 <span class="sd">    Summarizes scans only if there is a *_scans.tsv file.</span>
 
@@ -705,7 +705,7 @@
 
 
 <span class="k">def</span> <span class="nf">_summarize_sidecar_json</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -790,7 +790,7 @@
 
 
 <span class="k">def</span> <span class="nf">_summarize_channels_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Summarize channels.tsv data in BIDS root directory.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Summarize channels.tsv data in BIDS root directory.</span>
 
 <span class="sd">    Currently, summarizes all REQUIRED components of channels</span>
 <span class="sd">    data, and some RECOMMENDED and OPTIONAL components.</span>
@@ -864,7 +864,7 @@
 
 <div class="viewcode-block" id="make_report"><a class="viewcode-back" href="../../../generated/mne_bids.make_report.html#mne_bids.make_report">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">make_report</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a methods paragraph string from BIDS dataset.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a methods paragraph string from BIDS dataset.</span>
 
 <span class="sd">    Summarizes the REQUIRED components in the BIDS specification</span>
 <span class="sd">    and also some RECOMMENDED components. Currently, the methods</span>
@@ -1018,7 +1018,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-12-27.<br>
+    &copy; Copyright 2017-2023, MNE Developers. Last updated on 2023-01-02.<br>
 
 </p>
 

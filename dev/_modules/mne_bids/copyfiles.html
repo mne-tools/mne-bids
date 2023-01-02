@@ -458,7 +458,7 @@
 
 
 <span class="k">def</span> <span class="nf">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;See: https://github.com/jupyterlab/jupyterlab/pull/5150.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;See: https://github.com/jupyterlab/jupyterlab/pull/5150.&quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -469,7 +469,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the encoding of .vhdr and .vmrk files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the encoding of .vhdr and .vmrk files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -499,7 +499,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the .eeg/.dat and .vmrk file paths from a BrainVision header file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the .eeg/.dat and .vmrk file paths from a BrainVision header file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -561,7 +561,7 @@
 
 
 <div class="viewcode-block" id="copyfile_ctf"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf">[docs]</a><span class="k">def</span> <span class="nf">copyfile_ctf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy and rename CTF files to a new location.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy and rename CTF files to a new location.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -594,7 +594,7 @@
 
 <div class="viewcode-block" id="copyfile_kit"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit">[docs]</a><span class="k">def</span> <span class="nf">copyfile_kit</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span>
                  <span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">_init_kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy and rename KIT files to a new location.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy and rename KIT files to a new location.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -662,7 +662,7 @@
 
 
 <span class="k">def</span> <span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Overwrite file, replacing end of lines matching pattern with replace.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Overwrite file, replacing end of lines matching pattern with replace.&quot;&quot;&quot;</span>
     <span class="n">new_content</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">):</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
@@ -675,7 +675,7 @@
 
 
 <span class="k">def</span> <span class="nf">_anonymize_brainvision</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Anonymize vmrk and vhdr files in place using `date` datetime object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Anonymize vmrk and vhdr files in place using `date` datetime object.&quot;&quot;&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">)</span>
 
     <span class="c1"># Go through VMRK</span>
@@ -691,7 +691,7 @@
 
 <div class="viewcode-block" id="copyfile_brainvision"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
 
 <span class="sd">    The BrainVision file format consists of three files:</span>
 <span class="sd">    .vhdr, .eeg/.dat, and .vmrk</span>
@@ -801,7 +801,7 @@
 
 
 <div class="viewcode-block" id="copyfile_edf"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a><span class="k">def</span> <span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
 
 <span class="sd">    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:</span>
 <span class="sd">                 A generic &quot;startdate&quot; field that supports only 2-digit years,</span>
@@ -921,7 +921,7 @@
 
 
 <div class="viewcode-block" id="copyfile_eeglab"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab">[docs]</a><span class="k">def</span> <span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy an EEGLAB file to a new location.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EEGLAB file to a new location.</span>
 
 <span class="sd">    If the EEGLAB ``.set`` file comes with an accompanying ``.fdt`` binary file</span>
 <span class="sd">    that contains the actual data, this function will copy this file, too, and</span>
@@ -999,7 +999,7 @@
 
 
 <div class="viewcode-block" id="copyfile_bti"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti">[docs]</a><span class="k">def</span> <span class="nf">copyfile_bti</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Copy BTi data.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy BTi data.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1083,7 +1083,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-12-27.<br>
+    &copy; Copyright 2017-2023, MNE Developers. Last updated on 2023-01-02.<br>
 
 </p>
 

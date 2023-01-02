@@ -494,7 +494,7 @@
 
 
 <span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a channels.tsv file and save it.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a channels.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -619,7 +619,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_fid_coords</span><span class="p">(</span><span class="n">dig_points</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the fiducial coordinates from a DigMontage.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the fiducial coordinates from a DigMontage.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -661,7 +661,7 @@
 
 
 <span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
 
 <span class="sd">    This function will write the mandatory &#39;onset&#39;, and &#39;duration&#39; columns as</span>
 <span class="sd">    well as the optional &#39;value&#39; and &#39;sample&#39;. The &#39;value&#39;</span>
@@ -714,7 +714,7 @@
 
 
 <span class="k">def</span> <span class="nf">_readme</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a README file and save it.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a README file and save it.</span>
 
 <span class="sd">    This will write a README file containing an MNE-BIDS citation.</span>
 <span class="sd">    If a README already exists, the behavior depends on the</span>
@@ -752,7 +752,7 @@
 
 
 <span class="k">def</span> <span class="nf">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a participants.tsv file and save it.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a participants.tsv file and save it.</span>
 
 <span class="sd">    This will append any new participant data to the current list if it</span>
 <span class="sd">    exists. Otherwise a new file will be created with the provided information.</span>
@@ -873,7 +873,7 @@
 
 
 <span class="k">def</span> <span class="nf">_participants_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -936,7 +936,7 @@
 
 
 <span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">keep_source</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a scans.tsv file and save it.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a scans.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1054,7 +1054,7 @@
 
 
 <span class="k">def</span> <span class="nf">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span><span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert landmarks from head space to MRI space.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from head space to MRI space.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1073,7 +1073,7 @@
 
 
 <span class="k">def</span> <span class="nf">_mri_landmarks_to_mri_voxels</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">t1_mgh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert landmarks from MRI surface RAS space to MRI voxel space.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from MRI surface RAS space to MRI voxel space.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1096,7 +1096,7 @@
 
 
 <span class="k">def</span> <span class="nf">_mri_voxels_to_mri_scanner_ras</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert landmarks from MRI voxel space to MRI scanner RAS space.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from MRI voxel space to MRI scanner RAS space.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1117,7 +1117,7 @@
 
 
 <span class="k">def</span> <span class="nf">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span><span class="n">ras_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert landmarks from MRI scanner RAS space to MRI to MRI voxel space.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from MRI scanner RAS space to MRI to MRI voxel space.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1140,7 +1140,7 @@
 
 <span class="k">def</span> <span class="nf">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span>
                   <span class="n">emptyroom_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the suffix and save it.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the suffix and save it.</span>
 
 <span class="sd">    The sidecar json file provides meta data about the data</span>
 <span class="sd">    of a certain datatype.</span>
@@ -1414,7 +1414,7 @@
 
 
 <span class="k">def</span> <span class="nf">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save out the raw file in FIF.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save out the raw file in FIF.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1432,7 +1432,7 @@
 
 
 <span class="k">def</span> <span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save out the raw file in BrainVision format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save out the raw file in BrainVision format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1497,7 +1497,7 @@
 
 
 <span class="k">def</span> <span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1520,7 +1520,7 @@
                              <span class="n">ethics_approvals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">references_and_links</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">doi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">generated_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_datasets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a dataset_description.json file for a BIDS dataset.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a dataset_description.json file for a BIDS dataset.</span>
 
 <span class="sd">    The dataset_description.json file is required in BIDS and describes</span>
 <span class="sd">    several general aspects of the dataset. You can use this function</span>
@@ -1695,7 +1695,7 @@
     <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
 
 <span class="sd">    .. warning:: * The original file is simply copied over if the original</span>
 <span class="sd">                   file format is BIDS-supported for that datatype. Otherwise,</span>
@@ -2418,7 +2418,7 @@
 
 
 <div class="viewcode-block" id="get_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks">[docs]</a><span class="k">def</span> <span class="nf">get_anat_landmarks</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get anatomical landmarks in MRI voxel coordinates.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get anatomical landmarks in MRI voxel coordinates.</span>
 
 <span class="sd">    This function transforms the fiducial points from &quot;head&quot; to MRI &quot;voxel&quot;</span>
 <span class="sd">    coordinate space. The landmarks obtained are defined w.r.t. the MRI passed</span>
@@ -2492,7 +2492,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_t1w_mgh</span><span class="p">(</span><span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the T1w image in MGH format.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the T1w image in MGH format.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 
     <span class="n">fs_subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -2500,7 +2500,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">t1_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Freesurfer recon-all subject folder &#39;</span>
                          <span class="s1">&#39;is incorrect or improperly formatted, &#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;got </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                         <span class="sa">f</span><span class="s1">&#39;got </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fs_subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">t1w_img</span> <span class="o">=</span> <span class="n">_load_image</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t1_fname</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;T1.mgz&#39;</span><span class="p">)</span>
     <span class="n">t1w_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">t1w_img</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1w_img</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">t1w_mgh</span>
@@ -2545,7 +2545,7 @@
 <div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
 
 <span class="sd">    Given an MRI scan, format and store the MR data according to BIDS in the</span>
 <span class="sd">    correct location inside the specified :class:`mne_bids.BIDSPath`. If a</span>
@@ -2690,7 +2690,7 @@
 <div class="viewcode-block" id="mark_channels"><a class="viewcode-back" href="../../generated/mne_bids.mark_channels.html#mne_bids.mark_channels">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Update status and description of channels in an existing BIDS dataset.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update status and description of channels in an existing BIDS dataset.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -2811,7 +2811,7 @@
 
 <div class="viewcode-block" id="write_meg_calibration"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -2869,7 +2869,7 @@
 
 <div class="viewcode-block" id="write_meg_crosstalk"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_crosstalk.html#mne_bids.write_meg_crosstalk">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_meg_crosstalk</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN crosstalk information to disk.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN crosstalk information to disk.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -2916,7 +2916,7 @@
     <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span>
     <span class="n">show_progress_thresh</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Try to find a suitable &quot;daysback&quot; for anonymization.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to find a suitable &quot;daysback&quot; for anonymization.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -3007,7 +3007,7 @@
 <span class="k">def</span> <span class="nf">anonymize_dataset</span><span class="p">(</span><span class="n">bids_root_in</span><span class="p">,</span> <span class="n">bids_root_out</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
                       <span class="n">subject_mapping</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">datatypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Anonymize a BIDS dataset.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Anonymize a BIDS dataset.</span>
 
 <span class="sd">    This function creates a copy of a BIDS dataset, and tries to remove all</span>
 <span class="sd">    personally identifiable information from the copy.</span>
@@ -3215,7 +3215,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;Shifting recording dates by </span><span class="si">{</span><span class="n">daysback</span><span class="si">}</span><span class="s1"> days &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">daysback</span> <span class="o">/</span> <span class="mi">365</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s1"> years).</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">daysback</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">365</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s1"> years).</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="p">)</span>
     <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;Using the following subject ID anonymization mapping:</span><span class="se">\n\n</span><span class="s1">&#39;</span>
     <span class="k">for</span> <span class="n">orig_sub</span><span class="p">,</span> <span class="n">anon_sub</span> <span class="ow">in</span> <span class="n">subject_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -3438,7 +3438,7 @@
     
 <p class="copyright">
 
-    &copy; Copyright 2017-2022, MNE Developers. Last updated on 2022-12-27.<br>
+    &copy; Copyright 2017-2023, MNE Developers. Last updated on 2023-01-02.<br>
 
 </p>
 
