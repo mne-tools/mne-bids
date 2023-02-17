@@ -1,7 +1,7 @@
 numpy>=1.18.1
 scipy>=1.5.0
 mne>=1.2
-matplotlib>=3.1
+matplotlib<3.7
 pandas>=1.0.0
 nibabel>=2.5
 pybv>=0.7.5
