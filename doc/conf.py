@@ -139,6 +139,7 @@ html_theme_options = {
     'navigation_with_keys': False,
     'show_toc_level': 1,
     'navbar_end': ['version-switcher', 'navbar-icon-links'],
+    'analytics': dict(google_analytics_id='G-C8SH9E98QC'),
 }
 
 html_context = {
