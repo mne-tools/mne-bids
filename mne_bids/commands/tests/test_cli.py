@@ -67,7 +67,7 @@ def test_raw_to_bids(tmp_path):
     # Should work
     with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw',
                      raw_fname, '--bids_root', output_path,
-                     '--line_freq', 60)):
+                     '--line_freq', "60")):
         mne_bids_raw_to_bids.run()
 
     # Test line_freq == 'None'
@@ -81,7 +81,7 @@ def test_raw_to_bids(tmp_path):
     edf_fname = op.join(edf_data_path, 'test.edf')
     with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw',
                      edf_fname, '--bids_root', output_path,
-                     '--line_freq', 60)):
+                     '--overwrite', "false", '--line_freq', 60)):
         mne_bids_raw_to_bids.run()
 
     # Too few input args
