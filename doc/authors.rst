@@ -40,3 +40,4 @@
 .. _Bruno Hebling Vieira: https://bhvieira.github.io/
 .. _Daniel McCloy: http://dan.mccloy.info
 .. _Moritz Gerster: http://moritz-gerster.com
+.. _Laetitia Fesselier: https://github.com/laemtl
