@@ -533,18 +533,19 @@ def copyfile_eeglab(src, dest):
     # structure and potentially breaks re-reading of the file
     uint16_codec = None
     eeg = loadmat(file_name=src, simplify_cells=False,
-                  appendmat=False, uint16_codec=uint16_codec)
+                  appendmat=False, uint16_codec=uint16_codec, mat_dtype=True)
     oldstyle = False
     if 'EEG' in eeg:
         eeg = eeg['EEG']
         oldstyle = True
 
+    has_fdt_link = False
     try:
         # If the data field is a string, it points to a .fdt file in src dir
         if isinstance(eeg['data'][0, 0][0], str):
             has_fdt_link = True
     except IndexError:
-        has_fdt_link = False
+        pass
 
     if has_fdt_link:
         fdt_fname = eeg['data'][0, 0][0]
@@ -563,15 +564,6 @@ def copyfile_eeglab(src, dest):
         new_value = np.empty((1, 1), dtype=object)
         new_value[0, 0] = np.atleast_1d(np.array(tail))
         eeg['data'] = new_value
-
-        # Make sure all values are saved as float
-        # (see https://github.com/mne-tools/mne-bids/issues/1122)
-        eeg['nbchan'] = float(eeg['nbchan'])
-        eeg['pnts'] = float(eeg['pnts'])
-        eeg['trials'] = float(eeg['trials'])
-        eeg['srate'] = float(eeg['srate'])
-        eeg['xmin'] = float(eeg['xmin'])
-        eeg['xmax'] = float(eeg['xmax'])
 
         # Save the EEG dictionary as a Matlab struct again
         mdict = dict(EEG=eeg) if oldstyle else eeg
