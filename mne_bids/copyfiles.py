@@ -564,6 +564,15 @@ def copyfile_eeglab(src, dest):
         new_value[0, 0] = np.atleast_1d(np.array(tail))
         eeg['data'] = new_value
 
+        # Make sure all values are saved as float
+        # (see https://github.com/mne-tools/mne-bids/issues/1122)
+        eeg['nbchan'] = float(eeg['nbchan'])
+        eeg['pnts'] = float(eeg['pnts'])
+        eeg['trials'] = float(eeg['trials'])
+        eeg['srate'] = float(eeg['srate'])
+        eeg['xmin'] = float(eeg['xmin'])
+        eeg['xmax'] = float(eeg['xmax'])
+
         # Save the EEG dictionary as a Matlab struct again
         mdict = dict(EEG=eeg) if oldstyle else eeg
         savemat(file_name=dest, mdict=mdict, appendmat=False)
