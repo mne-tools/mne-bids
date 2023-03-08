@@ -52,6 +52,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - Amending a dataset now works in cases where the newly-written data contains additional participant properties (new columns in ``participants.tsv``) not found in the existing dataset, by `Richard Höchenberger`_ (:gh:`1113`)
+- Fix ``raw_to_bids`` CLI tool to properly recognize boolean and numeric values for the ``line_freq`` and ``overwrite`` parameters, by `Stefan Appelhoff`_ (:gh:`1125`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
