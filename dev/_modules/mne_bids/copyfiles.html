@@ -1005,18 +1005,19 @@ document.write(`
     <span class="c1"># structure and potentially breaks re-reading of the file</span>
     <span class="n">uint16_codec</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">eeg</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">file_name</span><span class="o">=</span><span class="n">src</span><span class="p">,</span> <span class="n">simplify_cells</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                  <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">uint16_codec</span><span class="o">=</span><span class="n">uint16_codec</span><span class="p">)</span>
+                  <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">uint16_codec</span><span class="o">=</span><span class="n">uint16_codec</span><span class="p">,</span> <span class="n">mat_dtype</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">oldstyle</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="s1">&#39;EEG&#39;</span> <span class="ow">in</span> <span class="n">eeg</span><span class="p">:</span>
         <span class="n">eeg</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
         <span class="n">oldstyle</span> <span class="o">=</span> <span class="kc">True</span>
 
+    <span class="n">has_fdt_link</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># If the data field is a string, it points to a .fdt file in src dir</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">has_fdt_link</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="n">has_fdt_link</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">pass</span>
 
     <span class="k">if</span> <span class="n">has_fdt_link</span><span class="p">:</span>
         <span class="n">fdt_fname</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -1111,7 +1112,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-06.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-08.
       <br/>
     
   </p>

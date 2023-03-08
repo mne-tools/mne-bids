@@ -519,6 +519,7 @@ document.write(`
 <h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Amending a dataset now works in cases where the newly-written data contains additional participant properties (new columns in <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code>) not found in the existing dataset, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1113">#1113</a>)</p></li>
+<li><p>Fixes <a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-func docutils literal notranslate"><span class="pre">copyfile_eeglab()</span></code></a> to prevent data type conversion leading to an <code class="docutils literal notranslate"><span class="pre">eeg_checkset</span></code> failure when trying to load the file in EEGLAB, by <a class="reference external" href="https://github.com/laemtl">Laetitia Fesselier</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1122">#1122</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -606,7 +607,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-06.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-08.
       <br/>
     
   </p>
