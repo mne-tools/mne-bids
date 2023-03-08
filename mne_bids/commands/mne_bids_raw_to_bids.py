@@ -89,8 +89,7 @@ def run():
         truthy = [1, "True", "true"]
         falsy = [0, "False", "false"]
         bool_mapping = dict(
-            chain(zip(truthy, repeat(True)), zip(falsy, repeat(False)))
-            )
+            chain(zip(truthy, repeat(True)), zip(falsy, repeat(False))))
         opt.overwrite = bool(bool_mapping[opt.overwrite])
 
     write_raw_bids(raw, bids_path, event_id=opt.event_id,
