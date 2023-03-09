@@ -155,6 +155,9 @@ authors:
       family-names: Gerster
       affiliation: 'Max Planck Institute for Human Cognitive and Brain Sciences, Leipzig, Germany'
       orcid: 'https://orcid.org/0000-0001-9343-6986'
+    - given-names: Fesselier
+      family-names: Laetitia
+      affiliation: 'McGill Centre for Integrative Neuroscience, McGill University, Montreal, Canada'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
