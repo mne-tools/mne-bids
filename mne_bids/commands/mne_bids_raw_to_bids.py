@@ -8,6 +8,8 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
+from itertools import chain, repeat
+
 import mne_bids
 from mne_bids import write_raw_bids, BIDSPath
 from mne_bids.read import _read_raw
@@ -80,8 +82,15 @@ def run():
                     hsp=opt.hsp, config_path=opt.config,
                     allow_maxshield=allow_maxshield)
     if opt.line_freq is not None:
-        line_freq = None if opt.line_freq == "None" else opt.line_freq
+        line_freq = None if opt.line_freq == "None" else float(opt.line_freq)
         raw.info['line_freq'] = line_freq
+
+    if opt.overwrite is not None:
+        truthy = [1, "True", "true"]
+        falsy = [0, "False", "false"]
+        bool_mapping = dict(
+            chain(zip(truthy, repeat(True)), zip(falsy, repeat(False))))
+        opt.overwrite = bool_mapping[opt.overwrite]
 
     write_raw_bids(raw, bids_path, event_id=opt.event_id,
                    events=opt.events, overwrite=opt.overwrite,
