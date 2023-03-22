@@ -466,7 +466,7 @@ def _import_nibabel(why='work with MRI data'):
             f'nibabel is required to {why} but could not be imported, '
             f'got: {exc}') from None
     else:
-        return True
+        return nibabel
 
 
 def warn(message, category=RuntimeWarning, module='mne_bids',
