@@ -493,6 +493,7 @@ document.write(`
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a></p></li>
+<li><p><a class="reference external" href="https://github.com/larsoner">Eric Larson</a></p></li>
 </ul>
 </section>
 <section id="detailed-list-of-changes">
@@ -521,6 +522,7 @@ document.write(`
 <li><p>Amending a dataset now works in cases where the newly-written data contains additional participant properties (new columns in <code class="docutils literal notranslate"><span class="pre">participants.tsv</span></code>) not found in the existing dataset, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1113">#1113</a>)</p></li>
 <li><p>Fix <code class="docutils literal notranslate"><span class="pre">raw_to_bids</span></code> CLI tool to properly recognize boolean and numeric values for the <code class="docutils literal notranslate"><span class="pre">line_freq</span></code> and <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> parameters, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1125">#1125</a>)</p></li>
 <li><p>Fix <a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-func docutils literal notranslate"><span class="pre">copyfile_eeglab()</span></code></a> to prevent data type conversion leading to an <code class="docutils literal notranslate"><span class="pre">eeg_checkset</span></code> failure when trying to load the file in EEGLAB, by <a class="reference external" href="https://github.com/laemtl">Laetitia Fesselier</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1122">#1122</a>)</p></li>
+<li><p>Improve compatibility with latest MNE-Python, by <a class="reference external" href="https://github.com/larsoner">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1128">#1128</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -608,7 +610,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-09.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-22.
       <br/>
     
   </p>

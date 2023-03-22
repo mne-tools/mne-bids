@@ -502,7 +502,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_unit2human</span><span class="p">,</span> <span class="n">_get_meg_system</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.chpi</span> <span class="kn">import</span> <span class="n">get_chpi_info</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Bunch</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">check_version</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">Bunch</span><span class="p">,</span>
                        <span class="n">_validate_type</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span>
                        <span class="n">ProgressBar</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">mne.preprocessing</span>
@@ -512,7 +512,8 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_write_text</span><span class="p">,</span>
                             <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span>
-                            <span class="n">_stamp_to_dt</span><span class="p">,</span> <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+                            <span class="n">_stamp_to_dt</span><span class="p">,</span> <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span>
+                            <span class="n">_import_nibabel</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">get_anonymization_daysback</span><span class="p">,</span>
                       <span class="n">get_bids_path_from_fname</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span>
@@ -1075,9 +1076,7 @@ document.write(`
 
 
 <span class="k">def</span> <span class="nf">_load_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;image&#39;</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nib</span><span class="o">.</span><span class="n">all_image_classes</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">image</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
@@ -1401,9 +1400,7 @@ document.write(`
 
 
 <span class="k">def</span> <span class="nf">_deface</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s1">&#39;deface MRIs&#39;</span><span class="p">)</span>
 
     <span class="n">inset</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">15.</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">deface</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -2500,9 +2497,7 @@ document.write(`
 <span class="sd">    landmarks : mne.channels.DigMontage</span>
 <span class="sd">        A montage with the landmarks in MRI voxel space.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s1">&#39;get anatomical landmarks&#39;</span><span class="p">)</span>
     <span class="n">coords_dict</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">!=</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_HEAD</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Fiducial coordinates in `info` must be in &#39;</span>
@@ -2656,9 +2651,7 @@ document.write(`
 <span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        Path to the written MRI data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s1">&#39;write anatomical MRI data&#39;</span><span class="p">)</span>
 
     <span class="n">write_sidecar</span> <span class="o">=</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
@@ -3466,7 +3459,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-09.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-22.
       <br/>
     
   </p>

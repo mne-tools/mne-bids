@@ -930,6 +930,17 @@ document.write(`
             <span class="s1">&#39;the raw object.&#39;</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_import_nibabel</span><span class="p">(</span><span class="n">why</span><span class="o">=</span><span class="s1">&#39;work with MRI data&#39;</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">nibabel</span>  <span class="c1"># noqa</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">exc</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;nibabel is required to </span><span class="si">{</span><span class="n">why</span><span class="si">}</span><span class="s1"> but could not be imported, &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;got: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nibabel</span>
+
+
 <span class="k">def</span> <span class="nf">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne_bids&#39;</span><span class="p">,</span>
          <span class="n">ignore_namespaces</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;mne_bids&#39;</span><span class="p">)):</span>  <span class="c1"># noqa: D103</span>
     <span class="n">_warn</span><span class="p">(</span>
@@ -980,7 +991,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-09.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-22.
       <br/>
     
   </p>

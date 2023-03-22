@@ -487,7 +487,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span>
-                       <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">)</span>
+                       <span class="n">get_subjects_dir</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">_picks_to_idx</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_SPACES</span><span class="p">,</span> <span class="n">BIDS_COORDINATE_UNITS</span><span class="p">,</span>
@@ -497,7 +497,7 @@ document.write(`
                              <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_scale_coord_to_meters</span><span class="p">,</span> <span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span>
-                            <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span><span class="p">)</span>
+                            <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">_import_nibabel</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
 
 <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span>
@@ -1139,9 +1139,7 @@ document.write(`
 <span class="sd">    %(subjects_dir)s</span>
 <span class="sd">    %(verbose)s</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s1">&#39;converting a montage to RAS&#39;</span><span class="p">)</span>
 
     <span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">T1_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;T1.mgz&#39;</span><span class="p">)</span>
@@ -1184,9 +1182,7 @@ document.write(`
 <span class="sd">        The transformation matrix from ``&#39;ras&#39;`` (``scanner RAS``) to</span>
 <span class="sd">        ``&#39;mri&#39;`` (``surface RAS``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s1">&#39;converting a montage to MRI&#39;</span><span class="p">)</span>
 
     <span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">T1_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;T1.mgz&#39;</span><span class="p">)</span>
@@ -1247,7 +1243,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-09.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-22.
       <br/>
     
   </p>
