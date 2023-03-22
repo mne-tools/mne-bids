@@ -458,6 +458,17 @@ def _check_datatype(raw, datatype):
             'the raw object.')
 
 
+def _import_nibabel(why='work with MRI data'):
+    try:
+        import nibabel  # noqa
+    except ImportError as exc:
+        raise exc.__class__(
+            f'nibabel is required to {why} but could not be imported, '
+            f'got: {exc}') from None
+    else:
+        return True
+
+
 def warn(message, category=RuntimeWarning, module='mne_bids',
          ignore_namespaces=('mne', 'mne_bids')):  # noqa: D103
     _warn(

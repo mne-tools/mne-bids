@@ -18,7 +18,7 @@ import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
 from mne.io.pick import pick_channels_regexp
-from mne.utils import has_nibabel, logger, get_subjects_dir
+from mne.utils import logger, get_subjects_dir
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -27,7 +27,7 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS,
                              ANNOTATIONS_TO_KEEP,
                              reader, _map_options)
-from mne_bids.utils import _get_ch_type_mapping, verbose, warn
+from mne_bids.utils import _get_ch_type_mapping, verbose, warn, _import_nibabel
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype, get_bids_path_from_fname)
 
@@ -900,9 +900,7 @@ def get_head_mri_trans(bids_path, extra_params=None, t1_bids_path=None,
     trans : mne.transforms.Transform
         The data transformation matrix from head to MRI coordinates.
     """
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
+    nib = _import_nibabel('get a head to MRI transform')
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
