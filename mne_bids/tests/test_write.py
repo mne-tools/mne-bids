@@ -30,7 +30,7 @@ from numpy.testing import (assert_allclose, assert_array_equal,
 
 import mne
 from mne.datasets import testing
-from mne.utils import check_version, requires_nibabel, requires_version
+from mne.utils import check_version, requires_version
 from mne.io import anonymize_info
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
@@ -1983,12 +1983,11 @@ def test_get_anat_landmarks():
         mri_voxel_landmarks, landmarks, decimal=5)
 
 
-@requires_nibabel()
 @testing.requires_testing_data
 def test_write_anat(_bids_validate, tmp_path):
     """Test writing anatomical data."""
+    nib = pytest.importorskip('nibabel')
     # Get the MNE testing sample data
-    import nibabel as nib
     bids_root = tmp_path / 'bids1'
 
     # Get the T1 weighted MRI data file
@@ -2199,10 +2198,10 @@ def test_write_raw_no_dig(tmp_path):
     assert bids_path_.extension == '.fif'
 
 
-@requires_nibabel()
 @testing.requires_testing_data
 def test_write_anat_pathlike(tmp_path):
     """Test writing anatomical data with pathlib.Paths."""
+    pytest.importorskip('nibabel')
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
@@ -3521,10 +3520,10 @@ def test_write_raw_special_paths(tmp_path, dir_name):
     write_raw_bids(raw=raw, bids_path=bids_path)
 
 
-@requires_nibabel()
 @testing.requires_testing_data
 def test_anonymize_dataset(_bids_validate, tmpdir):
     """Test creating an anonymized copy of a dataset."""
+    pytest.importorskip('nibabel')
     # Create a non-anonymized dataset
     bids_root = tmpdir / 'bids'
     bids_path = _bids_path.copy().update(

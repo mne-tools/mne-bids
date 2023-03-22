@@ -20,7 +20,7 @@ from pkg_resources import parse_version
 import mne
 from mne.datasets import testing
 from mne.io.constants import FIFF
-from mne.utils import requires_nibabel, object_diff, requires_version
+from mne.utils import object_diff, requires_version
 from mne.utils import assert_dig_allclose, check_version
 
 from mne_bids import BIDSPath
@@ -209,12 +209,11 @@ def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
     assert raw.info['subject_info']['sex'] is sex_mne
 
 
-@requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @testing.requires_testing_data
 def test_get_head_mri_trans(tmp_path):
     """Test getting a trans object from BIDS data."""
-    import nibabel as nib
+    nib = pytest.importorskip('nibabel')
 
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
@@ -1009,13 +1008,12 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
             assert ch['ch_name'] not in raw.info['bads']
 
 
-@requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 @pytest.mark.parametrize('fname', ['testdata_ctf.ds', 'catch-alp-good-f.ds'])
 @testing.requires_testing_data
 def test_get_head_mri_trans_ctf(fname, tmp_path):
     """Test getting a trans object from BIDS data in CTF."""
-    import nibabel as nib
+    nib = pytest.importorskip('nibabel')
 
     ctf_data_path = op.join(data_path, 'CTF')
     raw_ctf_fname = op.join(ctf_data_path, fname)
