@@ -30,7 +30,7 @@ from mne.io.pick import channel_type, _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import (_unit2human, _get_meg_system)
 from mne.chpi import get_chpi_info
-from mne.utils import (check_version, has_nibabel, logger, Bunch,
+from mne.utils import (check_version, logger, Bunch,
                        _validate_type, get_subjects_dir, verbose,
                        ProgressBar)
 import mne.preprocessing
@@ -40,7 +40,8 @@ from mne_bids.dig import _write_dig_bids, _write_coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _get_ch_type_mapping, _check_anonymize,
-                            _stamp_to_dt, _handle_datatype, warn)
+                            _stamp_to_dt, _handle_datatype, warn,
+                            _import_nibabel)
 from mne_bids import (BIDSPath, read_raw_bids, get_anonymization_daysback,
                       get_bids_path_from_fname)
 from mne_bids.path import _parse_ext, _mkdir_p, _path_to_str
@@ -603,9 +604,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
 
 
 def _load_image(image, name='image'):
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
+    nib = _import_nibabel()
     if type(image) not in nib.all_image_classes:
         try:
             image = _path_to_str(image)
@@ -929,9 +928,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
 
 
 def _deface(image, landmarks, deface):
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
+    nib = _import_nibabel('deface MRIs')
 
     inset, theta = (5, 15.)
     if isinstance(deface, dict):
@@ -2028,9 +2025,7 @@ def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
     landmarks : mne.channels.DigMontage
         A montage with the landmarks in MRI voxel space.
     """
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
+    nib = _import_nibabel('get anatomical landmarks')
     coords_dict, coord_frame = _get_fid_coords(info['dig'])
     if coord_frame != FIFF.FIFFV_COORD_HEAD:
         raise ValueError('Fiducial coordinates in `info` must be in '
@@ -2184,9 +2179,7 @@ def write_anat(image, bids_path, landmarks=None, deface=False, overwrite=False,
     bids_path : BIDSPath
         Path to the written MRI data.
     """
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
+    nib = _import_nibabel('write anatomical MRI data')
 
     write_sidecar = landmarks is not None
 

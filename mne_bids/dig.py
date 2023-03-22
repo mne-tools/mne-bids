@@ -15,7 +15,7 @@ import mne
 import numpy as np
 from mne.io.constants import FIFF
 from mne.utils import (logger, _validate_type, _check_option,
-                       has_nibabel, get_subjects_dir)
+                       get_subjects_dir)
 from mne.io.pick import _picks_to_idx
 
 from mne_bids.config import (ALLOWED_SPACES, BIDS_COORDINATE_UNITS,
@@ -25,7 +25,7 @@ from mne_bids.config import (ALLOWED_SPACES, BIDS_COORDINATE_UNITS,
                              BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_scale_coord_to_meters, _write_json, _write_tsv,
-                            verbose, warn)
+                            verbose, warn, _import_nibabel)
 from mne_bids.path import BIDSPath
 
 data_dir = Path(__file__).parent / 'data'
@@ -667,9 +667,7 @@ def convert_montage_to_ras(montage, subject, subjects_dir=None, verbose=None):
     %(subjects_dir)s
     %(verbose)s
     """
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
+    nib = _import_nibabel('converting a montage to RAS')
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
     T1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
@@ -712,9 +710,7 @@ def convert_montage_to_mri(montage, subject, subjects_dir=None, verbose=None):
         The transformation matrix from ``'ras'`` (``scanner RAS``) to
         ``'mri'`` (``surface RAS``).
     """
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
+    nib = _import_nibabel('converting a montage to MRI')
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
     T1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
