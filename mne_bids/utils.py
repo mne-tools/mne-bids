@@ -132,17 +132,21 @@ def _handle_datatype(raw, datatype):
             datatypes.append('meg')
         if 'eeg' in raw:
             datatypes.append('eeg')
+        if 'emg' in raw:
+            datatypes.append('emg')
         if 'fnirs_cw_amplitude' in raw:
             datatypes.append('nirs')
         if len(datatypes) == 0:
-            raise ValueError('No MEG, EEG or iEEG channels found in data. '
-                             'Please use raw.set_channel_types to set the '
+            raise ValueError('No MEG, EEG, iEEG or EMG channels found in data.'
+                             ' Please use raw.set_channel_types to set the '
                              'channel types in the data.')
         elif len(datatypes) > 1:
             if 'meg' in datatypes and 'ieeg' not in datatypes:
                 datatype = 'meg'
             elif 'ieeg' in datatypes and 'meg' not in datatypes:
                 datatype = 'ieeg'
+            elif 'emg' in datatypes:
+                datatype = 'emg'
             else:
                 raise ValueError(f'Multiple data types (``{datatypes}``) were '
                                  'found in the data. Please specify the '

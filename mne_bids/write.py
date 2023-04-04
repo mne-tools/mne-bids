@@ -883,6 +883,13 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         ('EEGPlacementScheme', _infer_eeg_placement_scheme(raw)),
         ('Manufacturer', manufacturer)]
 
+    ch_info_json_emg = [
+        # ('EEGReference', 'n/a'),
+        # ('EEGGround', 'n/a'),
+        # ('EEGPlacementScheme', _infer_eeg_placement_scheme(raw)),
+        # ('Manufacturer', manufacturer)
+    ]
+
     ch_info_json_ieeg = [
         ('iEEGReference', 'n/a'),
         ('ECOGChannelCount', n_ecogchan),
@@ -912,6 +919,8 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype,
         append_datatype_json = ch_info_json_meg
     elif datatype == 'eeg':
         append_datatype_json = ch_info_json_eeg
+    elif datatype == 'emg':
+        append_datatype_json = ch_info_json_emg
     elif datatype == 'ieeg':
         append_datatype_json = ch_info_json_ieeg
     elif datatype == 'nirs':

@@ -9,7 +9,7 @@ PYBV_VERSION = "0.7.3"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-EPHY_ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg', 'nirs']
+EPHY_ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg', 'nirs', 'emg']
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ['anat', 'beh']
 
@@ -110,6 +110,9 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.set',  # EEGLAB, potentially accompanied by .fdt
                           ]
 
+allowed_extensions_emg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
+                          ]
+
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.edf',  # European Data Format
                            '.set',  # EEGLAB, potentially accompanied by .fdt
@@ -124,6 +127,7 @@ allowed_extensions_nirs = ['.snirf',  # SNIRF
 ALLOWED_DATATYPE_EXTENSIONS = {
     'meg': allowed_extensions_meg,
     'eeg': allowed_extensions_eeg,
+    'emg': allowed_extensions_emg,
     'ieeg': allowed_extensions_ieeg,
     'nirs': allowed_extensions_nirs
 }
@@ -140,7 +144,7 @@ ALLOWED_INPUT_EXTENSIONS = \
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
     'meg', 'markers', 'eeg', 'ieeg', 'T1w', 'FLASH',  # datatype
-    'participants', 'scans',
+    'emg', 'participants', 'scans',
     'electrodes', 'optodes', 'channels', 'coordsystem', 'events',  # sidecars
     'headshape', 'digitizer',  # meg-specific sidecars
     'beh', 'physio', 'stim',  # behavioral
@@ -150,7 +154,7 @@ ALLOWED_FILENAME_SUFFIX = [
 # converts suffix to known path modalities
 SUFFIX_TO_DATATYPE = {
     'meg': 'meg', 'headshape': 'meg', 'digitizer': 'meg', 'markers': 'meg',
-    'eeg': 'eeg', 'ieeg': 'ieeg',
+    'eeg': 'eeg', 'ieeg': 'ieeg', 'emg': 'emg',
     'T1w': 'anat', 'FLASH': 'anat'
 }
 
@@ -415,7 +419,10 @@ REFERENCES = {'mne-bids':
               'to human intracranial electrophysiology. Scientific Data, '
               '6, 102. https://doi.org/10.1038/s41597-019-0105-7',
               'nirs':
-              'In preperation'}
+              'In preparation',
+              'emg':
+              'In preparation'
+            }
 
 
 # Mapping subject information between MNE-BIDS and MNE-Python.
