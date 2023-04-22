@@ -911,9 +911,9 @@ class BIDSPath(object):
                              'to set the root of the BIDS folder to read.')
 
         # needed to deal with inheritance principle
-        sidecar_fname = \
-            self.copy().update(datatype=None).find_matching_sidecar(
-                extension='.json')
+        sidecar_fname = self.copy().update(
+            datatype=None, suffix='meg'
+        ).find_matching_sidecar(extension='.json')
         with open(sidecar_fname, 'r', encoding='utf-8') as f:
             sidecar_json = json.load(f)
 
