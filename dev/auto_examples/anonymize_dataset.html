@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -38,8 +38,8 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -616,7 +616,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 31618 days (86.6 years).
+Shifting recording dates by 34587 days (94.8 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-1
@@ -624,10 +624,10 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/5 [00:00&lt;?,       ?it/s]
- 20%|##        | Anonymizing : 1/5 [00:00&lt;00:01,    3.46it/s]
- 40%|####      | Anonymizing : 2/5 [00:02&lt;00:03,    1.23s/it]
- 60%|######    | Anonymizing : 3/5 [00:03&lt;00:02,    1.04s/it]
-100%|##########| Anonymizing : 5/5 [00:03&lt;00:00,    1.61it/s]
+ 20%|##        | Anonymizing : 1/5 [00:00&lt;00:01,    3.43it/s]
+ 40%|####      | Anonymizing : 2/5 [00:02&lt;00:03,    1.25s/it]
+ 60%|######    | Anonymizing : 3/5 [00:03&lt;00:02,    1.08s/it]
+100%|##########| Anonymizing : 5/5 [00:03&lt;00:00,    1.56it/s]
 </pre></div>
 </div>
 <p>That’s it! Let’s have a look at directory structure of the anonymized
@@ -654,12 +654,12 @@ dataset.</p>
 |--------- sub-1_task-audiovisual_meg.fif
 |--------- sub-1_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19160513/
-|--------- sub-emptyroom_ses-19160513_scans.tsv
+|------ ses-19080327/
+|--------- sub-emptyroom_ses-19080327_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19160513_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19160513_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19160513_task-noise_meg.json
+|------------ sub-emptyroom_ses-19080327_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19080327_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19080327_task-noise_meg.json
 </pre></div>
 </div>
 <p>You can see that the subject ID was changed to a number (in this case, the
@@ -697,8 +697,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/1 [00:00&lt;?,       ?it/s]
-100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.12s/it]
-100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.12s/it]
+100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.17s/it]
+100%|##########| Anonymizing : 1/1 [00:02&lt;00:00,    2.17s/it]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -740,9 +740,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.25it/s]
- 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:01,    2.00it/s]
-100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.01it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.43it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.90it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.82it/s]
 |sub-emptyroom/
 |--- ses-20021126/
 |------ sub-emptyroom_ses-20021126_scans.tsv
@@ -783,7 +783,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 36054 days (98.8 years).
+Shifting recording dates by 35832 days (98.2 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-anonymous
@@ -791,9 +791,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.32it/s]
- 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:00,    2.02it/s]
-100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.05it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.57it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.92it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.86it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -810,12 +810,12 @@ Using the following subject ID anonymization mapping:
 |--------- sub-anonymous_task-audiovisual_meg.fif
 |--------- sub-anonymous_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19040321/
-|--------- sub-emptyroom_ses-19040321_scans.tsv
+|------ ses-19041029/
+|--------- sub-emptyroom_ses-19041029_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19040321_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19040321_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19040321_task-noise_meg.json
+|------------ sub-emptyroom_ses-19041029_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19041029_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19041029_task-noise_meg.json
 </pre></div>
 </div>
 </section>
@@ -872,9 +872,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.67it/s]
- 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:00,    2.07it/s]
-100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.15it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.47it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.91it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.83it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -916,9 +916,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.57it/s]
- 50%|#####     | Anonymizing : 2/4 [00:00&lt;00:00,    2.07it/s]
-100%|##########| Anonymizing : 4/4 [00:00&lt;00:00,    4.16it/s]
+ 25%|##5       | Anonymizing : 1/4 [00:00&lt;00:00,    3.31it/s]
+ 50%|#####     | Anonymizing : 2/4 [00:01&lt;00:01,    1.89it/s]
+100%|##########| Anonymizing : 4/4 [00:01&lt;00:00,    3.79it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -943,7 +943,7 @@ Using the following subject ID anonymization mapping:
 |------------ sub-emptyroom_ses-19221211_task-noise_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.784 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.286 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/anonymize_dataset.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -965,7 +965,10 @@ Using the following subject ID anonymization mapping:
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="update_bids_datasets.html"
@@ -985,7 +988,10 @@ Using the following subject ID anonymization mapping:
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1013,7 +1019,7 @@ Using the following subject ID anonymization mapping:
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1021,8 +1027,8 @@ Using the following subject ID anonymization mapping:
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1032,7 +1038,7 @@ Using the following subject ID anonymization mapping:
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-03-22.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-04-24.
       <br/>
     
   </p>
@@ -1040,7 +1046,7 @@ Using the following subject ID anonymization mapping:
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1051,7 +1057,7 @@ Using the following subject ID anonymization mapping:
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>
