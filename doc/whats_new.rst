@@ -42,7 +42,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- ...
+- We silenced warnings about missing ``events.tsv`` files when reading empty-room or resting-state data, by `Richard Höchenberger`_ (:gh:`1133`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
