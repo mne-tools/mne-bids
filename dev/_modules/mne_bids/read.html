@@ -1236,9 +1236,18 @@ document.write(`
 
     <span class="c1"># Try to find an associated events.tsv to get information about the</span>
     <span class="c1"># events in the recorded data</span>
-    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span>
-                                          <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
-                                          <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">&#39;noise&#39;</span><span class="p">)</span> <span class="ow">or</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;rest&#39;</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">on_error</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">on_error</span> <span class="o">=</span> <span class="s1">&#39;warn&#39;</span>
+
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
+    <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
@@ -1566,7 +1575,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-04-24.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-04-25.
       <br/>
     
   </p>
