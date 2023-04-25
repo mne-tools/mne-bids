@@ -43,6 +43,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - When writing events, we now also create an ``*_events.json`` file in addition to ``*_events.tsv``. This ensures compatibility with the upcoming release of BIDS 1.9, by `Richard Höchenberger`_ (:gh:`1132`)
+- We silenced warnings about missing ``events.tsv`` files when reading empty-room or resting-state data, by `Richard Höchenberger`_ (:gh:`1133`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
