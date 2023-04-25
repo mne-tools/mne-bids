@@ -289,6 +289,43 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False):
     _write_tsv(fname, data, overwrite)
 
 
+def _events_json(fname, overwrite=False):
+    """Create participants.json for non-default columns in accompanying TSV.
+
+    Parameters
+    ----------
+    fname : str | mne_bids.BIDSPath
+        Output filename.
+    overwrite : bool
+        Whether to overwrite the output file if it exists.
+    """
+    new_data = {
+        'sample': {
+            'Description': 'The event onset time in number of sampling points.'
+        },
+        'value': {
+            'Description': (
+                'The event code (also known as trigger code or event ID) '
+                'associated with the event.'
+            )
+        },
+        'trial_type': {
+            'Description': 'The type, category, or name of the event.'
+        },
+    }
+
+    # make sure to append any JSON fields added by the user
+    fname = Path(fname)
+    if fname.exists():
+        orig_data = json.loads(
+            fname.read_text(encoding='utf-8'),
+            object_pairs_hook=OrderedDict
+        )
+        new_data = {**orig_data, **new_data}
+
+    _write_json(fname, new_data, overwrite)
+
+
 def _readme(datatype, fname, overwrite=False):
     """Create a README file and save it.
 
@@ -454,7 +491,7 @@ def _participants_json(fname, overwrite=False):
     Parameters
     ----------
     fname : str | mne_bids.BIDSPath
-        Filename to save the scans.tsv to.
+        Output filename.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -462,7 +499,7 @@ def _participants_json(fname, overwrite=False):
         an error will be raised.
 
     """
-    data = {
+    new_data = {
         'participant_id': {
             'Description': 'Unique participant identifier'
         },
@@ -500,15 +537,13 @@ def _participants_json(fname, overwrite=False):
     # if `overwrite` is True
     fname = Path(fname)
     if fname.exists():
-        orig_cols = json.loads(
+        orig_data = json.loads(
             fname.read_text(encoding='utf-8'),
             object_pairs_hook=OrderedDict
         )
-        for key, val in orig_cols.items():
-            if key not in data:
-                data[key] = val
+        new_data = {**orig_data, **new_data}
 
-    _write_json(fname, data, overwrite)
+    _write_json(fname, new_data, overwrite)
 
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
@@ -1763,7 +1798,10 @@ def write_raw_bids(
 
     sidecar_path = bids_path.copy().update(suffix=bids_path.datatype,
                                            extension='.json')
-    events_path = bids_path.copy().update(suffix='events', extension='.tsv')
+    events_tsv_path = bids_path.copy().update(
+        suffix='events', extension='.tsv'
+    )
+    events_json_path = events_tsv_path.copy().update(extension='.json')
     channels_path = bids_path.copy().update(
         suffix='channels', extension='.tsv')
 
@@ -1838,9 +1876,12 @@ def write_raw_bids(
         events_array, event_dur, event_desc_id_map = _read_events(
             events, event_id, raw, bids_path=bids_path)
         if events_array.size != 0:
-            _events_tsv(events=events_array, durations=event_dur, raw=raw,
-                        fname=events_path.fpath, trial_type=event_desc_id_map,
-                        overwrite=overwrite)
+            _events_tsv(
+                events=events_array, durations=event_dur, raw=raw,
+                fname=events_tsv_path.fpath, trial_type=event_desc_id_map,
+                overwrite=overwrite
+            )
+            _events_json(fname=events_json_path.fpath, overwrite=overwrite)
         # Kepp events_array around for BrainVision writing below.
         del event_desc_id_map, events, event_id, event_dur
 

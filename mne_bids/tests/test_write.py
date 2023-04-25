@@ -2647,6 +2647,7 @@ def test_annotations_and_events(_bids_validate, tmp_path, write_events):
         suffix='events',
         extension='.tsv',
     )
+    events_json_fname = events_tsv_fname.copy().update(extension='.json')
 
     events = mne.read_events(events_fname)
     events = events[events[:, 2] != 0]  # drop unknown "0" events
@@ -2699,6 +2700,12 @@ def test_annotations_and_events(_bids_validate, tmp_path, write_events):
 
     if write_events:
         n_events_expected = len(events) + len(raw.annotations)
+        events_json = json.loads(
+            events_json_fname.fpath.read_text(encoding='utf-8')
+        )
+        assert 'value' in events_json
+        assert 'sample' in events_json
+        assert 'trial_type' in events_json
     else:
         n_events_expected = len(raw.annotations)
 
@@ -3752,7 +3759,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
     # Ensure that additional JSON sidecar fields are transferred if they are
     # "safe", and are omitted if they are not whitelisted
     bids_path.datatype = 'meg'
-    meg_json_path = bids_path.copy().update(extension='.json')
+    meg_json_path = bids_path.copy().update(suffix='meg', extension='.json')
     meg_json = json.loads(meg_json_path.fpath.read_text(encoding='utf-8'))
     assert 'Instructions' not in meg_json  # ensure following test makes sense
     meg_json['Instructions'] = 'Foo'
