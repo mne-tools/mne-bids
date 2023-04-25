@@ -761,6 +761,43 @@ document.write(`
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : str | mne_bids.BIDSPath</span>
+<span class="sd">        Output filename.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite the output file if it exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;sample&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;The event onset time in number of sampling points.&#39;</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s1">&#39;The event code (also known as trigger code or event ID) &#39;</span>
+                <span class="s1">&#39;associated with the event.&#39;</span>
+            <span class="p">)</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;trial_type&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;The type, category, or name of the event.&#39;</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="c1"># make sure to append any JSON fields added by the user</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">orig_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+            <span class="n">fname</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
+            <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span>
+        <span class="p">)</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">orig_data</span><span class="p">,</span> <span class="o">**</span><span class="n">new_data</span><span class="p">}</span>
+
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+
+
 <span class="k">def</span> <span class="nf">_readme</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a README file and save it.</span>
 
@@ -926,7 +963,7 @@ document.write(`
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fname : str | mne_bids.BIDSPath</span>
-<span class="sd">        Filename to save the scans.tsv to.</span>
+<span class="sd">        Output filename.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Defaults to False.</span>
 <span class="sd">        Whether to overwrite the existing data in the file.</span>
@@ -934,7 +971,7 @@ document.write(`
 <span class="sd">        an error will be raised.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;participant_id&#39;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="s1">&#39;Unique participant identifier&#39;</span>
         <span class="p">},</span>
@@ -972,15 +1009,13 @@ document.write(`
     <span class="c1"># if `overwrite` is True</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">orig_cols</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+        <span class="n">orig_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
             <span class="n">fname</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">),</span>
             <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span>
         <span class="p">)</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">orig_cols</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">orig_data</span><span class="p">,</span> <span class="o">**</span><span class="n">new_data</span><span class="p">}</span>
 
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">keep_source</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -2235,7 +2270,10 @@ document.write(`
 
     <span class="n">sidecar_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
                                            <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
-    <span class="n">events_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+    <span class="n">events_tsv_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span>
+    <span class="p">)</span>
+    <span class="n">events_json_path</span> <span class="o">=</span> <span class="n">events_tsv_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
     <span class="n">channels_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 
@@ -2310,9 +2348,12 @@ document.write(`
         <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
             <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">events_array</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">event_dur</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
-                        <span class="n">fname</span><span class="o">=</span><span class="n">events_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">trial_type</span><span class="o">=</span><span class="n">event_desc_id_map</span><span class="p">,</span>
-                        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">_events_tsv</span><span class="p">(</span>
+                <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">event_dur</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+                <span class="n">fname</span><span class="o">=</span><span class="n">events_tsv_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">trial_type</span><span class="o">=</span><span class="n">event_desc_id_map</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span>
+            <span class="p">)</span>
+            <span class="n">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">events_json_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
         <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
         <span class="k">del</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_dur</span>
 

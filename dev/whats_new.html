@@ -507,6 +507,7 @@ document.write(`
 <section id="api-and-behavior-changes">
 <h4>🧐 API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Permalink to this heading">#</a></h4>
 <ul class="simple">
+<li><p>When writing events, we now also create an <code class="docutils literal notranslate"><span class="pre">*_events.json</span></code> file in addition to <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. This ensures compatibility with the upcoming release of BIDS 1.9, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1132">#1132</a>)</p></li>
 <li><p>We silenced warnings about missing <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> files when reading empty-room or resting-state data, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1133">#1133</a>)</p></li>
 </ul>
 </section>

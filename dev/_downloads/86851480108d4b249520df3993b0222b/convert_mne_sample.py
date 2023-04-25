@@ -94,6 +94,7 @@ bids_path = BIDSPath(
     session='01',
     task=task,
     run='1',
+    datatype='meg',
     root=output_path
 )
 write_raw_bids(
@@ -110,7 +111,9 @@ write_raw_bids(
 # sidecar files that describe our data is correct.
 
 # Get the sidecar ``.json`` file
-sidecar_json_bids_path = bids_path.copy().update(extension='.json')
+sidecar_json_bids_path = bids_path.copy().update(
+    suffix='meg', extension='.json'
+)
 sidecar_json_content = sidecar_json_bids_path.fpath.read_text(
     encoding='utf-8-sig'
 )
