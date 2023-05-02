@@ -140,7 +140,7 @@ ALLOWED_INPUT_EXTENSIONS = \
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
     'meg', 'markers', 'eeg', 'ieeg', 'T1w', 'FLASH',  # datatype
-    'participants', 'scans',
+    'participants', 'scans', 'sessions',
     'electrodes', 'optodes', 'channels', 'coordsystem', 'events',  # sidecars
     'headshape', 'digitizer',  # meg-specific sidecars
     'beh', 'physio', 'stim',  # behavioral
