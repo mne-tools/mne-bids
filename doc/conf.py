@@ -166,6 +166,7 @@ html_sidebars = {}
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'mne': ('https://mne.tools/dev', None),
+    'mne-gui-addons': ('https://mne.tools/mne-gui-addons', None),
     'numpy': ('https://numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
