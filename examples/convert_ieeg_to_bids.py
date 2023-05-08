@@ -80,9 +80,8 @@ raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 
 # %%
-# When the locations of the channels in this dataset were found
-# in `Locating Intracranial Electrode Contacts
-# <https://mne.tools/dev/auto_tutorials/clinical/10_ieeg_localize.html>`_,
+# When the locations of the channels in this dataset were found in
+# :ref:`tut-ieeg-localize <Locating Intracranial Electrode Contacts>`,
 # the T1 was aligned to ACPC. So, this montage is in an
 # `ACPC-aligned coordinate system
 # <https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems>`_.
