@@ -81,7 +81,7 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 
 # %%
 # When the locations of the channels in this dataset were found in
-# :ref:`tut-ieeg-localize <Locating Intracranial Electrode Contacts>`,
+# :ref:`Locating Intracranial Electrode Contacts <tut-ieeg-localize>`,
 # the T1 was aligned to ACPC. So, this montage is in an
 # `ACPC-aligned coordinate system
 # <https://surfer.nmr.mgh.harvard.edu/fswiki/CoordinateSystems>`_.
