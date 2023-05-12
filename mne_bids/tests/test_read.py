@@ -49,7 +49,7 @@ _bids_path = BIDSPath(
 _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
-data_path = testing.data_path(download=False)
+data_path = testing.data_path(download=True)
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
 
@@ -581,7 +581,7 @@ def test_handle_scans_reading(tmp_path):
 
 
 def test_handle_sessions_reading(tmp_path):
-    """Test reading data from a BIDS sessions.tsv file."""
+    """Test writing, reading and altering data from a BIDS sessions.tsv file."""
     raw = _read_raw_fif(raw_fname)
     suffix = "meg"
 
@@ -594,7 +594,21 @@ def test_handle_sessions_reading(tmp_path):
     bids_path = write_raw_bids(raw, bids_path, overwrite=True)
     raw_01 = read_raw_bids(bids_path)
 
-    # find sidecar sessions.tsv file and alter the
+    # create a sessions.tsv file based on the scans.tsv
+    # The acq_time in sessions.tsv always equals the acq_time of the first recording of that session
+    scans_path = BIDSPath(subject=bids_path.subject,
+                          session=bids_path.session,
+                          root=tmp_path,
+                          suffix='scans', extension='.tsv')
+    scans_tsv = _from_tsv(scans_path)
+    sessions_path = BIDSPath(subject=bids_path.subject,
+                         suffix='sessions', extension='.tsv',
+                         root=tmp_path)
+
+    sessions_tsv = OrderedDict([('session_id', ['ses-01','']), ('acq_time', [scans_tsv['acq_time'][0],''])])
+    _to_tsv(sessions_tsv, sessions_path)
+
+    # find sessions.tsv file and alter the
     # acquisition time to not have the optional microseconds
     sessions_path = BIDSPath(subject=bids_path.subject,
                              root=tmp_path,
@@ -610,12 +624,11 @@ def test_handle_sessions_reading(tmp_path):
 
     # now re-load the data and it should be different
     # from the original date and the same as the newly altered date
-    raw_02 = read_raw_bids(bids_path)
+    sessions_02 = _from_tsv(sessions_path)
     new_acq_time += '.0Z'
     new_acq_time = datetime.strptime(new_acq_time,
                                      '%Y-%m-%dT%H:%M:%S.%fZ')
-    new_acq_time = new_acq_time.replace(tzinfo=timezone.utc)
-    assert raw_02.info['meas_date'] == new_acq_time
+    assert datetime.strptime(sessions_02['acq_time'][0], '%Y-%m-%dT%H:%M:%S') == new_acq_time
     assert new_acq_time != raw_01.info['meas_date']
 
 
