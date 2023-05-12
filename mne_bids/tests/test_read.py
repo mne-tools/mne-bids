@@ -395,7 +395,7 @@ def test_get_head_mri_trans(tmp_path):
     raw = _read_raw_fif(raw_fname)
     deriv_root = tmp_path / 'derivatives' / 'mne-bids-pipeline'
     electrophys_path = (
-            deriv_root / 'sub-01' / 'eeg' / 'sub-01_task-av_proc-filt_raw.fif'
+        deriv_root / 'sub-01' / 'eeg' / 'sub-01_task-av_proc-filt_raw.fif'
     )
     electrophys_path.parent.mkdir(parents=True)
     raw.save(electrophys_path)
@@ -631,7 +631,8 @@ def test_handle_sessions_reading(tmp_path):
     new_acq_time += '.0Z'
     new_acq_time = datetime.strptime(new_acq_time,
                                      '%Y-%m-%dT%H:%M:%S.%fZ')
-    ses2_acq_time = datetime.strptime(sessions_02['acq_time'][0], '%Y-%m-%dT%H:%M:%S')
+    ses2_acq_time = datetime.strptime(sessions_02['acq_time'][0],
+                                      '%Y-%m-%dT%H:%M:%S')
     assert ses2_acq_time == new_acq_time
     assert new_acq_time != raw_01.info['meas_date']
 
@@ -1325,9 +1326,9 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.save(raw_path, overwrite=True)
 
     with pytest.warns(
-            RuntimeWarning,
-            match=f'Cannot set channel type for the following channels, as they '
-                  f'are missing in the raw data: {ch_name_orig}'
+        RuntimeWarning,
+        match=f'Cannot set channel type for the following channels, as they '
+              f'are missing in the raw data: {ch_name_orig}'
     ):
         read_raw_bids(bids_path)
 
