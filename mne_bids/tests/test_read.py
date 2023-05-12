@@ -74,6 +74,7 @@ def _wrap_read_raw(read_raw):
         raw = read_raw(fname, *args, **kwargs)
         raw.info['line_freq'] = 60
         return raw
+
     return fn
 
 
@@ -394,7 +395,7 @@ def test_get_head_mri_trans(tmp_path):
     raw = _read_raw_fif(raw_fname)
     deriv_root = tmp_path / 'derivatives' / 'mne-bids-pipeline'
     electrophys_path = (
-        deriv_root / 'sub-01' / 'eeg' / 'sub-01_task-av_proc-filt_raw.fif'
+            deriv_root / 'sub-01' / 'eeg' / 'sub-01_task-av_proc-filt_raw.fif'
     )
     electrophys_path.parent.mkdir(parents=True)
     raw.save(electrophys_path)
@@ -581,7 +582,7 @@ def test_handle_scans_reading(tmp_path):
 
 
 def test_handle_sessions_reading(tmp_path):
-    """Test writing, reading and altering data from a BIDS sessions.tsv file."""
+    """Test writing/reading and altering data from a BIDS sessions.tsv file."""
     raw = _read_raw_fif(raw_fname)
     suffix = "meg"
 
@@ -595,17 +596,19 @@ def test_handle_sessions_reading(tmp_path):
     raw_01 = read_raw_bids(bids_path)
 
     # create a sessions.tsv file based on the scans.tsv
-    # The acq_time in sessions.tsv always equals the acq_time of the first recording of that session
+    # The acq_time in sessions.tsv always equals
+    # the acq_time of the first recording of that session
     scans_path = BIDSPath(subject=bids_path.subject,
                           session=bids_path.session,
                           root=tmp_path,
                           suffix='scans', extension='.tsv')
     scans_tsv = _from_tsv(scans_path)
     sessions_path = BIDSPath(subject=bids_path.subject,
-                         suffix='sessions', extension='.tsv',
-                         root=tmp_path)
+                             root=tmp_path,
+                             suffix='sessions', extension='.tsv')
 
-    sessions_tsv = OrderedDict([('session_id', ['ses-01','']), ('acq_time', [scans_tsv['acq_time'][0],''])])
+    sessions_tsv = OrderedDict([('session_id', ['ses-01', '']),
+                                ('acq_time', [scans_tsv['acq_time'][0], ''])])
     _to_tsv(sessions_tsv, sessions_path)
 
     # find sessions.tsv file and alter the
@@ -628,7 +631,8 @@ def test_handle_sessions_reading(tmp_path):
     new_acq_time += '.0Z'
     new_acq_time = datetime.strptime(new_acq_time,
                                      '%Y-%m-%dT%H:%M:%S.%fZ')
-    assert datetime.strptime(sessions_02['acq_time'][0], '%Y-%m-%dT%H:%M:%S') == new_acq_time
+    ses2_acq_time = datetime.strptime(sessions_02['acq_time'][0], '%Y-%m-%dT%H:%M:%S')
+    assert ses2_acq_time == new_acq_time
     assert new_acq_time != raw_01.info['meas_date']
 
 
@@ -1307,9 +1311,9 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.save(raw_path, overwrite=True)
 
     with pytest.warns(
-        RuntimeWarning,
-        match='number of channels in the channels.tsv sidecar .* '
-              'does not match the number of channels in the raw data'
+            RuntimeWarning,
+            match='number of channels in the channels.tsv sidecar .* '
+                  'does not match the number of channels in the raw data'
     ):
         read_raw_bids(bids_path)
 
@@ -1321,9 +1325,9 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.save(raw_path, overwrite=True)
 
     with pytest.warns(
-        RuntimeWarning,
-        match=f'Cannot set channel type for the following channels, as they '
-              f'are missing in the raw data: {ch_name_orig}'
+            RuntimeWarning,
+            match=f'Cannot set channel type for the following channels, as they '
+                  f'are missing in the raw data: {ch_name_orig}'
     ):
         read_raw_bids(bids_path)
 
@@ -1340,9 +1344,9 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.save(raw_path, overwrite=True)
 
     with pytest.warns(
-        RuntimeWarning,
-        match=f'Cannot set "bad" status for the following channels, as '
-              f'they are missing in the raw data: {ch_name_orig}'
+            RuntimeWarning,
+            match=f'Cannot set "bad" status for the following channels, as '
+                  f'they are missing in the raw data: {ch_name_orig}'
     ):
         read_raw_bids(bids_path)
 
