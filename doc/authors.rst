@@ -41,3 +41,4 @@
 .. _Daniel McCloy: http://dan.mccloy.info
 .. _Moritz Gerster: http://moritz-gerster.com
 .. _Laetitia Fesselier: https://github.com/laemtl
+.. _Jonathan Vanhoecke: https://github.com/JonathanVHoecke

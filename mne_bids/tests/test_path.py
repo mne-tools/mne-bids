@@ -731,6 +731,9 @@ def test_make_filenames():
             suffix='scans', extension='.tsv'
         )
 
+    # We should be able to create a BIDSPath for a *_sessions.tsv file
+    BIDSPath(subject=subject_id, suffix='sessions', extension='.tsv')
+
 
 @pytest.mark.parametrize(
     'entities, expected_n_matches',
