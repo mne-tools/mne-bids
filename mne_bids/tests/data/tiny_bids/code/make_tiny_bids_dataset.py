@@ -120,14 +120,14 @@ sessions_tsv_bp.fpath.write_text(sessions_tsv_content, encoding="utf-8")
 
 sessions_json_bp = sessions_tsv_bp.copy().update(extension=".json")
 sessions_json_content = """{
-	"acq_time":{
-		"Description":"date of the first acquistion of the session",
-		"Units":"date",
-		"TermURL":"https://tools.ietf.org/html/rfc3339#section-5.6"
-	},
-	"pathology":{
-		"Description":"Disease state of the subject when applicable",
-	}
+    "acq_time":{
+        "Description":"date of the first acquistion of the session",
+        "Units":"date",
+        "TermURL":"https://tools.ietf.org/html/rfc3339#section-5.6"
+    },
+    "pathology":{
+        "Description":"Disease state of the subject when applicable",
+    }
 }
 """
 sessions_json_bp.fpath.write_text(sessions_json_content, encoding="utf-8")
