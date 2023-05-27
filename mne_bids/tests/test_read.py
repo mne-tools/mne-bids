@@ -49,7 +49,7 @@ _bids_path = BIDSPath(
 _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
-data_path = testing.data_path(download=True)
+data_path = testing.data_path(download=False)
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
 
