@@ -555,7 +555,7 @@ refer to the <a class="reference external" href="https://bids-specification.read
 <h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this heading">#</a></h2>
 <p>First, we need some data to work with. We will use the
 data downloaded via MNE-Python’s <code class="docutils literal notranslate"><span class="pre">datasets</span></code> API:
-<a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="(in MNE v1.4)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.misc.data_path()</span></code></a></p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="(in MNE v1.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.misc.data_path()</span></code></a></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">misc_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="mne.datasets.misc.data_path" class="sphx-glr-backref-module-mne-datasets-misc sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 
 <span class="c1"># The electrode coords data are in the tsv file format</span>
@@ -1121,7 +1121,7 @@ reason, you can also do that.</p>
 <p>Here we’ll use the MNI Talairach transform to get to <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> space
 from “mri” aka surface RAS space.
 <code class="docutils literal notranslate"><span class="pre">fsaverage</span></code> is very useful for group analysis as shown in
-<a class="reference external" href="https://mne.tools/dev/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.4)"><span>Working with sEEG data</span></a>. Note, this is only a linear transform and so
+<a class="reference external" href="https://mne.tools/dev/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.5)"><span>Working with sEEG data</span></a>. Note, this is only a linear transform and so
 one loses quite a bit of accuracy relative to the needs of intracranial
 researchers so it is quite suboptimal. A better option is to use a
 symmetric diffeomorphic transform to create a one-to-one mapping of brain
@@ -1206,7 +1206,7 @@ to add these. Fortunately, there is a convenient function
 (<a class="reference internal" href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.template_to_head()</span></code></a>) that loads stored fiducials and takes
 care of the transformations. Once this function is applied, you can use
 the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object and the <code class="docutils literal notranslate"><span class="pre">trans</span></code> as in any MNE example
-(e.g. <a class="reference external" href="https://mne.tools/dev/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.4)"><span>Working with sEEG data</span></a>).</p>
+(e.g. <a class="reference external" href="https://mne.tools/dev/auto_tutorials/clinical/20_seeg.html#tut-working-with-seeg" title="(in MNE v1.5)"><span>Working with sEEG data</span></a>).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># use `coord_frame=&#39;mri&#39;` to indicate that the montage is in surface RAS</span>
 <span class="c1"># and `unit=&#39;m&#39;` to indicate that the units are in meters</span>
 <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a> <span class="o">=</span> <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">(</span>
@@ -1411,7 +1411,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.619 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.287 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1507,7 +1507,7 @@ coordinate frame.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-05-08.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-05-27.
       <br/>
     
   </p>
