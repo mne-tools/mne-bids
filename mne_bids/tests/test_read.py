@@ -1312,9 +1312,9 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.save(raw_path, overwrite=True)
 
     with pytest.warns(
-            RuntimeWarning,
-            match='number of channels in the channels.tsv sidecar .* '
-                  'does not match the number of channels in the raw data'
+        RuntimeWarning,
+        match='number of channels in the channels.tsv sidecar .* '
+              'does not match the number of channels in the raw data'
     ):
         read_raw_bids(bids_path)
 
