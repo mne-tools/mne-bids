@@ -1345,9 +1345,9 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.save(raw_path, overwrite=True)
 
     with pytest.warns(
-            RuntimeWarning,
-            match=f'Cannot set "bad" status for the following channels, as '
-                  f'they are missing in the raw data: {ch_name_orig}'
+        RuntimeWarning,
+        match=f'Cannot set "bad" status for the following channels, as '
+              f'they are missing in the raw data: {ch_name_orig}'
     ):
         read_raw_bids(bids_path)
 
