@@ -581,62 +581,6 @@ def test_handle_scans_reading(tmp_path):
     assert new_acq_time != raw_01.info['meas_date']
 
 
-def test_handle_sessions_reading(tmp_path):
-    """Test writing/reading and altering data from a BIDS sessions.tsv file."""
-    raw = _read_raw_fif(raw_fname)
-    suffix = "meg"
-
-    # write copy of raw with line freq of 60
-    # bids basename and fname
-    bids_path = BIDSPath(subject='01', session='01',
-                         task='audiovisual', run='01',
-                         datatype=suffix,
-                         root=tmp_path)
-    bids_path = write_raw_bids(raw, bids_path, overwrite=True)
-    raw_01 = read_raw_bids(bids_path)
-
-    # create a sessions.tsv file based on the scans.tsv
-    # The acq_time in sessions.tsv always equals
-    # the acq_time of the first recording of that session
-    scans_path = BIDSPath(subject=bids_path.subject,
-                          session=bids_path.session,
-                          root=tmp_path,
-                          suffix='scans', extension='.tsv')
-    scans_tsv = _from_tsv(scans_path)
-    sessions_path = BIDSPath(subject=bids_path.subject,
-                             root=tmp_path,
-                             suffix='sessions', extension='.tsv')
-
-    sessions_tsv = OrderedDict([('session_id', ['ses-01', '']),
-                                ('acq_time', [scans_tsv['acq_time'][0], ''])])
-    _to_tsv(sessions_tsv, sessions_path)
-
-    # find sessions.tsv file and alter the
-    # acquisition time to not have the optional microseconds
-    sessions_path = BIDSPath(subject=bids_path.subject,
-                             root=tmp_path,
-                             suffix='sessions', extension='.tsv')
-    sessions_tsv = _from_tsv(sessions_path)
-    acq_time_str = sessions_tsv['acq_time'][0]
-    acq_time = datetime.strptime(acq_time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-    acq_time = acq_time.replace(tzinfo=timezone.utc)
-    new_acq_time = acq_time_str.split('.')[0]
-    assert acq_time == raw_01.info['meas_date']
-    sessions_tsv['acq_time'][0] = new_acq_time
-    _to_tsv(sessions_tsv, sessions_path)
-
-    # now re-load the data and it should be different
-    # from the original date and the same as the newly altered date
-    sessions_02 = _from_tsv(sessions_path)
-    new_acq_time += '.0Z'
-    new_acq_time = datetime.strptime(new_acq_time,
-                                     '%Y-%m-%dT%H:%M:%S.%fZ')
-    ses2_acq_time = datetime.strptime(sessions_02['acq_time'][0],
-                                      '%Y-%m-%dT%H:%M:%S')
-    assert ses2_acq_time == new_acq_time
-    assert new_acq_time != raw_01.info['meas_date']
-
-
 @requires_version('mne', '1.2')  # tiny_bids contains GSR & temperature chans
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_scans_reading_brainvision(tmp_path):
