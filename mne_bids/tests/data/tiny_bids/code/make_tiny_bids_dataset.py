@@ -106,3 +106,30 @@ ds_json["Authors"] = ["MNE-BIDS Developers", "And Friends"]
 with open(dataset_description_json_path, "w", encoding="utf-8") as fout:
     json.dump(ds_json, fout, indent=4)
     fout.write("\n")
+
+# %%
+# Add *_sessions.tsv and *_sessions.json
+sessions_tsv_bp = BIDSPath(
+    subject="01", suffix="sessions", extension=".tsv", root=tiny_bids_root
+)
+sessions_tsv_content = """session_id	acq_time	pathology
+ses-eeg	2000-01-01T12:00:00.000000Z	Parkinson's disease
+"""
+
+sessions_tsv_bp.fpath.write_text(sessions_tsv_content, encoding="utf-8")
+
+sessions_json_bp = sessions_tsv_bp.copy().update(extension=".json")
+sessions_json_content = """{
+	"acq_time":{
+		"Description":"date of the first acquistion of the session",
+		"Units":"date",
+		"TermURL":"https://tools.ietf.org/html/rfc3339#section-5.6"
+	},
+	"pathology":{
+		"Description":"Disease state of the subject when applicable",
+	}
+}
+"""
+sessions_json_bp.fpath.write_text(sessions_json_content, encoding="utf-8")
+
+# %%

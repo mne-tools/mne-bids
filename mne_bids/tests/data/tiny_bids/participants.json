@@ -20,5 +20,13 @@
             "L": "left",
             "A": "ambidextrous"
         }
+    },
+    "weight": {
+        "Description": "Body weight of the participant",
+        "Units": "kg"
+    },
+    "height": {
+        "Description": "Body height of the participant",
+        "Units": "m"
     }
 }
