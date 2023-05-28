@@ -114,7 +114,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.8", "3.10"]  # Oldest and newest supported versions
-        mne-version: [mne-stable, mne-prev-stable]
+        mne-version: [mne-stable]
         bids-validator-version: [validator-stable]
 
         include:
@@ -123,6 +123,11 @@ jobs:
             python-version: "3.10"
             mne-version: mne-main
             bids-validator-version: validator-main
+          # Test previous MNE stable only on a single system so save CI resources
+          - os: ubuntu-latest
+            python-version: "3.8"
+            mne-version: mne-prev-stable
+            bids-validator-version: validator-stable
 
     env:
       TZ: Europe/Berlin
