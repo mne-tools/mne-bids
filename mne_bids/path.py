@@ -1059,8 +1059,9 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
         datatype = _infer_datatype(root=bids_root,
                                    sub=sub, ses=ses)
 
-    data_dir = BIDSPath(subject=sub, session=ses, datatype=datatype,
-                        root=bids_root).mkdir().directory
+    data_dir = BIDSPath(
+        subject=sub, session=ses, datatype=datatype, root=bids_root
+    ).directory
 
     # For BTI data, just return the directory with a '.pdf' extension
     # to facilitate reading in mne-bids
