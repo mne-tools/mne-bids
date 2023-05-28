@@ -57,6 +57,7 @@ Detailed list of changes
 - Fix ``raw_to_bids`` CLI tool to properly recognize boolean and numeric values for the ``line_freq`` and ``overwrite`` parameters, by `Stefan Appelhoff`_ (:gh:`1125`)
 - Fix :func:`~mne_bids.copyfiles.copyfile_eeglab` to prevent data type conversion leading to an ``eeg_checkset`` failure when trying to load the file in EEGLAB, by `Laetitia Fesselier`_ (:gh:`1122`)
 - Improve compatibility with latest MNE-Python, by `Eric Larson`_ (:gh:`1128`)
+- Working with :class:`~mne_bids.BIDSPath`` would sometimes inadvertently create new directories, contaminating the BIDS dataset, by `Richard Höchenberger`_ (:gh:`1139`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
