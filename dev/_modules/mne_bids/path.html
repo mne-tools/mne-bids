@@ -1531,8 +1531,9 @@ document.write(`
         <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                    <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
 
-    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
-                        <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span><span class="o">.</span><span class="n">directory</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">directory</span>
 
     <span class="c1"># For BTI data, just return the directory with a &#39;.pdf&#39; extension</span>
     <span class="c1"># to facilitate reading in mne-bids</span>
@@ -2653,7 +2654,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-05-27.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-05-28.
       <br/>
     
   </p>
