@@ -114,7 +114,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.8", "3.10"]  # Oldest and newest supported versions
-        mne-version: [mne-stable]
+        mne-version: [mne-stable, mne-prev-stable]
         bids-validator-version: [validator-stable]
 
         include:
@@ -153,6 +153,12 @@ jobs:
 
     - name: Install MNE (stable)
       if: "matrix.mne-version == 'mne-stable'"
+      run: |
+        git clone --single-branch --branch maint/1.4 https://github.com/mne-tools/mne-python.git
+        python -m pip install -e ./mne-python
+
+    - name: Install MNE (previous stable)
+      if: "matrix.mne-version == 'mne-prev-stable'"
       run: |
         git clone --single-branch --branch maint/1.3 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python

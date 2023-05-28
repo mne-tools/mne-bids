@@ -48,7 +48,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- ...
+- MNE-BIDS now requires MNE-Python 1.3 or newer.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^

@@ -20,7 +20,7 @@ from pkg_resources import parse_version
 import mne
 from mne.datasets import testing
 from mne.io.constants import FIFF
-from mne.utils import object_diff, requires_version
+from mne.utils import object_diff
 from mne.utils import assert_dig_allclose, check_version
 
 from mne_bids import BIDSPath
@@ -40,7 +40,6 @@ session_id = '01'
 run = '01'
 acq = '01'
 task = 'testing'
-fids_added = check_version('mne', '1.2')
 
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
@@ -288,10 +287,7 @@ def test_get_head_mri_trans(tmp_path):
     raw_test.set_montage(montage)
     raw_test.save(bids_path.fpath, overwrite=True)
 
-    if fids_added:
-        ctx = nullcontext()
-    else:
-        ctx = pytest.raises(RuntimeError, match='Could not extract fiducial')
+    ctx = nullcontext()
     with ctx:
         get_head_mri_trans(bids_path=bids_path, fs_subject='sample',
                            fs_subjects_dir=subjects_dir)
@@ -581,7 +577,6 @@ def test_handle_scans_reading(tmp_path):
     assert new_acq_time != raw_01.info['meas_date']
 
 
-@requires_version('mne', '1.2')  # tiny_bids contains GSR & temperature chans
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_scans_reading_brainvision(tmp_path):
     """Test stability of BrainVision's different file extensions"""
@@ -724,26 +719,22 @@ def test_handle_chpi_reading(tmp_path):
         meg_json_data = json.load(f)
 
     # cHPI frequency mismatch
-    if parse_version(mne.__version__) <= parse_version('1.1'):
-        assert 'ContinuousHeadLocalization' not in meg_json_data
-        assert 'HeadCoilFrequency' not in meg_json_data
-    else:
-        meg_json_data_freq_mismatch = meg_json_data.copy()
-        meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
-        _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
+    meg_json_data_freq_mismatch = meg_json_data.copy()
+    meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
+    _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
-        with pytest.warns(RuntimeWarning,
-                          match='Defaulting to .* mne.Raw object'):
-            raw_read = read_raw_bids(bids_path)
-
-        # cHPI "off" according to sidecar, but present in the data
-        meg_json_data_chpi_mismatch = meg_json_data.copy()
-        meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
-        _write_json(meg_json_path, meg_json_data_chpi_mismatch, overwrite=True)
-
+    with pytest.warns(RuntimeWarning,
+                        match='Defaulting to .* mne.Raw object'):
         raw_read = read_raw_bids(bids_path)
-        assert raw_read.info['hpi_subsystem'] is None
-        assert raw_read.info['hpi_meas'] == []
+
+    # cHPI "off" according to sidecar, but present in the data
+    meg_json_data_chpi_mismatch = meg_json_data.copy()
+    meg_json_data_chpi_mismatch['ContinuousHeadLocalization'] = False
+    _write_json(meg_json_path, meg_json_data_chpi_mismatch, overwrite=True)
+
+    raw_read = read_raw_bids(bids_path)
+    assert raw_read.info['hpi_subsystem'] is None
+    assert raw_read.info['hpi_meas'] == []
 
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
@@ -772,11 +763,7 @@ def test_handle_eeg_coords_reading(tmp_path):
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="unknown")
     raw.set_montage(montage)
-    if fids_added:
-        ctx = nullcontext()
-    else:
-        ctx = pytest.raises(
-            RuntimeError, match="'head' coordinate frame must contain")
+    ctx = nullcontext()
     with ctx:
         write_raw_bids(raw, bids_path, overwrite=True)
 
@@ -789,33 +776,18 @@ def test_handle_eeg_coords_reading(tmp_path):
                                               suffix='electrodes',
                                               extension='.tsv',
                                               on_error='warn')
-    if fids_added:
-        assert coordsystem_fname is not None
-        assert electrodes_fname is not None
-    else:
-        assert coordsystem_fname is None
-        assert electrodes_fname is None
+    assert coordsystem_fname is not None
+    assert electrodes_fname is not None
 
     # create montage in head frame and set should result in
     # an error if landmarks are not set
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="head")
     raw.set_montage(montage)
-    if fids_added:
-        ctx = nullcontext()
-    else:
-        ctx = pytest.raises(
-            RuntimeError, match="'head' coordinate frame must contain")
+    ctx = nullcontext()
     with ctx:
         write_raw_bids(raw, bids_path, overwrite=True)
 
-    if not fids_added:  # only need to rerun if the last one failed
-        montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                                coord_frame="head",
-                                                nasion=[1, 0, 0],
-                                                lpa=[0, 1, 0],
-                                                rpa=[0, 0, 1])
-        raw.set_montage(montage)
     write_raw_bids(raw, bids_path, overwrite=True)
 
     # obtain the sensor positions and assert ch_coords are same
@@ -1323,7 +1295,6 @@ def test_file_not_found(tmp_path):
         read_raw_bids(bp)
 
 
-@requires_version('mne', '1.2')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_gsr_and_temp_reading():
     """Test GSR and temperature channels are handled correctly."""
