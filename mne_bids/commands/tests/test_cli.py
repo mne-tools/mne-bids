@@ -18,7 +18,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import ArgvSetter, requires_pandas, check_version
+from mne.utils import ArgvSetter, requires_pandas
 from mne.utils._testing import requires_module
 
 from mne_bids.commands import (mne_bids_raw_to_bids,

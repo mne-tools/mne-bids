@@ -15,13 +15,11 @@ import shutil as sh
 import numpy as np
 from numpy.testing import assert_almost_equal
 
-from pkg_resources import parse_version
-
 import mne
 from mne.datasets import testing
 from mne.io.constants import FIFF
 from mne.utils import object_diff
-from mne.utils import assert_dig_allclose, check_version
+from mne.utils import assert_dig_allclose
 
 from mne_bids import BIDSPath
 from mne_bids.config import (MNE_STR_TO_FRAME, BIDS_SHARED_COORDINATE_FRAMES,
@@ -723,8 +721,7 @@ def test_handle_chpi_reading(tmp_path):
     meg_json_data_freq_mismatch['HeadCoilFrequency'][0] = 123
     _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
-    with pytest.warns(RuntimeWarning,
-                        match='Defaulting to .* mne.Raw object'):
+    with pytest.warns(RuntimeWarning, match='Defaulting to .* mne.Raw object'):
         raw_read = read_raw_bids(bids_path)
 
     # cHPI "off" according to sidecar, but present in the data
