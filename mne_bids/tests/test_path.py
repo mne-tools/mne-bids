@@ -1,5 +1,6 @@
 """Test for the MNE BIDSPath functions."""
 # Authors: Adam Li <adam2392@gmail.com>
+#          Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
 # License: BSD-3-Clause
 import os
@@ -1258,3 +1259,10 @@ def test_deprecation():
     """Test deprecated behavior."""
     with pytest.warns(FutureWarning, match='This will raise an exception'):
         BIDSPath(extension='vhdr')  # no leading period
+
+
+def test_dont_create_dirs_on_fpath_access(tmp_path):
+    """Regression test: don't create directories when accessing .fpath."""
+    bp = BIDSPath(subject='01', datatype='eeg', root=tmp_path)
+    bp.fpath  # accessing .fpath is required for this regression test
+    assert not (tmp_path / 'sub-01').exists()
