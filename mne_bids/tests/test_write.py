@@ -146,9 +146,6 @@ test_converteeg_data = [
 
 data_path = testing.data_path(download=False)
 
-bad_frame_xfail = pytest.mark.xfail(
-    check_version('mne', '1.2'), reason='Coordinate frame bug in MNE 1.2')
-
 
 def _test_anonymize(root, raw, bids_path, events_fname=None, event_id=None):
     """Write data to `root` for testing anonymization."""
@@ -772,17 +769,13 @@ def test_chpi(_bids_validate, tmp_path, format):
         assert 'ContinuousHeadLocalization' not in meg_json_data
         assert 'HeadCoilFrequency' not in meg_json_data
     elif format in ['fif_no_chpi', 'fif']:
-        if parse_version(mne.__version__) <= parse_version('1.1'):
-            assert 'ContinuousHeadLocalization' not in meg_json_data
-            assert 'HeadCoilFrequency' not in meg_json_data
-        else:
-            if format == 'fif_no_chpi':
-                assert meg_json_data['ContinuousHeadLocalization'] is False
-                assert meg_json_data['HeadCoilFrequency'] == []
-            elif format == 'fif':
-                assert meg_json_data['ContinuousHeadLocalization'] is True
-                assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
-                                          [83., 143., 203., 263., 323.])
+        if format == 'fif_no_chpi':
+            assert meg_json_data['ContinuousHeadLocalization'] is False
+            assert meg_json_data['HeadCoilFrequency'] == []
+        elif format == 'fif':
+            assert meg_json_data['ContinuousHeadLocalization'] is True
+            assert_array_almost_equal(meg_json_data['HeadCoilFrequency'],
+                                      [83., 143., 203., 263., 323.])
     elif format == 'kit':
         # no cHPI info is contained in the sample data
         assert meg_json_data['ContinuousHeadLocalization'] is False
@@ -930,10 +923,7 @@ def test_kit(_bids_validate, tmp_path):
 
     _bids_validate(bids_root)
     assert op.exists(bids_root / 'participants.tsv')
-    if check_version("mne", "1.3"):
-        with pytest.warns(RuntimeWarning, match=".* changed from V to NA"):
-            read_raw_bids(bids_path=kit_bids_path)
-    else:
+    with pytest.warns(RuntimeWarning, match=".* changed from V to NA"):
         read_raw_bids(bids_path=kit_bids_path)
 
     # ensure the marker file is produced in the right place
@@ -1231,7 +1221,6 @@ def test_vhdr(_bids_validate, tmp_path):
     warning_str['no_montage'],
 )
 @testing.requires_testing_data
-@bad_frame_xfail
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     """Test write_raw_bids conversion for EEG/iEEG data formats."""
     bids_root = tmp_path / 'bids1'
@@ -1244,27 +1233,20 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     raw.set_montage(None)  # remove montage
     events, _ = mne.events_from_annotations(raw, event_id=None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'curry':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'CNT':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            bids_output_path = write_raw_bids(**kwargs)
-    elif dir_name == 'EGI':
+
+    warning_to_catch = {
+        'EDF': None,
+        'curry': 'Encountered data in "int" format. Converting to float32.',
+        'NihonKohden': 'Encountered data in "short" format',
+        'CNT': 'Encountered data in "int" format. Converting to float32.',
+        'EGI': None,
+        'Persyst': 'Encountered data in "double" format'
+    }
+
+    if warning_to_catch[dir_name] is None:
         bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
+        with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
             bids_output_path = write_raw_bids(**kwargs)
 
     with pytest.raises(ValueError,
@@ -1292,28 +1274,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # Test we can overwrite dataset_description.json
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        write_raw_bids(**kwargs)
-    elif dir_name == 'curry':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'CNT':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'EGI':
-        write_raw_bids(**kwargs)
+    if warning_to_catch[dir_name] is None:
+        bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
+            bids_output_path = write_raw_bids(**kwargs)
 
     make_dataset_description(path=bids_root, name="test",
                              authors=["test1", "test2"], overwrite=True,
@@ -1328,28 +1293,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     # After writing the entire dataset again, dataset_description.json should
     # contain the default values.
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        write_raw_bids(**kwargs)
-    elif dir_name == 'curry':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'CNT':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'EGI':
-        write_raw_bids(**kwargs)
+    if warning_to_catch[dir_name] is None:
+        bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
+            bids_output_path = write_raw_bids(**kwargs)
 
     # dataset_description.json files should not be overwritten inside
     # write_raw_bids calls
@@ -1382,10 +1330,20 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame='head')
     raw.set_montage(eeg_montage)
+    # remove the 3 fiducial digitization points
+    for i in range(3):
+        del raw.info['dig'][i]
+
     # electrodes are not written w/o landmarks
     with pytest.raises(RuntimeError, match="'head' coordinate frame must "
                                            "contain nasion"):
-        write_raw_bids(raw, bids_path, overwrite=True)
+        if warning_to_catch[dir_name] is None:
+            write_raw_bids(**kwargs)
+        else:
+            with pytest.warns(
+                RuntimeWarning, match=warning_to_catch[dir_name]
+            ):
+                write_raw_bids(**kwargs)
 
     electrodes_fpath = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
@@ -1401,28 +1359,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
                                                 rpa=[0, 0, 1])
     raw.set_montage(eeg_montage)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        write_raw_bids(**kwargs)
-    elif dir_name == 'curry':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'CNT':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'EGI':
-        write_raw_bids(**kwargs)
+    if warning_to_catch[dir_name] is None:
+        bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
+            bids_output_path = write_raw_bids(**kwargs)
 
     electrodes_fpath = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
@@ -1461,26 +1402,13 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
             match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
             with pytest.warns(RuntimeWarning, match=match):
                 write_raw_bids(**kwargs)
-        elif dir_name == 'curry':
-            with pytest.warns(RuntimeWarning,
-                              match='Encountered data in "int" format. '
-                              'Converting to float32.'):
-                write_raw_bids(**kwargs)
-        elif dir_name == 'Persyst':
-            with pytest.warns(RuntimeWarning,
-                              match='Encountered data in "double" format'):
-                write_raw_bids(**kwargs)
-        elif dir_name == 'CNT':
-            with pytest.warns(RuntimeWarning,
-                              match='Encountered data in "int" format. '
-                              'Converting to float32.'):
-                write_raw_bids(**kwargs)
-        elif dir_name == 'EGI':
-            write_raw_bids(**kwargs)
+        elif warning_to_catch[dir_name] is None:
+            bids_output_path = write_raw_bids(**kwargs)
         else:
-            with pytest.warns(RuntimeWarning,
-                              match='Encountered data in "short" format'):
-                write_raw_bids(**kwargs)
+            with pytest.warns(
+                RuntimeWarning, match=warning_to_catch[dir_name]
+            ):
+                bids_output_path = write_raw_bids(**kwargs)
 
         data = _from_tsv(scans_tsv)
         bids_path = bids_path.copy()
@@ -1503,28 +1431,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_root = tmp_path / 'bids2'
     bids_path.update(root=bids_root, datatype='ieeg')
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        write_raw_bids(**kwargs)
-    elif dir_name == 'curry':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'CNT':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'EGI':
-        write_raw_bids(**kwargs)
+    if warning_to_catch[dir_name] is None:
+        bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
+            bids_output_path = write_raw_bids(**kwargs)
 
     _bids_validate(bids_root)
 
@@ -1552,28 +1463,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_root = tmp_path / 'bids3'
     bids_path.update(root=bids_root, datatype='ieeg')
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
-    if dir_name == 'EDF':
-        write_raw_bids(**kwargs)
-    elif dir_name == 'curry':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'CNT':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'EGI':
-        write_raw_bids(**kwargs)
+    if warning_to_catch[dir_name] is None:
+        bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
+            bids_output_path = write_raw_bids(**kwargs)
 
     _bids_validate(bids_root)
 
@@ -1612,28 +1506,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     bids_path.update(root=bids_root, datatype='ieeg')
     # test works if ACPC-aligned is specified
     kwargs.update(montage=ecog_montage, acpc_aligned=True)
-    if dir_name == 'EDF':
-        write_raw_bids(**kwargs)
-    elif dir_name == 'curry':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'NihonKohden':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "short" format'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'CNT':
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format. '
-                          'Converting to float32.'):
-            write_raw_bids(**kwargs)
-    elif dir_name == 'EGI':
-        write_raw_bids(**kwargs)
+    if warning_to_catch[dir_name] is None:
+        bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "double" format'):
-            write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
+            bids_output_path = write_raw_bids(**kwargs)
 
     _bids_validate(bids_root)
 
@@ -1791,10 +1668,7 @@ def test_bdf(_bids_validate, tmp_path):
     # Now read the raw data back from BIDS, with the tampered TSV, to show
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
-    if check_version("mne", "1.3"):
-        with pytest.warns(RuntimeWarning, match="Fp1 has changed from V .*"):
-            raw = read_raw_bids(bids_path=bids_path)
-    else:
+    with pytest.warns(RuntimeWarning, match="Fp1 has changed from V .*"):
         raw = read_raw_bids(bids_path=bids_path)
     assert coil_type(raw.info, test_ch_idx) == 'misc'
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
@@ -3122,7 +2996,6 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     warning_str['no_hand'],
 )
 @testing.requires_testing_data
-@bad_frame_xfail
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
     bids_root = tmp_path / format
@@ -3203,7 +3076,6 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     warning_str['no_hand'],
 )
 @testing.requires_testing_data
-@bad_frame_xfail
 def test_format_conversion_overwrite(dir_name, format, fname, reader,
                                      tmp_path):
     """Test that overwrite works when format is passed to write_raw_bids."""
@@ -3299,7 +3171,6 @@ def test_convert_meg_formats(dir_name, format, fname, reader, tmp_path):
     warning_str['no_hand'],
 )
 @testing.requires_testing_data
-@bad_frame_xfail
 def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     """Test errors when converting raw file formats."""
     bids_root = tmp_path / 'bids_1'
@@ -3845,10 +3716,7 @@ def test_repeat_write_location(tmpdir):
     bids_path = write_raw_bids(raw, bids_path, verbose=False)
 
     # Read back in
-    if check_version("mne", "1.3"):
-        with pytest.warns(RuntimeWarning, match=".* has changed from NA to V"):
-            raw = read_raw_bids(bids_path, verbose=False)
-    else:
+    with pytest.warns(RuntimeWarning, match=".* has changed from NA to V"):
         raw = read_raw_bids(bids_path, verbose=False)
 
     # Re-writing with src == dest should error

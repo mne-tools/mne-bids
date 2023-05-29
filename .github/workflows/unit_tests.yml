@@ -123,6 +123,11 @@ jobs:
             python-version: "3.10"
             mne-version: mne-main
             bids-validator-version: validator-main
+          # Test previous MNE stable only on a single system so save CI resources
+          - os: ubuntu-latest
+            python-version: "3.8"
+            mne-version: mne-prev-stable
+            bids-validator-version: validator-stable
 
     env:
       TZ: Europe/Berlin
@@ -153,6 +158,12 @@ jobs:
 
     - name: Install MNE (stable)
       if: "matrix.mne-version == 'mne-stable'"
+      run: |
+        git clone --single-branch --branch maint/1.4 https://github.com/mne-tools/mne-python.git
+        python -m pip install -e ./mne-python
+
+    - name: Install MNE (previous stable)
+      if: "matrix.mne-version == 'mne-prev-stable'"
       run: |
         git clone --single-branch --branch maint/1.3 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
