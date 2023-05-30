@@ -21,7 +21,7 @@ sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-# needs_sphinx = '1.0'
+needs_sphinx = '2.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -125,6 +125,7 @@ html_css_files = ['style.css']
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
+switcher_version_match = "dev" if "dev" in release else version
 html_theme_options = {
     'icon_links': [
         dict(name='GitHub',
@@ -138,26 +139,17 @@ html_theme_options = {
     'use_edit_page_button': False,
     'navigation_with_keys': False,
     'show_toc_level': 1,
-    'navbar_end': ['version-switcher', 'navbar-icon-links'],
+    'navbar_end': ['theme-switcher', 'version-switcher', 'navbar-icon-links'],
     'analytics': dict(google_analytics_id='G-C8SH9E98QC'),
+    "switcher": {
+        "json_url": "https://raw.githubusercontent.com/sappelhoff/mne-bids/docs/fix/doc/_static/versions.json",  # noqa: E501
+        "version_match": switcher_version_match,
+    },
 }
 
 html_context = {
-    'versions_dropdown': {
-        'dev': 'v0.13 (devel)',
-        'stable': 'v0.12 (stable)',
-        'v0.11': 'v0.11',
-        'v0.10': 'v0.10',
-        'v0.9': 'v0.9',
-        'v0.8': 'v0.8',
-        'v0.7': 'v0.7',
-        'v0.6': 'v0.6',
-        'v0.5': 'v0.5',
-        'v0.4': 'v0.4',
-        'v0.3': 'v0.3',
-        'v0.2': 'v0.2',
-        'v0.1': 'v0.1',
-    },
+    "default_mode": "auto",
+    "doc_path": "doc",
 }
 
 html_sidebars = {}
