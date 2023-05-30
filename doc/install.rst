@@ -13,17 +13,17 @@ Dependencies
 Required:
 
 * ``mne`` (>=1.3)
-* ``numpy`` (>=1.18.1)
-* ``scipy`` (>=1.4.1, or >=1.5.0 for certain operations with EEGLAB data)
+* ``numpy`` (>=1.20.2)
+* ``scipy`` (>=1.6.3)
 * ``setuptools`` (>=46.4.0)
 
 Optional:
 
-* ``nibabel`` (>=2.5, for processing MRI data)
+* ``nibabel`` (>=3.2.1, for processing MRI data)
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
 * ``pymatreader`` (>=0.0.30 , for operations with EEGLAB data)
-* ``matplotlib`` (>=3.1.0, for using the interactive data inspector)
-* ``pandas`` (>=1.0.0, for generating event statistics)
+* ``matplotlib`` (>=3.4.0, for using the interactive data inspector)
+* ``pandas`` (>=1.2.4, for generating event statistics)
 * ``EDFlib-Python`` (>=1.0.6, for writing EDF data)
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution.

@@ -158,6 +158,8 @@ authors:
     - given-names: Fesselier
       family-names: Laetitia
       affiliation: 'McGill Centre for Integrative Neuroscience, McGill University, Montreal, Canada'
+    - given-names: Jonathan
+      family-names: Vanhoecke
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
