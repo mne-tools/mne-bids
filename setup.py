@@ -14,7 +14,7 @@ with open(os.path.join("mne_bids", "__init__.py"), "r") as fid:
     for line in fid:
         line = line.strip()
         if line.startswith("__version__ = "):
-            version = line.split(" = ")[1].split("#")[0].strip("'")
+            version = line.split(" = ")[1].split("#")[0].strip('"')
             break
 if version is None:
     raise RuntimeError("Could not determine version")

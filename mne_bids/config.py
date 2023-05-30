@@ -435,7 +435,7 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
     "for different age groups (4.5–18.5 y.o., 4.5–8.5 y.o., "
     "7–11 y.o., 7.5–13.5 y.o., 10–14 y.o., 13–18.5 y.o. This "
     "template also comes in either -symmetric or -asymmetric flavor.",
-    "oasis30antsoasisants": "See https://figshare.com/articles/ANTs_ANTsR_Brain_Templates/915436",
+    "oasis30antsoasisants": "See https://figshare.com/articles/ANTs_ANTsR_Brain_Templates/915436",  # noqa: E501
     "oasis30atropos": "See https://mindboggle.info/data.html",
     "talairach": "Piecewise linear scaling of the brain is implemented as "
     "described in TT88.",
