@@ -31,15 +31,16 @@ from mne_bids import BIDSPath
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-bids_path = BIDSPath(subject='test', session='two', task='mytask',
-                     suffix='events', extension='.tsv')
+bids_path = BIDSPath(
+    subject="test", session="two", task="mytask", suffix="events", extension=".tsv"
+)
 print(bids_path)
 
 # %%
 # You may also omit the suffix, which will result in *only* a prefix for a
 # file name. This could then prepended to many more files.
 
-bids_path = BIDSPath(subject='test', task='mytask')
+bids_path = BIDSPath(subject="test", task="mytask")
 print(bids_path)
 
 # %%
@@ -48,6 +49,7 @@ print(bids_path)
 #
 # You can also use MNE-BIDS to create folder hierarchies.
 
-bids_path = BIDSPath(subject='01', session='mysession',
-                     datatype='meg', root='path/to/project').mkdir()
+bids_path = BIDSPath(
+    subject="01", session="mysession", datatype="meg", root="path/to/project"
+).mkdir()
 print(bids_path.directory)

@@ -14,33 +14,41 @@ import warnings
 import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.utils import (logger, _validate_type, _check_option,
-                       get_subjects_dir)
+from mne.utils import logger, _validate_type, _check_option, get_subjects_dir
 from mne.io.pick import _picks_to_idx
 
-from mne_bids.config import (ALLOWED_SPACES, BIDS_COORDINATE_UNITS,
-                             MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
-                             MNE_FRAME_TO_STR, MNE_STR_TO_FRAME,
-                             BIDS_COORD_FRAME_DESCRIPTIONS,
-                             BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
+from mne_bids.config import (
+    ALLOWED_SPACES,
+    BIDS_COORDINATE_UNITS,
+    MNE_TO_BIDS_FRAMES,
+    BIDS_TO_MNE_FRAMES,
+    MNE_FRAME_TO_STR,
+    MNE_STR_TO_FRAME,
+    BIDS_COORD_FRAME_DESCRIPTIONS,
+    BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
+)
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.utils import (_scale_coord_to_meters, _write_json, _write_tsv,
-                            verbose, warn, _import_nibabel)
+from mne_bids.utils import (
+    _scale_coord_to_meters,
+    _write_json,
+    _write_tsv,
+    verbose,
+    warn,
+    _import_nibabel,
+)
 from mne_bids.path import BIDSPath
 
-data_dir = Path(__file__).parent / 'data'
+data_dir = Path(__file__).parent / "data"
 
 
-def _handle_electrodes_reading(electrodes_fname, coord_frame,
-                               coord_unit):
+def _handle_electrodes_reading(electrodes_fname, coord_frame, coord_unit):
     """Read associated electrodes.tsv and populate raw.
 
     Handle xyz coordinates and coordinate frame of each channel.
     """
-    logger.info('Reading electrode '
-                'coords from {}.'.format(electrodes_fname))
+    logger.info("Reading electrode " "coords from {}.".format(electrodes_fname))
     electrodes_dict = _from_tsv(electrodes_fname)
-    ch_names_tsv = electrodes_dict['name']
+    ch_names_tsv = electrodes_dict["name"]
 
     def _float_or_nan(val):
         if val == "n/a":
@@ -49,22 +57,20 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
             return float(val)
 
     # convert coordinates to float and create list of tuples
-    electrodes_dict['x'] = [_float_or_nan(x) for x in electrodes_dict['x']]
-    electrodes_dict['y'] = [_float_or_nan(x) for x in electrodes_dict['y']]
-    electrodes_dict['z'] = [_float_or_nan(x) for x in electrodes_dict['z']]
-    ch_names_raw = [x for i, x in enumerate(ch_names_tsv)
-                    if electrodes_dict['x'][i] != "n/a"]
-    ch_locs = np.c_[electrodes_dict['x'],
-                    electrodes_dict['y'],
-                    electrodes_dict['z']]
+    electrodes_dict["x"] = [_float_or_nan(x) for x in electrodes_dict["x"]]
+    electrodes_dict["y"] = [_float_or_nan(x) for x in electrodes_dict["y"]]
+    electrodes_dict["z"] = [_float_or_nan(x) for x in electrodes_dict["z"]]
+    ch_names_raw = [
+        x for i, x in enumerate(ch_names_tsv) if electrodes_dict["x"][i] != "n/a"
+    ]
+    ch_locs = np.c_[electrodes_dict["x"], electrodes_dict["y"], electrodes_dict["z"]]
 
     # convert coordinates to meters
     ch_locs = _scale_coord_to_meters(ch_locs, coord_unit)
 
     # create mne.DigMontage
     ch_pos = dict(zip(ch_names_raw, ch_locs))
-    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                            coord_frame=coord_frame)
+    montage = mne.channels.make_dig_montage(ch_pos=ch_pos, coord_frame=coord_frame)
     return montage
 
 
@@ -74,42 +80,39 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype):
     Handle reading the coordinate frame and coordinate unit
     of each electrode.
     """
-    with open(coordsystem_fpath, 'r', encoding='utf-8-sig') as fin:
+    with open(coordsystem_fpath, "r", encoding="utf-8-sig") as fin:
         coordsystem_json = json.load(fin)
 
-    if datatype == 'meg':
-        coord_frame = coordsystem_json['MEGCoordinateSystem']
-        coord_unit = coordsystem_json['MEGCoordinateUnits']
-        coord_frame_desc = coordsystem_json.get('MEGCoordinateDescription',
-                                                None)
-    elif datatype == 'eeg':
-        coord_frame = coordsystem_json['EEGCoordinateSystem']
-        coord_unit = coordsystem_json['EEGCoordinateUnits']
-        coord_frame_desc = coordsystem_json.get('EEGCoordinateDescription',
-                                                None)
-    elif datatype == 'ieeg':
-        coord_frame = coordsystem_json['iEEGCoordinateSystem']
-        coord_unit = coordsystem_json['iEEGCoordinateUnits']
-        coord_frame_desc = coordsystem_json.get('iEEGCoordinateDescription',
-                                                None)
+    if datatype == "meg":
+        coord_frame = coordsystem_json["MEGCoordinateSystem"]
+        coord_unit = coordsystem_json["MEGCoordinateUnits"]
+        coord_frame_desc = coordsystem_json.get("MEGCoordinateDescription", None)
+    elif datatype == "eeg":
+        coord_frame = coordsystem_json["EEGCoordinateSystem"]
+        coord_unit = coordsystem_json["EEGCoordinateUnits"]
+        coord_frame_desc = coordsystem_json.get("EEGCoordinateDescription", None)
+    elif datatype == "ieeg":
+        coord_frame = coordsystem_json["iEEGCoordinateSystem"]
+        coord_unit = coordsystem_json["iEEGCoordinateUnits"]
+        coord_frame_desc = coordsystem_json.get("iEEGCoordinateDescription", None)
 
-    msg = f'Reading coordinate system frame {coord_frame}'
+    msg = f"Reading coordinate system frame {coord_frame}"
     if coord_frame_desc:
-        msg += f': {coord_frame_desc}'
+        msg += f": {coord_frame_desc}"
 
     return coord_frame, coord_unit
 
 
 def _get_impedances(raw, names):
     """Get the impedance values in kOhm from raw.impedances."""
-    if not hasattr(raw, 'impedances'):  # pragma: no cover
-        return ['n/a'] * len(names)
-    no_info = {'imp': np.nan, 'imp_unit': 'kOhm'}
+    if not hasattr(raw, "impedances"):  # pragma: no cover
+        return ["n/a"] * len(names)
+    no_info = {"imp": np.nan, "imp_unit": "kOhm"}
     impedance_dicts = [raw.impedances.get(name, no_info) for name in names]
     # If we encounter a unit not defined in `scalings`, return NaN
-    scalings = {'kOhm': 1, 'Ohm': 0.001}
+    scalings = {"kOhm": 1, "Ohm": 0.001}
     impedances = [
-        imp_dict['imp'] * scalings.get(imp_dict['imp_unit'], np.nan)
+        imp_dict["imp"] * scalings.get(imp_dict["imp_unit"], np.nan)
         for imp_dict in impedance_dicts
     ]
     # replace np.nan with BIDS 'n/a' representation
@@ -138,47 +141,49 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
     """
     # create list of channel coordinates and names
     x, y, z, names = list(), list(), list(), list()
-    for ch in raw.info['chs']:
-        if ch['kind'] == FIFF.FIFFV_STIM_CH:
-            logger.debug(f"Not writing stim chan {ch['ch_name']} "
-                         f"to electrodes.tsv")
+    for ch in raw.info["chs"]:
+        if ch["kind"] == FIFF.FIFFV_STIM_CH:
+            logger.debug(f"Not writing stim chan {ch['ch_name']} " f"to electrodes.tsv")
             continue
-        elif (
-            np.isnan(ch['loc'][:3]).any() or
-            np.allclose(ch['loc'][:3], 0)
-        ):
-            x.append('n/a')
-            y.append('n/a')
-            z.append('n/a')
+        elif np.isnan(ch["loc"][:3]).any() or np.allclose(ch["loc"][:3], 0):
+            x.append("n/a")
+            y.append("n/a")
+            z.append("n/a")
         else:
-            x.append(ch['loc'][0])
-            y.append(ch['loc'][1])
-            z.append(ch['loc'][2])
-        names.append(ch['ch_name'])
+            x.append(ch["loc"][0])
+            y.append(ch["loc"][1])
+            z.append(ch["loc"][2])
+        names.append(ch["ch_name"])
 
     # create OrderedDict to write to tsv file
     if datatype == "ieeg":
         # XXX: size should be included in the future
-        sizes = ['n/a'] * len(names)
-        data = OrderedDict([('name', names),
-                            ('x', x),
-                            ('y', y),
-                            ('z', z),
-                            ('size', sizes),
-                            ])
-    elif datatype == 'eeg':
-        data = OrderedDict([('name', names),
-                            ('x', x),
-                            ('y', y),
-                            ('z', z),
-                            ])
+        sizes = ["n/a"] * len(names)
+        data = OrderedDict(
+            [
+                ("name", names),
+                ("x", x),
+                ("y", y),
+                ("z", z),
+                ("size", sizes),
+            ]
+        )
+    elif datatype == "eeg":
+        data = OrderedDict(
+            [
+                ("name", names),
+                ("x", x),
+                ("y", y),
+                ("z", z),
+            ]
+        )
     else:  # pragma: no cover
         raise RuntimeError("datatype {} not supported.".format(datatype))
 
     # Add impedance values if available, currently only BrainVision:
     # https://github.com/mne-tools/mne-python/pull/7974
-    if hasattr(raw, 'impedances'):
-        data['impedance'] = _get_impedances(raw, names)
+    if hasattr(raw, "impedances"):
+        data["impedance"] = _get_impedances(raw, names)
 
     # note that any coordsystem.json file shared within sessions
     # will be the same across all runs (currently). So
@@ -189,13 +194,18 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
         electrodes_tsv = _from_tsv(fname)
 
         # cast values to str to make equality check work
-        if any([list(map(str, vals1)) != list(vals2) for vals1, vals2 in
-                zip(data.values(), electrodes_tsv.values())]):
+        if any(
+            [
+                list(map(str, vals1)) != list(vals2)
+                for vals1, vals2 in zip(data.values(), electrodes_tsv.values())
+            ]
+        ):
             raise RuntimeError(
-                f'Trying to write electrodes.tsv, but it already '
-                f'exists at {fname} and the contents do not match. '
-                f'You must differentiate this electrodes.tsv file '
-                f'from the existing one, or set "overwrite" to True.')
+                f"Trying to write electrodes.tsv, but it already "
+                f"exists at {fname} and the contents do not match. "
+                f"You must differentiate this electrodes.tsv file "
+                f'from the existing one, or set "overwrite" to True.'
+            )
     _write_tsv(fname, data, overwrite=True)
 
 
@@ -214,7 +224,7 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
     verbose : bool
         Set verbose output to True or False.
     """
-    picks = _picks_to_idx(raw.info, 'fnirs', exclude=[], allow_empty=True)
+    picks = _picks_to_idx(raw.info, "fnirs", exclude=[], allow_empty=True)
     sources = np.zeros(picks.shape)
     detectors = np.zeros(picks.shape)
     for ii in picks:
@@ -223,16 +233,18 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
         # pair, followed by the wavelength frequency.
         # The following code extracts the source and detector
         # numbers from the channel name.
-        ch1_name_info = re.match(r'S(\d+)_D(\d+) (\d+)',
-                                 raw.info['chs'][ii]['ch_name'])
+        ch1_name_info = re.match(r"S(\d+)_D(\d+) (\d+)", raw.info["chs"][ii]["ch_name"])
         sources[ii] = ch1_name_info.groups()[0]
         detectors[ii] = ch1_name_info.groups()[1]
     unique_sources = np.unique(sources)
     n_sources = len(unique_sources)
     unique_detectors = np.unique(detectors)
-    names = np.concatenate((
-        ["S" + str(s) for s in unique_sources.astype(int)],
-        ["D" + str(d) for d in unique_detectors.astype(int)]))
+    names = np.concatenate(
+        (
+            ["S" + str(s) for s in unique_sources.astype(int)],
+            ["D" + str(d) for d in unique_detectors.astype(int)],
+        )
+    )
 
     xs = np.zeros(names.shape)
     ys = np.zeros(names.shape)
@@ -249,21 +261,30 @@ def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
         zs[i + n_sources] = raw.info["chs"][d_idx]["loc"][8]
 
     ch_data = {
-        'name': names,
-        'type': np.concatenate(
-            (np.full(len(unique_sources), 'source'),
-             np.full(len(unique_detectors), 'detector'))
+        "name": names,
+        "type": np.concatenate(
+            (
+                np.full(len(unique_sources), "source"),
+                np.full(len(unique_detectors), "detector"),
+            )
         ),
-        'x': xs,
-        'y': ys,
-        'z': zs,
+        "x": xs,
+        "y": ys,
+        "z": zs,
     }
     _write_tsv(fname, ch_data, overwrite, verbose)
 
 
-def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
-                            sensor_coord_system, fname, datatype,
-                            overwrite=False):
+def _write_coordsystem_json(
+    *,
+    raw,
+    unit,
+    hpi_coord_system,
+    sensor_coord_system,
+    fname,
+    datatype,
+    overwrite=False,
+):
     """Create a coordsystem.json file and save it.
 
     Parameters
@@ -297,53 +318,55 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
         pos = montage.get_positions()
         dig = list() if montage.dig is None else montage.dig
         coords = dict(
-            NAS=list() if pos['nasion'] is None else pos['nasion'].tolist(),
-            LPA=list() if pos['lpa'] is None else pos['lpa'].tolist(),
-            RPA=list() if pos['rpa'] is None else pos['rpa'].tolist())
+            NAS=list() if pos["nasion"] is None else pos["nasion"].tolist(),
+            LPA=list() if pos["lpa"] is None else pos["lpa"].tolist(),
+            RPA=list() if pos["rpa"] is None else pos["rpa"].tolist(),
+        )
 
     # get the coordinate frame description
-    sensor_coord_system_descr = (BIDS_COORD_FRAME_DESCRIPTIONS
-                                 .get(sensor_coord_system.lower(), "n/a"))
+    sensor_coord_system_descr = BIDS_COORD_FRAME_DESCRIPTIONS.get(
+        sensor_coord_system.lower(), "n/a"
+    )
 
     # create the coordinate json data structure based on 'datatype'
-    if datatype == 'meg':
-        hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
+    if datatype == "meg":
+        hpi = {d["ident"]: d for d in dig if d["kind"] == FIFF.FIFFV_POINT_HPI}
         if hpi:
             for ident in hpi.keys():
-                coords['coil%d' % ident] = hpi[ident]['r'].tolist()
+                coords["coil%d" % ident] = hpi[ident]["r"].tolist()
 
         fid_json = {
-            'MEGCoordinateSystem': sensor_coord_system,
-            'MEGCoordinateUnits': unit,  # XXX validate this
-            'MEGCoordinateSystemDescription': sensor_coord_system_descr,
-            'HeadCoilCoordinates': coords,
-            'HeadCoilCoordinateSystem': hpi_coord_system,
-            'HeadCoilCoordinateUnits': unit,  # XXX validate this
-            'AnatomicalLandmarkCoordinates': coords,
-            'AnatomicalLandmarkCoordinateSystem': sensor_coord_system,
-            'AnatomicalLandmarkCoordinateUnits': unit
+            "MEGCoordinateSystem": sensor_coord_system,
+            "MEGCoordinateUnits": unit,  # XXX validate this
+            "MEGCoordinateSystemDescription": sensor_coord_system_descr,
+            "HeadCoilCoordinates": coords,
+            "HeadCoilCoordinateSystem": hpi_coord_system,
+            "HeadCoilCoordinateUnits": unit,  # XXX validate this
+            "AnatomicalLandmarkCoordinates": coords,
+            "AnatomicalLandmarkCoordinateSystem": sensor_coord_system,
+            "AnatomicalLandmarkCoordinateUnits": unit,
         }
-    elif datatype == 'eeg':
+    elif datatype == "eeg":
         fid_json = {
-            'EEGCoordinateSystem': sensor_coord_system,
-            'EEGCoordinateUnits': unit,
-            'EEGCoordinateSystemDescription': sensor_coord_system_descr,
-            'AnatomicalLandmarkCoordinates': coords,
-            'AnatomicalLandmarkCoordinateSystem': sensor_coord_system,
-            'AnatomicalLandmarkCoordinateUnits': unit,
+            "EEGCoordinateSystem": sensor_coord_system,
+            "EEGCoordinateUnits": unit,
+            "EEGCoordinateSystemDescription": sensor_coord_system_descr,
+            "AnatomicalLandmarkCoordinates": coords,
+            "AnatomicalLandmarkCoordinateSystem": sensor_coord_system,
+            "AnatomicalLandmarkCoordinateUnits": unit,
         }
     elif datatype == "ieeg":
         fid_json = {
             # (Other, Pixels, ACPC)
-            'iEEGCoordinateSystem': sensor_coord_system,
-            'iEEGCoordinateSystemDescription': sensor_coord_system_descr,
-            'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
+            "iEEGCoordinateSystem": sensor_coord_system,
+            "iEEGCoordinateSystemDescription": sensor_coord_system_descr,
+            "iEEGCoordinateUnits": unit,  # m (MNE), mm, cm , or pixels
         }
     elif datatype == "nirs":
         fid_json = {
-            'NIRSCoordinateSystem': sensor_coord_system,
-            'NIRSCoordinateSystemDescription': sensor_coord_system_descr,
-            'NIRSCoordinateUnits': unit,
+            "NIRSCoordinateSystem": sensor_coord_system,
+            "NIRSCoordinateSystemDescription": sensor_coord_system_descr,
+            "NIRSCoordinateUnits": unit,
         }
 
     # note that any coordsystem.json file shared within sessions
@@ -352,19 +375,19 @@ def _write_coordsystem_json(*, raw, unit, hpi_coord_system,
     # XXX: improve later when BIDS is updated
     # check that there already exists a coordsystem.json
     if Path(fname).exists() and not overwrite:
-        with open(fname, 'r', encoding='utf-8-sig') as fin:
+        with open(fname, "r", encoding="utf-8-sig") as fin:
             coordsystem_dict = json.load(fin)
         if fid_json != coordsystem_dict:
             raise RuntimeError(
-                f'Trying to write coordsystem.json, but it already '
-                f'exists at {fname} and the contents do not match. '
-                f'You must differentiate this coordsystem.json file '
-                f'from the existing one, or set "overwrite" to True.')
+                f"Trying to write coordsystem.json, but it already "
+                f"exists at {fname} and the contents do not match. "
+                f"You must differentiate this coordsystem.json file "
+                f'from the existing one, or set "overwrite" to True.'
+            )
     _write_json(fname, fid_json, overwrite=True)
 
 
-def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
-                    overwrite=False):
+def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False, overwrite=False):
     """Write BIDS formatted DigMontage from Raw instance.
 
     Handles coordsystem.json and electrodes.tsv writing
@@ -396,92 +419,114 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False,
         montage = raw.get_montage()
     else:  # assign montage to raw but supress any coordinate transforms
         montage = montage.copy()  # don't modify original
-        montage_coord_frame = montage.get_positions()['coord_frame']
-        fids = [d for d in montage.dig  # save to add back
-                if d['kind'] == FIFF.FIFFV_POINT_CARDINAL]
+        montage_coord_frame = montage.get_positions()["coord_frame"]
+        fids = [
+            d
+            for d in montage.dig  # save to add back
+            if d["kind"] == FIFF.FIFFV_POINT_CARDINAL
+        ]
         montage.remove_fiducials()  # prevent coordinate transform
         with warnings.catch_warnings():
-            warnings.filterwarnings(action='ignore', category=RuntimeWarning,
-                                    message='.*nasion not found', module='mne')
+            warnings.filterwarnings(
+                action="ignore",
+                category=RuntimeWarning,
+                message=".*nasion not found",
+                module="mne",
+            )
             raw.set_montage(montage)
-        for ch in raw.info['chs']:
-            ch['coord_frame'] = MNE_STR_TO_FRAME[montage_coord_frame]
-        for d in raw.info['dig']:
-            d['coord_frame'] = MNE_STR_TO_FRAME[montage_coord_frame]
+        for ch in raw.info["chs"]:
+            ch["coord_frame"] = MNE_STR_TO_FRAME[montage_coord_frame]
+        for d in raw.info["dig"]:
+            d["coord_frame"] = MNE_STR_TO_FRAME[montage_coord_frame]
         with raw.info._unlock():  # add back fiducials
-            raw.info['dig'] = fids + raw.info['dig']
+            raw.info["dig"] = fids + raw.info["dig"]
 
     # get the accepted mne-python coordinate frames
-    coord_frame_int = int(montage.dig[0]['coord_frame'])
+    coord_frame_int = int(montage.dig[0]["coord_frame"])
     mne_coord_frame = MNE_FRAME_TO_STR.get(coord_frame_int, None)
     coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
 
-    if coord_frame == 'CapTrak' and bids_path.datatype in ('eeg', 'nirs'):
+    if coord_frame == "CapTrak" and bids_path.datatype in ("eeg", "nirs"):
         pos = raw.get_montage().get_positions()
-        if any([pos[fid_key] is None for fid_key in ('nasion', 'lpa', 'rpa')]):
-            raise RuntimeError("'head' coordinate frame must contain nasion "
-                               "and left and right pre-auricular point "
-                               "landmarks")
+        if any([pos[fid_key] is None for fid_key in ("nasion", "lpa", "rpa")]):
+            raise RuntimeError(
+                "'head' coordinate frame must contain nasion "
+                "and left and right pre-auricular point "
+                "landmarks"
+            )
 
-    if bids_path.datatype == 'ieeg' and bids_path.space in (None, 'ACPC') and \
-            mne_coord_frame == 'ras':
+    if (
+        bids_path.datatype == "ieeg"
+        and bids_path.space in (None, "ACPC")
+        and mne_coord_frame == "ras"
+    ):
         if not acpc_aligned:
             raise RuntimeError(
-                '`acpc_aligned` is False, if your T1 is not aligned '
-                'to ACPC and the coordinates are in fact in ACPC '
-                'space there will be no way to relate the coordinates '
-                'to the T1. If the T1 is ACPC-aligned, use '
-                '`acpc_aligned=True`')
-        coord_frame = 'ACPC'
+                "`acpc_aligned` is False, if your T1 is not aligned "
+                "to ACPC and the coordinates are in fact in ACPC "
+                "space there will be no way to relate the coordinates "
+                "to the T1. If the T1 is ACPC-aligned, use "
+                "`acpc_aligned=True`"
+            )
+        coord_frame = "ACPC"
 
     if bids_path.space is None:  # no space, use MNE coord frame
         if coord_frame is None:  # if no MNE coord frame, skip
-            warn("Coordinate frame could not be inferred from the raw object "
-                 "and the BIDSPath.space was none, skipping the writing of "
-                 "channel positions")
+            warn(
+                "Coordinate frame could not be inferred from the raw object "
+                "and the BIDSPath.space was none, skipping the writing of "
+                "channel positions"
+            )
             return
     else:  # either a space and an MNE coord frame or just a space
         if coord_frame is None:  # just a space, use that
             coord_frame = bids_path.space
         else:  # space and raw have coordinate frame, check match
             if bids_path.space != coord_frame and not (
-                    coord_frame == 'fsaverage' and
-                    bids_path.space == 'MNI305'):  # fsaverage == MNI305
-                raise ValueError('Coordinates in the raw object or montage '
-                                 f'are in the {coord_frame} coordinate '
-                                 'frame but BIDSPath.space is '
-                                 f'{bids_path.space}')
+                coord_frame == "fsaverage" and bids_path.space == "MNI305"
+            ):  # fsaverage == MNI305
+                raise ValueError(
+                    "Coordinates in the raw object or montage "
+                    f"are in the {coord_frame} coordinate "
+                    "frame but BIDSPath.space is "
+                    f"{bids_path.space}"
+                )
 
     # create electrodes/coordsystem files using a subset of entities
     # that are specified for these files in the specification
     coord_file_entities = {
-        'root': bids_path.root,
-        'datatype': bids_path.datatype,
-        'subject': bids_path.subject,
-        'session': bids_path.session,
-        'acquisition': bids_path.acquisition,
-        'space': None if bids_path.datatype == 'nirs' else coord_frame
+        "root": bids_path.root,
+        "datatype": bids_path.datatype,
+        "subject": bids_path.subject,
+        "session": bids_path.session,
+        "acquisition": bids_path.acquisition,
+        "space": None if bids_path.datatype == "nirs" else coord_frame,
     }
-    channels_suffix = \
-        'optodes' if bids_path.datatype == 'nirs' else 'electrodes'
-    _channels_fun = _write_optodes_tsv if bids_path.datatype == 'nirs' else \
-        _write_electrodes_tsv
-    channels_path = BIDSPath(**coord_file_entities, suffix=channels_suffix,
-                             extension='.tsv')
-    coordsystem_path = BIDSPath(**coord_file_entities, suffix='coordsystem',
-                                extension='.json')
+    channels_suffix = "optodes" if bids_path.datatype == "nirs" else "electrodes"
+    _channels_fun = (
+        _write_optodes_tsv if bids_path.datatype == "nirs" else _write_electrodes_tsv
+    )
+    channels_path = BIDSPath(
+        **coord_file_entities, suffix=channels_suffix, extension=".tsv"
+    )
+    coordsystem_path = BIDSPath(
+        **coord_file_entities, suffix="coordsystem", extension=".json"
+    )
 
     # Now write the data to the elec coords and the coordsystem
     _channels_fun(raw, channels_path, bids_path.datatype, overwrite)
-    _write_coordsystem_json(raw=raw, unit=unit, hpi_coord_system='n/a',
-                            sensor_coord_system=coord_frame,
-                            fname=coordsystem_path,
-                            datatype=bids_path.datatype,
-                            overwrite=overwrite)
+    _write_coordsystem_json(
+        raw=raw,
+        unit=unit,
+        hpi_coord_system="n/a",
+        sensor_coord_system=coord_frame,
+        fname=coordsystem_path,
+        datatype=bids_path.datatype,
+        overwrite=overwrite,
+    )
 
 
-def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
-                   datatype, raw):
+def _read_dig_bids(electrodes_fpath, coordsystem_fpath, datatype, raw):
     """Read MNE-Python formatted DigMontage from BIDS files.
 
     Handles coordinatesystem.json and electrodes.tsv reading
@@ -501,32 +546,40 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         will be set in place.
     """
     bids_coord_frame, bids_coord_unit = _handle_coordsystem_reading(
-        coordsystem_fpath, datatype)
+        coordsystem_fpath, datatype
+    )
 
     if bids_coord_frame not in ALLOWED_SPACES[datatype]:
-        warn(f'"{bids_coord_frame}" is not a BIDS-acceptable coordinate frame '
-             f'for {datatype.upper()}. The supported coordinate frames are: '
-             '{}'.format(ALLOWED_SPACES[datatype]))
+        warn(
+            f'"{bids_coord_frame}" is not a BIDS-acceptable coordinate frame '
+            f"for {datatype.upper()}. The supported coordinate frames are: "
+            "{}".format(ALLOWED_SPACES[datatype])
+        )
         coord_frame = None
     elif bids_coord_frame in BIDS_TO_MNE_FRAMES:
         coord_frame = BIDS_TO_MNE_FRAMES.get(bids_coord_frame, None)
     else:
-        warn(f"{bids_coord_frame} is not an MNE-Python coordinate frame "
-             f"for {datatype.upper()} data and so will be set to 'unknown'")
-        coord_frame = 'unknown'
+        warn(
+            f"{bids_coord_frame} is not an MNE-Python coordinate frame "
+            f"for {datatype.upper()} data and so will be set to 'unknown'"
+        )
+        coord_frame = "unknown"
 
     # check coordinate units
     if bids_coord_unit not in BIDS_COORDINATE_UNITS:
-        warn(f"Coordinate unit is not an accepted BIDS unit for "
-             f"{electrodes_fpath}. Please specify to be one of "
-             f"{BIDS_COORDINATE_UNITS}. Skipping electrodes.tsv reading...")
+        warn(
+            f"Coordinate unit is not an accepted BIDS unit for "
+            f"{electrodes_fpath}. Please specify to be one of "
+            f"{BIDS_COORDINATE_UNITS}. Skipping electrodes.tsv reading..."
+        )
         coord_frame = None
 
     # montage is interpretable only if coordinate frame was properly parsed
     if coord_frame is not None:
         # read in electrode coordinates as a DigMontage object
-        montage = _handle_electrodes_reading(electrodes_fpath, coord_frame,
-                                             bids_coord_unit)
+        montage = _handle_electrodes_reading(
+            electrodes_fpath, coord_frame, bids_coord_unit
+        )
     else:
         montage = None
 
@@ -535,32 +588,37 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         ch_pos = montage._get_ch_pos()
         nan_chs = []
         for ch_name, ch_coord in ch_pos.items():
-            if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
+            if any(np.isnan(ch_coord)) and ch_name not in raw.info["bads"]:
                 nan_chs.append(ch_name)
         if len(nan_chs) > 0:
-            warn(f"There are channels without locations "
-                 f"(n/a) that are not marked as bad: {nan_chs}")
+            warn(
+                f"There are channels without locations "
+                f"(n/a) that are not marked as bad: {nan_chs}"
+            )
 
     # add montage to Raw object
     # XXX: Starting with mne 0.24, this will raise a RuntimeWarning
     #      if channel types are included outside of
     #      (EEG/sEEG/ECoG/DBS/fNIRS). Probably needs a fix in the future.
     with warnings.catch_warnings():
-        warnings.filterwarnings(action='ignore', category=RuntimeWarning,
-                                message='.*nasion not found', module='mne')
-        raw.set_montage(montage, on_missing='warn')
+        warnings.filterwarnings(
+            action="ignore",
+            category=RuntimeWarning,
+            message=".*nasion not found",
+            module="mne",
+        )
+        raw.set_montage(montage, on_missing="warn")
 
     # put back in unknown for unknown coordinate frame
-    if coord_frame == 'unknown':
-        for ch in raw.info['chs']:
-            ch['coord_frame'] = MNE_STR_TO_FRAME['unknown']
-        for d in raw.info['dig']:
-            d['coord_frame'] = MNE_STR_TO_FRAME['unknown']
+    if coord_frame == "unknown":
+        for ch in raw.info["chs"]:
+            ch["coord_frame"] = MNE_STR_TO_FRAME["unknown"]
+        for d in raw.info["dig"]:
+            d["coord_frame"] = MNE_STR_TO_FRAME["unknown"]
 
 
 @verbose
-def template_to_head(info, space, coord_frame='auto', unit='auto',
-                     verbose=None):
+def template_to_head(info, space, coord_frame="auto", unit="auto", verbose=None):
     """Transform a BIDS standard template montage to the head coordinate frame.
 
     Parameters
@@ -601,58 +659,53 @@ def template_to_head(info, space, coord_frame='auto', unit='auto',
 
     """
     _validate_type(info, mne.io.Info)
-    _check_option('space', space, BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
-    _check_option('coord_frame', coord_frame,
-                  ('auto', 'mri', 'mri_voxel', 'ras'))
-    _check_option('unit', unit, ('auto', 'm', 'mm'))
+    _check_option("space", space, BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
+    _check_option("coord_frame", coord_frame, ("auto", "mri", "mri_voxel", "ras"))
+    _check_option("unit", unit, ("auto", "m", "mm"))
     montage = info.get_montage()
     if montage is None:
-        raise RuntimeError('No montage found in the `raw` object')
+        raise RuntimeError("No montage found in the `raw` object")
     montage.remove_fiducials()  # we will add fiducials so remove any
     pos = montage.get_positions()
-    if pos['coord_frame'] not in ('mni_tal', 'unknown'):
+    if pos["coord_frame"] not in ("mni_tal", "unknown"):
         raise RuntimeError(
             "Montage coordinate frame '{}' not expected for a template "
-            "montage, should be 'unknown' or 'mni_tal'".format(
-                pos['coord_frame']))
-    locs = np.array(list(pos['ch_pos'].values()))
+            "montage, should be 'unknown' or 'mni_tal'".format(pos["coord_frame"])
+        )
+    locs = np.array(list(pos["ch_pos"].values()))
     locs = locs[~np.any(np.isnan(locs), axis=1)]  # only channels with loc
     if locs.size == 0:
-        raise RuntimeError('No channel locations found in the montage')
-    if unit == 'auto':
-        unit = 'm' if abs(locs - locs.mean(axis=0)).max() < 1 else 'mm'
-    if coord_frame == 'auto':
-        coord_frame = 'mri_voxel' if locs.min() >= 0 else 'ras'
+        raise RuntimeError("No channel locations found in the montage")
+    if unit == "auto":
+        unit = "m" if abs(locs - locs.mean(axis=0)).max() < 1 else "mm"
+    if coord_frame == "auto":
+        coord_frame = "mri_voxel" if locs.min() >= 0 else "ras"
     # transform montage to head
     # set to the right coordinate frame as specified by the user
     for d in montage.dig:  # ensure same coordinate frame
-        d['coord_frame'] = MNE_STR_TO_FRAME[coord_frame]
+        d["coord_frame"] = MNE_STR_TO_FRAME[coord_frame]
     # do the transforms, first ras -> vox if needed
-    if montage.get_positions()['coord_frame'] == 'ras':
-        ras_vox_trans = mne.read_trans(
-            data_dir / f'space-{space}_ras-vox_trans.fif')
-        if unit == 'm':  # must be in mm here
+    if montage.get_positions()["coord_frame"] == "ras":
+        ras_vox_trans = mne.read_trans(data_dir / f"space-{space}_ras-vox_trans.fif")
+        if unit == "m":  # must be in mm here
             for d in montage.dig:
-                d['r'] *= 1000
+                d["r"] *= 1000
         montage.apply_trans(ras_vox_trans)
-    if montage.get_positions()['coord_frame'] == 'mri_voxel':
-        vox_mri_trans = mne.read_trans(
-            data_dir / f'space-{space}_vox-mri_trans.fif')
+    if montage.get_positions()["coord_frame"] == "mri_voxel":
+        vox_mri_trans = mne.read_trans(data_dir / f"space-{space}_vox-mri_trans.fif")
         montage.apply_trans(vox_mri_trans)
-    assert montage.get_positions()['coord_frame'] == 'mri'
-    if not (unit == 'm' and coord_frame == 'mri'):  # if so, already in m
+    assert montage.get_positions()["coord_frame"] == "mri"
+    if not (unit == "m" and coord_frame == "mri"):  # if so, already in m
         for d in montage.dig:
-            d['r'] /= 1000  # mm -> m
+            d["r"] /= 1000  # mm -> m
     # now add fiducials (in mri coordinates)
-    fids = mne.io.read_fiducials(
-        data_dir / f'space-{space}_fiducials.fif'
-    )[0]
+    fids = mne.io.read_fiducials(data_dir / f"space-{space}_fiducials.fif")[0]
     montage.dig = fids + montage.dig  # add fiducials
     for fid in fids:  # ensure also in mri
-        fid['coord_frame'] = MNE_STR_TO_FRAME['mri']
+        fid["coord_frame"] = MNE_STR_TO_FRAME["mri"]
     info.set_montage(montage)  # transform to head
     # finally return montage
-    return info, mne.read_trans(data_dir / f'space-{space}_trans.fif')
+    return info, mne.read_trans(data_dir / f"space-{space}_trans.fif")
 
 
 @verbose
@@ -667,29 +720,31 @@ def convert_montage_to_ras(montage, subject, subjects_dir=None, verbose=None):
     %(subjects_dir)s
     %(verbose)s
     """
-    nib = _import_nibabel('converting a montage to RAS')
+    nib = _import_nibabel("converting a montage to RAS")
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    T1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+    T1_fname = op.join(subjects_dir, subject, "mri", "T1.mgz")
     if not op.isfile(T1_fname):
-        raise RuntimeError(f'Freesurfer subject ({subject}) and/or '
-                           f'subjects_dir ({subjects_dir}, incorrectly '
-                           'formatted, T1.mgz not found')
+        raise RuntimeError(
+            f"Freesurfer subject ({subject}) and/or "
+            f"subjects_dir ({subjects_dir}, incorrectly "
+            "formatted, T1.mgz not found"
+        )
     T1 = nib.load(T1_fname)
 
     # transform from "mri" (Freesurfer surface RAS) to "ras" (scanner RAS)
     mri_vox_t = np.linalg.inv(T1.header.get_vox2ras_tkr())
     mri_vox_t[:3, :3] *= 1000  # scale from mm to m
-    mri_vox_trans = mne.transforms.Transform(
-        fro='mri', to='mri_voxel', trans=mri_vox_t)
+    mri_vox_trans = mne.transforms.Transform(fro="mri", to="mri_voxel", trans=mri_vox_t)
 
     vox_ras_t = T1.header.get_vox2ras()
     vox_ras_t[:3] /= 1000  # scale from mm to m
-    vox_ras_trans = mne.transforms.Transform(
-        fro='mri_voxel', to='ras', trans=vox_ras_t)
+    vox_ras_trans = mne.transforms.Transform(fro="mri_voxel", to="ras", trans=vox_ras_t)
     montage.apply_trans(  # mri->vox + vox->ras = mri->ras
-        mne.transforms.combine_transforms(mri_vox_trans, vox_ras_trans,
-                                          fro='mri', to='ras'))
+        mne.transforms.combine_transforms(
+            mri_vox_trans, vox_ras_trans, fro="mri", to="ras"
+        )
+    )
 
 
 @verbose
@@ -710,26 +765,28 @@ def convert_montage_to_mri(montage, subject, subjects_dir=None, verbose=None):
         The transformation matrix from ``'ras'`` (``scanner RAS``) to
         ``'mri'`` (``surface RAS``).
     """
-    nib = _import_nibabel('converting a montage to MRI')
+    nib = _import_nibabel("converting a montage to MRI")
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    T1_fname = op.join(subjects_dir, subject, 'mri', 'T1.mgz')
+    T1_fname = op.join(subjects_dir, subject, "mri", "T1.mgz")
     if not op.isfile(T1_fname):
-        raise RuntimeError(f'Freesurfer subject ({subject}) and/or '
-                           f'subjects_dir ({subjects_dir}, incorrectly '
-                           'formatted, T1.mgz not found')
+        raise RuntimeError(
+            f"Freesurfer subject ({subject}) and/or "
+            f"subjects_dir ({subjects_dir}, incorrectly "
+            "formatted, T1.mgz not found"
+        )
     T1 = nib.load(T1_fname)
 
     # transform from "ras" (scanner RAS) to "mri" (Freesurfer surface RAS)
     ras_vox_t = T1.header.get_ras2vox()
     ras_vox_t[:3, :3] *= 1000  # scale from mm to m
-    ras_vox_trans = mne.transforms.Transform(
-        fro='ras', to='mri_voxel', trans=ras_vox_t)
+    ras_vox_trans = mne.transforms.Transform(fro="ras", to="mri_voxel", trans=ras_vox_t)
 
     vox_mri_t = T1.header.get_vox2ras_tkr()
     vox_mri_t[:3] /= 1000  # scale from mm to m
-    vox_mri_trans = mne.transforms.Transform(
-        fro='mri_voxel', to='mri', trans=vox_mri_t)
+    vox_mri_trans = mne.transforms.Transform(fro="mri_voxel", to="mri", trans=vox_mri_t)
     montage.apply_trans(  # ras->vox + vox->mri = ras->mri
-        mne.transforms.combine_transforms(ras_vox_trans, vox_mri_trans,
-                                          fro='ras', to='mri'))
+        mne.transforms.combine_transforms(
+            ras_vox_trans, vox_mri_trans, fro="ras", to="mri"
+        )
+    )

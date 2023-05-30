@@ -25,9 +25,13 @@ import shutil
 import mne
 from mne.datasets import eegbci
 
-from mne_bids import (write_raw_bids, BIDSPath,
-                      get_anonymization_daysback, make_report,
-                      print_dir_tree)
+from mne_bids import (
+    write_raw_bids,
+    BIDSPath,
+    get_anonymization_daysback,
+    make_report,
+    print_dir_tree,
+)
 from mne_bids.stats import count_events
 
 # %%
@@ -39,8 +43,8 @@ subject_ids = [1, 2]
 # documentation to get the 1st, 2nd, and 3rd run of one of the the motor
 # imagery task
 runs = [
-    4,   # This is run #1 of imagining to open/close left or right fist
-    8,   # ... run #2
+    4,  # This is run #1 of imagining to open/close left or right fist
+    8,  # ... run #2
     12,  # ... run #3
 ]
 
@@ -51,14 +55,14 @@ for subject_id in subject_ids:
     eegbci.load_data(subject=subject_id, runs=runs, update_path=True)
 
 # get path to MNE directory with the downloaded example data
-mne_data_dir = mne.get_config('MNE_DATASETS_EEGBCI_PATH')
-data_dir = op.join(mne_data_dir, 'MNE-eegbci-data')
+mne_data_dir = mne.get_config("MNE_DATASETS_EEGBCI_PATH")
+data_dir = op.join(mne_data_dir, "MNE-eegbci-data")
 
 # %%
 # Let us loop over the subjects and create BIDS-compatible folder
 
 # Make a path where we can save the data to
-bids_root = op.join(mne_data_dir, 'eegmmidb_bids_group_conversion')
+bids_root = op.join(mne_data_dir, "eegmmidb_bids_group_conversion")
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -81,12 +85,15 @@ for subject_id in subject_ids:
     for run in runs:
         raw_fname = eegbci.load_data(subject=subject_id, runs=run)[0]
         raw = mne.io.read_raw_edf(raw_fname)
-        raw.info['line_freq'] = 50  # specify power line frequency
+        raw.info["line_freq"] = 50  # specify power line frequency
         raw_list.append(raw)
-        bids_path = BIDSPath(subject=f'{subject_id:03}',
-                             session='01', task='MotorImagery',
-                             run=f'{run_map[run]:02}',
-                             root=bids_root)
+        bids_path = BIDSPath(
+            subject=f"{subject_id:03}",
+            session="01",
+            task="MotorImagery",
+            run=f"{run_map[run]:02}",
+            root=bids_root,
+        )
         bids_list.append(bids_path)
 
 daysback_min, daysback_max = get_anonymization_daysback(raw_list)
@@ -101,9 +108,9 @@ for raw, bids_path in zip(raw_list, bids_list):
     # Note that we do not need to pass any events, as the dataset is already
     # equipped with annotations, which will be converted to BIDS events
     # automatically.
-    write_raw_bids(raw, bids_path,
-                   anonymize=dict(daysback=daysback_min + 2117),
-                   overwrite=True)
+    write_raw_bids(
+        raw, bids_path, anonymize=dict(daysback=daysback_min + 2117), overwrite=True
+    )
 
 # %%
 # Now let's see the structure of the BIDS folder we created.
