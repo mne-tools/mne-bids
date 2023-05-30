@@ -531,8 +531,13 @@ modify BIDS-formatted data.</p>
 <p>We are importing everything we need for this example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">somato</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">,</span> <a href="../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">update_sidecar_json</span></a><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span>
+    <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">update_sidecar_json</span></a><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>We will be using the <a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html">MNE somato data</a>, which
@@ -549,6 +554,94 @@ BIDS dataset.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for somato...
+
+  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+  0%|▏                                     | 2.10M/611M [00:00&lt;00:29, 20.6MB/s]
+  1%|▎                                     | 5.76M/611M [00:00&lt;00:20, 29.1MB/s]
+  2%|▋                                     | 11.7M/611M [00:00&lt;00:14, 42.7MB/s]
+  3%|█                                     | 17.9M/611M [00:00&lt;00:11, 50.3MB/s]
+  4%|█▍                                    | 23.0M/611M [00:00&lt;00:12, 48.5MB/s]
+  5%|█▊                                    | 28.3M/611M [00:00&lt;00:11, 50.1MB/s]
+  6%|██▏                                   | 35.1M/611M [00:00&lt;00:10, 55.9MB/s]
+  7%|██▋                                   | 42.7M/611M [00:00&lt;00:09, 62.1MB/s]
+  8%|███▏                                  | 50.4M/611M [00:00&lt;00:08, 66.8MB/s]
+ 10%|███▌                                  | 58.2M/611M [00:01&lt;00:07, 70.0MB/s]
+ 11%|████                                  | 65.9M/611M [00:01&lt;00:07, 72.4MB/s]
+ 12%|████▌                                 | 73.5M/611M [00:01&lt;00:07, 73.5MB/s]
+ 13%|█████                                 | 80.9M/611M [00:01&lt;00:07, 70.5MB/s]
+ 14%|█████▍                                | 88.1M/611M [00:01&lt;00:07, 71.0MB/s]
+ 16%|█████▉                                | 95.6M/611M [00:01&lt;00:07, 72.0MB/s]
+ 17%|██████▌                                | 103M/611M [00:01&lt;00:06, 72.9MB/s]
+ 18%|███████                                | 111M/611M [00:01&lt;00:06, 73.7MB/s]
+ 19%|███████▌                               | 118M/611M [00:01&lt;00:06, 74.4MB/s]
+ 21%|████████                               | 126M/611M [00:01&lt;00:06, 75.4MB/s]
+ 22%|████████▌                              | 134M/611M [00:02&lt;00:06, 75.3MB/s]
+ 23%|█████████                              | 141M/611M [00:02&lt;00:06, 73.0MB/s]
+ 24%|█████████▍                             | 148M/611M [00:02&lt;00:06, 70.2MB/s]
+ 25%|█████████▉                             | 155M/611M [00:02&lt;00:06, 67.9MB/s]
+ 27%|██████████▍                            | 163M/611M [00:02&lt;00:06, 69.1MB/s]
+ 28%|██████████▊                            | 170M/611M [00:02&lt;00:06, 70.6MB/s]
+ 29%|███████████▎                           | 178M/611M [00:02&lt;00:06, 71.8MB/s]
+ 30%|███████████▊                           | 185M/611M [00:02&lt;00:05, 73.0MB/s]
+ 32%|████████████▎                          | 193M/611M [00:02&lt;00:05, 73.8MB/s]
+ 33%|████████████▊                          | 200M/611M [00:02&lt;00:05, 74.2MB/s]
+ 34%|█████████████▎                         | 208M/611M [00:03&lt;00:05, 74.5MB/s]
+ 35%|█████████████▊                         | 215M/611M [00:03&lt;00:05, 74.7MB/s]
+ 37%|██████████████▏                        | 223M/611M [00:03&lt;00:05, 75.1MB/s]
+ 38%|██████████████▋                        | 230M/611M [00:03&lt;00:05, 75.2MB/s]
+ 39%|███████████████▏                       | 238M/611M [00:03&lt;00:04, 75.3MB/s]
+ 40%|███████████████▋                       | 246M/611M [00:03&lt;00:04, 75.3MB/s]
+ 41%|████████████████▏                      | 253M/611M [00:03&lt;00:04, 75.4MB/s]
+ 43%|████████████████▋                      | 261M/611M [00:03&lt;00:04, 75.6MB/s]
+ 44%|█████████████████▏                     | 268M/611M [00:03&lt;00:04, 75.6MB/s]
+ 45%|█████████████████▌                     | 276M/611M [00:03&lt;00:04, 75.7MB/s]
+ 46%|██████████████████                     | 283M/611M [00:04&lt;00:04, 75.6MB/s]
+ 48%|██████████████████▌                    | 291M/611M [00:04&lt;00:04, 75.6MB/s]
+ 49%|███████████████████                    | 299M/611M [00:04&lt;00:04, 75.9MB/s]
+ 50%|███████████████████▌                   | 306M/611M [00:04&lt;00:04, 75.9MB/s]
+ 51%|████████████████████                   | 314M/611M [00:04&lt;00:03, 76.0MB/s]
+ 53%|████████████████████▌                  | 321M/611M [00:04&lt;00:03, 76.0MB/s]
+ 54%|█████████████████████                  | 329M/611M [00:04&lt;00:03, 75.8MB/s]
+ 55%|█████████████████████▌                 | 337M/611M [00:04&lt;00:03, 76.0MB/s]
+ 56%|█████████████████████▉                 | 344M/611M [00:04&lt;00:03, 76.1MB/s]
+ 58%|██████████████████████▍                | 352M/611M [00:04&lt;00:03, 76.1MB/s]
+ 59%|██████████████████████▉                | 360M/611M [00:05&lt;00:03, 76.2MB/s]
+ 60%|███████████████████████▍               | 367M/611M [00:05&lt;00:03, 76.2MB/s]
+ 61%|███████████████████████▉               | 375M/611M [00:05&lt;00:03, 76.1MB/s]
+ 63%|████████████████████████▍              | 383M/611M [00:05&lt;00:02, 76.1MB/s]
+ 64%|████████████████████████▉              | 390M/611M [00:05&lt;00:02, 76.2MB/s]
+ 65%|█████████████████████████▍             | 398M/611M [00:05&lt;00:02, 76.2MB/s]
+ 66%|█████████████████████████▉             | 405M/611M [00:05&lt;00:02, 75.0MB/s]
+ 68%|██████████████████████████▍            | 413M/611M [00:05&lt;00:03, 64.6MB/s]
+ 69%|██████████████████████████▊            | 420M/611M [00:05&lt;00:02, 67.1MB/s]
+ 70%|███████████████████████████▎           | 428M/611M [00:06&lt;00:02, 70.0MB/s]
+ 71%|███████████████████████████▊           | 436M/611M [00:06&lt;00:02, 72.2MB/s]
+ 73%|████████████████████████████▎          | 443M/611M [00:06&lt;00:02, 73.2MB/s]
+ 74%|████████████████████████████▊          | 451M/611M [00:06&lt;00:02, 73.8MB/s]
+ 75%|█████████████████████████████▎         | 459M/611M [00:06&lt;00:02, 74.7MB/s]
+ 76%|█████████████████████████████▊         | 466M/611M [00:06&lt;00:01, 75.0MB/s]
+ 78%|██████████████████████████████▎        | 474M/611M [00:06&lt;00:01, 75.2MB/s]
+ 79%|██████████████████████████████▋        | 481M/611M [00:06&lt;00:01, 75.2MB/s]
+ 80%|███████████████████████████████▏       | 489M/611M [00:06&lt;00:01, 75.5MB/s]
+ 81%|███████████████████████████████▋       | 496M/611M [00:06&lt;00:01, 75.6MB/s]
+ 83%|████████████████████████████████▏      | 504M/611M [00:07&lt;00:01, 75.8MB/s]
+ 84%|████████████████████████████████▋      | 512M/611M [00:07&lt;00:01, 75.9MB/s]
+ 85%|█████████████████████████████████▏     | 519M/611M [00:07&lt;00:01, 75.9MB/s]
+ 86%|█████████████████████████████████▋     | 527M/611M [00:07&lt;00:01, 76.0MB/s]
+ 88%|██████████████████████████████████▏    | 535M/611M [00:07&lt;00:01, 71.7MB/s]
+ 89%|██████████████████████████████████▌    | 542M/611M [00:07&lt;00:01, 68.3MB/s]
+ 90%|███████████████████████████████████    | 549M/611M [00:07&lt;00:00, 68.0MB/s]
+ 91%|███████████████████████████████████▌   | 556M/611M [00:07&lt;00:00, 69.5MB/s]
+ 92%|███████████████████████████████████▉   | 563M/611M [00:07&lt;00:00, 69.8MB/s]
+ 93%|████████████████████████████████████▍  | 570M/611M [00:07&lt;00:00, 71.1MB/s]
+ 95%|████████████████████████████████████▉  | 578M/611M [00:08&lt;00:00, 66.5MB/s]
+ 96%|█████████████████████████████████████▎ | 584M/611M [00:08&lt;00:00, 64.1MB/s]
+ 97%|█████████████████████████████████████▋ | 591M/611M [00:08&lt;00:00, 56.8MB/s]
+ 98%|██████████████████████████████████████ | 597M/611M [00:08&lt;00:00, 55.2MB/s]
+ 99%|██████████████████████████████████████▌| 604M/611M [00:08&lt;00:00, 59.1MB/s]
+  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+100%|███████████████████████████████████████| 611M/611M [00:00&lt;00:00, 2.30TB/s]
+Download complete in 15s (582.2 MB)
 </pre></div>
 </div>
 </section>
@@ -615,19 +708,18 @@ analysis).
 all matching metadata fields within the BIDS dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Search for all matching BIDSPaths in the root directory</span>
 <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html#mne.datasets.somato.data_path" title="mne.datasets.somato.data_path" class="sphx-glr-backref-module-mne-datasets-somato sphx-glr-backref-type-py-function"><span class="n">somato</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extension</span></a> <span class="o">=</span> <span class="s1">&#39;.fif&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extension</span></a> <span class="o">=</span> <span class="s2">&quot;.fif&quot;</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_paths</span></a> <span class="o">=</span> <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="p">,</span>
-                                 <span class="n">extensions</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extension</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_paths</span></a> <span class="o">=</span> <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extension</span></a><span class="p">)</span>
 <span class="c1"># We can now retrieve a list of all MEG-related files in the dataset:</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_paths</span></a><span class="p">)</span>
 
 <span class="c1"># Define a sidecar update as a dictionary</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;PowerLineFrequency&#39;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
-    <span class="s1">&#39;Manufacturer&#39;</span><span class="p">:</span> <span class="s2">&quot;MEGIN&quot;</span><span class="p">,</span>
-    <span class="s1">&#39;InstitutionName&#39;</span><span class="p">:</span> <span class="s2">&quot;Martinos Center&quot;</span>
+    <span class="s2">&quot;PowerLineFrequency&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="s2">&quot;Manufacturer&quot;</span><span class="p">:</span> <span class="s2">&quot;MEGIN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;InstitutionName&quot;</span><span class="p">:</span> <span class="s2">&quot;Martinos Center&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># Note: ``update_sidecar_json`` will perform essentially a</span>
@@ -639,7 +731,7 @@ all matching metadata fields within the BIDS dataset.</p>
 <span class="c1">#</span>
 <span class="c1"># Now update all sidecar fields according to our updating dictionary</span>
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_paths</span></a><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sidecar_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extension</span></a><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sidecar_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span></a><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extension</span></a><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">)</span>
 <a href="../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">update_sidecar_json</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sidecar_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -655,7 +747,7 @@ Writing &#39;/home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-soma
 <h2>Read the updated dataset<a class="headerlink" href="#read-the-updated-dataset" title="Permalink to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># new line frequency is now 60 Hz</span>
 <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_meg.fif...
@@ -692,8 +784,8 @@ analysis).
 </div>
 <p>We can revert the changes by updating the sidecar again.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># update the sidecar data to have a new PowerLineFrequency</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="p">[</span><span class="s1">&#39;Manufacturer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Elekta&quot;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="p">[</span><span class="s1">&#39;PowerLineFrequency&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="p">[</span><span class="s2">&quot;Manufacturer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Elekta&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="p">[</span><span class="s2">&quot;PowerLineFrequency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>
 <a href="../generated/mne_bids.update_sidecar_json.html#mne_bids.update_sidecar_json" title="mne_bids.update_sidecar_json" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">update_sidecar_json</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sidecar_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">entries</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -704,7 +796,7 @@ analysis).
 <code class="docutils literal notranslate"><span class="pre">update_sidecar_json</span></code> was called, the metadata will be updated.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The power line frequency should now change back to 50 Hz</span>
 <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">])</span>
 
 <span class="c1"># Generate the report with updated fields</span>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">))</span>
@@ -735,7 +827,7 @@ were on average 316.0 (std = 0.0) recording channels per scan, out of which
 analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.083 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  15.867 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-update-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/update_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>

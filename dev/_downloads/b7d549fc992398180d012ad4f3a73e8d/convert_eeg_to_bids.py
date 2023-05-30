@@ -68,8 +68,8 @@ eegbci.load_data(subject=subject, runs=run, update_path=True)
 # of the directory tree.
 
 # get MNE directory with example data
-mne_data_dir = mne.get_config('MNE_DATASETS_EEGBCI_PATH')
-data_dir = op.join(mne_data_dir, 'MNE-eegbci-data')
+mne_data_dir = mne.get_config("MNE_DATASETS_EEGBCI_PATH")
+data_dir = op.join(mne_data_dir, "MNE-eegbci-data")
 
 print_dir_tree(data_dir)
 
@@ -98,7 +98,7 @@ print_dir_tree(data_dir)
 # Load the data from "2 minutes eyes closed rest"
 edf_path = eegbci.load_data(subject=subject, runs=run)[0]
 raw = mne.io.read_raw_edf(edf_path, preload=False)
-raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
+raw.info["line_freq"] = 50  # specify power line frequency as required by BIDS
 
 # %%
 # For the sake of the example we will also pretend that we have the electrode
@@ -116,7 +116,7 @@ raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
 # Get the electrode coordinates
 testing_data = mne.datasets.testing.data_path()
-captrak_path = op.join(testing_data, 'montage', 'captrak_coords.bvct')
+captrak_path = op.join(testing_data, "montage", "captrak_coords.bvct")
 montage = mne.channels.read_dig_captrak(captrak_path)
 
 # Rename the montage channel names only for this example, because as said
@@ -154,11 +154,11 @@ print(write_raw_bids.__doc__)
 # In the second run of the experiment, the task was to rest with closed eyes.
 
 # zero padding to account for >100 subjects in this dataset
-subject_id = '001'
+subject_id = "001"
 
 # define a task name and a directory where to save the data to
-task = 'RestEyesClosed'
-bids_root = op.join(mne_data_dir, 'eegmmidb_bids_eeg_example')
+task = "RestEyesClosed"
+bids_root = op.join(mne_data_dir, "eegmmidb_bids_eeg_example")
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -220,8 +220,8 @@ counts
 #
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = op.join(bids_root, 'README')
-with open(readme, 'r', encoding='utf-8-sig') as fid:
+readme = op.join(bids_root, "README")
+with open(readme, "r", encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
 

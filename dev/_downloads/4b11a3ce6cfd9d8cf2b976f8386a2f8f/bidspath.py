@@ -36,7 +36,7 @@ from mne_bids import BIDSPath
 
 # We are using a pathlib.Path object for convenience, but you could just use
 # a string to specify ``bids_root`` here.
-bids_root = Path(mne_bids.__file__).parent / 'tests' / 'data' / 'tiny_bids'
+bids_root = Path(mne_bids.__file__).parent / "tests" / "data" / "tiny_bids"
 
 # %%
 # This refers to a folder named ``my_bids_root`` in the current working
@@ -51,7 +51,7 @@ print(bids_path.root)
 # identifiers**. We can either create a new ``BIDSPath``, or update our
 # existing one. The value can be retrieved via the ``.subject`` attribute.
 
-subject = '01'
+subject = "01"
 
 # Option 1: Create an entirely new BIDSPath.
 bids_path_new = BIDSPath(subject=subject, root=bids_root)
@@ -72,7 +72,7 @@ print(bids_path.subject)
 # information on our experimental session, and try to retrieve it again via
 # ``.session``.
 
-session = 'eeg'
+session = "eeg"
 bids_path.update(session=session)
 print(bids_path.session)
 
@@ -84,7 +84,7 @@ print(bids_path.session)
 # using `mne_bids.write_raw_bids`. For the sake of this example, however, we
 # are going to specify the data type explicitly.
 
-datatype = 'eeg'
+datatype = "eeg"
 bids_path.update(datatype=datatype)
 print(bids_path.datatype)
 
@@ -128,7 +128,7 @@ bids_path.entities
 # and implies that no value has been set. Let us add a ``run`` entity, and
 # remove the ``session``:
 
-run = '01'
+run = "01"
 session = None
 bids_path.update(run=run, session=session)
 bids_path
@@ -151,7 +151,7 @@ print(bids_path.fpath)
 # For now, let's revert to the last working iteration of our ``bids_path``
 # instance.
 
-bids_path.update(run=None, session='eeg')
+bids_path.update(run=None, session="eeg")
 print(bids_path.fpath)
 
 # %%
@@ -171,7 +171,7 @@ print(bids_path.fpath)
 # ``.tsv``.
 # Let's put our new knowledge to use!
 
-bids_path.update(suffix='eeg', extension='.vhdr')
+bids_path.update(suffix="eeg", extension=".vhdr")
 print(bids_path.fpath)
 bids_path
 

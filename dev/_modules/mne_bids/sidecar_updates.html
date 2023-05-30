@@ -492,9 +492,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">DigMontage</span><span class="p">,</span> <span class="n">make_dig_montage</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">_check_on_missing</span><span class="p">,</span> <span class="n">_on_missing</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">_check_on_missing</span><span class="p">,</span> <span class="n">_on_missing</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
 
@@ -573,32 +571,31 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># get all matching json files</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Only works for &quot;.json&quot; files. The &#39;</span>
-                           <span class="s1">&#39;BIDSPath object passed in has &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span><span class="si">}</span><span class="s1"> extension.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">!=</span> <span class="s2">&quot;.json&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s1">&#39;Only works for &quot;.json&quot; files. The &#39;</span>
+            <span class="s2">&quot;BIDSPath object passed in has &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span><span class="si">}</span><span class="s2"> extension.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># get the file path</span>
     <span class="n">fpath</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Sidecar file does not &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;exist for </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sidecar file does not &quot;</span> <span class="sa">f</span><span class="s2">&quot;exist for </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
     <span class="c1"># sidecar update either from file, or as dictionary</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">sidecar_tmp</span> <span class="o">=</span> <span class="n">entries</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
-            <span class="n">sidecar_tmp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-                <span class="n">tmp_f</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
+            <span class="n">sidecar_tmp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tmp_f</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">sidecar_tmp</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Updating </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
 
     <span class="c1"># load in sidecar filepath</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
-        <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-            <span class="n">tmp_f</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
+        <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tmp_f</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
 
     <span class="c1"># update sidecar JSON file with the fields passed in</span>
     <span class="n">sidecar_json</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">sidecar_tmp</span><span class="p">)</span>
@@ -619,7 +616,7 @@ document.write(`
 <span class="sd">    val : str</span>
 <span class="sd">        The corresponding value to change to in the sidecar JSON file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
     <span class="n">sidecar_json</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="n">_write_json</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">sidecar_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -627,8 +624,14 @@ document.write(`
 
 <div class="viewcode-block" id="update_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.update_anat_landmarks.html#mne_bids.update_anat_landmarks">[docs]</a><span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">update_anat_landmarks</span><span class="p">(</span>
-    <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_missing</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">bids_path</span><span class="p">,</span>
+    <span class="n">landmarks</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">on_missing</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update the anatomical landmark coordinates of an MRI scan.</span>
 
@@ -684,9 +687,9 @@ document.write(`
 <span class="sd">    -----</span>
 <span class="sd">    .. versionadded:: 0.8</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;bids_path&#39;</span><span class="p">)</span>
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">item</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">&quot;bids_path&quot;</span><span class="p">)</span>
     <span class="n">_validate_type</span><span class="p">(</span>
-        <span class="n">item</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">DigMontage</span><span class="p">,</span> <span class="s1">&#39;path-like&#39;</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;landmarks&#39;</span>
+        <span class="n">item</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">DigMontage</span><span class="p">,</span> <span class="s2">&quot;path-like&quot;</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">&quot;landmarks&quot;</span>
     <span class="p">)</span>
     <span class="n">_check_on_missing</span><span class="p">(</span><span class="n">on_missing</span><span class="p">)</span>
 
@@ -696,22 +699,25 @@ document.write(`
     <span class="c1"># XXX full specification of all parts of the BIDSPath, thoughts?</span>
     <span class="n">bids_path_mri</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;anat&#39;</span>
+        <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s2">&quot;anat&quot;</span>
 
-    <span class="k">if</span> <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="s1">&#39;anat&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="s2">&quot;anat&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;Can only operate on &quot;anat&quot; MRI data, but the provided bids_path &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;points to: </span><span class="si">{</span><span class="n">bids_path_mri</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;points to: </span><span class="si">{</span><span class="n">bids_path_mri</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Please specify the &quot;suffix&quot; entity of the provided &#39;</span>
-                         <span class="s1">&#39;bids_path.&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="s1">&#39;FLASH&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;Please specify the &quot;suffix&quot; entity of the provided &#39;</span> <span class="s2">&quot;bids_path.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;T1w&quot;</span><span class="p">,</span> <span class="s2">&quot;FLASH&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;Can only operate on &quot;T1w&quot; and &quot;FLASH&quot; images, but the bids_path &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;suffix indicates: </span><span class="si">{</span><span class="n">bids_path_mri</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;suffix indicates: </span><span class="si">{</span><span class="n">bids_path_mri</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-    <span class="n">valid_extensions</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+    <span class="n">valid_extensions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;.nii&quot;</span><span class="p">,</span> <span class="s2">&quot;.nii.gz&quot;</span><span class="p">)</span>
     <span class="n">tried_paths</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">file_exists</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">bids_path_mri</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -731,35 +737,37 @@ document.write(`
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">file_exists</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Could not find an MRI scan. Please check the provided &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;bids_path. Tried the following filenames: &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tried_paths</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not find an MRI scan. Please check the provided &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;bids_path. Tried the following filenames: &quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">tried_paths</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">DigMontage</span><span class="p">):</span>  <span class="c1"># it&#39;s pathlike</span>
         <span class="k">if</span> <span class="n">fs_subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">&#39;You must provide the &quot;fs_subject&quot; parameter when passing the &#39;</span>
-                <span class="s1">&#39;path to fiducials&#39;</span>
+                <span class="s2">&quot;path to fiducials&quot;</span>
             <span class="p">)</span>
         <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_get_landmarks_from_fiducials_file</span><span class="p">(</span>
             <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
             <span class="n">fname</span><span class="o">=</span><span class="n">landmarks</span><span class="p">,</span>
             <span class="n">fs_subject</span><span class="o">=</span><span class="n">fs_subject</span><span class="p">,</span>
-            <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="n">fs_subjects_dir</span>
+            <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="n">fs_subjects_dir</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">positions</span> <span class="o">=</span> <span class="n">landmarks</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
-    <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">!=</span> <span class="s1">&#39;mri_voxel&#39;</span><span class="p">:</span>
+    <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="s2">&quot;coord_frame&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">!=</span> <span class="s2">&quot;mri_voxel&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;The landmarks must be specified in MRI voxel coordinates, but &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;provided DigMontage is in &quot;</span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;The landmarks must be specified in MRI voxel coordinates, but &quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;provided DigMontage is in &quot;</span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="p">)</span>
 
     <span class="c1"># Extract the cardinal points</span>
     <span class="n">name_to_coords_map</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;LPA&#39;</span><span class="p">:</span> <span class="n">positions</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;NAS&#39;</span><span class="p">:</span> <span class="n">positions</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;RPA&#39;</span><span class="p">:</span> <span class="n">positions</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]</span>
+        <span class="s2">&quot;LPA&quot;</span><span class="p">:</span> <span class="n">positions</span><span class="p">[</span><span class="s2">&quot;lpa&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;NAS&quot;</span><span class="p">:</span> <span class="n">positions</span><span class="p">[</span><span class="s2">&quot;nasion&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;RPA&quot;</span><span class="p">:</span> <span class="n">positions</span><span class="p">[</span><span class="s2">&quot;rpa&quot;</span><span class="p">],</span>
     <span class="p">}</span>
 
     <span class="c1"># Check if coordinates for any cardinal point are missing, and convert to</span>
@@ -772,85 +780,90 @@ document.write(`
             <span class="c1"># Funnily, np.float64 is JSON-serializabe, while np.float32 is not!</span>
             <span class="c1"># Thus, cast to float64 to avoid issues (which e.g. may arise when</span>
             <span class="c1"># fiducials were read from disk!)</span>
-            <span class="n">name_to_coords_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">))</span>
+            <span class="n">name_to_coords_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">missing_points</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;The provided DigMontage did not contain all required cardinal &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;points (nasion and left and right pre-auricular points). The &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;following points are missing: &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_points</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;The provided DigMontage did not contain all required cardinal &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;points (nasion and left and right pre-auricular points). The &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;following points are missing: &quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_points</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
 
-    <span class="n">bids_path_json</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+    <span class="n">bids_path_json</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>  <span class="c1"># Must exist before we can update it</span>
         <span class="n">_write_json</span><span class="p">(</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
 
-    <span class="n">mri_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mri_json</span><span class="p">:</span>
+    <span class="n">mri_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s2">&quot;AnatomicalLandmarkCoordinates&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mri_json</span><span class="p">:</span>
         <span class="n">_on_missing</span><span class="p">(</span>
             <span class="n">on_missing</span><span class="o">=</span><span class="n">on_missing</span><span class="p">,</span>
-            <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;No AnatomicalLandmarkCoordinates section found in &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">error_klass</span><span class="o">=</span><span class="ne">KeyError</span>
+            <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;No AnatomicalLandmarkCoordinates section found in &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">error_klass</span><span class="o">=</span><span class="ne">KeyError</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">mri_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">mri_json</span><span class="p">[</span><span class="s2">&quot;AnatomicalLandmarkCoordinates&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="n">name_to_coords_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mri_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mri_json</span><span class="p">[</span><span class="s2">&quot;AnatomicalLandmarkCoordinates&quot;</span><span class="p">]:</span>
             <span class="n">_on_missing</span><span class="p">(</span>
                 <span class="n">on_missing</span><span class="o">=</span><span class="n">on_missing</span><span class="p">,</span>
-                <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Anatomical landmark not found in &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="n">error_klass</span><span class="o">=</span><span class="ne">KeyError</span>
+                <span class="n">msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Anatomical landmark not found in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path_json</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">error_klass</span><span class="o">=</span><span class="ne">KeyError</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="n">mri_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span>
+        <span class="n">mri_json</span><span class="p">[</span><span class="s2">&quot;AnatomicalLandmarkCoordinates&quot;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">coords</span>
 
     <span class="n">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path_json</span><span class="p">,</span> <span class="n">entries</span><span class="o">=</span><span class="n">mri_json</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_landmarks_from_fiducials_file</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span>
-                                       <span class="n">fs_subjects_dir</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_landmarks_from_fiducials_file</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get anatomical landmarks from fiducials file, in MRI voxel space.&quot;&quot;&quot;</span>
     <span class="c1"># avoid dicrular imports</span>
     <span class="kn">from</span> <span class="nn">mne_bids.write</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">_get_t1w_mgh</span><span class="p">,</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">,</span> <span class="n">_get_fid_coords</span>
+        <span class="n">_get_t1w_mgh</span><span class="p">,</span>
+        <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">,</span>
+        <span class="n">_get_fid_coords</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">digpoints</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
 
     <span class="c1"># All of this should be guaranteed, but better be safe than sorry!</span>
     <span class="k">assert</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span>
-    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;ident&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span>
-    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;ident&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span>
-    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;ident&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span>
+    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;ident&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span>
+    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;ident&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span>
+    <span class="k">assert</span> <span class="n">digpoints</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s2">&quot;ident&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span>
 
     <span class="n">montage_loaded</span> <span class="o">=</span> <span class="n">make_dig_montage</span><span class="p">(</span>
-        <span class="n">lpa</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
-        <span class="n">nasion</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
-        <span class="n">rpa</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">],</span>
-        <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span>
+        <span class="n">lpa</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;r&quot;</span><span class="p">],</span>
+        <span class="n">nasion</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;r&quot;</span><span class="p">],</span>
+        <span class="n">rpa</span><span class="o">=</span><span class="n">digpoints</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s2">&quot;r&quot;</span><span class="p">],</span>
+        <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;mri&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">landmark_coords_mri</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_fid_coords</span><span class="p">(</span><span class="n">dig_points</span><span class="o">=</span><span class="n">montage_loaded</span><span class="o">.</span><span class="n">dig</span><span class="p">)</span>
     <span class="n">landmark_coords_mri</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span>
-         <span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span>
-         <span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">])</span>
+        <span class="p">(</span>
+            <span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s2">&quot;lpa&quot;</span><span class="p">],</span>
+            <span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s2">&quot;nasion&quot;</span><span class="p">],</span>
+            <span class="n">landmark_coords_mri</span><span class="p">[</span><span class="s2">&quot;rpa&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 
     <span class="n">t1w_mgh</span> <span class="o">=</span> <span class="n">_get_t1w_mgh</span><span class="p">(</span><span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="p">)</span>
     <span class="n">landmark_coords_voxels</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span>
-        <span class="n">mri_landmarks</span><span class="o">=</span><span class="n">landmark_coords_mri</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>  <span class="c1"># in mm</span>
-        <span class="n">t1_mgh</span><span class="o">=</span><span class="n">t1w_mgh</span>
+        <span class="n">mri_landmarks</span><span class="o">=</span><span class="n">landmark_coords_mri</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">t1_mgh</span><span class="o">=</span><span class="n">t1w_mgh</span>  <span class="c1"># in mm</span>
     <span class="p">)</span>
     <span class="n">montage_voxels</span> <span class="o">=</span> <span class="n">make_dig_montage</span><span class="p">(</span>
         <span class="n">lpa</span><span class="o">=</span><span class="n">landmark_coords_voxels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
         <span class="n">nasion</span><span class="o">=</span><span class="n">landmark_coords_voxels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
         <span class="n">rpa</span><span class="o">=</span><span class="n">landmark_coords_voxels</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-        <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri_voxel&#39;</span>
+        <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;mri_voxel&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">montage_voxels</span>

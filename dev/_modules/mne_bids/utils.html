@@ -504,7 +504,7 @@ document.write(`
 
 <span class="c1"># This regex matches key-val pairs. Any characters are allowed in the key and</span>
 <span class="c1"># the value, except these special symbols: - _ . \ /</span>
-<span class="n">param_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([^-_\.</span><span class="se">\\</span><span class="s1">\/]+)-([^-_\.</span><span class="se">\\</span><span class="s1">\/]+)&#39;</span><span class="p">)</span>
+<span class="n">param_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^-_\.</span><span class="se">\\</span><span class="s2">\/]+)-([^-_\.</span><span class="se">\\</span><span class="s2">\/]+)&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_ensure_tuple</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -517,7 +517,7 @@ document.write(`
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s2">&quot;mne&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;bids&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Map between BIDS and MNE nomenclatures for channel types.</span>
 
 <span class="sd">    Parameters</span>
@@ -543,33 +543,62 @@ document.write(`
 <span class="sd">    Bio channels are supported in mne-python and are converted to MISC</span>
 <span class="sd">    because there is no &quot;Bio&quot; supported channel in BIDS.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span><span class="p">:</span>
-        <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
-                       <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">,</span>
-                       <span class="n">resp</span><span class="o">=</span><span class="s1">&#39;RESP&#39;</span><span class="p">,</span> <span class="n">bio</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">dbs</span><span class="o">=</span><span class="s1">&#39;DBS&#39;</span><span class="p">,</span> <span class="n">gsr</span><span class="o">=</span><span class="s1">&#39;GSR&#39;</span><span class="p">,</span>
-                       <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;TEMP&#39;</span><span class="p">,</span>
-                       <span class="c1"># NIRS</span>
-                       <span class="n">fnirs_cw_amplitude</span><span class="o">=</span><span class="s1">&#39;NIRSCWAMPLITUDE&#39;</span><span class="p">,</span>
-                       <span class="c1"># MEG channels</span>
-                       <span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span> <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span>
-                       <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span>
-                       <span class="n">meggradplanar</span><span class="o">=</span><span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span> <span class="n">megrefmag</span><span class="o">=</span><span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">,</span>
-                       <span class="n">ias</span><span class="o">=</span><span class="s1">&#39;MEGOTHER&#39;</span><span class="p">,</span> <span class="n">syst</span><span class="o">=</span><span class="s1">&#39;MEGOTHER&#39;</span><span class="p">,</span> <span class="n">exci</span><span class="o">=</span><span class="s1">&#39;MEGOTHER&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fro</span> <span class="o">==</span> <span class="s2">&quot;mne&quot;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s2">&quot;bids&quot;</span><span class="p">:</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">eeg</span><span class="o">=</span><span class="s2">&quot;EEG&quot;</span><span class="p">,</span>
+            <span class="n">misc</span><span class="o">=</span><span class="s2">&quot;MISC&quot;</span><span class="p">,</span>
+            <span class="n">stim</span><span class="o">=</span><span class="s2">&quot;TRIG&quot;</span><span class="p">,</span>
+            <span class="n">emg</span><span class="o">=</span><span class="s2">&quot;EMG&quot;</span><span class="p">,</span>
+            <span class="n">ecog</span><span class="o">=</span><span class="s2">&quot;ECOG&quot;</span><span class="p">,</span>
+            <span class="n">seeg</span><span class="o">=</span><span class="s2">&quot;SEEG&quot;</span><span class="p">,</span>
+            <span class="n">eog</span><span class="o">=</span><span class="s2">&quot;EOG&quot;</span><span class="p">,</span>
+            <span class="n">ecg</span><span class="o">=</span><span class="s2">&quot;ECG&quot;</span><span class="p">,</span>
+            <span class="n">resp</span><span class="o">=</span><span class="s2">&quot;RESP&quot;</span><span class="p">,</span>
+            <span class="n">bio</span><span class="o">=</span><span class="s2">&quot;MISC&quot;</span><span class="p">,</span>
+            <span class="n">dbs</span><span class="o">=</span><span class="s2">&quot;DBS&quot;</span><span class="p">,</span>
+            <span class="n">gsr</span><span class="o">=</span><span class="s2">&quot;GSR&quot;</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="s2">&quot;TEMP&quot;</span><span class="p">,</span>
+            <span class="c1"># NIRS</span>
+            <span class="n">fnirs_cw_amplitude</span><span class="o">=</span><span class="s2">&quot;NIRSCWAMPLITUDE&quot;</span><span class="p">,</span>
+            <span class="c1"># MEG channels</span>
+            <span class="n">meggradaxial</span><span class="o">=</span><span class="s2">&quot;MEGGRADAXIAL&quot;</span><span class="p">,</span>
+            <span class="n">megmag</span><span class="o">=</span><span class="s2">&quot;MEGMAG&quot;</span><span class="p">,</span>
+            <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s2">&quot;MEGREFGRADAXIAL&quot;</span><span class="p">,</span>
+            <span class="n">meggradplanar</span><span class="o">=</span><span class="s2">&quot;MEGGRADPLANAR&quot;</span><span class="p">,</span>
+            <span class="n">megrefmag</span><span class="o">=</span><span class="s2">&quot;MEGREFMAG&quot;</span><span class="p">,</span>
+            <span class="n">ias</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
+            <span class="n">syst</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
+            <span class="n">exci</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span><span class="p">:</span>
-        <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">EEG</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="n">MISC</span><span class="o">=</span><span class="s1">&#39;misc&#39;</span><span class="p">,</span> <span class="n">TRIG</span><span class="o">=</span><span class="s1">&#39;stim&#39;</span><span class="p">,</span> <span class="n">EMG</span><span class="o">=</span><span class="s1">&#39;emg&#39;</span><span class="p">,</span>
-                       <span class="n">ECOG</span><span class="o">=</span><span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="n">SEEG</span><span class="o">=</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="n">EOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">ECG</span><span class="o">=</span><span class="s1">&#39;ecg&#39;</span><span class="p">,</span>
-                       <span class="n">RESP</span><span class="o">=</span><span class="s1">&#39;resp&#39;</span><span class="p">,</span> <span class="n">GSR</span><span class="o">=</span><span class="s1">&#39;gsr&#39;</span><span class="p">,</span> <span class="n">TEMP</span><span class="o">=</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span>
-                       <span class="c1"># NIRS</span>
-                       <span class="n">NIRSCWAMPLITUDE</span><span class="o">=</span><span class="s1">&#39;fnirs_cw_amplitude&#39;</span><span class="p">,</span>
-                       <span class="n">NIRS</span><span class="o">=</span><span class="s1">&#39;fnirs_cw_amplitude&#39;</span><span class="p">,</span>
-                       <span class="c1"># No MEG channels for now (see Notes above)</span>
-                       <span class="c1"># Many to one mapping</span>
-                       <span class="n">VEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">HEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">DBS</span><span class="o">=</span><span class="s1">&#39;dbs&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">fro</span> <span class="o">==</span> <span class="s2">&quot;bids&quot;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s2">&quot;mne&quot;</span><span class="p">:</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">EEG</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span>
+            <span class="n">MISC</span><span class="o">=</span><span class="s2">&quot;misc&quot;</span><span class="p">,</span>
+            <span class="n">TRIG</span><span class="o">=</span><span class="s2">&quot;stim&quot;</span><span class="p">,</span>
+            <span class="n">EMG</span><span class="o">=</span><span class="s2">&quot;emg&quot;</span><span class="p">,</span>
+            <span class="n">ECOG</span><span class="o">=</span><span class="s2">&quot;ecog&quot;</span><span class="p">,</span>
+            <span class="n">SEEG</span><span class="o">=</span><span class="s2">&quot;seeg&quot;</span><span class="p">,</span>
+            <span class="n">EOG</span><span class="o">=</span><span class="s2">&quot;eog&quot;</span><span class="p">,</span>
+            <span class="n">ECG</span><span class="o">=</span><span class="s2">&quot;ecg&quot;</span><span class="p">,</span>
+            <span class="n">RESP</span><span class="o">=</span><span class="s2">&quot;resp&quot;</span><span class="p">,</span>
+            <span class="n">GSR</span><span class="o">=</span><span class="s2">&quot;gsr&quot;</span><span class="p">,</span>
+            <span class="n">TEMP</span><span class="o">=</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
+            <span class="c1"># NIRS</span>
+            <span class="n">NIRSCWAMPLITUDE</span><span class="o">=</span><span class="s2">&quot;fnirs_cw_amplitude&quot;</span><span class="p">,</span>
+            <span class="n">NIRS</span><span class="o">=</span><span class="s2">&quot;fnirs_cw_amplitude&quot;</span><span class="p">,</span>
+            <span class="c1"># No MEG channels for now (see Notes above)</span>
+            <span class="c1"># Many to one mapping</span>
+            <span class="n">VEOG</span><span class="o">=</span><span class="s2">&quot;eog&quot;</span><span class="p">,</span>
+            <span class="n">HEOG</span><span class="o">=</span><span class="s2">&quot;eog&quot;</span><span class="p">,</span>
+            <span class="n">DBS</span><span class="o">=</span><span class="s2">&quot;dbs&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only two types of mappings are currently supported: &#39;</span>
-                         <span class="s1">&#39;from mne to bids, or from bids to mne. However, &#39;</span>
-                         <span class="s1">&#39;you specified from &quot;</span><span class="si">{}</span><span class="s1">&quot; to &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fro</span><span class="p">,</span> <span class="n">to</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Only two types of mappings are currently supported: &quot;</span>
+            <span class="s2">&quot;from mne to bids, or from bids to mne. However, &quot;</span>
+            <span class="s1">&#39;you specified from &quot;</span><span class="si">{}</span><span class="s1">&quot; to &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fro</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mapping</span>
 
@@ -595,41 +624,47 @@ document.write(`
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_check_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span>
         <span class="c1"># MEG data is not supported by BrainVision or EDF files</span>
-        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="si">}</span><span class="s2">Both </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> and &#39;meg&#39; data found. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;BrainVision and EDF do not support &#39;meg&#39; data. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;The data will therefore be stored as &#39;meg&#39; data. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;If you wish to store your </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> data in &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;BrainVision or EDF, please remove the &#39;meg&#39;&quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;channels from your recording.</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="s2">&quot;meg&quot;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="si">}</span><span class="s2">Both </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> and &#39;meg&#39; data found. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;BrainVision and EDF do not support &#39;meg&#39; data. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;The data will therefore be stored as &#39;meg&#39; data. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;If you wish to store your </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> data in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;BrainVision or EDF, please remove the &#39;meg&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;channels from your recording.</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="s1">&#39;dbs&#39;</span><span class="p">]</span>
+        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;seeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ecog&quot;</span><span class="p">,</span> <span class="s2">&quot;dbs&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">raw</span> <span class="k">for</span> <span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">ieeg_types</span><span class="p">):</span>
-            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ieeg&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;eeg&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;fnirs_cw_amplitude&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nirs&#39;</span><span class="p">)</span>
+            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;ieeg&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;meg&quot;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;meg&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;eeg&quot;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;eeg&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;fnirs_cw_amplitude&quot;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+            <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;nirs&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">datatypes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No MEG, EEG or iEEG channels found in data. &#39;</span>
-                             <span class="s1">&#39;Please use raw.set_channel_types to set the &#39;</span>
-                             <span class="s1">&#39;channel types in the data.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;No MEG, EEG or iEEG channels found in data. &quot;</span>
+                <span class="s2">&quot;Please use raw.set_channel_types to set the &quot;</span>
+                <span class="s2">&quot;channel types in the data.&quot;</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">datatypes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">in</span> <span class="n">datatypes</span> <span class="ow">and</span> <span class="s1">&#39;ieeg&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
-                <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
-            <span class="k">elif</span> <span class="s1">&#39;ieeg&#39;</span> <span class="ow">in</span> <span class="n">datatypes</span> <span class="ow">and</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
-                <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;ieeg&#39;</span>
+            <span class="k">if</span> <span class="s2">&quot;meg&quot;</span> <span class="ow">in</span> <span class="n">datatypes</span> <span class="ow">and</span> <span class="s2">&quot;ieeg&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>
+            <span class="k">elif</span> <span class="s2">&quot;ieeg&quot;</span> <span class="ow">in</span> <span class="n">datatypes</span> <span class="ow">and</span> <span class="s2">&quot;meg&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="s2">&quot;ieeg&quot;</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Multiple data types (``</span><span class="si">{</span><span class="n">datatypes</span><span class="si">}</span><span class="s1">``) were &#39;</span>
-                                 <span class="s1">&#39;found in the data. Please specify the &#39;</span>
-                                 <span class="s1">&#39;datatype using &#39;</span>
-                                 <span class="s1">&#39;`bids_path.update(datatype=&quot;&lt;datatype&gt;&quot;)` &#39;</span>
-                                 <span class="s1">&#39;or use raw.set_channel_types to set the &#39;</span>
-                                 <span class="s1">&#39;correct channel types in the raw object.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Multiple data types (``</span><span class="si">{</span><span class="n">datatypes</span><span class="si">}</span><span class="s2">``) were &quot;</span>
+                    <span class="s2">&quot;found in the data. Please specify the &quot;</span>
+                    <span class="s2">&quot;datatype using &quot;</span>
+                    <span class="s1">&#39;`bids_path.update(datatype=&quot;&lt;datatype&gt;&quot;)` &#39;</span>
+                    <span class="s2">&quot;or use raw.set_channel_types to set the &quot;</span>
+                    <span class="s2">&quot;correct channel types in the raw object.&quot;</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">datatype</span> <span class="o">=</span> <span class="n">datatypes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">datatype</span>
@@ -647,8 +682,7 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">exp_date</span> <span class="o">&lt;</span> <span class="n">bday</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The experimentation date must be after the birth &quot;</span>
-                         <span class="s2">&quot;date&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The experimentation date must be after the birth &quot;</span> <span class="s2">&quot;date&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">exp_date</span><span class="o">.</span><span class="n">month</span> <span class="o">&gt;</span> <span class="n">bday</span><span class="o">.</span><span class="n">month</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">exp_date</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">bday</span><span class="o">.</span><span class="n">year</span>
     <span class="k">elif</span> <span class="n">exp_date</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">bday</span><span class="o">.</span><span class="n">month</span><span class="p">:</span>
@@ -661,21 +695,24 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make sure all vars are str or None.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You supplied a value (</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">) of type &quot;</span>
-                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="si">}</span><span class="s2">, where a string or None was &quot;</span>
-                             <span class="sa">f</span><span class="s2">&quot;expected.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;You supplied a value (</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">) of type &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="si">}</span><span class="s2">, where a string or None was &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;expected.&quot;</span>
+            <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write JSON to a file.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>
-                              <span class="s1">&#39;Please set overwrite to True.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span> <span class="s2">&quot;Please set overwrite to True.&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">json_output</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_output</span><span class="p">)</span>
-        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
@@ -684,8 +721,9 @@ document.write(`
 <span class="k">def</span> <span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write an ordered dictionary to a .tsv file.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>
-                              <span class="s1">&#39;Please set overwrite to True.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span> <span class="s2">&quot;Please set overwrite to True.&quot;</span>
+        <span class="p">)</span>
     <span class="n">_to_tsv</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
@@ -694,27 +732,29 @@ document.write(`
 <span class="k">def</span> <span class="nf">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write text to a file.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>
-                              <span class="s1">&#39;Please set overwrite to True.&#39;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span> <span class="s2">&quot;Please set overwrite to True.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform checks on a value to make sure it adheres to the spec.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ii</span> <span class="ow">in</span> <span class="n">val</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">]):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unallowed `-`, `_`, or `/` found in key/value pair&quot;</span>
-                         <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ii</span> <span class="ow">in</span> <span class="n">val</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unallowed `-`, `_`, or `/` found in key/value pair&quot;</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
 
 
 <span class="k">def</span> <span class="nf">_get_mrk_meas_date</span><span class="p">(</span><span class="n">mrk</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the measurement date from a KIT marker file.&quot;&quot;&quot;</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_kit_info</span><span class="p">(</span><span class="n">mrk</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">meas_date</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas_date&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">meas_date</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meas_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
@@ -741,43 +781,45 @@ document.write(`
 <span class="sd">        extraction.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">placement_scheme</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+    <span class="n">placement_scheme</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
     <span class="c1"># Check if the raw data contains eeg data at all</span>
-    <span class="k">if</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;eeg&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">placement_scheme</span>
 
     <span class="c1"># How many of the channels in raw are based on the extended 10/20 system</span>
     <span class="n">sel</span> <span class="o">=</span> <span class="n">pick_types</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sel</span><span class="p">]</span>
     <span class="n">channel_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">]</span>
-    <span class="n">montage1005</span> <span class="o">=</span> <span class="n">make_standard_montage</span><span class="p">(</span><span class="s1">&#39;standard_1005&#39;</span><span class="p">)</span>
+    <span class="n">montage1005</span> <span class="o">=</span> <span class="n">make_standard_montage</span><span class="p">(</span><span class="s2">&quot;standard_1005&quot;</span><span class="p">)</span>
     <span class="n">montage1005_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">montage1005</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_names</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">montage1005_names</span><span class="p">)):</span>
-        <span class="n">placement_scheme</span> <span class="o">=</span> <span class="s1">&#39;based on the extended 10/20 system&#39;</span>
+        <span class="n">placement_scheme</span> <span class="o">=</span> <span class="s2">&quot;based on the extended 10/20 system&quot;</span>
 
     <span class="k">return</span> <span class="n">placement_scheme</span>
 
 
 <span class="k">def</span> <span class="nf">_scale_coord_to_meters</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale units to meters (mne-python default).&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;cm&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="mf">100.</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;mm&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="mf">1000.</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;cm&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;mm&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">coord</span>
 
 
-<span class="k">def</span> <span class="nf">_check_empty_room_basename</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_check_empty_room_basename</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
     <span class="c1"># only check task entity for emptyroom when it is the sidecar/MEG file</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">!=</span> <span class="s1">&#39;noise&#39;</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;task must be &quot;noise&quot; if subject is &quot;emptyroom&quot;, but &#39;</span>
-                   <span class="sa">f</span><span class="s1">&#39;received: </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">on_invalid_er_task</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">!=</span> <span class="s2">&quot;noise&quot;</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;task must be &quot;noise&quot; if subject is &quot;emptyroom&quot;, but &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;received: </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">on_invalid_er_task</span> <span class="o">==</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">on_invalid_er_task</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">on_invalid_er_task</span> <span class="o">==</span> <span class="s2">&quot;warn&quot;</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">pass</span>
@@ -786,26 +828,29 @@ document.write(`
 <span class="k">def</span> <span class="nf">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the `anonymize` dict.&quot;&quot;&quot;</span>
     <span class="c1"># if info[&#39;meas_date&#39;] None, then the dates are not stored</span>
-    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">daysback</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;daysback&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="ow">or</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;daysback&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`daysback` argument required to anonymize.&#39;</span><span class="p">)</span>
-        <span class="n">daysback</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;daysback&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;daysback&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="ow">or</span> <span class="n">anonymize</span><span class="p">[</span><span class="s2">&quot;daysback&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`daysback` argument required to anonymize.&quot;</span><span class="p">)</span>
+        <span class="n">daysback</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s2">&quot;daysback&quot;</span><span class="p">]</span>
         <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span> <span class="o">=</span> <span class="n">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">daysback</span> <span class="o">&lt;</span> <span class="n">daysback_min</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`daysback` is too small; the measurement date &#39;</span>
-                 <span class="s1">&#39;is after 1925, which is not recommended by BIDS.&#39;</span>
-                 <span class="s1">&#39;The minimum `daysback` value for changing the &#39;</span>
-                 <span class="s1">&#39;measurement date of this data to before this date &#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;is </span><span class="si">{</span><span class="n">daysback_min</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span> <span class="ow">and</span> <span class="n">daysback</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`daysback` exceeds maximum value MNE &#39;</span>
-                             <span class="s1">&#39;is able to store in FIF format, must &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;be less than </span><span class="si">{</span><span class="n">daysback_max</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">keep_his</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;keep_his&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;keep_his&#39;</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="k">else</span> <span class="kc">False</span>
-    <span class="n">keep_source</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;keep_source&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;keep_source&#39;</span> <span class="ow">in</span> \
-        <span class="n">anonymize</span> <span class="k">else</span> <span class="kc">False</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;`daysback` is too small; the measurement date &quot;</span>
+                <span class="s2">&quot;is after 1925, which is not recommended by BIDS.&quot;</span>
+                <span class="s2">&quot;The minimum `daysback` value for changing the &quot;</span>
+                <span class="s2">&quot;measurement date of this data to before this date &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="n">daysback_min</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span> <span class="ow">and</span> <span class="n">daysback</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`daysback` exceeds maximum value MNE &quot;</span>
+                <span class="s2">&quot;is able to store in FIF format, must &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;be less than </span><span class="si">{</span><span class="n">daysback_max</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    <span class="n">keep_his</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s2">&quot;keep_his&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;keep_his&quot;</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="n">keep_source</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s2">&quot;keep_source&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;keep_source&quot;</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="k">else</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="p">,</span> <span class="n">keep_source</span>
 
 
@@ -824,10 +869,13 @@ document.write(`
 <span class="sd">    daysback_max : int</span>
 <span class="sd">        The maximum number of daysback that MNE can store.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">this_date</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+    <span class="n">this_date</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
     <span class="n">daysback_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_date</span> <span class="o">-</span> <span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">1924</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">31</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>
-    <span class="n">daysback_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_date</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="o">+</span>
-                    <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s1">&#39;&gt;i4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>
+    <span class="n">daysback_max</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">this_date</span>
+        <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s2">&quot;&gt;i4&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">days</span>
     <span class="k">return</span> <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span>
 
 
@@ -865,20 +913,23 @@ document.write(`
     <span class="n">daysback_min_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">daysback_max_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">raws</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span> <span class="o">=</span> <span class="n">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
             <span class="n">daysback_min_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">daysback_min</span><span class="p">)</span>
             <span class="n">daysback_max_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">daysback_max</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">daysback_min_list</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">daysback_max_list</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;All measurement dates are None, &#39;</span>
-                         <span class="s1">&#39;pass any `daysback` value to anonymize.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;All measurement dates are None, &quot;</span> <span class="s2">&quot;pass any `daysback` value to anonymize.&quot;</span>
+        <span class="p">)</span>
     <span class="n">daysback_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">daysback_min_list</span><span class="p">)</span>
     <span class="n">daysback_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">daysback_max_list</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">daysback_min</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The dataset spans more time than can be &#39;</span>
-                         <span class="s1">&#39;accomodated by MNE, you may have to &#39;</span>
-                         <span class="s1">&#39;not follow BIDS recommendations and use&#39;</span>
-                         <span class="s1">&#39;anonymized dates after 1925&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The dataset spans more time than can be &quot;</span>
+            <span class="s2">&quot;accomodated by MNE, you may have to &quot;</span>
+            <span class="s2">&quot;not follow BIDS recommendations and use&quot;</span>
+            <span class="s2">&quot;anonymized dates after 1925&quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span></div>
 
 
@@ -893,8 +944,9 @@ document.write(`
     <span class="n">stamp</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">utc_stamp</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stamp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># In case there is no microseconds information</span>
         <span class="n">stamp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span>
-            <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>  <span class="c1"># day, sec, μs</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span>
+        <span class="mi">0</span><span class="p">,</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># day, sec, μs</span>
 
 
 <span class="k">def</span> <span class="nf">_check_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
@@ -911,46 +963,52 @@ document.write(`
 <span class="sd">    -------</span>
 <span class="sd">    None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="s1">&#39;nirs&#39;</span><span class="p">)</span>
+    <span class="n">supported_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;nirs&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;The specified datatype </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1"> is currently not supported. &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;It should be one of  either `meg`, `eeg` or `ieeg` (Got &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;`</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1">`. Please specify a valid datatype using &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;`bids_path.update(datatype=&quot;&lt;datatype&gt;&quot;)`.&#39;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;The specified datatype </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> is currently not supported. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;It should be one of  either `meg`, `eeg` or `ieeg` (Got &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2">`. Please specify a valid datatype using &quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;`bids_path.update(datatype=&quot;&lt;datatype&gt;&quot;)`.&#39;</span>
+        <span class="p">)</span>
     <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;eeg&quot;</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span> <span class="ow">and</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;nirs&#39;</span> <span class="ow">and</span> <span class="s1">&#39;fnirs_cw_amplitude&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;nirs&quot;</span> <span class="ow">and</span> <span class="s2">&quot;fnirs_cw_amplitude&quot;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span>
-        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="s1">&#39;dbs&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
+        <span class="n">ieeg_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;seeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ecog&quot;</span><span class="p">,</span> <span class="s2">&quot;dbs&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">raw</span> <span class="k">for</span> <span class="n">ieeg_type</span> <span class="ow">in</span> <span class="n">ieeg_types</span><span class="p">):</span>
             <span class="n">datatype_matches</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">datatype_matches</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;The specified datatype </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1"> was not found in the raw &#39;</span>
-            <span class="s1">&#39;object. Please specify the correct datatype using &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;The specified datatype </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> was not found in the raw &quot;</span>
+            <span class="s2">&quot;object. Please specify the correct datatype using &quot;</span>
             <span class="s1">&#39;`bids_path.update(datatype=&quot;&lt;datatype&gt;&quot;)` or use &#39;</span>
-            <span class="s1">&#39;raw.set_channel_types to set the correct channel types in &#39;</span>
-            <span class="s1">&#39;the raw object.&#39;</span><span class="p">)</span>
+            <span class="s2">&quot;raw.set_channel_types to set the correct channel types in &quot;</span>
+            <span class="s2">&quot;the raw object.&quot;</span>
+        <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_import_nibabel</span><span class="p">(</span><span class="n">why</span><span class="o">=</span><span class="s1">&#39;work with MRI data&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_import_nibabel</span><span class="p">(</span><span class="n">why</span><span class="o">=</span><span class="s2">&quot;work with MRI data&quot;</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">nibabel</span>  <span class="c1"># noqa</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">exc</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;nibabel is required to </span><span class="si">{</span><span class="n">why</span><span class="si">}</span><span class="s1"> but could not be imported, &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;got: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="sa">f</span><span class="s2">&quot;nibabel is required to </span><span class="si">{</span><span class="n">why</span><span class="si">}</span><span class="s2"> but could not be imported, &quot;</span> <span class="sa">f</span><span class="s2">&quot;got: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">nibabel</span>
 
 
-<span class="k">def</span> <span class="nf">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne_bids&#39;</span><span class="p">,</span>
-         <span class="n">ignore_namespaces</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;mne_bids&#39;</span><span class="p">)):</span>  <span class="c1"># noqa: D103</span>
+<span class="k">def</span> <span class="nf">warn</span><span class="p">(</span>
+    <span class="n">message</span><span class="p">,</span>
+    <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span>
+    <span class="n">module</span><span class="o">=</span><span class="s2">&quot;mne_bids&quot;</span><span class="p">,</span>
+    <span class="n">ignore_namespaces</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mne&quot;</span><span class="p">,</span> <span class="s2">&quot;mne_bids&quot;</span><span class="p">),</span>
+<span class="p">):</span>  <span class="c1"># noqa: D103</span>
     <span class="n">_warn</span><span class="p">(</span>
         <span class="n">message</span><span class="p">,</span>
         <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">,</span>
@@ -960,7 +1018,7 @@ document.write(`
 
 
 <span class="c1"># Some of the defaults here will be wrong but it should be close enough</span>
-<span class="n">warn</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_warn</span><span class="p">,</span> <span class="s1">&#39;__doc__&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">warn</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_warn</span><span class="p">,</span> <span class="s2">&quot;__doc__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </pre></div>
 
                 </article>

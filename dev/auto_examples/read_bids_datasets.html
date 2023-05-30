@@ -546,8 +546,14 @@ inspect BIDS-formatted data.</p>
 <span class="kn">import</span> <span class="nn">openneuro</span>
 
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">,</span> <a href="../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_entity_vals</span></a><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span>
+    <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_entity_vals</span></a><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -562,21 +568,341 @@ resting-state recordings of patients with Parkinson’s disease.</p>
 <span class="c1">#          We&#39;re just using data from one subject to reduce the time</span>
 <span class="c1">#          it takes to run the example.</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <span class="s1">&#39;ds002778&#39;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s1">&#39;pd6&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a> <span class="o">=</span> <span class="s2">&quot;ds002778&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s2">&quot;pd6&quot;</span>
 
 <span class="c1"># Download one subject&#39;s data from each dataset</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/os.path.html#os.path.dirname" title="os.path.dirname" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">dirname</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()),</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.isdir" title="os.path.isdir" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">isdir</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">):</span>
     <a href="https://docs.python.org/3/library/os.html#os.makedirs" title="os.makedirs" class="sphx-glr-backref-module-os sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 
-<span class="n">openneuro</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">target_dir</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
-                   <span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span>
+<span class="n">openneuro</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset</span></a><span class="p">,</span> <span class="n">target_dir</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for sample...
+Creating ~/mne_data
+Downloading file &#39;MNE-sample-data-processed.tar.gz&#39; from &#39;https://osf.io/86qa2/download?version=6&#39; to &#39;/home/circleci/mne_data&#39;.
+
+  0%|                                              | 0.00/1.65G [00:00&lt;?, ?B/s]
+  0%|                                     | 2.91M/1.65G [00:00&lt;00:56, 29.1MB/s]
+  1%|▏                                    | 10.6M/1.65G [00:00&lt;00:28, 57.1MB/s]
+  1%|▎                                    | 16.3M/1.65G [00:00&lt;00:30, 53.3MB/s]
+  1%|▍                                    | 21.6M/1.65G [00:00&lt;00:40, 40.2MB/s]
+  2%|▋                                    | 29.3M/1.65G [00:00&lt;00:31, 50.8MB/s]
+  2%|▊                                    | 37.3M/1.65G [00:00&lt;00:27, 59.3MB/s]
+  3%|█                                    | 45.3M/1.65G [00:00&lt;00:24, 65.2MB/s]
+  3%|█▏                                   | 53.3M/1.65G [00:00&lt;00:22, 69.7MB/s]
+  4%|█▎                                   | 61.2M/1.65G [00:01&lt;00:21, 72.4MB/s]
+  4%|█▌                                   | 68.6M/1.65G [00:01&lt;00:28, 55.5MB/s]
+  5%|█▋                                   | 76.2M/1.65G [00:01&lt;00:26, 60.5MB/s]
+  5%|█▊                                   | 83.7M/1.65G [00:01&lt;00:24, 64.2MB/s]
+  6%|██                                   | 91.2M/1.65G [00:01&lt;00:23, 67.3MB/s]
+  6%|██▏                                  | 98.9M/1.65G [00:01&lt;00:22, 70.0MB/s]
+  6%|██▍                                   | 107M/1.65G [00:01&lt;00:21, 72.6MB/s]
+  7%|██▋                                   | 115M/1.65G [00:01&lt;00:20, 74.0MB/s]
+  7%|██▊                                   | 122M/1.65G [00:01&lt;00:20, 74.9MB/s]
+  8%|██▉                                   | 130M/1.65G [00:02&lt;00:20, 76.0MB/s]
+  8%|███▏                                  | 138M/1.65G [00:02&lt;00:19, 76.3MB/s]
+  9%|███▎                                  | 146M/1.65G [00:02&lt;00:41, 36.7MB/s]
+  9%|███▌                                  | 153M/1.65G [00:02&lt;00:35, 42.4MB/s]
+ 10%|███▋                                  | 160M/1.65G [00:02&lt;00:30, 49.1MB/s]
+ 10%|███▊                                  | 168M/1.65G [00:02&lt;00:26, 55.5MB/s]
+ 11%|████                                  | 176M/1.65G [00:02&lt;00:26, 56.7MB/s]
+ 11%|████▏                                 | 182M/1.65G [00:03&lt;01:14, 19.8MB/s]
+ 11%|████▎                                 | 189M/1.65G [00:04&lt;01:00, 24.3MB/s]
+ 12%|████▍                                 | 194M/1.65G [00:04&lt;01:09, 20.9MB/s]
+ 12%|████▋                                 | 201M/1.65G [00:04&lt;00:53, 27.3MB/s]
+ 13%|████▊                                 | 207M/1.65G [00:04&lt;00:58, 24.9MB/s]
+ 13%|████▊                                 | 211M/1.65G [00:05&lt;01:32, 15.5MB/s]
+ 13%|████▉                                 | 214M/1.65G [00:05&lt;01:35, 15.1MB/s]
+ 13%|█████                                 | 222M/1.65G [00:05&lt;01:05, 21.9MB/s]
+ 14%|█████▎                                | 229M/1.65G [00:05&lt;00:47, 29.7MB/s]
+ 14%|█████▍                                | 237M/1.65G [00:05&lt;00:37, 37.7MB/s]
+ 15%|█████▌                                | 243M/1.65G [00:06&lt;00:50, 27.9MB/s]
+ 15%|█████▊                                | 250M/1.65G [00:06&lt;00:39, 35.1MB/s]
+ 16%|█████▉                                | 258M/1.65G [00:06&lt;00:32, 42.9MB/s]
+ 16%|██████                                | 266M/1.65G [00:06&lt;00:27, 50.5MB/s]
+ 17%|██████▎                               | 274M/1.65G [00:06&lt;00:24, 56.9MB/s]
+ 17%|██████▍                               | 282M/1.65G [00:06&lt;00:22, 62.2MB/s]
+ 18%|██████▋                               | 290M/1.65G [00:06&lt;00:20, 66.7MB/s]
+ 18%|██████▊                               | 298M/1.65G [00:06&lt;00:19, 70.3MB/s]
+ 18%|███████                               | 306M/1.65G [00:07&lt;00:40, 32.9MB/s]
+ 19%|███████▏                              | 311M/1.65G [00:08&lt;01:08, 19.6MB/s]
+ 19%|███████▎                              | 318M/1.65G [00:08&lt;00:53, 24.9MB/s]
+ 20%|███████▍                              | 325M/1.65G [00:08&lt;00:43, 30.6MB/s]
+ 20%|███████▋                              | 333M/1.65G [00:08&lt;00:35, 37.4MB/s]
+ 20%|███████▊                              | 339M/1.65G [00:09&lt;00:58, 22.6MB/s]
+ 21%|███████▉                              | 346M/1.65G [00:09&lt;00:46, 28.3MB/s]
+ 21%|████████                              | 351M/1.65G [00:09&lt;01:09, 18.8MB/s]
+ 22%|████████▏                             | 357M/1.65G [00:09&lt;00:56, 22.9MB/s]
+ 22%|████████▎                             | 362M/1.65G [00:09&lt;00:47, 27.1MB/s]
+ 22%|████████▍                             | 367M/1.65G [00:10&lt;00:59, 21.5MB/s]
+ 23%|████████▌                             | 373M/1.65G [00:10&lt;00:48, 26.7MB/s]
+ 23%|████████▋                             | 378M/1.65G [00:10&lt;00:40, 31.8MB/s]
+ 23%|████████▊                             | 383M/1.65G [00:10&lt;00:53, 23.9MB/s]
+ 23%|████████▉                             | 387M/1.65G [00:11&lt;01:05, 19.4MB/s]
+ 24%|█████████                             | 394M/1.65G [00:11&lt;00:46, 27.0MB/s]
+ 24%|█████████▏                            | 401M/1.65G [00:11&lt;00:35, 35.6MB/s]
+ 25%|█████████▍                            | 409M/1.65G [00:11&lt;00:28, 44.4MB/s]
+ 25%|█████████▌                            | 417M/1.65G [00:11&lt;00:23, 51.9MB/s]
+ 26%|█████████▊                            | 425M/1.65G [00:11&lt;00:20, 58.7MB/s]
+ 26%|█████████▉                            | 433M/1.65G [00:11&lt;00:19, 63.8MB/s]
+ 27%|██████████▏                           | 441M/1.65G [00:11&lt;00:17, 68.1MB/s]
+ 27%|██████████▎                           | 449M/1.65G [00:12&lt;00:28, 41.8MB/s]
+ 28%|██████████▍                           | 456M/1.65G [00:12&lt;00:24, 48.1MB/s]
+ 28%|██████████▋                           | 463M/1.65G [00:12&lt;00:29, 40.2MB/s]
+ 28%|██████████▊                           | 468M/1.65G [00:12&lt;00:43, 27.5MB/s]
+ 29%|██████████▊                           | 472M/1.65G [00:13&lt;00:46, 25.3MB/s]
+ 29%|██████████▉                           | 475M/1.65G [00:13&lt;01:03, 18.5MB/s]
+ 29%|███████████                           | 482M/1.65G [00:13&lt;00:46, 25.2MB/s]
+ 30%|███████████▏                          | 489M/1.65G [00:13&lt;00:36, 31.8MB/s]
+ 30%|███████████▎                          | 494M/1.65G [00:14&lt;00:50, 23.1MB/s]
+ 30%|███████████▍                          | 497M/1.65G [00:14&lt;00:52, 21.8MB/s]
+ 31%|███████████▌                          | 505M/1.65G [00:14&lt;00:38, 30.2MB/s]
+ 31%|███████████▊                          | 512M/1.65G [00:14&lt;00:31, 35.8MB/s]
+ 31%|███████████▉                          | 517M/1.65G [00:14&lt;00:45, 24.8MB/s]
+ 32%|████████████                          | 524M/1.65G [00:14&lt;00:35, 31.8MB/s]
+ 32%|████████████▏                         | 532M/1.65G [00:15&lt;00:28, 39.9MB/s]
+ 33%|████████████▍                         | 538M/1.65G [00:15&lt;00:24, 45.8MB/s]
+ 33%|████████████▌                         | 544M/1.65G [00:15&lt;00:36, 30.5MB/s]
+ 33%|████████████▋                         | 550M/1.65G [00:15&lt;00:31, 34.9MB/s]
+ 34%|████████████▊                         | 555M/1.65G [00:15&lt;00:38, 28.4MB/s]
+ 34%|████████████▊                         | 559M/1.65G [00:16&lt;00:37, 29.3MB/s]
+ 34%|████████████▉                         | 565M/1.65G [00:16&lt;00:30, 35.4MB/s]
+ 34%|█████████████                         | 570M/1.65G [00:16&lt;00:41, 26.4MB/s]
+ 35%|█████████████▏                        | 573M/1.65G [00:16&lt;00:41, 26.3MB/s]
+ 35%|█████████████▎                        | 580M/1.65G [00:16&lt;00:30, 34.8MB/s]
+ 36%|█████████████▍                        | 587M/1.65G [00:16&lt;00:25, 41.7MB/s]
+ 36%|█████████████▋                        | 594M/1.65G [00:16&lt;00:21, 48.4MB/s]
+ 36%|█████████████▊                        | 600M/1.65G [00:16&lt;00:22, 46.9MB/s]
+ 37%|█████████████▉                        | 607M/1.65G [00:17&lt;00:19, 53.6MB/s]
+ 37%|██████████████                        | 613M/1.65G [00:17&lt;00:33, 31.0MB/s]
+ 37%|██████████████▏                       | 619M/1.65G [00:17&lt;00:28, 36.0MB/s]
+ 38%|██████████████▎                       | 625M/1.65G [00:17&lt;00:25, 39.6MB/s]
+ 38%|██████████████▌                       | 631M/1.65G [00:17&lt;00:22, 45.9MB/s]
+ 39%|██████████████▋                       | 637M/1.65G [00:17&lt;00:23, 42.5MB/s]
+ 39%|██████████████▊                       | 642M/1.65G [00:18&lt;00:33, 30.0MB/s]
+ 39%|██████████████▊                       | 646M/1.65G [00:18&lt;00:51, 19.6MB/s]
+ 39%|██████████████▉                       | 651M/1.65G [00:18&lt;00:41, 23.9MB/s]
+ 40%|███████████████                       | 655M/1.65G [00:18&lt;00:36, 27.0MB/s]
+ 40%|███████████████▏                      | 659M/1.65G [00:19&lt;00:53, 18.7MB/s]
+ 40%|███████████████▎                      | 665M/1.65G [00:19&lt;00:39, 24.9MB/s]
+ 41%|███████████████▍                      | 672M/1.65G [00:19&lt;00:30, 31.7MB/s]
+ 41%|███████████████▌                      | 679M/1.65G [00:19&lt;00:23, 40.7MB/s]
+ 41%|███████████████▊                      | 686M/1.65G [00:19&lt;00:21, 45.8MB/s]
+ 42%|███████████████▉                      | 693M/1.65G [00:19&lt;00:18, 53.2MB/s]
+ 42%|████████████████                      | 701M/1.65G [00:19&lt;00:15, 60.1MB/s]
+ 43%|████████████████▎                     | 709M/1.65G [00:19&lt;00:14, 65.1MB/s]
+ 43%|████████████████▍                     | 717M/1.65G [00:20&lt;00:13, 69.0MB/s]
+ 44%|████████████████▋                     | 725M/1.65G [00:20&lt;00:13, 68.9MB/s]
+ 44%|████████████████▊                     | 732M/1.65G [00:20&lt;00:13, 70.7MB/s]
+ 45%|█████████████████                     | 740M/1.65G [00:20&lt;00:12, 73.3MB/s]
+ 45%|█████████████████▏                    | 748M/1.65G [00:20&lt;00:12, 74.5MB/s]
+ 46%|█████████████████▎                    | 755M/1.65G [00:20&lt;00:13, 68.3MB/s]
+ 46%|█████████████████▌                    | 763M/1.65G [00:20&lt;00:12, 69.4MB/s]
+ 47%|█████████████████▋                    | 770M/1.65G [00:20&lt;00:12, 71.5MB/s]
+ 47%|█████████████████▉                    | 778M/1.65G [00:20&lt;00:11, 73.0MB/s]
+ 48%|██████████████████                    | 785M/1.65G [00:21&lt;00:12, 68.0MB/s]
+ 48%|██████████████████▏                   | 793M/1.65G [00:21&lt;00:12, 70.6MB/s]
+ 48%|██████████████████▍                   | 801M/1.65G [00:21&lt;00:11, 72.6MB/s]
+ 49%|██████████████████▌                   | 808M/1.65G [00:21&lt;00:11, 73.3MB/s]
+ 49%|██████████████████▊                   | 816M/1.65G [00:21&lt;00:11, 75.2MB/s]
+ 50%|██████████████████▉                   | 824M/1.65G [00:21&lt;00:10, 76.1MB/s]
+ 50%|███████████████████▏                  | 832M/1.65G [00:21&lt;00:10, 76.8MB/s]
+ 51%|███████████████████▎                  | 840M/1.65G [00:21&lt;00:10, 77.8MB/s]
+ 51%|███████████████████▍                  | 848M/1.65G [00:21&lt;00:10, 77.9MB/s]
+ 52%|███████████████████▋                  | 856M/1.65G [00:21&lt;00:10, 78.3MB/s]
+ 52%|███████████████████▊                  | 864M/1.65G [00:22&lt;00:10, 77.5MB/s]
+ 53%|████████████████████                  | 872M/1.65G [00:22&lt;00:09, 78.3MB/s]
+ 53%|████████████████████▏                 | 879M/1.65G [00:22&lt;00:09, 78.2MB/s]
+ 54%|████████████████████▍                 | 887M/1.65G [00:22&lt;00:09, 78.1MB/s]
+ 54%|████████████████████▌                 | 895M/1.65G [00:22&lt;00:09, 78.6MB/s]
+ 55%|████████████████████▊                 | 903M/1.65G [00:22&lt;00:09, 78.3MB/s]
+ 55%|████████████████████▉                 | 911M/1.65G [00:22&lt;00:09, 77.6MB/s]
+ 56%|█████████████████████                 | 919M/1.65G [00:22&lt;00:09, 77.5MB/s]
+ 56%|█████████████████████▎                | 927M/1.65G [00:22&lt;00:09, 78.4MB/s]
+ 57%|█████████████████████▍                | 935M/1.65G [00:22&lt;00:09, 78.4MB/s]
+ 57%|█████████████████████▋                | 942M/1.65G [00:23&lt;00:09, 78.5MB/s]
+ 57%|█████████████████████▊                | 950M/1.65G [00:23&lt;00:08, 78.5MB/s]
+ 58%|██████████████████████                | 958M/1.65G [00:23&lt;00:08, 78.5MB/s]
+ 58%|██████████████████████▏               | 966M/1.65G [00:23&lt;00:08, 77.8MB/s]
+ 59%|██████████████████████▍               | 974M/1.65G [00:23&lt;00:20, 33.8MB/s]
+ 59%|██████████████████████▌               | 981M/1.65G [00:24&lt;00:17, 39.2MB/s]
+ 60%|██████████████████████▋               | 988M/1.65G [00:24&lt;00:14, 46.1MB/s]
+ 60%|██████████████████████▉               | 996M/1.65G [00:24&lt;00:12, 52.6MB/s]
+ 61%|██████████████████████▍              | 1.00G/1.65G [00:24&lt;00:11, 58.2MB/s]
+ 61%|██████████████████████▋              | 1.01G/1.65G [00:24&lt;00:10, 62.4MB/s]
+ 62%|██████████████████████▊              | 1.02G/1.65G [00:24&lt;00:09, 65.9MB/s]
+ 62%|██████████████████████▉              | 1.03G/1.65G [00:24&lt;00:09, 67.6MB/s]
+ 63%|███████████████████████▏             | 1.03G/1.65G [00:24&lt;00:09, 66.0MB/s]
+ 63%|███████████████████████▎             | 1.04G/1.65G [00:24&lt;00:09, 66.5MB/s]
+ 63%|███████████████████████▍             | 1.05G/1.65G [00:24&lt;00:09, 66.9MB/s]
+ 64%|███████████████████████▌             | 1.05G/1.65G [00:25&lt;00:23, 25.6MB/s]
+ 64%|███████████████████████▋             | 1.06G/1.65G [00:26&lt;00:39, 14.9MB/s]
+ 64%|███████████████████████▊             | 1.06G/1.65G [00:27&lt;00:54, 10.9MB/s]
+ 65%|███████████████████████▊             | 1.07G/1.65G [00:27&lt;01:01, 9.54MB/s]
+ 65%|███████████████████████▉             | 1.07G/1.65G [00:28&lt;01:10, 8.29MB/s]
+ 65%|███████████████████████▉             | 1.07G/1.65G [00:28&lt;01:12, 7.99MB/s]
+ 65%|███████████████████████▉             | 1.07G/1.65G [00:28&lt;01:13, 7.92MB/s]
+ 65%|████████████████████████             | 1.07G/1.65G [00:28&lt;01:16, 7.55MB/s]
+ 65%|████████████████████████             | 1.07G/1.65G [00:28&lt;01:15, 7.64MB/s]
+ 65%|████████████████████████             | 1.07G/1.65G [00:28&lt;01:17, 7.42MB/s]
+ 65%|████████████████████████             | 1.08G/1.65G [00:29&lt;01:19, 7.23MB/s]
+ 65%|████████████████████████             | 1.08G/1.65G [00:29&lt;01:19, 7.27MB/s]
+ 65%|████████████████████████             | 1.08G/1.65G [00:29&lt;01:19, 7.22MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:29&lt;01:29, 6.39MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:29&lt;01:38, 5.84MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:29&lt;01:38, 5.82MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:29&lt;01:41, 5.66MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:29&lt;01:48, 5.29MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:30&lt;01:41, 5.64MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:30&lt;01:34, 6.02MB/s]
+ 65%|████████████████████████▏            | 1.08G/1.65G [00:30&lt;01:27, 6.51MB/s]
+ 66%|████████████████████████▎            | 1.08G/1.65G [00:30&lt;01:26, 6.61MB/s]
+ 66%|████████████████████████▎            | 1.08G/1.65G [00:30&lt;01:21, 6.94MB/s]
+ 66%|████████████████████████▎            | 1.08G/1.65G [00:30&lt;01:20, 7.04MB/s]
+ 66%|████████████████████████▎            | 1.09G/1.65G [00:30&lt;01:19, 7.14MB/s]
+ 66%|████████████████████████▎            | 1.09G/1.65G [00:30&lt;01:18, 7.24MB/s]
+ 66%|████████████████████████▎            | 1.09G/1.65G [00:30&lt;01:15, 7.49MB/s]
+ 66%|████████████████████████▎            | 1.09G/1.65G [00:31&lt;01:17, 7.30MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:31&lt;01:14, 7.56MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:31&lt;01:14, 7.52MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:31&lt;01:18, 7.16MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:31&lt;01:19, 7.10MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:31&lt;01:21, 6.91MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:31&lt;01:19, 7.08MB/s]
+ 66%|████████████████████████▍            | 1.09G/1.65G [00:31&lt;01:20, 6.99MB/s]
+ 66%|████████████████████████▌            | 1.09G/1.65G [00:31&lt;01:18, 7.15MB/s]
+ 66%|████████████████████████▌            | 1.10G/1.65G [00:32&lt;01:17, 7.18MB/s]
+ 66%|████████████████████████▌            | 1.10G/1.65G [00:32&lt;01:15, 7.34MB/s]
+ 66%|████████████████████████▌            | 1.10G/1.65G [00:32&lt;01:15, 7.41MB/s]
+ 66%|████████████████████████▌            | 1.10G/1.65G [00:32&lt;01:15, 7.32MB/s]
+ 66%|████████████████████████▌            | 1.10G/1.65G [00:32&lt;01:16, 7.25MB/s]
+ 67%|████████████████████████▌            | 1.10G/1.65G [00:32&lt;01:14, 7.39MB/s]
+ 67%|████████████████████████▌            | 1.10G/1.65G [00:32&lt;01:14, 7.46MB/s]
+ 67%|████████████████████████▋            | 1.10G/1.65G [00:32&lt;01:12, 7.63MB/s]
+ 67%|████████████████████████▋            | 1.10G/1.65G [00:32&lt;01:14, 7.36MB/s]
+ 67%|████████████████████████▋            | 1.10G/1.65G [00:32&lt;01:13, 7.48MB/s]
+ 67%|████████████████████████▋            | 1.10G/1.65G [00:33&lt;01:14, 7.37MB/s]
+ 67%|████████████████████████▋            | 1.10G/1.65G [00:33&lt;01:18, 6.97MB/s]
+ 67%|████████████████████████▋            | 1.10G/1.65G [00:33&lt;01:19, 6.89MB/s]
+ 67%|████████████████████████▋            | 1.11G/1.65G [00:33&lt;01:18, 6.97MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:33&lt;01:19, 6.91MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:33&lt;01:18, 6.96MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:33&lt;01:21, 6.67MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:33&lt;01:20, 6.74MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:34&lt;01:21, 6.64MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:34&lt;01:21, 6.67MB/s]
+ 67%|████████████████████████▊            | 1.11G/1.65G [00:34&lt;01:21, 6.68MB/s]
+ 67%|████████████████████████▉            | 1.11G/1.65G [00:34&lt;01:18, 6.88MB/s]
+ 67%|████████████████████████▉            | 1.11G/1.65G [00:34&lt;01:18, 6.89MB/s]
+ 67%|████████████████████████▉            | 1.11G/1.65G [00:34&lt;01:16, 7.02MB/s]
+ 67%|████████████████████████▉            | 1.11G/1.65G [00:34&lt;01:15, 7.14MB/s]
+ 67%|████████████████████████▉            | 1.11G/1.65G [00:34&lt;01:16, 7.06MB/s]
+ 68%|████████████████████████▉            | 1.12G/1.65G [00:34&lt;01:14, 7.23MB/s]
+ 68%|████████████████████████▉            | 1.12G/1.65G [00:35&lt;01:14, 7.18MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:35&lt;01:13, 7.31MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:35&lt;01:15, 7.05MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:35&lt;01:14, 7.15MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:35&lt;01:15, 7.02MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:35&lt;01:15, 7.05MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:35&lt;01:16, 6.91MB/s]
+ 68%|█████████████████████████            | 1.12G/1.65G [00:35&lt;01:15, 7.00MB/s]
+ 68%|█████████████████████████▏           | 1.12G/1.65G [00:35&lt;01:16, 6.89MB/s]
+ 68%|█████████████████████████▏           | 1.12G/1.65G [00:36&lt;01:11, 7.42MB/s]
+ 68%|█████████████████████████▏           | 1.12G/1.65G [00:36&lt;01:06, 7.93MB/s]
+ 68%|█████████████████████████▏           | 1.13G/1.65G [00:36&lt;01:02, 8.38MB/s]
+ 68%|█████████████████████████▏           | 1.13G/1.65G [00:36&lt;01:01, 8.62MB/s]
+ 68%|█████████████████████████▎           | 1.13G/1.65G [00:36&lt;00:58, 8.97MB/s]
+ 68%|█████████████████████████▎           | 1.13G/1.65G [00:36&lt;00:58, 8.97MB/s]
+ 68%|█████████████████████████▎           | 1.13G/1.65G [00:36&lt;01:03, 8.22MB/s]
+ 68%|█████████████████████████▎           | 1.13G/1.65G [00:36&lt;01:06, 7.87MB/s]
+ 68%|█████████████████████████▎           | 1.13G/1.65G [00:36&lt;01:07, 7.75MB/s]
+ 69%|█████████████████████████▎           | 1.13G/1.65G [00:37&lt;01:09, 7.54MB/s]
+ 69%|█████████████████████████▍           | 1.13G/1.65G [00:37&lt;00:44, 11.7MB/s]
+ 69%|█████████████████████████▌           | 1.14G/1.65G [00:37&lt;00:17, 28.6MB/s]
+ 69%|█████████████████████████▋           | 1.15G/1.65G [00:37&lt;00:18, 27.4MB/s]
+ 69%|█████████████████████████▋           | 1.15G/1.65G [00:37&lt;00:35, 14.2MB/s]
+ 70%|█████████████████████████▊           | 1.15G/1.65G [00:38&lt;00:48, 10.4MB/s]
+ 70%|█████████████████████████▊           | 1.16G/1.65G [00:38&lt;00:31, 15.9MB/s]
+ 70%|██████████████████████████           | 1.16G/1.65G [00:38&lt;00:20, 24.3MB/s]
+ 71%|██████████████████████████▏          | 1.17G/1.65G [00:38&lt;00:16, 28.9MB/s]
+ 71%|██████████████████████████▏          | 1.17G/1.65G [00:38&lt;00:23, 20.8MB/s]
+ 71%|██████████████████████████▍          | 1.18G/1.65G [00:39&lt;00:16, 29.2MB/s]
+ 72%|██████████████████████████▌          | 1.19G/1.65G [00:39&lt;00:12, 38.0MB/s]
+ 72%|██████████████████████████▋          | 1.19G/1.65G [00:39&lt;00:09, 46.4MB/s]
+ 73%|██████████████████████████▉          | 1.20G/1.65G [00:39&lt;00:08, 53.6MB/s]
+ 73%|███████████████████████████          | 1.21G/1.65G [00:40&lt;00:23, 18.8MB/s]
+ 73%|███████████████████████████▏         | 1.21G/1.65G [00:40&lt;00:34, 12.9MB/s]
+ 74%|███████████████████████████▎         | 1.22G/1.65G [00:41&lt;00:24, 17.3MB/s]
+ 74%|███████████████████████████▍         | 1.23G/1.65G [00:41&lt;00:18, 23.3MB/s]
+ 75%|███████████████████████████▌         | 1.23G/1.65G [00:41&lt;00:16, 25.8MB/s]
+ 75%|███████████████████████████▋         | 1.24G/1.65G [00:42&lt;00:29, 13.9MB/s]
+ 75%|███████████████████████████▊         | 1.24G/1.65G [00:42&lt;00:31, 13.0MB/s]
+ 76%|███████████████████████████▉         | 1.25G/1.65G [00:42&lt;00:21, 18.7MB/s]
+ 76%|████████████████████████████         | 1.26G/1.65G [00:42&lt;00:15, 25.6MB/s]
+ 76%|████████████████████████████▎        | 1.26G/1.65G [00:42&lt;00:11, 33.1MB/s]
+ 77%|████████████████████████████▍        | 1.27G/1.65G [00:42&lt;00:09, 40.7MB/s]
+ 77%|████████████████████████████▌        | 1.28G/1.65G [00:43&lt;00:07, 47.6MB/s]
+ 78%|████████████████████████████▊        | 1.29G/1.65G [00:43&lt;00:09, 40.3MB/s]
+ 78%|████████████████████████████▉        | 1.29G/1.65G [00:43&lt;00:07, 45.8MB/s]
+ 79%|█████████████████████████████        | 1.30G/1.65G [00:43&lt;00:06, 51.4MB/s]
+ 79%|█████████████████████████████▎       | 1.31G/1.65G [00:43&lt;00:06, 57.0MB/s]
+ 80%|█████████████████████████████▍       | 1.31G/1.65G [00:43&lt;00:05, 62.1MB/s]
+ 80%|█████████████████████████████▌       | 1.32G/1.65G [00:44&lt;00:09, 36.3MB/s]
+ 80%|█████████████████████████████▋       | 1.33G/1.65G [00:44&lt;00:07, 42.9MB/s]
+ 81%|█████████████████████████████▉       | 1.33G/1.65G [00:44&lt;00:07, 43.5MB/s]
+ 81%|██████████████████████████████       | 1.34G/1.65G [00:44&lt;00:10, 31.0MB/s]
+ 82%|██████████████████████████████▏      | 1.35G/1.65G [00:44&lt;00:07, 38.4MB/s]
+ 82%|██████████████████████████████▎      | 1.36G/1.65G [00:44&lt;00:06, 46.0MB/s]
+ 82%|██████████████████████████████▍      | 1.36G/1.65G [00:44&lt;00:06, 44.2MB/s]
+ 83%|██████████████████████████████▌      | 1.37G/1.65G [00:45&lt;00:08, 32.0MB/s]
+ 83%|██████████████████████████████▊      | 1.37G/1.65G [00:45&lt;00:07, 39.5MB/s]
+ 84%|██████████████████████████████▉      | 1.38G/1.65G [00:45&lt;00:05, 47.1MB/s]
+ 84%|███████████████████████████████      | 1.39G/1.65G [00:45&lt;00:04, 53.5MB/s]
+ 85%|███████████████████████████████▎     | 1.40G/1.65G [00:45&lt;00:04, 58.9MB/s]
+ 85%|███████████████████████████████▍     | 1.40G/1.65G [00:45&lt;00:05, 47.0MB/s]
+ 85%|███████████████████████████████▌     | 1.41G/1.65G [00:45&lt;00:04, 52.2MB/s]
+ 86%|███████████████████████████████▊     | 1.42G/1.65G [00:46&lt;00:04, 57.6MB/s]
+ 86%|███████████████████████████████▉     | 1.43G/1.65G [00:46&lt;00:04, 56.3MB/s]
+ 87%|████████████████████████████████     | 1.43G/1.65G [00:46&lt;00:05, 39.1MB/s]
+ 87%|████████████████████████████████▏    | 1.44G/1.65G [00:46&lt;00:04, 46.3MB/s]
+ 88%|████████████████████████████████▍    | 1.45G/1.65G [00:46&lt;00:03, 53.4MB/s]
+ 88%|████████████████████████████████▌    | 1.45G/1.65G [00:46&lt;00:03, 59.5MB/s]
+ 88%|████████████████████████████████▋    | 1.46G/1.65G [00:46&lt;00:02, 64.5MB/s]
+ 89%|████████████████████████████████▉    | 1.47G/1.65G [00:47&lt;00:05, 36.0MB/s]
+ 89%|█████████████████████████████████    | 1.48G/1.65G [00:47&lt;00:07, 24.7MB/s]
+ 90%|█████████████████████████████████▏   | 1.48G/1.65G [00:47&lt;00:05, 31.4MB/s]
+ 90%|█████████████████████████████████▎   | 1.49G/1.65G [00:47&lt;00:04, 37.3MB/s]
+ 91%|█████████████████████████████████▍   | 1.50G/1.65G [00:48&lt;00:05, 28.3MB/s]
+ 91%|█████████████████████████████████▋   | 1.50G/1.65G [00:48&lt;00:04, 34.9MB/s]
+ 91%|█████████████████████████████████▊   | 1.51G/1.65G [00:48&lt;00:06, 21.7MB/s]
+ 92%|█████████████████████████████████▉   | 1.52G/1.65G [00:49&lt;00:04, 27.8MB/s]
+ 92%|██████████████████████████████████   | 1.52G/1.65G [00:49&lt;00:03, 34.4MB/s]
+ 93%|██████████████████████████████████▏  | 1.53G/1.65G [00:49&lt;00:02, 41.2MB/s]
+ 93%|██████████████████████████████████▎  | 1.54G/1.65G [00:49&lt;00:04, 25.9MB/s]
+ 93%|██████████████████████████████████▌  | 1.54G/1.65G [00:49&lt;00:03, 32.3MB/s]
+ 94%|██████████████████████████████████▋  | 1.55G/1.65G [00:49&lt;00:03, 33.2MB/s]
+ 94%|██████████████████████████████████▊  | 1.55G/1.65G [00:50&lt;00:03, 25.6MB/s]
+ 94%|██████████████████████████████████▉  | 1.56G/1.65G [00:50&lt;00:02, 33.1MB/s]
+ 95%|███████████████████████████████████  | 1.57G/1.65G [00:50&lt;00:02, 40.8MB/s]
+ 95%|███████████████████████████████████▎ | 1.58G/1.65G [00:50&lt;00:01, 48.3MB/s]
+ 96%|███████████████████████████████████▍ | 1.58G/1.65G [00:50&lt;00:01, 55.1MB/s]
+ 96%|███████████████████████████████████▌ | 1.59G/1.65G [00:50&lt;00:01, 60.9MB/s]
+ 97%|███████████████████████████████████▊ | 1.60G/1.65G [00:50&lt;00:00, 65.5MB/s]
+ 97%|███████████████████████████████████▉ | 1.61G/1.65G [00:50&lt;00:00, 68.3MB/s]
+ 98%|████████████████████████████████████ | 1.61G/1.65G [00:51&lt;00:01, 20.5MB/s]
+ 98%|████████████████████████████████████▏| 1.62G/1.65G [00:52&lt;00:02, 16.5MB/s]
+ 98%|████████████████████████████████████▍| 1.63G/1.65G [00:52&lt;00:01, 21.7MB/s]
+ 99%|████████████████████████████████████▌| 1.63G/1.65G [00:52&lt;00:00, 28.1MB/s]
+ 99%|████████████████████████████████████▋| 1.64G/1.65G [00:52&lt;00:00, 35.2MB/s]
+100%|████████████████████████████████████▉| 1.65G/1.65G [00:53&lt;00:00, 25.5MB/s]
+  0%|                                              | 0.00/1.65G [00:00&lt;?, ?B/s]
+100%|█████████████████████████████████████| 1.65G/1.65G [00:00&lt;00:00, 6.03TB/s]
+Untarring contents of &#39;/home/circleci/mne_data/MNE-sample-data-processed.tar.gz&#39; to &#39;/home/circleci/mne_data&#39;
 Attempting to create new mne-python configuration file:
 /home/circleci/.mne/mne-python.json
+Download complete in 01m11s (1576.2 MB)
 
 Hello! This is openneuro-py 2022.4.0. Great to see you!
 
@@ -586,68 +912,90 @@ Hello! This is openneuro-py 2022.4.0. Great to see you!
 Preparing to download ds002778 ...
 
 Traversing directories for ds002778: 0 entities [00:00, ? entities/s]
-Traversing directories for ds002778: 7 entities [00:02,  2.36 entities/s]
-Traversing directories for ds002778: 8 entities [00:03,  2.59 entities/s]
-Traversing directories for ds002778: 14 entities [00:03,  5.71 entities/s]
-Traversing directories for ds002778: 17 entities [00:03,  7.03 entities/s]
-Traversing directories for ds002778: 20 entities [00:03,  5.50 entities/s]
+Traversing directories for ds002778: 7 entities [00:02,  2.46 entities/s]
+Traversing directories for ds002778: 8 entities [00:03,  2.64 entities/s]
+Traversing directories for ds002778: 14 entities [00:03,  5.77 entities/s]
+Traversing directories for ds002778: 17 entities [00:03,  7.13 entities/s]
+Traversing directories for ds002778: 20 entities [00:03,  5.62 entities/s]
 Retrieving up to 19 files (5 concurrent downloads).
 
-Skipping participants.tsv: already downloaded.: 100%|##########| 1.62k/1.62k [00:00&lt;?, ?B/s]
+participants.json:   0%|          | 0.00/1.24k [00:00&lt;?, ?B/s]
 
 
-Skipping participants.json: already downloaded.: 100%|##########| 1.24k/1.24k [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|##########| 75.0/75.0 [00:00&lt;?, ?B/s]
+CHANGES: 0.00B [00:00, ?B/s]
+
+README: 0.00B [00:00, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|##########| 10.0/10.0 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|##########| 66.0/66.0 [00:00&lt;?, ?B/s]
-
-
-Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
-Re-downloading README: file size mismatch.: 0.00B [00:00, ?B/s]
-
-Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s]
+dataset_description.json: 0.00B [00:00, ?B/s]
 
 
 
-Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|##########| 433/433 [00:00&lt;?, ?B/s]
 
 
-Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
+
+sub-pd6_ses-on_scans.tsv:   0%|          | 0.00/74.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|##########| 10.0/10.0 [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_beh.tsv:   0%|          | 0.00/10.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|##########| 471/471 [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|##########| 51.0/51.0 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_channels.tsv:   0%|          | 0.00/2.22k [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|##########| 2.22k/2.22k [00:00&lt;?, ?B/s]
+participants.tsv:   0%|          | 0.00/1.62k [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|##########| 2.22k/2.22k [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_events.tsv:   0%|          | 0.00/66.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|##########| 74.0/74.0 [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_task-rest_beh.json: 0.00B [00:00, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|##########| 471/471 [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_beh.json:   0%|          | 0.00/433 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|##########| 17.4M/17.4M [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_events.tsv:   0%|          | 0.00/51.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|##########| 11.5M/11.5M [00:00&lt;?, ?B/s]
+sub-pd6_ses-off_scans.tsv:   0%|          | 0.00/75.0 [00:00&lt;?, ?B/s]
+
+
+sub-pd6_ses-on_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
+
+
+sub-pd6_ses-off_task-rest_eeg.json:   0%|          | 0.00/471 [00:00&lt;?, ?B/s]
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:   0%|          | 0.00/17.4M [00:00&lt;?, ?B/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:   0%|          | 0.00/11.5M [00:00&lt;?, ?B/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  19%|#9        | 3.30M/17.4M [00:00&lt;00:00, 34.6MB/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  12%|#2        | 1.39M/11.5M [00:00&lt;00:00, 14.6MB/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  28%|##8       | 3.27M/11.5M [00:00&lt;00:00, 17.6MB/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  38%|###8      | 6.60M/17.4M [00:00&lt;00:00, 24.1MB/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  45%|####5     | 5.18M/11.5M [00:00&lt;00:00, 18.7MB/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  52%|#####2    | 9.10M/17.4M [00:00&lt;00:00, 22.1MB/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  61%|######    | 6.97M/11.5M [00:00&lt;00:00, 18.5MB/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  65%|######5   | 11.3M/17.4M [00:00&lt;00:00, 20.8MB/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  77%|#######6  | 8.80M/11.5M [00:00&lt;00:00, 18.7MB/s]
+sub-pd6_ses-on_task-rest_eeg.bdf:  77%|#######6  | 13.3M/17.4M [00:00&lt;00:00, 20.5MB/s]
+
+sub-pd6_ses-off_task-rest_eeg.bdf:  94%|#########3| 10.8M/11.5M [00:00&lt;00:00, 19.4MB/s]
+
+
+sub-pd6_ses-on_task-rest_eeg.bdf:  92%|#########1| 15.9M/17.4M [00:00&lt;00:00, 22.4MB/s]
 
 Finished downloading ds002778.
 
@@ -726,11 +1074,12 @@ of the Parkinson’s disease patient dataset. There were two sessions, one
 where the patients took their regular anti-Parkinsonian medications and
 one where they abstained for more than twelve hours. For now, we are
 not interested in the on-medication session.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a> <span class="o">=</span> <a href="../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_entity_vals</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="n">ignore_sessions</span><span class="o">=</span><span class="s1">&#39;on&#39;</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s1">&#39;eeg&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a> <span class="o">=</span> <a href="../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_entity_vals</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s2">&quot;session&quot;</span><span class="p">,</span> <span class="n">ignore_sessions</span><span class="o">=</span><span class="s2">&quot;on&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s2">&quot;eeg&quot;</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extensions</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.tsv&quot;</span><span class="p">]</span>  <span class="c1"># ignore .json files</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_paths</span></a> <span class="o">=</span> <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">datatypes</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">,</span>
-                                 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extensions</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extensions</span></a><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_paths</span></a> <span class="o">=</span> <a href="../generated/mne_bids.find_matching_paths.html#mne_bids.find_matching_paths" title="mne_bids.find_matching_paths" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">find_matching_paths</span></a><span class="p">(</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">datatypes</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">sessions</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extensions</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">extensions</span></a>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>We can now retrieve a list of all MEG-related files in the dataset:</p>
@@ -750,7 +1099,7 @@ basename: sub-pd6_ses-off_task-rest_events.tsv)]
 </pre></div>
 </div>
 <p>Note that this is the same as running:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session</span></a> <span class="o">=</span> <span class="s1">&#39;off&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session</span></a> <span class="o">=</span> <span class="s2">&quot;off&quot;</span>
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">session</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">match</span></a><span class="p">(</span><span class="n">ignore_json</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
@@ -784,8 +1133,8 @@ pass a <code class="docutils literal notranslate"><span class="pre">suffix</span
 extension – <code class="docutils literal notranslate"><span class="pre">'channels'</span></code> and <code class="docutils literal notranslate"><span class="pre">'events'</span></code> for the two TSV files in
 our example, and <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code> for EEG raw data. For MEG and EEG raw data, the
 suffix is identical to the datatype, so don’t let yourself be confused here!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;rest&#39;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a> <span class="o">=</span> <span class="s1">&#39;eeg&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s2">&quot;rest&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a> <span class="o">=</span> <span class="s2">&quot;eeg&quot;</span>
 
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="p">)</span>
 </pre></div>
@@ -840,28 +1189,28 @@ extension too, by passing e.g. <code class="docutils literal notranslate"><span 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_bids/read.py:621: RuntimeWarning: The unit for channel(s) Status has changed from NA to V.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_bids/read.py:663: RuntimeWarning: The unit for channel(s) Status has changed from NA to V.
   raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 </pre></div>
 </div>
 <p>Now we can inspect the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object to check that it contains to correct
 metadata.</p>
 <p>Basic subject metadata is here.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;his_id&#39;: &#39;sub-pd6&#39;, &#39;age&#39;: &#39;62&#39;, &#39;gender&#39;: &#39;f&#39;, &#39;hand&#39;: 1, &#39;MMSE&#39;: &#39;30&#39;, &#39;NAART&#39;: &#39;42&#39;, &#39;disease_duration&#39;: &#39;8&#39;, &#39;rl_deficits&#39;: &#39;L OFF meds, more R ON meds&#39;, &#39;notes&#39;: &#39;Used preprocessed data from EEGLAB .mat file instead of raw data for pd on&#39;}
 </pre></div>
 </div>
 <p>Power line frequency is here.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>60.0
 </pre></div>
 </div>
 <p>Sampling frequency is here.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>512.0
@@ -883,7 +1232,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.952 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  17.810 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>

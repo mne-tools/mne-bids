@@ -57,11 +57,18 @@ import nibabel as nib
 from nilearn.plotting import plot_anat
 
 import mne
-from mne_bids import (BIDSPath, write_raw_bids, write_anat,
-                      get_anat_landmarks, read_raw_bids,
-                      search_folder_for_text, print_dir_tree,
-                      template_to_head, convert_montage_to_ras,
-                      convert_montage_to_mri)
+from mne_bids import (
+    BIDSPath,
+    write_raw_bids,
+    write_anat,
+    get_anat_landmarks,
+    read_raw_bids,
+    search_folder_for_text,
+    print_dir_tree,
+    template_to_head,
+    convert_montage_to_ras,
+    convert_montage_to_mri,
+)
 
 # %%
 # Step 1: Download the data
@@ -74,10 +81,9 @@ misc_path = mne.datasets.misc.data_path()
 
 # The electrode coords data are in the tsv file format
 # which is easily read in using numpy
-raw = mne.io.read_raw_fif(op.join(
-    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
-raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
-subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
+raw = mne.io.read_raw_fif(op.join(misc_path, "seeg", "sample_seeg_ieeg.fif"))
+raw.info["line_freq"] = 60  # specify power line frequency as required by BIDS
+subjects_dir = op.join(misc_path, "seeg")  # Freesurfer recon-all directory
 
 # %%
 # When the locations of the channels in this dataset were found in
@@ -95,13 +101,13 @@ subjects_dir = op.join(misc_path, 'seeg')  # Freesurfer recon-all directory
 # is the best option.
 
 # estimate the transformation from "head" to "mri" space
-trans = mne.coreg.estimate_head_mri_t('sample_seeg', subjects_dir)
+trans = mne.coreg.estimate_head_mri_t("sample_seeg", subjects_dir)
 
 # %%
 # Now let's convert the montage to "ras"
 montage = raw.get_montage()
 montage.apply_trans(trans)  # head->mri
-convert_montage_to_ras(montage, 'sample_seeg', subjects_dir)  # mri->ras
+convert_montage_to_ras(montage, "sample_seeg", subjects_dir)  # mri->ras
 
 # %%
 # BIDS vs MNE-Python Coordinate Systems
@@ -147,14 +153,14 @@ print(write_raw_bids.__doc__)
 # Let us initialize some of the necessary data for the subject.
 
 # There is a subject, and specific task for the dataset.
-subject_id = '1'
-task = 'motor'
+subject_id = "1"
+task = "motor"
 
 # get MNE-Python directory w/ example data
-mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
+mne_data_dir = mne.get_config("MNE_DATASETS_MISC_PATH")
 
 # There is the root directory for where we will write our data.
-bids_root = op.join(mne_data_dir, 'ieeg_bids')
+bids_root = op.join(mne_data_dir, "ieeg_bids")
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -180,18 +186,26 @@ bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
 # plot T1 to show that it is ACPC-aligned
 # note that the origin is centered on the anterior commissure (AC)
 # with the y-axis passing through the posterior commissure (PC)
-T1_fname = op.join(subjects_dir, 'sample_seeg', 'mri', 'T1.mgz')
+T1_fname = op.join(subjects_dir, "sample_seeg", "mri", "T1.mgz")
 fig = plot_anat(T1_fname, cut_coords=(0, 0, 0))
-fig.axes['x'].ax.annotate('AC', (2., -2.), (30., -40.), color='w',
-                          arrowprops=dict(facecolor='w', alpha=0.5))
-fig.axes['x'].ax.annotate('PC', (-31., -2.), (-80., -40.), color='w',
-                          arrowprops=dict(facecolor='w', alpha=0.5))
+fig.axes["x"].ax.annotate(
+    "AC",
+    (2.0, -2.0),
+    (30.0, -40.0),
+    color="w",
+    arrowprops=dict(facecolor="w", alpha=0.5),
+)
+fig.axes["x"].ax.annotate(
+    "PC",
+    (-31.0, -2.0),
+    (-80.0, -40.0),
+    color="w",
+    arrowprops=dict(facecolor="w", alpha=0.5),
+)
 
 # write ACPC-aligned T1
-landmarks = get_anat_landmarks(T1_fname, raw.info, trans,
-                               'sample_seeg', subjects_dir)
-T1_bids_path = write_anat(T1_fname, bids_path, deface=True,
-                          landmarks=landmarks)
+landmarks = get_anat_landmarks(T1_fname, raw.info, trans, "sample_seeg", subjects_dir)
+T1_bids_path = write_anat(T1_fname, bids_path, deface=True, landmarks=landmarks)
 
 # write `raw` to BIDS and anonymize it (converts to BrainVision format)
 #
@@ -200,8 +214,14 @@ T1_bids_path = write_anat(T1_fname, bids_path, deface=True,
 #
 # `acpc_aligned=True` affirms that our MRI is aligned to ACPC
 # if this is not true, convert to `fsaverage` (see below)!
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
-               montage=montage, acpc_aligned=True, overwrite=True)
+write_raw_bids(
+    raw,
+    bids_path,
+    anonymize=dict(daysback=40000),
+    montage=montage,
+    acpc_aligned=True,
+    overwrite=True,
+)
 
 # check our output
 print_dir_tree(bids_root)
@@ -216,7 +236,7 @@ print_dir_tree(bids_root)
 # describe ``iEEGReference`` and ``iEEGGround`` yourself.
 # It's easy to find these by searching for ``"n/a"`` in the sidecar files.
 
-search_folder_for_text('n/a', bids_root)
+search_folder_for_text("n/a", bids_root)
 
 # %%
 # Remember that there is a convenient JavaScript tool to validate all your BIDS
@@ -246,14 +266,13 @@ raw2 = read_raw_bids(bids_path=bids_path)
 montage2 = raw2.get_montage()
 
 # we need to go from scanner RAS back to surface RAS (requires recon-all)
-convert_montage_to_mri(montage2, 'sample_seeg', subjects_dir=subjects_dir)
+convert_montage_to_mri(montage2, "sample_seeg", subjects_dir=subjects_dir)
 
 # this uses Freesurfer recon-all subject directory
-montage2.add_estimated_fiducials('sample_seeg', subjects_dir=subjects_dir)
+montage2.add_estimated_fiducials("sample_seeg", subjects_dir=subjects_dir)
 
 # get head->mri trans, invert from mri->head
-trans2 = mne.transforms.invert_transform(
-    mne.channels.compute_native_head_t(montage2))
+trans2 = mne.transforms.invert_transform(mne.channels.compute_native_head_t(montage2))
 
 # now the montage is properly in "head" and ready for analysis in MNE
 raw2.set_montage(montage2)
@@ -269,10 +288,13 @@ montage2 = raw2.get_montage()  # the recovered montage in 'head' coordinates
 montage2.apply_trans(trans2)
 
 # compare with standard
-print('Recovered coordinate: {recovered}\n'
-      'Saved coordinate:     {saved}'.format(
-          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          saved=montage.get_positions()['ch_pos']['LENT 1']))
+print(
+    "Recovered coordinate: {recovered}\n"
+    "Saved coordinate:     {saved}".format(
+        recovered=montage2.get_positions()["ch_pos"]["LENT 1"],
+        saved=montage.get_positions()["ch_pos"]["LENT 1"],
+    )
+)
 
 # %%
 # Step 4: Cite mne-bids
@@ -280,8 +302,8 @@ print('Recovered coordinate: {recovered}\n'
 # We can see that the appropriate citations are already written in the README.
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = op.join(bids_root, 'README')
-with open(readme, 'r', encoding='utf-8-sig') as fid:
+readme = op.join(bids_root, "README")
+with open(readme, "r", encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
 
@@ -319,12 +341,11 @@ if op.exists(bids_root):
     shutil.rmtree(bids_root)
 
 # load our raw data again
-raw = mne.io.read_raw_fif(op.join(
-    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
-raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+raw = mne.io.read_raw_fif(op.join(misc_path, "seeg", "sample_seeg_ieeg.fif"))
+raw.info["line_freq"] = 60  # specify power line frequency as required by BIDS
 
 # get Talairach transform
-mri_mni_t = mne.read_talxfm('sample_seeg', subjects_dir)
+mri_mni_t = mne.read_talxfm("sample_seeg", subjects_dir)
 
 # %%
 # Now let's convert the montage to MNI Talairach ("mni_tal").
@@ -333,8 +354,9 @@ montage.apply_trans(trans)  # head->mri
 montage.apply_trans(mri_mni_t)
 
 # write to BIDS, this time with a template coordinate system
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
-               montage=montage, overwrite=True)
+write_raw_bids(
+    raw, bids_path, anonymize=dict(daysback=40000), montage=montage, overwrite=True
+)
 
 # read in the BIDS dataset
 raw2 = read_raw_bids(bids_path=bids_path)
@@ -352,8 +374,7 @@ raw2 = read_raw_bids(bids_path=bids_path)
 
 # use `coord_frame='mri'` to indicate that the montage is in surface RAS
 # and `unit='m'` to indicate that the units are in meters
-trans2 = template_to_head(
-    raw2.info, space='fsaverage', coord_frame='mri', unit='m')[1]
+trans2 = template_to_head(raw2.info, space="fsaverage", coord_frame="mri", unit="m")[1]
 # this a bit confusing since we transformed from mri->mni and now we're
 # saying we're back in 'mri' but that is because we were in the surface RAS
 # coordinate frame of `sample_seeg` and transformed to 'mni_tal', which is the
@@ -367,28 +388,35 @@ trans2 = template_to_head(
 # ``head -> mri`` ``trans`` which is the setup MNE-Python is designed around.
 
 # check that we can recover the coordinates
-print('Recovered coordinate head: {recovered}\n'
-      'Original coordinate head:  {original}'.format(
-          recovered=raw2.info['chs'][0]['loc'][:3],
-          original=raw.info['chs'][0]['loc'][:3]))
+print(
+    "Recovered coordinate head: {recovered}\n"
+    "Original coordinate head:  {original}".format(
+        recovered=raw2.info["chs"][0]["loc"][:3], original=raw.info["chs"][0]["loc"][:3]
+    )
+)
 
 # check difference in trans
-print('Recovered trans:\n{recovered}\n'
-      'Original trans:\n{original}'.format(
-          recovered=trans2['trans'].round(3),
-          # combine head->mri with mri->mni to get head->mni
-          # and then invert to get mni->head
-          original=np.linalg.inv(np.dot(trans['trans'], mri_mni_t['trans'])
-                                 ).round(3)))
+print(
+    "Recovered trans:\n{recovered}\n"
+    "Original trans:\n{original}".format(
+        recovered=trans2["trans"].round(3),
+        # combine head->mri with mri->mni to get head->mni
+        # and then invert to get mni->head
+        original=np.linalg.inv(np.dot(trans["trans"], mri_mni_t["trans"])).round(3),
+    )
+)
 
 # ensure that the data in MNI coordinates is exactly the same
 # (within computer precision)
 montage2 = raw2.get_montage()  # get montage after transformed back to head
 montage2.apply_trans(trans2)
-print('Recovered coordinate: {recovered}\n'
-      'Original coordinate:  {original}'.format(
-          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          original=montage.get_positions()['ch_pos']['LENT 1']))
+print(
+    "Recovered coordinate: {recovered}\n"
+    "Original coordinate:  {original}".format(
+        recovered=montage2.get_positions()["ch_pos"]["LENT 1"],
+        original=montage.get_positions()["ch_pos"]["LENT 1"],
+    )
+)
 
 # %%
 # As you can see the coordinates stored in the ``raw`` object are slightly off.
@@ -447,40 +475,44 @@ if op.exists(bids_root):
     shutil.rmtree(bids_root)
 
 # get a template mgz image to transform the montage to voxel coordinates
-subjects_dir = op.join(mne.datasets.sample.data_path(), 'subjects')
-template_T1 = nib.load(op.join(subjects_dir, 'fsaverage', 'mri', 'T1.mgz'))
+subjects_dir = op.join(mne.datasets.sample.data_path(), "subjects")
+template_T1 = nib.load(op.join(subjects_dir, "fsaverage", "mri", "T1.mgz"))
 
 # get voxels to surface RAS and scanner RAS transforms
 vox_mri_t = template_T1.header.get_vox2ras_tkr()  # surface RAS
 vox_ras_t = template_T1.header.get_vox2ras()  # scanner RAS
 
-raw = mne.io.read_raw_fif(op.join(  # load our raw data again
-    misc_path, 'seeg', 'sample_seeg_ieeg.fif'))
+raw = mne.io.read_raw_fif(
+    op.join(misc_path, "seeg", "sample_seeg_ieeg.fif")  # load our raw data again
+)
 montage = raw.get_montage()  # get the original montage
 montage.apply_trans(trans)  # head->mri
 montage.apply_trans(mri_mni_t)  # mri->mni
 pos = montage.get_positions()
-ch_pos = np.array(list(pos['ch_pos'].values()))  # get an array of positions
+ch_pos = np.array(list(pos["ch_pos"].values()))  # get an array of positions
 # mri -> vox and m -> mm
 ch_pos = mne.transforms.apply_trans(np.linalg.inv(vox_mri_t), ch_pos * 1000)
 ch_pos = mne.transforms.apply_trans(vox_ras_t, ch_pos)
 
 montage_ras = mne.channels.make_dig_montage(
-    ch_pos=dict(zip(pos['ch_pos'].keys(), ch_pos)), coord_frame='ras')
+    ch_pos=dict(zip(pos["ch_pos"].keys(), ch_pos)), coord_frame="ras"
+)
 
 # specify our standard template coordinate system space
-bids_path.update(datatype='ieeg', space='fsaverage')
+bids_path.update(datatype="ieeg", space="fsaverage")
 
 # write to BIDS, this time with a template coordinate system in voxels
-write_raw_bids(raw, bids_path, anonymize=dict(daysback=40000),
-               montage=montage_ras, overwrite=True)
+write_raw_bids(
+    raw, bids_path, anonymize=dict(daysback=40000), montage=montage_ras, overwrite=True
+)
 
 # %%
 # Now, let's load our data and convert our montage to ``head``.
 
 raw2 = read_raw_bids(bids_path=bids_path)
 trans2 = template_to_head(  # unit='auto' automatically determines it's in mm
-    raw2.info, space='fsaverage', coord_frame='ras', unit='auto')[1]
+    raw2.info, space="fsaverage", coord_frame="ras", unit="auto"
+)[1]
 
 # %%
 # Let's check to make sure again that the original coordinates from the BIDS
@@ -488,10 +520,13 @@ trans2 = template_to_head(  # unit='auto' automatically determines it's in mm
 
 montage2 = raw2.get_montage()  # get montage after transformed back to head
 montage2.apply_trans(trans2)  # apply trans to go back to 'mri'
-print('Recovered coordinate: {recovered}\n'
-      'Original coordinate:  {original}'.format(
-          recovered=montage2.get_positions()['ch_pos']['LENT 1'],
-          original=montage.get_positions()['ch_pos']['LENT 1']))
+print(
+    "Recovered coordinate: {recovered}\n"
+    "Original coordinate:  {original}".format(
+        recovered=montage2.get_positions()["ch_pos"]["LENT 1"],
+        original=montage.get_positions()["ch_pos"]["LENT 1"],
+    )
+)
 
 # %%
 # In summary, as we saw, these standard template spaces that are allowable by

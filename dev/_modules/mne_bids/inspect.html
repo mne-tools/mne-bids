@@ -494,11 +494,13 @@ document.write(`
 <span class="kn">from</span> <span class="nn">mne.fixes</span> <span class="kn">import</span> <span class="n">_compare_version</span>
 <span class="kn">from</span> <span class="nn">mne.viz</span> <span class="kn">import</span> <span class="n">use_browser_backend</span>
 
-<span class="k">if</span> <span class="n">_compare_version</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0.dev0&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+<span class="k">if</span> <span class="n">_compare_version</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;1.0.dev0&quot;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
     <span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_flat</span>
+
     <span class="n">_annotate_flat_func</span> <span class="o">=</span> <span class="n">annotate_flat</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_amplitude</span>
+
     <span class="n">_annotate_flat_func</span> <span class="o">=</span> <span class="n">annotate_amplitude</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">mark_channels</span>
@@ -508,8 +510,14 @@ document.write(`
 
 
 <div class="viewcode-block" id="inspect_dataset"><a class="viewcode-back" href="../../generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">inspect_dataset</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">find_flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">show_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">inspect_dataset</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">,</span>
+    <span class="n">find_flat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">h_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_annotations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspect and annotate BIDS raw data.</span>
 
 <span class="sd">    This function allows you to browse MEG, EEG, and iEEG raw data stored in a</span>
@@ -581,24 +589,31 @@ document.write(`
 <span class="sd">    &gt;&gt;&gt; inspect_dataset(bids_path=bids_path, find_flat=False,  # doctest: +SKIP</span>
 <span class="sd">    ...                 l_freq=1, h_freq=30)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">allowed_extensions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">]</span> <span class="o">+</span>
-                             <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">]</span> <span class="o">+</span>
-                             <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;ieeg&#39;</span><span class="p">])</span>
+    <span class="n">allowed_extensions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s2">&quot;meg&quot;</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">]</span>
+        <span class="o">+</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="s2">&quot;ieeg&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
 
-    <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                  <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
-                      <span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="n">allowed_extensions</span><span class="p">)</span> <span class="ow">and</span>
-                  <span class="n">p</span><span class="o">.</span><span class="n">acquisition</span> <span class="o">!=</span> <span class="s1">&#39;crosstalk&#39;</span><span class="p">]</span>
+    <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">p</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="n">allowed_extensions</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">acquisition</span> <span class="o">!=</span> <span class="s2">&quot;crosstalk&quot;</span>
+    <span class="p">]</span>
 
     <span class="k">for</span> <span class="n">bids_path_</span> <span class="ow">in</span> <span class="n">bids_paths</span><span class="p">:</span>
-        <span class="n">_inspect_raw</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path_</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span>
-                     <span class="n">find_flat</span><span class="o">=</span><span class="n">find_flat</span><span class="p">,</span> <span class="n">show_annotations</span><span class="o">=</span><span class="n">show_annotations</span><span class="p">)</span></div>
+        <span class="n">_inspect_raw</span><span class="p">(</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path_</span><span class="p">,</span>
+            <span class="n">l_freq</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span>
+            <span class="n">h_freq</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span>
+            <span class="n">find_flat</span><span class="o">=</span><span class="n">find_flat</span><span class="p">,</span>
+            <span class="n">show_annotations</span><span class="o">=</span><span class="n">show_annotations</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <span class="c1"># XXX This this should probably be refactored into a class attribute someday.</span>
-<span class="n">_global_vars</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">raw_fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">dialog_fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">mne_close_key</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">_global_vars</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">raw_fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dialog_fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mne_close_key</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_inspect_raw</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">l_freq</span><span class="p">,</span> <span class="n">h_freq</span><span class="p">,</span> <span class="n">find_flat</span><span class="p">,</span> <span class="n">show_annotations</span><span class="p">):</span>
@@ -608,41 +623,38 @@ document.write(`
     <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
     <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span>
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
-    <span class="n">old_bads</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span><span class="p">:</span>
+        <span class="n">extra_params</span><span class="p">[</span><span class="s2">&quot;allow_maxshield&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+    <span class="n">old_bads</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">old_annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">find_flat</span><span class="p">:</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>  <span class="c1"># Speeds up processing dramatically</span>
-        <span class="k">if</span> <span class="n">_annotate_flat_func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;annotate_amplitude&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_annotate_flat_func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;annotate_amplitude&quot;</span><span class="p">:</span>
             <span class="n">flat_annot</span><span class="p">,</span> <span class="n">flat_chans</span> <span class="o">=</span> <span class="n">annotate_amplitude</span><span class="p">(</span>
-                <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
-                <span class="n">flat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
-                <span class="n">bad_percent</span><span class="o">=</span><span class="mi">5</span>
+                <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">bad_percent</span><span class="o">=</span><span class="mi">5</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-            <span class="n">flat_annot</span><span class="p">,</span> <span class="n">flat_chans</span> <span class="o">=</span> <span class="n">annotate_flat</span><span class="p">(</span>
-                <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
-                <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.05</span>
-            <span class="p">)</span>
+            <span class="n">flat_annot</span><span class="p">,</span> <span class="n">flat_chans</span> <span class="o">=</span> <span class="n">annotate_flat</span><span class="p">(</span><span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
         <span class="n">new_annot</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span> <span class="o">+</span> <span class="n">flat_annot</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">new_annot</span><span class="p">)</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">flat_chans</span><span class="p">))</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">flat_chans</span><span class="p">))</span>
         <span class="k">del</span> <span class="n">new_annot</span><span class="p">,</span> <span class="n">flat_annot</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">flat_chans</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="n">show_options</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span>
+    <span class="n">show_options</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span>
 
-    <span class="k">with</span> <span class="n">use_browser_backend</span><span class="p">(</span><span class="s1">&#39;matplotlib&#39;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">use_browser_backend</span><span class="p">(</span><span class="s2">&quot;matplotlib&quot;</span><span class="p">):</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">highpass</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span> <span class="n">lowpass</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">highpass</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span>
+            <span class="n">lowpass</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span>
             <span class="n">show_options</span><span class="o">=</span><span class="n">show_options</span><span class="p">,</span>
-            <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span>
+            <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># Add our own event handlers so that when the MNE Raw Browser is being</span>
@@ -651,29 +663,33 @@ document.write(`
         <span class="n">mne_raw_fig</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span>
         <span class="c1"># Bads alterations are only transferred to `inst` once the figure is</span>
         <span class="c1"># closed; Annotation changes are immediately reflected in `inst`</span>
-        <span class="n">new_bads</span> <span class="o">=</span> <span class="n">mne_raw_fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">new_bads</span> <span class="o">=</span> <span class="n">mne_raw_fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">mne_raw_fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">new_annotations</span><span class="p">:</span>
             <span class="c1"># Ensure it&#39;s not an empty list, but an empty set of Annotations.</span>
             <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span>
-                <span class="n">onset</span><span class="o">=</span><span class="p">[],</span> <span class="n">duration</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="p">[],</span>
-                <span class="n">orig_time</span><span class="o">=</span><span class="n">mne_raw_fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+                <span class="n">onset</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">duration</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">description</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">orig_time</span><span class="o">=</span><span class="n">mne_raw_fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">],</span>
             <span class="p">)</span>
-        <span class="n">_save_raw_if_changed</span><span class="p">(</span><span class="n">old_bads</span><span class="o">=</span><span class="n">old_bads</span><span class="p">,</span>
-                             <span class="n">new_bads</span><span class="o">=</span><span class="n">new_bads</span><span class="p">,</span>
-                             <span class="n">flat_chans</span><span class="o">=</span><span class="n">flat_chans</span><span class="p">,</span>
-                             <span class="n">old_annotations</span><span class="o">=</span><span class="n">old_annotations</span><span class="p">,</span>
-                             <span class="n">new_annotations</span><span class="o">=</span><span class="n">new_annotations</span><span class="p">,</span>
-                             <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
-        <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;raw_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_save_raw_if_changed</span><span class="p">(</span>
+            <span class="n">old_bads</span><span class="o">=</span><span class="n">old_bads</span><span class="p">,</span>
+            <span class="n">new_bads</span><span class="o">=</span><span class="n">new_bads</span><span class="p">,</span>
+            <span class="n">flat_chans</span><span class="o">=</span><span class="n">flat_chans</span><span class="p">,</span>
+            <span class="n">old_annotations</span><span class="o">=</span><span class="n">old_annotations</span><span class="p">,</span>
+            <span class="n">new_annotations</span><span class="o">=</span><span class="n">new_annotations</span><span class="p">,</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;raw_fig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_keypress_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;mne_close_key&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;mne_close_key&quot;</span><span class="p">]:</span>
             <span class="n">_handle_close</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
-    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;close_event&#39;</span><span class="p">,</span> <span class="n">_handle_close</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;key_press_event&#39;</span><span class="p">,</span> <span class="n">_keypress_callback</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;close_event&quot;</span><span class="p">,</span> <span class="n">_handle_close</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;key_press_event&quot;</span><span class="p">,</span> <span class="n">_keypress_callback</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">show_annotations</span><span class="p">:</span>
         <span class="c1"># Remove annotations and kill `_toggle_annotation_fig` method, since</span>
@@ -683,27 +699,24 @@ document.write(`
         <span class="n">fig</span><span class="o">.</span><span class="n">_toggle_annotation_fig</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
         <span class="c1"># Ensure it&#39;s not an empty list, but an empty set of Annotations.</span>
         <span class="n">old_annotations</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span>
-            <span class="n">onset</span><span class="o">=</span><span class="p">[],</span> <span class="n">duration</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="p">[],</span>
-            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+            <span class="n">onset</span><span class="o">=</span><span class="p">[],</span> <span class="n">duration</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="p">[],</span> <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;agg&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;agg&quot;</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;raw_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
-    <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;mne_close_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">close_key</span>
+    <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;raw_fig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
+    <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;mne_close_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">close_key</span>
 
 
 <span class="k">def</span> <span class="nf">_annotations_almost_equal</span><span class="p">(</span><span class="n">old_annotations</span><span class="p">,</span> <span class="n">new_annotations</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Allow for a tiny bit of floating point precision loss.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-                       <span class="n">new_annotations</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="ow">and</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">,</span>
-                       <span class="n">new_annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">)</span> <span class="ow">and</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span>
-                    <span class="n">new_annotations</span><span class="o">.</span><span class="n">onset</span><span class="p">)</span> <span class="ow">and</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
-                    <span class="n">new_annotations</span><span class="o">.</span><span class="n">duration</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">new_annotations</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">,</span> <span class="n">new_annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">onset</span><span class="p">,</span> <span class="n">new_annotations</span><span class="o">.</span><span class="n">onset</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">old_annotations</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">new_annotations</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -713,34 +726,40 @@ document.write(`
     <span class="c1"># Attach the new Annotations to our raw data so we can easily convert them</span>
     <span class="c1"># to events, which will be stored in the *_events.tsv sidecar.</span>
     <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span><span class="p">:</span>
+        <span class="n">extra_params</span><span class="p">[</span><span class="s2">&quot;allow_maxshield&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span>
 
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span>
-                        <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span>
+    <span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
-    <span class="n">events</span><span class="p">,</span> <span class="n">durs</span><span class="p">,</span> <span class="n">descrs</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                        <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">events</span><span class="p">,</span> <span class="n">durs</span><span class="p">,</span> <span class="n">descrs</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
+        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span>
+    <span class="p">)</span>
 
     <span class="c1"># Write sidecar – or remove it if no events are left.</span>
-    <span class="n">events_tsv_fname</span> <span class="o">=</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                        <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span>
-                                <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
-                        <span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
+    <span class="n">events_tsv_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">durs</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
-                    <span class="n">fname</span><span class="o">=</span><span class="n">events_tsv_fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="o">=</span><span class="n">descrs</span><span class="p">,</span>
-                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_events_tsv</span><span class="p">(</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">durations</span><span class="o">=</span><span class="n">durs</span><span class="p">,</span>
+            <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+            <span class="n">fname</span><span class="o">=</span><span class="n">events_tsv_fname</span><span class="p">,</span>
+            <span class="n">trial_type</span><span class="o">=</span><span class="n">descrs</span><span class="p">,</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">elif</span> <span class="n">events_tsv_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No events remaining after interactive inspection, &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;removing </span><span class="si">{</span><span class="n">events_tsv_fname</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No events remaining after interactive inspection, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;removing </span><span class="si">{</span><span class="n">events_tsv_fname</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">events_tsv_fname</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_save_raw_if_changed</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">old_bads</span><span class="p">,</span> <span class="n">new_bads</span><span class="p">,</span> <span class="n">flat_chans</span><span class="p">,</span>
-                         <span class="n">old_annotations</span><span class="p">,</span> <span class="n">new_annotations</span><span class="p">,</span>
-                         <span class="n">bids_path</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_save_raw_if_changed</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">old_bads</span><span class="p">,</span> <span class="n">new_bads</span><span class="p">,</span> <span class="n">flat_chans</span><span class="p">,</span> <span class="n">old_annotations</span><span class="p">,</span> <span class="n">new_annotations</span><span class="p">,</span> <span class="n">bids_path</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save bad channel selection if it has been changed.</span>
 
 <span class="sd">    Parameters</span>
@@ -768,27 +787,30 @@ document.write(`
         <span class="n">bad_descriptions</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># Generate entries for the `status_description` column.</span>
-        <span class="n">channels_tsv_fname</span> <span class="o">=</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                              <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
-                              <span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
+        <span class="n">channels_tsv_fname</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
+        <span class="p">)</span>
         <span class="n">channels_tsv_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_tsv_fname</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;bad&#39;</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bad&quot;</span><span class="p">:</span>
                 <span class="c1"># Channel was already marked as bad in the data, so retain</span>
                 <span class="c1"># existing description.</span>
-                <span class="n">description</span> <span class="o">=</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s1">&#39;status_description&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s2">&quot;status_description&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">flat_chans</span><span class="p">:</span>
-                <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Flat channel, auto-detected via MNE-BIDS&#39;</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Flat channel, auto-detected via MNE-BIDS&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Channel has been manually marked as bad during inspection</span>
-                <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Interactive inspection via MNE-BIDS&#39;</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Interactive inspection via MNE-BIDS&quot;</span>
 
             <span class="n">bad_descriptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
             <span class="k">del</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">description</span>
 
-        <span class="k">del</span> <span class="n">channels_tsv_data</span><span class="p">,</span> <span class="n">channels_tsv_fname</span><span class="p">,</span>
+        <span class="k">del</span> <span class="p">(</span>
+            <span class="n">channels_tsv_data</span><span class="p">,</span>
+            <span class="n">channels_tsv_fname</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">_annotations_almost_equal</span><span class="p">(</span><span class="n">old_annotations</span><span class="p">,</span> <span class="n">new_annotations</span><span class="p">):</span>
         <span class="n">annotations</span> <span class="o">=</span> <span class="kc">None</span>
@@ -799,10 +821,12 @@ document.write(`
         <span class="c1"># Nothing has changed, so we can just exit.</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">return</span> <span class="n">_save_raw_dialog_box</span><span class="p">(</span><span class="n">bads</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span>
-                                <span class="n">bad_descriptions</span><span class="o">=</span><span class="n">bad_descriptions</span><span class="p">,</span>
-                                <span class="n">annotations</span><span class="o">=</span><span class="n">annotations</span><span class="p">,</span>
-                                <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_save_raw_dialog_box</span><span class="p">(</span>
+        <span class="n">bads</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span>
+        <span class="n">bad_descriptions</span><span class="o">=</span><span class="n">bad_descriptions</span><span class="p">,</span>
+        <span class="n">annotations</span><span class="o">=</span><span class="n">annotations</span><span class="p">,</span>
+        <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_save_raw_dialog_box</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bads</span><span class="p">,</span> <span class="n">bad_descriptions</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">):</span>
@@ -813,54 +837,62 @@ document.write(`
     <span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">Button</span>
     <span class="kn">from</span> <span class="nn">mne.viz.utils</span> <span class="kn">import</span> <span class="n">figure_nobar</span>
 
-    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Save changes?&#39;</span>
-    <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;You have modified &#39;</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Save changes?&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;You have modified &quot;</span>
     <span class="k">if</span> <span class="n">bads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;the bad channel selection &#39;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;the bad channel selection &quot;</span>
         <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">bads</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;the bad segments selection &#39;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;the bad segments selection &quot;</span>
         <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">7.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;the bad channel and</span><span class="se">\n</span><span class="s1">annotations selection &#39;</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;the bad channel and</span><span class="se">\n</span><span class="s2">annotations selection &quot;</span>
         <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-    <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;of</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">.</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;Would you like to save these changes to the</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;BIDS dataset?&#39;</span><span class="p">)</span>
-    <span class="n">icon_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;assets&#39;</span> <span class="o">/</span> <span class="s1">&#39;help-128px.png&#39;</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">+=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;of</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Would you like to save these changes to the</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;BIDS dataset?&quot;</span>
+    <span class="p">)</span>
+    <span class="n">icon_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;assets&quot;</span> <span class="o">/</span> <span class="s2">&quot;help-128px.png&quot;</span><span class="p">)</span>
     <span class="n">icon</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">icon_fname</span><span class="p">)</span>
 
     <span class="n">fig</span> <span class="o">=</span> <span class="n">figure_nobar</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="s1">&#39;MNE-BIDS Inspector&#39;</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;xx-large&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="s2">&quot;MNE-BIDS Inspector&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;xx-large&quot;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
 
     <span class="n">gs</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_gridspec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">width_ratios</span><span class="o">=</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 
     <span class="c1"># The dialog box tet.</span>
     <span class="n">ax_msg</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-    <span class="n">ax_msg</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">,</span>
-                <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
-                <span class="n">multialignment</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-    <span class="n">ax_msg</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">ax_msg</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">s</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="s2">&quot;large&quot;</span><span class="p">,</span>
+        <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span>
+        <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+        <span class="n">multialignment</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax_msg</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
 
     <span class="c1"># The help icon.</span>
     <span class="n">ax_icon</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="n">ax_icon</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
-    <span class="n">ax_icon</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">ax_icon</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
 
     <span class="c1"># Buttons.</span>
     <span class="n">ax_save</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
     <span class="n">ax_dont_save</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
 
-    <span class="n">save_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax_save</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Save&#39;</span><span class="p">)</span>
-    <span class="n">save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="s1">&#39;medium&#39;</span><span class="p">)</span>
-    <span class="n">save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    <span class="n">save_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax_save</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Save&quot;</span><span class="p">)</span>
+    <span class="n">save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
 
     <span class="n">dont_save_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax_dont_save</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Don&#39;t save&quot;</span><span class="p">)</span>
-    <span class="n">dont_save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="s1">&#39;medium&#39;</span><span class="p">)</span>
-    <span class="n">dont_save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+    <span class="n">dont_save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+    <span class="n">dont_save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
 
     <span class="c1"># Store references to keep buttons alive.</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">save_button</span> <span class="o">=</span> <span class="n">save_button</span>
@@ -869,34 +901,33 @@ document.write(`
     <span class="c1"># Define callback functions.</span>
     <span class="k">def</span> <span class="nf">_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>  <span class="c1"># Close dialog</span>
-        <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;dialog_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;dialog_fig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">bads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_save_bads</span><span class="p">(</span><span class="n">bads</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="n">bad_descriptions</span><span class="p">,</span>
-                       <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">_save_bads</span><span class="p">(</span><span class="n">bads</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="n">bad_descriptions</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_save_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="o">=</span><span class="n">annotations</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_dont_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>  <span class="c1"># Close dialog</span>
-        <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;dialog_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;dialog_fig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_keypress_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;enter&#39;</span><span class="p">,</span> <span class="s1">&#39;return&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;enter&quot;</span><span class="p">,</span> <span class="s2">&quot;return&quot;</span><span class="p">]:</span>
             <span class="n">_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;mne_close_key&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;mne_close_key&quot;</span><span class="p">]:</span>
             <span class="n">_dont_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
     <span class="c1"># Connect events to callback functions.</span>
     <span class="n">save_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">_save_callback</span><span class="p">)</span>
     <span class="n">dont_save_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">_dont_save_callback</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;close_event&#39;</span><span class="p">,</span> <span class="n">_dont_save_callback</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;key_press_event&#39;</span><span class="p">,</span> <span class="n">_keypress_callback</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;close_event&quot;</span><span class="p">,</span> <span class="n">_dont_save_callback</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;key_press_event&quot;</span><span class="p">,</span> <span class="n">_keypress_callback</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;agg&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;agg&quot;</span><span class="p">:</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;dialog_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
+    <span class="n">_global_vars</span><span class="p">[</span><span class="s2">&quot;dialog_fig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
 
 
 <span class="k">def</span> <span class="nf">_save_bads</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bads</span><span class="p">,</span> <span class="n">descriptions</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">):</span>
@@ -910,9 +941,10 @@ document.write(`
 <span class="sd">        The values to be written to the `status_description` column.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># We first make all channels not passed as bad here to be marked as good.</span>
-    <span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="p">[],</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;good&#39;</span><span class="p">)</span>
-    <span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;bad&#39;</span><span class="p">,</span>
-                  <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">)</span>
+    <span class="n">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="p">[],</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;good&quot;</span><span class="p">)</span>
+    <span class="n">mark_channels</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span>
+    <span class="p">)</span>
 </pre></div>
 
                 </article>

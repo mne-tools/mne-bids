@@ -504,54 +504,73 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_read_dig_bids</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
-                             <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">,</span>
-                             <span class="n">reader</span><span class="p">,</span> <span class="n">_map_options</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
+    <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">,</span>
+    <span class="n">reader</span><span class="p">,</span>
+    <span class="n">_map_options</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">_import_nibabel</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
-                           <span class="n">_infer_datatype</span><span class="p">,</span> <span class="n">get_bids_path_from_fname</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BIDSPath</span><span class="p">,</span>
+    <span class="n">_parse_ext</span><span class="p">,</span>
+    <span class="n">_find_matching_sidecar</span><span class="p">,</span>
+    <span class="n">_infer_datatype</span><span class="p">,</span>
+    <span class="n">get_bids_path_from_fname</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_read_raw</span><span class="p">(</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-              <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">config_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_read_raw</span><span class="p">(</span>
+    <span class="n">raw_path</span><span class="p">,</span>
+    <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">config_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a raw file into MNE, making inferences based on extension.&quot;&quot;&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_path</span><span class="p">)</span>
 
     <span class="c1"># KIT systems</span>
-    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.con&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">]:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">(</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
-                              <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.con&quot;</span><span class="p">,</span> <span class="s2">&quot;.sqd&quot;</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">(</span>
+            <span class="n">raw_path</span><span class="p">,</span> <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span> <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
 
     <span class="c1"># BTi systems</span>
-    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">(</span>
             <span class="n">pdf_fname</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">raw_path</span><span class="p">),</span>  <span class="c1"># FIXME MNE should accept Path!</span>
             <span class="n">config_fname</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">),</span>  <span class="c1"># FIXME MNE should accept Path!</span>
             <span class="n">head_shape_fname</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
             <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.EDF&#39;</span><span class="p">,</span> <span class="s1">&#39;.snirf&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;.cdt&#39;</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.ds&quot;</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="s2">&quot;.set&quot;</span><span class="p">,</span> <span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;.snirf&quot;</span><span class="p">,</span> <span class="s2">&quot;.cdt&quot;</span><span class="p">]:</span>
         <span class="n">raw_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw_path</span><span class="p">)</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># MEF and NWB are allowed, but not yet implemented</span>
-    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.mef&#39;</span><span class="p">,</span> <span class="s1">&#39;.nwb&#39;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Got &quot;</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&quot; as extension. This is an allowed &#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;extension but there is no IO support for this &#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;file format yet.&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.mef&quot;</span><span class="p">,</span> <span class="s2">&quot;.nwb&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Got &quot;</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&quot; as extension. This is an allowed &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;extension but there is no IO support for this &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;file format yet.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># No supported data found ...</span>
     <span class="c1"># ---------------------------</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Raw file name extension must be one &#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;of </span><span class="si">{</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;Got </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Raw file name extension must be one &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;of </span><span class="si">{</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">raw</span>
 
 
@@ -591,11 +610,12 @@ document.write(`
     <span class="c1"># retrieve events</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have two dimensions, &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Events must have two dimensions, &quot;</span> <span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have second dimension of length 3, &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Events must have second dimension of length 3, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">events</span>
     <span class="k">elif</span> <span class="n">events</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
@@ -605,9 +625,9 @@ document.write(`
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="s1">&#39;The provided raw data contains annotations, but you did not &#39;</span>
+                <span class="s2">&quot;The provided raw data contains annotations, but you did not &quot;</span>
                 <span class="s1">&#39;pass an &quot;event_id&quot; mapping from annotation descriptions to &#39;</span>
-                <span class="s1">&#39;event codes. We will generate arbitrary event codes. &#39;</span>
+                <span class="s2">&quot;event codes. We will generate arbitrary event codes. &quot;</span>
                 <span class="s1">&#39;To specify custom event codes, please pass &quot;event_id&quot;.&#39;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -616,9 +636,9 @@ document.write(`
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">desc_without_id</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;The provided raw data contains annotations, but &#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;The provided raw data contains annotations, but &quot;</span>
                     <span class="sa">f</span><span class="s1">&#39;&quot;event_id&quot; does not contain entries for all annotation &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;descriptions. The following entries are missing: &#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;descriptions. The following entries are missing: &quot;</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_without_id</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
 
@@ -628,10 +648,10 @@ document.write(`
         <span class="n">ids_without_desc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">ids_without_desc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;No description was specified for the following event(s): &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;No description was specified for the following event(s): &quot;</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">sorted</span><span class="p">(</span><span class="n">ids_without_desc</span><span class="p">)])</span><span class="si">}</span><span class="s1">. &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;Please add them to the event_id dictionary, or drop them &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;from the events array.&#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;Please add them to the event_id dictionary, or drop them &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;from the events array.&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># Append events to raw.annotations. All event onsets are relative to</span>
@@ -640,8 +660,11 @@ document.write(`
         <span class="c1"># We don&#39;t pass `first_samp`, as set_annotations() below will take</span>
         <span class="c1"># care of this shift automatically.</span>
         <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">annotations_from_events</span><span class="p">(</span>
-            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span> <span class="n">event_desc</span><span class="o">=</span><span class="n">id_to_desc_map</span><span class="p">,</span>
-            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">)</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+            <span class="n">event_desc</span><span class="o">=</span><span class="n">id_to_desc_map</span><span class="p">,</span>
+            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Don&#39;t alter the original.</span>
         <span class="n">annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -656,27 +679,21 @@ document.write(`
     <span class="n">all_events</span><span class="p">,</span> <span class="n">all_desc</span> <span class="o">=</span> <span class="n">events_from_annotations</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
         <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-        <span class="n">regexp</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># Include `BAD_` and `EDGE_` Annotations, too.</span>
+        <span class="n">regexp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Include `BAD_` and `EDGE_` Annotations, too.</span>
     <span class="p">)</span>
     <span class="n">all_dur</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">duration</span>
 
     <span class="c1"># Warn about missing events if not rest or empty-room data</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="p">(</span>
-            <span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;rest&#39;</span><span class="p">)</span> <span class="ow">or</span>
-            <span class="ow">not</span> <span class="p">(</span>
-                <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span> <span class="ow">and</span>
-                <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">&#39;noise&#39;</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">&quot;emptyroom&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;noise&quot;</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No events found or provided. Please add annotations to the raw &#39;</span>
-             <span class="s1">&#39;data, or provide the events and event_id parameters. For &#39;</span>
-             <span class="s1">&#39;resting state data, BIDS recommends naming the task using &#39;</span>
-             <span class="s1">&#39;labels beginning with &quot;rest&quot;.&#39;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;No events found or provided. Please add annotations to the raw &quot;</span>
+            <span class="s2">&quot;data, or provide the events and event_id parameters. For &quot;</span>
+            <span class="s2">&quot;resting state data, BIDS recommends naming the task using &quot;</span>
+            <span class="s1">&#39;labels beginning with &quot;rest&quot;.&#39;</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">all_events</span><span class="p">,</span> <span class="n">all_dur</span><span class="p">,</span> <span class="n">all_desc</span>
 
@@ -691,45 +708,48 @@ document.write(`
         <span class="n">extra</span> <span class="o">=</span> <span class="n">get_close_matches</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">),</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span> <span class="k">for</span> <span class="n">ll</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">allow_all</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">extra</span><span class="p">:</span>
             <span class="n">extra</span> <span class="o">=</span> <span class="n">lst</span>
-        <span class="n">extra</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;. Did you mean one of </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s1">?&#39;</span> <span class="k">if</span> <span class="n">extra</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">exc</span><span class="si">}{</span><span class="n">extra</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;. Did you mean one of </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">?&quot;</span> <span class="k">if</span> <span class="n">extra</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exc</span><span class="si">}{</span><span class="n">extra</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
 
 <span class="k">def</span> <span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="p">):</span>
     <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">)</span>
-    <span class="n">subjects</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span>
+    <span class="n">subjects</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span>
     <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">subjects</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">allow_all</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># start from scratch</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># start from scratch</span>
 
     <span class="c1"># set data from participants tsv into subject_info</span>
     <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;hand&#39;</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">col_name</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
-                                 <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;hand&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span>
+                <span class="n">what</span><span class="o">=</span><span class="n">col_name</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span> <span class="n">fro</span><span class="o">=</span><span class="s2">&quot;bids&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;mne&quot;</span>
+            <span class="p">)</span>
             <span class="c1"># We don&#39;t know how to translate to MNE, so skip.</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span>
-                    <span class="n">info_str</span> <span class="o">=</span> <span class="s1">&#39;subject sex&#39;</span>
+                <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">&quot;sex&quot;</span><span class="p">:</span>
+                    <span class="n">info_str</span> <span class="o">=</span> <span class="s2">&quot;subject sex&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">info_str</span> <span class="o">=</span> <span class="s1">&#39;subject handedness&#39;</span>
-                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unable to map &quot;</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s1">&quot; value &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; to MNE. &#39;</span>
-                     <span class="sa">f</span><span class="s1">&#39;Not setting </span><span class="si">{</span><span class="n">info_str</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">):</span>
+                    <span class="n">info_str</span> <span class="o">=</span> <span class="s2">&quot;subject handedness&quot;</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Unable to map &quot;</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s1">&quot; value &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; to MNE. &#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Not setting </span><span class="si">{</span><span class="n">info_str</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">])</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
 
         <span class="c1"># add data into raw.Info</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;his_id&#39;</span> <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s1">&#39;participant_id&#39;</span> <span class="k">else</span> <span class="n">col_name</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;his_id&quot;</span> <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">&quot;participant_id&quot;</span> <span class="k">else</span> <span class="n">col_name</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">assert</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
@@ -739,20 +759,20 @@ document.write(`
     <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">)</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.pdf&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
         <span class="c1"># for BTI files, the scan is an entire directory</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># get the row corresponding to the file</span>
     <span class="c1"># use string concatenation instead of os.path</span>
     <span class="c1"># to work nicely with windows</span>
     <span class="n">data_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="o">/</span> <span class="n">fname</span>
-    <span class="n">fnames</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
     <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s1">&#39;acq_time&#39;</span> <span class="ow">in</span> <span class="n">scans_tsv</span><span class="p">:</span>
-        <span class="n">acq_times</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;acq_time&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s2">&quot;acq_time&quot;</span> <span class="ow">in</span> <span class="n">scans_tsv</span><span class="p">:</span>
+        <span class="n">acq_times</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s2">&quot;acq_time&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">acq_times</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span>
+        <span class="n">acq_times</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnames</span><span class="p">)</span>
 
     <span class="c1"># There are three possible extensions for BrainVision</span>
     <span class="c1"># First gather all the possible extensions</span>
@@ -760,41 +780,43 @@ document.write(`
     <span class="c1"># Add the filename extension for the bids folder</span>
     <span class="n">acq_suffixes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.vmrk&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">acq_suffixes</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="s2">&quot;.eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">acq_suffixes</span><span class="p">):</span>
         <span class="n">ext</span> <span class="o">=</span> <span class="n">fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">suffix</span>
         <span class="n">data_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
     <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">data_fname</span><span class="p">)</span>
 
     <span class="c1"># check whether all split files have the same acq_time</span>
     <span class="c1"># and throw an error if they don&#39;t</span>
-    <span class="k">if</span> <span class="s1">&#39;_split-&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
-        <span class="n">split_idx</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;split-&#39;</span><span class="p">)</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span>
-                             <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">[:</span><span class="n">split_idx</span><span class="p">]</span> <span class="o">+</span>
-                             <span class="sa">r</span><span class="s1">&#39;split-\d+_&#39;</span> <span class="o">+</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">+</span>
-                             <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
-        <span class="n">split_fnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()),</span> <span class="n">fnames</span>
-        <span class="p">))</span>
+    <span class="k">if</span> <span class="s2">&quot;_split-&quot;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
+        <span class="n">split_idx</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;split-&quot;</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+            <span class="o">+</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">[:</span><span class="n">split_idx</span><span class="p">]</span>
+            <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;split-\d+_&quot;</span>
+            <span class="o">+</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+            <span class="o">+</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span>
+        <span class="p">)</span>
+        <span class="n">split_fnames</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()),</span> <span class="n">fnames</span><span class="p">))</span>
         <span class="n">split_acq_times</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">split_f</span> <span class="ow">in</span> <span class="n">split_fnames</span><span class="p">:</span>
-            <span class="n">split_acq_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">acq_times</span><span class="p">[</span><span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">split_f</span><span class="p">)])</span>
+            <span class="n">split_acq_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acq_times</span><span class="p">[</span><span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">split_f</span><span class="p">)])</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">split_acq_times</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Split files must have the same acq_time.&quot;</span><span class="p">)</span>
 
     <span class="c1"># extract the acquisition time from scans file</span>
     <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_times</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">acq_time</span> <span class="o">!=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">acq_time</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
         <span class="c1"># microseconds in the acquisition time is optional</span>
-        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acq_time</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">acq_time</span><span class="p">:</span>
             <span class="c1"># acquisition time ends with &#39;.%fZ&#39; microseconds string</span>
-            <span class="n">acq_time</span> <span class="o">+=</span> <span class="s1">&#39;.0Z&#39;</span>
-        <span class="n">acq_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">acq_time</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
+            <span class="n">acq_time</span> <span class="o">+=</span> <span class="s2">&quot;.0Z&quot;</span>
+        <span class="n">acq_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">acq_time</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S.</span><span class="si">%f</span><span class="s2">Z&quot;</span><span class="p">)</span>
         <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s1"> scans file to set &#39;</span>
-                     <span class="sa">f</span><span class="s1">&#39;acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s2"> scans file to set &quot;</span> <span class="sa">f</span><span class="s2">&quot;acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># First set measurement date to None and then call call anonymize() to</span>
         <span class="c1"># remove any traces of the measurement date we wish</span>
         <span class="c1"># to replace – it might lurk out in more places than just</span>
@@ -815,7 +837,7 @@ document.write(`
 
 <span class="sd">    Handle PowerLineFrequency of recording.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
 
     <span class="c1"># read in the sidecar JSON&#39;s and raw object&#39;s line frequency</span>
@@ -825,12 +847,12 @@ document.write(`
     <span class="c1"># If both are defined, warn if there is a conflict, else all is fine</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">json_linefreq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">raw_linefreq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">json_linefreq</span> <span class="o">!=</span> <span class="n">raw_linefreq</span><span class="p">:</span>
-
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Line frequency in sidecar JSON does not match the info &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;data structure of the mne.Raw object:</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Sidecar JSON is -&gt; </span><span class="si">{</span><span class="n">json_linefreq</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Raw is -&gt; </span><span class="si">{</span><span class="n">raw_linefreq</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;Raw is -&gt; </span><span class="si">{</span><span class="n">raw_linefreq</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">json_linefreq</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Defaulting to the info from mne.Raw object.&quot;</span>
@@ -848,7 +870,7 @@ document.write(`
         <span class="k">pass</span>  <span class="c1"># line freq is either defined or None in mne.Raw</span>
 
     <span class="c1"># get cHPI info</span>
-    <span class="n">chpi</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ContinuousHeadLocalization&#39;</span><span class="p">)</span>
+    <span class="n">chpi</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ContinuousHeadLocalization&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">chpi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># no cHPI info in the sidecar – leave raw.info unchanged</span>
         <span class="k">pass</span>
@@ -856,25 +878,26 @@ document.write(`
         <span class="kn">from</span> <span class="nn">mne.io.ctf</span> <span class="kn">import</span> <span class="n">RawCTF</span>
         <span class="kn">from</span> <span class="nn">mne.io.kit.kit</span> <span class="kn">import</span> <span class="n">RawKIT</span>
 
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Cannot verify that the cHPI frequencies from &#39;</span>
-               <span class="s1">&#39;the MEG JSON sidecar file correspond to the raw data</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Cannot verify that the cHPI frequencies from &quot;</span>
+            <span class="s2">&quot;the MEG JSON sidecar file correspond to the raw data</span><span class="si">{}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">RawCTF</span><span class="p">):</span>
             <span class="c1"># Pick channels corresponding to the cHPI positions</span>
-            <span class="n">hpi_picks</span> <span class="o">=</span> <span class="n">pick_channels_regexp</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">],</span>
-                                             <span class="s1">&#39;HLC00[123][123].*&#39;</span><span class="p">)</span>
+            <span class="n">hpi_picks</span> <span class="o">=</span> <span class="n">pick_channels_regexp</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">],</span> <span class="s2">&quot;HLC00[123][123].*&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hpi_picks</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">9</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Could not find all cHPI channels that we expected for &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;CTF data. Expected: 9, found: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">hpi_picks</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Could not find all cHPI channels that we expected for &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;CTF data. Expected: 9, found: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">hpi_picks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot; for CTF files.&quot;</span><span class="p">))</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">RawKIT</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot; for KIT files.&quot;</span><span class="p">))</span>
 
-        <span class="k">elif</span> <span class="s1">&#39;HeadCoilFrequency&#39;</span> <span class="ow">in</span> <span class="n">sidecar_json</span><span class="p">:</span>
-            <span class="n">hpi_freqs_json</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="p">[</span><span class="s1">&#39;HeadCoilFrequency&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s2">&quot;HeadCoilFrequency&quot;</span> <span class="ow">in</span> <span class="n">sidecar_json</span><span class="p">:</span>
+            <span class="n">hpi_freqs_json</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="p">[</span><span class="s2">&quot;HeadCoilFrequency&quot;</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">hpi_freqs_raw</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">chpi</span><span class="o">.</span><span class="n">get_chpi_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -883,24 +906,27 @@ document.write(`
                 <span class="c1"># XXX: Set chpi info in mne.Raw to what is in the sidecar</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">hpi_freqs_json</span><span class="p">,</span> <span class="n">hpi_freqs_raw</span><span class="p">):</span>
                     <span class="n">warn</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">&#39;The cHPI coil frequencies in the sidecar file &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sidecar_fname</span><span class="si">}</span><span class="s1">:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="n">hpi_freqs_json</span><span class="si">}</span><span class="se">\n</span><span class="s1"> &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;differ from what is stored in the raw data:</span><span class="se">\n</span><span class="s1">&#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;    </span><span class="si">{</span><span class="n">hpi_freqs_raw</span><span class="si">}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;Defaulting to the info from mne.Raw object.&#39;</span>
+                        <span class="sa">f</span><span class="s2">&quot;The cHPI coil frequencies in the sidecar file &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sidecar_fname</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">    </span><span class="si">{</span><span class="n">hpi_freqs_json</span><span class="si">}</span><span class="se">\n</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;differ from what is stored in the raw data:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;    </span><span class="si">{</span><span class="n">hpi_freqs_raw</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Defaulting to the info from mne.Raw object.&quot;</span>
                     <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">addmsg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;.</span><span class="se">\n</span><span class="s2">(Because no &#39;HeadCoilFrequency&#39; data &quot;</span>
-                      <span class="s2">&quot;was found in the sidecar.)&quot;</span><span class="p">)</span>
+            <span class="n">addmsg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;.</span><span class="se">\n</span><span class="s2">(Because no &#39;HeadCoilFrequency&#39; data &quot;</span> <span class="s2">&quot;was found in the sidecar.)&quot;</span>
+            <span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">addmsg</span><span class="p">))</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;hpi_subsystem&#39;</span><span class="p">]:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Dropping cHPI information stored in raw data, &#39;</span>
-                        <span class="s1">&#39;following specification in sidecar file&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;hpi_subsystem&quot;</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Dropping cHPI information stored in raw data, &quot;</span>
+                <span class="s2">&quot;following specification in sidecar file&quot;</span>
+            <span class="p">)</span>
         <span class="k">with</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">_unlock</span><span class="p">():</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;hpi_subsystem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;hpi_meas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;hpi_subsystem&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;hpi_meas&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
@@ -910,28 +936,30 @@ document.write(`
 
 <span class="sd">    Handle onset, duration, and description of each event.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading events from </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">events_fname</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading events from </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">events_fname</span><span class="p">))</span>
     <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
 
     <span class="c1"># Get the descriptions of the events</span>
-    <span class="k">if</span> <span class="s1">&#39;trial_type&#39;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
-        <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s1">&#39;trial_type&#39;</span>
-    <span class="k">elif</span> <span class="s1">&#39;stim_type&#39;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>  <span class="c1"># Backward-compat with old datasets.</span>
-        <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s1">&#39;stim_type&#39;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The events file, </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s1">, contains a &quot;stim_type&quot; &#39;</span>
-             <span class="sa">f</span><span class="s1">&#39;column. This column should be renamed to &quot;trial_type&quot; for &#39;</span>
-             <span class="sa">f</span><span class="s1">&#39;BIDS compatibility.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;trial_type&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+        <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s2">&quot;trial_type&quot;</span>
+    <span class="k">elif</span> <span class="s2">&quot;stim_type&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>  <span class="c1"># Backward-compat with old datasets.</span>
+        <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s2">&quot;stim_type&quot;</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;The events file, </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s1">, contains a &quot;stim_type&quot; &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;column. This column should be renamed to &quot;trial_type&quot; for &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;BIDS compatibility.&quot;</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">trial_type_col_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Drop events unrelated to a trial type</span>
-        <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="n">trial_type_col_name</span><span class="p">)</span>
+        <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="n">trial_type_col_name</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
             <span class="c1"># Check whether the `trial_type` &lt;&gt; `value` mapping is unique.</span>
             <span class="n">trial_types</span> <span class="o">=</span> <span class="n">events_dict</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">]</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">trial_type</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">trial_types</span><span class="p">):</span>
                 <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">trial_type</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">trial_types</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">matching_values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
@@ -941,36 +969,37 @@ document.write(`
                     <span class="c1"># event descriptors.</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">&#39;The event &quot;</span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s1">&quot; refers to multiple event &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;values. Creating hierarchical event names.&#39;</span><span class="p">)</span>
+                        <span class="sa">f</span><span class="s2">&quot;values. Creating hierarchical event names.&quot;</span>
+                    <span class="p">)</span>
                     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">:</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
-                        <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;na&#39;</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">value</span>
-                        <span class="n">new_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;    Renaming event: </span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s1"> -&gt; &#39;</span>
-                                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">else</span> <span class="n">value</span>
+                        <span class="n">new_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;    Renaming event: </span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
                         <span class="n">trial_types</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_name</span>
             <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">],</span>
-                                      <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+            <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
         <span class="c1"># If we don&#39;t have a proper description of the events, perhaps we have</span>
         <span class="c1"># at least an event value?</span>
         <span class="c1"># Drop events unrelated to value</span>
-        <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
-        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 
     <span class="c1"># Worst case, we go with &#39;n/a&#39; for all events</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 
     <span class="c1"># Deal with &quot;n/a&quot; strings before converting to float</span>
     <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">on</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">on</span> <span class="k">for</span> <span class="n">on</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]],</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">on</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">else</span> <span class="n">on</span> <span class="k">for</span> <span class="n">on</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+    <span class="p">)</span>
     <span class="n">durations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">du</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">du</span> <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]],</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">du</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">else</span> <span class="n">du</span> <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+    <span class="p">)</span>
 
     <span class="c1"># Keep only events where onset is known</span>
     <span class="n">good_events_idx</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">onsets</span><span class="p">)</span>
@@ -983,14 +1012,16 @@ document.write(`
     <span class="c1"># raw file</span>
     <span class="n">annot_from_raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-    <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="n">onset</span><span class="o">=</span><span class="n">onsets</span><span class="p">,</span>
-                                        <span class="n">duration</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span>
-                                        <span class="n">description</span><span class="o">=</span><span class="n">descriptions</span><span class="p">)</span>
+    <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span>
+        <span class="n">onset</span><span class="o">=</span><span class="n">onsets</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">descriptions</span>
+    <span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot_from_events</span><span class="p">)</span>
 
-    <span class="n">annot_idx_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">descr</span>
-                         <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">annot_from_raw</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
-                         <span class="k">if</span> <span class="n">descr</span> <span class="ow">in</span> <span class="n">ANNOTATIONS_TO_KEEP</span><span class="p">]</span>
+    <span class="n">annot_idx_to_keep</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">idx</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">descr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">annot_from_raw</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">descr</span> <span class="ow">in</span> <span class="n">ANNOTATIONS_TO_KEEP</span>
+    <span class="p">]</span>
     <span class="n">annot_to_keep</span> <span class="o">=</span> <span class="n">annot_from_raw</span><span class="p">[</span><span class="n">annot_idx_to_keep</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">annot_to_keep</span><span class="p">):</span>
@@ -1002,11 +1033,11 @@ document.write(`
 <span class="k">def</span> <span class="nf">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract names of bads from data read from channels.tsv.&quot;&quot;&quot;</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">ch_idx</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;bad&#39;</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">ch_idx</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;bad&quot;</span><span class="p">:</span>
             <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch_idx</span><span class="p">)</span>
 
-    <span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
+    <span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">bads</span>
 
 
@@ -1015,9 +1046,9 @@ document.write(`
 
 <span class="sd">    Updates status (bad) and types of channels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading channel info from </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading channel info from </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">))</span>
     <span class="n">channels_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
-    <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
 
     <span class="c1"># Now we can do some work.</span>
     <span class="c1"># The &quot;type&quot; column is mandatory in BIDS. We can use it to set channel</span>
@@ -1025,14 +1056,18 @@ document.write(`
     <span class="n">channel_type_bids_mne_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
     <span class="c1"># Get the best mapping we currently have from BIDS to MNE nomenclature</span>
-    <span class="n">bids_to_mne_ch_types</span> <span class="o">=</span> <span class="n">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
-    <span class="n">ch_types_json</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+    <span class="n">bids_to_mne_ch_types</span> <span class="o">=</span> <span class="n">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s2">&quot;bids&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;mne&quot;</span><span class="p">)</span>
+    <span class="n">ch_types_json</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">ch_types_json</span><span class="p">):</span>
         <span class="c1"># We don&#39;t map MEG channels for now, as there&#39;s no clear 1:1 mapping</span>
         <span class="c1"># from BIDS to MNE coil types.</span>
         <span class="k">if</span> <span class="n">ch_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">,</span> <span class="s1">&#39;MEGOTHER&#39;</span>
+            <span class="s2">&quot;MEGGRADAXIAL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MEGMAG&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MEGREFGRADAXIAL&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MEGGRADPLANAR&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MEGREFMAG&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="k">continue</span>
 
@@ -1047,14 +1082,16 @@ document.write(`
             <span class="c1"># XXX x-ref https://github.com/mne-tools/mne-bids/issues/481</span>
             <span class="n">updated_ch_type</span> <span class="o">=</span> <span class="n">bids_to_mne_ch_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_type</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The BIDS dataset contains channel types in lowercase &#39;</span>
-                       <span class="s1">&#39;spelling. This violates the BIDS specification and &#39;</span>
-                       <span class="s1">&#39;will raise an error in the future.&#39;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;The BIDS dataset contains channel types in lowercase &quot;</span>
+                    <span class="s2">&quot;spelling. This violates the BIDS specification and &quot;</span>
+                    <span class="s2">&quot;will raise an error in the future.&quot;</span>
+                <span class="p">)</span>
                 <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># We don&#39;t have an appropriate mapping, so make it a &quot;misc&quot; channel</span>
-            <span class="n">channel_type_bids_mne_map</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;misc&#39;</span>
+            <span class="n">channel_type_bids_mne_map</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;misc&quot;</span>
             <span class="n">warn</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;No BIDS -&gt; MNE mapping found for channel type &quot;</span><span class="si">{</span><span class="n">ch_type</span><span class="si">}</span><span class="s1">&quot;. &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;Type of channel &quot;</span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s1">&quot; will be set to &quot;misc&quot;.&#39;</span>
@@ -1064,24 +1101,28 @@ document.write(`
             <span class="n">channel_type_bids_mne_map</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
 
     <span class="c1"># Special handling for (synthesized) stimulus channel</span>
-    <span class="n">synthesized_stim_ch_name</span> <span class="o">=</span> <span class="s1">&#39;STI 014&#39;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">synthesized_stim_ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span> <span class="ow">and</span>
-            <span class="n">synthesized_stim_ch_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names_tsv</span><span class="p">):</span>
+    <span class="n">synthesized_stim_ch_name</span> <span class="o">=</span> <span class="s2">&quot;STI 014&quot;</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">synthesized_stim_ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span>
+        <span class="ow">and</span> <span class="n">synthesized_stim_ch_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names_tsv</span>
+    <span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;The stimulus channel &quot;</span><span class="si">{</span><span class="n">synthesized_stim_ch_name</span><span class="si">}</span><span class="s1">&quot; is present in &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;the raw data, but not included in channels.tsv. Removing the &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;channel.&#39;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;the raw data, but not included in channels.tsv. Removing the &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;channel.&quot;</span>
+        <span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">drop_channels</span><span class="p">([</span><span class="n">synthesized_stim_ch_name</span><span class="p">])</span>
 
     <span class="c1"># Rename channels in loaded Raw to match those read from the BIDS sidecar</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">):</span>
-        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The number of channels in the channels.tsv sidecar file &#39;</span>
-             <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span><span class="si">}</span><span class="s1">) does not match the number of channels &#39;</span>
-             <span class="sa">f</span><span class="s1">&#39;in the raw data file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s1">). Will not try to &#39;</span>
-             <span class="sa">f</span><span class="s1">&#39;set channel names.&#39;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The number of channels in the channels.tsv sidecar file &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match the number of channels &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;in the raw data file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">). Will not try to &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;set channel names.&quot;</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">bids_ch_name</span><span class="p">,</span> <span class="n">raw_ch_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span>
-                                             <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">copy</span><span class="p">()):</span>
+        <span class="k">for</span> <span class="n">bids_ch_name</span><span class="p">,</span> <span class="n">raw_ch_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="o">.</span><span class="n">copy</span><span class="p">()):</span>
             <span class="k">if</span> <span class="n">bids_ch_name</span> <span class="o">!=</span> <span class="n">raw_ch_name</span><span class="p">:</span>
                 <span class="n">raw</span><span class="o">.</span><span class="n">rename_channels</span><span class="p">({</span><span class="n">raw_ch_name</span><span class="p">:</span> <span class="n">bids_ch_name</span><span class="p">})</span>
 
@@ -1091,28 +1132,30 @@ document.write(`
         <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="n">channel_type_bids_mne_map</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span>
     <span class="p">}</span>
-    <span class="n">ch_diff</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="nb">set</span><span class="p">(</span><span class="n">channel_type_bids_mne_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span>
-        <span class="nb">set</span><span class="p">(</span><span class="n">channel_type_bids_mne_map_available_channels</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">ch_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">channel_type_bids_mne_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="n">channel_type_bids_mne_map_available_channels</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">ch_diff</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot set channel type for the following channels, as they &#39;</span>
-             <span class="sa">f</span><span class="s1">&#39;are missing in the raw data: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot set channel type for the following channels, as they &quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;are missing in the raw data: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">channel_type_bids_mne_map_available_channels</span><span class="p">)</span>
 
     <span class="c1"># Set bad channels based on _channels.tsv sidecar</span>
-    <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s2">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
         <span class="n">bads_tsv</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">)</span>
-        <span class="n">bads_avail</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch_name</span> <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads_tsv</span>
-                      <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
+        <span class="n">bads_avail</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch_name</span> <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads_tsv</span> <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
 
         <span class="n">ch_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">bads_tsv</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">bads_avail</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ch_diff</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot set &quot;bad&quot; status for the following channels, as &#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;they are missing in the raw data: &#39;</span>
-                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Cannot set &quot;bad&quot; status for the following channels, as &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;they are missing in the raw data: &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
 
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads_avail</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads_avail</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
@@ -1167,8 +1210,10 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
-                           <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
+            <span class="s2">&quot;instantiate using mne_bids.BIDSPath().&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">sub</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span>
@@ -1179,9 +1224,11 @@ document.write(`
 
     <span class="c1"># check root available</span>
     <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
-                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
-                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+            <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+            <span class="s2">&quot;to set the root of the BIDS folder to read.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># infer the datatype and suffix if they are not present in the BIDSPath</span>
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1190,27 +1237,26 @@ document.write(`
     <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
-        <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">raw_path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;c,rf*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">config_path</span> <span class="o">=</span> <span class="n">bids_raw_folder</span> <span class="o">/</span> <span class="s1">&#39;config&#39;</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+        <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">raw_path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;c,rf*&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">bids_raw_folder</span> <span class="o">/</span> <span class="s2">&quot;config&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">raw_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
         <span class="c1"># Resolve for FIFF files</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">raw_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span> <span class="ow">and</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">split</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span>
-            <span class="n">raw_path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()</span>
+            <span class="n">raw_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span>
+            <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">split</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="n">target_path</span> <span class="o">=</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Resolving symbolic link: &#39;</span>
-                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">target_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resolving symbolic link: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">target_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">raw_path</span> <span class="o">=</span> <span class="n">target_path</span>
         <span class="n">config_path</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Special-handle EDF filenames: we accept upper- and lower-case extensions</span>
-    <span class="k">if</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;.edf&#39;</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.EDF&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.edf&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">):</span>
             <span class="n">candidate_path</span> <span class="o">=</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">extension</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">candidate_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
                 <span class="n">raw_path</span> <span class="o">=</span> <span class="n">candidate_path</span>
@@ -1219,41 +1265,46 @@ document.write(`
     <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">options</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">get_close_matches</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;File does not exist:</span><span class="se">\n</span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;File does not exist:</span><span class="se">\n</span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Did you mean one of:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
-                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">+</span>
-                <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">instead of:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
-                <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Did you mean one of:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">instead of:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span>
             <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;config directory not found: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;config directory not found: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">extra_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="s1">&#39;exclude&#39;</span> <span class="ow">in</span> <span class="n">extra_params</span><span class="p">:</span>
-        <span class="k">del</span> <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;exclude&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s2">&quot;exclude&quot;</span> <span class="ow">in</span> <span class="n">extra_params</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">extra_params</span><span class="p">[</span><span class="s2">&quot;exclude&quot;</span><span class="p">]</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&quot;exclude&quot; parameter is not supported by read_raw_bids&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span> <span class="ow">and</span> <span class="s1">&#39;allow_maxshield&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_params</span><span class="p">:</span>
-        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_raw</span><span class="p">(</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span> <span class="o">**</span><span class="n">extra_params</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span> <span class="ow">and</span> <span class="s2">&quot;allow_maxshield&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_params</span><span class="p">:</span>
+        <span class="n">extra_params</span><span class="p">[</span><span class="s2">&quot;allow_maxshield&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_raw</span><span class="p">(</span>
+        <span class="n">raw_path</span><span class="p">,</span>
+        <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">extra_params</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Try to find an associated events.tsv to get information about the</span>
     <span class="c1"># events in the recorded data</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">&#39;noise&#39;</span><span class="p">)</span> <span class="ow">or</span>
-        <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;rest&#39;</span><span class="p">)</span>
-    <span class="p">):</span>
-        <span class="n">on_error</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">&quot;emptyroom&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;noise&quot;</span>
+    <span class="p">)</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">):</span>
+        <span class="n">on_error</span> <span class="o">=</span> <span class="s2">&quot;ignore&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">on_error</span> <span class="o">=</span> <span class="s1">&#39;warn&#39;</span>
+        <span class="n">on_error</span> <span class="o">=</span> <span class="s2">&quot;warn&quot;</span>
 
     <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1261,74 +1312,80 @@ document.write(`
 
     <span class="c1"># Try to find an associated channels.tsv to get information about the</span>
     <span class="c1"># status and type of present channels</span>
-    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span>
-                                            <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
-                                            <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
-                                            <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">)</span>
+    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;channels&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">channels_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated electrodes.tsv and coordsystem.json</span>
     <span class="c1"># to get information about the status and type of present channels</span>
-    <span class="n">on_error</span> <span class="o">=</span> <span class="s1">&#39;warn&#39;</span> <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span> <span class="k">else</span> <span class="s1">&#39;ignore&#39;</span>
-    <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span>
-                                              <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;electrodes&#39;</span><span class="p">,</span>
-                                              <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
-                                              <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">)</span>
-    <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span>
-                                               <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem&#39;</span><span class="p">,</span>
-                                               <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
-                                               <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">)</span>
+    <span class="n">on_error</span> <span class="o">=</span> <span class="s2">&quot;warn&quot;</span> <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span> <span class="k">else</span> <span class="s2">&quot;ignore&quot;</span>
+    <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;electrodes&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
+    <span class="p">)</span>
+    <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;coordsystem&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for&quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
-            <span class="n">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span>
-                           <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">]:</span>
+            <span class="n">_read_dig_bids</span><span class="p">(</span>
+                <span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span>
+            <span class="p">)</span>
 
     <span class="c1"># Try to find an associated sidecar .json to get information about the</span>
     <span class="c1"># recording snapshot</span>
-    <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span>
-                                           <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
-                                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
-                                           <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">)</span>
+    <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
+        <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">sidecar_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># read in associated scans filename</span>
     <span class="n">scans_fname</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
-        <span class="n">subject</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
-        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;scans&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
-        <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;scans&quot;</span><span class="p">,</span>
+        <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span>
+        <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
 
     <span class="k">if</span> <span class="n">scans_fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_scans_reading</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># read in associated subject info from participants.tsv</span>
-    <span class="n">participants_tsv_path</span> <span class="o">=</span> <span class="n">bids_root</span> <span class="o">/</span> <span class="s1">&#39;participants.tsv&#39;</span>
+    <span class="n">participants_tsv_path</span> <span class="o">=</span> <span class="n">bids_root</span> <span class="o">/</span> <span class="s2">&quot;participants.tsv&quot;</span>
     <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">participants_tsv_path</span><span class="p">):</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_participants_reading</span><span class="p">(</span>
-            <span class="n">participants_fname</span><span class="o">=</span><span class="n">participants_tsv_path</span><span class="p">,</span>
-            <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
-            <span class="n">subject</span><span class="o">=</span><span class="n">subject</span>
+            <span class="n">participants_fname</span><span class="o">=</span><span class="n">participants_tsv_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;participants.tsv file not found for </span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
-    <span class="k">assert</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span> <span class="o">==</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span> <span class="o">==</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
 <div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t1_bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">,</span>
+    <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">t1_bids_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fs_subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
 
 <span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
@@ -1389,44 +1446,50 @@ document.write(`
 <span class="sd">    trans : mne.transforms.Transform</span>
 <span class="sd">        The data transformation matrix from head to MRI coordinates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s1">&#39;get a head to MRI transform&#39;</span><span class="p">)</span>
+    <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s2">&quot;get a head to MRI transform&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
-                           <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
+            <span class="s2">&quot;instantiate using mne_bids.BIDSPath().&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># check root available</span>
     <span class="n">meg_bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">del</span> <span class="n">bids_path</span>
     <span class="k">if</span> <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
-                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
-                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+            <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+            <span class="s2">&quot;to set the root of the BIDS folder to read.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># if the bids_path is underspecified, only get info for MEG data</span>
     <span class="k">if</span> <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;bids_path did not have a datatype set. Assuming &quot;meg&quot;. This &#39;</span>
-             <span class="s1">&#39;will raise an exception in the future.&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne_bids&#39;</span><span class="p">,</span>
-             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s1">&#39;bids_path did not have a datatype set. Assuming &quot;meg&quot;. This &#39;</span>
+            <span class="s2">&quot;will raise an exception in the future.&quot;</span><span class="p">,</span>
+            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;mne_bids&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;bids_path did not have a suffix set. Assuming &quot;meg&quot;. This &#39;</span>
-             <span class="s1">&#39;will raise an exception in the future.&#39;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;mne_bids&#39;</span><span class="p">,</span>
-             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">meg_bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s1">&#39;bids_path did not have a suffix set. Assuming &quot;meg&quot;. This &#39;</span>
+            <span class="s2">&quot;will raise an exception in the future.&quot;</span><span class="p">,</span>
+            <span class="n">module</span><span class="o">=</span><span class="s2">&quot;mne_bids&quot;</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># Get the sidecar file for MRI landmarks</span>
     <span class="n">t1w_bids_path</span> <span class="o">=</span> <span class="p">(</span>
         <span class="p">(</span><span class="n">meg_bids_path</span> <span class="k">if</span> <span class="n">t1_bids_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">t1_bids_path</span><span class="p">)</span>
         <span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;anat&#39;</span><span class="p">,</span>
-            <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span>
-            <span class="n">task</span><span class="o">=</span><span class="kc">None</span>
-        <span class="p">)</span>
+        <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;anat&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;T1w&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
-        <span class="n">bids_path</span><span class="o">=</span><span class="n">t1w_bids_path</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span>
+        <span class="n">bids_path</span><span class="o">=</span><span class="n">t1w_bids_path</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
     <span class="p">)</span>
     <span class="k">del</span> <span class="n">t1_bids_path</span>
 
@@ -1435,10 +1498,9 @@ document.write(`
 
     <span class="k">if</span> <span class="n">t1w_json_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">t1w_json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Did not find T1w JSON sidecar file, tried location: &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">t1w_json_path</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;Did not find T1w JSON sidecar file, tried location: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1w_json_path</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;.nii.gz&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.nii&quot;</span><span class="p">,</span> <span class="s2">&quot;.nii.gz&quot;</span><span class="p">):</span>
         <span class="n">t1w_path_candidate</span> <span class="o">=</span> <span class="n">t1w_json_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">extension</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">t1w_path_candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">t1w_bids_path</span> <span class="o">=</span> <span class="n">get_bids_path_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">t1w_path_candidate</span><span class="p">)</span>
@@ -1446,54 +1508,60 @@ document.write(`
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Did not find T1w recording file, tried location: &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;Did not find T1w recording file, tried location: &quot;</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">t1w_path_candidate</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.nii.gz&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">[.nii, .nii.gz]&#39;</span>
         <span class="p">)</span>
 
     <span class="c1"># Get MRI landmarks from the JSON sidecar</span>
-    <span class="n">t1w_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-    <span class="n">mri_coords_dict</span> <span class="o">=</span> <span class="n">t1w_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+    <span class="n">t1w_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+    <span class="n">mri_coords_dict</span> <span class="o">=</span> <span class="n">t1w_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;AnatomicalLandmarkCoordinates&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
 
     <span class="c1"># landmarks array: rows: [LPA, NAS, RPA]; columns: [x, y, z]</span>
     <span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">landmark_name</span><span class="p">,</span> <span class="n">coords</span> <span class="ow">in</span> <span class="n">mri_coords_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;LPA&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;LPA&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
             <span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coords</span>
-        <span class="k">elif</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;RPA&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
+        <span class="k">elif</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;RPA&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
             <span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coords</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;NAS&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">or</span>
-              <span class="n">landmark_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;nasion&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">landmark_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;NAS&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="ow">or</span> <span class="n">landmark_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;nasion&quot;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="p">):</span>
             <span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">coords</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">continue</span>
 
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Could not extract fiducial points from T1w sidecar file: &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">t1w_json_path</span><span class="si">}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;The sidecar file SHOULD contain a key &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not extract fiducial points from T1w sidecar file: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1w_json_path</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;The sidecar file SHOULD contain a key &quot;</span>
             <span class="sa">f</span><span class="s1">&#39;&quot;AnatomicalLandmarkCoordinates&quot; pointing to an &#39;</span>
             <span class="sa">f</span><span class="s1">&#39;object with the keys &quot;LPA&quot;, &quot;NAS&quot;, and &quot;RPA&quot;. &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;Yet, the following structure was found:</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">mri_coords_dict</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;Yet, the following structure was found:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mri_coords_dict</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="c1"># The MRI landmarks are in &quot;voxels&quot;. We need to convert them to the</span>
     <span class="c1"># Neuromag RAS coordinate system in order to compare them with MEG</span>
     <span class="c1"># landmarks. See also: `mne_bids.write.write_anat`</span>
     <span class="k">if</span> <span class="n">fs_subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Passing &quot;fs_subject=None&quot; has been deprecated and will raise &#39;</span>
-             <span class="s1">&#39;an error in future versions. Please explicitly specify the &#39;</span>
-             <span class="s1">&#39;FreeSurfer subject name.&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="n">fs_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">meg_bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s1">&#39;Passing &quot;fs_subject=None&quot; has been deprecated and will raise &#39;</span>
+            <span class="s2">&quot;an error in future versions. Please explicitly specify the &quot;</span>
+            <span class="s2">&quot;FreeSurfer subject name.&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">fs_subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">meg_bids_path</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">fs_subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">fs_t1_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span> <span class="o">/</span> <span class="s1">&#39;mri&#39;</span> <span class="o">/</span> <span class="s1">&#39;T1.mgz&#39;</span>
+    <span class="n">fs_t1_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span> <span class="o">/</span> <span class="s2">&quot;mri&quot;</span> <span class="o">/</span> <span class="s2">&quot;T1.mgz&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fs_t1_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">fs_t1_path</span><span class="si">}</span><span class="s2">. Consider running FreeSurfer&#39;s &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;recon-all` for subject </span><span class="si">{</span><span class="n">fs_subject</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;recon-all` for subject </span><span class="si">{</span><span class="n">fs_subject</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
     <span class="n">fs_t1_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">fs_t1_path</span><span class="p">))</span>
     <span class="n">t1_nifti</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">))</span>
 
@@ -1515,29 +1583,34 @@ document.write(`
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">meg_bids_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">extra_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">extra_params</span><span class="p">[</span><span class="s1">&#39;allow_maxshield&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;yes&#39;</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span><span class="p">:</span>
+        <span class="n">extra_params</span><span class="p">[</span><span class="s2">&quot;allow_maxshield&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">meg_bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
-        <span class="nb">any</span><span class="p">([</span><span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()[</span><span class="n">fid_key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
-             <span class="k">for</span> <span class="n">fid_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;nasion&#39;</span><span class="p">,</span> <span class="s1">&#39;lpa&#39;</span><span class="p">,</span> <span class="s1">&#39;rpa&#39;</span><span class="p">)])):</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="ow">or</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()[</span><span class="n">fid_key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">fid_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;nasion&quot;</span><span class="p">,</span> <span class="s2">&quot;lpa&quot;</span><span class="p">,</span> <span class="s2">&quot;rpa&quot;</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Could not extract fiducial points from ``raw`` file: &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">meg_bids_path</span><span class="si">}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;The ``raw`` file SHOULD contain digitization points &#39;</span>
-            <span class="s1">&#39;for the nasion and left and right pre-auricular points &#39;</span>
-            <span class="s1">&#39;but none were found&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not extract fiducial points from ``raw`` file: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">meg_bids_path</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;The ``raw`` file SHOULD contain digitization points &quot;</span>
+            <span class="s2">&quot;for the nasion and left and right pre-auricular points &quot;</span>
+            <span class="s2">&quot;but none were found&quot;</span>
         <span class="p">)</span>
     <span class="n">pos</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
-    <span class="n">meg_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">pos</span><span class="p">[</span><span class="s1">&#39;lpa&#39;</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="s1">&#39;nasion&#39;</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="s1">&#39;rpa&#39;</span><span class="p">]))</span>
+    <span class="n">meg_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">pos</span><span class="p">[</span><span class="s2">&quot;lpa&quot;</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;nasion&quot;</span><span class="p">],</span> <span class="n">pos</span><span class="p">[</span><span class="s2">&quot;rpa&quot;</span><span class="p">]))</span>
 
     <span class="c1"># Given the two sets of points, fit the transform</span>
-    <span class="n">trans_fitted</span> <span class="o">=</span> <span class="n">fit_matched_points</span><span class="p">(</span><span class="n">src_pts</span><span class="o">=</span><span class="n">meg_landmarks</span><span class="p">,</span>
-                                      <span class="n">tgt_pts</span><span class="o">=</span><span class="n">mri_landmarks</span><span class="p">)</span>
-    <span class="n">trans</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="n">trans_fitted</span><span class="p">)</span>
+    <span class="n">trans_fitted</span> <span class="o">=</span> <span class="n">fit_matched_points</span><span class="p">(</span><span class="n">src_pts</span><span class="o">=</span><span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">tgt_pts</span><span class="o">=</span><span class="n">mri_landmarks</span><span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s2">&quot;head&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;mri&quot;</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="n">trans_fitted</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">trans</span></div>
 </pre></div>
 
