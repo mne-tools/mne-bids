@@ -35,6 +35,7 @@ jobs:
 
         - run:
             name: Build the documentation
+            no_output_timeout: 30m
             command: |
               make build-doc
 
@@ -117,6 +118,7 @@ jobs:
 
       - run:
           name: Check links
+          no_output_timeout: 30m
           command: |
             make -C doc linkcheck
 

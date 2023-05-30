@@ -36,7 +36,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pydocstyle flake8 check-manifest
+        pip install pydocstyle flake8 check-manifest black
     - name: Display versions and environment information
       run: |
         python --version

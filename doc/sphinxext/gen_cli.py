@@ -11,7 +11,6 @@ see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 import os
 import glob
 from os import path as op
-import subprocess
 import sys
 
 import sphinx.util
@@ -69,7 +68,7 @@ def generate_cli_rst(app=None):
     fnames = sorted(
         [op.basename(fname) for fname in glob.glob(op.join(cli_path, "mne_bids*.py"))]
     )
-    iterator = sphinx.util.status_iterator(
+    iterator = sphinx.util.display.status_iterator(
         fnames, "generating MNE-BIDS cli help ... ", length=len(fnames)
     )
     with open(out_fname, "w", encoding="utf-8") as f:

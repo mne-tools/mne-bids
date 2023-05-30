@@ -4,7 +4,7 @@ Contributions are welcome in the form of feedback and discussion in issues,
 or pull requests for changes to the code.
 
 Once the implementation of a piece of functionality is considered to be bug
-free and properly documented (both API docs and an example script),
+free and properly documented (both in the API docs and with an example script),
 it can be incorporated into the `main` branch.
 
 To help developing `mne-bids`, you will need a few adjustments to your
@@ -24,10 +24,10 @@ To start with, you should install `mne-bids` as described in our
 [installation documentation](https://mne.tools/mne-bids/dev/install.html).
 For a development environment we recommend that you perform the installation in
 a dedicated Python environment,
-for example using `conda`.
+for example using `conda` (see: https://docs.conda.io/en/latest/miniconda.html).
 Afterwards, a few additional steps need to be performed.
-For all of the steps below we assume that you work in your dedicated `mne-bids`
-Python environment.
+
+**For all of the steps below we assume that you work in your dedicated `mne-bids` Python environment.**
 
 ### Clone MNE-Python and install it from the git repository
 
@@ -37,7 +37,7 @@ then navigate to the cloned repository using the `cd` command.
 Then from the `mne-python` root directory call:
 
 ```Shell
-pip uninstall mne
+pip uninstall mne --yes
 pip install -e .
 ```
 
@@ -69,7 +69,7 @@ pip install -r test_requirements.txt
 pip install -r doc/requirements.txt
 ```
 
-This will install several packages to run tests, and build the documentation for `mne-bids`.
+This will install several packages for running tests and building the documentation for `mne-bids`.
 
 ### Install the BIDS validator
 
@@ -121,17 +121,29 @@ figure out how to run the commands without invoking `make`.
 
 We run several style checks on `mne-bids`.
 If you have accurately followed the steps to setup your `mne-bids` development version,
-you can simply call from the root of the `mne-bids` repository:
+you can simply use the following command from the root of the `mne-bids` repository:
 
 ```Shell
 make pep
 ```
 
+We use [Black](https://github.com/psf/black) to format our code.
+You can simply call `black .` from the root of the `mne-bids` repository
+to automatically convert your code to follow the appropriate style.
+
 ## Running tests
 
 We run tests using `pytest`.
+
+First you will need to download the MNE-Python testing data.
+Use the following command:
+
+```Shell
+python -c 'import mne; mne.datasets.testing.data_path(verbose=True)'
+```
+
 If you have accurately followed the steps to setup your `mne-bids` development version,
-you can simply call from the root of the `mne-bids` repository:
+you can then simply use the following command from the root of the `mne-bids` repository:
 
 ```Shell
 make test
@@ -148,7 +160,7 @@ VALIDATOR_EXECUTABLE=../bids-validator/bids-validator/bin/bids-validator pytest
 
 The documentation can be built using [Sphinx](https://www.sphinx-doc.org).
 If you have accurately followed the steps to setup your `mne-bids` development version,
-you can simply call from the root of the `mne-bids` repository:
+you can simply use the following command from the root of the `mne-bids` repository:
 
 ```Shell
 make build-doc
