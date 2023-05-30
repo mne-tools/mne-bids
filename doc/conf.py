@@ -142,7 +142,7 @@ html_theme_options = {
     'navbar_end': ['theme-switcher', 'version-switcher', 'navbar-icon-links'],
     'analytics': dict(google_analytics_id='G-C8SH9E98QC'),
     "switcher": {
-        "json_url": "https://raw.githubusercontent.com/sappelhoff/mne-bids/docs/fix/doc/_static/versions.json",  # noqa: E501
+        "json_url": "https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json",  # noqa: E501
         "version_match": switcher_version_match,
     },
 }
