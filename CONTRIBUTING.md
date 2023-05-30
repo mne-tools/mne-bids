@@ -52,7 +52,8 @@ Then, `git clone` your fork and install it in "editable" mode.
 
 ```Shell
 git clone https://github.com/<your-GitHub-username>/mne-bids
-pip install -e ./mne-bids
+cd ./mne-bids
+pip install -e .[full]
 ```
 
 You should now have both the `mne` and `mne-bids` development versions available in your Python environment.
