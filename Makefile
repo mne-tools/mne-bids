@@ -1,6 +1,6 @@
-.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e inplace test check-manifest flake pydocstyle pep build-doc
+.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test check-manifest flake pydocstyle pep build-doc dist-build
 
-all: clean inplace pep test build-doc
+all: clean inplace pep test build-doc dist-build
 
 clean-pyc:
 	find . -name "*.pyc" | xargs rm -f
@@ -24,7 +24,7 @@ clean-e:
 clean: clean-build clean-pyc clean-so clean-ctags clean-cache clean-e
 
 inplace:
-	python setup.py develop
+	@python -m pip install -e .[full]
 
 test:
 	@echo "Running tests"
