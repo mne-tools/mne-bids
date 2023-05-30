@@ -51,6 +51,7 @@ from mne import head_to_mri
 
 from mne_bids import (write_raw_bids, BIDSPath, write_anat, get_anat_landmarks,
                       get_head_mri_trans, print_dir_tree)
+from mne_bids.viz import plot_anat_landmarks
 
 # %%
 # We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
@@ -144,8 +145,17 @@ t1w_bids_path = write_anat(
 anat_dir = t1w_bids_path.directory
 
 # %%
-# Let's have another look at our BIDS directory
+# Our BIDS dataset is now ready to be shared. We can easily estimate the
+# transformation matrix using ``MNE-BIDS`` and the BIDS dataset since we
+# have now anatomical landmarks.
+estim_trans = get_head_mri_trans(
+    bids_path=bids_path, fs_subject='sample', fs_subjects_dir=fs_subjects_dir)
+
+# %%
+# Let's have another look at our BIDS directory and plot the written landmarks
 print_dir_tree(output_path)
+
+plot_anat_landmarks(t1w_bids_path, vmax=160)
 
 # %%
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
@@ -189,7 +199,7 @@ mri_pos = head_to_mri(pos=pos,
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
-fig, axs = plt.subplots(3, 1, figsize=(7, 7), facecolor='k')
+fig, axs = plt.subplots(3, 1, figsize=(7, 7))
 for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
     plot_anat(t1_nii_fname, axes=axs[point_idx],
               cut_coords=mri_pos[point_idx, :],
@@ -232,9 +242,7 @@ anat_dir = t1w_bids_path.directory
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(t1_nii_fname, axes=ax, title='Defaced', vmax=160)
-plt.show()
+plot_anat_landmarks(t1w_bids_path, vmax=160)
 
 # %%
 # Writing defaced and anonymized FLASH MRI image
@@ -265,9 +273,7 @@ flash_bids_path = write_anat(
 flash_nii_fname = op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz')
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
+plot_anat_landmarks(flash_bids_path, vmax=700)
 
 # %%
 # Using manual landmark coordinates in scanner RAS
@@ -302,9 +308,7 @@ flash_bids_path = write_anat(
 )
 
 # Plot it
-fig, ax = plt.subplots()
-plot_anat(flash_nii_fname, axes=ax, title='Defaced', vmax=700)
-plt.show()
+plot_anat_landmarks(flash_bids_path, vmax=700)
 
 # %%
 # .. LINKS

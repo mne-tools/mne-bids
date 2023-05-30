@@ -62,7 +62,6 @@ mne_bids.stats
 
    count_events
 
-
 mne_bids.copyfiles
 ------------------
 
@@ -83,3 +82,19 @@ mne_bids.copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
+
+mne_bids.viz
+--------------
+
+:py:mod:`mne_bids.viz`:
+
+.. automodule:: mne_bids.viz
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: mne_bids.viz
+
+.. autosummary::
+   :toctree: generated/
+
+   plot_anat_landmarks
