@@ -11,7 +11,7 @@ import mne_bids
 from mne_bids import BIDSPath, write_raw_bids
 
 data_path = mne.datasets.testing.data_path(download=False)
-assert mne.datasets.has_dataset('testing'), 'Download testing data'
+assert mne.datasets.has_dataset("testing"), "Download testing data"
 vhdr_path = data_path / "montage" / "bv_dig_test.vhdr"
 captrak_path = data_path / "montage" / "captrak_coords.bvct"
 
@@ -20,8 +20,13 @@ tiny_bids_root = mne_bids_root / "mne_bids" / "tests" / "data" / "tiny_bids"
 tiny_bids_root.mkdir(exist_ok=True)
 
 bids_path = BIDSPath(
-    subject="01", task="rest", session="eeg", suffix="eeg", extension=".vhdr",
-    datatype="eeg", root=tiny_bids_root
+    subject="01",
+    task="rest",
+    session="eeg",
+    suffix="eeg",
+    extension=".vhdr",
+    datatype="eeg",
+    root=tiny_bids_root,
 )
 
 # %%
@@ -44,14 +49,16 @@ raw.info["subject_info"] = {
 
 # %%
 # Add GSR and temperature channels
-if 'GSR' not in raw.ch_names and 'Temperature' not in raw.ch_names:
+if "GSR" not in raw.ch_names and "Temperature" not in raw.ch_names:
     gsr_data = np.array([2.1e-6] * len(raw.times))
     temperature_data = np.array([36.5] * len(raw.times))
 
-    gsr_and_temp_data = np.concatenate([
-        np.atleast_2d(gsr_data),
-        np.atleast_2d(temperature_data),
-    ])
+    gsr_and_temp_data = np.concatenate(
+        [
+            np.atleast_2d(gsr_data),
+            np.atleast_2d(temperature_data),
+        ]
+    )
     gsr_and_temp_info = mne.create_info(
         ch_names=["GSR", "Temperature"],
         sfreq=raw.info["sfreq"],
@@ -72,33 +79,35 @@ if 'GSR' not in raw.ch_names and 'Temperature' not in raw.ch_names:
 
 # %%
 raw.set_annotations(None)
-events = np.array([
-    [0, 0, 1],
-    [1000, 0, 2]
-])
-event_id = {
-    "start_experiment": 1,
-    "show_stimulus": 2
-}
+events = np.array([[0, 0, 1], [1000, 0, 2]])
+event_id = {"start_experiment": 1, "show_stimulus": 2}
 
 # %%
 write_raw_bids(
-    raw, bids_path, events=events, event_id=event_id, overwrite=True,
-    allow_preload=True, format="BrainVision",
+    raw,
+    bids_path,
+    events=events,
+    event_id=event_id,
+    overwrite=True,
+    allow_preload=True,
+    format="BrainVision",
 )
 mne_bids.mark_channels(
     bids_path=bids_path,
-    ch_names=['C3', 'C4', 'PO10', 'GSR', 'Temperature'],
-    status=['good', 'good', 'bad', 'good', 'good'],
-    descriptions=['resected', 'resected', 'continuously flat',
-                  'left index finger', 'left ear']
+    ch_names=["C3", "C4", "PO10", "GSR", "Temperature"],
+    status=["good", "good", "bad", "good", "good"],
+    descriptions=[
+        "resected",
+        "resected",
+        "continuously flat",
+        "left index finger",
+        "left ear",
+    ],
 )
 
 # %%
 dataset_description_json_path = tiny_bids_root / "dataset_description.json"
-ds_json = json.loads(
-    dataset_description_json_path.read_text(encoding="utf-8")
-)
+ds_json = json.loads(dataset_description_json_path.read_text(encoding="utf-8"))
 
 ds_json["Name"] = "tiny_bids"
 ds_json["Authors"] = ["MNE-BIDS Developers", "And Friends"]

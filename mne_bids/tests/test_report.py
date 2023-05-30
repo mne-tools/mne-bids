@@ -9,47 +9,43 @@ import mne
 import pytest
 from mne.datasets import testing
 
-from mne_bids import (BIDSPath,
-                      make_report)
+from mne_bids import BIDSPath, make_report
 from mne_bids.write import write_raw_bids
 from mne_bids.config import BIDS_VERSION
 
 
-subject_id = '01'
-session_id = '01'
-run = '01'
-acq = '01'
-task = 'testing'
+subject_id = "01"
+session_id = "01"
+run = "01"
+acq = "01"
+task = "testing"
 
 _bids_path = BIDSPath(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task
+    subject=subject_id, session=session_id, run=run, acquisition=acq, task=task
 )
 
 # Get the MNE testing sample data
 data_path = testing.data_path(download=False)
-raw_fname = op.join(data_path, 'MEG', 'sample',
-                    'sample_audvis_trunc_raw.fif')
+raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
 
 warning_str = dict(
-    channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
+    channel_unit_changed="ignore:The unit for chann*.:RuntimeWarning:mne",
 )
 
 
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_report(tmp_path):
     """Test that report generated works as intended."""
     bids_root = str(tmp_path)
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
-    raw.info['line_freq'] = 60
+    raw.info["line_freq"] = 60
     bids_path = _bids_path.copy().update(root=bids_root)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     report = make_report(bids_root)
 
-    expected_report = \
-    f"""This dataset was created by [Unspecified] and conforms to BIDS version {BIDS_VERSION}.
+    expected_report = f"""This dataset was created by [Unspecified] and conforms to BIDS version {BIDS_VERSION}.
 This report was generated with MNE-BIDS (https://doi.org/10.21105/joss.01896).
 The dataset consists of 1 participants (sex were all unknown; handedness were
 all unknown; ages all unknown) and 1 recording sessions: 01. Data was recorded
@@ -61,30 +57,29 @@ data recorded over all scans. For each dataset, there were on average 376.0 (std
 = 0.0) recording channels per scan, out of which 374.0 (std = 0.0) were used in
 analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
 
-    expected_report = '\n'.join(textwrap.wrap(expected_report, width=80))
+    expected_report = "\n".join(textwrap.wrap(expected_report, width=80))
     assert report == expected_report
 
 
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_report_no_participant_information(tmp_path):
     """Test report with participants.tsv with participant_id column only."""
     bids_root = tmp_path
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
-    raw.info['line_freq'] = 60
+    raw.info["line_freq"] = 60
     bids_path = _bids_path.copy().update(root=bids_root)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     # remove all information and check if report still runs
-    (bids_root / 'participants.json').unlink()
+    (bids_root / "participants.json").unlink()
 
     # overwrite participant information to see if report still runs
-    (bids_root / 'participants.tsv').write_text('participant_id\nsub-001')
+    (bids_root / "participants.tsv").write_text("participant_id\nsub-001")
 
     report = make_report(bids_root)
 
-    expected_report = \
-    f"""This dataset was created by [Unspecified] and conforms to BIDS version {BIDS_VERSION}.
+    expected_report = f"""This dataset was created by [Unspecified] and conforms to BIDS version {BIDS_VERSION}.
 This report was generated with MNE-BIDS (https://doi.org/10.21105/joss.01896).
 The dataset consists of 1 participants (sex were all unknown; handedness were
 all unknown; ages all unknown) and 1 recording sessions: 01. Data was recorded
@@ -96,5 +91,5 @@ data recorded over all scans. For each dataset, there were on average 376.0 (std
 = 0.0) recording channels per scan, out of which 374.0 (std = 0.0) were used in
 analysis (2.0 +/- 0.0 were removed from analysis)."""  # noqa
 
-    expected_report = '\n'.join(textwrap.wrap(expected_report, width=80))
+    expected_report = "\n".join(textwrap.wrap(expected_report, width=80))
     assert report == expected_report

@@ -39,8 +39,14 @@ import os.path as op
 import openneuro
 
 from mne.datasets import sample
-from mne_bids import (BIDSPath, read_raw_bids, print_dir_tree, make_report,
-                      find_matching_paths, get_entity_vals)
+from mne_bids import (
+    BIDSPath,
+    read_raw_bids,
+    print_dir_tree,
+    make_report,
+    find_matching_paths,
+    get_entity_vals,
+)
 
 # %%
 # Download a subject's data from an OpenNeuro BIDS dataset
@@ -57,16 +63,15 @@ from mne_bids import (BIDSPath, read_raw_bids, print_dir_tree, make_report,
 #          We're just using data from one subject to reduce the time
 #          it takes to run the example.
 
-dataset = 'ds002778'
-subject = 'pd6'
+dataset = "ds002778"
+subject = "pd6"
 
 # Download one subject's data from each dataset
 bids_root = op.join(op.dirname(sample.data_path()), dataset)
 if not op.isdir(bids_root):
     os.makedirs(bids_root)
 
-openneuro.download(dataset=dataset, target_dir=bids_root,
-                   include=[f'sub-{subject}'])
+openneuro.download(dataset=dataset, target_dir=bids_root, include=[f"sub-{subject}"])
 
 # %%
 # Explore the dataset contents
@@ -96,11 +101,12 @@ print(make_report(bids_root))
 # one where they abstained for more than twelve hours. For now, we are
 # not interested in the on-medication session.
 
-sessions = get_entity_vals(bids_root, 'session', ignore_sessions='on')
-datatype = 'eeg'
+sessions = get_entity_vals(bids_root, "session", ignore_sessions="on")
+datatype = "eeg"
 extensions = [".bdf", ".tsv"]  # ignore .json files
-bids_paths = find_matching_paths(bids_root, datatypes=datatype,
-                                 sessions=sessions, extensions=extensions)
+bids_paths = find_matching_paths(
+    bids_root, datatypes=datatype, sessions=sessions, extensions=extensions
+)
 
 # %%
 # We can now retrieve a list of all MEG-related files in the dataset:
@@ -108,7 +114,7 @@ print(bids_paths)
 
 # %%
 # Note that this is the same as running:
-session = 'off'
+session = "off"
 bids_path = BIDSPath(root=bids_root, session=session, datatype=datatype)
 print(bids_path.match(ignore_json=True))
 
@@ -132,8 +138,8 @@ print(bids_path.match(ignore_json=True))
 # our example, and ``'eeg'`` for EEG raw data. For MEG and EEG raw data, the
 # suffix is identical to the datatype, so don't let yourself be confused here!
 
-task = 'rest'
-suffix = 'eeg'
+task = "rest"
+suffix = "eeg"
 
 bids_path = bids_path.update(subject=subject, task=task, suffix=suffix)
 
@@ -190,17 +196,17 @@ raw = read_raw_bids(bids_path=bids_path, verbose=False)
 #
 # Basic subject metadata is here.
 
-print(raw.info['subject_info'])
+print(raw.info["subject_info"])
 
 # %%
 # Power line frequency is here.
 
-print(raw.info['line_freq'])
+print(raw.info["line_freq"])
 
 # %%
 # Sampling frequency is here.
 
-print(raw.info['sfreq'])
+print(raw.info["sfreq"])
 
 # %%
 # Events are now Annotations

@@ -1,4 +1,4 @@
-.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test check-manifest flake pydocstyle pep build-doc dist-build
+.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test check-manifest flake black pydocstyle pep build-doc dist-build
 
 all: clean inplace pep test build-doc dist-build
 
@@ -45,11 +45,15 @@ flake:
 	@echo "Running flake8"
 	@flake8 --count mne_bids examples
 
+black:
+	@echo "Running black"
+	@black --check .
+
 pydocstyle:
 	@echo "Running pydocstyle"
 	@pydocstyle .
 
-pep: flake pydocstyle check-manifest
+pep: flake pydocstyle check-manifest black
 
 build-doc:
 	@echo "Building documentation"

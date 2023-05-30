@@ -140,8 +140,10 @@ def _from_tsv(fname, dtypes=None):
 
     """
     from .utils import warn  # avoid circular import
-    data = np.loadtxt(fname, dtype=str, delimiter='\t', ndmin=2,
-                      comments=None, encoding='utf-8-sig')
+
+    data = np.loadtxt(
+        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding="utf-8-sig"
+    )
     column_names = data[0, :]
     info = data[1:, :]
     data_dict = OrderedDict()
@@ -150,8 +152,10 @@ def _from_tsv(fname, dtypes=None):
     if not isinstance(dtypes, (list, tuple)):
         dtypes = [dtypes] * info.shape[1]
     if not len(dtypes) == info.shape[1]:
-        raise ValueError('dtypes length mismatch. Provided: {0}, '
-                         'Expected: {1}'.format(len(dtypes), info.shape[1]))
+        raise ValueError(
+            "dtypes length mismatch. Provided: {0}, "
+            "Expected: {1}".format(len(dtypes), info.shape[1])
+        )
     empty_cols = 0
     for i, name in enumerate(column_names):
         values = info[:, i].astype(dtypes[i]).tolist()
@@ -179,9 +183,9 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with open(fname, 'w', encoding='utf-8-sig') as f:
+    with open(fname, "w", encoding="utf-8-sig") as f:
         f.write(output)
-        f.write('\n')
+        f.write("\n")
 
 
 def _tsv_to_str(data, rows=5):
@@ -204,12 +208,12 @@ def _tsv_to_str(data, rows=5):
     n_rows = len(data[col_names[0]])
     output = list()
     # write headings.
-    output.append('\t'.join(col_names))
+    output.append("\t".join(col_names))
 
     # write column data.
     max_rows = min(n_rows, rows)
     for idx in range(max_rows):
         row_data = list(str(data[key][idx]) for key in data)
-        output.append('\t'.join(row_data))
+        output.append("\t".join(row_data))
 
-    return '\n'.join(output)
+    return "\n".join(output)

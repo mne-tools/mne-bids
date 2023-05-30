@@ -21,8 +21,13 @@ modify BIDS-formatted data.
 # We are importing everything we need for this example:
 from mne.datasets import somato
 
-from mne_bids import (read_raw_bids, find_matching_paths,
-                      print_dir_tree, make_report, update_sidecar_json)
+from mne_bids import (
+    read_raw_bids,
+    find_matching_paths,
+    print_dir_tree,
+    make_report,
+    update_sidecar_json,
+)
 
 # %%
 # We will be using the `MNE somato data <mne_somato_data_>`_, which
@@ -62,19 +67,18 @@ print(make_report(bids_root))
 
 # Search for all matching BIDSPaths in the root directory
 bids_root = somato.data_path()
-suffix = 'meg'
-extension = '.fif'
+suffix = "meg"
+extension = ".fif"
 
-bids_paths = find_matching_paths(bids_root, suffixes=suffix,
-                                 extensions=extension)
+bids_paths = find_matching_paths(bids_root, suffixes=suffix, extensions=extension)
 # We can now retrieve a list of all MEG-related files in the dataset:
 print(bids_paths)
 
 # Define a sidecar update as a dictionary
 entries = {
-    'PowerLineFrequency': 60,
-    'Manufacturer': "MEGIN",
-    'InstitutionName': "Martinos Center"
+    "PowerLineFrequency": 60,
+    "Manufacturer": "MEGIN",
+    "InstitutionName": "Martinos Center",
 }
 
 # Note: ``update_sidecar_json`` will perform essentially a
@@ -86,7 +90,7 @@ entries = {
 #
 # Now update all sidecar fields according to our updating dictionary
 bids_path = bids_paths[0]
-sidecar_path = bids_path.copy().update(extension='.json')
+sidecar_path = bids_path.copy().update(extension=".json")
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 # %%
@@ -95,7 +99,7 @@ update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 # new line frequency is now 60 Hz
 raw = read_raw_bids(bids_path=bids_path)
-print(raw.info['line_freq'])
+print(raw.info["line_freq"])
 
 # %%
 # Generate a new report based on the updated metadata.
@@ -107,8 +111,8 @@ print(make_report(bids_root))
 # We can revert the changes by updating the sidecar again.
 
 # update the sidecar data to have a new PowerLineFrequency
-entries['Manufacturer'] = "Elekta"
-entries['PowerLineFrequency'] = 50
+entries["Manufacturer"] = "Elekta"
+entries["PowerLineFrequency"] = 50
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 # %%
@@ -117,7 +121,7 @@ update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 # The power line frequency should now change back to 50 Hz
 raw = read_raw_bids(bids_path=bids_path)
-print(raw.info['line_freq'])
+print(raw.info["line_freq"])
 
 # Generate the report with updated fields
 print(make_report(bids_root))

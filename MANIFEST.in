@@ -23,6 +23,7 @@ exclude tools
 prune .circleci
 prune paper
 
+exclude .git-blame-ignore-revs
 exclude CITATION.cff
 exclude Makefile
 exclude CONTRIBUTING.md

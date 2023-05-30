@@ -14,11 +14,13 @@ from mne.utils import logger, verbose
 from mne.fixes import _compare_version
 from mne.viz import use_browser_backend
 
-if _compare_version(mne.__version__, '<', '1.0.dev0'):  # pragma: no cover
+if _compare_version(mne.__version__, "<", "1.0.dev0"):  # pragma: no cover
     from mne.preprocessing import annotate_flat
+
     _annotate_flat_func = annotate_flat
 else:
     from mne.preprocessing import annotate_amplitude
+
     _annotate_flat_func = annotate_amplitude
 
 from mne_bids import read_raw_bids, mark_channels
@@ -28,8 +30,14 @@ from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
 @verbose
-def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
-                    show_annotations=True, verbose=None):
+def inspect_dataset(
+    bids_path,
+    find_flat=True,
+    l_freq=None,
+    h_freq=None,
+    show_annotations=True,
+    verbose=None,
+):
     """Inspect and annotate BIDS raw data.
 
     This function allows you to browse MEG, EEG, and iEEG raw data stored in a
@@ -101,24 +109,31 @@ def inspect_dataset(bids_path, find_flat=True, l_freq=None, h_freq=None,
     >>> inspect_dataset(bids_path=bids_path, find_flat=False,  # doctest: +SKIP
     ...                 l_freq=1, h_freq=30)
     """
-    allowed_extensions = set(ALLOWED_DATATYPE_EXTENSIONS['meg'] +
-                             ALLOWED_DATATYPE_EXTENSIONS['eeg'] +
-                             ALLOWED_DATATYPE_EXTENSIONS['ieeg'])
+    allowed_extensions = set(
+        ALLOWED_DATATYPE_EXTENSIONS["meg"]
+        + ALLOWED_DATATYPE_EXTENSIONS["eeg"]
+        + ALLOWED_DATATYPE_EXTENSIONS["ieeg"]
+    )
 
-    bids_paths = [p for p in bids_path.match(check=True)
-                  if (p.extension is None or
-                      p.extension in allowed_extensions) and
-                  p.acquisition != 'crosstalk']
+    bids_paths = [
+        p
+        for p in bids_path.match(check=True)
+        if (p.extension is None or p.extension in allowed_extensions)
+        and p.acquisition != "crosstalk"
+    ]
 
     for bids_path_ in bids_paths:
-        _inspect_raw(bids_path=bids_path_, l_freq=l_freq, h_freq=h_freq,
-                     find_flat=find_flat, show_annotations=show_annotations)
+        _inspect_raw(
+            bids_path=bids_path_,
+            l_freq=l_freq,
+            h_freq=h_freq,
+            find_flat=find_flat,
+            show_annotations=show_annotations,
+        )
 
 
 # XXX This this should probably be refactored into a class attribute someday.
-_global_vars = dict(raw_fig=None,
-                    dialog_fig=None,
-                    mne_close_key=None)
+_global_vars = dict(raw_fig=None, dialog_fig=None, mne_close_key=None)
 
 
 def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
@@ -128,41 +143,38 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
     import matplotlib.pyplot as plt
 
     extra_params = dict()
-    if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = 'yes'
-    raw = read_raw_bids(bids_path, extra_params=extra_params, verbose='error')
-    old_bads = raw.info['bads'].copy()
+    if bids_path.extension == ".fif":
+        extra_params["allow_maxshield"] = "yes"
+    raw = read_raw_bids(bids_path, extra_params=extra_params, verbose="error")
+    old_bads = raw.info["bads"].copy()
     old_annotations = raw.annotations.copy()
 
     if find_flat:
         raw.load_data()  # Speeds up processing dramatically
-        if _annotate_flat_func.__name__ == 'annotate_amplitude':
+        if _annotate_flat_func.__name__ == "annotate_amplitude":
             flat_annot, flat_chans = annotate_amplitude(
-                raw=raw,
-                flat=0,
-                min_duration=0.05,
-                bad_percent=5
+                raw=raw, flat=0, min_duration=0.05, bad_percent=5
             )
         else:  # pragma: no cover
-            flat_annot, flat_chans = annotate_flat(
-                raw=raw,
-                min_duration=0.05
-            )
+            flat_annot, flat_chans = annotate_flat(raw=raw, min_duration=0.05)
         new_annot = raw.annotations + flat_annot
         raw.set_annotations(new_annot)
-        raw.info['bads'] = list(set(raw.info['bads'] + flat_chans))
+        raw.info["bads"] = list(set(raw.info["bads"] + flat_chans))
         del new_annot, flat_annot
     else:
         flat_chans = []
 
-    show_options = bids_path.datatype == 'meg'
+    show_options = bids_path.datatype == "meg"
 
-    with use_browser_backend('matplotlib'):
+    with use_browser_backend("matplotlib"):
         fig = raw.plot(
-            title=f'{bids_path.root.name}: {bids_path.basename}',
-            highpass=l_freq, lowpass=h_freq,
+            title=f"{bids_path.root.name}: {bids_path.basename}",
+            highpass=l_freq,
+            lowpass=h_freq,
             show_options=show_options,
-            block=False, show=False, verbose='warning'
+            block=False,
+            show=False,
+            verbose="warning",
         )
 
     # Add our own event handlers so that when the MNE Raw Browser is being
@@ -171,29 +183,33 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
         mne_raw_fig = event.canvas.figure
         # Bads alterations are only transferred to `inst` once the figure is
         # closed; Annotation changes are immediately reflected in `inst`
-        new_bads = mne_raw_fig.mne.info['bads'].copy()
+        new_bads = mne_raw_fig.mne.info["bads"].copy()
         new_annotations = mne_raw_fig.mne.inst.annotations.copy()
 
         if not new_annotations:
             # Ensure it's not an empty list, but an empty set of Annotations.
             new_annotations = mne.Annotations(
-                onset=[], duration=[], description=[],
-                orig_time=mne_raw_fig.mne.info['meas_date']
+                onset=[],
+                duration=[],
+                description=[],
+                orig_time=mne_raw_fig.mne.info["meas_date"],
             )
-        _save_raw_if_changed(old_bads=old_bads,
-                             new_bads=new_bads,
-                             flat_chans=flat_chans,
-                             old_annotations=old_annotations,
-                             new_annotations=new_annotations,
-                             bids_path=bids_path)
-        _global_vars['raw_fig'] = None
+        _save_raw_if_changed(
+            old_bads=old_bads,
+            new_bads=new_bads,
+            flat_chans=flat_chans,
+            old_annotations=old_annotations,
+            new_annotations=new_annotations,
+            bids_path=bids_path,
+        )
+        _global_vars["raw_fig"] = None
 
     def _keypress_callback(event):
-        if event.key == _global_vars['mne_close_key']:
+        if event.key == _global_vars["mne_close_key"]:
             _handle_close(event)
 
-    fig.canvas.mpl_connect('close_event', _handle_close)
-    fig.canvas.mpl_connect('key_press_event', _keypress_callback)
+    fig.canvas.mpl_connect("close_event", _handle_close)
+    fig.canvas.mpl_connect("key_press_event", _keypress_callback)
 
     if not show_annotations:
         # Remove annotations and kill `_toggle_annotation_fig` method, since
@@ -203,27 +219,24 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
         fig._toggle_annotation_fig = lambda: None
         # Ensure it's not an empty list, but an empty set of Annotations.
         old_annotations = mne.Annotations(
-            onset=[], duration=[], description=[],
-            orig_time=raw.info['meas_date']
+            onset=[], duration=[], description=[], orig_time=raw.info["meas_date"]
         )
 
-    if matplotlib.get_backend() != 'agg':
+    if matplotlib.get_backend() != "agg":
         plt.show(block=True)
 
-    _global_vars['raw_fig'] = fig
-    _global_vars['mne_close_key'] = fig.mne.close_key
+    _global_vars["raw_fig"] = fig
+    _global_vars["mne_close_key"] = fig.mne.close_key
 
 
 def _annotations_almost_equal(old_annotations, new_annotations):
     """Allow for a tiny bit of floating point precision loss."""
-    if (np.array_equal(old_annotations.description,
-                       new_annotations.description) and
-        np.array_equal(old_annotations.orig_time,
-                       new_annotations.orig_time) and
-        np.allclose(old_annotations.onset,
-                    new_annotations.onset) and
-        np.allclose(old_annotations.duration,
-                    new_annotations.duration)):
+    if (
+        np.array_equal(old_annotations.description, new_annotations.description)
+        and np.array_equal(old_annotations.orig_time, new_annotations.orig_time)
+        and np.allclose(old_annotations.onset, new_annotations.onset)
+        and np.allclose(old_annotations.duration, new_annotations.duration)
+    ):
         return True
     else:
         return False
@@ -233,34 +246,40 @@ def _save_annotations(*, annotations, bids_path):
     # Attach the new Annotations to our raw data so we can easily convert them
     # to events, which will be stored in the *_events.tsv sidecar.
     extra_params = dict()
-    if bids_path.extension == '.fif':
-        extra_params['allow_maxshield'] = 'yes'
+    if bids_path.extension == ".fif":
+        extra_params["allow_maxshield"] = "yes"
 
-    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
-                        verbose='warning')
+    raw = read_raw_bids(
+        bids_path=bids_path, extra_params=extra_params, verbose="warning"
+    )
     raw.set_annotations(annotations)
-    events, durs, descrs = _read_events(events=None, event_id=None,
-                                        bids_path=bids_path, raw=raw)
+    events, durs, descrs = _read_events(
+        events=None, event_id=None, bids_path=bids_path, raw=raw
+    )
 
     # Write sidecar – or remove it if no events are left.
-    events_tsv_fname = (bids_path.copy()
-                        .update(suffix='events',
-                                extension='.tsv')
-                        .fpath)
+    events_tsv_fname = bids_path.copy().update(suffix="events", extension=".tsv").fpath
 
     if len(events) > 0:
-        _events_tsv(events=events, durations=durs, raw=raw,
-                    fname=events_tsv_fname, trial_type=descrs,
-                    overwrite=True)
+        _events_tsv(
+            events=events,
+            durations=durs,
+            raw=raw,
+            fname=events_tsv_fname,
+            trial_type=descrs,
+            overwrite=True,
+        )
     elif events_tsv_fname.exists():
-        logger.info(f'No events remaining after interactive inspection, '
-                    f'removing {events_tsv_fname.name}')
+        logger.info(
+            f"No events remaining after interactive inspection, "
+            f"removing {events_tsv_fname.name}"
+        )
         events_tsv_fname.unlink()
 
 
-def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
-                         old_annotations, new_annotations,
-                         bids_path):
+def _save_raw_if_changed(
+    *, old_bads, new_bads, flat_chans, old_annotations, new_annotations, bids_path
+):
     """Save bad channel selection if it has been changed.
 
     Parameters
@@ -288,27 +307,30 @@ def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
         bad_descriptions = []
 
         # Generate entries for the `status_description` column.
-        channels_tsv_fname = (bids_path.copy()
-                              .update(suffix='channels', extension='.tsv')
-                              .fpath)
+        channels_tsv_fname = (
+            bids_path.copy().update(suffix="channels", extension=".tsv").fpath
+        )
         channels_tsv_data = _from_tsv(channels_tsv_fname)
 
         for ch_name in bads:
-            idx = channels_tsv_data['name'].index(ch_name)
-            if channels_tsv_data['status'][idx] == 'bad':
+            idx = channels_tsv_data["name"].index(ch_name)
+            if channels_tsv_data["status"][idx] == "bad":
                 # Channel was already marked as bad in the data, so retain
                 # existing description.
-                description = channels_tsv_data['status_description'][idx]
+                description = channels_tsv_data["status_description"][idx]
             elif ch_name in flat_chans:
-                description = 'Flat channel, auto-detected via MNE-BIDS'
+                description = "Flat channel, auto-detected via MNE-BIDS"
             else:
                 # Channel has been manually marked as bad during inspection
-                description = 'Interactive inspection via MNE-BIDS'
+                description = "Interactive inspection via MNE-BIDS"
 
             bad_descriptions.append(description)
             del ch_name, description
 
-        del channels_tsv_data, channels_tsv_fname,
+        del (
+            channels_tsv_data,
+            channels_tsv_fname,
+        )
 
     if _annotations_almost_equal(old_annotations, new_annotations):
         annotations = None
@@ -319,10 +341,12 @@ def _save_raw_if_changed(*, old_bads, new_bads, flat_chans,
         # Nothing has changed, so we can just exit.
         return None
 
-    return _save_raw_dialog_box(bads=bads,
-                                bad_descriptions=bad_descriptions,
-                                annotations=annotations,
-                                bids_path=bids_path)
+    return _save_raw_dialog_box(
+        bads=bads,
+        bad_descriptions=bad_descriptions,
+        annotations=annotations,
+        bids_path=bids_path,
+    )
 
 
 def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path):
@@ -333,54 +357,62 @@ def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path):
     from matplotlib.widgets import Button
     from mne.viz.utils import figure_nobar
 
-    title = 'Save changes?'
-    message = 'You have modified '
+    title = "Save changes?"
+    message = "You have modified "
     if bads is not None and annotations is None:
-        message += 'the bad channel selection '
+        message += "the bad channel selection "
         figsize = (7.5, 2.5)
     elif bads is None and annotations is not None:
-        message += 'the bad segments selection '
+        message += "the bad segments selection "
         figsize = (7.5, 2.5)
     else:
-        message += 'the bad channel and\nannotations selection '
+        message += "the bad channel and\nannotations selection "
         figsize = (8.5, 3)
 
-    message += (f'of\n'
-                f'{bids_path.basename}.\n\n'
-                f'Would you like to save these changes to the\n'
-                f'BIDS dataset?')
-    icon_fname = str(Path(__file__).parent / 'assets' / 'help-128px.png')
+    message += (
+        f"of\n"
+        f"{bids_path.basename}.\n\n"
+        f"Would you like to save these changes to the\n"
+        f"BIDS dataset?"
+    )
+    icon_fname = str(Path(__file__).parent / "assets" / "help-128px.png")
     icon = plt.imread(icon_fname)
 
     fig = figure_nobar(figsize=figsize)
-    fig.canvas.manager.set_window_title('MNE-BIDS Inspector')
-    fig.suptitle(title, y=0.95, fontsize='xx-large', fontweight='bold')
+    fig.canvas.manager.set_window_title("MNE-BIDS Inspector")
+    fig.suptitle(title, y=0.95, fontsize="xx-large", fontweight="bold")
 
     gs = fig.add_gridspec(1, 2, width_ratios=(1.5, 5))
 
     # The dialog box tet.
     ax_msg = fig.add_subplot(gs[0, 1])
-    ax_msg.text(x=0, y=0.8, s=message, fontsize='large',
-                verticalalignment='top', horizontalalignment='left',
-                multialignment='left')
-    ax_msg.axis('off')
+    ax_msg.text(
+        x=0,
+        y=0.8,
+        s=message,
+        fontsize="large",
+        verticalalignment="top",
+        horizontalalignment="left",
+        multialignment="left",
+    )
+    ax_msg.axis("off")
 
     # The help icon.
     ax_icon = fig.add_subplot(gs[0, 0])
     ax_icon.imshow(icon)
-    ax_icon.axis('off')
+    ax_icon.axis("off")
 
     # Buttons.
     ax_save = fig.add_axes([0.6, 0.05, 0.3, 0.1])
     ax_dont_save = fig.add_axes([0.1, 0.05, 0.3, 0.1])
 
-    save_button = Button(ax=ax_save, label='Save')
-    save_button.label.set_fontsize('medium')
-    save_button.label.set_fontweight('bold')
+    save_button = Button(ax=ax_save, label="Save")
+    save_button.label.set_fontsize("medium")
+    save_button.label.set_fontweight("bold")
 
     dont_save_button = Button(ax=ax_dont_save, label="Don't save")
-    dont_save_button.label.set_fontsize('medium')
-    dont_save_button.label.set_fontweight('bold')
+    dont_save_button.label.set_fontsize("medium")
+    dont_save_button.label.set_fontweight("bold")
 
     # Store references to keep buttons alive.
     fig.save_button = save_button
@@ -389,34 +421,33 @@ def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path):
     # Define callback functions.
     def _save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
-        _global_vars['dialog_fig'] = None
+        _global_vars["dialog_fig"] = None
 
         if bads is not None:
-            _save_bads(bads=bads, descriptions=bad_descriptions,
-                       bids_path=bids_path)
+            _save_bads(bads=bads, descriptions=bad_descriptions, bids_path=bids_path)
         if annotations is not None:
             _save_annotations(annotations=annotations, bids_path=bids_path)
 
     def _dont_save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
-        _global_vars['dialog_fig'] = None
+        _global_vars["dialog_fig"] = None
 
     def _keypress_callback(event):
-        if event.key in ['enter', 'return']:
+        if event.key in ["enter", "return"]:
             _save_callback(event)
-        elif event.key == _global_vars['mne_close_key']:
+        elif event.key == _global_vars["mne_close_key"]:
             _dont_save_callback(event)
 
     # Connect events to callback functions.
     save_button.on_clicked(_save_callback)
     dont_save_button.on_clicked(_dont_save_callback)
-    fig.canvas.mpl_connect('close_event', _dont_save_callback)
-    fig.canvas.mpl_connect('key_press_event', _keypress_callback)
+    fig.canvas.mpl_connect("close_event", _dont_save_callback)
+    fig.canvas.mpl_connect("key_press_event", _keypress_callback)
 
-    if matplotlib.get_backend() != 'agg':
+    if matplotlib.get_backend() != "agg":
         fig.show()
 
-    _global_vars['dialog_fig'] = fig
+    _global_vars["dialog_fig"] = fig
 
 
 def _save_bads(*, bads, descriptions, bids_path):
@@ -430,6 +461,7 @@ def _save_bads(*, bads, descriptions, bids_path):
         The values to be written to the `status_description` column.
     """
     # We first make all channels not passed as bad here to be marked as good.
-    mark_channels(bids_path=bids_path, ch_names=[], status='good')
-    mark_channels(bids_path=bids_path, ch_names=bads, status='bad',
-                  descriptions=descriptions)
+    mark_channels(bids_path=bids_path, ch_names=[], status="good")
+    mark_channels(
+        bids_path=bids_path, ch_names=bads, status="bad", descriptions=descriptions
+    )

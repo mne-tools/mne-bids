@@ -12,9 +12,7 @@ from collections import OrderedDict
 import numpy as np
 
 from mne.channels import DigMontage, make_dig_montage
-from mne.utils import (
-    logger, _validate_type, verbose, _check_on_missing, _on_missing
-)
+from mne.utils import logger, _validate_type, verbose, _check_on_missing, _on_missing
 from mne.io import read_fiducials
 from mne.io.constants import FIFF
 
@@ -93,32 +91,31 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     """
     # get all matching json files
     bids_path = bids_path.copy()
-    if bids_path.extension != '.json':
-        raise RuntimeError('Only works for ".json" files. The '
-                           'BIDSPath object passed in has '
-                           f'{bids_path.extension} extension.')
+    if bids_path.extension != ".json":
+        raise RuntimeError(
+            'Only works for ".json" files. The '
+            "BIDSPath object passed in has "
+            f"{bids_path.extension} extension."
+        )
 
     # get the file path
     fpath = bids_path.fpath
     if not fpath.exists():
-        raise RuntimeError(f'Sidecar file does not '
-                           f'exist for {fpath}.')
+        raise RuntimeError(f"Sidecar file does not " f"exist for {fpath}.")
 
     # sidecar update either from file, or as dictionary
     if isinstance(entries, dict):
         sidecar_tmp = entries
     else:
-        with open(entries, 'r') as tmp_f:
-            sidecar_tmp = json.load(
-                tmp_f, object_pairs_hook=OrderedDict)
+        with open(entries, "r") as tmp_f:
+            sidecar_tmp = json.load(tmp_f, object_pairs_hook=OrderedDict)
 
     logger.debug(sidecar_tmp)
-    logger.debug(f'Updating {fpath}...')
+    logger.debug(f"Updating {fpath}...")
 
     # load in sidecar filepath
-    with open(fpath, 'r') as tmp_f:
-        sidecar_json = json.load(
-            tmp_f, object_pairs_hook=OrderedDict)
+    with open(fpath, "r") as tmp_f:
+        sidecar_json = json.load(tmp_f, object_pairs_hook=OrderedDict)
 
     # update sidecar JSON file with the fields passed in
     sidecar_json.update(**sidecar_tmp)
@@ -139,7 +136,7 @@ def _update_sidecar(sidecar_fname, key, val):
     val : str
         The corresponding value to change to in the sidecar JSON file.
     """
-    with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
+    with open(sidecar_fname, "r", encoding="utf-8-sig") as fin:
         sidecar_json = json.load(fin)
     sidecar_json[key] = val
     _write_json(sidecar_fname, sidecar_json, overwrite=True)
@@ -147,8 +144,14 @@ def _update_sidecar(sidecar_fname, key, val):
 
 @verbose
 def update_anat_landmarks(
-    bids_path, landmarks, *, fs_subject=None, fs_subjects_dir=None,
-    kind=None, on_missing='raise', verbose=None
+    bids_path,
+    landmarks,
+    *,
+    fs_subject=None,
+    fs_subjects_dir=None,
+    kind=None,
+    on_missing="raise",
+    verbose=None,
 ):
     """Update the anatomical landmark coordinates of an MRI scan.
 
@@ -204,9 +207,9 @@ def update_anat_landmarks(
     -----
     .. versionadded:: 0.8
     """
-    _validate_type(item=bids_path, types=BIDSPath, item_name='bids_path')
+    _validate_type(item=bids_path, types=BIDSPath, item_name="bids_path")
     _validate_type(
-        item=landmarks, types=(DigMontage, 'path-like'), item_name='landmarks'
+        item=landmarks, types=(DigMontage, "path-like"), item_name="landmarks"
     )
     _check_on_missing(on_missing)
 
@@ -216,22 +219,25 @@ def update_anat_landmarks(
     # XXX full specification of all parts of the BIDSPath, thoughts?
     bids_path_mri = bids_path.copy()
     if bids_path_mri.datatype is None:
-        bids_path_mri.datatype = 'anat'
+        bids_path_mri.datatype = "anat"
 
-    if bids_path_mri.datatype != 'anat':
+    if bids_path_mri.datatype != "anat":
         raise ValueError(
             f'Can only operate on "anat" MRI data, but the provided bids_path '
-            f'points to: {bids_path_mri.datatype}')
+            f"points to: {bids_path_mri.datatype}"
+        )
 
     if bids_path_mri.suffix is None:
-        raise ValueError('Please specify the "suffix" entity of the provided '
-                         'bids_path.')
-    elif bids_path_mri.suffix not in ('T1w', 'FLASH'):
+        raise ValueError(
+            'Please specify the "suffix" entity of the provided ' "bids_path."
+        )
+    elif bids_path_mri.suffix not in ("T1w", "FLASH"):
         raise ValueError(
             f'Can only operate on "T1w" and "FLASH" images, but the bids_path '
-            f'suffix indicates: {bids_path_mri.suffix}')
+            f"suffix indicates: {bids_path_mri.suffix}"
+        )
 
-    valid_extensions = ('.nii', '.nii.gz')
+    valid_extensions = (".nii", ".nii.gz")
     tried_paths = []
     file_exists = False
     if bids_path_mri.extension is None:
@@ -251,35 +257,37 @@ def update_anat_landmarks(
 
     if not file_exists:
         raise ValueError(
-            f'Could not find an MRI scan. Please check the provided '
-            f'bids_path. Tried the following filenames: '
-            f'{", ".join([p.name for p in tried_paths])}')
+            f"Could not find an MRI scan. Please check the provided "
+            f"bids_path. Tried the following filenames: "
+            f'{", ".join([p.name for p in tried_paths])}'
+        )
 
     if not isinstance(landmarks, DigMontage):  # it's pathlike
         if fs_subject is None:
             raise ValueError(
                 'You must provide the "fs_subject" parameter when passing the '
-                'path to fiducials'
+                "path to fiducials"
             )
         landmarks = _get_landmarks_from_fiducials_file(
             bids_path=bids_path,
             fname=landmarks,
             fs_subject=fs_subject,
-            fs_subjects_dir=fs_subjects_dir
+            fs_subjects_dir=fs_subjects_dir,
         )
 
     positions = landmarks.get_positions()
-    coord_frame = positions['coord_frame']
-    if coord_frame != 'mri_voxel':
+    coord_frame = positions["coord_frame"]
+    if coord_frame != "mri_voxel":
         raise ValueError(
-            f'The landmarks must be specified in MRI voxel coordinates, but '
-            f'provided DigMontage is in "{coord_frame}"')
+            f"The landmarks must be specified in MRI voxel coordinates, but "
+            f'provided DigMontage is in "{coord_frame}"'
+        )
 
     # Extract the cardinal points
     name_to_coords_map = {
-        'LPA': positions['lpa'],
-        'NAS': positions['nasion'],
-        'RPA': positions['rpa']
+        "LPA": positions["lpa"],
+        "NAS": positions["nasion"],
+        "RPA": positions["rpa"],
     }
 
     # Check if coordinates for any cardinal point are missing, and convert to
@@ -292,85 +300,90 @@ def update_anat_landmarks(
             # Funnily, np.float64 is JSON-serializabe, while np.float32 is not!
             # Thus, cast to float64 to avoid issues (which e.g. may arise when
             # fiducials were read from disk!)
-            name_to_coords_map[name] = list(coords.astype('float64'))
+            name_to_coords_map[name] = list(coords.astype("float64"))
 
     if missing_points:
         raise ValueError(
-            f'The provided DigMontage did not contain all required cardinal '
-            f'points (nasion and left and right pre-auricular points). The '
-            f'following points are missing: '
-            f'{", ".join(missing_points)}')
+            f"The provided DigMontage did not contain all required cardinal "
+            f"points (nasion and left and right pre-auricular points). The "
+            f"following points are missing: "
+            f'{", ".join(missing_points)}'
+        )
 
-    bids_path_json = bids_path.copy().update(extension='.json')
+    bids_path_json = bids_path.copy().update(extension=".json")
     if not bids_path_json.fpath.exists():  # Must exist before we can update it
         _write_json(bids_path_json.fpath, dict())
 
-    mri_json = json.loads(bids_path_json.fpath.read_text(encoding='utf-8'))
-    if 'AnatomicalLandmarkCoordinates' not in mri_json:
+    mri_json = json.loads(bids_path_json.fpath.read_text(encoding="utf-8"))
+    if "AnatomicalLandmarkCoordinates" not in mri_json:
         _on_missing(
             on_missing=on_missing,
-            msg=f'No AnatomicalLandmarkCoordinates section found in '
-                f'{bids_path_json.fpath.name}',
-            error_klass=KeyError
+            msg=f"No AnatomicalLandmarkCoordinates section found in "
+            f"{bids_path_json.fpath.name}",
+            error_klass=KeyError,
         )
-        mri_json['AnatomicalLandmarkCoordinates'] = dict()
+        mri_json["AnatomicalLandmarkCoordinates"] = dict()
 
     for name, coords in name_to_coords_map.items():
         if kind is not None:
-            name = f'{name}_{kind}'
+            name = f"{name}_{kind}"
 
-        if name not in mri_json['AnatomicalLandmarkCoordinates']:
+        if name not in mri_json["AnatomicalLandmarkCoordinates"]:
             _on_missing(
                 on_missing=on_missing,
-                msg=f'Anatomical landmark not found in '
-                    f'{bids_path_json.fpath.name}: {name}',
-                error_klass=KeyError
+                msg=f"Anatomical landmark not found in "
+                f"{bids_path_json.fpath.name}: {name}",
+                error_klass=KeyError,
             )
 
-        mri_json['AnatomicalLandmarkCoordinates'][name] = coords
+        mri_json["AnatomicalLandmarkCoordinates"][name] = coords
 
     update_sidecar_json(bids_path=bids_path_json, entries=mri_json)
 
 
-def _get_landmarks_from_fiducials_file(*, bids_path, fname, fs_subject,
-                                       fs_subjects_dir):
+def _get_landmarks_from_fiducials_file(
+    *, bids_path, fname, fs_subject, fs_subjects_dir
+):
     """Get anatomical landmarks from fiducials file, in MRI voxel space."""
     # avoid dicrular imports
     from mne_bids.write import (
-        _get_t1w_mgh, _mri_landmarks_to_mri_voxels, _get_fid_coords
+        _get_t1w_mgh,
+        _mri_landmarks_to_mri_voxels,
+        _get_fid_coords,
     )
 
     digpoints, coord_frame = read_fiducials(fname)
 
     # All of this should be guaranteed, but better be safe than sorry!
     assert coord_frame == FIFF.FIFFV_COORD_MRI
-    assert digpoints[0]['ident'] == FIFF.FIFFV_POINT_LPA
-    assert digpoints[1]['ident'] == FIFF.FIFFV_POINT_NASION
-    assert digpoints[2]['ident'] == FIFF.FIFFV_POINT_RPA
+    assert digpoints[0]["ident"] == FIFF.FIFFV_POINT_LPA
+    assert digpoints[1]["ident"] == FIFF.FIFFV_POINT_NASION
+    assert digpoints[2]["ident"] == FIFF.FIFFV_POINT_RPA
 
     montage_loaded = make_dig_montage(
-        lpa=digpoints[0]['r'],
-        nasion=digpoints[1]['r'],
-        rpa=digpoints[2]['r'],
-        coord_frame='mri'
+        lpa=digpoints[0]["r"],
+        nasion=digpoints[1]["r"],
+        rpa=digpoints[2]["r"],
+        coord_frame="mri",
     )
     landmark_coords_mri, _ = _get_fid_coords(dig_points=montage_loaded.dig)
     landmark_coords_mri = np.asarray(
-        (landmark_coords_mri['lpa'],
-         landmark_coords_mri['nasion'],
-         landmark_coords_mri['rpa'])
+        (
+            landmark_coords_mri["lpa"],
+            landmark_coords_mri["nasion"],
+            landmark_coords_mri["rpa"],
+        )
     )
 
     t1w_mgh = _get_t1w_mgh(fs_subject, fs_subjects_dir)
     landmark_coords_voxels = _mri_landmarks_to_mri_voxels(
-        mri_landmarks=landmark_coords_mri * 1000,  # in mm
-        t1_mgh=t1w_mgh
+        mri_landmarks=landmark_coords_mri * 1000, t1_mgh=t1w_mgh  # in mm
     )
     montage_voxels = make_dig_montage(
         lpa=landmark_coords_voxels[0],
         nasion=landmark_coords_voxels[1],
         rpa=landmark_coords_voxels[2],
-        coord_frame='mri_voxel'
+        coord_frame="mri_voxel",
     )
 
     return montage_voxels
