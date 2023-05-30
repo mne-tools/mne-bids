@@ -1,0 +1,11 @@
+﻿name	type	units	low_cutoff	high_cutoff	description	sampling_frequency	status	status_description
+ECOG_0	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_1	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_2	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_3	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_4	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_5	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_6	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_7	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_8	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
+ECOG_9	ECOG	µV	0.0	500.0	Electrocorticography	1000.0	good	n/a
