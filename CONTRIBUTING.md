@@ -54,8 +54,10 @@ Then, `git clone` your fork and install it in "editable" mode.
 git clone https://github.com/<your-GitHub-username>/mne-bids
 cd ./mne-bids
 pip install -e .[full]
+git config --local blame.ignoreRevsFile .git-blame-ignore-revs
 ```
 
+The last command is needed for `git diff` to work properly.
 You should now have both the `mne` and `mne-bids` development versions available in your Python environment.
 
 ### Install additional Python packages required for development
