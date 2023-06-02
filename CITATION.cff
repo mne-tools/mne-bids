@@ -105,9 +105,10 @@ authors:
       family-names: Niso Galán
       affiliation: 'Psychological & Brain Sciences, Indiana University, Bloomington, IN, USA'
       orcid: 'https://orcid.org/0000-0001-5872-8924'
-    - given-names: Richard
-      family-names: Koehler
+    - given-names: Richard M.
+      family-names: Köhler
       orcid: 'https://orcid.org/0000-0002-5219-1289'
+      affiliation: 'Movement Disorder and Neuromodulation Unit, Department of Neurology, Charité – Universitätsmedizin Berlin, Germany'
     - given-names: Robert
       family-names: Luke
       orcid: 'https://orcid.org/0000-0002-4930-8351'
@@ -160,6 +161,8 @@ authors:
       affiliation: 'McGill Centre for Integrative Neuroscience, McGill University, Montreal, Canada'
     - given-names: Jonathan
       family-names: Vanhoecke
+      orcid: 'https://orcid.org/0000-0002-9857-1519'
+      affiliation: 'Movement Disorder and Neuromodulation Unit, Department of Neurology, Charité – Universitätsmedizin Berlin, Germany'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
