@@ -17,6 +17,7 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 import shutil
 from collections import defaultdict, OrderedDict
+import warnings
 
 from pkg_resources import parse_version
 
@@ -1324,11 +1325,13 @@ def make_dataset_description(
         with open(fname, "r", encoding="utf-8-sig") as fin:
             orig_cols = json.load(fin)
         if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
-            raise ValueError(
-                "Previous BIDS version used, please redo the "
-                "conversion to BIDS in a new directory "
-                "after ensuring all software is updated"
+            warnings.warn(
+                "Conflicting BIDSVersion found in dataset_description.json!"
+                "Consider setting BIDS root to a new directory and redo "
+                "conversion after ensuring all software has been updated."
+                "Original dataset description will not be overwritten."
             )
+            overwrite = False
         for key in description:
             if description[key] is None or not overwrite:
                 description[key] = orig_cols.get(key, None)
