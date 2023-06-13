@@ -414,7 +414,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
         make_dataset_description(path=tmp_path, name="tst", source_datasets=s_ds)
 
     monkeypatch.setattr(write, "BIDS_VERSION", "old")
-    with pytest.raises(ValueError, match="Previous BIDS version used"):
+    with pytest.warns(UserWarning, match="Conflicting BIDSVersion found*"):
         make_dataset_description(path=tmp_path, name="tst")
 
 

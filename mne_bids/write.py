@@ -1326,9 +1326,9 @@ def make_dataset_description(
             orig_cols = json.load(fin)
         if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
             warnings.warn(
-                "Conflicting BIDSVersion found in dataset_description.json!"
+                "Conflicting BIDSVersion found in dataset_description.json! "
                 "Consider setting BIDS root to a new directory and redo "
-                "conversion after ensuring all software has been updated."
+                "conversion after ensuring all software has been updated. "
                 "Original dataset description will not be overwritten."
             )
             overwrite = False
