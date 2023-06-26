@@ -655,7 +655,7 @@ class BIDSPath(object):
         """
         # only proceed if root is defined
         if self.root is None:
-            raise RuntimeError("Cannot remove files from BIDS dataset")
+            raise RuntimeError("The root must not be None to remove files.")
 
         # Planning:
         paths_matched = self.match(ignore_json=False, check=self.check)
