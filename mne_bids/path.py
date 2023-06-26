@@ -39,6 +39,7 @@ from mne_bids.utils import (
 )
 from mne_bids.tsv_handler import (_from_tsv, _drop, _to_tsv)
 
+
 def _find_empty_room_candidates(bids_path):
     """Get matching empty-room file for an MEG recording."""
     # Check whether we have a BIDS root.
@@ -84,7 +85,7 @@ def _find_empty_room_candidates(bids_path):
         for item in dir_contents:
             item = Path(item)
             if (item.suffix in allowed_extensions) or (
-                not item.suffix and item.is_dir()
+                    not item.suffix and item.is_dir()
             ):  # Hopefully BTi?
                 candidate_er_fnames.append(item.name)
 
@@ -325,39 +326,39 @@ class BIDSPath(object):
     """
 
     def __init__(
-        self,
-        subject=None,
-        session=None,
-        task=None,
-        acquisition=None,
-        run=None,
-        processing=None,
-        recording=None,
-        space=None,
-        split=None,
-        description=None,
-        root=None,
-        suffix=None,
-        extension=None,
-        datatype=None,
-        check=True,
+            self,
+            subject=None,
+            session=None,
+            task=None,
+            acquisition=None,
+            run=None,
+            processing=None,
+            recording=None,
+            space=None,
+            split=None,
+            description=None,
+            root=None,
+            suffix=None,
+            extension=None,
+            datatype=None,
+            check=True,
     ):
         if all(
-            ii is None
-            for ii in [
-                subject,
-                session,
-                task,
-                acquisition,
-                run,
-                processing,
-                recording,
-                space,
-                description,
-                root,
-                suffix,
-                extension,
-            ]
+                ii is None
+                for ii in [
+                    subject,
+                    session,
+                    task,
+                    acquisition,
+                    run,
+                    processing,
+                    recording,
+                    space,
+                    description,
+                    root,
+                    suffix,
+                    extension,
+                ]
         ):
             raise ValueError("At least one parameter must be given.")
 
@@ -626,7 +627,8 @@ class BIDSPath(object):
         self.directory.mkdir(parents=True, exist_ok=exist_ok)
         return self
 
-    def rm(self, safe_remove=True, verbose=True):
+    @verbose
+    def rm(self, safe_remove=True, verbose=None):
         """Safely delete a set of files inside BIDS dataset.
 
         Deleting a scan that conforms to the bids-validator, will
@@ -635,68 +637,101 @@ class BIDSPath(object):
 
         Deleting all files of a subject will update the
         ``*participants.tsv`` file.
+
+
+        Parameters
+        ----------
+        safe_remove : bool
+            If ``False``, directly delete and update the files.
+            Otherwise, displays the list of operations planned
+            and asks for user confirmation before
+            executing them (default).
+        %(verbose)s
+
+        Returns
+        -------
+        self : BIDSPath
+            The BIDSPath object.
         """
         # only proceed if root is defined
         if self.root is None:
             raise RuntimeError('Cannot remove files from BIDS dataset')
 
-        # get file paths to delete
-        paths_to_delete = self.match()
-        pretty_paths = '\n'.join(paths_to_delete)
-
-        if verbose:
-            print(f'Deleting the following files:\n '
-                  f'{pretty_paths}')
-
-        if safe_remove:
-            proceed = input(f'Do you want to delete the '
-                            f'following files (Y/n): \n{pretty_paths}')
-            if proceed.lower() != 'y':
-                return
-
+        # Planning:
+        paths_matched = self.match(ignore_json=False, check=self.check)
         subjects = set()
-        # remove files one by one
-        for bids_path in paths_to_delete:
-            bids_path.fpath.unlink()
-
+        paths_to_delete = []
+        paths_to_update = {}
+        subjects_paths_to_delete = []
+        participants_tsv_fpath = None
+        for bids_path in paths_matched:
+            paths_to_delete.append(bids_path)
             # if a datatype is present, then check
             # if a scan is deleted or not
-            datatype = bids_path.datatype
-            if datatype is not None:
+            if bids_path.datatype is not None:
                 # read in the corresponding scans file
-                scans_fpath = _find_matching_sidecar(bids_path,
-                                                     suffix='scans.tsv',
-                                                     allow_fail=False)
-                scans_tsv = _from_tsv(scans_fpath)
-                scans_fnames = scans_tsv['filename']
-
-                # get the relative datatype of this bids file
-                bids_fname = op.join(datatype, bids_path.fpath.name)
-                if bids_fname in scans_fnames:
-                    scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
-                    _to_tsv(scans_tsv, scans_fpath)
+                scans_fpath = bids_path.copy().update(datatype=None).find_matching_sidecar(
+                    suffix='scans',
+                    extension='.tsv',
+                    on_error='raise',
+                )
+                paths_to_update.setdefault(scans_fpath, []).append(bids_path)
             subjects.add(bids_path.subject)
 
+        files_to_delete = set(map(lambda p: p.fpath, paths_to_delete))
         for subject in subjects:
             # check existence of files in the sub dir
             subj_path = BIDSPath(root=self.root,
-                                 subject=subject).directory
-            subj_files = [fpath for fpath in subj_path.rglob('*')
+                                 subject=subject)
+            subj_files = [fpath for fpath in subj_path.directory.rglob('*')
                           if fpath.is_file()]
-            if len(subj_files) == 0:
-                # update the participants tsv
-                participants_tsv_fpath = op.join(
-                    self.root, 'participants.tsv')
-                participants_tsv = _from_tsv(participants_tsv_fpath)
+            if set(subj_files) <= files_to_delete:
+                subjects_paths_to_delete.append(subj_path)
+                participants_tsv_fpath = self.root / 'participants.tsv'
 
-                # delete the subject data directory
-                sh.rmtree(subj_path)
+        # Execution:
+        pretty_delete_paths = '\n'.join(
+            map(str, paths_to_delete + list(map(lambda p: p.directory, subjects_paths_to_delete))))
+        pretty_update_paths = '\n'.join(map(str, list(paths_to_update.keys()) + (
+            [participants_tsv_fpath] if participants_tsv_fpath is not None else [])
+                                            ))
+        summary = (
+            f'Delete:\n'
+            f'{pretty_delete_paths}\n'
+            f'Update:\n'
+            f'{pretty_update_paths}\n'
+        )
+        if safe_remove:
+            choice = input(f'Please, confirm you want execute the following operations:\n{summary}\nI confirm [y/N]:')
+            if choice.lower() != 'y':
+                return
+        else:
+            logger.info(f'Executing the following operations:\n{summary}')
+        for bids_path in paths_to_delete:
+            bids_path.fpath.unlink()
 
-                # resave the participants.tsv file
-                participants_tsv = _drop(participants_tsv, self.subject,
-                                         'participant_id')
-                _to_tsv(participants_tsv, participants_tsv_fpath)
+        for scans_fpath, bids_paths in paths_to_update.items():
+            if not scans_fpath.exists():
+                continue
+            # get the relative datatype of these bids files
+            bids_fnames = list(map(lambda p: op.join(p.datatype, p.fpath.name), bids_paths))
+            scans_tsv = _from_tsv(scans_fpath)
+            scans_tsv = _drop(scans_tsv, bids_fnames, 'filename')
+            _to_tsv(scans_tsv, scans_fpath)
 
+        subjects_to_delete = []
+        for subj_path in subjects_paths_to_delete:
+            if subj_path.directory.exists():
+                # subj_path.directory.rmdir()
+                sh.rmtree(subj_path.directory)
+            subjects_to_delete.append(subj_path.subject)
+        if subjects_to_delete and participants_tsv_fpath.exists():
+            participants_tsv = _from_tsv(participants_tsv_fpath)
+            participants_tsv = _drop(participants_tsv, subjects_to_delete,
+                                     'participant_id')
+            _to_tsv(participants_tsv, participants_tsv_fpath)
+
+        return self
 
     @property
     def fpath(self):
@@ -725,7 +760,7 @@ class BIDSPath(object):
             # not None, then BIDSPath will infer the dataset
             # else, return the relative path with the basename
             if (
-                self.suffix is None or self.extension is None
+                    self.suffix is None or self.extension is None
             ) and self.root is not None:
                 # get matching BIDSPaths inside the bids root
                 matching_paths = _get_matching_bidspaths_from_filesystem(self)
@@ -745,7 +780,7 @@ class BIDSPath(object):
                     ]
 
                 if self.split is None and (
-                    not matching_paths or "_split-" in matching_paths[0]
+                        not matching_paths or "_split-" in matching_paths[0]
                 ):
                     # try finding FIF split files (only first one)
                     this_self = self.copy().update(split="01")
@@ -968,7 +1003,7 @@ class BIDSPath(object):
 
         # perform error check on scans
         if (
-            self.suffix == "scans" and self.extension == ".tsv"
+                self.suffix == "scans" and self.extension == ".tsv"
         ) and _check_non_sub_ses_entity(self):
             raise ValueError(
                 "scans.tsv file name can only contain "
@@ -1255,13 +1290,13 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
 def _check_non_sub_ses_entity(bids_path):
     """Check existence of non subject/session entities in BIDSPath."""
     if (
-        bids_path.task
-        or bids_path.acquisition
-        or bids_path.run
-        or bids_path.space
-        or bids_path.recording
-        or bids_path.split
-        or bids_path.processing
+            bids_path.task
+            or bids_path.acquisition
+            or bids_path.run
+            or bids_path.space
+            or bids_path.recording
+            or bids_path.split
+            or bids_path.processing
     ):
         return True
     return False
@@ -1322,7 +1357,7 @@ def _truncate_tsv_line(line, lim=10):
 
 
 def search_folder_for_text(
-    entry, folder, extensions=(".json", ".tsv"), line_numbers=True, return_str=False
+        entry, folder, extensions=(".json", ".tsv"), line_numbers=True, return_str=False
 ):
     """Find any particular string entry in the text files of a folder.
 
@@ -1724,9 +1759,9 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
         msg = (
-            f"Expected to find a single {search_suffix} file "
-            f"associated with {bids_path.basename}, "
-            f"but found {len(candidate_list)}:\n\n" + "\n".join(candidate_list)
+                f"Expected to find a single {search_suffix} file "
+                f"associated with {bids_path.basename}, "
+                f"but found {len(candidate_list)}:\n\n" + "\n".join(candidate_list)
         )
     msg += f'\n\nThe search_str was "{search_str_complete}"'
     if on_error == "raise":
@@ -1783,23 +1818,23 @@ def get_datatypes(root, verbose=None):
 
 @verbose
 def get_entity_vals(
-    root,
-    entity_key,
-    *,
-    ignore_subjects="emptyroom",
-    ignore_sessions=None,
-    ignore_tasks=None,
-    ignore_runs=None,
-    ignore_processings=None,
-    ignore_spaces=None,
-    ignore_acquisitions=None,
-    ignore_splits=None,
-    ignore_descriptions=None,
-    ignore_modalities=None,
-    ignore_datatypes=None,
-    ignore_dirs=("derivatives", "sourcedata"),
-    with_key=False,
-    verbose=None,
+        root,
+        entity_key,
+        *,
+        ignore_subjects="emptyroom",
+        ignore_sessions=None,
+        ignore_tasks=None,
+        ignore_runs=None,
+        ignore_processings=None,
+        ignore_spaces=None,
+        ignore_acquisitions=None,
+        ignore_splits=None,
+        ignore_descriptions=None,
+        ignore_modalities=None,
+        ignore_datatypes=None,
+        ignore_dirs=("derivatives", "sourcedata"),
+        with_key=False,
+        verbose=None,
 ):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
@@ -1954,18 +1989,18 @@ def get_entity_vals(
         # Skip ignored directories
         # XXX In Python 3.9, we can use Path.is_relative_to() here
         if any(
-            [str(filename).startswith(str(ignore_dir)) for ignore_dir in ignore_dirs]
+                [str(filename).startswith(str(ignore_dir)) for ignore_dir in ignore_dirs]
         ):
             continue
 
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any(
-            [filename.stem.startswith(f"sub-{s}_") for s in ignore_subjects]
+                [filename.stem.startswith(f"sub-{s}_") for s in ignore_subjects]
         ):
             continue
         if ignore_sessions and any(
-            [f"_ses-{s}_" in filename.stem for s in ignore_sessions]
+                [f"_ses-{s}_" in filename.stem for s in ignore_sessions]
         ):
             continue
         if ignore_tasks and any([f"_task-{t}_" in filename.stem for t in ignore_tasks]):
@@ -1973,27 +2008,27 @@ def get_entity_vals(
         if ignore_runs and any([f"_run-{r}_" in filename.stem for r in ignore_runs]):
             continue
         if ignore_processings and any(
-            [f"_proc-{p}_" in filename.stem for p in ignore_processings]
+                [f"_proc-{p}_" in filename.stem for p in ignore_processings]
         ):
             continue
         if ignore_spaces and any(
-            [f"_space-{s}_" in filename.stem for s in ignore_spaces]
+                [f"_space-{s}_" in filename.stem for s in ignore_spaces]
         ):
             continue
         if ignore_acquisitions and any(
-            [f"_acq-{a}_" in filename.stem for a in ignore_acquisitions]
+                [f"_acq-{a}_" in filename.stem for a in ignore_acquisitions]
         ):
             continue
         if ignore_splits and any(
-            [f"_split-{s}_" in filename.stem for s in ignore_splits]
+                [f"_split-{s}_" in filename.stem for s in ignore_splits]
         ):
             continue
         if ignore_descriptions and any(
-            [f"_desc-{d}_" in filename.stem for d in ignore_descriptions]
+                [f"_desc-{d}_" in filename.stem for d in ignore_descriptions]
         ):
             continue
         if ignore_modalities and any(
-            [f"_{k}" in filename.stem for k in ignore_modalities]
+                [f"_{k}" in filename.stem for k in ignore_modalities]
         ):
             continue
 
@@ -2120,20 +2155,20 @@ def _path_to_str(var):
 
 
 def _filter_fnames(
-    fnames,
-    *,
-    subject=None,
-    session=None,
-    task=None,
-    acquisition=None,
-    run=None,
-    processing=None,
-    recording=None,
-    space=None,
-    split=None,
-    description=None,
-    suffix=None,
-    extension=None,
+        fnames,
+        *,
+        subject=None,
+        session=None,
+        task=None,
+        acquisition=None,
+        run=None,
+        processing=None,
+        recording=None,
+        space=None,
+        split=None,
+        description=None,
+        suffix=None,
+        extension=None,
 ):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
@@ -2182,19 +2217,19 @@ def _filter_fnames(
     ext_str = r"(" + "|".join(extension) + ")" if extension else r".([^_]+)"
 
     regexp = (
-        leading_path_str
-        + sub_str
-        + ses_str
-        + task_str
-        + acq_str
-        + run_str
-        + proc_str
-        + space_str
-        + rec_str
-        + split_str
-        + desc_str
-        + suffix_str
-        + ext_str
+            leading_path_str
+            + sub_str
+            + ses_str
+            + task_str
+            + acq_str
+            + run_str
+            + proc_str
+            + space_str
+            + rec_str
+            + split_str
+            + desc_str
+            + suffix_str
+            + ext_str
     )
 
     # Convert to str so we can apply the regexp ...
@@ -2209,21 +2244,21 @@ def _filter_fnames(
 
 
 def find_matching_paths(
-    root,
-    subjects=None,
-    sessions=None,
-    tasks=None,
-    acquisitions=None,
-    runs=None,
-    processings=None,
-    recordings=None,
-    spaces=None,
-    splits=None,
-    descriptions=None,
-    suffixes=None,
-    extensions=None,
-    datatypes=None,
-    check=False,
+        root,
+        subjects=None,
+        sessions=None,
+        tasks=None,
+        acquisitions=None,
+        runs=None,
+        processings=None,
+        recordings=None,
+        spaces=None,
+        splits=None,
+        descriptions=None,
+        suffixes=None,
+        extensions=None,
+        datatypes=None,
+        check=False,
 ):
     """Get list of all matching paths for all matching entity values.
 
