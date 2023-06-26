@@ -171,10 +171,10 @@ def test_search_folder_for_text(capsys):
     captured = capsys.readouterr()
     assert "sub-01_ses-eeg_task-rest_eeg.json" in captured.out
     assert (
-               "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-               "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"
-               # noqa: E501
-           ) in captured.out
+        "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+        "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"
+        # noqa: E501
+    ) in captured.out
     # test if pathlib.Path object
     search_folder_for_text("n/a", Path(test_dir))
 
@@ -182,9 +182,9 @@ def test_search_folder_for_text(capsys):
     out = search_folder_for_text("n/a", test_dir, line_numbers=False, return_str=True)
     assert "sub-01_ses-eeg_task-rest_eeg.json" in out
     assert (
-               "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-               "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
-           ) in out
+        "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+        "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
+    ) in out
 
 
 def test_print_dir_tree(capsys):
@@ -260,7 +260,7 @@ def test_make_folders(tmp_path):
 
 
 def test_rm(return_bids_test_dir, capsys):
-    """ Test the BIDSPath.rm method to remove files """
+    """Test the BIDSPath.rm method to remove files"""
     # for some reason, mne's logger can't be captured by caplog....
     bids_root = return_bids_test_dir
 
@@ -269,7 +269,7 @@ def test_rm(return_bids_test_dir, capsys):
     bids_path = BIDSPath(
         subject=subject_id,
         session=session_id,
-        run='01',
+        run="01",
         acquisition=acq,
         task=task,
         root=bids_root,
@@ -277,14 +277,18 @@ def test_rm(return_bids_test_dir, capsys):
 
     # Delete one run:
     deleted_paths = bids_path.match(ignore_json=False)
-    updated_paths = [bids_path.copy().update(datatype=None).find_matching_sidecar(
-        suffix='scans',
-        extension='.tsv',
-        on_error='raise',
-    )]
+    updated_paths = [
+        bids_path.copy()
+        .update(datatype=None)
+        .find_matching_sidecar(
+            suffix="scans",
+            extension=".tsv",
+            on_error="raise",
+        )
+    ]
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += map(str, deleted_paths + updated_paths)
-    bids_path.rm(safe_remove=False, verbose='INFO')
+    bids_path.rm(safe_remove=False, verbose="INFO")
     captured = capsys.readouterr().out
     assert set(captured.splitlines()) == set(expected)
 
@@ -295,25 +299,29 @@ def test_rm(return_bids_test_dir, capsys):
         root=bids_root,
     )
     deleted_paths = bids_path.match(ignore_json=False)
-    deleted_paths += [BIDSPath(
-        root=bids_path.root,
-        subject=bids_path.subject,
-    ).directory]
+    deleted_paths += [
+        BIDSPath(
+            root=bids_path.root,
+            subject=bids_path.subject,
+        ).directory
+    ]
     updated_paths = [
-        bids_path.copy().update(datatype=None).find_matching_sidecar(
-            suffix='scans',
-            extension='.tsv',
-            on_error='raise',
+        bids_path.copy()
+        .update(datatype=None)
+        .find_matching_sidecar(
+            suffix="scans",
+            extension=".tsv",
+            on_error="raise",
         ),
-        bids_path.root / 'participants.tsv',
+        bids_path.root / "participants.tsv",
     ]
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
     expected += map(str, deleted_paths + updated_paths)
-    bids_path.rm(safe_remove=False, verbose='INFO')
+    bids_path.rm(safe_remove=False, verbose="INFO")
     captured2 = capsys.readouterr().out
     assert set(captured2.splitlines()) == set(expected)
-    print('\n'.join(captured))
-    print('\n'.join(captured2))
+    print("\n".join(captured))
+    print("\n".join(captured2))
 
 
 def test_parse_ext():
@@ -367,8 +375,8 @@ def test_get_bids_path_from_fname(fname):
         "sub-01_ses-02_task-test_run-3_split-01_desc-filtered.fif",
         "sub-01_ses-02_task-test_run-3_split-01_desc-filtered",
         (
-                "/bids_root/sub-01/ses-02/meg/"
-                + "sub-01_ses-02_task-test_run-3_split-01_desc-filtered_meg.fif"
+            "/bids_root/sub-01/ses-02/meg/"
+            + "sub-01_ses-02_task-test_run-3_split-01_desc-filtered_meg.fif"
         ),
     ],
 )
@@ -400,8 +408,8 @@ def test_get_entities_from_fname(fname):
     [
         "sub-01_ses-02_task-test_run-3_split-01_meg.fif",
         (
-                "/bids_root/sub-01/ses-02/meg/"
-                "sub-01_ses-02_task-test_run-3_split-01_meg.fif"
+            "/bids_root/sub-01/ses-02/meg/"
+            "sub-01_ses-02_task-test_run-3_split-01_meg.fif"
         ),
         "sub-01_ses-02_task-test_run-3_split-01_foo-tfr_meg.fif",
     ],
@@ -520,7 +528,7 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     bids_path.mkdir()
 
     for suffix, extension in zip(
-            ["eeg", "eeg", "events", "events"], [".fif", ".json", ".tsv", ".json"]
+        ["eeg", "eeg", "events", "events"], [".fif", ".json", ".tsv", ".json"]
     ):
         bids_path.suffix = suffix
         bids_path.extension = extension
@@ -797,19 +805,19 @@ def test_bids_path(return_bids_test_dir):
     bids_path = BIDSPath(subject="01", task="noise", datatype="eeg")
 
     for entity in (
-            "subject",
-            "session",
-            "task",
-            "run",
-            "acquisition",
-            "processing",
-            "recording",
-            "space",
-            "suffix",
-            "extension",
-            "datatype",
-            "root",
-            "split",
+        "subject",
+        "session",
+        "task",
+        "run",
+        "acquisition",
+        "processing",
+        "recording",
+        "space",
+        "suffix",
+        "extension",
+        "datatype",
+        "root",
+        "split",
     ):
         if entity == "run":
             new_val = "01"
@@ -850,18 +858,18 @@ def test_make_filenames():
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
-            BIDSPath(**prefix_data)
-            == (Path("sub-one") / "ses-two" / "ieeg" / expected_str).as_posix()
+        BIDSPath(**prefix_data)
+        == (Path("sub-one") / "ses-two" / "ieeg" / expected_str).as_posix()
     )
 
     # subsets of keys works
     assert (
-            BIDSPath(subject="one", task="three", run=4).basename
-            == "sub-one_task-three_run-04"
+        BIDSPath(subject="one", task="three", run=4).basename
+        == "sub-one_task-three_run-04"
     )
     assert (
-            BIDSPath(subject="one", task="three", suffix="meg", extension=".json").basename
-            == "sub-one_task-three_meg.json"
+        BIDSPath(subject="one", task="three", suffix="meg", extension=".json").basename
+        == "sub-one_task-three_meg.json"
     )
 
     with pytest.raises(ValueError):
@@ -884,8 +892,8 @@ def test_make_filenames():
         BIDSPath(**prefix_data)
     basename = BIDSPath(**prefix_data, check=False)
     assert (
-            basename.basename
-            == "sub-one_ses-two_task-three_acq-four_run-01_proc-six_rec-seven_ieeg.h5"
+        basename.basename
+        == "sub-one_ses-two_task-three_acq-four_run-01_proc-six_rec-seven_ieeg.h5"
     )  # noqa
 
     # what happens with scans.tsv file
@@ -1178,8 +1186,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     anonymize_info(raw.info)
     write_raw_bids(raw, bids_path, overwrite=True, format="FIF")
     with pytest.raises(
-            ValueError,
-            match="The provided recording does not " "have a measurement date set",
+        ValueError,
+        match="The provided recording does not " "have a measurement date set",
     ):
         bids_path.find_empty_room()
 
@@ -1420,16 +1428,16 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
         check=False,
     )
     assert (
-            bids_path.fpath.as_posix()
-            == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
+        bids_path.fpath.as_posix()
+        == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
     )
 
     # setting it via update should work
     bids_path = BIDSPath(root=return_bids_test_dir, extension=".json", check=True)
     bids_path.update(suffix="dataset_description", check=False)
     assert (
-            bids_path.fpath.as_posix()
-            == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
+        bids_path.fpath.as_posix()
+        == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
     )
 
 
