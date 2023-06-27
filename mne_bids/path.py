@@ -631,9 +631,9 @@ class BIDSPath(object):
     def rm(self, *, safe_remove=True, verbose=None):
         """Safely delete a set of files inside BIDS dataset.
 
-        Deleting a scan that conforms to the bids-validator, will
-        delete both the row in the ``*scans.tsv`` file, and also
-        the corresponding sidecar files and the data file itself.
+        Deleting a scan that conforms to the bids-validator will
+        remove the respective row in ``*_scans.tsv``,  the
+        corresponding sidecar files, and the data file itself.
 
         Deleting all files of a subject will update the
         ``*participants.tsv`` file.
