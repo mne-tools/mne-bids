@@ -172,8 +172,7 @@ def test_search_folder_for_text(capsys):
     assert "sub-01_ses-eeg_task-rest_eeg.json" in captured.out
     assert (
         "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-        "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"
-        # noqa: E501
+        "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
     ) in captured.out
     # test if pathlib.Path object
     search_folder_for_text("n/a", Path(test_dir))
