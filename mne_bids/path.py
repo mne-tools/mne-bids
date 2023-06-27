@@ -744,7 +744,6 @@ class BIDSPath(object):
         subjects_to_delete = []
         for subj_path in subjects_paths_to_delete:
             if subj_path.directory.exists():
-                # subj_path.directory.rmdir()
                 sh.rmtree(subj_path.directory)
             subjects_to_delete.append(subj_path.subject)
         if subjects_to_delete and participants_tsv_fpath.exists():
