@@ -660,7 +660,7 @@ class BIDSPath(object):
         # Planning:
         paths_matched = self.match(ignore_json=False, check=self.check)
         subjects = set()
-        paths_to_delete = []
+        paths_to_delete = list()
         paths_to_update = {}
         subjects_paths_to_delete = []
         participants_tsv_fpath = None
