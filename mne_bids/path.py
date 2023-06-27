@@ -636,7 +636,7 @@ class BIDSPath(object):
         corresponding sidecar files, and the data file itself.
 
         Deleting all files of a subject will update the
-        ``*participants.tsv`` file.
+        ``*_participants.tsv`` file.
 
 
         Parameters
