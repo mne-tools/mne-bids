@@ -51,7 +51,7 @@ _bids_path = BIDSPath(
 )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def return_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp("mnebids_utils_test_bids_ds"))
