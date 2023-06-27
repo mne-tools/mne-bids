@@ -629,7 +629,7 @@ class BIDSPath(object):
 
     @verbose
     def rm(self, *, safe_remove=True, verbose=None):
-        """Safely delete a set of files inside BIDS dataset.
+        """Safely delete a set of files from a BIDS dataset.
 
         Deleting a scan that conforms to the bids-validator will
         remove the respective row in ``*_scans.tsv``,  the
