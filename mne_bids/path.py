@@ -682,7 +682,7 @@ class BIDSPath(object):
                 paths_to_update.setdefault(scans_fpath, []).append(bids_path)
             subjects.add(bids_path.subject)
 
-        files_to_delete = set(map(lambda p: p.fpath, paths_to_delete))
+        files_to_delete = set(p.fpath for p in paths_to_delete)
         for subject in subjects:
             # check existence of files in the subject dir
             subj_path = BIDSPath(root=self.root, subject=subject)
@@ -695,29 +695,29 @@ class BIDSPath(object):
 
         # Execution:
         pretty_delete_paths = "\n".join(
-            map(
-                str,
-                paths_to_delete
-                + list(map(lambda p: p.directory, subjects_paths_to_delete)),
-            )
+            [
+                str(p)
+                for p in paths_to_delete
+                + [p.directory for p in subjects_paths_to_delete]
+            ]
         )
         pretty_update_paths = "\n".join(
-            map(
-                str,
-                list(paths_to_update.keys())
+            [
+                str(p)
+                for p in list(paths_to_update.keys())
                 + (
                     [participants_tsv_fpath]
                     if participants_tsv_fpath is not None
                     else []
-                ),
-            )
+                )
+            ]
         )
-        summary = (
-            f"Delete:\n"
-            f"{pretty_delete_paths}\n"
-            f"Update:\n"
-            f"{pretty_update_paths}\n"
-        )
+        summary = ""
+        if pretty_delete_paths:
+            summary += f"Delete:\n{pretty_delete_paths}\n"
+        if pretty_update_paths:
+            summary += f"Update:\n{pretty_update_paths}\n"
+
         if safe_remove:
             choice = input(
                 "Please, confirm you want execute the following operations:\n"
@@ -734,9 +734,8 @@ class BIDSPath(object):
             if not scans_fpath.exists():
                 continue
             # get the relative datatype of these bids files
-            bids_fnames = list(
-                map(lambda p: op.join(p.datatype, p.fpath.name), bids_paths)
-            )
+            bids_fnames = [op.join(p.datatype, p.fpath.name) for p in bids_paths]
+
             scans_tsv = _from_tsv(scans_fpath)
             scans_tsv = _drop(scans_tsv, bids_fnames, "filename")
             _to_tsv(scans_tsv, scans_fpath)

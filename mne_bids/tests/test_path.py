@@ -287,7 +287,7 @@ def test_rm(return_bids_test_dir, capsys):
         )
     ]
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
-    expected += map(str, deleted_paths + updated_paths)
+    expected += [str(p) for p in deleted_paths + updated_paths]
     bids_path.rm(safe_remove=False, verbose="INFO")
     captured = capsys.readouterr().out
     assert set(captured.splitlines()) == set(expected)
@@ -316,7 +316,7 @@ def test_rm(return_bids_test_dir, capsys):
         bids_path.root / "participants.tsv",
     ]
     expected = ["Executing the following operations:", "Delete:", "Update:", ""]
-    expected += map(str, deleted_paths + updated_paths)
+    expected += [str(p) for p in deleted_paths + updated_paths]
     bids_path.rm(safe_remove=False, verbose="INFO")
     captured2 = capsys.readouterr().out
     assert set(captured2.splitlines()) == set(expected)
