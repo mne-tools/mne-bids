@@ -628,7 +628,7 @@ class BIDSPath(object):
         return self
 
     @verbose
-    def rm(self, safe_remove=True, verbose=None):
+    def rm(self, *, safe_remove=True, verbose=None):
         """Safely delete a set of files inside BIDS dataset.
 
         Deleting a scan that conforms to the bids-validator, will
