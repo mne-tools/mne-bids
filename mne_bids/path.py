@@ -684,7 +684,7 @@ class BIDSPath(object):
 
         files_to_delete = set(map(lambda p: p.fpath, paths_to_delete))
         for subject in subjects:
-            # check existence of files in the sub dir
+            # check existence of files in the subject dir
             subj_path = BIDSPath(root=self.root, subject=subject)
             subj_files = [
                 fpath for fpath in subj_path.directory.rglob("*") if fpath.is_file()
