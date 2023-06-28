@@ -657,7 +657,8 @@ class BIDSPath(object):
         --------
         Remove one specific run:
 
-        >>> bids_path = BIDSPath(subject='01', session='01', run="01", root='/bids_dataset').rm()
+        >>> bids_path = BIDSPath(subject='01', session='01', run="01",
+        ...                      root='/bids_dataset').rm()
         Please, confirm you want to execute the following operations:
         Delete:
         /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_channels.tsv
