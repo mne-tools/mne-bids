@@ -652,6 +652,41 @@ class BIDSPath(object):
         -------
         self : BIDSPath
             The BIDSPath object.
+
+        Examples
+        --------
+        Remove one specific run:
+
+        >>> bids_path = BIDSPath(subject='01', session='01', run="01", root='/bids_dataset').rm()
+        Please, confirm you want to execute the following operations:
+        Delete:
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_channels.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.json
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.fif
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.json
+        Update:
+        /bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv
+        I confirm [y/N]>? y
+
+        Remove all the files of a specific subject:
+
+        >>> bids_path = BIDSPath(subject='01', root='/bids_dataset', check=False).rm()
+        Please, confirm you want to execute the following operations:
+        Delete:
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-calibration_meg.dat
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-crosstalk_meg.fif
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_channels.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.json
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.fif
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.json
+        /bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv
+        /bids_dataset/sub-01
+        Update:
+        /bids_dataset/participants.tsv
+        I confirm [y/N]>? y
         """
         # only proceed if root is defined
         if self.root is None:
@@ -720,8 +755,8 @@ class BIDSPath(object):
 
         if safe_remove:
             choice = input(
-                "Please, confirm you want execute the following operations:\n"
-                f"{summary}\nI confirm [y/N]:"
+                "Please, confirm you want to execute the following operations:\n"
+                f"{summary}\nI confirm [y/N]"
             )
             if choice.lower() != "y":
                 return
