@@ -718,9 +718,6 @@ class BIDSPath(object):
                 )
                 paths_to_update.setdefault(scans_fpath, []).append(bids_path)
             subjects.add(bids_path.subject)
-        paths_to_update = {
-            k: v for k, v in paths_to_update.items() if k not in paths_to_delete
-        }
 
         files_to_delete = set(p.fpath for p in paths_to_delete)
         for subject in subjects:
@@ -773,6 +770,8 @@ class BIDSPath(object):
             bids_path.fpath.unlink()
 
         for scans_fpath, bids_paths in paths_to_update.items():
+            if not scans_fpath.exists():
+                continue
             # get the relative datatype of these bids files
             bids_fnames = [op.join(p.datatype, p.fpath.name) for p in bids_paths]
 
