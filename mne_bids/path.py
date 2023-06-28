@@ -657,8 +657,8 @@ class BIDSPath(object):
         --------
         Remove one specific run:
 
-        >>> bids_path = BIDSPath(subject='01', session='01', run="01",
-        ...                      root='/bids_dataset').rm()
+        >>> bids_path = BIDSPath(subject='01', session='01', run="01",  # doctest: +SKIP
+        ...                      root='/bids_dataset').rm()  # doctest: +SKIP
         Please, confirm you want to execute the following operations:
         Delete:
         /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_channels.tsv
@@ -672,7 +672,8 @@ class BIDSPath(object):
 
         Remove all the files of a specific subject:
 
-        >>> bids_path = BIDSPath(subject='01', root='/bids_dataset', check=False).rm()
+        >>> bids_path = BIDSPath(subject='01', root='/bids_dataset',  # doctest: +SKIP
+        ...                      check=False).rm()  # doctest: +SKIP
         Please, confirm you want to execute the following operations:
         Delete:
         /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-calibration_meg.dat
