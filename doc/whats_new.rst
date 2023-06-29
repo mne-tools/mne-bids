@@ -33,6 +33,7 @@ The following authors had contributed before. Thank you for sticking around! ðŸ¤
 * `Richard HÃ¶chenberger`_
 * `Eric Larson`_
 * `Stefan Appelhoff`_
+* `Adam Li`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
