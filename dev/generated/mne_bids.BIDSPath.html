@@ -700,7 +700,10 @@ different properties look like for our object:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.mkdir" title="mne_bids.BIDSPath.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mkdir</span></code></a>([exist_ok])</p></td>
 <td><p>Create the directory structure of the BIDS path.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.rm" title="mne_bids.BIDSPath.rm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rm</span></code></a>(*[, safe_remove, verbose])</p></td>
+<td><p>Safely delete a set of files from a BIDS dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
 <td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
@@ -970,6 +973,75 @@ Otherwise, do nothing (default).</p>
 <dd><p>The recording name.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_bids.BIDSPath.rm">
+<span class="sig-name descname"><span class="pre">rm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safe_remove</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.rm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.rm" title="Permalink to this definition">#</a></dt>
+<dd><p>Safely delete a set of files from a BIDS dataset.</p>
+<p>Deleting a scan that conforms to the bids-validator will
+remove the respective row in <code class="docutils literal notranslate"><span class="pre">*_scans.tsv</span></code>,  the
+corresponding sidecar files, and the data file itself.</p>
+<p>Deleting all files of a subject will update the
+<code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code> file.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>safe_remove</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, directly delete and update the files.
+Otherwise, displays the list of operations planned
+and asks for user confirmation before
+executing them (default).</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.11)"><span class="xref std std-ref">logging documentation</span></a> and
+<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.5)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+argument.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>self</strong><span class="classifier"><a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The BIDSPath object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Remove one specific run:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s2">&quot;01&quot;</span><span class="p">,</span>  
+<span class="gp">... </span>                     <span class="n">root</span><span class="o">=</span><span class="s1">&#39;/bids_dataset&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rm</span><span class="p">()</span>  
+<span class="go">Please, confirm you want to execute the following operations:</span>
+<span class="go">Delete:</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_channels.tsv</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.json</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.tsv</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.fif</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.json</span>
+<span class="go">Update:</span>
+<span class="go">/bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv</span>
+<span class="go">I confirm [y/N]&gt;? y</span>
+</pre></div>
+</div>
+<p>Remove all the files of a specific subject:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;/bids_dataset&#39;</span><span class="p">,</span>  
+<span class="gp">... </span>                     <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">rm</span><span class="p">()</span>  
+<span class="go">Please, confirm you want to execute the following operations:</span>
+<span class="go">Delete:</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-calibration_meg.dat</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-crosstalk_meg.fif</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_channels.tsv</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.json</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.tsv</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.fif</span>
+<span class="go">/bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.json</span>
+<span class="go">/bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv</span>
+<span class="go">/bids_dataset/sub-01</span>
+<span class="go">Update:</span>
+<span class="go">/bids_dataset/participants.tsv</span>
+<span class="go">I confirm [y/N]&gt;? y</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.root">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#mne_bids.BIDSPath.root" title="Permalink to this definition">#</a></dt>
@@ -1196,6 +1268,7 @@ or updates for ‘root’ or ‘datatype’.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.mkdir"><code class="docutils literal notranslate"><span class="pre">BIDSPath.mkdir()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.processing"><code class="docutils literal notranslate"><span class="pre">BIDSPath.processing</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.recording"><code class="docutils literal notranslate"><span class="pre">BIDSPath.recording</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.rm"><code class="docutils literal notranslate"><span class="pre">BIDSPath.rm()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.root"><code class="docutils literal notranslate"><span class="pre">BIDSPath.root</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.run"><code class="docutils literal notranslate"><span class="pre">BIDSPath.run</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.BIDSPath.session"><code class="docutils literal notranslate"><span class="pre">BIDSPath.session</span></code></a></li>
@@ -1235,7 +1308,7 @@ or updates for ‘root’ or ‘datatype’.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-06-21.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-06-30.
       <br/>
     
   </p>

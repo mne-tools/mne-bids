@@ -517,6 +517,7 @@ document.write(`
     <span class="n">_ensure_tuple</span><span class="p">,</span>
     <span class="n">warn</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_to_tsv</span>
 
 
 <span class="k">def</span> <span class="nf">_find_empty_room_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
@@ -1104,6 +1105,172 @@ document.write(`
 <span class="sd">            The BIDSPath object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="n">exist_ok</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="BIDSPath.rm"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.rm">[docs]</a>    <span class="nd">@verbose</span>
+    <span class="k">def</span> <span class="nf">rm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">safe_remove</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Safely delete a set of files from a BIDS dataset.</span>
+
+<span class="sd">        Deleting a scan that conforms to the bids-validator will</span>
+<span class="sd">        remove the respective row in ``*_scans.tsv``,  the</span>
+<span class="sd">        corresponding sidecar files, and the data file itself.</span>
+
+<span class="sd">        Deleting all files of a subject will update the</span>
+<span class="sd">        ``*_participants.tsv`` file.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        safe_remove : bool</span>
+<span class="sd">            If ``False``, directly delete and update the files.</span>
+<span class="sd">            Otherwise, displays the list of operations planned</span>
+<span class="sd">            and asks for user confirmation before</span>
+<span class="sd">            executing them (default).</span>
+<span class="sd">        %(verbose)s</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : BIDSPath</span>
+<span class="sd">            The BIDSPath object.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Remove one specific run:</span>
+
+<span class="sd">        &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;01&#39;, run=&quot;01&quot;,  # doctest: +SKIP</span>
+<span class="sd">        ...                      root=&#39;/bids_dataset&#39;).rm()  # doctest: +SKIP</span>
+<span class="sd">        Please, confirm you want to execute the following operations:</span>
+<span class="sd">        Delete:</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_channels.tsv</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.json</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.tsv</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.fif</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.json</span>
+<span class="sd">        Update:</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv</span>
+<span class="sd">        I confirm [y/N]&gt;? y</span>
+
+<span class="sd">        Remove all the files of a specific subject:</span>
+
+<span class="sd">        &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, root=&#39;/bids_dataset&#39;,  # doctest: +SKIP</span>
+<span class="sd">        ...                      check=False).rm()  # doctest: +SKIP</span>
+<span class="sd">        Please, confirm you want to execute the following operations:</span>
+<span class="sd">        Delete:</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-calibration_meg.dat</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-crosstalk_meg.fif</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_channels.tsv</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.json</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.tsv</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.fif</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.json</span>
+<span class="sd">        /bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv</span>
+<span class="sd">        /bids_dataset/sub-01</span>
+<span class="sd">        Update:</span>
+<span class="sd">        /bids_dataset/participants.tsv</span>
+<span class="sd">        I confirm [y/N]&gt;? y</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># only proceed if root is defined</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The root must not be None to remove files.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Planning:</span>
+        <span class="n">paths_matched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ignore_json</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">)</span>
+        <span class="n">subjects</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">paths_to_delete</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">paths_to_update</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">subjects_paths_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">bids_path</span> <span class="ow">in</span> <span class="n">paths_matched</span><span class="p">:</span>
+            <span class="n">paths_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="c1"># if a datatype is present, then check</span>
+            <span class="c1"># if a scan is deleted or not</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># read in the corresponding scans file</span>
+                <span class="n">scans_fpath</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">find_matching_sidecar</span><span class="p">(</span>
+                        <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;scans&quot;</span><span class="p">,</span>
+                        <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span>
+                        <span class="n">on_error</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">paths_to_update</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">scans_fpath</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">subjects</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+
+        <span class="n">files_to_delete</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">fpath</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths_to_delete</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">subjects</span><span class="p">:</span>
+            <span class="c1"># check existence of files in the subject dir</span>
+            <span class="n">subj_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">)</span>
+            <span class="n">subj_files</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">fpath</span> <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="n">subj_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">fpath</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">subj_files</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">files_to_delete</span><span class="p">:</span>
+                <span class="n">subjects_paths_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subj_path</span><span class="p">)</span>
+                <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;participants.tsv&quot;</span>
+
+        <span class="c1"># Informing:</span>
+        <span class="n">pretty_delete_paths</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths_to_delete</span>
+                <span class="o">+</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">directory</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">subjects_paths_to_delete</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">pretty_update_paths</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">paths_to_update</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="o">+</span> <span class="p">(</span>
+                    <span class="p">[</span><span class="n">participants_tsv_fpath</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">participants_tsv_fpath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="p">[]</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">pretty_delete_paths</span><span class="p">:</span>
+            <span class="n">summary</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Delete:</span><span class="se">\n</span><span class="si">{</span><span class="n">pretty_delete_paths</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">pretty_update_paths</span><span class="p">:</span>
+            <span class="n">summary</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Update:</span><span class="se">\n</span><span class="si">{</span><span class="n">pretty_update_paths</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="n">safe_remove</span><span class="p">:</span>
+            <span class="n">choice</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+                <span class="s2">&quot;Please, confirm you want to execute the following operations:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="se">\n</span><span class="s2">I confirm [y/N]&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">choice</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Executing the following operations:</span><span class="se">\n</span><span class="si">{</span><span class="n">summary</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Execution:</span>
+        <span class="k">for</span> <span class="n">bids_path</span> <span class="ow">in</span> <span class="n">paths_to_delete</span><span class="p">:</span>
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">scans_fpath</span><span class="p">,</span> <span class="n">bids_paths</span> <span class="ow">in</span> <span class="n">paths_to_update</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">scans_fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">continue</span>
+            <span class="c1"># get the relative datatype of these bids files</span>
+            <span class="n">bids_fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bids_paths</span><span class="p">]</span>
+
+            <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scans_fpath</span><span class="p">)</span>
+            <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">scans_tsv</span><span class="p">,</span> <span class="n">bids_fnames</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">)</span>
+            <span class="n">_to_tsv</span><span class="p">(</span><span class="n">scans_tsv</span><span class="p">,</span> <span class="n">scans_fpath</span><span class="p">)</span>
+
+        <span class="n">subjects_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">subj_path</span> <span class="ow">in</span> <span class="n">subjects_paths_to_delete</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">subj_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">subj_path</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
+            <span class="n">subjects_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subj_path</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subjects_to_delete</span> <span class="ow">and</span> <span class="n">participants_tsv_fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">)</span>
+            <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span>
+                <span class="n">participants_tsv</span><span class="p">,</span> <span class="n">subjects_to_delete</span><span class="p">,</span> <span class="s2">&quot;participant_id&quot;</span>
+            <span class="p">)</span>
+            <span class="n">_to_tsv</span><span class="p">(</span><span class="n">participants_tsv</span><span class="p">,</span> <span class="n">participants_tsv_fpath</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@property</span>
@@ -2838,7 +3005,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-06-21.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-06-30.
       <br/>
     
   </p>
