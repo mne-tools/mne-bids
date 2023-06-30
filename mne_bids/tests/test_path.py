@@ -39,7 +39,6 @@ from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 
 from test_read import _read_raw_fif, warning_str
 
-
 subject_id = "01"
 session_id = "01"
 run = "01"
@@ -257,6 +256,72 @@ def test_make_folders(tmp_path):
     bids_path.mkdir().directory
     assert op.isdir(op.join(os.getcwd(), "sub-04", "ses-foo", "eeg"))
     os.chdir(curr_dir)
+
+
+def test_rm(return_bids_test_dir, capsys, tmp_path_factory):
+    """Test the BIDSPath.rm method to remove files"""
+    # for some reason, mne's logger can't be captured by caplog....
+    bids_root = str(tmp_path_factory.mktemp("test_rm") / "mnebids_utils_test_bids_ds")
+    shutil.copytree(return_bids_test_dir, bids_root)
+
+    # without providing all the entities, ambiguous when trying
+    # to use fpath
+    bids_path = BIDSPath(
+        subject=subject_id,
+        session=session_id,
+        run="01",
+        acquisition=acq,
+        task=task,
+        root=bids_root,
+    )
+
+    # Delete one run:
+    deleted_paths = bids_path.match(ignore_json=False)
+    updated_paths = [
+        bids_path.copy()
+        .update(datatype=None)
+        .find_matching_sidecar(
+            suffix="scans",
+            extension=".tsv",
+            on_error="raise",
+        )
+    ]
+    expected = ["Executing the following operations:", "Delete:", "Update:", ""]
+    expected += [str(p) for p in deleted_paths + updated_paths]
+    bids_path.rm(safe_remove=False, verbose="INFO")
+    captured = capsys.readouterr().out
+    assert set(captured.splitlines()) == set(expected)
+
+    # delete the last run of a subject:
+    bids_path = BIDSPath(
+        subject=subject_id,
+        session=session_id,
+        root=bids_root,
+    )
+    deleted_paths = bids_path.match(ignore_json=False)
+    deleted_paths += [
+        BIDSPath(
+            root=bids_path.root,
+            subject=bids_path.subject,
+        ).directory
+    ]
+    updated_paths = [
+        bids_path.copy()
+        .update(datatype=None)
+        .find_matching_sidecar(
+            suffix="scans",
+            extension=".tsv",
+            on_error="raise",
+        ),
+        bids_path.root / "participants.tsv",
+    ]
+    expected = ["Executing the following operations:", "Delete:", "Update:", ""]
+    expected += [str(p) for p in deleted_paths + updated_paths]
+    bids_path.rm(safe_remove=False, verbose="INFO")
+    captured2 = capsys.readouterr().out
+    assert set(captured2.splitlines()) == set(expected)
+    print("\n".join(captured))
+    print("\n".join(captured2))
 
 
 def test_parse_ext():

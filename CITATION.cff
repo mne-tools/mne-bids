@@ -163,6 +163,10 @@ authors:
       family-names: Vanhoecke
       orcid: 'https://orcid.org/0000-0002-9857-1519'
       affiliation: 'Movement Disorder and Neuromodulation Unit, Department of Neurology, Charité – Universitätsmedizin Berlin, Germany'
+    - given-names: Pierre
+      family-names: Guetschel
+      orcid: 'https://orcid.org/0000-0002-8933-7640'
+      affiliation: 'Donders Institute for Brain, Cognition and Behaviour, Radboud University, Nijmegen, Netherlands'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

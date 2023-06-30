@@ -26,12 +26,14 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Laetitia Fesselier`_
 * `Jonathan Vanhoecke`_
+* `Pierre Guetschel`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Richard Höchenberger`_
 * `Eric Larson`_
 * `Stefan Appelhoff`_
+* `Adam Li`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,6 +42,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - :class:`~mne_bids.BIDSPath` now supports the new ``"sessions"`` suffix, by `Jonathan Vanhoecke`_ and `Richard Höchenberger`_ (:gh:`1137`)
+- The :func:`~mne_bids.BIDSPath.rm` method will safely delete all the files compatible with that path and update the ``scans.tsv`` and ``participants.tsv`` files accordingly, by `Pierre Guetschel`_ and `Adam Li`_ (:gh:`1149`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
