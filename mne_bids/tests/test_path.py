@@ -258,8 +258,9 @@ def test_make_folders(tmp_path):
     os.chdir(curr_dir)
 
 
+@testing.requires_testing_data
 def test_rm(return_bids_test_dir, capsys, tmp_path_factory):
-    """Test the BIDSPath.rm method to remove files"""
+    """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
     bids_root = str(tmp_path_factory.mktemp("test_rm") / "mnebids_utils_test_bids_ds")
     shutil.copytree(return_bids_test_dir, bids_root)
