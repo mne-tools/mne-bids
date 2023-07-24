@@ -43,3 +43,4 @@
 .. _Laetitia Fesselier: https://github.com/laemtl
 .. _Jonathan Vanhoecke: https://github.com/JonathanVHoecke
 .. _Ford McDonald: https://github.com/fordmcdonald
+.. _Pierre Guetschel: https://github.com/PierreGtch

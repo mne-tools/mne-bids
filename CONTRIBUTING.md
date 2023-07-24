@@ -177,6 +177,22 @@ The latter command will result in a faster build but produce no plots in the exa
 More information on our documentation setup can be found in our
 [mne-bids WIKI](https://github.com/mne-tools/mne-bids/wiki).
 
+## Instructions for first-time contributors
+
+When you are making your first contribution to `mne-bids`, we kindly request you to:
+
+1. Create an account at [circleci](https://circleci.com/), because this will simplify running the automated test suite
+   of `mne-bids`.
+   Note: you can simply use your GitHub account to log in.
+1. Add yourself to the [list of authors](https://github.com/mne-tools/mne-bids/blob/main/doc/authors.rst).
+1. Add yourself to the [CITATION.cff](https://github.com/mne-tools/mne-bids/blob/main/CITATION.cff) file.
+   Note: please add yourself in the
+   ["authors" section](https://github.com/mne-tools/mne-bids/blob/fff6e90984ea0aa1e2914bb55e4197f7ec2800bf/CITATION.cff#L7C3-L7C3)
+   of that file, towards the end of the list of authors, but **before** `Alexandre Gramfort` and `Mainak Jas`.
+1. Update the [changelog](https://github.com/mne-tools/mne-bids/blob/main/doc/whats_new.rst) with your contribution.
+   Note: please follow the existing format and add your name as a list item under the heading saying:
+   `The following authors contributed for the first time. Thank you so much!`.
+
 ## Making a release
 
 Usually only core developers make a release after consensus has been reached.

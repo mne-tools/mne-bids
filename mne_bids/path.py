@@ -37,6 +37,7 @@ from mne_bids.utils import (
     _ensure_tuple,
     warn,
 )
+from mne_bids.tsv_handler import _from_tsv, _drop, _to_tsv
 
 
 def _find_empty_room_candidates(bids_path):
@@ -624,6 +625,172 @@ class BIDSPath(object):
             The BIDSPath object.
         """
         self.directory.mkdir(parents=True, exist_ok=exist_ok)
+        return self
+
+    @verbose
+    def rm(self, *, safe_remove=True, verbose=None):
+        """Safely delete a set of files from a BIDS dataset.
+
+        Deleting a scan that conforms to the bids-validator will
+        remove the respective row in ``*_scans.tsv``,  the
+        corresponding sidecar files, and the data file itself.
+
+        Deleting all files of a subject will update the
+        ``*_participants.tsv`` file.
+
+
+        Parameters
+        ----------
+        safe_remove : bool
+            If ``False``, directly delete and update the files.
+            Otherwise, displays the list of operations planned
+            and asks for user confirmation before
+            executing them (default).
+        %(verbose)s
+
+        Returns
+        -------
+        self : BIDSPath
+            The BIDSPath object.
+
+        Examples
+        --------
+        Remove one specific run:
+
+        >>> bids_path = BIDSPath(subject='01', session='01', run="01",  # doctest: +SKIP
+        ...                      root='/bids_dataset').rm()  # doctest: +SKIP
+        Please, confirm you want to execute the following operations:
+        Delete:
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_channels.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.json
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_events.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.fif
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-01_meg.json
+        Update:
+        /bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv
+        I confirm [y/N]>? y
+
+        Remove all the files of a specific subject:
+
+        >>> bids_path = BIDSPath(subject='01', root='/bids_dataset',  # doctest: +SKIP
+        ...                      check=False).rm()  # doctest: +SKIP
+        Please, confirm you want to execute the following operations:
+        Delete:
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-calibration_meg.dat
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_acq-crosstalk_meg.fif
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_channels.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.json
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_events.tsv
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.fif
+        /bids_dataset/sub-01/ses-01/meg/sub-01_ses-01_run-02_meg.json
+        /bids_dataset/sub-01/ses-01/sub-01_ses-01_scans.tsv
+        /bids_dataset/sub-01
+        Update:
+        /bids_dataset/participants.tsv
+        I confirm [y/N]>? y
+        """
+        # only proceed if root is defined
+        if self.root is None:
+            raise RuntimeError("The root must not be None to remove files.")
+
+        # Planning:
+        paths_matched = self.match(ignore_json=False, check=self.check)
+        subjects = set()
+        paths_to_delete = list()
+        paths_to_update = {}
+        subjects_paths_to_delete = []
+        participants_tsv_fpath = None
+        for bids_path in paths_matched:
+            paths_to_delete.append(bids_path)
+            # if a datatype is present, then check
+            # if a scan is deleted or not
+            if bids_path.datatype is not None:
+                # read in the corresponding scans file
+                scans_fpath = (
+                    bids_path.copy()
+                    .update(datatype=None)
+                    .find_matching_sidecar(
+                        suffix="scans",
+                        extension=".tsv",
+                        on_error="raise",
+                    )
+                )
+                paths_to_update.setdefault(scans_fpath, []).append(bids_path)
+            subjects.add(bids_path.subject)
+
+        files_to_delete = set(p.fpath for p in paths_to_delete)
+        for subject in subjects:
+            # check existence of files in the subject dir
+            subj_path = BIDSPath(root=self.root, subject=subject)
+            subj_files = [
+                fpath for fpath in subj_path.directory.rglob("*") if fpath.is_file()
+            ]
+            if set(subj_files) <= files_to_delete:
+                subjects_paths_to_delete.append(subj_path)
+                participants_tsv_fpath = self.root / "participants.tsv"
+
+        # Informing:
+        pretty_delete_paths = "\n".join(
+            [
+                str(p)
+                for p in paths_to_delete
+                + [p.directory for p in subjects_paths_to_delete]
+            ]
+        )
+        pretty_update_paths = "\n".join(
+            [
+                str(p)
+                for p in list(paths_to_update.keys())
+                + (
+                    [participants_tsv_fpath]
+                    if participants_tsv_fpath is not None
+                    else []
+                )
+            ]
+        )
+        summary = ""
+        if pretty_delete_paths:
+            summary += f"Delete:\n{pretty_delete_paths}\n"
+        if pretty_update_paths:
+            summary += f"Update:\n{pretty_update_paths}\n"
+
+        if safe_remove:
+            choice = input(
+                "Please, confirm you want to execute the following operations:\n"
+                f"{summary}\nI confirm [y/N]"
+            )
+            if choice.lower() != "y":
+                return
+        else:
+            logger.info(f"Executing the following operations:\n{summary}")
+
+        # Execution:
+        for bids_path in paths_to_delete:
+            bids_path.fpath.unlink()
+
+        for scans_fpath, bids_paths in paths_to_update.items():
+            if not scans_fpath.exists():
+                continue
+            # get the relative datatype of these bids files
+            bids_fnames = [op.join(p.datatype, p.fpath.name) for p in bids_paths]
+
+            scans_tsv = _from_tsv(scans_fpath)
+            scans_tsv = _drop(scans_tsv, bids_fnames, "filename")
+            _to_tsv(scans_tsv, scans_fpath)
+
+        subjects_to_delete = []
+        for subj_path in subjects_paths_to_delete:
+            if subj_path.directory.exists():
+                sh.rmtree(subj_path.directory)
+            subjects_to_delete.append(subj_path.subject)
+        if subjects_to_delete and participants_tsv_fpath.exists():
+            participants_tsv = _from_tsv(participants_tsv_fpath)
+            participants_tsv = _drop(
+                participants_tsv, subjects_to_delete, "participant_id"
+            )
+            _to_tsv(participants_tsv, participants_tsv_fpath)
+
         return self
 
     @property
