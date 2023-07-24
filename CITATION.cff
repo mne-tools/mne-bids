@@ -163,6 +163,10 @@ authors:
       family-names: Vanhoecke
       orcid: 'https://orcid.org/0000-0002-9857-1519'
       affiliation: 'Movement Disorder and Neuromodulation Unit, Department of Neurology, Charité – Universitätsmedizin Berlin, Germany'
+    - given-names: Ford
+      family-names: McDonald
+      affiliation: 'Behavior and NeuroData Core, Brown University, Providence, RI, USA'
+      orcid: 'https://orcid.org/0009-0004-5099-7109'
     - given-names: Pierre
       family-names: Guetschel
       orcid: 'https://orcid.org/0000-0002-8933-7640'
