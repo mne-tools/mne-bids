@@ -61,7 +61,7 @@ Detailed list of changes
 - Fix :func:`~mne_bids.copyfiles.copyfile_eeglab` to prevent data type conversion leading to an ``eeg_checkset`` failure when trying to load the file in EEGLAB, by `Laetitia Fesselier`_ (:gh:`1126`)
 - Improve compatibility with latest MNE-Python, by `Eric Larson`_ (:gh:`1128`)
 - Working with :class:`~mne_bids.BIDSPath` would sometimes inadvertently create new directories, contaminating the BIDS dataset, by `Richard Höchenberger`_ (:gh:`1139`)
-- Fix thrown error if the BIDSVersion defined in dataset_description.json file does not match the MNE compliant BIDSVersion, ensuring backwards compatibility across BIDS complient tools. by `Ford McDonald`` _ (:gh:`1147``)
+- Fix thrown error if the ``BIDSVersion`` defined in ``dataset_description.json`` file does not match the MNE-BIDS compliant ``BIDSVersion``, ensuring backwards compatibility across BIDS complient tools, by `Ford McDonald`_ (:gh:`1147`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
