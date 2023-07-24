@@ -42,3 +42,4 @@
 .. _Moritz Gerster: http://moritz-gerster.com
 .. _Laetitia Fesselier: https://github.com/laemtl
 .. _Jonathan Vanhoecke: https://github.com/JonathanVHoecke
+.. _Ford McDonald: https://github.com/fordmcdonald
