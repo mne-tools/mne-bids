@@ -21,8 +21,6 @@ from pathlib import Path
 import codecs
 import warnings
 
-from pkg_resources import parse_version
-
 import pytest
 import numpy as np
 from numpy.testing import assert_allclose, assert_array_equal, assert_array_almost_equal
@@ -858,10 +856,7 @@ def test_chpi(_bids_validate, tmp_path, format):
     meg_json = bids_path.copy().update(suffix="meg", extension=".json")
     meg_json_data = json.loads(meg_json.fpath.read_text(encoding="utf-8"))
 
-    if parse_version(mne.__version__) <= parse_version("0.23"):
-        assert "ContinuousHeadLocalization" not in meg_json_data
-        assert "HeadCoilFrequency" not in meg_json_data
-    elif format in ["fif_no_chpi", "fif"]:
+    if format in ["fif_no_chpi", "fif"]:
         if format == "fif_no_chpi":
             assert meg_json_data["ContinuousHeadLocalization"] is False
             assert meg_json_data["HeadCoilFrequency"] == []
@@ -1870,10 +1865,8 @@ def test_bdf(_bids_validate, tmp_path):
     if hasattr(raw.info, "_unlock"):
         with raw.info._unlock():
             raw.info["sfreq"] -= 10  # change raw.times, but retain shape
-    elif parse_version(mne.__version__) >= parse_version("0.23"):
-        raw.info["sfreq"] -= 10
     else:
-        raw._times = raw._times / 5
+        raw.info["sfreq"] -= 10
 
     with pytest.raises(ValueError, match="raw.times has changed"):
         write_raw_bids(raw, bids_path, overwrite=True)

@@ -19,8 +19,6 @@ import shutil
 from collections import defaultdict, OrderedDict
 import warnings
 
-from pkg_resources import parse_version
-
 import numpy as np
 from scipy import linalg
 import mne
@@ -599,7 +597,6 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
     if meas_date is None:
         acq_time = "n/a"
     elif isinstance(meas_date, datetime):
-        # for MNE >= v0.20
         acq_time = meas_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     # for fif files check whether raw file is likely to be split
@@ -892,7 +889,7 @@ def _sidecar_json(
     system, _ = _get_meg_system(raw.info)
     chpi = None
     hpi_freqs = []
-    if datatype == "meg" and parse_version(mne.__version__) > parse_version("0.23"):
+    if datatype == "meg":
         # We need to handle different data formats differently
         if system == "CTF_275":
             try:
@@ -914,12 +911,6 @@ def _sidecar_json(
             if chpi:
                 hpi_freqs, _, _ = get_chpi_info(info=raw.info, on_missing="ignore")
                 hpi_freqs = list(hpi_freqs)
-
-    elif datatype == "meg":
-        logger.info(
-            "Cannot check for & write continuous head localization "
-            "information: requires MNE-Python >= 0.24"
-        )
 
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
