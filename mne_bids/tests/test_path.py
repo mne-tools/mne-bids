@@ -1150,13 +1150,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
 
-    if not isinstance(er_raw.info["meas_date"], datetime):  # pragma: no cover
-        # mne < v0.20
-        er_date = datetime.fromtimestamp(er_raw.info["meas_date"][0])
-    else:
-        er_date = er_raw.info["meas_date"]
-
-    er_date = er_date.strftime("%Y%m%d")
+    er_date = er_raw.info["meas_date"].strftime("%Y%m%d")
     er_bids_path = BIDSPath(
         subject="emptyroom", task="noise", session=er_date, suffix="meg", root=bids_root
     )

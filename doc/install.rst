@@ -15,7 +15,6 @@ Required:
 * ``mne`` (>=1.3)
 * ``numpy`` (>=1.20.2)
 * ``scipy`` (>=1.6.3)
-* ``setuptools`` (>=46.4.0)
 
 Optional:
 

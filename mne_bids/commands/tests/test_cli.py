@@ -9,15 +9,7 @@ from functools import partial
 
 import pytest
 
-# This is here to handle mne-python <0.20
-import warnings
-
-with warnings.catch_warnings():
-    warnings.filterwarnings(
-        action="ignore", message="can't resolve package", category=ImportWarning
-    )
-    import mne
-
+import mne
 from mne.datasets import testing
 from mne.utils import ArgvSetter, requires_pandas
 from mne.utils._testing import requires_module
