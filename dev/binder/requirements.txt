@@ -7,6 +7,5 @@ numpydoc
 matplotlib
 pillow
 pandas
-setuptools
 mne-nirs
 seaborn
