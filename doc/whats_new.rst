@@ -24,17 +24,18 @@ Version 0.13 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Laetitia Fesselier`_
-* `Jonathan Vanhoecke`_
 * `Ford McDonald`_
+* `Jonathan Vanhoecke`_
+* `Laetitia Fesselier`_
 * `Pierre Guetschel`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* `Richard Höchenberger`_
-* `Eric Larson`_
-* `Stefan Appelhoff`_
 * `Adam Li`_
+* `Alexandre Gramfort`_
+* `Eric Larson`_
+* `Richard Höchenberger`_
+* `Stefan Appelhoff`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,7 +56,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- MNE-BIDS now requires MNE-Python 1.3 or newer.
+- MNE-BIDS now requires MNE-Python 1.4 or newer.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
