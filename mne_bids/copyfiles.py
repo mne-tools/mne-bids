@@ -22,7 +22,6 @@ from pathlib import Path
 
 from scipy.io import loadmat, savemat
 
-import mne
 from mne.io import read_raw_brainvision, read_raw_edf, read_raw_bdf, anonymize_info
 from mne.utils import logger, verbose
 
