@@ -22,7 +22,6 @@ from pathlib import Path
 
 from scipy.io import loadmat, savemat
 
-import mne
 from mne.io import read_raw_brainvision, read_raw_edf, read_raw_bdf, anonymize_info
 from mne.utils import logger, verbose
 
@@ -539,9 +538,6 @@ def copyfile_eeglab(src, dest):
     copyfile_kit
 
     """
-    if not mne.utils.check_version("scipy", "1.5.0"):  # pragma: no cover
-        raise ImportError("SciPy >=1.5.0 is required handling EEGLAB data.")
-
     # Get extension of the EEGLAB file
     _, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
@@ -625,4 +621,8 @@ def copyfile_bti(raw, dest):
         pdf_fname = "c,rf%0.1fHz" % raw.info["highpass"]
     sh.copyfile(raw._init_kwargs["pdf_fname"], op.join(dest, pdf_fname))
     sh.copyfile(raw._init_kwargs["config_fname"], op.join(dest, "config"))
-    sh.copyfile(raw._init_kwargs["head_shape_fname"], op.join(dest, "hs_file"))
+
+    # If no headshape file present, cannot copy it
+    hs_file = raw._init_kwargs.get("head_shape_fname")
+    if hs_file is not None:  # pragma: no cover
+        sh.copyfile(hs_file, op.join(dest, "hs_file"))
