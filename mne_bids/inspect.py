@@ -11,17 +11,8 @@ import numpy as np
 import mne
 
 from mne.utils import logger, verbose
-from mne.fixes import _compare_version
 from mne.viz import use_browser_backend
-
-if _compare_version(mne.__version__, "<", "1.0.dev0"):  # pragma: no cover
-    from mne.preprocessing import annotate_flat
-
-    _annotate_flat_func = annotate_flat
-else:
-    from mne.preprocessing import annotate_amplitude
-
-    _annotate_flat_func = annotate_amplitude
+from mne.preprocessing import annotate_amplitude
 
 from mne_bids import read_raw_bids, mark_channels
 from mne_bids.read import _from_tsv, _read_events
@@ -151,12 +142,9 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
 
     if find_flat:
         raw.load_data()  # Speeds up processing dramatically
-        if _annotate_flat_func.__name__ == "annotate_amplitude":
-            flat_annot, flat_chans = annotate_amplitude(
-                raw=raw, flat=0, min_duration=0.05, bad_percent=5
-            )
-        else:  # pragma: no cover
-            flat_annot, flat_chans = annotate_flat(raw=raw, min_duration=0.05)
+        flat_annot, flat_chans = annotate_amplitude(
+            raw=raw, flat=0, min_duration=0.05, bad_percent=5
+        )
         new_annot = raw.annotations + flat_annot
         raw.set_annotations(new_annot)
         raw.info["bads"] = list(set(raw.info["bads"] + flat_chans))

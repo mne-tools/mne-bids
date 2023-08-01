@@ -539,9 +539,6 @@ def copyfile_eeglab(src, dest):
     copyfile_kit
 
     """
-    if not mne.utils.check_version("scipy", "1.5.0"):  # pragma: no cover
-        raise ImportError("SciPy >=1.5.0 is required handling EEGLAB data.")
-
     # Get extension of the EEGLAB file
     _, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
@@ -628,5 +625,5 @@ def copyfile_bti(raw, dest):
 
     # If no headshape file present, cannot copy it
     hs_file = raw._init_kwargs.get("head_shape_fname")
-    if hs_file is not None:
+    if hs_file is not None:  # pragma: no cover
         sh.copyfile(hs_file, op.join(dest, "hs_file"))
