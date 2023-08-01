@@ -2,14 +2,12 @@
 
 import os.path as op
 import pytest
-from functools import partial
 
 import numpy as np
 from matplotlib.backend_bases import KeyEvent
 
 import mne
 from mne.datasets import testing
-from mne.utils._testing import requires_module
 from mne.viz.utils import _fake_click
 
 from mne_bids import (
@@ -24,10 +22,6 @@ import mne_bids.inspect
 from mne_bids.read import _from_tsv
 
 from test_read import warning_str
-
-requires_matplotlib = partial(
-    requires_module, name="matplotlib", call="import matplotlib"
-)
 
 _bids_path = BIDSPath(
     subject="01", session="01", run="01", task="testing", datatype="meg"
@@ -70,15 +64,14 @@ def setup_bids_test_dir(bids_root):
     return bids_root
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.parametrize("save_changes", (True, False))
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_single_file(tmp_path, save_changes):
     """Test inspecting a dataset consisting of only a single file."""
-    from mne.utils._testing import _click_ch_name
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
+    from mne.utils._testing import _click_ch_name
 
     matplotlib.use("Agg")
     plt.close("all")
@@ -117,12 +110,11 @@ def test_inspect_single_file(tmp_path, save_changes):
         assert old_bads == new_bads
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_multiple_files(tmp_path):
     """Test inspecting a dataset consisting of more than one file."""
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
     matplotlib.use("Agg")
@@ -145,14 +137,13 @@ def test_inspect_multiple_files(tmp_path):
     raw_fig.canvas.callbacks.process("key_press_event", key_event)
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_set_and_unset_bads(tmp_path):
     """Test marking channels as bad and later marking them as good again."""
-    from mne.utils._testing import _click_ch_name
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
+    from mne.utils._testing import _click_ch_name
 
     matplotlib.use("Agg")
     plt.close("all")
@@ -221,12 +212,11 @@ def _add_annotation(raw_fig):
     _fake_click(raw_fig, data_ax, [5.0, 1.0], xform="data", button=1, kind="release")
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_annotations(tmp_path):
     """Test inspection of Annotations."""
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
     matplotlib.use("Agg")
@@ -278,12 +268,11 @@ def test_inspect_annotations(tmp_path):
     assert raw.annotations == orig_annotations
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_annotations_remove_all(tmp_path):
     """Test behavior if all Annotations are removed by the user."""
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
     matplotlib.use("Agg")
@@ -338,12 +327,11 @@ def test_inspect_annotations_remove_all(tmp_path):
     assert not events_tsv_fpath.exists()
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_dont_show_annotations(tmp_path):
     """Test if show_annotations=False works."""
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
     matplotlib.use("Agg")
@@ -356,14 +344,13 @@ def test_inspect_dont_show_annotations(tmp_path):
     assert not raw_fig.mne.annotations
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_bads_and_annotations(tmp_path):
     """Test adding bads and Annotations in one go."""
-    from mne.utils._testing import _click_ch_name
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
+    from mne.utils._testing import _click_ch_name
 
     matplotlib.use("Agg")
     plt.close("all")
@@ -398,13 +385,12 @@ def test_inspect_bads_and_annotations(tmp_path):
     assert "BAD_test" in raw.annotations.description
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.parametrize("save_changes", (True, False))
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_auto_flats(tmp_path, save_changes):
     """Test flat channel & segment detection."""
-    import matplotlib
+    matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
     matplotlib.use("Agg")
@@ -458,7 +444,6 @@ def test_inspect_auto_flats(tmp_path, save_changes):
         assert "BAD_flat" not in raw.annotations.description
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 @pytest.mark.parametrize(
     ("l_freq", "h_freq"), [(None, None), (1, None), (None, 30), (1, 30)]
@@ -466,6 +451,7 @@ def test_inspect_auto_flats(tmp_path, save_changes):
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_inspect_freq_filter(tmp_path, l_freq, h_freq):
     """Test frequency filter for Raw display."""
+    pytest.importorskip("matplotlib")
     bids_root = setup_bids_test_dir(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root)
     inspect_dataset(bids_path, l_freq=l_freq, h_freq=h_freq, find_flat=False)

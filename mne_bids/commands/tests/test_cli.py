@@ -5,14 +5,12 @@
 # License: BSD-3-Clause
 import os.path as op
 from pathlib import Path
-from functools import partial
 
 import pytest
 
 import mne
 from mne.datasets import testing
-from mne.utils import ArgvSetter, requires_pandas
-from mne.utils._testing import requires_module
+from mne.utils import ArgvSetter
 
 from mne_bids.commands import (
     mne_bids_raw_to_bids,
@@ -25,10 +23,6 @@ from mne_bids.commands import (
 )
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
-
-requires_matplotlib = partial(
-    requires_module, name="matplotlib", call="import matplotlib"
-)
 
 data_path = testing.data_path(download=False)
 base_path = op.join(op.dirname(mne.__file__), "io")
@@ -343,10 +337,10 @@ def test_crosstalk_to_bids(tmp_path):
     assert bids_path.meg_crosstalk_fpath.exists()
 
 
-@requires_pandas
 @testing.requires_testing_data
 def test_count_events(tmp_path):
     """Test mne_bids count_events."""
+    pytest.importorskip("pandas")
     # Check that help is printed
     check_usage(mne_bids_count_events)
 
@@ -389,10 +383,10 @@ def test_count_events(tmp_path):
         mne_bids_count_events.run()
 
 
-@requires_matplotlib
 @testing.requires_testing_data
 def test_inspect(tmp_path):
     """Test mne_bids inspect."""
+    pytest.importorskip("matplotlib")
     # Check that help is printed
     check_usage(mne_bids_inspect)
 

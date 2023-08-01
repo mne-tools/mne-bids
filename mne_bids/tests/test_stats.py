@@ -9,7 +9,6 @@ import pytest
 import numpy as np
 
 import mne
-from mne.utils import requires_pandas
 from mne.datasets import testing
 
 from mne_bids import BIDSPath, write_raw_bids
@@ -96,10 +95,10 @@ def _check_counts(
         (["01"], ["task1", "task2"], [None], [None]),
     ],
 )
-@requires_pandas
 @testing.requires_testing_data
 def test_count_events(tmp_path, subjects, tasks, runs, sessions):
     """Test the event counts."""
+    pytest.importorskip("pandas")
     root, events, event_id = _make_dataset(tmp_path, subjects, tasks, runs, sessions)
 
     counts = count_events(root)
@@ -107,10 +106,10 @@ def test_count_events(tmp_path, subjects, tasks, runs, sessions):
     _check_counts(counts, events, event_id, subjects, tasks, runs, sessions)
 
 
-@requires_pandas
 @testing.requires_testing_data
 def test_count_events_bids_path(tmp_path):
     """Test the event counts passing a BIDSPath."""
+    pytest.importorskip("pandas")
     root, events, event_id = _make_dataset(
         tmp_path, subjects=["01", "02"], tasks=["task1"]
     )
@@ -125,10 +124,10 @@ def test_count_events_bids_path(tmp_path):
     _check_counts(counts, events, event_id, subjects=["01"], tasks=["task1"])
 
 
-@requires_pandas
 @testing.requires_testing_data
 def test_count_no_events_file(tmp_path):
     """Test count_events with no event present."""
+    pytest.importorskip("pandas")
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw(raw_fname)
     raw.info["line_freq"] = 60.0
@@ -145,10 +144,10 @@ def test_count_no_events_file(tmp_path):
         count_events(root)
 
 
-@requires_pandas
 @testing.requires_testing_data
 def test_count_no_events_column(tmp_path):
     """Test case where events.tsv doesn't contain [stim,trial]_type column."""
+    pytest.importorskip("pandas")
     subject, task, run, session, datatype = "01", "task1", "01", "01", "meg"
     root, events, event_id = _make_dataset(
         tmp_path, [subject], [task], [run], [session]

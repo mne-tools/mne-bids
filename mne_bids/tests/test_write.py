@@ -27,7 +27,7 @@ from numpy.testing import assert_allclose, assert_array_equal, assert_array_almo
 
 import mne
 from mne.datasets import testing
-from mne.utils import check_version, requires_version
+from mne.utils import check_version
 from mne.io import anonymize_info
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
@@ -502,12 +502,12 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
         assert eeg_json["PowerLineFrequency"] == "n/a"
 
 
-@requires_version("pybv", PYBV_VERSION)
 @testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @pytest.mark.filterwarnings(warning_str["maxshield"])
 def test_fif(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for fif."""
+    pytest.importorskip("pybv", PYBV_VERSION)
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
     raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
@@ -3282,7 +3282,6 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     assert_array_equal(raw.annotations.description, raw_read.annotations.description)
 
 
-@requires_version("pybv", PYBV_VERSION)
 @pytest.mark.parametrize("dir_name, format, fname, reader", test_converteeg_data)
 @pytest.mark.filterwarnings(
     warning_str["channel_unit_changed"],
@@ -3294,6 +3293,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
+    pytest.importorskip("pybv", PYBV_VERSION)
     bids_root = tmp_path / format
     raw_fname = data_path / dir_name / fname
 
@@ -3367,7 +3367,6 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     assert_array_almost_equal(raw.get_data(), raw2.get_data()[:, :orig_len], decimal=6)
 
 
-@requires_version("pybv", PYBV_VERSION)
 @pytest.mark.parametrize("dir_name, format, fname, reader", test_converteeg_data)
 @pytest.mark.filterwarnings(
     warning_str["channel_unit_changed"],
@@ -3379,6 +3378,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 @testing.requires_testing_data
 def test_format_conversion_overwrite(dir_name, format, fname, reader, tmp_path):
     """Test that overwrite works when format is passed to write_raw_bids."""
+    pytest.importorskip("pybv", PYBV_VERSION)
     bids_root = tmp_path / format
     raw_fname = data_path / dir_name / fname
 
