@@ -625,4 +625,8 @@ def copyfile_bti(raw, dest):
         pdf_fname = "c,rf%0.1fHz" % raw.info["highpass"]
     sh.copyfile(raw._init_kwargs["pdf_fname"], op.join(dest, pdf_fname))
     sh.copyfile(raw._init_kwargs["config_fname"], op.join(dest, "config"))
-    sh.copyfile(raw._init_kwargs["head_shape_fname"], op.join(dest, "hs_file"))
+
+    # If no headshape file present, cannot copy it
+    hs_file = raw._init_kwargs.get("head_shape_fname")
+    if hs_file is not None:
+        sh.copyfile(hs_file, op.join(dest, "hs_file"))
