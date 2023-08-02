@@ -280,7 +280,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     fname = bids_path.fpath.name
 
     if fname.endswith(".pdf"):
-        # for BTI files, the scan is an entire directory
+        # for BTi files, the scan is an entire directory
         fname = fname.split(".")[0]
 
     # get the row corresponding to the file

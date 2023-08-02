@@ -305,7 +305,7 @@ def test_copyfile_kit(tmp_path):
 @pytest.mark.parametrize("dataset", ("4Dsim", "erm_HFH"))
 @testing.requires_testing_data
 def test_copyfile_bti(tmp_path, dataset):
-    """Test copying and renaming BTI files to a new location."""
+    """Test copying and renaming BTi files to a new location."""
     pdf_fname = testing_path / "BTi" / dataset / "c,rfDC"
     kwargs = dict(head_shape_fname=None) if dataset == "erm_HFH" else dict()
     raw = mne.io.read_raw_bti(pdf_fname, **kwargs, verbose=False)

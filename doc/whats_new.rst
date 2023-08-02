@@ -50,6 +50,7 @@ Detailed list of changes
 
 - When writing events, we now also create an ``*_events.json`` file in addition to ``*_events.tsv``. This ensures compatibility with the upcoming release of BIDS 1.9, by `Richard Höchenberger`_ (:gh:`1132`)
 - We silenced warnings about missing ``events.tsv`` files when reading empty-room or resting-state data, by `Richard Höchenberger`_ (:gh:`1133`)
+- BTi 'processed data files' (pdf) will no longer be renamed to ``c,rf*`` by default. Instead, they will be copied over without name changes. When reading BTi data via ``mne-bids``, more informative log and error messages will help choosing the right course of action, by `Stefan Appelhoff`_ (:gh:`1160`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -65,7 +66,7 @@ Detailed list of changes
 - Improve compatibility with latest MNE-Python, by `Eric Larson`_ (:gh:`1128`)
 - Working with :class:`~mne_bids.BIDSPath` would sometimes inadvertently create new directories, contaminating the BIDS dataset, by `Richard Höchenberger`_ (:gh:`1139`)
 - Fix thrown error if the ``BIDSVersion`` defined in ``dataset_description.json`` file does not match the MNE-BIDS compliant ``BIDSVersion``, ensuring backwards compatibility across BIDS complient tools, by `Ford McDonald`_ (:gh:`1147`)
-- Copying BTI files without a headshape file will no longer raise an error, the file will simply be copied, and the missing headshape file will be ignored, by `Stefan Appelhoff`_ (:gh:`1158`)
+- Copying BTi files without a headshape file will no longer raise an error, the file will simply be copied, and the missing headshape file will be ignored, by `Stefan Appelhoff`_ (:gh:`1158`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
