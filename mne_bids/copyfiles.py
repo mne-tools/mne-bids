@@ -638,7 +638,7 @@ def copyfile_bti(raw, dest):
             val = op.basename(keyfile)
 
         # If no headshape file present, cannot copy it
-        if key == "head_shape_fname" and keyfile is None:  # pragma: no cover
+        if key == "head_shape_fname" and keyfile is None:
             continue
 
         sh.copyfile(keyfile, op.join(dest, val))
