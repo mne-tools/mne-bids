@@ -21,6 +21,7 @@ from mne_bids.copyfiles import (
     copyfile_edf,
     copyfile_eeglab,
     copyfile_kit,
+    copyfile_bti,
 )
 
 testing_path = testing.data_path(download=False)
@@ -299,3 +300,17 @@ def test_copyfile_kit(tmp_path):
             root=output_path,
         )
         assert op.exists(hsp_fname)
+
+
+@pytest.mark.parametrize("dataset", ("4Dsim", "erm_HFH"))
+@testing.requires_testing_data
+def test_copyfile_bti(tmp_path, dataset):
+    """Test copying and renaming BTI files to a new location."""
+    pdf_fname = testing_path / "BTi" / dataset / "c,rfDC"
+    kwargs = dict(head_shape_fname=None) if dataset == "erm_HFH" else dict()
+    raw = mne.io.read_raw_bti(pdf_fname, **kwargs, verbose=False)
+
+    dest = tmp_path / dataset
+    copyfile_bti(raw=raw, dest=dest)
+
+    mne.io.read_raw_bti(dest / "c,rfDC", **kwargs, verbose=False)
