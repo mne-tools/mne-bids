@@ -9,15 +9,8 @@ What's new?
 
 .. _changes_0_13:
 
-Version 0.13 (unreleased)
+Version 0.13 (2023-08-xx)
 -------------------------
-
-...
-
-📝 Notable changes
-~~~~~~~~~~~~~~~~~~
-
-- ...
 
 👩🏽‍💻 Authors
 ~~~~~~~~~~~~~~~
