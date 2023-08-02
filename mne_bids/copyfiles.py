@@ -619,10 +619,10 @@ def copyfile_bti(raw, dest):
     """
     # XXX: remove after support for mne<1.5 is dropped
     # BTi operations were unreliable in mne-bids prior to mne 1.5 / mne-bids 0.13
-    need_mne = "1.3"
-    if _compare_version(mne.__version__, "<", need_mne):
+    need_mne = "1.4.2"
+    if not _compare_version(mne.__version__, ">", need_mne):  # pragma: no cover
         raise ImportError(
-            f"mne >= {need_mne} is required for BTi operations, got {mne.__version__}"
+            f"mne > {need_mne} is required for BTi operations, got {mne.__version__}"
         )
 
     os.makedirs(dest, exist_ok=True)

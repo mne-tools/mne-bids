@@ -1192,7 +1192,7 @@ def test_ctf(_bids_validate, tmp_path):
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_bti(_bids_validate, tmp_path, dataset):
     """Test functionality of the write_raw_bids conversion for BTi data."""
-    pytest.importorskip("mne", "1.5")  # XXX: remove when mne<1.5 is dropped
+    pytest.importorskip("mne", "1.5.0.dev")  # XXX: remove when mne<1.5 is dropped
     if dataset == "inbuilt_linux":
         bti_path = op.join(base_path, "bti", "tests", "data")
         pdf_fname = op.join(bti_path, "test_pdf_linux")
