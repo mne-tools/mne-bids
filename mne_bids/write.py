@@ -877,9 +877,9 @@ def _sidecar_json(
                 FIFF.FIFFV_POINT_LPA,
             ]:
                 digitized_landmark = True
-            elif dig_point["kind"] == FIFF.FIFFV_POINT_EXTRA and raw.filenames[
-                0
-            ].endswith(".fif"):
+            elif dig_point["kind"] == FIFF.FIFFV_POINT_EXTRA and str(
+                raw.filenames[0]
+            ).endswith(".fif"):
                 digitized_head_points = True
     software_filters = {
         "SpatialCompensation": {"GradientOrder": raw.compensation_grade}
@@ -1685,9 +1685,9 @@ def write_raw_bids(
         if ".ds" in op.dirname(raw.filenames[0]):
             raw_fname = op.dirname(raw.filenames[0])
         # point to file containing header info for multifile systems
-        raw_fname = raw_fname.replace(".eeg", ".vhdr")
-        raw_fname = raw_fname.replace(".fdt", ".set")
-        raw_fname = raw_fname.replace(".dat", ".lay")
+        raw_fname = str(raw_fname).replace(".eeg", ".vhdr")
+        raw_fname = str(raw_fname).replace(".fdt", ".set")
+        raw_fname = str(raw_fname).replace(".dat", ".lay")
         _, ext = _parse_ext(raw_fname)
 
         # force all EDF/BDF files with upper-case extension to be written as
