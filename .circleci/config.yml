@@ -1,12 +1,25 @@
 # See: https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
 version: 2.1
 
+_check_skip: &check_skip
+  name: Check-skip
+  command: |
+    set -e
+    export COMMIT_MESSAGE=$(git log --format=oneline -n 1);
+    if [[ -v CIRCLE_PULL_REQUEST ]] && ([[ "$COMMIT_MESSAGE" == *"[skip circle]"* ]] || [[ "$COMMIT_MESSAGE" == *"[circle skip]"* ]]); then
+      echo "Skip detected, exiting job ${CIRCLE_JOB} for PR ${CIRCLE_PULL_REQUEST}."
+      circleci-agent step halt;
+    fi
+
 jobs:
   docs-build:
     machine:
         image: ubuntu-2004:202111-01
     steps:
         - checkout
+
+        - run:
+            <<: *check_skip
 
         # restore cache from last build. Unless __init__.py has changed since then
         - restore_cache:
