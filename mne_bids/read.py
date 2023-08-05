@@ -61,8 +61,8 @@ def _read_raw(
     # BTi systems
     elif ext == ".pdf":
         raw = io.read_raw_bti(
-            pdf_fname=str(raw_path),  # FIXME MNE should accept Path!
-            config_fname=str(config_path),  # FIXME MNE should accept Path!
+            pdf_fname=raw_path,
+            config_fname=config_path,
             head_shape_fname=hsp,
             preload=False,
             **kwargs,
@@ -280,7 +280,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     fname = bids_path.fpath.name
 
     if fname.endswith(".pdf"):
-        # for BTI files, the scan is an entire directory
+        # for BTi files, the scan is an entire directory
         fname = fname.split(".")[0]
 
     # get the row corresponding to the file
@@ -759,7 +759,29 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
 
     if bids_path.fpath.suffix == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
-        raw_path = list(bids_raw_folder.glob("c,rf*"))[0]
+
+        # try to find the processed data file ("pdf")
+        # see: https://www.fieldtriptoolbox.org/getting_started/bti/
+        bti_pdf_patterns = ["0", "c,rf*", "hc,rf*", "e,rf*"]
+        pdf_list = []
+        for pattern in bti_pdf_patterns:
+            pdf_list += sorted(bids_raw_folder.glob(pattern))
+
+        if len(pdf_list) == 0:
+            raise RuntimeError(
+                "Cannot find BTi 'processed data file' (pdf). Please open an issue on "
+                "the mne-bids repository to discuss with the developers:\n\n"
+                "https://github.com/mne-tools/mne-bids/issues/new/choose\n\n"
+                f"No matches for following patterns:\n\n{bti_pdf_patterns}\n\n"
+                f"In: {bids_raw_folder}"
+            )
+        elif len(pdf_list) > 1:  # pragma: no cover
+            logger.warn(
+                "Found more than one BTi 'processed data file' (pdf). "
+                f"Picking:\n\n    {pdf_list[0]}\n\nout of the options:\n\n"
+                f"{pdf_list}\n\n"
+            )
+        raw_path = pdf_list[0]
         config_path = bids_raw_folder / "config"
     else:
         raw_path = bids_path.fpath

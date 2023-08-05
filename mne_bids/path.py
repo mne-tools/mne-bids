@@ -1320,7 +1320,7 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
         subject=sub, session=ses, datatype=datatype, root=bids_root
     ).directory
 
-    # For BTI data, just return the directory with a '.pdf' extension
+    # For BTi data, just return the directory with a '.pdf' extension
     # to facilitate reading in mne-bids
     bti_dir = op.join(data_dir, f"{basename}")
     if op.isdir(bti_dir):

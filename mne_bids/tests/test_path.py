@@ -332,7 +332,7 @@ def test_parse_ext():
     assert fname == "sub-05_task-matchingpennies"
     assert ext == ".vhdr"
 
-    # Test for case where no extension: assume BTI format
+    # Test for case where no extension: assume BTi format
     f = "sub-01_task-rest"
     fname, ext = _parse_ext(f)
     assert fname == f

@@ -781,7 +781,7 @@ Bug fixes
 - Fix :func:`write_raw_bids` when ``info['dig']`` is ``None``, by `Alexandre Gramfort`_ (:gh:`452`)
 - :func:`mne_bids.write_raw_bids` now applies ``verbose`` to the functions that read events, by `Evgenii Kalenkovich`_ (:gh:`453`)
 - Fix ``raw_to_bids`` CLI tool to work with non-FIFF files, by `Austin Hurst`_ (:gh:`456`)
-- Fix :func:`mne_bids.write_raw_bids` to output BTI and CTF data in the ``scans.tsv`` according to the BIDS specification, by `Adam Li`_ (:gh:`465`)
+- Fix :func:`mne_bids.write_raw_bids` to output BTi and CTF data in the ``scans.tsv`` according to the BIDS specification, by `Adam Li`_ (:gh:`465`)
 - :func:`mne_bids.read_raw_bids` now populates the list of bad channels based on ``*_channels.tsv`` if (and only if) a ``status`` column is present, ignoring similar metadata stored in raw file (which will still be used if **no** ``status`` column is present in ``*_channels.tsv``), by `Richard Höchenberger`_ (:gh:`499`)
 - Ensure that ``Raw.info['bads']`` returned by :func:`mne_bids.read_raw_bids` is always a list, by `Richard Höchenberger`_ (:gh:`501`)
 - :func:`mne_bids.write_raw_bids` now ensures that **all** parts of the :class:`mne.io.Raw` instance stay in sync when using anonymization to shift dates, e.g. ``raw.annotations``, by `Richard Höchenberger`_ (:gh:`504`)

@@ -16,18 +16,19 @@ due to internal pointers that are not being updated.
 # License: BSD-3-Clause
 import os
 import os.path as op
+from pathlib import Path
 import re
 import shutil as sh
-from pathlib import Path
 
-from scipy.io import loadmat, savemat
-
+import mne
 from mne.io import read_raw_brainvision, read_raw_edf, read_raw_bdf, anonymize_info
 from mne.utils import logger, verbose
+from mne.fixes import _compare_version
+import numpy as np
+from scipy.io import loadmat, savemat
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize, warn
-import numpy as np
 
 
 def _copytree(src, dst, **kwargs):
@@ -616,13 +617,28 @@ def copyfile_bti(raw, dest):
     copyfile_kit
 
     """
-    pdf_fname = "c,rfDC"
-    if raw.info["highpass"] is not None:
-        pdf_fname = "c,rf%0.1fHz" % raw.info["highpass"]
-    sh.copyfile(raw._init_kwargs["pdf_fname"], op.join(dest, pdf_fname))
-    sh.copyfile(raw._init_kwargs["config_fname"], op.join(dest, "config"))
+    # XXX: remove after support for mne<1.5 is dropped
+    # BTi operations were unreliable in mne-bids prior to mne 1.5 / mne-bids 0.13
+    need_mne = "1.4.2"
+    if not _compare_version(mne.__version__, ">", need_mne):  # pragma: no cover
+        raise ImportError(
+            f"mne > {need_mne} is required for BTi operations, got {mne.__version__}"
+        )
 
-    # If no headshape file present, cannot copy it
-    hs_file = raw._init_kwargs.get("head_shape_fname")
-    if hs_file is not None:  # pragma: no cover
-        sh.copyfile(hs_file, op.join(dest, "hs_file"))
+    os.makedirs(dest, exist_ok=True)
+    for key, val in (
+        ("pdf_fname", None),
+        ("config_fname", "config"),
+        ("head_shape_fname", "hs_file"),
+    ):
+        keyfile = raw._raw_extras[0].get(key)
+
+        # Keep name of pdf file
+        if key == "pdf_fname":
+            val = op.basename(keyfile)
+
+        # If no headshape file present, cannot copy it
+        if key == "head_shape_fname" and keyfile is None:
+            continue
+
+        sh.copyfile(keyfile, op.join(dest, val))

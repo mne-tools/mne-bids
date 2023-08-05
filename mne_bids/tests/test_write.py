@@ -1187,17 +1187,27 @@ def test_ctf(_bids_validate, tmp_path):
         get_anonymization_daysback(raw)
 
 
+@pytest.mark.parametrize("dataset", ("inbuilt_linux", "4Dsim", "erm_HFH"))
+@testing.requires_testing_data
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
-def test_bti(_bids_validate, tmp_path):
+def test_bti(_bids_validate, tmp_path, dataset):
     """Test functionality of the write_raw_bids conversion for BTi data."""
-    bti_path = op.join(base_path, "bti", "tests", "data")
-    raw_fname = op.join(bti_path, "test_pdf_linux")
-    config_fname = op.join(bti_path, "test_config_linux")
-    headshape_fname = op.join(bti_path, "test_hs_linux")
+    pytest.importorskip("mne", "1.5.0.dev")  # XXX: remove when mne<1.5 is dropped
+    if dataset == "inbuilt_linux":
+        bti_path = op.join(base_path, "bti", "tests", "data")
+        pdf_fname = op.join(bti_path, "test_pdf_linux")
+        kwargs = dict(
+            config_fname=op.join(bti_path, "test_config_linux"),
+            head_shape_fname=op.join(bti_path, "test_hs_linux"),
+        )
+    elif dataset == "4Dsim":
+        pdf_fname = data_path / "BTi" / dataset / "c,rfDC"
+        kwargs = dict()
+    else:
+        pdf_fname = data_path / "BTi" / dataset / "c,rfDC"
+        kwargs = dict(head_shape_fname=None)
 
-    raw = _read_raw_bti(
-        raw_fname, config_fname=config_fname, head_shape_fname=headshape_fname
-    )
+    raw = _read_raw_bti(pdf_fname, **kwargs)
 
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
 
@@ -1216,18 +1226,22 @@ def test_bti(_bids_validate, tmp_path):
     assert op.exists(tmp_path / "participants.tsv")
     _bids_validate(tmp_path)
 
-    raw = read_raw_bids(bids_path=bids_path)
+    if dataset == "inbuilt_linux":
+        # Reading this is impossible, because the pdf file was renamed
+        # to some idiosyncratic name
+        with pytest.raises(RuntimeError, match="Cannot find BTi .*"):
+            raw = read_raw_bids(bids_path=bids_path)
 
-    with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
-        read_raw_bids(bids_path=bids_path, extra_params=dict(foo="bar"))
+        # also test anonymize
+        raw = _read_raw_bti(pdf_fname, **kwargs)
+        with pytest.warns(RuntimeWarning, match="Converting to FIF for anonymization"):
+            output_path = _test_anonymize(tmp_path / "tmp", raw, bids_path)
+        _bids_validate(output_path)
 
-    # test anonymize
-    raw = _read_raw_bti(
-        raw_fname, config_fname=config_fname, head_shape_fname=headshape_fname
-    )
-    with pytest.warns(RuntimeWarning, match="Converting to FIF for anonymization"):
-        output_path = _test_anonymize(tmp_path / "tmp", raw, bids_path)
-    _bids_validate(output_path)
+    else:
+        # The other datasets can be read, as their pdf file names were
+        # not changed and still fit the "standard" naming patterns
+        raw = read_raw_bids(bids_path=bids_path)
 
 
 @pytest.mark.filterwarnings(
