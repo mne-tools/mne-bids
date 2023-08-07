@@ -665,6 +665,10 @@ def test_bids_path(return_bids_test_dir):
     # Same test, but exploiting the fact that bids_fpath is a pathlib.Path
     assert bids_fpath.name == bids_path.basename
 
+    # basename should be just the extension if nothing else is provided
+    bids_path = BIDSPath(extension=".vhdr")
+    assert bids_path.basename == ".vhdr"
+
     # confirm BIDSPath assigns properties correctly
     bids_path = BIDSPath(subject=subject_id, session=session_id)
     assert bids_path.subject == subject_id

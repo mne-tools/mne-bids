@@ -411,12 +411,13 @@ class BIDSPath(object):
                 basename.append(f"{key}-{val}")
 
         if self.suffix is not None:
-            if self.extension is not None:
-                basename.append(f"{self.suffix}{self.extension}")
-            else:
-                basename.append(self.suffix)
+            basename.append(self.suffix)
 
+        # Populate basename without extension first, then append the extension
         basename = "_".join(basename)
+        if self.extension is not None:
+            basename += self.extension
+
         return basename
 
     @property

@@ -67,6 +67,7 @@ Detailed list of changes
 - Working with :class:`~mne_bids.BIDSPath` would sometimes inadvertently create new directories, contaminating the BIDS dataset, by `Richard Höchenberger`_ (:gh:`1139`)
 - Fix thrown error if the ``BIDSVersion`` defined in ``dataset_description.json`` file does not match the MNE-BIDS compliant ``BIDSVersion``, ensuring backwards compatibility across BIDS complient tools, by `Ford McDonald`_ (:gh:`1147`)
 - Copying BTi files without a headshape file will no longer raise an error, the file will simply be copied, and the missing headshape file will be ignored, by `Stefan Appelhoff`_ (:gh:`1158`)
+- Fix the ``basename`` of :class:`~mne_bids.BIDSPath` when the path only consists of a filename extension. Previously, the ``basename`` would be empty, by `Richard Höchenberger`_ (:gh:`1163`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
