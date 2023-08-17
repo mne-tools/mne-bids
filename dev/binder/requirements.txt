@@ -1,5 +1,5 @@
 nilearn
-sphinx
+sphinx<7.2  # unpin soon, see: https://github.com/mne-tools/mne-bids/issues/1164 
 sphinx_gallery
 sphinx-copybutton
 pydata-sphinx-theme

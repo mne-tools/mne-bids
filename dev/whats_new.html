@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -523,6 +523,7 @@ document.write(`
 <ul class="simple">
 <li><p>When writing events, we now also create an <code class="docutils literal notranslate"><span class="pre">*_events.json</span></code> file in addition to <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. This ensures compatibility with the upcoming release of BIDS 1.9, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1132">#1132</a>)</p></li>
 <li><p>We silenced warnings about missing <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> files when reading empty-room or resting-state data, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1133">#1133</a>)</p></li>
+<li><p>BTi ‘processed data files’ (pdf) will no longer be renamed to <code class="docutils literal notranslate"><span class="pre">c,rf*</span></code> by default. Instead, they will be copied over without name changes. When reading BTi data via <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>, more informative log and error messages will help choosing the right course of action, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1160">#1160</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -540,7 +541,7 @@ document.write(`
 <li><p>Improve compatibility with latest MNE-Python, by <a class="reference external" href="https://github.com/larsoner">Eric Larson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1128">#1128</a>)</p></li>
 <li><p>Working with <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> would sometimes inadvertently create new directories, contaminating the BIDS dataset, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1139">#1139</a>)</p></li>
 <li><p>Fix thrown error if the <code class="docutils literal notranslate"><span class="pre">BIDSVersion</span></code> defined in <code class="docutils literal notranslate"><span class="pre">dataset_description.json</span></code> file does not match the MNE-BIDS compliant <code class="docutils literal notranslate"><span class="pre">BIDSVersion</span></code>, ensuring backwards compatibility across BIDS complient tools, by <a class="reference external" href="https://github.com/fordmcdonald">Ford McDonald</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1147">#1147</a>)</p></li>
-<li><p>Copying BTI files without a headshape file will no longer raise an error, the file will simply be copied, and the missing headshape file will be ignored, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1158">#1158</a>)</p></li>
+<li><p>Copying BTi files without a headshape file will no longer raise an error, the file will simply be copied, and the missing headshape file will be ignored, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1158">#1158</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -634,7 +635,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-02.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-17.
       <br/>
     
   </p>

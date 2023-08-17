@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -496,18 +496,19 @@ document.write(`
 <span class="c1"># License: BSD-3-Clause</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
-
+<span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">read_raw_edf</span><span class="p">,</span> <span class="n">read_raw_bdf</span><span class="p">,</span> <span class="n">anonymize_info</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.fixes</span> <span class="kn">import</span> <span class="n">_compare_version</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">warn</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
 <span class="k">def</span> <span class="nf">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1096,16 +1097,31 @@ document.write(`
 <span class="sd">    copyfile_kit</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pdf_fname</span> <span class="o">=</span> <span class="s2">&quot;c,rfDC&quot;</span>
-    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;highpass&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">pdf_fname</span> <span class="o">=</span> <span class="s2">&quot;c,rf</span><span class="si">%0.1f</span><span class="s2">Hz&quot;</span> <span class="o">%</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;highpass&quot;</span><span class="p">]</span>
-    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">[</span><span class="s2">&quot;pdf_fname&quot;</span><span class="p">],</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">pdf_fname</span><span class="p">))</span>
-    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">[</span><span class="s2">&quot;config_fname&quot;</span><span class="p">],</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">))</span>
+    <span class="c1"># XXX: remove after support for mne&lt;1.5 is dropped</span>
+    <span class="c1"># BTi operations were unreliable in mne-bids prior to mne 1.5 / mne-bids 0.13</span>
+    <span class="n">need_mne</span> <span class="o">=</span> <span class="s2">&quot;1.4.2&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_compare_version</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="n">need_mne</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;mne &gt; </span><span class="si">{</span><span class="n">need_mne</span><span class="si">}</span><span class="s2"> is required for BTi operations, got </span><span class="si">{</span><span class="n">mne</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-    <span class="c1"># If no headshape file present, cannot copy it</span>
-    <span class="n">hs_file</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;head_shape_fname&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">hs_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">hs_file</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;hs_file&quot;</span><span class="p">))</span></div>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s2">&quot;pdf_fname&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;config_fname&quot;</span><span class="p">,</span> <span class="s2">&quot;config&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;head_shape_fname&quot;</span><span class="p">,</span> <span class="s2">&quot;hs_file&quot;</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="n">keyfile</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">_raw_extras</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># Keep name of pdf file</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;pdf_fname&quot;</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">keyfile</span><span class="p">)</span>
+
+        <span class="c1"># If no headshape file present, cannot copy it</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;head_shape_fname&quot;</span> <span class="ow">and</span> <span class="n">keyfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span></div>
 </pre></div>
 
                 </article>
@@ -1150,7 +1166,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-02.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-17.
       <br/>
     
   </p>

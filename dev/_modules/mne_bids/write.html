@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -1357,9 +1357,9 @@ document.write(`
                 <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">,</span>
             <span class="p">]:</span>
                 <span class="n">digitized_landmark</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">elif</span> <span class="n">dig_point</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_EXTRA</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span>
-                <span class="mi">0</span>
-            <span class="p">]</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fif&quot;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="n">dig_point</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_EXTRA</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fif&quot;</span><span class="p">):</span>
                 <span class="n">digitized_head_points</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">software_filters</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;SpatialCompensation&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;GradientOrder&quot;</span><span class="p">:</span> <span class="n">raw</span><span class="o">.</span><span class="n">compensation_grade</span><span class="p">}</span>
@@ -2165,9 +2165,9 @@ document.write(`
         <span class="k">if</span> <span class="s2">&quot;.ds&quot;</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="c1"># point to file containing header info for multifile systems</span>
-        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
-        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.fdt&quot;</span><span class="p">,</span> <span class="s2">&quot;.set&quot;</span><span class="p">)</span>
-        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.dat&quot;</span><span class="p">,</span> <span class="s2">&quot;.lay&quot;</span><span class="p">)</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.fdt&quot;</span><span class="p">,</span> <span class="s2">&quot;.set&quot;</span><span class="p">)</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.dat&quot;</span><span class="p">,</span> <span class="s2">&quot;.lay&quot;</span><span class="p">)</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
 
         <span class="c1"># force all EDF/BDF files with upper-case extension to be written as</span>
@@ -3647,7 +3647,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-02.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-17.
       <br/>
     
   </p>

@@ -27,7 +27,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -541,8 +541,8 @@ document.write(`
     <span class="c1"># BTi systems</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">(</span>
-            <span class="n">pdf_fname</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">raw_path</span><span class="p">),</span>  <span class="c1"># FIXME MNE should accept Path!</span>
-            <span class="n">config_fname</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">config_path</span><span class="p">),</span>  <span class="c1"># FIXME MNE should accept Path!</span>
+            <span class="n">pdf_fname</span><span class="o">=</span><span class="n">raw_path</span><span class="p">,</span>
+            <span class="n">config_fname</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
             <span class="n">head_shape_fname</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
             <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -760,7 +760,7 @@ document.write(`
     <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
-        <span class="c1"># for BTI files, the scan is an entire directory</span>
+        <span class="c1"># for BTi files, the scan is an entire directory</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># get the row corresponding to the file</span>
@@ -1239,7 +1239,29 @@ document.write(`
 
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
         <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="n">raw_path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;c,rf*&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># try to find the processed data file (&quot;pdf&quot;)</span>
+        <span class="c1"># see: https://www.fieldtriptoolbox.org/getting_started/bti/</span>
+        <span class="n">bti_pdf_patterns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;c,rf*&quot;</span><span class="p">,</span> <span class="s2">&quot;hc,rf*&quot;</span><span class="p">,</span> <span class="s2">&quot;e,rf*&quot;</span><span class="p">]</span>
+        <span class="n">pdf_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">bti_pdf_patterns</span><span class="p">:</span>
+            <span class="n">pdf_list</span> <span class="o">+=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdf_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Cannot find BTi &#39;processed data file&#39; (pdf). Please open an issue on &quot;</span>
+                <span class="s2">&quot;the mne-bids repository to discuss with the developers:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;https://github.com/mne-tools/mne-bids/issues/new/choose</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;No matches for following patterns:</span><span class="se">\n\n</span><span class="si">{</span><span class="n">bti_pdf_patterns</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;In: </span><span class="si">{</span><span class="n">bids_raw_folder</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdf_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Found more than one BTi &#39;processed data file&#39; (pdf). &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Picking:</span><span class="se">\n\n</span><span class="s2">    </span><span class="si">{</span><span class="n">pdf_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">out of the options:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pdf_list</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">raw_path</span> <span class="o">=</span> <span class="n">pdf_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">config_path</span> <span class="o">=</span> <span class="n">bids_raw_folder</span> <span class="o">/</span> <span class="s2">&quot;config&quot;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">raw_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
@@ -1656,7 +1678,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-02.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-17.
       <br/>
     
   </p>
