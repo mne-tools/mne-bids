@@ -12,7 +12,7 @@ Dependencies
 
 Required:
 
-* ``mne`` (>=1.3)
+* ``mne`` (>=1.4)
 * ``numpy`` (>=1.20.2)
 * ``scipy`` (>=1.6.3)
 
@@ -25,9 +25,11 @@ Optional:
 * ``pandas`` (>=1.2.4, for generating event statistics)
 * ``EDFlib-Python`` (>=1.0.6, for writing EDF data)
 
-We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python distribution.
+We recommend installing ``mne-bids`` into an isolated Python environment,
+for example created via ``conda``
+(may be obtained through `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_).
 We require that you **use Python 3.8 or higher**.
-You may choose to install ``mne-bids``
+You may choose to install ``mne-bids`` into your isolated Python environment
 `via pip <#installation-via-pip>`_ or
 `via conda <#installation-via-conda>`_.
 
@@ -42,10 +44,10 @@ simply run:
    pip install --upgrade mne-bids[full]
 
 This ``pip`` command will also work if you want to upgrade if a newer version
-of ``mne-bids`` is available.
+of MNE-BIDS is available.
 
 If you don't require advanced features like interactive visual data inspection,
-you may also install a basic version of ``mne-bids`` via
+you may also install a basic version of MNE-BIDS via
 
 .. code-block:: bash
 
@@ -55,7 +57,7 @@ If you want to install a snapshot of the current development version, run:
 
 .. code-block:: bash
 
-   pip install --upgrade https://api.github.com/repos/mne-tools/mne-bids/zipball/main
+   pip install --upgrade git+https://github.com/mne-tools/mne-bids
 
 To check if everything worked fine, the following command should
 print a version number and not give any error messages:
@@ -68,14 +70,13 @@ MNE-BIDS works best with the latest stable release of MNE-Python (the ``mne`` pa
 To ensure MNE-Python is up-to-date, follow the
 `MNE-Python installation instructions <https://mne.tools/stable/install/#>`_.
 
-
 Installation via conda
 ----------------------
 
 If you have followed the
 `MNE-Python installation instructions <https://mne.tools/stable/install/#>`_,
-all that's left to do is to install ``mne-bids`` without its dependencies, as
-they've already been installed during the MNE-Python installation process.
+all that's left to do is to install MNE-BIDS without its dependencies,
+as they've already been installed during the MNE-Python installation process.
 
 Activate the correct ``conda`` environment and install ``mne-bids``:
 
@@ -84,7 +85,7 @@ Activate the correct ``conda`` environment and install ``mne-bids``:
    conda activate mne
    conda install --channel conda-forge --no-deps mne-bids
 
-This approach ensures that the installation of ``mne-bids`` doesn't alter any
+This approach ensures that the installation of MNE-BIDS doesn't alter any
 other packages in your existing ``conda`` environment.
 
 Alternatively, you may wish to take advantage of the fact that the
@@ -97,7 +98,7 @@ dependencies) will provide you with a working copy of of both ``mne`` and
 
    conda create --name mne --channel conda-forge mne-bids
 
-After activating the environment, you should be ready to use ``mne-bids``:
+After activating the environment, you should be ready to use MNE-BIDS:
 
 .. code-block:: bash
 
