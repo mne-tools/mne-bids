@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>12. Updating BIDS datasets &#8212; MNE-BIDS 0.13.dev0 documentation</title>
+    <title>12. Updating BIDS datasets &#8212; MNE-BIDS 0.14.dev0 documentation</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=e5fbc548" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=7ce5be07" />
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=0b2f1c6e"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=7af4b604"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -127,7 +127,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.13.dev0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.14.dev0 documentation</p>
   
 </a></div>
     
@@ -554,6 +554,93 @@ BIDS dataset.</p>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for somato...
+
+  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+  1%|▎                                     | 5.73M/611M [00:00&lt;00:10, 57.3MB/s]
+  2%|▊                                     | 12.9M/611M [00:00&lt;00:09, 65.8MB/s]
+  3%|█▎                                    | 20.1M/611M [00:00&lt;00:08, 68.7MB/s]
+  5%|█▋                                    | 27.5M/611M [00:00&lt;00:08, 70.8MB/s]
+  6%|██▏                                   | 34.9M/611M [00:00&lt;00:08, 71.9MB/s]
+  7%|██▋                                   | 42.4M/611M [00:00&lt;00:07, 72.8MB/s]
+  8%|███                                   | 49.8M/611M [00:00&lt;00:07, 73.4MB/s]
+  9%|███▌                                  | 57.3M/611M [00:00&lt;00:07, 73.7MB/s]
+ 11%|████                                  | 64.7M/611M [00:00&lt;00:07, 73.8MB/s]
+ 12%|████▍                                 | 72.2M/611M [00:01&lt;00:07, 74.2MB/s]
+ 13%|████▉                                 | 79.7M/611M [00:01&lt;00:07, 74.4MB/s]
+ 14%|█████▍                                | 87.1M/611M [00:01&lt;00:07, 74.5MB/s]
+ 15%|█████▉                                | 94.6M/611M [00:01&lt;00:06, 73.9MB/s]
+ 17%|██████▌                                | 102M/611M [00:01&lt;00:06, 74.1MB/s]
+ 18%|██████▉                                | 110M/611M [00:01&lt;00:06, 74.3MB/s]
+ 19%|███████▍                               | 117M/611M [00:01&lt;00:06, 74.0MB/s]
+ 20%|███████▉                               | 124M/611M [00:01&lt;00:06, 72.1MB/s]
+ 22%|████████▍                              | 132M/611M [00:01&lt;00:06, 69.8MB/s]
+ 23%|████████▊                              | 139M/611M [00:01&lt;00:06, 67.6MB/s]
+ 24%|█████████▎                             | 146M/611M [00:02&lt;00:06, 68.5MB/s]
+ 25%|█████████▊                             | 153M/611M [00:02&lt;00:06, 70.4MB/s]
+ 26%|██████████▎                            | 161M/611M [00:02&lt;00:06, 71.6MB/s]
+ 28%|██████████▋                            | 168M/611M [00:02&lt;00:06, 72.6MB/s]
+ 29%|███████████▏                           | 176M/611M [00:02&lt;00:05, 73.3MB/s]
+ 30%|███████████▋                           | 183M/611M [00:02&lt;00:05, 73.2MB/s]
+ 31%|████████████▏                          | 190M/611M [00:02&lt;00:05, 73.6MB/s]
+ 32%|████████████▋                          | 198M/611M [00:02&lt;00:05, 73.9MB/s]
+ 34%|█████████████                          | 205M/611M [00:02&lt;00:05, 74.0MB/s]
+ 35%|█████████████▌                         | 213M/611M [00:02&lt;00:05, 74.2MB/s]
+ 36%|██████████████                         | 220M/611M [00:03&lt;00:05, 74.4MB/s]
+ 37%|██████████████▌                        | 228M/611M [00:03&lt;00:05, 74.5MB/s]
+ 39%|███████████████                        | 235M/611M [00:03&lt;00:05, 74.3MB/s]
+ 40%|███████████████▍                       | 243M/611M [00:03&lt;00:04, 74.2MB/s]
+ 41%|███████████████▉                       | 250M/611M [00:03&lt;00:04, 74.1MB/s]
+ 42%|████████████████▍                      | 257M/611M [00:03&lt;00:04, 74.1MB/s]
+ 43%|████████████████▉                      | 265M/611M [00:03&lt;00:04, 74.2MB/s]
+ 45%|█████████████████▍                     | 272M/611M [00:03&lt;00:04, 74.0MB/s]
+ 46%|█████████████████▊                     | 280M/611M [00:03&lt;00:04, 73.9MB/s]
+ 47%|██████████████████▎                    | 287M/611M [00:03&lt;00:04, 74.0MB/s]
+ 48%|██████████████████▊                    | 295M/611M [00:04&lt;00:04, 74.0MB/s]
+ 49%|███████████████████▎                   | 302M/611M [00:04&lt;00:04, 73.9MB/s]
+ 51%|███████████████████▊                   | 309M/611M [00:04&lt;00:04, 73.9MB/s]
+ 52%|████████████████████▏                  | 317M/611M [00:04&lt;00:03, 74.0MB/s]
+ 53%|████████████████████▋                  | 324M/611M [00:04&lt;00:03, 73.7MB/s]
+ 54%|█████████████████████▏                 | 332M/611M [00:04&lt;00:03, 73.8MB/s]
+ 56%|█████████████████████▋                 | 339M/611M [00:04&lt;00:03, 73.8MB/s]
+ 57%|██████████████████████                 | 346M/611M [00:04&lt;00:03, 73.5MB/s]
+ 58%|██████████████████████▌                | 354M/611M [00:04&lt;00:03, 73.7MB/s]
+ 59%|███████████████████████                | 361M/611M [00:04&lt;00:03, 73.8MB/s]
+ 60%|███████████████████████▌               | 369M/611M [00:05&lt;00:03, 73.9MB/s]
+ 62%|████████████████████████               | 376M/611M [00:05&lt;00:03, 73.9MB/s]
+ 63%|████████████████████████▍              | 383M/611M [00:05&lt;00:03, 73.9MB/s]
+ 64%|████████████████████████▉              | 391M/611M [00:05&lt;00:02, 73.9MB/s]
+ 65%|█████████████████████████▍             | 398M/611M [00:05&lt;00:02, 73.9MB/s]
+ 66%|█████████████████████████▉             | 406M/611M [00:05&lt;00:02, 73.9MB/s]
+ 68%|██████████████████████████▍            | 413M/611M [00:05&lt;00:02, 74.0MB/s]
+ 69%|██████████████████████████▊            | 420M/611M [00:05&lt;00:02, 73.7MB/s]
+ 70%|███████████████████████████▎           | 428M/611M [00:05&lt;00:02, 73.8MB/s]
+ 71%|███████████████████████████▊           | 435M/611M [00:05&lt;00:02, 74.0MB/s]
+ 72%|████████████████████████████▎          | 443M/611M [00:06&lt;00:02, 73.8MB/s]
+ 74%|████████████████████████████▋          | 450M/611M [00:06&lt;00:02, 73.9MB/s]
+ 75%|█████████████████████████████▏         | 457M/611M [00:06&lt;00:02, 73.9MB/s]
+ 76%|█████████████████████████████▋         | 465M/611M [00:06&lt;00:01, 73.8MB/s]
+ 77%|██████████████████████████████▏        | 472M/611M [00:06&lt;00:01, 74.0MB/s]
+ 79%|██████████████████████████████▋        | 480M/611M [00:06&lt;00:01, 74.0MB/s]
+ 80%|███████████████████████████████        | 487M/611M [00:06&lt;00:01, 74.0MB/s]
+ 81%|███████████████████████████████▌       | 494M/611M [00:06&lt;00:01, 74.0MB/s]
+ 82%|████████████████████████████████       | 502M/611M [00:06&lt;00:01, 74.0MB/s]
+ 83%|████████████████████████████████▌      | 509M/611M [00:06&lt;00:01, 73.9MB/s]
+ 85%|████████████████████████████████▉      | 517M/611M [00:07&lt;00:01, 73.8MB/s]
+ 86%|█████████████████████████████████▍     | 524M/611M [00:07&lt;00:01, 74.1MB/s]
+ 87%|█████████████████████████████████▉     | 531M/611M [00:07&lt;00:01, 74.0MB/s]
+ 88%|██████████████████████████████████▍    | 539M/611M [00:07&lt;00:00, 74.1MB/s]
+ 89%|██████████████████████████████████▉    | 546M/611M [00:07&lt;00:00, 74.1MB/s]
+ 91%|███████████████████████████████████▎   | 554M/611M [00:07&lt;00:00, 74.0MB/s]
+ 92%|███████████████████████████████████▊   | 561M/611M [00:07&lt;00:00, 73.9MB/s]
+ 93%|████████████████████████████████████▎  | 569M/611M [00:07&lt;00:00, 73.9MB/s]
+ 94%|████████████████████████████████████▊  | 576M/611M [00:07&lt;00:00, 74.1MB/s]
+ 96%|█████████████████████████████████████▎ | 583M/611M [00:07&lt;00:00, 74.0MB/s]
+ 97%|█████████████████████████████████████▋ | 591M/611M [00:08&lt;00:00, 74.0MB/s]
+ 98%|██████████████████████████████████████▏| 598M/611M [00:08&lt;00:00, 74.2MB/s]
+ 99%|██████████████████████████████████████▋| 606M/611M [00:08&lt;00:00, 74.2MB/s]
+  0%|                                               | 0.00/611M [00:00&lt;?, ?B/s]
+100%|███████████████████████████████████████| 611M/611M [00:00&lt;00:00, 1.72TB/s]
+Download complete in 15s (582.2 MB)
 </pre></div>
 </div>
 </section>
@@ -739,7 +826,7 @@ were on average 316.0 (std = 0.0) recording channels per scan, out of which
 analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.082 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.174 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-update-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/update_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -834,7 +921,7 @@ analysis).
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-17.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-21.
       <br/>
     
   </p>

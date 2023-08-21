@@ -9,3 +9,4 @@ pillow
 pandas
 mne-nirs
 seaborn
+openneuro-py

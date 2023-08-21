@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation &#8212; MNE-BIDS 0.13.dev0 documentation</title>
+    <title>Installation &#8212; MNE-BIDS 0.14.dev0 documentation</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=e5fbc548" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=7ce5be07" />
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=0b2f1c6e"></script>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=7af4b604"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -127,7 +127,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.13.dev0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.14.dev0 documentation</p>
   
 </a></div>
     
@@ -489,7 +489,7 @@ document.write(`
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading">#</a></h2>
 <p>Required:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mne</span></code> (&gt;=1.3)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mne</span></code> (&gt;=1.4)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code> (&gt;=1.20.2)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scipy</span></code> (&gt;=1.6.3)</p></li>
 </ul>
@@ -502,9 +502,11 @@ document.write(`
 <li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> (&gt;=1.2.4, for generating event statistics)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">EDFlib-Python</span></code> (&gt;=1.0.6, for writing EDF data)</p></li>
 </ul>
-<p>We recommend the <a class="reference external" href="https://www.anaconda.com/download/">Anaconda</a> Python distribution.
+<p>We recommend installing <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> into an isolated Python environment,
+for example created via <code class="docutils literal notranslate"><span class="pre">conda</span></code>
+(may be obtained through <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">miniconda</a>).
 We require that you <strong>use Python 3.8 or higher</strong>.
-You may choose to install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>
+You may choose to install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> into your isolated Python environment
 <a class="reference external" href="#installation-via-pip">via pip</a> or
 <a class="reference external" href="#installation-via-conda">via conda</a>.</p>
 </section>
@@ -516,14 +518,14 @@ simply run:</p>
 </pre></div>
 </div>
 <p>This <code class="docutils literal notranslate"><span class="pre">pip</span></code> command will also work if you want to upgrade if a newer version
-of <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> is available.</p>
+of MNE-BIDS is available.</p>
 <p>If you don’t require advanced features like interactive visual data inspection,
-you may also install a basic version of <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> via</p>
+you may also install a basic version of MNE-BIDS via</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>mne-bids
 </pre></div>
 </div>
 <p>If you want to install a snapshot of the current development version, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>https://api.github.com/repos/mne-tools/mne-bids/zipball/main
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/mne-tools/mne-bids
 </pre></div>
 </div>
 <p>To check if everything worked fine, the following command should
@@ -539,14 +541,14 @@ To ensure MNE-Python is up-to-date, follow the
 <h2>Installation via conda<a class="headerlink" href="#installation-via-conda" title="Permalink to this heading">#</a></h2>
 <p>If you have followed the
 <a class="reference external" href="https://mne.tools/stable/install/#">MNE-Python installation instructions</a>,
-all that’s left to do is to install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> without its dependencies, as
-they’ve already been installed during the MNE-Python installation process.</p>
+all that’s left to do is to install MNE-BIDS without its dependencies,
+as they’ve already been installed during the MNE-Python installation process.</p>
 <p>Activate the correct <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment and install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>mne
 conda<span class="w"> </span>install<span class="w"> </span>--channel<span class="w"> </span>conda-forge<span class="w"> </span>--no-deps<span class="w"> </span>mne-bids
 </pre></div>
 </div>
-<p>This approach ensures that the installation of <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> doesn’t alter any
+<p>This approach ensures that the installation of MNE-BIDS doesn’t alter any
 other packages in your existing <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment.</p>
 <p>Alternatively, you may wish to take advantage of the fact that the
 <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> package on <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> in fact depends on <code class="docutils literal notranslate"><span class="pre">mne</span></code>,
@@ -556,7 +558,7 @@ dependencies) will provide you with a working copy of of both <code class="docut
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>mne<span class="w"> </span>--channel<span class="w"> </span>conda-forge<span class="w"> </span>mne-bids
 </pre></div>
 </div>
-<p>After activating the environment, you should be ready to use <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>:</p>
+<p>After activating the environment, you should be ready to use MNE-BIDS:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>mne
 python<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;import mne_bids; print(mne_bids.__version__)&#39;</span>
 </pre></div>
@@ -641,7 +643,7 @@ python<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;im
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-17.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-21.
       <br/>
     
   </p>
