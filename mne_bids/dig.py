@@ -658,7 +658,7 @@ def template_to_head(info, space, coord_frame="auto", unit="auto", verbose=None)
         coordinates.
 
     """
-    _validate_type(info, mne.io.Info)
+    _validate_type(info, mne.Info)
     _check_option("space", space, BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS)
     _check_option("coord_frame", coord_frame, ("auto", "mri", "mri_voxel", "ras"))
     _check_option("unit", unit, ("auto", "m", "mm"))
