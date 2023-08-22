@@ -17,7 +17,7 @@ import os
 import numpy as np
 import mne
 from mne import io, read_events, events_from_annotations
-from mne.io.pick import pick_channels_regexp
+from mne import pick_channels_regexp
 from mne.utils import logger, get_subjects_dir
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans

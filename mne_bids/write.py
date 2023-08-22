@@ -23,9 +23,9 @@ import numpy as np
 from scipy import linalg
 import mne
 from mne.transforms import _get_trans, apply_trans, rotation, translation
-from mne import Epochs
+from mne import Epochs, channel_type
 from mne.io.constants import FIFF
-from mne.io.pick import channel_type, _picks_to_idx
+from mne.io.pick import _picks_to_idx
 from mne.io import BaseRaw, read_fiducials
 from mne.channels.channels import _unit2human, _get_meg_system
 from mne.chpi import get_chpi_info
