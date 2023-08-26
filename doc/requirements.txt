@@ -7,6 +7,6 @@ numpydoc
 matplotlib
 pillow
 pandas
-mne-nirs
+git+https://github.com/mne-tools/mne-nirs
 seaborn
 openneuro-py
