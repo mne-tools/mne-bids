@@ -588,8 +588,8 @@ tests and example runs, we simply delete it.</p>
 <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_er</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_er_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="c1"># specify power line frequency as required by BIDS</span>
-<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>
-<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_er</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>
+<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>
+<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_er</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>
 
 <span class="c1"># Write empty-room data</span>
 <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_er</span></a><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path_er</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -637,7 +637,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 33494 days (91.8 years).
+Shifting recording dates by 31049 days (85.1 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-1
@@ -645,10 +645,10 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/5 [00:00&lt;?,       ?it/s]
- 20%|██        | Anonymizing : 1/5 [00:00&lt;00:01,    2.44it/s]
- 40%|████      | Anonymizing : 2/5 [00:03&lt;00:04,    1.66s/it]
- 60%|██████    | Anonymizing : 3/5 [00:04&lt;00:02,    1.44s/it]
-100%|██████████| Anonymizing : 5/5 [00:04&lt;00:00,    1.17it/s]
+ 20%|██        | Anonymizing : 1/5 [00:00&lt;00:01,    2.79it/s]
+ 40%|████      | Anonymizing : 2/5 [00:02&lt;00:04,    1.43s/it]
+ 60%|██████    | Anonymizing : 3/5 [00:03&lt;00:02,    1.23s/it]
+100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.36it/s]
 </pre></div>
 </div>
 <p>That’s it! Let’s have a look at directory structure of the anonymized
@@ -676,12 +676,12 @@ dataset.</p>
 |--------- sub-1_task-audiovisual_meg.fif
 |--------- sub-1_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19110325/
-|--------- sub-emptyroom_ses-19110325_scans.tsv
+|------ ses-19171203/
+|--------- sub-emptyroom_ses-19171203_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19110325_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19110325_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19110325_task-noise_meg.json
+|------------ sub-emptyroom_ses-19171203_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19171203_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19171203_task-noise_meg.json
 </pre></div>
 </div>
 <p>You can see that the subject ID was changed to a number (in this case, the
@@ -719,8 +719,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/1 [00:00&lt;?,       ?it/s]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.86s/it]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.86s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.49s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.49s/it]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -762,9 +762,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.52it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.40it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    2.81it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.68it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.65it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.30it/s]
 |sub-emptyroom/
 |--- ses-20021126/
 |------ sub-emptyroom_ses-20021126_scans.tsv
@@ -802,7 +802,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 35680 days (97.8 years).
+Shifting recording dates by 30567 days (83.7 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-anonymous
@@ -810,9 +810,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.47it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.39it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    2.80it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.51it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.59it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.19it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -830,12 +830,12 @@ Using the following subject ID anonymization mapping:
 |--------- sub-anonymous_task-audiovisual_meg.fif
 |--------- sub-anonymous_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19050330/
-|--------- sub-emptyroom_ses-19050330_scans.tsv
+|------ ses-19190330/
+|--------- sub-emptyroom_ses-19190330_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19050330_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19050330_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19050330_task-noise_meg.json
+|------------ sub-emptyroom_ses-19190330_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19190330_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19190330_task-noise_meg.json
 </pre></div>
 </div>
 </section>
@@ -892,9 +892,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.44it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.39it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    2.78it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.83it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.59it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.20it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -937,9 +937,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.48it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.39it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    2.80it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:01,    2.63it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.57it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.16it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -965,7 +965,7 @@ Using the following subject ID anonymization mapping:
 |------------ sub-emptyroom_ses-19221211_task-noise_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 15.172 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.097 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/anonymize_dataset.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1060,7 +1060,7 @@ Using the following subject ID anonymization mapping:
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-22.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-26.
       <br/>
     
   </p>

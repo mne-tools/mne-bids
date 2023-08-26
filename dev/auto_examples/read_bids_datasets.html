@@ -591,11 +591,13 @@ Attempting to create new mne-python configuration file:
 🌍 Preparing to download ds002778 …
 
 📁 Traversing directories for ds002778 : 0 entities [00:00, ? entities/s]
-📁 Traversing directories for ds002778 : 7 entities [00:03,  2.31 entities/s]
-📁 Traversing directories for ds002778 : 8 entities [00:03,  2.45 entities/s]
-📁 Traversing directories for ds002778 : 14 entities [00:03,  5.40 entities/s]
-📁 Traversing directories for ds002778 : 17 entities [00:03,  6.68 entities/s]
-📁 Traversing directories for ds002778 : 20 entities [00:03,  5.26 entities/s]
+📁 Traversing directories for ds002778 : 7 entities [00:03,  2.19 entities/s]
+📁 Traversing directories for ds002778 : 8 entities [00:03,  2.33 entities/s]
+📁 Traversing directories for ds002778 : 10 entities [00:03,  3.22 entities/s]
+📁 Traversing directories for ds002778 : 14 entities [00:03,  5.70 entities/s]
+📁 Traversing directories for ds002778 : 16 entities [00:03,  6.91 entities/s]
+📁 Traversing directories for ds002778 : 18 entities [00:03,  8.29 entities/s]
+📁 Traversing directories for ds002778 : 20 entities [00:04,  4.91 entities/s]
 📥 Retrieving up to 19 files (5 concurrent downloads).
 
 Skipping participants.tsv: already downloaded.: 100%|██████████| 1.62k/1.62k [00:00&lt;?, ?B/s]
@@ -619,10 +621,10 @@ Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s
 
 
 
-Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██████████| 66.0/66.0 [00:00&lt;?, ?B/s]
 
 
 
+Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|██████████| 74.0/74.0 [00:00&lt;?, ?B/s]
 
 
 
@@ -630,13 +632,13 @@ Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██�
 Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|██████████| 433/433 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
@@ -651,13 +653,13 @@ Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|██�
 Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|██████████| 74.0/74.0 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 11.5M/11.5M [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██████████| 66.0/66.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 17.4M/17.4M [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 11.5M/11.5M [00:00&lt;?, ?B/s]
 
 ✅ Finished downloading ds002778.
 
@@ -858,21 +860,21 @@ extension too, by passing e.g. <code class="docutils literal notranslate"><span 
 <p>Now we can inspect the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object to check that it contains to correct
 metadata.</p>
 <p>Basic subject metadata is here.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;his_id&#39;: &#39;sub-pd6&#39;, &#39;age&#39;: &#39;62&#39;, &#39;gender&#39;: &#39;f&#39;, &#39;hand&#39;: 1, &#39;MMSE&#39;: &#39;30&#39;, &#39;NAART&#39;: &#39;42&#39;, &#39;disease_duration&#39;: &#39;8&#39;, &#39;rl_deficits&#39;: &#39;L OFF meds, more R ON meds&#39;, &#39;notes&#39;: &#39;Used preprocessed data from EEGLAB .mat file instead of raw data for pd on&#39;}
 </pre></div>
 </div>
 <p>Power line frequency is here.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>60.0
 </pre></div>
 </div>
 <p>Sampling frequency is here.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>512.0
@@ -894,7 +896,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.664 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.589 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -989,7 +991,7 @@ metadata.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-22.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-08-26.
       <br/>
     
   </p>
