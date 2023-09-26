@@ -11,3 +11,6 @@ ignore = [
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
+
+[tool.black]
+exclude = "(dist/)|(build/)|(.*\\.ipynb)"
