@@ -1,6 +1,3 @@
-[tool.codespell]
-builtin = "clear,rare,informal,names,usage"
-
 [tool.ruff]
 select = ["E", "F", "W", "D"]
 exclude = ["__init__.py"]
