@@ -5,13 +5,13 @@ repos:
       - id: black
         args: [--quiet]
 
-  # Ruff mne-bids
+  # Ruff mne_bids
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.0.291
     hooks:
       - id: ruff
-        name: ruff mne-bids/
-        files: ^mne-bids/
+        name: ruff mne_bids/
+        files: ^mne_bids/
 
   # Ruff examples
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -31,7 +31,7 @@ repos:
       - id: codespell
         additional_dependencies:
           - tomli
-        files: ^mne-bids/|^doc/|^examples/
+        files: ^mne_bids/|^doc/|^examples/
         types_or: [python, bib, rst, inc]
 
   # yamllint
