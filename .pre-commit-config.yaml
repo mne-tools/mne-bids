@@ -10,7 +10,7 @@ repos:
     rev: v0.0.291
     hooks:
       - id: ruff
-        name: ruff mne-bids
+        name: ruff mne-bids/
         files: ^mne-bids/
 
   # Ruff examples
@@ -18,7 +18,7 @@ repos:
     rev: v0.0.291
     hooks:
       - id: ruff
-        name: ruff examples
+        name: ruff examples/
         # D103: missing docstring in public function
         # D400: docstring first line must end with period
         args: ["--ignore=D103,D400"]
