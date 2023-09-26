@@ -529,6 +529,7 @@ def warn(
     module="mne_bids",
     ignore_namespaces=("mne", "mne_bids"),
 ):  # noqa: D103
+    """Emit a warning."""
     _warn(
         message,
         category=category,

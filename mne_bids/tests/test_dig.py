@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Test the digitizations.
+
 For each supported coordinate frame, implement a test.
 """
 # Authors: Alex Rockhill <aprockhill@mailbox.org>

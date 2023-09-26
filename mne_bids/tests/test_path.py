@@ -1039,8 +1039,10 @@ def test_match(return_bids_test_dir):
 
 @testing.requires_testing_data
 def test_find_matching_paths(return_bids_test_dir):
-    """We test by yielding the same results as BIDSPath.match() which
-    is extensively tested above."""
+    """We test by yielding the same results as BIDSPath.match().
+
+    BIDSPath.match() is extensively tested above.
+    """
     bids_root = Path(return_bids_test_dir)
 
     # Check a few exemplary entities

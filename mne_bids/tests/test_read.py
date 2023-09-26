@@ -619,7 +619,7 @@ def test_handle_scans_reading(tmp_path):
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_handle_scans_reading_brainvision(tmp_path):
-    """Test stability of BrainVision's different file extensions"""
+    """Test stability of BrainVision's different file extensions."""
     test_scan_eeg = OrderedDict(
         [
             ("filename", [Path("eeg/sub-01_ses-eeg_task-rest_eeg.eeg")]),
