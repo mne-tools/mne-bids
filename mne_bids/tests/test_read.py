@@ -1258,7 +1258,7 @@ def test_ignore_exclude_param(tmp_path):
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_channels_tsv_raw_mismatch(tmp_path):
-    """Test behavior when channels.tsv contains channels not found in raw."""
+    """Test mismatch between channels in channels.tsv and raw."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg", task="rest")
 
     # Remove one channel from the raw data without updating channels.tsv
@@ -1310,6 +1310,19 @@ def test_channels_tsv_raw_mismatch(tmp_path):
         f"they are missing in the raw data: {ch_name_orig}",
     ):
         read_raw_bids(bids_path)
+
+    # Test mismatched channel ordering between channels.tsv and raw
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    ch_names_orig = raw.ch_names.copy()
+    ch_names_new = ch_names_orig.copy()
+    ch_names_new[1], ch_names_new[0] = ch_names_new[0], ch_names_new[1]
+    raw.reorder_channels(ch_names_new)
+    raw.save(raw_path, overwrite=True)
+
+    raw = read_raw_bids(bids_path)
+    assert raw.ch_names == ch_names_orig
 
 
 @testing.requires_testing_data
