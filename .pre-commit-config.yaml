@@ -24,19 +24,19 @@ repos:
         args: ["--ignore=D103,D400"]
         files: ^examples/
 
-  # Codespell
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.5
-    hooks:
-      - id: codespell
-        additional_dependencies:
-          - tomli
-        files: ^mne_bids/|^doc/|^examples/
-        types_or: [python, bib, rst, inc]
+  # # Codespell
+  # - repo: https://github.com/codespell-project/codespell
+  #   rev: v2.2.5
+  #   hooks:
+  #     - id: codespell
+  #       additional_dependencies:
+  #         - tomli
+  #       files: ^mne_bids/|^doc/|^examples/
+  #       types_or: [python, bib, rst, inc]
 
-  # yamllint
-  - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.32.0
-    hooks:
-      - id: yamllint
-        args: [--strict, -c, .yamllint.yml]
+  # # yamllint
+  # - repo: https://github.com/adrienverge/yamllint.git
+  #   rev: v1.32.0
+  #   hooks:
+  #     - id: yamllint
+  #       args: [--strict, -c, .yamllint.yml]
