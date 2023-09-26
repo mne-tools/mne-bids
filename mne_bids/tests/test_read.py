@@ -1152,6 +1152,7 @@ def test_handle_non_mne_channel_type(tmp_path):
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_bads_reading(tmp_path):
+    """Test reading bad channels."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
     bads_raw = ["MEG 0112", "MEG 0113"]
     bads_sidecar = ["EEG 053", "MEG 2443"]

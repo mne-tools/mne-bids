@@ -355,6 +355,7 @@ def test_parse_ext():
     ],
 )
 def test_get_bids_path_from_fname(fname):
+    """Test get_bids_path_from_fname()."""
     bids_path = get_bids_path_from_fname(fname)
     assert bids_path.basename == Path(fname).name
 
@@ -1338,6 +1339,7 @@ def test_find_emptyroom_no_meas_date(tmp_path):
 
 
 def test_bids_path_label_vs_index_entity():
+    """Test entities that must be strings vs those that may be an int."""
     match = "subject must be an instance of None or str"
     with pytest.raises(TypeError, match=match):
         BIDSPath(subject=1)
@@ -1350,6 +1352,7 @@ def test_bids_path_label_vs_index_entity():
 
 @testing.requires_testing_data
 def test_meg_calibration_fpath(return_bids_test_dir):
+    """Test BIDSPath.meg_calibration_fpath."""
     bids_root = return_bids_test_dir
 
     # File exists, so BIDSPath.meg_calibration_fpath should return a non-None
@@ -1381,6 +1384,7 @@ def test_meg_calibration_fpath(return_bids_test_dir):
 
 @testing.requires_testing_data
 def test_meg_crosstalk_fpath(return_bids_test_dir):
+    """Test BIDSPath.meg_crosstalk_fpath."""
     bids_root = return_bids_test_dir
 
     # File exists, so BIDSPath.crosstalk_fpath should return a non-None
@@ -1412,6 +1416,7 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
 
 @testing.requires_testing_data
 def test_datasetdescription_with_bidspath(return_bids_test_dir):
+    """Test a BIDSPath can generate a valid path to dataset_description.json."""
     with pytest.raises(ValueError, match="Unallowed"):
         bids_path = BIDSPath(
             root=return_bids_test_dir, suffix="dataset_description", extension=".json"
@@ -1439,6 +1444,7 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
 
 
 def test_update_fail_check_no_change():
+    """Test BIDSPath.check works in preventing invalid changes."""
     bids_path = BIDSPath(subject="test")
     try:
         bids_path.update(suffix="ave")
