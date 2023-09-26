@@ -1,0 +1,13 @@
+[tool.codespell]
+builtin = "clear,rare,informal,names,usage"
+
+[tool.ruff]
+select = ["E", "F", "W", "D"]
+ignore = [
+    "D100", # Missing docstring in public module
+    "D104", # Missing docstring in public package
+    "D413", # Missing blank line after last section
+]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
