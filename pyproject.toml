@@ -7,3 +7,6 @@ convention = "numpy"
 
 [tool.black]
 exclude = "(dist/)|(build/)|(.*\\.ipynb)"
+
+[tool.check-manifest]
+ignore = [".pre-commit-config.yaml"]
