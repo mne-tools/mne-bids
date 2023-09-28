@@ -21,6 +21,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
+* `Richard Höchenberger`_
 * `Stefan Appelhoff`_
 
 Detailed list of changes
@@ -44,7 +45,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- nothing yet
+- Fix reading when the channel order differs between ``*_channels.tsv`` and the raw data file, which would previously throw an error, by `Richard Höchenberger`_ (:gh:`1171`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
