@@ -133,8 +133,8 @@ to automatically convert your code to follow the appropriate style.
 
 ### git pre-commit hooks
 
-W suggest installing our git pre-commit hooks to automatically run style checks
-before a commit is created:
+We suggest installing our git pre-commit hooks to automatically run style
+checks before a commit is created:
 
 ```Shell
 pip install pre-commit
