@@ -642,9 +642,7 @@ def _handle_channels_reading(channels_fname, raw):
             f"set channel names."
         )
     else:
-        for bids_ch_name, raw_ch_name in zip(ch_names_tsv, raw.ch_names.copy()):
-            if bids_ch_name != raw_ch_name:
-                raw.rename_channels({raw_ch_name: bids_ch_name})
+        raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
