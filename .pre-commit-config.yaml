@@ -1,0 +1,20 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        args: [--quiet]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.0.291
+    hooks:
+      - id: ruff
+        name: ruff mne_bids/
+        files: ^mne_bids/
+      - id: ruff
+        name: ruff examples/
+        # D103: missing docstring in public function
+        # D400: docstring first line must end with period
+        # D205: 1 blank line required between summary line and description
+        args: ["--ignore=D103,D400,D205"]
+        files: ^examples/

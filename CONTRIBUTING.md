@@ -109,7 +109,7 @@ bids-validator --version
 We use [GNU Make](https://www.gnu.org/software/make/) for developing `mne-bids`.
 We recommend that you install GNU Make and make use of our `Makefile` at the root
 of the repository.
-For most Linux and OSX operating systems, GNU Make will be already installed by default.
+For most Linux and macOS operating systems, GNU Make will be already installed by default.
 Windows users can download the [Chocolatey package manager](https://chocolatey.org/)
 and install [GNU Make from their repository](https://community.chocolatey.org/packages/make).
 
@@ -130,6 +130,22 @@ make pep
 We use [Black](https://github.com/psf/black) to format our code.
 You can simply call `black .` from the root of the `mne-bids` repository
 to automatically convert your code to follow the appropriate style.
+
+### git pre-commit hooks
+
+We suggest installing our git pre-commit hooks to automatically run style
+checks before a commit is created:
+
+```Shell
+pip install pre-commit
+pre-commit install
+```
+
+You can also manually run the hooks via
+
+```Shell
+pre-commit run -a
+```
 
 ## Running tests
 

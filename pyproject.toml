@@ -1,0 +1,12 @@
+[tool.ruff]
+select = ["E", "F", "W", "D"]
+exclude = ["__init__.py"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
+
+[tool.black]
+exclude = "(dist/)|(build/)|(.*\\.ipynb)"
+
+[tool.check-manifest]
+ignore = [".pre-commit-config.yaml"]

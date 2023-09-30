@@ -1981,7 +1981,7 @@ def get_entity_vals(
 
     References
     ----------
-    .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities  # noqa: E501
+    .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities
 
     """
     root = _check_fname(
