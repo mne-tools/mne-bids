@@ -8,7 +8,8 @@
 BIDSPath is MNE-BIDS's working horse when it comes to file and folder
 operations. Learn here how to use it.
 """
-# Author: Richard Höchenberger <richard.hoechenberger@gmail.com>
+# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
 
@@ -141,15 +142,9 @@ bids_path
 print(bids_path.fpath)
 
 # %%
-# Oups! The cell above produced a ``RuntimeWarning`` that our data file could
-# not be found. That's because we changed the ``run`` and ``session`` entities
-# above, and the ``tiny_bids`` dataset does not contain corresponding data.
-#
-# That shows us that ``BIDSPath`` is doing a lot of guess-work and checking
-# in the background, but note that this may change in the future.
-#
-# For now, let's revert to the last working iteration of our ``bids_path``
-# instance.
+# However, for the sake of the present examples, let's revert to the iteration
+# of our ``bids_path`` instance with no ``run`` and ``session="eeg"``, as that
+# file exists in the ``tiny_bids`` dataset.
 
 bids_path.update(run=None, session="eeg")
 print(bids_path.fpath)

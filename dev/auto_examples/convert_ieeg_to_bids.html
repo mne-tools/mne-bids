@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.14.dev0 documentation</title>
+    <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.14 documentation</title>
   
   
   
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -37,11 +37,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=7ce5be07" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=7af4b604"></script>
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=725d3283"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,9 +55,9 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/convert_ieeg_to_bids';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.14.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.3';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.14';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -140,7 +140,8 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.14.dev0 documentation</p>
+  
+    <p class="title logo__title">MNE-BIDS 0.14 documentation</p>
   
 </a></div>
     
@@ -194,10 +195,10 @@
                     </li>
                 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-header-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
-                <ul id="pst-header-nav-more-links" class="dropdown-menu">
+                <ul id="pst-nav-more-links" class="dropdown-menu">
                     
                     <li class="nav-item">
                       <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
@@ -245,12 +246,21 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
       Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
-    <!-- dropdown will be populated by javascript on page load -->
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
 `);
@@ -367,10 +377,10 @@ document.write(`
                     </li>
                 
             <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-header-nav-more-links">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
                     More
                 </button>
-                <ul id="pst-header-nav-more-links" class="dropdown-menu">
+                <ul id="pst-nav-more-links-2" class="dropdown-menu">
                     
                     <li class="nav-item">
                       <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
@@ -405,12 +415,21 @@ document.write(`
 <script>
 document.write(`
   <div class="version-switcher__container dropdown">
-    <button id="versionswitcherbutton" type="button" role="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="listbox" aria-controls="versionswitcherlist" aria-label="Version switcher list">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
       Choose version  <!-- this text may get changed later by javascript -->
       <span class="caret"></span>
     </button>
-    <div id="versionswitcherlist" class="version-switcher__menu dropdown-menu list-group-flush py-0" role="listbox" aria-labelledby="versionswitcherbutton">
-    <!-- dropdown will be populated by javascript on page load -->
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
     </div>
   </div>
 `);
@@ -597,6 +616,181 @@ data downloaded via MNE-Python’s <code class="docutils literal notranslate"><s
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
+Dataset misc version 0.0 out of date, latest version is 0.26
+
+0.00B [00:00, ?B/s]
+510kB [00:00, 4.72MB/s]
+982kB [00:00, 4.29MB/s]
+1.64MB [00:00, 5.25MB/s]
+5.11MB [00:00, 16.4MB/s]
+6.80MB [00:00, 16.2MB/s]
+9.58MB [00:00, 16.5MB/s]
+11.2MB [00:00, 13.6MB/s]
+12.7MB [00:01, 11.5MB/s]
+13.9MB [00:01, 8.47MB/s]
+15.3MB [00:01, 9.56MB/s]
+16.7MB [00:01, 10.4MB/s]
+18.4MB [00:01, 11.6MB/s]
+19.7MB [00:01, 8.37MB/s]
+20.8MB [00:02, 8.79MB/s]
+21.8MB [00:02, 7.48MB/s]
+23.6MB [00:02, 9.48MB/s]
+24.7MB [00:02, 7.45MB/s]
+26.2MB [00:02, 8.66MB/s]
+27.2MB [00:02, 7.00MB/s]
+28.4MB [00:03, 7.87MB/s]
+29.4MB [00:03, 6.27MB/s]
+30.6MB [00:03, 7.32MB/s]
+31.5MB [00:03, 6.30MB/s]
+32.7MB [00:03, 7.43MB/s]
+33.6MB [00:03, 6.32MB/s]
+34.7MB [00:03, 7.24MB/s]
+35.7MB [00:04, 7.75MB/s]
+36.5MB [00:04, 3.32MB/s]
+39.8MB [00:04, 6.94MB/s]
+42.9MB [00:04, 10.7MB/s]
+45.9MB [00:05, 14.1MB/s]
+49.3MB [00:05, 18.1MB/s]
+52.6MB [00:05, 21.3MB/s]
+55.7MB [00:05, 23.7MB/s]
+58.9MB [00:05, 25.7MB/s]
+62.1MB [00:05, 27.5MB/s]
+65.3MB [00:05, 28.7MB/s]
+68.5MB [00:05, 29.5MB/s]
+71.7MB [00:05, 30.2MB/s]
+75.0MB [00:05, 31.0MB/s]
+78.2MB [00:06, 24.0MB/s]
+80.9MB [00:06, 9.04MB/s]
+82.8MB [00:07, 9.64MB/s]
+85.3MB [00:07, 11.7MB/s]
+87.9MB [00:07, 13.8MB/s]
+90.3MB [00:07, 15.6MB/s]
+92.5MB [00:07, 9.84MB/s]
+95.0MB [00:07, 12.1MB/s]
+97.5MB [00:08, 14.3MB/s]
+100MB [00:08, 16.4MB/s]
+103MB [00:08, 18.3MB/s]
+106MB [00:08, 22.5MB/s]
+109MB [00:08, 14.1MB/s]
+111MB [00:09, 8.47MB/s]
+112MB [00:09, 6.82MB/s]
+114MB [00:09, 6.40MB/s]
+117MB [00:10, 10.0MB/s]
+120MB [00:10, 12.6MB/s]
+122MB [00:10, 12.9MB/s]
+124MB [00:10, 13.1MB/s]
+126MB [00:10, 9.05MB/s]
+127MB [00:10, 8.67MB/s]
+128MB [00:11, 9.37MB/s]
+130MB [00:11, 7.71MB/s]
+131MB [00:11, 6.78MB/s]
+131MB [00:11, 7.02MB/s]
+133MB [00:11, 9.44MB/s]
+134MB [00:11, 9.88MB/s]
+136MB [00:11, 10.1MB/s]
+137MB [00:12, 10.6MB/s]
+138MB [00:12, 7.96MB/s]
+139MB [00:12, 6.68MB/s]
+140MB [00:12, 6.38MB/s]
+141MB [00:12, 7.98MB/s]
+142MB [00:12, 6.88MB/s]
+143MB [00:13, 6.19MB/s]
+144MB [00:13, 5.65MB/s]
+145MB [00:13, 6.90MB/s]
+147MB [00:13, 9.65MB/s]
+148MB [00:13, 7.62MB/s]
+149MB [00:13, 6.54MB/s]
+149MB [00:14, 6.63MB/s]
+150MB [00:14, 7.03MB/s]
+152MB [00:14, 8.89MB/s]
+153MB [00:14, 7.23MB/s]
+154MB [00:14, 6.37MB/s]
+154MB [00:14, 6.00MB/s]
+156MB [00:14, 8.60MB/s]
+157MB [00:15, 7.13MB/s]
+158MB [00:15, 6.27MB/s]
+159MB [00:15, 5.60MB/s]
+161MB [00:15, 8.28MB/s]
+162MB [00:15, 6.99MB/s]
+163MB [00:15, 6.29MB/s]
+163MB [00:16, 5.57MB/s]
+165MB [00:16, 8.11MB/s]
+166MB [00:16, 6.87MB/s]
+167MB [00:16, 6.29MB/s]
+168MB [00:16, 5.87MB/s]
+169MB [00:16, 7.04MB/s]
+171MB [00:16, 9.69MB/s]
+172MB [00:17, 7.69MB/s]
+173MB [00:17, 6.55MB/s]
+174MB [00:18, 3.07MB/s]
+177MB [00:18, 6.37MB/s]
+180MB [00:18, 9.93MB/s]
+183MB [00:18, 13.7MB/s]
+187MB [00:18, 17.3MB/s]
+190MB [00:18, 20.6MB/s]
+193MB [00:18, 23.4MB/s]
+196MB [00:18, 25.7MB/s]
+200MB [00:18, 27.6MB/s]
+203MB [00:18, 28.5MB/s]
+206MB [00:19, 30.1MB/s]
+209MB [00:19, 30.0MB/s]
+213MB [00:19, 31.0MB/s]
+216MB [00:19, 31.3MB/s]
+219MB [00:19, 31.5MB/s]
+222MB [00:19, 31.7MB/s]
+226MB [00:19, 32.0MB/s]
+229MB [00:19, 31.7MB/s]
+232MB [00:19, 31.8MB/s]
+235MB [00:20, 32.0MB/s]
+239MB [00:20, 18.1MB/s]
+241MB [00:20, 18.7MB/s]
+243MB [00:20, 18.9MB/s]
+246MB [00:20, 19.3MB/s]
+248MB [00:20, 19.7MB/s]
+250MB [00:20, 19.9MB/s]
+252MB [00:21, 20.2MB/s]
+254MB [00:21, 20.4MB/s]
+256MB [00:21, 20.4MB/s]
+259MB [00:21, 20.5MB/s]
+261MB [00:22, 7.52MB/s]
+262MB [00:22, 7.94MB/s]
+264MB [00:22, 8.22MB/s]
+265MB [00:22, 8.55MB/s]
+266MB [00:22, 8.78MB/s]
+267MB [00:22, 8.97MB/s]
+268MB [00:22, 9.28MB/s]
+269MB [00:22, 9.29MB/s]
+270MB [00:23, 9.35MB/s]
+271MB [00:23, 9.32MB/s]
+272MB [00:23, 9.28MB/s]
+273MB [00:23, 9.42MB/s]
+274MB [00:23, 9.31MB/s]
+275MB [00:23, 9.19MB/s]
+276MB [00:23, 9.16MB/s]
+277MB [00:23, 9.27MB/s]
+278MB [00:23, 9.36MB/s]
+279MB [00:23, 9.38MB/s]
+280MB [00:24, 9.54MB/s]
+281MB [00:24, 9.44MB/s]
+282MB [00:24, 9.57MB/s]
+283MB [00:24, 9.53MB/s]
+284MB [00:24, 9.51MB/s]
+285MB [00:24, 9.59MB/s]
+286MB [00:24, 9.54MB/s]
+287MB [00:24, 9.46MB/s]
+288MB [00:24, 9.47MB/s]
+289MB [00:24, 9.52MB/s]
+290MB [00:25, 9.70MB/s]
+291MB [00:25, 9.68MB/s]
+292MB [00:25, 9.68MB/s]
+293MB [00:25, 9.64MB/s]
+294MB [00:25, 9.51MB/s]
+295MB [00:25, 9.58MB/s]
+296MB [00:25, 9.48MB/s]
+297MB [00:25, 9.65MB/s]
+0.00B [00:00, ?B/s]
+0.00B [00:00, ?B/s]
+Download complete in 29s (278.8 MB)
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
@@ -770,14 +964,14 @@ which are however optional. The required inputs are:</p>
             ``source`` column of ``scans.tsv``. By default, this information
             is not stored.
 
-    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;EDF&#39; | &#39;FIF&#39;
+    format : &#39;auto&#39; | &#39;BrainVision&#39; | &#39;EDF&#39; | &#39;FIF&#39; | &#39;EEGLAB&#39;
         Controls the file format of the data after BIDS conversion. If
         ``&#39;auto&#39;``, MNE-BIDS will attempt to convert the input data to BIDS
         without a change of the original file format. A conversion to a
-        different file format (BrainVision, EDF, or FIF) will only take place
-        when the original file format lacks some necessary features. Conversion
-        can be forced to BrainVision or EDF for (i)EEG, and to FIF for MEG
-        data.
+        different file format will then only take place if the original file
+        format lacks some necessary features.
+        Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
+        and to FIF for MEG data.
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
@@ -1470,10 +1664,10 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.913 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 34.579 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.14/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/a577037ece7a732b0607a269316e55b8/convert_ieeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_ieeg_to_bids.py</span></code></a></p>
@@ -1551,8 +1745,8 @@ coordinate frame.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1562,7 +1756,7 @@ coordinate frame.</p>
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-09-27.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-11-16.
       <br/>
     
   </p>
@@ -1582,7 +1776,7 @@ coordinate frame.</p>
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
 </p></div>
       
     </div>
