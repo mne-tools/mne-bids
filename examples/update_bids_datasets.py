@@ -130,5 +130,5 @@ print(make_report(bids_root))
 # .. LINKS
 #
 # .. _mne_somato_data:
-#    https://mne.tools/dev/generated/mne.datasets.somato.data_path.html
+#    https://mne.tools/dev/api/generated/mne.datasets.somato.data_path.html
 #
