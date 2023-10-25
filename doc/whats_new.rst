@@ -46,6 +46,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - Fix reading when the channel order differs between ``*_channels.tsv`` and the raw data file, which would previously throw an error, by `Richard Höchenberger`_ (:gh:`1171`)
+- Make ``recording`` entity available for :func:`mne_bids.get_entity_vals`, by `Stefan Appelhoff`_ (:gh:`1182`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
