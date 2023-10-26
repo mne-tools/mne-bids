@@ -1884,10 +1884,11 @@ def get_entity_vals(
     ignore_subjects="emptyroom",
     ignore_sessions=None,
     ignore_tasks=None,
+    ignore_acquisitions=None,
     ignore_runs=None,
     ignore_processings=None,
     ignore_spaces=None,
-    ignore_acquisitions=None,
+    ignore_recordings=None,
     ignore_splits=None,
     ignore_descriptions=None,
     ignore_modalities=None,
@@ -1928,14 +1929,16 @@ def get_entity_vals(
         Session(s) to ignore. If ``None``, include all sessions.
     ignore_tasks : str | array-like of str | None
         Task(s) to ignore. If ``None``, include all tasks.
+    ignore_acquisitions : str | array-like of str | None
+        Acquisition(s) to ignore. If ``None``, include all acquisitions.
     ignore_runs : str | array-like of str | None
         Run(s) to ignore. If ``None``, include all runs.
     ignore_processings : str | array-like of str | None
         Processing(s) to ignore. If ``None``, include all processings.
     ignore_spaces : str | array-like of str | None
         Space(s) to ignore. If ``None``, include all spaces.
-    ignore_acquisitions : str | array-like of str | None
-        Acquisition(s) to ignore. If ``None``, include all acquisitions.
+    ignore_recordings : str | array-like of str | None
+        Recording(s) to ignore. If ``None``, include all recordings.
     ignore_splits : str | array-like of str | None
         Split(s) to ignore. If ``None``, include all splits.
     ignore_descriptions : str | array-like of str | None
@@ -1997,10 +2000,11 @@ def get_entity_vals(
         "subject",
         "task",
         "session",
+        "acquisition",
         "run",
         "processing",
         "space",
-        "acquisition",
+        "recording",
         "split",
         "description",
         "suffix",
@@ -2009,10 +2013,11 @@ def get_entity_vals(
         "sub",
         "task",
         "ses",
+        "acq",
         "run",
         "proc",
         "space",
-        "acq",
+        "rec",
         "split",
         "desc",
         "suffix",
@@ -2027,10 +2032,11 @@ def get_entity_vals(
     ignore_subjects = _ensure_tuple(ignore_subjects)
     ignore_sessions = _ensure_tuple(ignore_sessions)
     ignore_tasks = _ensure_tuple(ignore_tasks)
+    ignore_acquisitions = _ensure_tuple(ignore_acquisitions)
     ignore_runs = _ensure_tuple(ignore_runs)
     ignore_processings = _ensure_tuple(ignore_processings)
     ignore_spaces = _ensure_tuple(ignore_spaces)
-    ignore_acquisitions = _ensure_tuple(ignore_acquisitions)
+    ignore_recordings = _ensure_tuple(ignore_recordings)
     ignore_splits = _ensure_tuple(ignore_splits)
     ignore_descriptions = _ensure_tuple(ignore_descriptions)
     ignore_modalities = _ensure_tuple(ignore_modalities)
@@ -2065,6 +2071,10 @@ def get_entity_vals(
             continue
         if ignore_tasks and any([f"_task-{t}_" in filename.stem for t in ignore_tasks]):
             continue
+        if ignore_acquisitions and any(
+            [f"_acq-{a}_" in filename.stem for a in ignore_acquisitions]
+        ):
+            continue
         if ignore_runs and any([f"_run-{r}_" in filename.stem for r in ignore_runs]):
             continue
         if ignore_processings and any(
@@ -2075,8 +2085,8 @@ def get_entity_vals(
             [f"_space-{s}_" in filename.stem for s in ignore_spaces]
         ):
             continue
-        if ignore_acquisitions and any(
-            [f"_acq-{a}_" in filename.stem for a in ignore_acquisitions]
+        if ignore_recordings and any(
+            [f"_rec-{a}_" in filename.stem for a in ignore_recordings]
         ):
             continue
         if ignore_splits and any(
