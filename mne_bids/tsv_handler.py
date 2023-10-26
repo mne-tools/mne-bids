@@ -80,7 +80,7 @@ def _contains_row(data, row_data):
         # https://github.com/mne-tools/mne-bids/pull/372
         row_value = np.array(row_value, dtype=data_value.dtype)
 
-        column_mask = np.in1d(data_value, row_value)
+        column_mask = np.isin(data_value, row_value)
         mask = column_mask if mask is None else (mask & column_mask)
     return np.any(mask)
 
@@ -115,7 +115,7 @@ def _drop(data, values, column):
         dtype = np.array(values).dtype
     values = np.array(values, dtype=dtype)
 
-    mask = np.in1d(new_data_col, values, invert=True)
+    mask = np.isin(new_data_col, values, invert=True)
     for key in new_data.keys():
         new_data[key] = np.array(new_data[key])[mask].tolist()
     return new_data
