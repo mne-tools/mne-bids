@@ -1168,7 +1168,7 @@ def _write_raw_set(raw, bids_fname, overwrite):
     overwrite : bool
         Whether to overwrite an existing file or not.
     """
-    assert str(bids_fname).endswith('.set')
+    assert str(bids_fname).endswith(".set")
     raw.export(bids_fname, overwrite=overwrite)
 
 
@@ -2047,9 +2047,9 @@ def write_raw_bids(
         elif format == "EDF" and bids_path.datatype in ["ieeg", "eeg"]:
             convert = True
             bids_path.update(extension=".edf")
-        elif format == "SET" and bids_path.datatype in ['ieeg', 'eeg']:
+        elif format == "SET" and bids_path.datatype in ["ieeg", "eeg"]:
             convert = True
-            bids_path.update(extension='.set')
+            bids_path.update(extension=".set")
         elif format == "FIF" and bids_path.datatype == "meg":
             convert = True
             bids_path.update(extension=".fif")
@@ -2110,8 +2110,8 @@ def write_raw_bids(
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EDF":
             warn("Converting data files to EDF format")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ['eeg', 'ieeg'] and format == 'SET':
-            warn('Converting data files to SET format')
+        elif bids_path.datatype in ["eeg", "ieeg"] and format == "SET":
+            warn("Converting data files to SET format")
             _write_raw_set(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn("Converting data files to BrainVision format")
