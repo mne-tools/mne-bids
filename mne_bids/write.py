@@ -1156,6 +1156,22 @@ def _write_raw_edf(raw, bids_fname, overwrite):
     raw.export(bids_fname, overwrite=overwrite)
 
 
+def _write_raw_set(raw, bids_fname, overwrite):
+    """Store data as EDF.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Raw data to save.
+    bids_fname : str
+        The output filename.
+    overwrite : bool
+        Whether to overwrite an existing file or not.
+    """
+    assert str(bids_fname).endswith('.set')
+    raw.export(bids_fname, overwrite=overwrite)
+
+
 @verbose
 def make_dataset_description(
     *,
@@ -1716,6 +1732,8 @@ def write_raw_bids(
             ext = ".vhdr"
         elif format == "EDF":
             ext = ".edf"
+        elif format == "SET":
+            ext = ".set"
         elif format == "FIF":
             ext = ".fif"
         else:
@@ -2029,6 +2047,9 @@ def write_raw_bids(
         elif format == "EDF" and bids_path.datatype in ["ieeg", "eeg"]:
             convert = True
             bids_path.update(extension=".edf")
+        elif format == "SET" and bids_path.datatype in ['ieeg', 'eeg']:
+            convert = True
+            bids_path.update(extension='.set')
         elif format == "FIF" and bids_path.datatype == "meg":
             convert = True
             bids_path.update(extension=".fif")
@@ -2089,6 +2110,9 @@ def write_raw_bids(
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EDF":
             warn("Converting data files to EDF format")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
+        elif bids_path.datatype in ['eeg', 'ieeg'] and format == 'SET':
+            warn('Converting data files to SET format')
+            _write_raw_set(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn("Converting data files to BrainVision format")
             bids_path.update(suffix=bids_path.datatype, extension=".vhdr")
