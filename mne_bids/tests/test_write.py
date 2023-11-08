@@ -2660,6 +2660,10 @@ def test_write_meg_calibration(_bids_validate, tmp_path):
     write_meg_calibration(calibration=calibration, bids_path=bids_path)
     _bids_validate(bids_root)
 
+    # subject emptyroom
+    bids_path_erm = bids_path.copy().update(subject="emptyroom", task="noise")
+    write_meg_calibration(calibration=fine_cal_fname, bids_path=bids_path_erm)
+
     # Test passing in incompatible dict.
     calibration = mne.preprocessing.read_fine_calibration(fine_cal_fname)
     del calibration["locs"]
@@ -2686,7 +2690,7 @@ def test_write_meg_calibration(_bids_validate, tmp_path):
 def test_write_meg_crosstalk(_bids_validate, tmp_path):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
     bids_root = tmp_path / "bids1"
-    bids_path = _bids_path.copy().update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root, suffix="meg")
 
     raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
     raw = _read_raw_fif(raw_fname, verbose=False)
@@ -2697,6 +2701,13 @@ def test_write_meg_crosstalk(_bids_validate, tmp_path):
     write_meg_crosstalk(fname=crosstalk_fname, bids_path=bids_path)
     _bids_validate(bids_root)
 
+    # subject emptyroom
+    bids_path_erm = bids_path.copy().update(subject="emptyroom", task="noise")
+    write_meg_crosstalk(fname=crosstalk_fname, bids_path=bids_path_erm)
+
+    # bad path when task is provided for crosstalk
+    with pytest.raises(ValueError, match="task must be None if the acquisition is"):
+        assert bids_path_erm.copy().update(acquisition="crosstalk").task == "noise"
     # subject not set.
     bids_path = bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match="must have root and subject set"):
