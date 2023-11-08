@@ -329,20 +329,19 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
-def _check_empty_room_basename(bids_path, on_invalid_er_task="raise"):
+def _check_empty_room_basename(bids_path):
+    if bids_path.subject != "emptyroom":
+        return
     # only check task entity for emptyroom when it is the sidecar/MEG file
-    if bids_path.suffix == "meg":
-        if bids_path.task != "noise":
-            msg = (
-                f'task must be "noise" if subject is "emptyroom", but '
-                f"received: {bids_path.task}"
-            )
-            if on_invalid_er_task == "raise":
-                raise ValueError(msg)
-            elif on_invalid_er_task == "warn":
-                logger.critical(msg)
-            else:
-                pass
+    if bids_path.suffix != "meg":
+        return
+    if bids_path.acquisition in ("calibration", "crosstalk"):
+        return
+    if bids_path.task != "noise":
+        raise ValueError(
+            f'task must be "noise" if subject is "emptyroom", but '
+            f"received: {bids_path.task}"
+        )
 
 
 def _check_anonymize(anonymize, raw, ext):

@@ -1073,8 +1073,16 @@ class BIDSPath(object):
 
         # perform deeper check if user has it turned on
         if self.check:
-            if self.subject == "emptyroom":
-                _check_empty_room_basename(self)
+            _check_empty_room_basename(self)
+
+            if (
+                self.acquisition in ("calibration", "crosstalk")
+                and self.task is not None
+            ):
+                raise ValueError(
+                    f'task must be None if the acquisition is "calibration" or '
+                    f'"crosstalk", but received: {self.task}'
+                )
 
             # ensure extension starts with a '.'
             extension = self.extension
