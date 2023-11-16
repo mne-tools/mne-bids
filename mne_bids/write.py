@@ -1157,7 +1157,7 @@ def _write_raw_edf(raw, bids_fname, overwrite):
 
 
 def _write_raw_set(raw, bids_fname, overwrite):
-    """Store data as EDF.
+    """Store data as EEGLAB.
 
     Parameters
     ----------
