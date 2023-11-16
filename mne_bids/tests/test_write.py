@@ -148,6 +148,7 @@ test_convertmeg_data = [
 
 # parametrization for testing converting file formats for EEG/iEEG
 test_converteeg_data = [
+    ("EEGLAB", "EEGLAB", "test_raw.set", _read_raw_eeglab),  # noqa
     (
         "Persyst",
         "BrainVision",

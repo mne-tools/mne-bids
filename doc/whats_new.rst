@@ -30,7 +30,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- nothing yet
+- Enable exporting to the EEGLAB data format (``.set``), by `Laetitia Fesselier`_ and `Stefan Appelhoff`_ (:gh:`1187`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1483,14 +1483,14 @@ def write_raw_bids(
             ``source`` column of ``scans.tsv``. By default, this information
             is not stored.
 
-    format : 'auto' | 'BrainVision' | 'EDF' | 'FIF'
+    format : 'auto' | 'BrainVision' | 'EDF' | 'FIF' | 'EEGLAB'
         Controls the file format of the data after BIDS conversion. If
         ``'auto'``, MNE-BIDS will attempt to convert the input data to BIDS
         without a change of the original file format. A conversion to a
-        different file format (BrainVision, EDF, or FIF) will only take place
-        when the original file format lacks some necessary features. Conversion
-        can be forced to BrainVision or EDF for (i)EEG, and to FIF for MEG
-        data.
+        different file format will then only take place if the original file
+        format lacks some necessary features.
+        Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
+        and to FIF for MEG data.
     symlink : bool
         Instead of copying the source files, only create symbolic links to
         preserve storage space. This is only allowed when not anonymizing the
@@ -1732,7 +1732,7 @@ def write_raw_bids(
             ext = ".vhdr"
         elif format == "EDF":
             ext = ".edf"
-        elif format == "SET":
+        elif format == "EEGLAB":
             ext = ".set"
         elif format == "FIF":
             ext = ".fif"
@@ -2047,7 +2047,7 @@ def write_raw_bids(
         elif format == "EDF" and bids_path.datatype in ["ieeg", "eeg"]:
             convert = True
             bids_path.update(extension=".edf")
-        elif format == "SET" and bids_path.datatype in ["ieeg", "eeg"]:
+        elif format == "EEGLAB" and bids_path.datatype in ["ieeg", "eeg"]:
             convert = True
             bids_path.update(extension=".set")
         elif format == "FIF" and bids_path.datatype == "meg":
@@ -2110,7 +2110,7 @@ def write_raw_bids(
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EDF":
             warn("Converting data files to EDF format")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
-        elif bids_path.datatype in ["eeg", "ieeg"] and format == "SET":
+        elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
             warn("Converting data files to SET format")
             _write_raw_set(raw, bids_path.fpath, overwrite=overwrite)
         else:
