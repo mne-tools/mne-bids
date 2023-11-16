@@ -3373,7 +3373,9 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
             ):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning, match="Converting data files to EDF format"):
+        with pytest.warns(
+            RuntimeWarning, match=f"Converting data files to {format} format"
+        ):
             bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
