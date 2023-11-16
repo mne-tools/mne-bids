@@ -570,7 +570,7 @@ def test_fif(_bids_validate, tmp_path):
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     raw.load_data()
-    raw2 = raw.pick_types(meg=False, eeg=True, stim=True, eog=True, ecg=True)
+    raw2 = raw.pick(["eeg", "stim", "eog", "ecg"])
     raw2.save(bids_root / "test-raw.fif", overwrite=True)
     raw2 = mne.io.Raw(op.join(bids_root, "test-raw.fif"), preload=False)
     events = mne.find_events(raw2)
@@ -3343,7 +3343,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 
     raw = reader(raw_fname)
     # drop 'misc' type channels when exporting
-    raw = raw.pick_types(eeg=True)
+    raw = raw.pick(["eeg"])
     kwargs = dict(
         raw=raw, format=format, bids_path=bids_path, overwrite=True, verbose=False
     )
@@ -3379,7 +3379,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
             bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
-    raw2 = read_raw_bids(bids_output_path)
+    raw2 = read_raw_bids(bids_output_path, extra_params=dict(preload=True))
     assert all(
         [
             ch1["unit"] == ch2["unit"]
@@ -3431,7 +3431,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader, tmp_path):
 
     raw = reader(raw_fname)
     # drop 'misc' type channels when exporting
-    raw = raw.pick_types(eeg=True)
+    raw = raw.pick(["eeg"])
     kwargs = dict(raw=raw, format=format, bids_path=bids_path, verbose=False)
 
     with warnings.catch_warnings():
