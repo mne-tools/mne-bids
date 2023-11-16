@@ -9,18 +9,17 @@ What's new?
 
 .. _changes_0_14:
 
-Version 0.14 (unreleased)
+Version 0.14 (2023-11-16)
 -------------------------
 
 👩🏽‍💻 Authors
 ~~~~~~~~~~~~~~~
 
-The following authors contributed for the first time. Thank you so much! 🤩
+The following authors contributed:
 
-* nobody yet
-
-The following authors had contributed before. Thank you for sticking around! 🤘
-
+* `Eric Larson`_
+* `Laetitia Fesselier`_
+* `Mathieu Scheltienne`_
 * `Richard Höchenberger`_
 * `Stefan Appelhoff`_
 
@@ -31,16 +30,6 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - Enable exporting to the EEGLAB data format (``.set``), by `Laetitia Fesselier`_ and `Stefan Appelhoff`_ (:gh:`1187`)
-
-🧐 API and behavior changes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-- nothing yet
-
-🛠 Requirements
-^^^^^^^^^^^^^^^
-
-- ``eeglabio`` is now a required package if you want to export to the EEGLAB data format.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^

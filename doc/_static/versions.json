@@ -1,17 +1,22 @@
 [
     {
-        "name": "0.14 (devel)",
+        "name": "0.15 (devel)",
         "version": "dev",
         "url": "https://mne.tools/mne-bids/dev/"
     },
     {
-        "name": "0.13 (stable)",
-        "version": "dev",
+        "name": "0.14 (stable)",
+        "version": "stable",
+        "url": "https://mne.tools/mne-bids/v0.14/"
+    },
+    {
+        "name": "0.13",
+        "version": "0.13",
         "url": "https://mne.tools/mne-bids/v0.13/"
     },
     {
         "name": "0.12",
-        "version": "stable",
+        "version": "0.12",
         "url": "https://mne.tools/mne-bids/v0.12/"
     },
     {
