@@ -59,7 +59,12 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS, PYBV_VERSION
+from mne_bids.config import (
+    REFERENCES,
+    BIDS_COORD_FRAME_DESCRIPTIONS,
+    PYBV_VERSION,
+    EEGLABIO_VERSION,
+)
 
 base_path = op.join(op.dirname(mne.__file__), "io")
 subject_id = "01"
@@ -3329,6 +3334,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
     pytest.importorskip("pybv", PYBV_VERSION)
+    pytest.importorskip("eeglabio", EEGLABIO_VERSION)
     bids_root = tmp_path / format
     raw_fname = data_path / dir_name / fname
 
@@ -3414,6 +3420,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 def test_format_conversion_overwrite(dir_name, format, fname, reader, tmp_path):
     """Test that overwrite works when format is passed to write_raw_bids."""
     pytest.importorskip("pybv", PYBV_VERSION)
+    pytest.importorskip("eeglabio", EEGLABIO_VERSION)
     bids_root = tmp_path / format
     raw_fname = data_path / dir_name / fname
 

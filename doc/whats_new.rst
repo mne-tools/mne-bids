@@ -40,7 +40,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- nothing yet
+- ``eeglabio`` is now a required package if you want to export to the EEGLAB data format.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
