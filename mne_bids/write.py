@@ -1156,7 +1156,7 @@ def _write_raw_edf(raw, bids_fname, overwrite):
     raw.export(bids_fname, overwrite=overwrite)
 
 
-def _write_raw_set(raw, bids_fname, overwrite):
+def _write_raw_eeglab(raw, bids_fname, overwrite):
     """Store data as EEGLAB.
 
     Parameters
@@ -2111,8 +2111,8 @@ def write_raw_bids(
             warn("Converting data files to EDF format")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
-            warn("Converting data files to SET format")
-            _write_raw_set(raw, bids_path.fpath, overwrite=overwrite)
+            warn("Converting data files to EEGLAB format")
+            _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn("Converting data files to BrainVision format")
             bids_path.update(suffix=bids_path.datatype, extension=".vhdr")
