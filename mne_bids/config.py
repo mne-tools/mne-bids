@@ -6,6 +6,7 @@ from mne.io.constants import FIFF
 BIDS_VERSION = "1.7.0"
 
 PYBV_VERSION = "0.7.3"
+EEGLABIO_VERSION = "0.0.2"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 

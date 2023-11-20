@@ -109,7 +109,7 @@ def test_dig_pixels(tmp_path):
         op.join(bids_root, "sub-01", "ses-01", bids_path.datatype), exist_ok=True
     )
     raw = _load_raw()
-    raw.pick_types(eeg=True)
+    raw.pick(["eeg"])
     raw.del_proj()
     raw.set_channel_types({ch: "ecog" for ch in raw.ch_names})
 
@@ -145,7 +145,7 @@ def test_dig_template(tmp_path):
         bids_path = _bids_path.copy().update(root=bids_root, datatype=datatype)
         for coord_frame in BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS:
             raw = _load_raw()
-            raw.pick_types(eeg=True)
+            raw.pick(["eeg"])
             bids_path.update(space=coord_frame)
             montage = raw.get_montage()
             pos = montage.get_positions()
@@ -251,7 +251,7 @@ def test_template_to_head():
     # test all coordinate frames
     raw = _load_raw()
     raw.set_montage(None)
-    raw.pick_types(eeg=True)
+    raw.pick(["eeg"])
     raw.drop_channels(raw.ch_names[3:])
     montage = mne.channels.make_dig_montage(
         ch_pos={
@@ -365,7 +365,7 @@ def test_convert_montage():
 def test_electrodes_io(tmp_path):
     """Ensure only electrodes end up in *_electrodes.json."""
     raw = _load_raw()
-    raw.pick_types(eeg=True, stim=True)  # we don't need meg channels
+    raw.pick(["eeg", "stim"])  # we don't need meg channels
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="eeg")
     write_raw_bids(raw=raw, bids_path=bids_path)

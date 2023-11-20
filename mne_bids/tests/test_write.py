@@ -11,6 +11,7 @@ For each supported file format, implement a test.
 #
 # License: BSD-3-Clause
 import sys
+import inspect
 import os
 import os.path as op
 from glob import glob
@@ -58,7 +59,12 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES, BIDS_COORD_FRAME_DESCRIPTIONS, PYBV_VERSION
+from mne_bids.config import (
+    REFERENCES,
+    BIDS_COORD_FRAME_DESCRIPTIONS,
+    PYBV_VERSION,
+    EEGLABIO_VERSION,
+)
 
 base_path = op.join(op.dirname(mne.__file__), "io")
 subject_id = "01"
@@ -147,6 +153,7 @@ test_convertmeg_data = [
 
 # parametrization for testing converting file formats for EEG/iEEG
 test_converteeg_data = [
+    ("EEGLAB", "EEGLAB", "test_raw.set", _read_raw_eeglab),  # noqa
     (
         "Persyst",
         "BrainVision",
@@ -563,7 +570,7 @@ def test_fif(_bids_validate, tmp_path):
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     raw.load_data()
-    raw2 = raw.pick_types(meg=False, eeg=True, stim=True, eog=True, ecg=True)
+    raw2 = raw.pick(["eeg", "stim", "eog", "ecg"])
     raw2.save(bids_root / "test-raw.fif", overwrite=True)
     raw2 = mne.io.Raw(op.join(bids_root, "test-raw.fif"), preload=False)
     events = mne.find_events(raw2)
@@ -617,7 +624,15 @@ def test_fif(_bids_validate, tmp_path):
         raw2, events2, event_id=event_id, tmin=-0.2, tmax=0.5, preload=True
     )
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
-    assert_array_almost_equal(epochs.get_data(), epochs2.get_data(), decimal=4)
+    kwargs = dict()
+    # XXX: remove logic once support for mne<1.6 is dropped
+    if "copy" in inspect.getfullargspec(epochs.get_data).kwonlyargs:
+        kwargs["copy"] = False
+    assert_array_almost_equal(
+        epochs.get_data(**kwargs),
+        epochs2.get_data(**kwargs),
+        decimal=4,
+    )
     _bids_validate(bids_root)
 
     # write the same data but pretend it is empty room data:
@@ -3319,6 +3334,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
     """Test conversion of EEG/iEEG manufacturer fmt to BrainVision/EDF."""
     pytest.importorskip("pybv", PYBV_VERSION)
+    pytest.importorskip("eeglabio", EEGLABIO_VERSION)
     bids_root = tmp_path / format
     raw_fname = data_path / dir_name / fname
 
@@ -3327,7 +3343,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 
     raw = reader(raw_fname)
     # drop 'misc' type channels when exporting
-    raw = raw.pick_types(eeg=True)
+    raw = raw.pick(["eeg"])
     kwargs = dict(
         raw=raw, format=format, bids_path=bids_path, overwrite=True, verbose=False
     )
@@ -3357,11 +3373,13 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
             ):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(RuntimeWarning, match="Converting data files to EDF format"):
+        with pytest.warns(
+            RuntimeWarning, match=f"Converting data files to {format} format"
+        ):
             bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
-    raw2 = read_raw_bids(bids_output_path)
+    raw2 = read_raw_bids(bids_output_path, extra_params=dict(preload=True))
     assert all(
         [
             ch1["unit"] == ch2["unit"]
@@ -3404,6 +3422,7 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
 def test_format_conversion_overwrite(dir_name, format, fname, reader, tmp_path):
     """Test that overwrite works when format is passed to write_raw_bids."""
     pytest.importorskip("pybv", PYBV_VERSION)
+    pytest.importorskip("eeglabio", EEGLABIO_VERSION)
     bids_root = tmp_path / format
     raw_fname = data_path / dir_name / fname
 
@@ -3412,7 +3431,7 @@ def test_format_conversion_overwrite(dir_name, format, fname, reader, tmp_path):
 
     raw = reader(raw_fname)
     # drop 'misc' type channels when exporting
-    raw = raw.pick_types(eeg=True)
+    raw = raw.pick(["eeg"])
     kwargs = dict(raw=raw, format=format, bids_path=bids_path, verbose=False)
 
     with warnings.catch_warnings():
