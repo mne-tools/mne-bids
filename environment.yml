@@ -2,7 +2,7 @@ name: mne_bids
 channels:
 - conda-forge
 dependencies:
-- python<3.12
+- python<3.13
 - pip
 - pip:
   - mne_bids
@@ -11,6 +11,7 @@ dependencies:
   - scipy>=1.6.3
   - nibabel>=3.2.1
   - pybv>=0.7.5
+  - eeglabio>=0.0.2
   - pymatreader>=0.0.30
   - matplotlib>=3.4.0
   - pandas>=1.2.4

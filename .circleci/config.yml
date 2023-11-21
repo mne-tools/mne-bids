@@ -1,0 +1,22 @@
+# Exists so that CircleCI does not show a failure due to missing config.yml file.
+# We do not actually want to run any CircleCI jobs on this branch.
+# See: https://discuss.circleci.com/t/how-to-limit-pipeline-or-workflow-only-on-1-branch-or-how-to-prevent-pipeline-from-be-called-on-branch-without-config-yml/42254
+version: 2.1
+
+jobs:
+  build:
+    machine:
+      image: ubuntu-2004:202111-01
+    steps:
+      - run:
+          name: do nothing
+          command: |
+            sleep 1
+
+workflows:
+  build-workflow:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
