@@ -110,6 +110,16 @@ jobs:
         python -c 'import edfio; print(edfio.__version__)'
 
   test:
+    # For GitHub "required" CI checks, add in branch protection:
+    # 6 checks:
+    # for each OS (ubuntu, macos, windows):
+    # 3.9 -> stable / full / stable
+    # 3.12 -> stable / full / stable
+    #
+    # 3 additional checks:
+    # ubuntu / 3.12 / main / full / main
+    # ubuntu / 3.9 / prev / full / stable
+    # ubuntu / 3.12 / stable / minimal / stable
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     strategy:
