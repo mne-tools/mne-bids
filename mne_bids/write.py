@@ -1739,7 +1739,7 @@ def write_raw_bids(
         else:
             msg = (
                 'For preloaded data, you must set the "format" parameter '
-                "to one of: BrainVision, EDF, or FIF"
+                "to one of: BrainVision, EDF, EEGLAB, or FIF"
             )
             if format != "auto":  # the default was changed
                 msg += f', but got: "{format}"'
