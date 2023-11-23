@@ -12,9 +12,9 @@ Dependencies
 
 Required:
 
-* ``mne`` (>=1.4)
-* ``numpy`` (>=1.20.2)
-* ``scipy`` (>=1.6.3)
+* ``mne`` (>=1.5)
+* ``numpy`` (>=1.21.2)
+* ``scipy`` (>=1.7.0)
 
 Optional:
 
@@ -22,14 +22,16 @@ Optional:
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
 * ``eeglabio`` (>=0.0.2, for writing EEGLAB data)
 * ``pymatreader`` (>=0.0.30, for other operations with EEGLAB data)
-* ``matplotlib`` (>=3.4.0, for using the interactive data inspector)
-* ``pandas`` (>=1.2.4, for generating event statistics)
-* ``EDFlib-Python`` (>=1.0.6, for writing EDF data)
+* ``matplotlib`` (>=3.5.0, for using the interactive data inspector)
+* ``pandas`` (>=1.3.2, for generating event statistics)
+* ``EDFlib-Python`` (>=1.0.6, for writing EDF data with ``mne`` versions <1.7)
+* ``edfio`` (>=0.2.1, for writing EDF data)
+
 
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``
 (may be obtained through `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_).
-We require that you **use Python 3.8 or higher**.
+We require that you **use Python 3.9 or higher**.
 You may choose to install ``mne-bids`` into your isolated Python environment
 `via pip <#installation-via-pip>`_ or
 `via conda <#installation-via-conda>`_.

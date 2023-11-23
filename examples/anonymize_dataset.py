@@ -211,7 +211,7 @@ print_dir_tree(bids_root_anon)
 #    anonymize the entire dataset again.
 
 for i in range(2):
-    print(f"\n\nRun {i+1}\n")
+    print(f"\n\nRun {i + 1}\n")
     shutil.rmtree(bids_root_anon)
     anonymize_dataset(
         bids_root_in=bids_root,

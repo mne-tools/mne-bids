@@ -21,6 +21,8 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
+* `Laetitia Fesselier`_
+* `Richard Höchenberger`_
 * `Stefan Appelhoff`_
 
 Detailed list of changes
@@ -39,7 +41,10 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- nothing yet
+- MNE-BIDS now requires Python 3.9 or higher.
+- MNE-BIDS now requires MNE-Python 1.5.0 or higher.
+- ``edfio`` replaces ``EDFlib-Python`` for export to EDF with MNE-Python >= 1.7.0.
+- Version requirements for optional dependency packages have been bumped up, see installation instructions.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
