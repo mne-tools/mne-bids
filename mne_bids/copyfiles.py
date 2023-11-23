@@ -20,10 +20,8 @@ from pathlib import Path
 import re
 import shutil as sh
 
-import mne
 from mne.io import read_raw_brainvision, read_raw_edf, read_raw_bdf, anonymize_info
 from mne.utils import logger, verbose
-from mne.fixes import _compare_version
 import numpy as np
 from scipy.io import loadmat, savemat
 
@@ -617,14 +615,6 @@ def copyfile_bti(raw, dest):
     copyfile_kit
 
     """
-    # XXX: remove after support for mne<1.5 is dropped
-    # BTi operations were unreliable in mne-bids prior to mne 1.5 / mne-bids 0.13
-    need_mne = "1.4.2"
-    if not _compare_version(mne.__version__, ">", need_mne):  # pragma: no cover
-        raise ImportError(
-            f"mne > {need_mne} is required for BTi operations, got {mne.__version__}"
-        )
-
     os.makedirs(dest, exist_ok=True)
     for key, val in (
         ("pdf_fname", None),

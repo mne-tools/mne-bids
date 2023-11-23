@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.12"]
     steps:
     - uses: actions/checkout@v4
     - uses: psf/black@stable
@@ -50,7 +50,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.8", "3.11"]  # Oldest and newest supported versions
+        python-version: ["3.9", "3.12"]  # Oldest and newest supported versions
     steps:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -107,6 +107,7 @@ jobs:
         python -c 'import matplotlib; print(matplotlib.__version__)'
         python -c 'import pandas; print(pandas.__version__)'
         python -c 'import EDFlib; print("EDFlib has no .__version__")'
+        python -c 'import edfio; print(edfio.__version__)'
 
   test:
     timeout-minutes: 60
@@ -115,7 +116,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.8", "3.11"]  # Oldest and newest supported versions
+        python-version: ["3.9", "3.12"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
         bids-validator-version: [validator-stable]
@@ -124,19 +125,19 @@ jobs:
           # special test runs running only on single CI systems to save resources
           # Test development versions
           - os: ubuntu-latest
-            python-version: "3.11"
+            python-version: "3.12"
             mne-version: mne-main
             mne-bids-install: full
             bids-validator-version: validator-main
           # Test previous MNE stable version
           - os: ubuntu-latest
-            python-version: "3.8"
+            python-version: "3.9"
             mne-version: mne-prev-stable
             mne-bids-install: full
             bids-validator-version: validator-stable
           # Test minimal mne-bids install
           - os: ubuntu-latest
-            python-version: "3.11"
+            python-version: "3.12"
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: validator-stable
@@ -170,31 +171,31 @@ jobs:
         python -m pip install --upgrade -r test_requirements.txt
 
     - name: Install MNE (stable)
-      if: "matrix.mne-version == 'mne-stable'"
+      if: matrix.mne-version == 'mne-stable'
+      run: |
+        git clone --single-branch --branch maint/1.6 https://github.com/mne-tools/mne-python.git
+        python -m pip install -e ./mne-python
+
+    - name: Install MNE (previous stable)
+      if: matrix.mne-version == 'mne-prev-stable'
       run: |
         git clone --single-branch --branch maint/1.5 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
-    - name: Install MNE (previous stable)
-      if: "matrix.mne-version == 'mne-prev-stable'"
-      run: |
-        git clone --single-branch --branch maint/1.4 https://github.com/mne-tools/mne-python.git
-        python -m pip install -e ./mne-python
-
     - name: Install MNE (main)
-      if: "matrix.mne-version == 'mne-main'"
+      if: matrix.mne-version == 'mne-main'
       run: |
         git clone --single-branch --branch main https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
     - name: Install BIDS validator (stable)
-      if: "matrix.bids-validator-version == 'validator-stable'"
+      if: matrix.bids-validator-version == 'validator-stable'
       run: |
         npm install -g bids-validator
         echo "BIDS_VALIDATOR_BRANCH=stable" >> $GITHUB_ENV
 
     - name: Download BIDS validator (main)
-      if: "matrix.bids-validator-version == 'validator-main'"
+      if: matrix.bids-validator-version == 'validator-main'
       run: |
         pushd ..
         git clone --depth 1 https://github.com/bids-standard/bids-validator
@@ -202,7 +203,7 @@ jobs:
         echo "BIDS_VALIDATOR_BRANCH=main" >> $GITHUB_ENV
 
     - name: Install BIDS validator (main)
-      if: "matrix.bids-validator-version == 'validator-main'"
+      if: matrix.bids-validator-version == 'validator-main'
       run: |
         pushd ..
         cd bids-validator
@@ -228,17 +229,17 @@ jobs:
         mne sys_info
 
     - name: Install MNE-BIDS (minimal)
-      if: "matrix.mne-bids-install == 'minimal'"
+      if: matrix.mne-bids-install == 'minimal'
       run: python -m pip install -e .
 
     - name: Install MNE-BIDS (full)
-      if: "matrix.mne-bids-install == 'full'"
+      if: matrix.mne-bids-install == 'full'
       run: python -m pip install -e .[full]
 
     # Only run on a limited set of jobs
     - name: Run pytest without testing data
       run: make test
-      if: ${{ matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
+      if: ${{ matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest' && matrix.mne-version == 'mne-main' }}
 
     # Get testing data
     - run: ./tools/get_testing_version.sh

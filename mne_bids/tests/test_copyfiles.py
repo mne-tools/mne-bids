@@ -306,7 +306,6 @@ def test_copyfile_kit(tmp_path):
 @testing.requires_testing_data
 def test_copyfile_bti(tmp_path, dataset):
     """Test copying and renaming BTi files to a new location."""
-    pytest.importorskip("mne", "1.5.0.dev")  # XXX: remove when mne<1.5 is dropped
     pdf_fname = testing_path / "BTi" / dataset / "c,rfDC"
     kwargs = dict(head_shape_fname=None) if dataset == "erm_HFH" else dict()
     raw = mne.io.read_raw_bti(pdf_fname, **kwargs, verbose=False)
