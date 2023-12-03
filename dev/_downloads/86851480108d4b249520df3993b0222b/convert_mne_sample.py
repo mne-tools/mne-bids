@@ -228,7 +228,7 @@ data in BIDS format.""",
     references_and_links=[
         "https://doi.org/10.1016/j.neuroimage.2014.02.017",
         "https://doi.org/10.3389/fnins.2013.00267",
-        "https://mne.tools/stable/overview/datasets_index.html#sample",
+        "https://mne.tools/stable/documentation/datasets.html#sample",
     ],
     doi="doi:10.18112/openneuro.ds000248.v1.2.4",
     overwrite=True,

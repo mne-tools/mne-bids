@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-theme="auto">
+<html lang="en" data-content_root="" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -37,9 +37,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=7ce5be07" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=6ab18eca"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
@@ -56,7 +56,7 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/anonymize_dataset';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.14.3';
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
@@ -133,6 +133,7 @@
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
+
   
 
 <a class="navbar-brand logo" href="../index.html">
@@ -152,7 +153,8 @@
     
     <div class="me-auto navbar-header-items__center">
       
-        <div class="navbar-item"><nav class="navbar-nav">
+        <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -220,6 +222,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -233,6 +236,7 @@
       
       
         <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -301,6 +305,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
  <script>
  document.write(`
    <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -334,7 +339,8 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item"><nav class="navbar-nav">
+          <div class="navbar-item">
+<nav class="navbar-nav">
   <p class="sidebar-header-items__title"
      role="heading"
      aria-level="1"
@@ -402,6 +408,7 @@ document.write(`
       <div class="sidebar-header-items__end">
         
           <div class="navbar-item">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -469,7 +476,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
@@ -672,7 +680,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 32016 days (87.7 years).
+Shifting recording dates by 33620 days (92.1 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-1
@@ -680,10 +688,10 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/5 [00:00&lt;?,       ?it/s]
- 20%|██        | Anonymizing : 1/5 [00:00&lt;00:01,    3.06it/s]
- 40%|████      | Anonymizing : 2/5 [00:02&lt;00:03,    1.30s/it]
- 60%|██████    | Anonymizing : 3/5 [00:03&lt;00:02,    1.09s/it]
-100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.53it/s]
+ 20%|██        | Anonymizing : 1/5 [00:00&lt;00:00,    4.01it/s]
+ 40%|████      | Anonymizing : 2/5 [00:02&lt;00:03,    1.17s/it]
+ 60%|██████    | Anonymizing : 3/5 [00:02&lt;00:02,    1.01s/it]
+100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.66it/s]
 </pre></div>
 </div>
 <p>That’s it! Let’s have a look at directory structure of the anonymized
@@ -711,12 +719,12 @@ dataset.</p>
 |--------- sub-1_task-audiovisual_meg.fif
 |--------- sub-1_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19150411/
-|--------- sub-emptyroom_ses-19150411_scans.tsv
+|------ ses-19101119/
+|--------- sub-emptyroom_ses-19101119_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19150411_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19150411_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19150411_task-noise_meg.json
+|------------ sub-emptyroom_ses-19101119_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19101119_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19101119_task-noise_meg.json
 </pre></div>
 </div>
 <p>You can see that the subject ID was changed to a number (in this case, the
@@ -754,8 +762,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/1 [00:00&lt;?,       ?it/s]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.17s/it]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.17s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.05s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.05s/it]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -797,9 +805,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.05it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.91it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.83it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    4.09it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:00&lt;00:00,    2.09it/s]
+100%|██████████| Anonymizing : 4/4 [00:00&lt;00:00,    4.20it/s]
 |sub-emptyroom/
 |--- ses-20021126/
 |------ sub-emptyroom_ses-20021126_scans.tsv
@@ -837,7 +845,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 30640 days (83.9 years).
+Shifting recording dates by 31383 days (86.0 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-anonymous
@@ -845,9 +853,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.10it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.90it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.81it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    4.00it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:00&lt;00:00,    2.09it/s]
+100%|██████████| Anonymizing : 4/4 [00:00&lt;00:00,    4.19it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -865,12 +873,12 @@ Using the following subject ID anonymization mapping:
 |--------- sub-anonymous_task-audiovisual_meg.fif
 |--------- sub-anonymous_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19190116/
-|--------- sub-emptyroom_ses-19190116_scans.tsv
+|------ ses-19170103/
+|--------- sub-emptyroom_ses-19170103_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19190116_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19190116_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19190116_task-noise_meg.json
+|------------ sub-emptyroom_ses-19170103_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19170103_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19170103_task-noise_meg.json
 </pre></div>
 </div>
 </section>
@@ -927,9 +935,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.10it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.92it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.85it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    4.04it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:00&lt;00:00,    2.09it/s]
+100%|██████████| Anonymizing : 4/4 [00:00&lt;00:00,    4.20it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -972,9 +980,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.03it/s]
- 50%|█████     | Anonymizing : 2/4 [00:01&lt;00:01,    1.90it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.82it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    4.00it/s]
+ 50%|█████     | Anonymizing : 2/4 [00:00&lt;00:00,    2.09it/s]
+100%|██████████| Anonymizing : 4/4 [00:00&lt;00:00,    4.20it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -1000,7 +1008,7 @@ Using the following subject ID anonymization mapping:
 |------------ sub-emptyroom_ses-19221211_task-noise_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.355 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.505 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/anonymize_dataset.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -1024,7 +1032,7 @@ Using the following subject ID anonymization mapping:
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="update_bids_datasets.html"
@@ -1054,6 +1062,7 @@ Using the following subject ID anonymization mapping:
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
@@ -1080,8 +1089,8 @@ Using the following subject ID anonymization mapping:
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1089,15 +1098,17 @@ Using the following subject ID anonymization mapping:
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-11-23.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
       <br/>
     
   </p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
     <br/>
@@ -1110,8 +1121,9 @@ Using the following subject ID anonymization mapping:
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
 </p></div>
       
     </div>
