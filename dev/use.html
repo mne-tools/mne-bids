@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="auto">
+<html lang="en" data-content_root="./" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -41,12 +41,18 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
   <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=6ab18eca"></script>
+    <script src="_static/documentation_options.js?v=ffd9d0a1"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -549,11 +555,11 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="using-mne-bids">
-<h1>Using MNE-BIDS<a class="headerlink" href="#using-mne-bids" title="Permalink to this heading">#</a></h1>
+<h1>Using MNE-BIDS<a class="headerlink" href="#using-mne-bids" title="Link to this heading">#</a></h1>
 <section id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h2>
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">#</a></h2>
 <section id="python">
-<h3>Python<a class="headerlink" href="#python" title="Permalink to this heading">#</a></h3>
+<h3>Python<a class="headerlink" href="#python" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mne</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">write_raw_bids</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">(</span><span class="s1">&#39;my_old_file.fif&#39;</span><span class="p">)</span>
@@ -564,7 +570,7 @@ document.write(`
 </div>
 </section>
 <section id="command-line-interface">
-<h3>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">#</a></h3>
+<h3>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Link to this heading">#</a></h3>
 <p>Simply type <code class="docutils literal notranslate"><span class="pre">mne_bids</span></code> in your command line and press enter to see a list of
 accepted commands. Then type <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">&lt;command&gt;</span> <span class="pre">--help</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;command&gt;</span></code>
 is one of the accepted commands, to get more information about it.</p>
@@ -575,7 +581,7 @@ is one of the accepted commands, to get more information about it.</p>
 </section>
 </section>
 <section id="mastering-bidspath">
-<span id="bidspath-intro"></span><h2>Mastering BIDSPath<a class="headerlink" href="#mastering-bidspath" title="Permalink to this heading">#</a></h2>
+<span id="bidspath-intro"></span><h2>Mastering BIDSPath<a class="headerlink" href="#mastering-bidspath" title="Link to this heading">#</a></h2>
 <p>To be able to effectively use MNE-BIDS, you need to understand how to work with
 the <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> object. Follow
 <a class="reference internal" href="auto_examples/read_bids_datasets.html#read-bids-datasets-example"><span class="std std-ref">our basic example</span></a> on how to read a
@@ -584,7 +590,7 @@ BIDS dataset, and have a look at
 to learn everything you need!</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <p>The following examples demonstrate some common use-cases of MNE-BIDS.
 Each example has a badge called “Binder” at the end. By clicking on that badge,
 you can interactively run the examples in your browser.</p>
@@ -724,7 +730,7 @@ you can interactively run the examples in your browser.</p>
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -733,7 +739,7 @@ you can interactively run the examples in your browser.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>

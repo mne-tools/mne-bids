@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="auto">
+<html lang="en" data-content_root="../" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -41,12 +41,18 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=6ab18eca"></script>
+    <script src="../_static/documentation_options.js?v=ffd9d0a1"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -524,15 +530,15 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="mne-bids-command-line-interface-cli">
-<span id="python-cli"></span><h1>MNE-BIDS Command Line Interface (CLI)<a class="headerlink" href="#mne-bids-command-line-interface-cli" title="Permalink to this heading">#</a></h1>
+<span id="python-cli"></span><h1>MNE-BIDS Command Line Interface (CLI)<a class="headerlink" href="#mne-bids-command-line-interface-cli" title="Link to this heading">#</a></h1>
 <p>Here we list the MNE-BIDS tools that you can use from the command line.</p>
 <section id="mne-bids-calibration-to-bids">
-<span id="gen-mne-bids-calibration-to-bids"></span><h2>mne_bids calibration_to_bids<a class="headerlink" href="#mne-bids-calibration-to-bids" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-calibration-to-bids"></span><h2>mne_bids calibration_to_bids<a class="headerlink" href="#mne-bids-calibration-to-bids" title="Link to this heading">#</a></h2>
 <section class="callout" id="write-elekta-neuromag-megin-fine-calibration-data-to-bids">
-<h3>Write Elekta/Neuromag/MEGIN fine-calibration data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-fine-calibration-data-to-bids" title="Permalink to this heading">#</a></h3>
+<h3>Write Elekta/Neuromag/MEGIN fine-calibration data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-fine-calibration-data-to-bids" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">calibration_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="options">
-<h4>Options<a class="headerlink" href="#options" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#options" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -563,12 +569,12 @@ $ mne_bids calibration_to_bids –subject_id=01 –session=test
 </section>
 </section>
 <section id="mne-bids-count-events">
-<span id="gen-mne-bids-count-events"></span><h2>mne_bids count_events<a class="headerlink" href="#mne-bids-count-events" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-count-events"></span><h2>mne_bids count_events<a class="headerlink" href="#mne-bids-count-events" title="Link to this heading">#</a></h2>
 <section class="callout" id="count-events-in-bids-dataset">
-<h3>Count events in BIDS dataset.<a class="headerlink" href="#count-events-in-bids-dataset" title="Permalink to this heading">#</a></h3>
+<h3>Count events in BIDS dataset.<a class="headerlink" href="#count-events-in-bids-dataset" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">count_events</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id1">
-<h4>Options<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -601,12 +607,12 @@ etc.).</p>
 </section>
 </section>
 <section id="mne-bids-cp">
-<span id="gen-mne-bids-cp"></span><h2>mne_bids cp<a class="headerlink" href="#mne-bids-cp" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-cp"></span><h2>mne_bids cp<a class="headerlink" href="#mne-bids-cp" title="Link to this heading">#</a></h2>
 <section class="callout" id="rename-files-making-a-copy-and-update-their-internal-pointers">
-<h3>Rename files (making a copy) and update their internal pointers.<a class="headerlink" href="#rename-files-making-a-copy-and-update-their-internal-pointers" title="Permalink to this heading">#</a></h3>
+<h3>Rename files (making a copy) and update their internal pointers.<a class="headerlink" href="#rename-files-making-a-copy-and-update-their-internal-pointers" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">cp</span> <span class="pre">-i</span> <span class="pre">INPUT</span> <span class="pre">-o</span> <span class="pre">OUTPUT</span></code></p>
 <section id="id2">
-<h4>Options<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -631,12 +637,12 @@ file)</p>
 </section>
 </section>
 <section id="mne-bids-crosstalk-to-bids">
-<span id="gen-mne-bids-crosstalk-to-bids"></span><h2>mne_bids crosstalk_to_bids<a class="headerlink" href="#mne-bids-crosstalk-to-bids" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-crosstalk-to-bids"></span><h2>mne_bids crosstalk_to_bids<a class="headerlink" href="#mne-bids-crosstalk-to-bids" title="Link to this heading">#</a></h2>
 <section class="callout" id="write-elekta-neuromag-megin-crosstalk-data-to-bids">
-<h3>Write Elekta/Neuromag/MEGIN crosstalk data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-crosstalk-data-to-bids" title="Permalink to this heading">#</a></h3>
+<h3>Write Elekta/Neuromag/MEGIN crosstalk data to BIDS.<a class="headerlink" href="#write-elekta-neuromag-megin-crosstalk-data-to-bids" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">crosstalk_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id3">
-<h4>Options<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -667,12 +673,12 @@ $ mne_bids crosstalk_to_bids –subject_id=01 –session=test
 </section>
 </section>
 <section id="mne-bids-inspect">
-<span id="gen-mne-bids-inspect"></span><h2>mne_bids inspect<a class="headerlink" href="#mne-bids-inspect" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-inspect"></span><h2>mne_bids inspect<a class="headerlink" href="#mne-bids-inspect" title="Link to this heading">#</a></h2>
 <section class="callout" id="inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad">
-<h3>Inspect MEG and EEG raw data, and interactively mark channels as bad.<a class="headerlink" href="#inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad" title="Permalink to this heading">#</a></h3>
+<h3>Inspect MEG and EEG raw data, and interactively mark channels as bad.<a class="headerlink" href="#inspect-meg-and-eeg-raw-data-and-interactively-mark-channels-as-bad" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">inspect</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id4">
-<h4>Options<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -734,12 +740,12 @@ $ mne_bids inspect –subject_id=01 –task=experiment –session=test –dataty
 </section>
 </section>
 <section id="mne-bids-mark-channels">
-<span id="gen-mne-bids-mark-channels"></span><h2>mne_bids mark_channels<a class="headerlink" href="#mne-bids-mark-channels" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-mark-channels"></span><h2>mne_bids mark_channels<a class="headerlink" href="#mne-bids-mark-channels" title="Link to this heading">#</a></h2>
 <section class="callout" id="mark-channels-in-an-existing-bids-dataset-as-bad">
-<h3>Mark channels in an existing BIDS dataset as “bad”.<a class="headerlink" href="#mark-channels-in-an-existing-bids-dataset-as-bad" title="Permalink to this heading">#</a></h3>
+<h3>Mark channels in an existing BIDS dataset as “bad”.<a class="headerlink" href="#mark-channels-in-an-existing-bids-dataset-as-bad" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">mark_channels</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id5">
-<h4>Options<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#id5" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -805,12 +811,12 @@ $ mne_bids mark_channels –ch_name=”MEG 0112” –description=”noisy”   
 </section>
 </section>
 <section id="mne-bids-raw-to-bids">
-<span id="gen-mne-bids-raw-to-bids"></span><h2>mne_bids raw_to_bids<a class="headerlink" href="#mne-bids-raw-to-bids" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-raw-to-bids"></span><h2>mne_bids raw_to_bids<a class="headerlink" href="#mne-bids-raw-to-bids" title="Link to this heading">#</a></h2>
 <section class="callout" id="write-raw-files-to-bids-format">
-<h3>Write raw files to BIDS format.<a class="headerlink" href="#write-raw-files-to-bids-format" title="Permalink to this heading">#</a></h3>
+<h3>Write raw files to BIDS format.<a class="headerlink" href="#write-raw-files-to-bids-format" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">raw_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id6">
-<h4>Options<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#id6" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -874,12 +880,12 @@ If unknown, pass None</p>
 </section>
 </section>
 <section id="mne-bids-report">
-<span id="gen-mne-bids-report"></span><h2>mne_bids report<a class="headerlink" href="#mne-bids-report" title="Permalink to this heading">#</a></h2>
+<span id="gen-mne-bids-report"></span><h2>mne_bids report<a class="headerlink" href="#mne-bids-report" title="Link to this heading">#</a></h2>
 <section class="callout" id="id7">
-<h3>Write raw files to BIDS format.<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h3>
+<h3>Write raw files to BIDS format.<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">report</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
 <section id="id8">
-<h4>Options<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h4>
+<h4>Options<a class="headerlink" href="#id8" title="Link to this heading">#</a></h4>
 <dl class="field-list cmd-list option-list">
 <dt><kbd><span class="option">--version</span></kbd></dt>
 <dd><p>show program’s version number and exit</p>
@@ -1025,7 +1031,7 @@ If unknown, pass None</p>
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -1034,7 +1040,7 @@ If unknown, pass None</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>

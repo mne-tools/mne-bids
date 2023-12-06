@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="auto">
+<html lang="en" data-content_root="../../" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -40,12 +40,18 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6ab18eca"></script>
+    <script src="../../_static/documentation_options.js?v=ffd9d0a1"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -651,7 +657,9 @@ document.write(`
     <span class="k">return</span> <span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="copyfile_ctf"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf">[docs]</a><span class="k">def</span> <span class="nf">copyfile_ctf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+<div class="viewcode-block" id="copyfile_ctf">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf">[docs]</a>
+<span class="k">def</span> <span class="nf">copyfile_ctf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy and rename CTF files to a new location.</span>
 
 <span class="sd">    Parameters</span>
@@ -692,7 +700,10 @@ document.write(`
         <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">fname</span><span class="p">),</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">bids_folder_name</span> <span class="o">+</span> <span class="n">ext</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="copyfile_kit"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit">[docs]</a><span class="k">def</span> <span class="nf">copyfile_kit</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">_init_kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="copyfile_kit">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit">[docs]</a>
+<span class="k">def</span> <span class="nf">copyfile_kit</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">_init_kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy and rename KIT files to a new location.</span>
 
 <span class="sd">    Parameters</span>
@@ -771,6 +782,7 @@ document.write(`
             <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">position_file</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">position_path</span><span class="o">.</span><span class="n">basename</span><span class="p">))</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Overwrite file, replacing end of lines matching pattern with replace.&quot;&quot;&quot;</span>
     <span class="n">new_content</span> <span class="o">=</span> <span class="p">[]</span>
@@ -799,7 +811,9 @@ document.write(`
     <span class="n">_replace_file</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="copyfile_brainvision"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a><span class="nd">@verbose</span>
+<div class="viewcode-block" id="copyfile_brainvision">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
 
@@ -913,7 +927,10 @@ document.write(`
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Anonymized all dates in VHDR and VMRK.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="copyfile_edf"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a><span class="k">def</span> <span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="copyfile_edf">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a>
+<span class="k">def</span> <span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
 
 <span class="sd">    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:</span>
@@ -1036,7 +1053,10 @@ document.write(`
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="s2">&quot;ascii&quot;</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="copyfile_eeglab"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab">[docs]</a><span class="k">def</span> <span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+
+<div class="viewcode-block" id="copyfile_eeglab">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab">[docs]</a>
+<span class="k">def</span> <span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EEGLAB file to a new location.</span>
 
 <span class="sd">    If the EEGLAB ``.set`` file comes with an accompanying ``.fdt`` binary file</span>
@@ -1118,7 +1138,10 @@ document.write(`
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="copyfile_bti"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti">[docs]</a><span class="k">def</span> <span class="nf">copyfile_bti</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+
+<div class="viewcode-block" id="copyfile_bti">
+<a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti">[docs]</a>
+<span class="k">def</span> <span class="nf">copyfile_bti</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy BTi data.</span>
 
 <span class="sd">    Parameters</span>
@@ -1154,6 +1177,7 @@ document.write(`
             <span class="k">continue</span>
 
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span></div>
+
 </pre></div>
 
                 </article>
@@ -1195,7 +1219,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -1204,7 +1228,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>

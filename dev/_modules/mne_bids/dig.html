@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="auto">
+<html lang="en" data-content_root="../../" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -40,12 +40,18 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6ab18eca"></script>
+    <script src="../../_static/documentation_options.js?v=ffd9d0a1"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1139,7 +1145,9 @@ document.write(`
             <span class="n">d</span><span class="p">[</span><span class="s2">&quot;coord_frame&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MNE_STR_TO_FRAME</span><span class="p">[</span><span class="s2">&quot;unknown&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="template_to_head"><a class="viewcode-back" href="../../generated/mne_bids.template_to_head.html#mne_bids.template_to_head">[docs]</a><span class="nd">@verbose</span>
+<div class="viewcode-block" id="template_to_head">
+<a class="viewcode-back" href="../../generated/mne_bids.template_to_head.html#mne_bids.template_to_head">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">template_to_head</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform a BIDS standard template montage to the head coordinate frame.</span>
 
@@ -1230,7 +1238,10 @@ document.write(`
     <span class="k">return</span> <span class="n">info</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">read_trans</span><span class="p">(</span><span class="n">data_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;space-</span><span class="si">{</span><span class="n">space</span><span class="si">}</span><span class="s2">_trans.fif&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_montage_to_ras"><a class="viewcode-back" href="../../generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras">[docs]</a><span class="nd">@verbose</span>
+
+<div class="viewcode-block" id="convert_montage_to_ras">
+<a class="viewcode-back" href="../../generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">convert_montage_to_ras</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a montage from surface RAS (m) to scanner RAS (m).</span>
 
@@ -1269,7 +1280,10 @@ document.write(`
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="convert_montage_to_mri"><a class="viewcode-back" href="../../generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri">[docs]</a><span class="nd">@verbose</span>
+
+<div class="viewcode-block" id="convert_montage_to_mri">
+<a class="viewcode-back" href="../../generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">convert_montage_to_mri</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a montage from scanner RAS (m) to surface RAS (m).</span>
 
@@ -1312,6 +1326,7 @@ document.write(`
             <span class="n">ras_vox_trans</span><span class="p">,</span> <span class="n">vox_mri_trans</span><span class="p">,</span> <span class="n">fro</span><span class="o">=</span><span class="s2">&quot;ras&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;mri&quot;</span>
         <span class="p">)</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
                 </article>
@@ -1353,7 +1368,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -1362,7 +1377,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>

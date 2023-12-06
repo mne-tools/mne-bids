@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="auto">
+<html lang="en" data-content_root="./" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -41,12 +41,18 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
   <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=6ab18eca"></script>
+    <script src="_static/documentation_options.js?v=ffd9d0a1"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -497,19 +503,19 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="mne-bids">
-<h1>MNE-BIDS<a class="headerlink" href="#mne-bids" title="Permalink to this heading">#</a></h1>
+<h1>MNE-BIDS<a class="headerlink" href="#mne-bids" title="Link to this heading">#</a></h1>
 <p>MNE-BIDS is a Python package that allows you to read and write
 <a class="reference external" href="https://bids.neuroimaging.io/">BIDS</a>-compatible datasets with the help of
 <a class="reference external" href="https://mne.tools/stable/index.html">MNE-Python</a>.</p>
 <img alt="Schematic: From raw data to BIDS using MNE-BIDS" src="http://mne.tools/mne-bids/assets/MNE-BIDS.png" />
 <section id="why">
-<h2>Why?<a class="headerlink" href="#why" title="Permalink to this heading">#</a></h2>
+<h2>Why?<a class="headerlink" href="#why" title="Link to this heading">#</a></h2>
 <p>MNE-BIDS links BIDS and MNE-Python with the goal to make your analyses faster
 to code, more robust, and facilitate data and code sharing with co-workers
 and collaborators.</p>
 </section>
 <section id="what-is-this-bids-thing-anyway">
-<h2>What is this BIDS thing, anyway?<a class="headerlink" href="#what-is-this-bids-thing-anyway" title="Permalink to this heading">#</a></h2>
+<h2>What is this BIDS thing, anyway?<a class="headerlink" href="#what-is-this-bids-thing-anyway" title="Link to this heading">#</a></h2>
 <p>BIDS, the Brain Imaging Data Structure, is a standard that describes how to
 organize neuroimaging and electrophysiological data. In particular, it defines:</p>
 <ul class="simple">
@@ -522,14 +528,14 @@ organize neuroimaging and electrophysiological data. In particular, it defines:<
 <a class="reference external" href="https://bids-specification.readthedocs.io/">BIDS specification</a>.</p>
 </section>
 <section id="supported-file-formats">
-<h2>Supported file formats<a class="headerlink" href="#supported-file-formats" title="Permalink to this heading">#</a></h2>
+<h2>Supported file formats<a class="headerlink" href="#supported-file-formats" title="Link to this heading">#</a></h2>
 <p>Currently, we support all file formats that are in the BIDS specification for MEG, EEG, fNIRS, and iEEG data.
 We also support a range of additional manufacturer formats to facilitate converting them to their BIDS-recommended
 formats. For example, if you have a Nihon Kohden file, you can read that file using MNE-Python, and
 then use MNE-BIDS convert it to the BrainVision format and store it according to BIDS.</p>
 </section>
 <section id="citing-mne-bids">
-<h2>Citing MNE-BIDS<a class="headerlink" href="#citing-mne-bids" title="Permalink to this heading">#</a></h2>
+<h2>Citing MNE-BIDS<a class="headerlink" href="#citing-mne-bids" title="Link to this heading">#</a></h2>
 <p>If you use MNE-BIDS in your work, please cite our
 <a class="reference external" href="https://doi.org/10.21105/joss.01896">publication in JOSS</a>.</p>
 <p>Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C.,
@@ -618,7 +624,7 @@ data type you used:</p>
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -627,7 +633,7 @@ data type you used:</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>

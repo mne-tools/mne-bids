@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="auto">
+<html lang="en" data-content_root="../../" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -40,12 +40,18 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
   <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6ab18eca"></script>
+    <script src="../../_static/documentation_options.js?v=ffd9d0a1"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -1694,7 +1700,9 @@ document.write(`
     <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="make_dataset_description"><a class="viewcode-back" href="../../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description">[docs]</a><span class="nd">@verbose</span>
+<div class="viewcode-block" id="make_dataset_description">
+<a class="viewcode-back" href="../../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">make_dataset_description</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">path</span><span class="p">,</span>
@@ -1878,7 +1886,10 @@ document.write(`
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="nd">@verbose</span>
+
+<div class="viewcode-block" id="write_raw_bids">
+<a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span>
     <span class="n">raw</span><span class="p">,</span>
     <span class="n">bids_path</span><span class="p">,</span>
@@ -2700,7 +2711,10 @@ document.write(`
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
-<div class="viewcode-block" id="get_anat_landmarks"><a class="viewcode-back" href="../../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks">[docs]</a><span class="k">def</span> <span class="nf">get_anat_landmarks</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_anat_landmarks">
+<a class="viewcode-back" href="../../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks">[docs]</a>
+<span class="k">def</span> <span class="nf">get_anat_landmarks</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get anatomical landmarks in MRI voxel coordinates.</span>
 
 <span class="sd">    This function transforms the fiducial points from &quot;head&quot; to MRI &quot;voxel&quot;</span>
@@ -2774,6 +2788,7 @@ document.write(`
     <span class="k">return</span> <span class="n">landmarks</span></div>
 
 
+
 <span class="k">def</span> <span class="nf">_get_t1w_mgh</span><span class="p">(</span><span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the T1w image in MGH format.&quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
@@ -2827,7 +2842,9 @@ document.write(`
     <span class="k">return</span> <span class="n">img_json</span><span class="p">,</span> <span class="n">landmarks</span>
 
 
-<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="nd">@verbose</span>
+<div class="viewcode-block" id="write_anat">
+<a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span>
     <span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
@@ -2974,7 +2991,10 @@ document.write(`
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
-<div class="viewcode-block" id="mark_channels"><a class="viewcode-back" href="../../generated/mne_bids.mark_channels.html#mne_bids.mark_channels">[docs]</a><span class="nd">@verbose</span>
+
+<div class="viewcode-block" id="mark_channels">
+<a class="viewcode-back" href="../../generated/mne_bids.mark_channels.html#mne_bids.mark_channels">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update status and description of channels in an existing BIDS dataset.</span>
 
@@ -3104,7 +3124,10 @@ document.write(`
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">tsv_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write_meg_calibration"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration">[docs]</a><span class="nd">@verbose</span>
+
+<div class="viewcode-block" id="write_meg_calibration">
+<a class="viewcode-back" href="../../generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.</span>
 
@@ -3176,7 +3199,10 @@ document.write(`
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write_meg_crosstalk"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_crosstalk.html#mne_bids.write_meg_crosstalk">[docs]</a><span class="nd">@verbose</span>
+
+<div class="viewcode-block" id="write_meg_crosstalk">
+<a class="viewcode-back" href="../../generated/mne_bids.write_meg_crosstalk.html#mne_bids.write_meg_crosstalk">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">write_meg_crosstalk</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN crosstalk information to disk.</span>
 
@@ -3224,6 +3250,7 @@ document.write(`
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing crosstalk file to </span><span class="si">{</span><span class="n">out_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">out_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
     <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">))</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_daysback</span><span class="p">(</span>
@@ -3315,7 +3342,9 @@ document.write(`
     <span class="k">return</span> <span class="n">is_finecal_path</span>
 
 
-<div class="viewcode-block" id="anonymize_dataset"><a class="viewcode-back" href="../../generated/mne_bids.anonymize_dataset.html#mne_bids.anonymize_dataset">[docs]</a><span class="nd">@verbose</span>
+<div class="viewcode-block" id="anonymize_dataset">
+<a class="viewcode-back" href="../../generated/mne_bids.anonymize_dataset.html#mne_bids.anonymize_dataset">[docs]</a>
+<span class="nd">@verbose</span>
 <span class="k">def</span> <span class="nf">anonymize_dataset</span><span class="p">(</span>
     <span class="n">bids_root_in</span><span class="p">,</span>
     <span class="n">bids_root_out</span><span class="p">,</span>
@@ -3669,6 +3698,7 @@ document.write(`
         <span class="n">in_path</span> <span class="o">=</span> <span class="n">bids_root_in</span> <span class="o">/</span> <span class="n">fname</span>
         <span class="k">if</span> <span class="n">in_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">in_path</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">bids_root_out</span><span class="p">)</span></div>
+
 </pre></div>
 
                 </article>
@@ -3710,7 +3740,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -3719,7 +3749,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>

@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="" data-theme="auto">
+<html lang="en" data-content_root="../" data-theme="auto">
 
   <head>
     <meta charset="utf-8" />
@@ -41,12 +41,18 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
   <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=6ab18eca"></script>
+    <script src="../_static/documentation_options.js?v=ffd9d0a1"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
     <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
     <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){ dataLayer.push(arguments); }
@@ -557,7 +563,7 @@ document.write(`
 to download the full example code or to run this example in your browser via Binder</p>
 </div>
 <section class="sphx-glr-example-title" id="rename-brainvision-eeg-data-files">
-<span id="sphx-glr-auto-examples-rename-brainvision-files-py"></span><h1>06. Rename BrainVision EEG data files<a class="headerlink" href="#rename-brainvision-eeg-data-files" title="Permalink to this heading">#</a></h1>
+<span id="sphx-glr-auto-examples-rename-brainvision-files-py"></span><h1>06. Rename BrainVision EEG data files<a class="headerlink" href="#rename-brainvision-eeg-data-files" title="Link to this heading">#</a></h1>
 <p>According to the EEG extension to BIDS <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, the <a class="reference external" href="https://www.brainproducts.com/support-resources/brainvision-core-data-format-1-0/">BrainVision data format</a> is
 one of the recommended formats to store EEG data within a BIDS dataset.</p>
 <p>To organize EEG data in BIDS format, it is often necessary to rename the files.
@@ -594,7 +600,7 @@ for the <a class="reference internal" href="../generated/cli.html#python-cli"><s
 </pre></div>
 </div>
 <section id="download-some-example-data">
-<h2>Download some example data<a class="headerlink" href="#download-some-example-data" title="Permalink to this heading">#</a></h2>
+<h2>Download some example data<a class="headerlink" href="#download-some-example-data" title="Link to this heading">#</a></h2>
 <p>To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
 will use the MNE-Python testing data. Feel free to use your own BrainVision
 data.</p>
@@ -608,7 +614,7 @@ data.</p>
 </div>
 </section>
 <section id="rename-the-recording">
-<h2>Rename the recording<a class="headerlink" href="#rename-the-recording" title="Permalink to this heading">#</a></h2>
+<h2>Rename the recording<a class="headerlink" href="#rename-the-recording" title="Link to this heading">#</a></h2>
 <p>Above, at the top of the example, we imported
 <a class="reference internal" href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_brainvision()</span></code></a> from
 the MNE-BIDS <code class="docutils literal notranslate"><span class="pre">mne_bids/copyfiles.py</span></code> module. This function takes two
@@ -643,14 +649,14 @@ Setting channel info structure...
 </div>
 </section>
 <section id="further-information">
-<h2>Further information<a class="headerlink" href="#further-information" title="Permalink to this heading">#</a></h2>
+<h2>Further information<a class="headerlink" href="#further-information" title="Link to this heading">#</a></h2>
 <p>For converting data files, or writing new data to the BrainVision format, you
 can use <a class="reference external" href="https://mne.tools/dev/api/export.html#module-mne.export" title="(in MNE v1.7)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne.export</span></code></a> or have a look at the <a class="reference external" href="https://github.com/bids-standard/pybv">pybv</a> Python package.</p>
 <p>There is node JS tool to check the integrity of your BrainVision files.
 For that, see the <a class="reference external" href="https://github.com/sappelhoff/brainvision-validator">BrainVision Validator</a></p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id2" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
@@ -660,7 +666,7 @@ electroencephalography. Sci Data 6, 103 (2019).
 <a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.015 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.017 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-rename-brainvision-files-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/rename_brainvision_files.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -752,7 +758,7 @@ electroencephalography. Sci Data 6, 103 (2019).
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-03.
+      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-06.
       <br/>
     
   </p>
@@ -761,7 +767,7 @@ electroencephalography. Sci Data 6, 103 (2019).
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     <br/>
   </p>
 </div>
