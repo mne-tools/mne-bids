@@ -60,7 +60,7 @@ If you want to install a snapshot of the current development version, run:
 
 .. code-block:: bash
 
-   pip install --upgrade git+https://github.com/mne-tools/mne-bids
+   pip install --upgrade https://github.com/mne-tools/mne-bids/archive/refs/heads/main.zip
 
 To check if everything worked fine, the following command should
 print a version number and not give any error messages:

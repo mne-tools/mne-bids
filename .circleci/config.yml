@@ -43,7 +43,7 @@ jobs:
               python -m pip install --upgrade --progress-bar off pip
               python -m pip install --upgrade --progress-bar off -r test_requirements.txt
               python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
-              python -m pip install --upgrade git+https://github.com/mne-tools/mne-python
+              python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
               python -m pip install -e .
 
         - run:
@@ -126,7 +126,7 @@ jobs:
             python -m pip install --upgrade --progress-bar off pip
             python -m pip install --upgrade --progress-bar off -r test_requirements.txt
             python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
-            python -m pip install --upgrade --no-deps git+https://github.com/mne-tools/mne-python
+            python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
             python -m pip install -e .
 
       - run:
