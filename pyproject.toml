@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "mne-bids"
@@ -40,6 +40,7 @@ classifiers = [
 ]
 scripts = { mne_bids = "mne_bids.commands.run:main" }
 dependencies = ["mne>=1.5", "numpy>=1.21.2", "scipy>=1.7.1"]
+
 [project.optional-dependencies]
 # Variants with dependencies that will get installed on top of those listed unter
 # project.dependencies
@@ -80,7 +81,7 @@ doc = [
     "mne-nirs @ https://github.com/mne-tools/mne-nirs/archive/refs/heads/main.zip",
     "seaborn",
     "openneuro-py",
-    "defusedxml",  # for reading BrainVision montages: `examples/convert_eeg_to_bids.py`
+    "defusedxml", # for reading BrainVision montages: `examples/convert_eeg_to_bids.py`
 ]
 
 # Dependencies for developer installations
@@ -94,14 +95,15 @@ dev = ["mne_bids[test,doc,full]", "pre-commit"]
 "Forum" = "https://mne.discourse.group/"
 "Source Code" = "https://github.com/mne-tools/mne-bids"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["mne_bids"]
-exclude = ["tests"]
-namespaces = false
+[tool.hatch.metadata]
+allow-direct-references = true # allow specifying URLs in our dependencies
 
-[tool.setuptools.dynamic]
-version = { attr = "mne_bids.__version__" }
+[tool.hatch.build]
+exclude = ["tests/"]
+
+[tool.hatch.version]
+source = "vcs"
+raw-options = { version_scheme = "release-branch-semver" }
 
 [tool.ruff]
 select = ["E", "F", "W", "D", "I"]

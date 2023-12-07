@@ -1,6 +1,12 @@
 """MNE software for easily interacting with BIDS compatible datasets."""
 
-__version__ = "0.15.dev0"
+try:
+    from importlib.metadata import version
+
+    __version__ = version("mne_bids")
+except Exception:
+    __version__ = "0.0.0"
+
 from mne_bids import commands
 from mne_bids.report import make_report
 from mne_bids.path import (

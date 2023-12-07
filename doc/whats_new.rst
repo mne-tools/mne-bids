@@ -36,7 +36,9 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- nothing yet
+- The package build backend has been switched from ``setuptools`` to ``hatchling``. This
+  only affects users who build and install MNE-BIDS from source, and should not lead to
+  changed runtime behavior, by `Richard Höchenberger`_ (:gh:`1204`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
