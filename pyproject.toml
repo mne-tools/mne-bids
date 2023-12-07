@@ -101,8 +101,8 @@ allow-direct-references = true # allow specifying URLs in our dependencies
 [tool.hatch.build]
 exclude = [
     "/.*",
-    "tests/",
-    "/paper/",
+    "**/tests",
+    "/paper",
     "/examples",
     "/doc",
     "/Makefile",
