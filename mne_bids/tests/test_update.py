@@ -6,22 +6,21 @@ import json
 import os.path as op
 from pathlib import Path
 
-import pytest
-import numpy as np
-
 import mne
-from mne.io.constants import FIFF
+import numpy as np
+import pytest
 from mne.datasets import testing
+from mne.io.constants import FIFF
 
 from mne_bids import (
     BIDSPath,
-    write_raw_bids,
-    write_meg_calibration,
-    write_meg_crosstalk,
     get_anat_landmarks,
+    update_anat_landmarks,
     update_sidecar_json,
     write_anat,
-    update_anat_landmarks,
+    write_meg_calibration,
+    write_meg_crosstalk,
+    write_raw_bids,
 )
 from mne_bids.path import _mkdir_p
 from mne_bids.utils import _write_json
@@ -127,7 +126,7 @@ def test_update_sidecar_jsons(
     # get the sidecar json
     sidecar_path = bids_path.copy().update(extension=".json", datatype="meg")
     sidecar_fpath = sidecar_path.fpath
-    with open(sidecar_fpath, "r", encoding="utf-8") as fin:
+    with open(sidecar_fpath, encoding="utf-8") as fin:
         sidecar_json = json.load(fin)
     for key, val, _ in expected_checks:
         assert sidecar_json.get(key) == val
@@ -135,7 +134,7 @@ def test_update_sidecar_jsons(
 
     # update sidecars
     update_sidecar_json(sidecar_path, _get_sidecar_json_update_file)
-    with open(sidecar_fpath, "r", encoding="utf-8") as fin:
+    with open(sidecar_fpath, encoding="utf-8") as fin:
         sidecar_json = json.load(fin)
     for key, _, val in expected_checks:
         assert sidecar_json.get(key) == val

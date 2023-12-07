@@ -1,10 +1,4 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 23.11.0
-    hooks:
-      - id: black
-        args: [--quiet]
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.6
     hooks:
@@ -18,3 +12,21 @@ repos:
         # D205: 1 blank line required between summary line and description
         args: ["--ignore=D103,D400,D205"]
         files: ^examples/
+      - id: ruff-format
+        name: ruff format mne_bids/
+        files: ^mne_bids/
+      - id: ruff-format
+        name: ruff format examples/
+        files: ^examples/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-ast
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-docstring-first

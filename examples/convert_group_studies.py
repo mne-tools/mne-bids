@@ -26,11 +26,11 @@ import mne
 from mne.datasets import eegbci
 
 from mne_bids import (
-    write_raw_bids,
     BIDSPath,
     get_anonymization_daysback,
     make_report,
     print_dir_tree,
+    write_raw_bids,
 )
 from mne_bids.stats import count_events
 

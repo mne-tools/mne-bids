@@ -6,18 +6,16 @@
 
 from pathlib import Path
 
-import numpy as np
-
 import mne
-
+import numpy as np
+from mne.preprocessing import annotate_amplitude
 from mne.utils import logger, verbose
 from mne.viz import use_browser_backend
-from mne.preprocessing import annotate_amplitude
 
-from mne_bids import read_raw_bids, mark_channels
+from mne_bids import mark_channels, read_raw_bids
+from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 from mne_bids.read import _from_tsv, _read_events
 from mne_bids.write import _events_tsv
-from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
 @verbose

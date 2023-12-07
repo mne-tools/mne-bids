@@ -8,26 +8,27 @@ For each supported coordinate frame, implement a test.
 
 import os
 import os.path as op
-import numpy as np
-import pytest
-from numpy.testing import assert_almost_equal
 import warnings
 
 import mne
-import mne_bids
+import numpy as np
+import pytest
 from mne.datasets import testing
-from mne_bids import BIDSPath, write_raw_bids, read_raw_bids
-from mne_bids.dig import (
-    _write_dig_bids,
-    _read_dig_bids,
-    template_to_head,
-    convert_montage_to_mri,
-    convert_montage_to_ras,
-)
+from numpy.testing import assert_almost_equal
+
+import mne_bids
+from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 from mne_bids.config import (
     BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_TO_MNE_FRAMES,
     MNE_STR_TO_FRAME,
+)
+from mne_bids.dig import (
+    _read_dig_bids,
+    _write_dig_bids,
+    convert_montage_to_mri,
+    convert_montage_to_ras,
+    template_to_head,
 )
 
 base_path = op.join(op.dirname(mne.__file__), "io")

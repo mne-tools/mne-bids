@@ -2,44 +2,42 @@
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
-from contextlib import nullcontext
 import json
 import os
 import os.path as op
-from pathlib import Path
-from datetime import datetime, timezone
-from typing import OrderedDict
-
-import pytest
 import shutil as sh
-import numpy as np
-from numpy.testing import assert_almost_equal
+from collections import OrderedDict
+from contextlib import nullcontext
+from datetime import datetime, timezone
+from pathlib import Path
 
 import mne
+import numpy as np
+import pytest
 from mne.datasets import testing
 from mne.io.constants import FIFF
-from mne.utils import object_diff
-from mne.utils import assert_dig_allclose
+from mne.utils import assert_dig_allclose, object_diff
+from numpy.testing import assert_almost_equal
 
+import mne_bids.write
 from mne_bids import BIDSPath
 from mne_bids.config import (
-    MNE_STR_TO_FRAME,
     BIDS_SHARED_COORDINATE_FRAMES,
     BIDS_TO_MNE_FRAMES,
+    MNE_STR_TO_FRAME,
 )
+from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
-    read_raw_bids,
-    _read_raw,
-    get_head_mri_trans,
     _handle_events_reading,
     _handle_scans_reading,
+    _read_raw,
+    get_head_mri_trans,
+    read_raw_bids,
 )
-from mne_bids.tsv_handler import _to_tsv, _from_tsv
-from mne_bids.utils import _write_json
 from mne_bids.sidecar_updates import _update_sidecar
-from mne_bids.path import _find_matching_sidecar
-import mne_bids.write
-from mne_bids.write import write_anat, write_raw_bids, get_anat_landmarks
+from mne_bids.tsv_handler import _from_tsv, _to_tsv
+from mne_bids.utils import _write_json
+from mne_bids.write import get_anat_landmarks, write_anat, write_raw_bids
 
 subject_id = "01"
 session_id = "01"
@@ -766,7 +764,7 @@ def test_handle_chpi_reading(tmp_path):
 
     # cause conflicts between cHPI info in sidecar and raw data
     meg_json_path = bids_path.copy().update(suffix="meg", extension=".json")
-    with open(meg_json_path, "r", encoding="utf-8") as f:
+    with open(meg_json_path, encoding="utf-8") as f:
         meg_json_data = json.load(f)
 
     # cHPI frequency mismatch

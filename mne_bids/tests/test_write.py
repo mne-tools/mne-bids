@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Test the MNE BIDS converter.
 
 For each supported file format, implement a test.
@@ -10,61 +9,60 @@ For each supported file format, implement a test.
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD-3-Clause
-import sys
+import codecs
 import inspect
+import json
 import os
 import os.path as op
-from glob import glob
-from datetime import datetime, timezone, timedelta
 import shutil as sh
-import json
-from pathlib import Path
-import codecs
+import sys
 import warnings
-
-import pytest
-import numpy as np
-from numpy.testing import assert_allclose, assert_array_equal, assert_array_almost_equal
+from datetime import datetime, timedelta, timezone
+from glob import glob
+from pathlib import Path
 
 import mne
+import numpy as np
+import pytest
 from mne.datasets import testing
-from mne.utils import check_version
 from mne.io import anonymize_info
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
+from mne.utils import check_version
+from numpy.testing import assert_allclose, assert_array_almost_equal, assert_array_equal
 
 from mne_bids import (
-    write_raw_bids,
-    read_raw_bids,
     BIDSPath,
-    write_anat,
+    anonymize_dataset,
+    get_anat_landmarks,
+    get_entities_from_fname,
+    get_entity_vals,
     make_dataset_description,
     mark_channels,
+    read_raw_bids,
+    write,
+    write_anat,
     write_meg_calibration,
     write_meg_crosstalk,
-    get_entities_from_fname,
-    get_anat_landmarks,
-    write,
-    anonymize_dataset,
-    get_entity_vals,
+    write_raw_bids,
 )
-from mne_bids.write import _get_fid_coords
-from mne_bids.utils import (
-    _stamp_to_dt,
-    _get_anonymization_daysback,
-    get_anonymization_daysback,
-    _write_json,
+from mne_bids.config import (
+    BIDS_COORD_FRAME_DESCRIPTIONS,
+    EEGLABIO_VERSION,
+    PYBV_VERSION,
+    REFERENCES,
 )
-from mne_bids.tsv_handler import _from_tsv, _to_tsv
-from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
-from mne_bids.config import (
-    REFERENCES,
-    BIDS_COORD_FRAME_DESCRIPTIONS,
-    PYBV_VERSION,
-    EEGLABIO_VERSION,
+from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
+from mne_bids.tsv_handler import _from_tsv, _to_tsv
+from mne_bids.utils import (
+    _get_anonymization_daysback,
+    _stamp_to_dt,
+    _write_json,
+    get_anonymization_daysback,
 )
+from mne_bids.write import _get_fid_coords
 
 base_path = op.join(op.dirname(mne.__file__), "io")
 subject_id = "01"
@@ -284,7 +282,7 @@ def test_write_participants(_bids_validate, tmp_path):
     _bids_validate(tmp_path)
     write_raw_bids(raw, bids_path, overwrite=True)
     data = _from_tsv(participants_tsv)
-    with open(participants_json_fpath, "r", encoding="utf-8") as fin:
+    with open(participants_json_fpath, encoding="utf-8") as fin:
         participants_json = json.load(fin)
     assert "subject_test_col1" in participants_json
     assert data["subject_test_col1"][participant_idx] == "S"
@@ -295,7 +293,7 @@ def test_write_participants(_bids_validate, tmp_path):
     with pytest.raises(FileExistsError, match="already exists"):
         write_raw_bids(raw, bids_path, overwrite=False)
     data = _from_tsv(participants_tsv)
-    with open(participants_json_fpath, "r", encoding="utf-8") as fin:
+    with open(participants_json_fpath, encoding="utf-8") as fin:
         participants_json = json.load(fin)
     assert "subject_test_col1" in participants_json
     assert data["age"][data["participant_id"].index("sub-01")] == "1"
@@ -346,9 +344,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
     """Test making a dataset_description.json."""
     make_dataset_description(path=tmp_path, name="tst")
 
-    with open(
-        op.join(tmp_path, "dataset_description.json"), "r", encoding="utf-8"
-    ) as fid:
+    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
@@ -363,9 +359,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
         verbose=True,
     )
 
-    with open(
-        op.join(tmp_path, "dataset_description.json"), "r", encoding="utf-8"
-    ) as fid:
+    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
@@ -380,9 +374,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
         verbose=True,
     )
 
-    with open(
-        op.join(tmp_path, "dataset_description.json"), "r", encoding="utf-8"
-    ) as fid:
+    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["MNE B.", "MNE P."]
 
@@ -500,7 +492,7 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
     eeg_json_fpath = (
         bids_path.copy().update(suffix="eeg", datatype="eeg", extension=".json").fpath
     )
-    with open(eeg_json_fpath, "r", encoding="utf-8") as fin:
+    with open(eeg_json_fpath, encoding="utf-8") as fin:
         eeg_json = json.load(fin)
 
     if line_freq == 60:
@@ -649,9 +641,9 @@ def test_fif(_bids_validate, tmp_path):
         op.join(
             bids_root,
             "sub-emptyroom",
-            "ses-{0}".format(er_date),
+            f"ses-{er_date}",
             "meg",
-            "sub-emptyroom_ses-{0}_task-noise_meg.json".format(er_date),
+            f"sub-emptyroom_ses-{er_date}_task-noise_meg.json",
         )
     )
 
@@ -727,7 +719,7 @@ def test_fif(_bids_validate, tmp_path):
         )
 
     # assert README has references in it
-    with open(readme, "r", encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
         assert REFERENCES["mne-bids"] in text
@@ -738,7 +730,7 @@ def test_fif(_bids_validate, tmp_path):
     # now force the overwrite
     write_raw_bids(raw, bids_path2, events=events, event_id=event_id, overwrite=True)
 
-    with open(readme, "r", encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert "Welcome to my dataset\n" in text
         assert REFERENCES["mne-bids"] in text
@@ -1363,7 +1355,7 @@ def test_vhdr(_bids_validate, tmp_path):
     coordsystem_fpath = _find_matching_sidecar(
         bids_path.copy().update(root=bids_root), suffix="coordsystem", extension=".json"
     )
-    with open(coordsystem_fpath, "r") as fin:
+    with open(coordsystem_fpath) as fin:
         coordsys_data = json.load(fin)
         descr = coordsys_data.get("EEGCoordinateSystemDescription", "")
         assert descr == BIDS_COORD_FRAME_DESCRIPTIONS["captrak"]
@@ -1458,7 +1450,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         hed_version="No HED used (just testing)",
     )
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
-    with open(dataset_description_fpath, "r", encoding="utf-8") as f:
+    with open(dataset_description_fpath, encoding="utf-8") as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == ["test1", "test2"]
 
@@ -1473,7 +1465,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # dataset_description.json files should not be overwritten inside
     # write_raw_bids calls
-    with open(dataset_description_fpath, "r", encoding="utf-8") as f:
+    with open(dataset_description_fpath, encoding="utf-8") as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == ["test1", "test2"]
 
@@ -1623,7 +1615,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # assert README has references in it
     readme = op.join(bids_root, "README")
-    with open(readme, "r", encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert REFERENCES["ieeg"] in text
         assert REFERENCES["meg"] not in text
@@ -1850,7 +1842,7 @@ def test_bdf(_bids_validate, tmp_path):
 
     # assert README has references in it
     readme = op.join(tmp_path, "README")
-    with open(readme, "r", encoding="utf-8-sig") as fid:
+    with open(readme, encoding="utf-8-sig") as fid:
         text = fid.read()
         assert REFERENCES["eeg"] in text
         assert REFERENCES["meg"] not in text
@@ -1959,7 +1951,7 @@ def _check_anat_json(bids_path):
     json_path = bids_path.copy().update(extension=".json")
     # Validate that matching sidecar file is as expected
     assert op.exists(json_path.fpath)
-    with open(json_path, "r", encoding="utf-8") as f:
+    with open(json_path, encoding="utf-8") as f:
         json_dict = json.load(f)
 
     # We only should have AnatomicalLandmarkCoordinates as key
@@ -2008,7 +2000,7 @@ def test_get_anat_landmarks():
 
     # trans is a str, but file does not exist
     wrong_fname = "not_a_trans"
-    match = 'trans file "{}" not found'.format(wrong_fname)
+    match = f'trans file "{wrong_fname}" not found'
     with pytest.raises(IOError, match=match):
         get_anat_landmarks(**dict(kwargs, trans=wrong_fname))
 
@@ -2800,7 +2792,8 @@ def test_annotations(_bids_validate, bad_segments, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "write_events", [True, False]  # whether to pass "events" to write_raw_bids
+    "write_events",
+    [True, False],  # whether to pass "events" to write_raw_bids
 )
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
@@ -3036,7 +3029,7 @@ def test_coordsystem_json_compliance(
     coordsystem_fname = _find_matching_sidecar(
         bids_output_path, suffix="coordsystem", extension=".json"
     )
-    with open(coordsystem_fname, "r", encoding="utf-8") as fin:
+    with open(coordsystem_fname, encoding="utf-8") as fin:
         coordsystem_json = json.load(fin)
 
     # writing twice should work as long as the coordsystem
@@ -3214,7 +3207,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
 
     # update the scans sidecar JSON with information
     scans_json_fpath = scans_fname.copy().update(extension=".json")
-    with open(scans_json_fpath, "r") as fin:
+    with open(scans_json_fpath) as fin:
         scans_json = json.load(fin)
     scans_json["test"] = "New stuff..."
     update_sidecar_json(scans_json_fpath, scans_json)
@@ -3227,7 +3220,7 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
         anonymize=dict(daysback=daysback_min, keep_source=True),
         verbose=False,
     )
-    with open(scans_json_fpath, "r") as fin:
+    with open(scans_json_fpath) as fin:
         scans_json = json.load(fin)
     assert "test" in scans_json
 
@@ -3292,18 +3285,18 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 
     # TSV files should be written with a BOM
     for tsv_file in bids_path.root.rglob("*.tsv"):
-        with open(tsv_file, "r", encoding="utf-8") as f:
+        with open(tsv_file, encoding="utf-8") as f:
             x = f.read()
         assert x[0] == codecs.BOM_UTF8.decode("utf-8")
 
     # Readme should be written with a BOM
-    with open(bids_path.root / "README", "r", encoding="utf-8") as f:
+    with open(bids_path.root / "README", encoding="utf-8") as f:
         x = f.read()
     assert x[0] == codecs.BOM_UTF8.decode("utf-8")
 
     # JSON files should be written without a BOM
     for json_file in bids_path.root.rglob("*.json"):
-        with open(json_file, "r", encoding="utf-8") as f:
+        with open(json_file, encoding="utf-8") as f:
             x = f.read()
         assert x[0] != codecs.BOM_UTF8.decode("utf-8")
 
@@ -3311,7 +3304,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     events_tsv_fname = (
         bids_path.copy().update(suffix="events", extension=".tsv").match()[0]
     )
-    with open(str(events_tsv_fname), "r", encoding="utf-8-sig") as f:
+    with open(str(events_tsv_fname), encoding="utf-8-sig") as f:
         x = f.read()
     assert "döner" in x
     assert "bøfsandwich" in x
@@ -3697,7 +3690,7 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path, empty_room_dtype):
     _bids_validate(bids_path.root)
 
     meg_json_path = bids_path.copy().update(extension=".json")
-    with open(meg_json_path, "r") as fin:
+    with open(meg_json_path) as fin:
         meg_json_data = json.load(fin)
 
     assert "AssociatedEmptyRoom" in meg_json_data

@@ -29,20 +29,20 @@ In a second step we will read the organized dataset using MNE-BIDS.
 
 import json
 import os.path as op
-from pprint import pprint
 import shutil
+from pprint import pprint
 
 import mne
 from mne.datasets import sample
 
 from mne_bids import (
-    write_raw_bids,
+    BIDSPath,
+    make_dataset_description,
+    print_dir_tree,
     read_raw_bids,
     write_meg_calibration,
     write_meg_crosstalk,
-    BIDSPath,
-    print_dir_tree,
-    make_dataset_description,
+    write_raw_bids,
 )
 from mne_bids.stats import count_events
 
@@ -180,7 +180,7 @@ print(bids_path.meg_crosstalk_fpath)
 # for mne-bids. If you are preparing a manuscript, please make sure to also
 # cite MNE-BIDS there.
 readme = op.join(output_path, "README")
-with open(readme, "r", encoding="utf-8-sig") as fid:
+with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
 
@@ -209,9 +209,7 @@ make_dataset_description(
 Alexandre Gramfort, Mainak Jas, and Stefan Appelhoff prepared and updated the \
 data in BIDS format.""",
     data_license="CC0",
-    ethics_approvals=[
-        "Human Subjects Division at the University of Washington"
-    ],  # noqa: E501
+    ethics_approvals=["Human Subjects Division at the University of Washington"],
     funding=[
         "NIH 5R01EB009048",
         "NIH 1R01EB009048",
@@ -234,7 +232,7 @@ data in BIDS format.""",
     overwrite=True,
 )
 desc_json_path = bids_path.root / "dataset_description.json"
-with open(desc_json_path, "r", encoding="utf-8-sig") as fid:
+with open(desc_json_path, encoding="utf-8-sig") as fid:
     pprint(json.loads(fid.read()))
 
 # %%

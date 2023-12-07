@@ -22,10 +22,10 @@ modify BIDS-formatted data.
 from mne.datasets import somato
 
 from mne_bids import (
-    read_raw_bids,
     find_matching_paths,
-    print_dir_tree,
     make_report,
+    print_dir_tree,
+    read_raw_bids,
     update_sidecar_json,
 )
 

@@ -63,9 +63,7 @@ test = [
     "pytest-cov",
     "pytest-sugar",
     "check-manifest",
-    "pydocstyle",
-    "flake8",
-    "black",
+    "ruff",
 ]
 
 # Dependencies for building the documentation
@@ -106,14 +104,11 @@ namespaces = false
 version = { attr = "mne_bids.__version__" }
 
 [tool.ruff]
-select = ["E", "F", "W", "D"]
+select = ["E", "F", "W", "D", "I"]
 exclude = ["__init__.py"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
-
-[tool.black]
-exclude = "(dist/)|(build/)|(.*\\.ipynb)"
 
 [tool.coverage.run]
 omit = ["*tests*"]
@@ -122,38 +117,7 @@ omit = ["*tests*"]
 # Regexes for lines to exclude from consideration
 exclude_lines = ["pragma: no cover", "if 0:", "if __name__ == .__main__.:"]
 
-[tool.isort]
-skip_glob = "*/*"
-
-[tool.pydocstyle]
-convention = "pep257"
-match_dir = "^(?!\\.|doc|examples).*$"
-add-ignore = ["D100", "D104", "D107", "D413"]
-add-select = [
-    "D214",
-    "D215",
-    "D404",
-    "D405",
-    "D406",
-    "D407",
-    "D408",
-    "D409",
-    "D410",
-    "D411",
-]
-ignore-decorators = "property"
-
-[tool.flake8]
-max-line-length = 88
-exclude = "__init__.py"
-ignore = ["I101", "I100", "I201"]
-extend-ignore = ["W503", "E203"]
-per-file-ignores = [
-    "mne_bids/commands/tests/test_*.py:E402",
-    "mne_bids/tests/test_*.py:E402",
-]
-
-[tool.pytest]
+[tool.pytest.ini_options]
 addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
     --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
 filterwarnings = [

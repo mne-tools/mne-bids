@@ -14,8 +14,8 @@ $ mne_bids mark_channels --ch_name="MEG 0112" --description="noisy" \
 from mne.utils import logger
 
 import mne_bids
-from mne_bids.config import reader
 from mne_bids import BIDSPath, mark_channels
+from mne_bids.config import reader
 
 
 def run():

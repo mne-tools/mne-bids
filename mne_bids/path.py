@@ -4,40 +4,40 @@
 #
 # License: BSD-3-Clause
 import glob
+import json
 import os
 import re
-from io import StringIO
 import shutil as sh
 from copy import deepcopy
+from datetime import datetime
+from io import StringIO
 from os import path as op
 from pathlib import Path
-from datetime import datetime
-import json
 from textwrap import indent
 from typing import Optional
 
 import numpy as np
-from mne.utils import logger, _validate_type, verbose, _check_fname
+from mne.utils import _check_fname, _validate_type, logger, verbose
 
 from mne_bids.config import (
-    ALLOWED_PATH_ENTITIES,
+    ALLOWED_DATATYPE_EXTENSIONS,
+    ALLOWED_DATATYPES,
     ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX,
+    ALLOWED_PATH_ENTITIES,
     ALLOWED_PATH_ENTITIES_SHORT,
-    ALLOWED_DATATYPES,
-    ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_SPACES,
-    reader,
     ENTITY_VALUE_TYPE,
+    reader,
 )
+from mne_bids.tsv_handler import _drop, _from_tsv, _to_tsv
 from mne_bids.utils import (
-    _check_key_val,
     _check_empty_room_basename,
-    param_regex,
+    _check_key_val,
     _ensure_tuple,
+    param_regex,
     warn,
 )
-from mne_bids.tsv_handler import _from_tsv, _drop, _to_tsv
 
 
 def _find_empty_room_candidates(bids_path):
@@ -174,7 +174,7 @@ def _find_matched_empty_room(bids_path):
     return best_er_bids_path
 
 
-class BIDSPath(object):
+class BIDSPath:
     """A BIDS path object.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -966,7 +966,7 @@ class BIDSPath(object):
                 if isinstance(val, str) and not val.isdigit():
                     raise ValueError(f"{key} is not an index (Got {val})")
                 elif isinstance(val, int):
-                    kwargs[key] = "{:02}".format(val)
+                    kwargs[key] = f"{val:02}"
 
         # ensure extension starts with a '.'
         extension = kwargs.get("extension")
@@ -1167,7 +1167,7 @@ class BIDSPath(object):
             .update(datatype=None, suffix="meg")
             .find_matching_sidecar(extension=".json")
         )
-        with open(sidecar_fname, "r", encoding="utf-8") as f:
+        with open(sidecar_fname, encoding="utf-8") as f:
             sidecar_json = json.load(f)
 
         if "AssociatedEmptyRoom" in sidecar_json:
@@ -1390,7 +1390,7 @@ def _print_lines_with_entry(file, entry, folder, is_tsv, line_numbers, outfile):
         prints to the console, else a string is printed to.
     """
     entry_lines = list()
-    with open(file, "r", encoding="utf-8-sig") as fid:
+    with open(file, encoding="utf-8-sig") as fid:
         if is_tsv:  # format tsv files nicely
             header = _truncate_tsv_line(fid.readline())
             if line_numbers:
@@ -1536,7 +1536,7 @@ def print_dir_tree(folder, max_depth=None, return_str=False):
         # Only print if this is up to the depth we asked
         if branchlen <= max_depth:
             if branchlen <= 1:
-                print("|{}".format(op.basename(root) + os.sep), file=outfile)
+                print(f"|{op.basename(root) + os.sep}", file=outfile)
             else:
                 print(
                     "|{} {}".format(
@@ -2055,7 +2055,7 @@ def get_entity_vals(
     ]
     ignore_dirs = _ensure_tuple(existing_ignore_dirs)
 
-    p = re.compile(r"{}-(.*?)_".format(entity_long_abbr_map[entity_key]))
+    p = re.compile(rf"{entity_long_abbr_map[entity_key]}-(.*?)_")
     values = list()
     filenames = root.glob(f"**/*{entity_long_abbr_map[entity_key]}-*_*")
 

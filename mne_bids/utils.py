@@ -10,17 +10,17 @@
 import json
 import os
 import re
-from datetime import datetime, date, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from os import path as op
 
 import numpy as np
+from mne import pick_types
 from mne.channels import make_standard_montage
 from mne.io.kit.kit import get_kit_info
-from mne import pick_types
-from mne.utils import warn as _warn, logger, verbose
+from mne.utils import logger, verbose
+from mne.utils import warn as _warn
 
 from mne_bids.tsv_handler import _to_tsv
-
 
 # This regex matches key-val pairs. Any characters are allowed in the key and
 # the value, except these special symbols: - _ . \ /
@@ -117,7 +117,7 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
         raise ValueError(
             "Only two types of mappings are currently supported: "
             "from mne to bids, or from bids to mne. However, "
-            'you specified from "{}" to "{}"'.format(fro, to)
+            f'you specified from "{fro}" to "{to}"'
         )
 
     return mapping

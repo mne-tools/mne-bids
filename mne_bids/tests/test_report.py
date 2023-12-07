@@ -10,9 +10,8 @@ import pytest
 from mne.datasets import testing
 
 from mne_bids import BIDSPath, make_report
-from mne_bids.write import write_raw_bids
 from mne_bids.config import BIDS_VERSION
-
+from mne_bids.write import write_raw_bids
 
 subject_id = "01"
 session_id = "01"

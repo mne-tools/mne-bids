@@ -4,39 +4,39 @@
 #          Alex Rockhill <aprockhill@mailbox.org>
 #
 # License: BSD-3-Clause
-import os.path as op
 import json
-from collections import OrderedDict
-from pathlib import Path
+import os.path as op
 import re
 import warnings
+from collections import OrderedDict
+from pathlib import Path
 
 import mne
 import numpy as np
 from mne.io.constants import FIFF
-from mne.utils import logger, _validate_type, _check_option, get_subjects_dir
 from mne.io.pick import _picks_to_idx
+from mne.utils import _check_option, _validate_type, get_subjects_dir, logger
 
 from mne_bids.config import (
     ALLOWED_SPACES,
+    BIDS_COORD_FRAME_DESCRIPTIONS,
     BIDS_COORDINATE_UNITS,
-    MNE_TO_BIDS_FRAMES,
+    BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
     BIDS_TO_MNE_FRAMES,
     MNE_FRAME_TO_STR,
     MNE_STR_TO_FRAME,
-    BIDS_COORD_FRAME_DESCRIPTIONS,
-    BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS,
+    MNE_TO_BIDS_FRAMES,
 )
+from mne_bids.path import BIDSPath
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (
+    _import_nibabel,
     _scale_coord_to_meters,
     _write_json,
     _write_tsv,
     verbose,
     warn,
-    _import_nibabel,
 )
-from mne_bids.path import BIDSPath
 
 data_dir = Path(__file__).parent / "data"
 
@@ -46,7 +46,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, coord_unit):
 
     Handle xyz coordinates and coordinate frame of each channel.
     """
-    logger.info("Reading electrode " "coords from {}.".format(electrodes_fname))
+    logger.info("Reading electrode " f"coords from {electrodes_fname}.")
     electrodes_dict = _from_tsv(electrodes_fname)
     ch_names_tsv = electrodes_dict["name"]
 
@@ -80,7 +80,7 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype):
     Handle reading the coordinate frame and coordinate unit
     of each electrode.
     """
-    with open(coordsystem_fpath, "r", encoding="utf-8-sig") as fin:
+    with open(coordsystem_fpath, encoding="utf-8-sig") as fin:
         coordsystem_json = json.load(fin)
 
     if datatype == "meg":
@@ -178,7 +178,7 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
             ]
         )
     else:  # pragma: no cover
-        raise RuntimeError("datatype {} not supported.".format(datatype))
+        raise RuntimeError(f"datatype {datatype} not supported.")
 
     # Add impedance values if available, currently only BrainVision:
     # https://github.com/mne-tools/mne-python/pull/7974
@@ -375,7 +375,7 @@ def _write_coordsystem_json(
     # XXX: improve later when BIDS is updated
     # check that there already exists a coordsystem.json
     if Path(fname).exists() and not overwrite:
-        with open(fname, "r", encoding="utf-8-sig") as fin:
+        with open(fname, encoding="utf-8-sig") as fin:
             coordsystem_dict = json.load(fin)
         if fid_json != coordsystem_dict:
             raise RuntimeError(

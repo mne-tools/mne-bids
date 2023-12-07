@@ -6,7 +6,7 @@ on:
       - CITATION.cff
   pull_request:
     paths:
-      - CITATION.cff        
+      - CITATION.cff
 
 jobs:
   validate:

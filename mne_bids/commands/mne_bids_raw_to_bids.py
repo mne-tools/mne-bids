@@ -11,7 +11,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 from itertools import chain, repeat
 
 import mne_bids
-from mne_bids import write_raw_bids, BIDSPath
+from mne_bids import BIDSPath, write_raw_bids
 from mne_bids.read import _read_raw
 
 
@@ -74,9 +74,7 @@ def run():
 
     if len(args) > 0:
         parser.print_help()
-        parser.error(
-            'Do not specify arguments without flags. Found: "{}".\n'.format(args)
-        )
+        parser.error(f'Do not specify arguments without flags. Found: "{args}".\n')
 
     if not all([opt.subject_id, opt.task, opt.raw_fname, opt.bids_root]):
         parser.print_help()

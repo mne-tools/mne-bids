@@ -1,27 +1,25 @@
 """Test the interactive data inspector."""
 
 import os.path as op
-import pytest
-
-import numpy as np
-from matplotlib.backend_bases import KeyEvent
 
 import mne
+import numpy as np
+import pytest
+from matplotlib.backend_bases import KeyEvent
 from mne.datasets import testing
 from mne.viz.utils import _fake_click
+from test_read import warning_str
 
+import mne_bids.inspect
 from mne_bids import (
     BIDSPath,
-    read_raw_bids,
-    write_raw_bids,
     inspect_dataset,
+    read_raw_bids,
     write_meg_calibration,
     write_meg_crosstalk,
+    write_raw_bids,
 )
-import mne_bids.inspect
 from mne_bids.read import _from_tsv
-
-from test_read import warning_str
 
 _bids_path = BIDSPath(
     subject="01", session="01", run="01", task="testing", datatype="meg"

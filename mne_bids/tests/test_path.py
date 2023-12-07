@@ -5,39 +5,37 @@
 # License: BSD-3-Clause
 import os
 import os.path as op
-import shutil as sh
-from pathlib import Path
 import shutil
+import shutil as sh
 from datetime import datetime, timezone
-
-import pytest
+from pathlib import Path
 
 import mne
+import pytest
 from mne.datasets import testing
 from mne.io import anonymize_info
+from test_read import _read_raw_fif, warning_str
 
 from mne_bids import (
+    BIDSPath,
     get_datatypes,
     get_entity_vals,
     print_dir_tree,
-    BIDSPath,
-    write_raw_bids,
     read_raw_bids,
     write_meg_calibration,
     write_meg_crosstalk,
-)
-from mne_bids.path import (
-    _parse_ext,
-    get_entities_from_fname,
-    _find_best_candidates,
-    _filter_fnames,
-    search_folder_for_text,
-    get_bids_path_from_fname,
-    find_matching_paths,
+    write_raw_bids,
 )
 from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
-
-from test_read import _read_raw_fif, warning_str
+from mne_bids.path import (
+    _filter_fnames,
+    _find_best_candidates,
+    _parse_ext,
+    find_matching_paths,
+    get_bids_path_from_fname,
+    get_entities_from_fname,
+    search_folder_for_text,
+)
 
 subject_id = "01"
 session_id = "01"
@@ -171,9 +169,12 @@ def test_search_folder_for_text(capsys):
     captured = capsys.readouterr()
     assert "sub-01_ses-eeg_task-rest_eeg.json" in captured.out
     assert (
-        "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-        "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
-    ) in captured.out
+        (
+            "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+            "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
+        )
+        in captured.out
+    )
     # test if pathlib.Path object
     search_folder_for_text("n/a", Path(test_dir))
 
@@ -181,9 +182,12 @@ def test_search_folder_for_text(capsys):
     out = search_folder_for_text("n/a", test_dir, line_numbers=False, return_str=True)
     assert "sub-01_ses-eeg_task-rest_eeg.json" in out
     assert (
-        "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-        "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
-    ) in out
+        (
+            "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+            "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
+        )
+        in out
+    )
 
 
 def test_print_dir_tree(capsys):
@@ -202,20 +206,20 @@ def test_print_dir_tree(capsys):
     print_dir_tree(test_dir)
     captured = capsys.readouterr()
     assert "|--- test_utils.py" in captured.out.split("\n")
-    assert "|--- __pycache__{}".format(os.sep) in captured.out.split("\n")
+    assert f"|--- __pycache__{os.sep}" in captured.out.split("\n")
     assert ".pyc" in captured.out
 
     # Now limit depth ... we should not descend into pycache
     print_dir_tree(test_dir, max_depth=1)
     captured = capsys.readouterr()
     assert "|--- test_utils.py" in captured.out.split("\n")
-    assert "|--- __pycache__{}".format(os.sep) in captured.out.split("\n")
+    assert f"|--- __pycache__{os.sep}" in captured.out.split("\n")
     assert ".pyc" not in captured.out
 
     # Limit depth even more
     print_dir_tree(test_dir, max_depth=0)
     captured = capsys.readouterr()
-    assert captured.out == "|tests{}\n".format(os.sep)
+    assert captured.out == f"|tests{os.sep}\n"
 
     # test if pathlib.Path object
     print_dir_tree(Path(test_dir))
@@ -224,7 +228,7 @@ def test_print_dir_tree(capsys):
     out = print_dir_tree(test_dir, return_str=True, max_depth=1)
     assert isinstance(out, str)
     assert "|--- test_utils.py" in out.split("\n")
-    assert "|--- __pycache__{}".format(os.sep) in out.split("\n")
+    assert f"|--- __pycache__{os.sep}" in out.split("\n")
     assert ".pyc" not in out
 
 
@@ -633,9 +637,7 @@ def test_bids_path(return_bids_test_dir):
 
     # test BIDSPath without bids_root, suffix, extension
     # basename and fpath should be the same
-    expected_basename = (
-        f"sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}"  # noqa
-    )
+    expected_basename = f"sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}"
     assert op.basename(bids_path.fpath) == expected_basename + "_meg.fif"
     assert op.dirname(bids_path.fpath).startswith(bids_root)
 
