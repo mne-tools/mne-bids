@@ -24,12 +24,12 @@ jobs:
         # restore cache from last build. Unless __init__.py has changed since then
         - restore_cache:
             keys:
-              - data-cache-5-{{ checksum "./mne_bids/__init__.py" }}
+              - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
 
         # Also restore pip cache to speed up installations
         - restore_cache:
             keys:
-              - pip-cache-1-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+              - pip-cache-0-{{ checksum "./pyproject.toml" }}
 
         - run:
             name: Setup Python3 environment
@@ -41,10 +41,8 @@ jobs:
             name: Install Python packages
             command: |
               python -m pip install --upgrade --progress-bar off pip
-              python -m pip install --upgrade --progress-bar off -r test_requirements.txt
-              python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
               python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
-              python -m pip install -e .
+              python -m pip install -e .[test,doc]
 
         - run:
             name: Build the documentation
@@ -62,13 +60,13 @@ jobs:
 
         # Store the data cache
         - save_cache:
-            key: data-cache-5-{{ checksum "./mne_bids/__init__.py" }}
+            key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
             paths:
               - ~/mne_data
 
         # Store pip cache
         - save_cache:
-            key: pip-cache-1-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+            key: pip-cache-0-{{ checksum "./pyproject.toml" }}
             paths:
               - ~/.cache/pip
 
@@ -112,7 +110,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - pip-cache-1-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+            - pip-cache-0-{{ checksum "./pyproject.toml" }}
 
       - run:
           name: Setup Python3 environment
@@ -124,10 +122,8 @@ jobs:
           name: Install Python packages
           command: |
             python -m pip install --upgrade --progress-bar off pip
-            python -m pip install --upgrade --progress-bar off -r test_requirements.txt
-            python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
             python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
-            python -m pip install -e .
+            python -m pip install -e .[test,doc]
 
       - run:
           name: Check links
