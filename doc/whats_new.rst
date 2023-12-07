@@ -45,7 +45,6 @@ Detailed list of changes
 - MNE-BIDS now requires MNE-Python 1.5.0 or higher.
 - ``edfio`` replaces ``EDFlib-Python`` for export to EDF with MNE-Python >= 1.7.0.
 - Version requirements for optional dependency packages have been bumped up, see installation instructions.
-- ``defusedxml`` is now required for some BrainVision data operations.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^

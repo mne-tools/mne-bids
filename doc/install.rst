@@ -20,7 +20,6 @@ Optional:
 
 * ``nibabel`` (>=3.2.1, for processing MRI data)
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
-* ``defusedxml`` (for some BrainVision data operations)
 * ``eeglabio`` (>=0.0.2, for writing EEGLAB data)
 * ``pymatreader`` (>=0.0.30, for other operations with EEGLAB data)
 * ``matplotlib`` (>=3.5.0, for using the interactive data inspector)
