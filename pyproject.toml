@@ -104,8 +104,7 @@ namespaces = false
 version = { attr = "mne_bids.__version__" }
 
 [tool.ruff]
-#use soon: select = ["E", "F", "W", "D", "UP", "I"]
-select = ["E", "F", "W", "D"]
+select = ["E", "F", "W", "D", "UP", "I"]
 exclude = ["__init__.py"]
 
 [tool.ruff.pydocstyle]
