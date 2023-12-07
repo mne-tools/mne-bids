@@ -16,17 +16,17 @@ due to internal pointers that are not being updated.
 # License: BSD-3-Clause
 import os
 import os.path as op
-from pathlib import Path
 import re
 import shutil as sh
+from pathlib import Path
 
-from mne.io import read_raw_brainvision, read_raw_edf, read_raw_bdf, anonymize_info
-from mne.utils import logger, verbose
 import numpy as np
+from mne.io import anonymize_info, read_raw_bdf, read_raw_brainvision, read_raw_edf
+from mne.utils import logger, verbose
 from scipy.io import loadmat, savemat
 
-from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
-from mne_bids.utils import _get_mrk_meas_date, _check_anonymize, warn
+from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
+from mne_bids.utils import _check_anonymize, _get_mrk_meas_date, warn
 
 
 def _copytree(src, dst, **kwargs):
@@ -94,7 +94,7 @@ def _get_brainvision_paths(vhdr_path):
     enc = _get_brainvision_encoding(vhdr_path)
 
     # ..and read it
-    with open(vhdr_path, "r", encoding=enc) as f:
+    with open(vhdr_path, encoding=enc) as f:
         lines = f.readlines()
 
     # Try to find data file .eeg/.dat
@@ -252,7 +252,7 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
 def _replace_file(fname, pattern, replace):
     """Overwrite file, replacing end of lines matching pattern with replace."""
     new_content = []
-    for line in open(fname, "r"):
+    for line in open(fname):
         match = re.match(pattern, line)
         if match:
             line = match.group()[: -len(replace)] + replace + "\n"
@@ -363,14 +363,14 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
         "MarkerFile=" + basename_src + ".vmrk",
     ]
 
-    with open(vhdr_src, "r", encoding=enc) as fin:
+    with open(vhdr_src, encoding=enc) as fin:
         with open(vhdr_dest, "w", encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
-    with open(vmrk_file_path, "r", encoding=enc) as fin:
+    with open(vmrk_file_path, encoding=enc) as fin:
         with open(fname_dest + ".vmrk", "w", encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
@@ -477,7 +477,7 @@ def copyfile_edf(src, dest, anonymize=None):
         elif ext_src in [".edf", ".EDF"]:
             raw = read_raw_edf(dest, preload=False, verbose=0)
         else:
-            raise ValueError("Unsupported file type ({0})".format(ext_src))
+            raise ValueError(f"Unsupported file type ({ext_src})")
 
         # Get subject info, recording info, and recording date
         with open(dest, "rb") as f:

@@ -4,25 +4,25 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
-import os.path as op
 import datetime
+import os.path as op
 from pathlib import Path
 
-import pytest
-
 import mne
+import pytest
 from mne.datasets import testing
+
 from mne_bids import BIDSPath
-from mne_bids.path import _parse_ext
 from mne_bids.copyfiles import (
     _get_brainvision_encoding,
     _get_brainvision_paths,
     copyfile_brainvision,
+    copyfile_bti,
     copyfile_edf,
     copyfile_eeglab,
     copyfile_kit,
-    copyfile_bti,
 )
+from mne_bids.path import _parse_ext
 
 testing_path = testing.data_path(download=False)
 base_path = op.join(op.dirname(mne.__file__), "io")
@@ -35,11 +35,11 @@ def test_get_brainvision_encoding():
     raw_fname = op.join(data_path, "test.vhdr")
 
     with pytest.raises(UnicodeDecodeError):
-        with open(raw_fname, "r", encoding="ascii") as f:
+        with open(raw_fname, encoding="ascii") as f:
             f.readlines()
 
     enc = _get_brainvision_encoding(raw_fname)
-    with open(raw_fname, "r", encoding=enc) as f:
+    with open(raw_fname, encoding=enc) as f:
         f.readlines()
 
 
@@ -132,7 +132,7 @@ def test_copyfile_edf(tmp_path):
     raw_date = mne.io.read_raw_edf(testfile).info["meas_date"]
     date = datetime.datetime.strftime(raw_date, "%d-%b-%Y").upper()
     test_id_info = "023 F 02-AUG-1951 Jane"
-    test_rec_info = "Startdate {0} ID-123 John BioSemi_ActiveTwo".format(date)
+    test_rec_info = f"Startdate {date} ID-123 John BioSemi_ActiveTwo"
     with open(testfile, "r+b") as f:
         f.seek(8)
         f.write(bytes(test_id_info.ljust(80), "ascii"))
@@ -176,7 +176,7 @@ def test_copyfile_edf(tmp_path):
         f.seek(8)
         id_info = f.read(80).decode("ascii").rstrip()
         rec_info = f.read(80).decode("ascii").rstrip()
-    rec = "Startdate {0} ID-123 John BioSemi_ActiveTwo".format(anon_startdate)
+    rec = f"Startdate {anon_startdate} ID-123 John BioSemi_ActiveTwo"
     assert id_info == "023 F X X"
     assert rec_info == rec
 

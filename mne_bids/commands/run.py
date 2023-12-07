@@ -3,10 +3,10 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
-import sys
 import glob
-import subprocess
 import os.path as op
+import subprocess
+import sys
 
 import mne_bids
 

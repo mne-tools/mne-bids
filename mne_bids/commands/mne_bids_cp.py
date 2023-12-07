@@ -6,7 +6,7 @@ example usage: $ mne_bids cp --input myfile.vhdr --output sub-01_task-test.vhdr
 #
 # License: BSD-3-Clause
 import mne_bids
-from mne_bids.copyfiles import copyfile_brainvision, copyfile_eeglab, copyfile_ctf
+from mne_bids.copyfiles import copyfile_brainvision, copyfile_ctf, copyfile_eeglab
 
 
 def run():
@@ -28,7 +28,7 @@ def run():
         "-i",
         "--input",
         dest="input",
-        help=("path to the input file. {}".format(accepted_formats_msg)),
+        help=(f"path to the input file. {accepted_formats_msg}"),
         metavar="INPUT",
     )
 
@@ -55,15 +55,15 @@ def run():
     if len(args) > 0:
         parser.print_help()
         parser.error(
-            'Do not specify arguments without flags. Found: "{}".\n'
-            "Did you forget to provide -i and -o?".format(args)
+            f'Do not specify arguments without flags. Found: "{args}".\n'
+            "Did you forget to provide -i and -o?"
         )
 
     if not opt_dict.get("input") or not opt_dict.get("output"):
         parser.print_help()
         parser.error(
             "Incorrect number of arguments. Supply one input and one "
-            'output file. You supplied: "{}"'.format(opt)
+            f'output file. You supplied: "{opt}"'
         )
 
     # Attempt to do the copying. Errors will be raised by the copyfile
@@ -75,7 +75,7 @@ def run():
     elif opt.input.endswith(".ds"):
         copyfile_ctf(opt.input, opt.output)
     else:
-        parser.error('{} You supplied: "{}"'.format(accepted_formats_msg, opt))
+        parser.error(f'{accepted_formats_msg} You supplied: "{opt}"')
 
 
 if __name__ == "__main__":

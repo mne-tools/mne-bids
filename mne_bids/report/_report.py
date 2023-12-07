@@ -7,22 +7,21 @@ import os.path as op
 import textwrap
 from pathlib import Path
 
-import numpy as np
 import jinja2
+import numpy as np
 from mne.utils import logger, verbose
 
-from mne_bids.config import DOI, ALLOWED_DATATYPES
-from mne_bids.tsv_handler import _from_tsv
+from mne_bids.config import ALLOWED_DATATYPES, DOI
 from mne_bids.path import (
+    BIDSPath,
+    _find_matching_sidecar,
+    _parse_ext,
     get_bids_path_from_fname,
     get_datatypes,
     get_entity_vals,
-    BIDSPath,
-    _parse_ext,
-    _find_matching_sidecar,
 )
+from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import warn
-
 
 jinja_env = jinja2.Environment(
     loader=jinja2.PackageLoader(
@@ -156,7 +155,7 @@ def _summarize_dataset(root):
         return dict()
 
     # read file and 'REQUIRED' components of it
-    with open(dataset_descrip_fpath, "r", encoding="utf-8-sig") as fin:
+    with open(dataset_descrip_fpath, encoding="utf-8-sig") as fin:
         dataset_description = json.load(fin)
 
     # create dictionary to pass into template string
@@ -330,7 +329,7 @@ def _summarize_sidecar_json(root, scans_fpaths):
             sidecar_fname = _find_matching_sidecar(
                 bids_path=bids_path, suffix=datatype, extension=".json"
             )
-            with open(sidecar_fname, "r", encoding="utf-8-sig") as fin:
+            with open(sidecar_fname, encoding="utf-8-sig") as fin:
                 sidecar_json = json.load(fin)
 
             # aggregate metadata from each scan

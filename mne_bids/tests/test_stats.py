@@ -5,15 +5,14 @@
 
 import itertools
 
-import pytest
-import numpy as np
-
 import mne
+import numpy as np
+import pytest
 from mne.datasets import testing
 
 from mne_bids import BIDSPath, write_raw_bids
-from mne_bids.stats import count_events
 from mne_bids.read import _from_tsv
+from mne_bids.stats import count_events
 from mne_bids.write import _write_tsv
 
 data_path = testing.data_path(download=False)

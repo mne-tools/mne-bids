@@ -6,38 +6,37 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
-import os.path as op
-from pathlib import Path
 import json
+import os
+import os.path as op
 import re
 from datetime import datetime, timezone
 from difflib import get_close_matches
-import os
+from pathlib import Path
 
-import numpy as np
 import mne
-from mne import io, read_events, events_from_annotations
-from mne import pick_channels_regexp
-from mne.utils import logger, get_subjects_dir
+import numpy as np
+from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
+from mne.utils import get_subjects_dir, logger
 
-from mne_bids.dig import _read_dig_bids
-from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
-    reader,
     _map_options,
+    reader,
 )
-from mne_bids.utils import _get_ch_type_mapping, verbose, warn, _import_nibabel
+from mne_bids.dig import _read_dig_bids
 from mne_bids.path import (
     BIDSPath,
-    _parse_ext,
     _find_matching_sidecar,
     _infer_datatype,
+    _parse_ext,
     get_bids_path_from_fname,
 )
+from mne_bids.tsv_handler import _drop, _from_tsv
+from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
 
 def _read_raw(
@@ -357,7 +356,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
     Handle PowerLineFrequency of recording.
     """
-    with open(sidecar_fname, "r", encoding="utf-8-sig") as fin:
+    with open(sidecar_fname, encoding="utf-8-sig") as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's and raw object's line frequency
@@ -456,7 +455,7 @@ def _handle_events_reading(events_fname, raw):
 
     Handle onset, duration, and description of each event.
     """
-    logger.info("Reading events from {}.".format(events_fname))
+    logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
     # Get the descriptions of the events
@@ -566,7 +565,7 @@ def _handle_channels_reading(channels_fname, raw):
 
     Updates status (bad) and types of channels.
     """
-    logger.info("Reading channel info from {}.".format(channels_fname))
+    logger.info(f"Reading channel info from {channels_fname}.")
     channels_dict = _from_tsv(channels_fname)
     ch_names_tsv = channels_dict["name"]
 

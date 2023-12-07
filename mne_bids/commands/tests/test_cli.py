@@ -6,23 +6,21 @@
 import os.path as op
 from pathlib import Path
 
-import pytest
-
 import mne
+import pytest
 from mne.datasets import testing
 from mne.utils import ArgvSetter
 
-from mne_bids.commands import (
-    mne_bids_raw_to_bids,
-    mne_bids_cp,
-    mne_bids_mark_channels,
-    mne_bids_calibration_to_bids,
-    mne_bids_crosstalk_to_bids,
-    mne_bids_count_events,
-    mne_bids_inspect,
-)
-
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
+from mne_bids.commands import (
+    mne_bids_calibration_to_bids,
+    mne_bids_count_events,
+    mne_bids_cp,
+    mne_bids_crosstalk_to_bids,
+    mne_bids_inspect,
+    mne_bids_mark_channels,
+    mne_bids_raw_to_bids,
+)
 
 data_path = testing.data_path(download=False)
 base_path = op.join(op.dirname(mne.__file__), "io")

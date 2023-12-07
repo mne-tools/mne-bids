@@ -10,11 +10,10 @@ import json
 from collections import OrderedDict
 
 import numpy as np
-
 from mne.channels import DigMontage, make_dig_montage
-from mne.utils import logger, _validate_type, verbose, _check_on_missing, _on_missing
 from mne.io import read_fiducials
 from mne.io.constants import FIFF
+from mne.utils import _check_on_missing, _on_missing, _validate_type, logger, verbose
 
 from mne_bids import BIDSPath
 from mne_bids.utils import _write_json
@@ -107,14 +106,14 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     if isinstance(entries, dict):
         sidecar_tmp = entries
     else:
-        with open(entries, "r") as tmp_f:
+        with open(entries) as tmp_f:
             sidecar_tmp = json.load(tmp_f, object_pairs_hook=OrderedDict)
 
     logger.debug(sidecar_tmp)
     logger.debug(f"Updating {fpath}...")
 
     # load in sidecar filepath
-    with open(fpath, "r") as tmp_f:
+    with open(fpath) as tmp_f:
         sidecar_json = json.load(tmp_f, object_pairs_hook=OrderedDict)
 
     # update sidecar JSON file with the fields passed in
@@ -136,7 +135,7 @@ def _update_sidecar(sidecar_fname, key, val):
     val : str
         The corresponding value to change to in the sidecar JSON file.
     """
-    with open(sidecar_fname, "r", encoding="utf-8-sig") as fin:
+    with open(sidecar_fname, encoding="utf-8-sig") as fin:
         sidecar_json = json.load(fin)
     sidecar_json[key] = val
     _write_json(sidecar_fname, sidecar_json, overwrite=True)
@@ -347,9 +346,9 @@ def _get_landmarks_from_fiducials_file(
     """Get anatomical landmarks from fiducials file, in MRI voxel space."""
     # avoid dicrular imports
     from mne_bids.write import (
+        _get_fid_coords,
         _get_t1w_mgh,
         _mri_landmarks_to_mri_voxels,
-        _get_fid_coords,
     )
 
     digpoints, coord_frame = read_fiducials(fname)

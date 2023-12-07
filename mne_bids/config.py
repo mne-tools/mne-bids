@@ -2,7 +2,6 @@
 from mne import io
 from mne.io.constants import FIFF
 
-
 BIDS_VERSION = "1.7.0"
 
 PYBV_VERSION = "0.7.3"
@@ -522,8 +521,8 @@ def _map_options(what, key, fro, to):
         mapped_option = mapping_mne_bids.get(key, None)
     else:
         raise RuntimeError(
-            "fro value {} and to value {} are not "
-            "accepted. Use 'mne', or 'bids'.".format(fro, to)
+            f"fro value {fro} and to value {to} are not "
+            "accepted. Use 'mne', or 'bids'."
         )
 
     return mapped_option

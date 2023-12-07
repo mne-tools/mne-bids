@@ -9,11 +9,11 @@ from collections import OrderedDict as odict
 import pytest
 
 from mne_bids.tsv_handler import (
+    _combine_rows,
+    _contains_row,
+    _drop,
     _from_tsv,
     _to_tsv,
-    _combine_rows,
-    _drop,
-    _contains_row,
     _tsv_to_str,
 )
 

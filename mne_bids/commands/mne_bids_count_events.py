@@ -65,7 +65,7 @@ def run():
     if len(args) > 0:
         parser.print_help()
         parser.error(
-            'Do not specify arguments without flags. Found: "{}".\n'.format(args)
+            f'Do not specify arguments without flags. Found: "{args}".\n'
         )
 
     if not all([opt.bids_root]):

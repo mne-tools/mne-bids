@@ -8,21 +8,20 @@ import os.path as op
 from datetime import datetime
 from pathlib import Path
 
-import pytest
-from numpy.random import random, RandomState
-
 import mne
+import pytest
+from numpy.random import RandomState, random
 
 from mne_bids import BIDSPath
+from mne_bids.path import _path_to_str
 from mne_bids.utils import (
-    _check_types,
     _age_on_date,
+    _check_datatype,
+    _check_types,
+    _get_ch_type_mapping,
     _handle_datatype,
     _infer_eeg_placement_scheme,
-    _get_ch_type_mapping,
-    _check_datatype,
 )
-from mne_bids.path import _path_to_str
 
 base_path = op.join(op.dirname(mne.__file__), "io")
 subject_id = "01"
