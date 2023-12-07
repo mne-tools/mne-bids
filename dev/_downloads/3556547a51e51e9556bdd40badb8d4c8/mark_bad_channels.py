@@ -30,12 +30,13 @@ import os.path as op
 import shutil
 
 import mne
+
 from mne_bids import (
     BIDSPath,
-    write_raw_bids,
-    read_raw_bids,
     inspect_dataset,
     mark_channels,
+    read_raw_bids,
+    write_raw_bids,
 )
 
 data_path = mne.datasets.sample.data_path()

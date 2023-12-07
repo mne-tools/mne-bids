@@ -594,24 +594,24 @@ refer to the <a class="reference external" href="https://bids-specification.read
 </pre></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
+<span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">nilearn.plotting</span> <span class="kn">import</span> <a href="http://nilearn.github.io/stable/modules/generated/nilearn.plotting.plot_anat.html#nilearn.plotting.plot_anat" title="nilearn.plotting.plot_anat" class="sphx-glr-backref-module-nilearn-plotting sphx-glr-backref-type-py-function"><span class="n">plot_anat</span></a>
 
-<span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span>
     <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span>
-    <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span>
-    <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri" title="mne_bids.convert_montage_to_mri" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_mri</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras" title="mne_bids.convert_montage_to_ras" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_ras</span></a><span class="p">,</span>
     <a href="../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anat_landmarks</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span>
     <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
     <a href="../generated/mne_bids.search_folder_for_text.html#mne_bids.search_folder_for_text" title="mne_bids.search_folder_for_text" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">search_folder_for_text</span></a><span class="p">,</span>
-    <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span>
     <a href="../generated/mne_bids.template_to_head.html#mne_bids.template_to_head" title="mne_bids.template_to_head" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">template_to_head</span></a><span class="p">,</span>
-    <a href="../generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras" title="mne_bids.convert_montage_to_ras" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_ras</span></a><span class="p">,</span>
-    <a href="../generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri" title="mne_bids.convert_montage_to_mri" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">convert_montage_to_mri</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_anat</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -630,179 +630,6 @@ data downloaded via MNE-Python’s <code class="docutils literal notranslate"><s
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
-Dataset misc version 0.0 out of date, latest version is 0.26
-
-0.00B [00:00, ?B/s]
-514kB [00:00, 4.66MB/s]
-1.31MB [00:00, 6.18MB/s]
-3.21MB [00:00, 11.7MB/s]
-6.24MB [00:00, 18.8MB/s]
-9.26MB [00:00, 22.8MB/s]
-11.6MB [00:00, 13.3MB/s]
-13.4MB [00:01, 11.7MB/s]
-14.8MB [00:01, 9.63MB/s]
-16.5MB [00:01, 10.8MB/s]
-17.9MB [00:01, 11.6MB/s]
-19.3MB [00:01, 8.51MB/s]
-20.7MB [00:01, 9.39MB/s]
-21.9MB [00:02, 7.78MB/s]
-23.6MB [00:02, 9.50MB/s]
-24.8MB [00:02, 7.58MB/s]
-26.2MB [00:02, 8.68MB/s]
-27.3MB [00:02, 7.07MB/s]
-28.5MB [00:02, 7.89MB/s]
-29.4MB [00:03, 6.55MB/s]
-30.6MB [00:03, 7.54MB/s]
-31.5MB [00:03, 6.41MB/s]
-32.7MB [00:03, 7.53MB/s]
-33.6MB [00:03, 6.38MB/s]
-34.4MB [00:03, 6.61MB/s]
-35.7MB [00:03, 7.84MB/s]
-36.5MB [00:04, 3.60MB/s]
-39.6MB [00:04, 7.25MB/s]
-42.8MB [00:04, 11.2MB/s]
-46.0MB [00:04, 15.0MB/s]
-49.2MB [00:04, 18.5MB/s]
-52.5MB [00:05, 21.8MB/s]
-55.7MB [00:05, 24.3MB/s]
-58.9MB [00:05, 26.3MB/s]
-62.1MB [00:05, 27.9MB/s]
-65.3MB [00:05, 28.7MB/s]
-68.5MB [00:05, 29.7MB/s]
-71.8MB [00:05, 30.6MB/s]
-75.0MB [00:05, 31.1MB/s]
-78.2MB [00:05, 24.6MB/s]
-80.9MB [00:06, 9.13MB/s]
-82.9MB [00:06, 9.47MB/s]
-85.4MB [00:07, 11.4MB/s]
-88.0MB [00:07, 13.7MB/s]
-90.5MB [00:07, 15.7MB/s]
-92.7MB [00:07, 9.84MB/s]
-95.2MB [00:07, 12.1MB/s]
-97.8MB [00:07, 14.3MB/s]
-100MB [00:08, 16.2MB/s]
-103MB [00:08, 18.5MB/s]
-106MB [00:08, 22.3MB/s]
-109MB [00:08, 14.2MB/s]
-111MB [00:09, 8.52MB/s]
-113MB [00:09, 6.85MB/s]
-114MB [00:09, 6.41MB/s]
-117MB [00:09, 9.78MB/s]
-120MB [00:09, 12.4MB/s]
-122MB [00:10, 13.0MB/s]
-124MB [00:10, 14.1MB/s]
-126MB [00:10, 9.14MB/s]
-127MB [00:10, 8.82MB/s]
-128MB [00:10, 9.46MB/s]
-130MB [00:11, 7.56MB/s]
-131MB [00:11, 6.65MB/s]
-132MB [00:11, 7.93MB/s]
-134MB [00:11, 9.46MB/s]
-135MB [00:11, 9.25MB/s]
-137MB [00:11, 11.2MB/s]
-138MB [00:12, 8.17MB/s]
-139MB [00:12, 6.98MB/s]
-140MB [00:12, 7.05MB/s]
-141MB [00:12, 8.21MB/s]
-142MB [00:12, 7.03MB/s]
-143MB [00:12, 6.23MB/s]
-144MB [00:13, 6.01MB/s]
-145MB [00:13, 7.32MB/s]
-147MB [00:13, 9.67MB/s]
-148MB [00:13, 7.59MB/s]
-149MB [00:13, 6.63MB/s]
-150MB [00:13, 6.67MB/s]
-151MB [00:13, 7.57MB/s]
-152MB [00:13, 8.87MB/s]
-153MB [00:14, 7.16MB/s]
-154MB [00:14, 6.31MB/s]
-154MB [00:14, 5.92MB/s]
-156MB [00:14, 8.58MB/s]
-157MB [00:14, 7.13MB/s]
-158MB [00:15, 6.25MB/s]
-159MB [00:15, 5.48MB/s]
-161MB [00:15, 8.07MB/s]
-162MB [00:15, 6.84MB/s]
-163MB [00:15, 6.16MB/s]
-163MB [00:15, 5.47MB/s]
-165MB [00:15, 8.02MB/s]
-166MB [00:16, 6.79MB/s]
-167MB [00:16, 6.21MB/s]
-168MB [00:16, 5.81MB/s]
-169MB [00:16, 6.97MB/s]
-171MB [00:16, 9.64MB/s]
-172MB [00:16, 7.53MB/s]
-173MB [00:17, 6.49MB/s]
-174MB [00:17, 3.23MB/s]
-177MB [00:17, 6.62MB/s]
-180MB [00:18, 9.99MB/s]
-183MB [00:18, 13.7MB/s]
-186MB [00:18, 17.3MB/s]
-189MB [00:18, 20.5MB/s]
-193MB [00:18, 23.0MB/s]
-196MB [00:18, 25.8MB/s]
-199MB [00:18, 27.6MB/s]
-202MB [00:18, 28.8MB/s]
-206MB [00:18, 29.8MB/s]
-209MB [00:18, 30.4MB/s]
-212MB [00:19, 29.6MB/s]
-215MB [00:19, 30.3MB/s]
-218MB [00:19, 30.2MB/s]
-222MB [00:19, 30.8MB/s]
-225MB [00:19, 31.4MB/s]
-228MB [00:19, 31.7MB/s]
-231MB [00:19, 31.9MB/s]
-235MB [00:19, 31.6MB/s]
-238MB [00:20, 18.8MB/s]
-240MB [00:20, 19.2MB/s]
-243MB [00:20, 19.5MB/s]
-245MB [00:20, 19.8MB/s]
-247MB [00:20, 20.0MB/s]
-249MB [00:20, 20.2MB/s]
-252MB [00:20, 20.4MB/s]
-254MB [00:20, 20.5MB/s]
-256MB [00:20, 20.7MB/s]
-258MB [00:21, 20.6MB/s]
-260MB [00:21, 8.77MB/s]
-262MB [00:21, 8.98MB/s]
-263MB [00:21, 9.04MB/s]
-264MB [00:22, 9.22MB/s]
-265MB [00:22, 9.25MB/s]
-266MB [00:22, 9.32MB/s]
-268MB [00:22, 9.42MB/s]
-269MB [00:22, 9.43MB/s]
-270MB [00:22, 9.47MB/s]
-271MB [00:22, 9.47MB/s]
-272MB [00:22, 9.33MB/s]
-272MB [00:22, 9.38MB/s]
-273MB [00:23, 9.41MB/s]
-274MB [00:23, 9.40MB/s]
-275MB [00:23, 9.30MB/s]
-276MB [00:23, 9.33MB/s]
-277MB [00:23, 9.40MB/s]
-278MB [00:23, 9.42MB/s]
-279MB [00:23, 9.46MB/s]
-280MB [00:23, 9.58MB/s]
-281MB [00:23, 9.50MB/s]
-282MB [00:23, 9.47MB/s]
-283MB [00:24, 9.45MB/s]
-284MB [00:24, 9.40MB/s]
-285MB [00:24, 9.40MB/s]
-286MB [00:24, 9.44MB/s]
-287MB [00:24, 9.46MB/s]
-288MB [00:24, 9.47MB/s]
-289MB [00:24, 9.50MB/s]
-290MB [00:24, 9.74MB/s]
-291MB [00:24, 9.65MB/s]
-292MB [00:24, 9.60MB/s]
-293MB [00:25, 9.55MB/s]
-294MB [00:25, 9.50MB/s]
-295MB [00:25, 9.45MB/s]
-296MB [00:25, 9.51MB/s]
-297MB [00:25, 9.60MB/s]
-0.00B [00:00, ?B/s]
-0.00B [00:00, ?B/s]
-Download complete in 29s (278.8 MB)
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
@@ -1333,16 +1160,13 @@ have to run the Freesurfer <code class="docutils literal notranslate"><span clas
 
 <span class="c1"># compare with standard</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;Saved coordinate:     </span><span class="si">{saved}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">][</span><span class="s2">&quot;LENT 1&quot;</span><span class="p">],</span>
-        <span class="n">saved</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">][</span><span class="s2">&quot;LENT 1&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
+    <span class="sa">f</span><span class="s2">&quot;Recovered coordinate: </span><span class="si">{</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Saved coordinate: </span><span class="si">{</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.02430001  0.02610001 -0.05600001]
-Saved coordinate:     [-0.0243  0.0261 -0.056 ]
+Saved coordinate: [-0.0243  0.0261 -0.056 ]
 </pre></div>
 </div>
 </section>
@@ -1352,14 +1176,14 @@ Saved coordinate:     [-0.0243  0.0261 -0.056 ]
 If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 there.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s2">&quot;README&quot;</span><span class="p">)</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="p">:</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="p">:</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>References
 ----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896).https://doi.org/10.21105/joss.01896
 
 Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D&#39;Ambrosio, S., David, O., … Hermes, D. (2019). iEEG-BIDS, extending the Brain Imaging Data Structure specification to human intracranial electrophysiology. Scientific Data, 6, 102. https://doi.org/10.1038/s41597-019-0105-7
 </pre></div>
@@ -1425,7 +1249,7 @@ Ready.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/examples/convert_ieeg_to_bids.py:357: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/examples/convert_ieeg_to_bids.py:354: RuntimeWarning: Converting data files to BrainVision format for anonymization
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1439,7 +1263,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_event
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_channels.tsv&#39;...
-/home/circleci/project/examples/convert_ieeg_to_bids.py:357: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/examples/convert_ieeg_to_bids.py:354: RuntimeWarning: Converting data files to BrainVision format
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_ieeg.vhdr.
@@ -1483,13 +1307,11 @@ dataset now that we are working in the <code class="docutils literal notranslate
 
 <span class="c1"># check difference in trans</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Recovered trans:</span><span class="se">\n</span><span class="si">{recovered}</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;Original trans:</span><span class="se">\n</span><span class="si">{original}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">[</span><span class="s2">&quot;trans&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
-        <span class="c1"># combine head-&gt;mri with mri-&gt;mni to get head-&gt;mni</span>
-        <span class="c1"># and then invert to get mni-&gt;head</span>
-        <span class="n">original</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="numpy.linalg.inv" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.dot.html#numpy.dot" title="numpy.dot" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">dot</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">[</span><span class="s2">&quot;trans&quot;</span><span class="p">],</span> <a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_mni_t</span></a><span class="p">[</span><span class="s2">&quot;trans&quot;</span><span class="p">]))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>
-    <span class="p">)</span>
+    <span class="sa">f</span><span class="s2">&quot;Recovered trans:</span><span class="se">\n</span><span class="si">{</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="c1"># combine head-&gt;mri with mri-&gt;mni to get head-&gt;mni</span>
+    <span class="c1"># and then invert to get mni-&gt;head</span>
+    <span class="s2">&quot;Original trans:</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="numpy.linalg.inv" class="sphx-glr-backref-module-numpy-linalg sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.dot.html#numpy.dot" title="numpy.dot" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">dot</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">],</span><span class="w"> </span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mri_mni_t</span></a><span class="p">[</span><span class="s1">&#39;trans&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 
 <span class="c1"># ensure that the data in MNI coordinates is exactly the same</span>
@@ -1497,11 +1319,8 @@ dataset now that we are working in the <code class="docutils literal notranslate
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;Original coordinate:  </span><span class="si">{original}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">][</span><span class="s2">&quot;LENT 1&quot;</span><span class="p">],</span>
-        <span class="n">original</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">][</span><span class="s2">&quot;LENT 1&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
+    <span class="sa">f</span><span class="s2">&quot;Recovered coordinate: </span><span class="si">{</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Original coordinate: </span><span class="si">{</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1518,7 +1337,7 @@ Original trans:
  [-0.001 -0.053  0.946  0.04 ]
  [ 0.     0.     0.     1.   ]]
 Recovered coordinate: [-0.0231477   0.00949445 -0.05183359]
-Original coordinate:  [-0.0231477   0.00949445 -0.05183359]
+Original coordinate: [-0.0231477   0.00949445 -0.05183359]
 </pre></div>
 </div>
 <p>As you can see the coordinates stored in the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object are slightly off.
@@ -1611,7 +1430,7 @@ Ready.
 Opening raw data file /home/circleci/mne_data/MNE-misc-data/seeg/sample_seeg_ieeg.fif...
     Range : 1310640 ... 1370605 =   1311.411 ...  1371.411 secs
 Ready.
-/home/circleci/project/examples/convert_ieeg_to_bids.py:505: RuntimeWarning: Converting data files to BrainVision format for anonymization
+/home/circleci/project/examples/convert_ieeg_to_bids.py:497: RuntimeWarning: Converting data files to BrainVision format for anonymization
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/README&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/participants.tsv&#39;...
@@ -1625,7 +1444,7 @@ Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space
 Writing &#39;/home/circleci/mne_data/ieeg_bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_ieeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/ieeg/sub-1_task-motor_space-fsaverage_channels.tsv&#39;...
-/home/circleci/project/examples/convert_ieeg_to_bids.py:505: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/examples/convert_ieeg_to_bids.py:497: RuntimeWarning: Converting data files to BrainVision format
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/ieeg_bids/sub-1/sub-1_scans.tsv entry with ieeg/sub-1_task-motor_space-fsaverage_ieeg.vhdr.
@@ -1655,16 +1474,13 @@ dataset were recovered.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage2</span></a> <span class="o">=</span> <span class="n">raw2</span><span class="o">.</span><span class="n">get_montage</span><span class="p">()</span>  <span class="c1"># get montage after transformed back to head</span>
 <a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.apply_trans" title="mne.channels.DigMontage.apply_trans" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">apply_trans</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.transforms.Transform.html#mne.transforms.Transform" title="mne.transforms.Transform" class="sphx-glr-backref-module-mne-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trans2</span></a><span class="p">)</span>  <span class="c1"># apply trans to go back to &#39;mri&#39;</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="s2">&quot;Recovered coordinate: </span><span class="si">{recovered}</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="s2">&quot;Original coordinate:  </span><span class="si">{original}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">recovered</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">][</span><span class="s2">&quot;LENT 1&quot;</span><span class="p">],</span>
-        <span class="n">original</span><span class="o">=</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s2">&quot;ch_pos&quot;</span><span class="p">][</span><span class="s2">&quot;LENT 1&quot;</span><span class="p">],</span>
-    <span class="p">)</span>
+    <span class="sa">f</span><span class="s2">&quot;Recovered coordinate: </span><span class="si">{</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage2</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Original coordinate: </span><span class="si">{</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.get_positions" title="mne.channels.DigMontage.get_positions" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">get_positions</span></a><span class="p">()[</span><span class="s1">&#39;ch_pos&#39;</span><span class="p">][</span><span class="s1">&#39;LENT 1&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Recovered coordinate: [-0.0231477   0.00949445 -0.05183359]
-Original coordinate:  [-0.0231477   0.00949445 -0.05183359]
+Original coordinate: [-0.0231477   0.00949445 -0.05183359]
 </pre></div>
 </div>
 <p>In summary, as we saw, these standard template spaces that are allowable by
@@ -1676,7 +1492,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 36.611 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.117 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/cf640e6bfa39f55978e620ef4269fd4c/convert_ieeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_ieeg_to_bids.ipynb</span></code></a></p>

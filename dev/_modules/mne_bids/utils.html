@@ -538,17 +538,17 @@ document.write(`
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">pick_types</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">make_standard_montage</span>
 <span class="kn">from</span> <span class="nn">mne.io.kit.kit</span> <span class="kn">import</span> <span class="n">get_kit_info</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">pick_types</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">_warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">_warn</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_to_tsv</span>
-
 
 <span class="c1"># This regex matches key-val pairs. Any characters are allowed in the key and</span>
 <span class="c1"># the value, except these special symbols: - _ . \ /</span>
@@ -645,7 +645,7 @@ document.write(`
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Only two types of mappings are currently supported: &quot;</span>
             <span class="s2">&quot;from mne to bids, or from bids to mne. However, &quot;</span>
-            <span class="s1">&#39;you specified from &quot;</span><span class="si">{}</span><span class="s1">&quot; to &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fro</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+            <span class="sa">f</span><span class="s1">&#39;you specified from &quot;</span><span class="si">{</span><span class="n">fro</span><span class="si">}</span><span class="s1">&quot; to &quot;</span><span class="si">{</span><span class="n">to</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mapping</span>

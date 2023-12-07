@@ -532,39 +532,39 @@ document.write(`
 <span class="c1">#          Alex Rockhill &lt;aprockhill@mailbox.org&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD-3-Clause</span>
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">get_subjects_dir</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">_picks_to_idx</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_SPACES</span><span class="p">,</span>
+    <span class="n">BIDS_COORD_FRAME_DESCRIPTIONS</span><span class="p">,</span>
     <span class="n">BIDS_COORDINATE_UNITS</span><span class="p">,</span>
-    <span class="n">MNE_TO_BIDS_FRAMES</span><span class="p">,</span>
+    <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">,</span>
     <span class="n">BIDS_TO_MNE_FRAMES</span><span class="p">,</span>
     <span class="n">MNE_FRAME_TO_STR</span><span class="p">,</span>
     <span class="n">MNE_STR_TO_FRAME</span><span class="p">,</span>
-    <span class="n">BIDS_COORD_FRAME_DESCRIPTIONS</span><span class="p">,</span>
-    <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">,</span>
+    <span class="n">MNE_TO_BIDS_FRAMES</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_import_nibabel</span><span class="p">,</span>
     <span class="n">_scale_coord_to_meters</span><span class="p">,</span>
     <span class="n">_write_json</span><span class="p">,</span>
     <span class="n">_write_tsv</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">,</span>
     <span class="n">warn</span><span class="p">,</span>
-    <span class="n">_import_nibabel</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
 
 <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
 
@@ -574,7 +574,7 @@ document.write(`
 
 <span class="sd">    Handle xyz coordinates and coordinate frame of each channel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading electrode &quot;</span> <span class="s2">&quot;coords from </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading electrode &quot;</span> <span class="sa">f</span><span class="s2">&quot;coords from </span><span class="si">{</span><span class="n">electrodes_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">electrodes_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">)</span>
     <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
 
@@ -608,7 +608,7 @@ document.write(`
 <span class="sd">    Handle reading the coordinate frame and coordinate unit</span>
 <span class="sd">    of each electrode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">coordsystem_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
@@ -706,7 +706,7 @@ document.write(`
             <span class="p">]</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;datatype </span><span class="si">{}</span><span class="s2"> not supported.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datatype</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;datatype </span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Add impedance values if available, currently only BrainVision:</span>
     <span class="c1"># https://github.com/mne-tools/mne-python/pull/7974</span>
@@ -903,7 +903,7 @@ document.write(`
     <span class="c1"># XXX: improve later when BIDS is updated</span>
     <span class="c1"># check that there already exists a coordsystem.json</span>
     <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
             <span class="n">coordsystem_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fid_json</span> <span class="o">!=</span> <span class="n">coordsystem_dict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>

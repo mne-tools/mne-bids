@@ -538,11 +538,10 @@ document.write(`
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">DigMontage</span><span class="p">,</span> <span class="n">make_dig_montage</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">_check_on_missing</span><span class="p">,</span> <span class="n">_on_missing</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_check_on_missing</span><span class="p">,</span> <span class="n">_on_missing</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_write_json</span>
@@ -637,14 +636,14 @@ document.write(`
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">sidecar_tmp</span> <span class="o">=</span> <span class="n">entries</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
             <span class="n">sidecar_tmp</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tmp_f</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">sidecar_tmp</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updating </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
 
     <span class="c1"># load in sidecar filepath</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_f</span><span class="p">:</span>
         <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tmp_f</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)</span>
 
     <span class="c1"># update sidecar JSON file with the fields passed in</span>
@@ -667,7 +666,7 @@ document.write(`
 <span class="sd">    val : str</span>
 <span class="sd">        The corresponding value to change to in the sidecar JSON file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
         <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
     <span class="n">sidecar_json</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="n">_write_json</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">sidecar_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -881,9 +880,9 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get anatomical landmarks from fiducials file, in MRI voxel space.&quot;&quot;&quot;</span>
     <span class="c1"># avoid dicrular imports</span>
     <span class="kn">from</span> <span class="nn">mne_bids.write</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">_get_fid_coords</span><span class="p">,</span>
         <span class="n">_get_t1w_mgh</span><span class="p">,</span>
         <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">,</span>
-        <span class="n">_get_fid_coords</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">digpoints</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
@@ -911,7 +910,8 @@ document.write(`
 
     <span class="n">t1w_mgh</span> <span class="o">=</span> <span class="n">_get_t1w_mgh</span><span class="p">(</span><span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="p">)</span>
     <span class="n">landmark_coords_voxels</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span>
-        <span class="n">mri_landmarks</span><span class="o">=</span><span class="n">landmark_coords_mri</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">t1_mgh</span><span class="o">=</span><span class="n">t1w_mgh</span>  <span class="c1"># in mm</span>
+        <span class="n">mri_landmarks</span><span class="o">=</span><span class="n">landmark_coords_mri</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">t1_mgh</span><span class="o">=</span><span class="n">t1w_mgh</span><span class="p">,</span>  <span class="c1"># in mm</span>
     <span class="p">)</span>
     <span class="n">montage_voxels</span> <span class="o">=</span> <span class="n">make_dig_montage</span><span class="p">(</span>
         <span class="n">lpa</span><span class="o">=</span><span class="n">landmark_coords_voxels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>

@@ -583,13 +583,12 @@ only.</p>
 <p>Let us first import mne_bids.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a>
 </pre></div>
 </div>
 <p>And define the paths and event_id dictionary.</p>
@@ -638,7 +637,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/par
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
-/home/circleci/project/examples/convert_empty_room.py:69: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events and event_id parameters. For resting state data, BIDS recommends naming the task using labels beginning with &quot;rest&quot;.
+/home/circleci/project/examples/convert_empty_room.py:68: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events and event_id parameters. For resting state data, BIDS recommends naming the task using labels beginning with &quot;rest&quot;.
   write_raw_bids(raw, bids_path, overwrite=True)
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json&#39;...
@@ -860,7 +859,7 @@ Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-/home/circleci/project/examples/convert_empty_room.py:118: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+/home/circleci/project/examples/convert_empty_room.py:117: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
 
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/meg/sub-01_ses-01*events.tsv&quot;
   er_bids_path = bids_path.find_empty_room()
@@ -885,7 +884,7 @@ Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-
 &lt;Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~354 kB, data not loaded&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.900 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.844 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/58cece9c8037ffebaaad2703d5ce7839/convert_empty_room.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_empty_room.ipynb</span></code></a></p>

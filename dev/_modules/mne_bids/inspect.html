@@ -534,18 +534,16 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">import</span> <span class="nn">mne</span>
-
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_amplitude</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
 <span class="kn">from</span> <span class="nn">mne.viz</span> <span class="kn">import</span> <span class="n">use_browser_backend</span>
-<span class="kn">from</span> <span class="nn">mne.preprocessing</span> <span class="kn">import</span> <span class="n">annotate_amplitude</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">mark_channels</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">mark_channels</span><span class="p">,</span> <span class="n">read_raw_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span>
 <span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_read_events</span>
 <span class="kn">from</span> <span class="nn">mne_bids.write</span> <span class="kn">import</span> <span class="n">_events_tsv</span>
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span>
 
 
 <div class="viewcode-block" id="inspect_dataset">

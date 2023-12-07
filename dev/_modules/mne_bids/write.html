@@ -535,91 +535,88 @@ document.write(`
 <span class="c1">#          Matt Sanderson &lt;matt.sanderson@mq.edu.au&gt;</span>
 <span class="c1">#</span>
 <span class="c1"># License: BSD-3-Clause</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span>
+<span class="kn">import</span> <span class="nn">mne.preprocessing</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Epochs</span><span class="p">,</span> <span class="n">channel_type</span>
+<span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_get_meg_system</span><span class="p">,</span> <span class="n">_unit2human</span>
+<span class="kn">from</span> <span class="nn">mne.chpi</span> <span class="kn">import</span> <span class="n">get_chpi_info</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">_picks_to_idx</span>
-<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
-<span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span><span class="p">,</span> <span class="n">_get_meg_system</span>
-<span class="kn">from</span> <span class="nn">mne.chpi</span> <span class="kn">import</span> <span class="n">get_chpi_info</span>
+<span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">check_version</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">,</span>
     <span class="n">Bunch</span><span class="p">,</span>
-    <span class="n">_validate_type</span><span class="p">,</span>
-    <span class="n">get_subjects_dir</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="p">,</span>
     <span class="n">ProgressBar</span><span class="p">,</span>
+    <span class="n">_validate_type</span><span class="p">,</span>
+    <span class="n">check_version</span><span class="p">,</span>
+    <span class="n">get_subjects_dir</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">mne.preprocessing</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
-<span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_dig_bids</span><span class="p">,</span> <span class="n">_write_coordsystem_json</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">_write_json</span><span class="p">,</span>
-    <span class="n">_write_tsv</span><span class="p">,</span>
-    <span class="n">_write_text</span><span class="p">,</span>
-    <span class="n">_age_on_date</span><span class="p">,</span>
-    <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
-    <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
-    <span class="n">_check_anonymize</span><span class="p">,</span>
-    <span class="n">_stamp_to_dt</span><span class="p">,</span>
-    <span class="n">_handle_datatype</span><span class="p">,</span>
-    <span class="n">warn</span><span class="p">,</span>
-    <span class="n">_import_nibabel</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">BIDSPath</span><span class="p">,</span>
-    <span class="n">read_raw_bids</span><span class="p">,</span>
     <span class="n">get_anonymization_daysback</span><span class="p">,</span>
     <span class="n">get_bids_path_from_fname</span><span class="p">,</span>
+    <span class="n">read_raw_bids</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span>
-<span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">copyfile_brainvision</span><span class="p">,</span>
-    <span class="n">copyfile_eeglab</span><span class="p">,</span>
-    <span class="n">copyfile_ctf</span><span class="p">,</span>
-    <span class="n">copyfile_bti</span><span class="p">,</span>
-    <span class="n">copyfile_kit</span><span class="p">,</span>
-    <span class="n">copyfile_edf</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span> <span class="n">_combine_rows</span>
-<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
-<span class="kn">from</span> <span class="nn">mne_bids.sidecar_updates</span> <span class="kn">import</span> <span class="n">update_sidecar_json</span>
-
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ORIENTATION</span><span class="p">,</span>
-    <span class="n">EXT_TO_UNIT_MAP</span><span class="p">,</span>
-    <span class="n">MANUFACTURERS</span><span class="p">,</span>
-    <span class="n">IGNORED_CHANNELS</span><span class="p">,</span>
     <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
+    <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">,</span>
+    <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">,</span>
+    <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">,</span>
     <span class="n">BIDS_VERSION</span><span class="p">,</span>
+    <span class="n">CONVERT_FORMATS</span><span class="p">,</span>
+    <span class="n">EXT_TO_UNIT_MAP</span><span class="p">,</span>
+    <span class="n">IGNORED_CHANNELS</span><span class="p">,</span>
+    <span class="n">MANUFACTURERS</span><span class="p">,</span>
+    <span class="n">ORIENTATION</span><span class="p">,</span>
+    <span class="n">PYBV_VERSION</span><span class="p">,</span>
     <span class="n">REFERENCES</span><span class="p">,</span>
+    <span class="n">UNITS_MNE_TO_BIDS_MAP</span><span class="p">,</span>
     <span class="n">_map_options</span><span class="p">,</span>
     <span class="n">reader</span><span class="p">,</span>
-    <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">,</span>
-    <span class="n">CONVERT_FORMATS</span><span class="p">,</span>
-    <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">,</span>
-    <span class="n">PYBV_VERSION</span><span class="p">,</span>
-    <span class="n">BIDS_STANDARD_TEMPLATE_COORDINATE_SYSTEMS</span><span class="p">,</span>
-    <span class="n">UNITS_MNE_TO_BIDS_MAP</span><span class="p">,</span>
 <span class="p">)</span>
-
+<span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">copyfile_brainvision</span><span class="p">,</span>
+    <span class="n">copyfile_bti</span><span class="p">,</span>
+    <span class="n">copyfile_ctf</span><span class="p">,</span>
+    <span class="n">copyfile_edf</span><span class="p">,</span>
+    <span class="n">copyfile_eeglab</span><span class="p">,</span>
+    <span class="n">copyfile_kit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_coordsystem_json</span><span class="p">,</span> <span class="n">_write_dig_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_path_to_str</span>
+<span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
+<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
+<span class="kn">from</span> <span class="nn">mne_bids.sidecar_updates</span> <span class="kn">import</span> <span class="n">update_sidecar_json</span>
+<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_combine_rows</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_from_tsv</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_age_on_date</span><span class="p">,</span>
+    <span class="n">_check_anonymize</span><span class="p">,</span>
+    <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
+    <span class="n">_handle_datatype</span><span class="p">,</span>
+    <span class="n">_import_nibabel</span><span class="p">,</span>
+    <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
+    <span class="n">_stamp_to_dt</span><span class="p">,</span>
+    <span class="n">_write_json</span><span class="p">,</span>
+    <span class="n">_write_text</span><span class="p">,</span>
+    <span class="n">_write_tsv</span><span class="p">,</span>
+    <span class="n">warn</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="n">_FIFF_SPLIT_SIZE</span> <span class="o">=</span> <span class="s2">&quot;2GB&quot;</span>  <span class="c1"># MNE-Python default; can be altered during debugging</span>
 
@@ -910,7 +907,7 @@ document.write(`
 <span class="sd">        already contains that citation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
             <span class="n">orig_data</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">mne_bids_ref</span> <span class="o">=</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="s2">&quot;mne-bids&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_data</span>
         <span class="n">datatype_ref</span> <span class="o">=</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_data</span>
@@ -1204,9 +1201,9 @@ document.write(`
             <span class="c1"># so load the file from the specified location. We do this</span>
             <span class="c1"># here to keep the try block as short as possible.</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;`</span><span class="si">{}</span><span class="s2">` must be a path to an MRI data &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">` must be a path to an MRI data &quot;</span>
                 <span class="s2">&quot;file or a nibabel image object, but it &quot;</span>
-                <span class="s1">&#39;is of type &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">))</span>
+                <span class="sa">f</span><span class="s1">&#39;is of type &quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
@@ -1859,7 +1856,7 @@ document.write(`
 
     <span class="c1"># Handle potentially existing file contents</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
             <span class="n">orig_cols</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;BIDSVersion&quot;</span> <span class="ow">in</span> <span class="n">orig_cols</span> <span class="ow">and</span> <span class="n">orig_cols</span><span class="p">[</span><span class="s2">&quot;BIDSVersion&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">BIDS_VERSION</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -2962,9 +2959,9 @@ document.write(`
         <span class="n">img_json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;AnatomicalLandmarkCoordinates&quot;</span><span class="p">:</span> <span class="n">img_json</span><span class="p">}</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
                 <span class="s2">&quot;Wanted to write a file but it already exists and &quot;</span>
-                <span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
             <span class="p">)</span>
         <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">img_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
@@ -2981,7 +2978,7 @@ document.write(`
         <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Wanted to write a file but it already exists and &quot;</span>
                 <span class="sa">f</span><span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
             <span class="p">)</span>
@@ -3254,7 +3251,7 @@ document.write(`
 
 
 <span class="k">def</span> <span class="nf">_get_daysback</span><span class="p">(</span>
-    <span class="o">*</span><span class="p">,</span> <span class="n">bids_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BIDSPath</span><span class="p">],</span> <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span> <span class="n">show_progress_thresh</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">bids_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BIDSPath</span><span class="p">],</span> <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span> <span class="n">show_progress_thresh</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to find a suitable &quot;daysback&quot; for anonymization.</span>
 
