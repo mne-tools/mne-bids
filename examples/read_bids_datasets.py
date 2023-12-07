@@ -36,16 +36,17 @@ inspect BIDS-formatted data.
 # We are importing everything we need for this example:
 import os
 import os.path as op
-import openneuro
 
+import openneuro
 from mne.datasets import sample
+
 from mne_bids import (
     BIDSPath,
-    read_raw_bids,
-    print_dir_tree,
-    make_report,
     find_matching_paths,
     get_entity_vals,
+    make_report,
+    print_dir_tree,
+    read_raw_bids,
 )
 
 # %%

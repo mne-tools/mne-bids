@@ -24,15 +24,17 @@ to do the heavy lifting for you, automatically.
 # %%
 import shutil
 from pathlib import Path
+
 import mne
+
 from mne_bids import (
     BIDSPath,
-    write_raw_bids,
+    anonymize_dataset,
+    print_dir_tree,
     write_anat,
     write_meg_calibration,
     write_meg_crosstalk,
-    anonymize_dataset,
-    print_dir_tree,
+    write_raw_bids,
 )
 
 data_path = Path(mne.datasets.sample.data_path())

@@ -40,22 +40,20 @@ See the documentation pages in the MNE docs for more information on
 import os.path as op
 import shutil
 
-import numpy as np
 import matplotlib.pyplot as plt
-
+import mne
+import numpy as np
+from mne import head_to_mri
+from mne.datasets import sample
 from nilearn.plotting import plot_anat
 
-import mne
-from mne.datasets import sample
-from mne import head_to_mri
-
 from mne_bids import (
-    write_raw_bids,
     BIDSPath,
-    write_anat,
     get_anat_landmarks,
     get_head_mri_trans,
     print_dir_tree,
+    write_anat,
+    write_raw_bids,
 )
 
 # %%

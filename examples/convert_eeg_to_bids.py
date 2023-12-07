@@ -34,7 +34,7 @@ import shutil
 import mne
 from mne.datasets import eegbci
 
-from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
+from mne_bids import BIDSPath, print_dir_tree, write_raw_bids
 from mne_bids.stats import count_events
 
 # %%
@@ -221,7 +221,7 @@ counts
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
 readme = op.join(bids_root, "README")
-with open(readme, "r", encoding="utf-8-sig") as fid:
+with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
 

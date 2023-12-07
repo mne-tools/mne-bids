@@ -50,24 +50,24 @@ refer to the `iEEG part of the BIDS specification`_.
 # %%
 
 import os.path as op
-import numpy as np
 import shutil
 
+import mne
 import nibabel as nib
+import numpy as np
 from nilearn.plotting import plot_anat
 
-import mne
 from mne_bids import (
     BIDSPath,
-    write_raw_bids,
-    write_anat,
+    convert_montage_to_mri,
+    convert_montage_to_ras,
     get_anat_landmarks,
+    print_dir_tree,
     read_raw_bids,
     search_folder_for_text,
-    print_dir_tree,
     template_to_head,
-    convert_montage_to_ras,
-    convert_montage_to_mri,
+    write_anat,
+    write_raw_bids,
 )
 
 # %%
@@ -302,7 +302,7 @@ print(
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
 readme = op.join(bids_root, "README")
-with open(readme, "r", encoding="utf-8-sig") as fid:
+with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
 

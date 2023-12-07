@@ -31,13 +31,12 @@ format and how to retrieve them.
 
 import os.path as op
 import shutil
-
 from datetime import datetime, timezone
 
 import mne
 from mne.datasets import sample
 
-from mne_bids import write_raw_bids, read_raw_bids, BIDSPath, print_dir_tree
+from mne_bids import BIDSPath, print_dir_tree, read_raw_bids, write_raw_bids
 
 # %%
 # And define the paths and event_id dictionary.
