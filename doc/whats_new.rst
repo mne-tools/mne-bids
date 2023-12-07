@@ -52,7 +52,7 @@ Detailed list of changes
 - nothing yet
 
 ⚕️ Code health
-^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 
 - The package build backend has been switched from ``setuptools`` to ``hatchling``. This
   only affects users who build and install MNE-BIDS from source, and should not lead to
