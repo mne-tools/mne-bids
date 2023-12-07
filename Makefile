@@ -62,6 +62,6 @@ build-doc:
 dist-build:
 	@echo "Building dist"
 	rm -rf dist
-	@python -m pip install wheel setuptools build twine
+	@python -m pip install build twine
 	@python -m build
 	@python -m twine check --strict dist/*
