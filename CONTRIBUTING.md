@@ -117,7 +117,7 @@ make pep
 ```
 
 We use [ruff](https://docs.astral.sh/ruff/) to format our code.
-You can simply call `ruff format .` from the root of the `mne-bids` repository
+You can simply call `make ruff-format` from the root of the `mne-bids` repository
 to automatically convert your code to follow the appropriate style.
 
 ### git pre-commit hooks

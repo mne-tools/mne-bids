@@ -44,6 +44,7 @@ check-manifest:
 ruff-format:
 	@echo "Running ruff format"
 	@ruff format mne_bids
+	@ruff format examples
 
 ruff-check:
 	@echo "Running ruff check"
