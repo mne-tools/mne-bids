@@ -457,26 +457,31 @@ REFERENCES = {
     "Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). "
     "MNE-BIDS: Organizing electrophysiological data into the "
     "BIDS format and facilitating their analysis. Journal of "
-    "Open Source Software 4: (1896). "
+    "Open Source Software 4: (1896)."
     "https://doi.org/10.21105/joss.01896",
     "meg": "Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., "
     "Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, "
     "V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., "
     "Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain "
     "imaging data structure extended to magnetoencephalography. "
-    "Scientific Data, 5, 180110. "
+    "Scientific Data, 5, 180110."
     "https://doi.org/10.1038/sdata.2018.110",
     "eeg": "Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., "
     "Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). "
     "EEG-BIDS, an extension to the brain imaging data structure "
-    "for electroencephalography. Scientific Data, 6, 103. "
+    "for electroencephalography. Scientific Data, 6, 103."
     "https://doi.org/10.1038/s41597-019-0104-8",
     "ieeg": "Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., "
     "D'Ambrosio, S., David, O., … Hermes, D. (2019). iEEG-BIDS, "
     "extending the Brain Imaging Data Structure specification "
     "to human intracranial electrophysiology. Scientific Data, "
     "6, 102. https://doi.org/10.1038/s41597-019-0105-7",
-    "nirs": "In preperation",
+    "nirs": "Luke, R., Oostenveld, R., Cockx, H., Niso, G., Shader, M., "
+    "Orihuela-Espina, F., Innes-Brown, H., Tucker, S., Boas, D., Gau, R., "
+    "Salo, T., Appelhoff, S., Markiewicz, C McAlpine, D., BIDS maintainers, "
+    "Pollonini, L. (2023). fNIRS-BIDS, the Brain Imaging Data Structure "
+    "Extended to Functional Near-Infrared Spectroscopy. PsyArXiv. "
+    "https://doi.org/10.31219/osf.io/7nmcp",
 }
 
 
