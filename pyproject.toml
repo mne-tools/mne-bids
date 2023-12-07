@@ -117,7 +117,7 @@ omit = ["*tests*"]
 # Regexes for lines to exclude from consideration
 exclude_lines = ["pragma: no cover", "if 0:", "if __name__ == .__main__.:"]
 
-[tool.pytest]
+[tool.pytest.ini_options]
 addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
     --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
 filterwarnings = [
