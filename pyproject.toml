@@ -58,14 +58,7 @@ full = [
 ]
 
 # Dependencies for running the test infrastructure
-test = [
-    "mne_bids[full]",
-    "pytest",
-    "pytest-cov",
-    "pytest-sugar",
-    "check-manifest",
-    "ruff",
-]
+test = ["mne_bids[full]", "pytest", "pytest-cov", "pytest-sugar", "ruff"]
 
 # Dependencies for building the documentation
 doc = [
