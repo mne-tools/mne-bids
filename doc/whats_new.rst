@@ -36,7 +36,8 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- nothing yet
+- The experimental support for running MNE-BIDS examples from your browser using Binder has
+  been removed, by `Stefan Appelhoff`_ (:gh:`1202`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -54,10 +55,14 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
+- The configuration of MNE-BIDS has been consolidated from several files (e.g., ``setup.cfg``,
+  ``setup.py``, ``requirements.txt``) and is now specified in a standard ``pyproject.toml``
+  file, by `Stefan Appelhoff`_ (:gh:`1202`)
+- Linting and code formatting is now done entirely using ``ruff``. Previously used tools
+  (e.g., ``flake8``, ``black``) have been fully replaced, by `Stefan Appelhoff`_ (:gh:`1203`)
 - The package build backend has been switched from ``setuptools`` to ``hatchling``. This
   only affects users who build and install MNE-BIDS from source, and should not lead to
   changed runtime behavior, by `Richard Höchenberger`_ (:gh:`1204`)
-
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
