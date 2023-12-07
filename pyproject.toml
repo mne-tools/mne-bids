@@ -63,7 +63,7 @@ test = [
     "pytest-cov",
     "pytest-sugar",
     "check-manifest",
-    "black",
+    "ruff",
 ]
 
 # Dependencies for building the documentation
@@ -109,9 +109,6 @@ exclude = ["__init__.py"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"
-
-[tool.black]
-exclude = "(dist/)|(build/)|(.*\\.ipynb)"
 
 [tool.coverage.run]
 omit = ["*tests*"]

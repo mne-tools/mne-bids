@@ -116,8 +116,8 @@ you can simply use the following command from the root of the `mne-bids` reposit
 make pep
 ```
 
-We use [Black](https://github.com/psf/black) to format our code.
-You can simply call `black .` from the root of the `mne-bids` repository
+We use [ruff](https://docs.astral.sh/ruff/) to format our code.
+You can simply call `ruff format .` from the root of the `mne-bids` repository
 to automatically convert your code to follow the appropriate style.
 
 ### git pre-commit hooks

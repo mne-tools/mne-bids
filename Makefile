@@ -1,4 +1,4 @@
-.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test check-manifest black ruff pep build-doc dist-build
+.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test check-manifest ruff-check ruff-format pep build-doc dist-build
 
 all: clean inplace pep test build-doc dist-build
 
@@ -41,16 +41,16 @@ check-manifest:
 	@echo "Checking MANIFEST.in"
 	@check-manifest .
 
-black:
-	@echo "Running black"
-	@black --check .
+ruff-format:
+	@echo "Running ruff format"
+	@ruff format mne_bids
 
-ruff:
+ruff-check:
 	@echo "Running ruff check"
 	@ruff check mne_bids
 	@ruff check examples/ --ignore=D103,D400,D205
 
-pep: ruff check-manifest black
+pep: ruff-check check-manifest ruff-format
 
 build-doc:
 	@echo "Building documentation"
