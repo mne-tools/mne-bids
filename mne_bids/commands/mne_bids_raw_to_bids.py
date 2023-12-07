@@ -74,9 +74,7 @@ def run():
 
     if len(args) > 0:
         parser.print_help()
-        parser.error(
-            f'Do not specify arguments without flags. Found: "{args}".\n'
-        )
+        parser.error(f'Do not specify arguments without flags. Found: "{args}".\n')
 
     if not all([opt.subject_id, opt.task, opt.raw_fname, opt.bids_root]):
         parser.print_help()

@@ -344,9 +344,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
     """Test making a dataset_description.json."""
     make_dataset_description(path=tmp_path, name="tst")
 
-    with open(
-        op.join(tmp_path, "dataset_description.json"), encoding="utf-8"
-    ) as fid:
+    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
@@ -361,9 +359,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
         verbose=True,
     )
 
-    with open(
-        op.join(tmp_path, "dataset_description.json"), encoding="utf-8"
-    ) as fid:
+    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["[Unspecified]"]
 
@@ -378,9 +374,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
         verbose=True,
     )
 
-    with open(
-        op.join(tmp_path, "dataset_description.json"), encoding="utf-8"
-    ) as fid:
+    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["MNE B.", "MNE P."]
 
