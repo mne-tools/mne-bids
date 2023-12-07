@@ -52,9 +52,6 @@ dependencies = [
 
 # Dependencies for running the test infrastructure
 test = [
-    "mne>=1.5",
-    "numpy>=1.21.2",
-    "scipy>=1.7.1",
     "nibabel>=3.2.1",
     "pybv>=0.7.5",
     "eeglabio>=0.0.2",
