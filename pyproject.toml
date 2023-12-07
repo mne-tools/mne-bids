@@ -74,7 +74,7 @@ doc = [
     "mne-nirs @ https://github.com/mne-tools/mne-nirs/archive/refs/heads/main.zip",
     "seaborn",
     "openneuro-py",
-    "defusedxml",                                                                   # for reading BrainVision montages: `examples/convert_eeg_to_bids.py`
+    "defusedxml", # for reading BrainVision montages: `examples/convert_eeg_to_bids.py`
 ]
 
 # Dependencies for developer installations
