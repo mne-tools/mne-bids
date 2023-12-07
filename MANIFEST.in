@@ -29,5 +29,5 @@ exclude Makefile
 exclude CONTRIBUTING.md
 exclude *.yml
 exclude .mailmap
-exclude test_requirements.txt
 exclude .gitignore
+exclude .pre-commit-config.yaml

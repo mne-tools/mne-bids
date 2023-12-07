@@ -27,7 +27,6 @@ Optional:
 * ``EDFlib-Python`` (>=1.0.6, for writing EDF data with ``mne`` versions <1.7)
 * ``edfio`` (>=0.2.1, for writing EDF data)
 
-
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``
 (may be obtained through `miniconda <https://docs.conda.io/en/latest/miniconda.html>`_).

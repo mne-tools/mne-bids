@@ -9,9 +9,6 @@ on:
     branches: ['**']
   pull_request:
     branches: ['**']
-  create:
-    branches: [main]
-    tags: ['**']
   schedule:
     - cron: "0 4 * * *"
 
@@ -32,7 +29,7 @@ jobs:
     - uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: style-0-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+        key: style-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -60,7 +57,7 @@ jobs:
     - uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: build-2-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+        key: build-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install dependencies
       run: |
@@ -177,12 +174,13 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ env.pythonLocation }}
-        key: test-1-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('test_requirements.txt') }}
+        key: test-0-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install Python dependencies using pip
+      # This would be nicer once this feature is implemented: https://github.com/pypa/pip/issues/11440
       run: |
         python -m pip install --upgrade pip
-        python -m pip install --upgrade -r test_requirements.txt
+        python -m pip install -e .[test]
 
     - name: Install MNE (stable)
       if: matrix.mne-version == 'mne-stable'

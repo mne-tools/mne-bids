@@ -1,3 +1,110 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mne-bids"
+description = "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python"
+dynamic = ["version"]
+authors = [{ name = "MNE-BIDS Developers" }]
+maintainers = [
+    { name = "Stefan Appelhoff", email = "stefan.appelhoff@mailbox.org" },
+]
+license = { text = "BSD-3-Clause" }
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.9"
+keywords = [
+    "meg",
+    "eeg",
+    "ieeg",
+    "bids",
+    "brain imaging data structure",
+    "neuroscience",
+    "neuroimaging",
+]
+classifiers = [
+    "Topic :: Scientific/Engineering",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+scripts = { mne_bids = "mne_bids.commands.run:main" }
+dependencies = ["mne>=1.5", "numpy>=1.21.2", "scipy>=1.7.1"]
+[project.optional-dependencies]
+# Variants with dependencies that will get installed on top of those listed unter
+# project.dependencies
+
+# Dependencies for using all mne_bids features
+full = [
+    "nibabel >= 3.2.1",
+    "pybv >= 0.7.5",
+    "eeglabio >= 0.0.2",
+    "pymatreader >= 0.0.30",
+    "matplotlib >= 3.5.0",
+    "pandas >= 1.3.2",
+    "EDFlib-Python >= 1.0.6", # drop once mne <1.7 is no longer supported
+    "edfio >= 0.2.1",
+]
+
+# Dependencies for running the test infrastructure
+test = [
+    "mne_bids[full]",
+    "pytest",
+    "pytest-cov",
+    "pytest-sugar",
+    "check-manifest",
+    "pydocstyle",
+    "flake8",
+    "black",
+]
+
+# Dependencies for building the documentation
+doc = [
+    "nilearn",
+    "sphinx",
+    "sphinx_gallery",
+    "sphinx-copybutton",
+    "pydata-sphinx-theme",
+    "numpydoc",
+    "matplotlib",
+    "pillow",
+    "pandas",
+    "mne-nirs @ https://github.com/mne-tools/mne-nirs/archive/refs/heads/main.zip",
+    "seaborn",
+    "openneuro-py",
+    "defusedxml",  # for reading BrainVision montages: `examples/convert_eeg_to_bids.py`
+]
+
+# Dependencies for developer installations
+dev = ["mne_bids[test,doc,full]", "pre-commit"]
+
+[project.urls]
+"Homepage" = "https://mne.tools/mne-bids"
+"Download" = "https://pypi.org/project/mne-bids/#files"
+"Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"
+"Documentation" = "https://mne.tools/mne-bids"
+"Forum" = "https://mne.discourse.group/"
+"Source Code" = "https://github.com/mne-tools/mne-bids"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mne_bids"]
+exclude = ["tests"]
+namespaces = false
+
+[tool.setuptools.dynamic]
+version = { attr = "mne_bids.__version__" }
+
 [tool.ruff]
 select = ["E", "F", "W", "D"]
 exclude = ["__init__.py"]
@@ -8,5 +115,69 @@ convention = "numpy"
 [tool.black]
 exclude = "(dist/)|(build/)|(.*\\.ipynb)"
 
-[tool.check-manifest]
-ignore = [".pre-commit-config.yaml"]
+[tool.coverage.run]
+omit = ["*tests*"]
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = ["pragma: no cover", "if 0:", "if __name__ == .__main__.:"]
+
+[tool.isort]
+skip_glob = "*/*"
+
+[tool.pydocstyle]
+convention = "pep257"
+match_dir = "^(?!\\.|doc|examples).*$"
+add-ignore = ["D100", "D104", "D107", "D413"]
+add-select = [
+    "D214",
+    "D215",
+    "D404",
+    "D405",
+    "D406",
+    "D407",
+    "D408",
+    "D409",
+    "D410",
+    "D411",
+]
+ignore-decorators = "property"
+
+[tool.flake8]
+max-line-length = 88
+exclude = "__init__.py"
+ignore = ["I101", "I100", "I201"]
+extend-ignore = ["W503", "E203"]
+per-file-ignores = [
+    "mne_bids/commands/tests/test_*.py:E402",
+    "mne_bids/tests/test_*.py:E402",
+]
+
+[tool.pytest]
+addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
+    --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
+filterwarnings = [
+    "error",
+    "ignore:Estimation of line frequency only supports.*:RuntimeWarning",
+    "ignore:There are channels without locations (n/a)*:RuntimeWarning",
+    "ignore:Did not find any electrodes.tsv.*:RuntimeWarning",
+    "ignore:Did not find any coordsystem.json.*:RuntimeWarning",
+    "ignore:Did not find any events.tsv.*:RuntimeWarning",
+    "ignore:No events found or provided.*:RuntimeWarning",
+    "ignore:Participants file not found for.*:RuntimeWarning",
+    "ignore:Converting to FIF for anonymization:RuntimeWarning",
+    "ignore:Converting to BV for anonymization:RuntimeWarning",
+    "ignore:Converting data files to BrainVision format:RuntimeWarning",
+    "ignore:Writing of electrodes.tsv is not supported for datatype.*:RuntimeWarning",
+    "ignore:numpy.ufunc size changed.*:RuntimeWarning",
+    "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
+    "ignore:MEG ref channel RMSP did not.*:RuntimeWarning",
+    "ignore:`product` is deprecated as of NumPy.*:DeprecationWarning",
+    # Python 3.10+ and NumPy 1.22 (and maybe also newer NumPy versions?)
+    "ignore:.*distutils\\.sysconfig module is deprecated.*:DeprecationWarning",
+    # numba with NumPy dev
+    "ignore:`np.MachAr` is deprecated.*:DeprecationWarning",
+    # old MNE _fake_click
+    "ignore:The .*_event function was deprecated in Matplotlib.*:",
+    "ignore:datetime\\.datetime\\.utcfromtimestamp.* is deprecated and scheduled for removal in a future version.*:DeprecationWarning",
+]

@@ -6,6 +6,7 @@ build
 coverage
 *.xml
 .venv
+.ruff_cache
 
 # Sphinx documentation
 doc/_build/

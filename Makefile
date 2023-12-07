@@ -32,7 +32,7 @@ test:
 	--doctest-modules \
 	--cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ \
 	--cov-report=xml \
-	--cov-config=setup.cfg \
+	--cov-config=pyproject.toml \
 	--verbose \
 	--ignore mne-python \
 	--ignore examples
