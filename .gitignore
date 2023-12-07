@@ -10,3 +10,4 @@ examples/
 junit-results.xml
 coverage.xml
 .coverage
+.ruff_cache
