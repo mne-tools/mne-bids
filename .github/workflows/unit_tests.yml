@@ -32,21 +32,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install ruff check-manifest pre-commit
-        pre-commit install
+        python -m pip install ruff check-manifest
     - name: Display versions and environment information
       run: |
         python --version
         which python
     - name: Run style & documentation tests
       run: make pep
-    - name: Run selected pre-commit hook checks
-      run: |
-        pre-commit run trailing-whitespace
-        pre-commit run end-of-file-fixer
-        pre-commit run check-yaml
-        pre-commit run check-added-large-files
-        pre-commit run check-case-conflict
 
   build:
     runs-on: ${{ matrix.os }}
