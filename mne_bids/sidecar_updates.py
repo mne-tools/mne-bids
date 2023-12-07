@@ -377,7 +377,8 @@ def _get_landmarks_from_fiducials_file(
 
     t1w_mgh = _get_t1w_mgh(fs_subject, fs_subjects_dir)
     landmark_coords_voxels = _mri_landmarks_to_mri_voxels(
-        mri_landmarks=landmark_coords_mri * 1000, t1_mgh=t1w_mgh  # in mm
+        mri_landmarks=landmark_coords_mri * 1000,
+        t1_mgh=t1w_mgh,  # in mm
     )
     montage_voxels = make_dig_montage(
         lpa=landmark_coords_voxels[0],

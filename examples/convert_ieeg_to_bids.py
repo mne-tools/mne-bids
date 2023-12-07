@@ -289,8 +289,7 @@ montage2.apply_trans(trans2)
 
 # compare with standard
 print(
-    "Recovered coordinate: {recovered}\n"
-    "Saved coordinate:     {saved}".format(
+    "Recovered coordinate: {recovered}\n" "Saved coordinate:     {saved}".format(
         recovered=montage2.get_positions()["ch_pos"]["LENT 1"],
         saved=montage.get_positions()["ch_pos"]["LENT 1"],
     )
@@ -397,8 +396,7 @@ print(
 
 # check difference in trans
 print(
-    "Recovered trans:\n{recovered}\n"
-    "Original trans:\n{original}".format(
+    "Recovered trans:\n{recovered}\n" "Original trans:\n{original}".format(
         recovered=trans2["trans"].round(3),
         # combine head->mri with mri->mni to get head->mni
         # and then invert to get mni->head
@@ -411,8 +409,7 @@ print(
 montage2 = raw2.get_montage()  # get montage after transformed back to head
 montage2.apply_trans(trans2)
 print(
-    "Recovered coordinate: {recovered}\n"
-    "Original coordinate:  {original}".format(
+    "Recovered coordinate: {recovered}\n" "Original coordinate:  {original}".format(
         recovered=montage2.get_positions()["ch_pos"]["LENT 1"],
         original=montage.get_positions()["ch_pos"]["LENT 1"],
     )
@@ -521,8 +518,7 @@ trans2 = template_to_head(  # unit='auto' automatically determines it's in mm
 montage2 = raw2.get_montage()  # get montage after transformed back to head
 montage2.apply_trans(trans2)  # apply trans to go back to 'mri'
 print(
-    "Recovered coordinate: {recovered}\n"
-    "Original coordinate:  {original}".format(
+    "Recovered coordinate: {recovered}\n" "Original coordinate:  {original}".format(
         recovered=montage2.get_positions()["ch_pos"]["LENT 1"],
         original=montage.get_positions()["ch_pos"]["LENT 1"],
     )

@@ -2800,7 +2800,8 @@ def test_annotations(_bids_validate, bad_segments, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "write_events", [True, False]  # whether to pass "events" to write_raw_bids
+    "write_events",
+    [True, False],  # whether to pass "events" to write_raw_bids
 )
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data

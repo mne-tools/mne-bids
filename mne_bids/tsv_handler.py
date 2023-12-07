@@ -153,8 +153,8 @@ def _from_tsv(fname, dtypes=None):
         dtypes = [dtypes] * info.shape[1]
     if not len(dtypes) == info.shape[1]:
         raise ValueError(
-            "dtypes length mismatch. Provided: {0}, "
-            "Expected: {1}".format(len(dtypes), info.shape[1])
+            "dtypes length mismatch. "
+            f"Provided: {len(dtypes)}, Expected: {info.shape[1]}"
         )
     empty_cols = 0
     for i, name in enumerate(column_names):
