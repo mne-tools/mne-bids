@@ -8,25 +8,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>01. Read BIDS datasets &#8212; MNE-BIDS 0.15.dev0 documentation</title>
+    <title>01. Read BIDS datasets &#8212; MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</title>
   
   
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -34,15 +34,15 @@
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=7ce5be07" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script src="../_static/documentation_options.js?v=ffd9d0a1"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/documentation_options.js?v=124f375b"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -61,7 +61,7 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/read_bids_datasets';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
@@ -84,28 +84,23 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
   
   <input type="checkbox"
           class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
@@ -127,12 +122,17 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
   </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.15.dev0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</p>
   
 </a></div>
     
@@ -160,60 +160,54 @@
       
         <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../whats_new.html">
-                        News
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    News
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../install.html">
-                        Install
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../use.html">
-                        Use
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../generated/cli.html">
-                        CLI
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown pst-header-nav-item">
                 <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
                     More
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
-                        Contribute
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
                 </ul>
             </li>
             
@@ -324,16 +318,19 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
-    </label>
+    </button>
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
+      
+      
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -344,67 +341,56 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
+          
+          
+            <div class="navbar-item">
 <nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../whats_new.html">
-                        News
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    News
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../install.html">
-                        Install
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item current active">
-                      <a class="nav-link nav-internal" href="../use.html">
-                        Use
-                      </a>
-                    </li>
-                
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../api.html">
-                        API
-                      </a>
-                    </li>
-                
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../generated/cli.html">
-                        CLI
-                      </a>
-                    </li>
-                
-            <li class="nav-item dropdown">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links-2">
-                    More
-                </button>
-                <ul id="pst-nav-more-links-2" class="dropdown-menu">
-                    
-                    <li class="nav-item">
-                      <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
-                        Contribute
-                      </a>
-                    </li>
-                
-                </ul>
-            </li>
-            
+<li class="nav-item pst-header-nav-item current active">
+  <a class="nav-link nav-internal" href="../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../generated/cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item pst-header-nav-item">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -514,13 +500,13 @@ document.write(`
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article">
+              <div class="bd-header-article d-print-none">
 <div class="header-article-items header-article__inner">
   
     <div class="header-article-items__start">
@@ -529,7 +515,7 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
@@ -555,12 +541,12 @@ document.write(`
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="#sphx-glr-download-auto-examples-read-bids-datasets-py"><span class="std std-ref">Go to the end</span></a>
-to download the full example code</p>
+to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="read-bids-datasets">
 <span id="read-bids-datasets-example"></span><span id="sphx-glr-auto-examples-read-bids-datasets-py"></span><h1>01. Read BIDS datasets<a class="headerlink" href="#read-bids-datasets" title="Link to this heading">#</a></h1>
@@ -633,7 +619,7 @@ resting-state recordings of patients with Parkinson’s disease.</p>
 Attempting to create new mne-python configuration file:
 /home/circleci/.mne/mne-python.json
 
-👋 Hello! This is openneuro-py 2023.1.0. Great to see you! 🤗
+👋 Hello! This is openneuro-py 2024.2.0. Great to see you! 🤗
 
    👉 Please report problems 🤯 and bugs 🪲 at
       https://github.com/hoechenberger/openneuro-py/issues
@@ -641,17 +627,21 @@ Attempting to create new mne-python configuration file:
 🌍 Preparing to download ds002778 …
 
 📁 Traversing directories for ds002778 : 0 entities [00:00, ? entities/s]
-📁 Traversing directories for ds002778 : 7 entities [00:03,  2.23 entities/s]
-📁 Traversing directories for ds002778 : 8 entities [00:03,  2.42 entities/s]
-📁 Traversing directories for ds002778 : 14 entities [00:03,  5.35 entities/s]
-📁 Traversing directories for ds002778 : 17 entities [00:03,  6.66 entities/s]
-📁 Traversing directories for ds002778 : 20 entities [00:03,  5.18 entities/s]
+📁 Traversing directories for ds002778 : 7 entities [00:03,  2.06 entities/s]
+📁 Traversing directories for ds002778 : 8 entities [00:03,  2.22 entities/s]
+📁 Traversing directories for ds002778 : 10 entities [00:03,  3.11 entities/s]
+📁 Traversing directories for ds002778 : 14 entities [00:03,  5.56 entities/s]
+📁 Traversing directories for ds002778 : 17 entities [00:04,  7.07 entities/s]
+📁 Traversing directories for ds002778 : 20 entities [00:04,  4.75 entities/s]
 📥 Retrieving up to 19 files (5 concurrent downloads).
 
 Skipping participants.json: already downloaded.: 100%|██████████| 1.24k/1.24k [00:00&lt;?, ?B/s]
 
 
 Skipping participants.tsv: already downloaded.: 100%|██████████| 1.62k/1.62k [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|██████████| 75.0/75.0 [00:00&lt;?, ?B/s]
@@ -663,13 +653,13 @@ Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|███�
 Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██████████| 66.0/66.0 [00:00&lt;?, ?B/s]
 
 
-Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
+Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|██████████| 74.0/74.0 [00:00&lt;?, ?B/s]
 
 
-Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s]
+Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
 
 
-Re-downloading README: file size mismatch.: 0.00B [00:00, ?B/s]
+Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|██████████| 433/433 [00:00&lt;?, ?B/s]
@@ -678,31 +668,28 @@ Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|███�
 Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
 
 
-Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
 Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|██████████| 51.0/51.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|██████████| 74.0/74.0 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
-
-
 Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 11.5M/11.5M [00:00&lt;?, ?B/s]
 
 
+Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
+
+
+Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
+
+Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s]
+
+
+
 Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 17.4M/17.4M [00:00&lt;?, ?B/s]
+
+
+Re-downloading README: file size mismatch.: 0.00B [00:00, ?B/s]
 
 ✅ Finished downloading ds002778.
 
@@ -896,7 +883,7 @@ extension too, by passing e.g. <code class="docutils literal notranslate"><span 
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_bids/read.py:660: RuntimeWarning: The unit for channel(s) Status has changed from NA to V.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/project/mne_bids/read.py:690: RuntimeWarning: The unit for channel(s) Status has changed from NA to V.
   raw.set_channel_types(channel_type_bids_mne_map_available_channels)
 </pre></div>
 </div>
@@ -939,7 +926,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.201 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.510 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>
@@ -959,7 +946,7 @@ metadata.</p>
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
     <a class="left-prev"
@@ -989,12 +976,14 @@ metadata.</p>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-  <div class="sidebar-secondary-item">
 
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-a-subject-s-data-from-an-openneuro-bids-dataset">Download a subject’s data from an OpenNeuro BIDS dataset</a></li>
@@ -1017,8 +1006,8 @@ metadata.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1029,7 +1018,7 @@ metadata.</p>
 
   <p class="copyright">
     
-      © Copyright 2017-2023, MNE Developers. Last updated on 2023-12-07.
+      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
       <br/>
     
   </p>
@@ -1038,7 +1027,7 @@ metadata.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     <br/>
   </p>
 </div>
@@ -1051,7 +1040,7 @@ metadata.</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
 </p></div>
       
     </div>
