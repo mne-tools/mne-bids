@@ -172,17 +172,6 @@ intersphinx_mapping = {
 }
 intersphinx_timeout = 5
 
-# Resolve binder filepath_prefix. From the docs:
-# "A prefix to append to the filepath in the Binder links. You should use this
-# if you will store your built documentation in a sub-folder of a repository,
-# instead of in the root."
-# we will store dev docs in a `dev` subdirectory and all other docs in a
-# directory "v" + version_str. E.g., "v0.3"
-if "dev" in version:
-    filepath_prefix = "dev"
-else:
-    filepath_prefix = "v{}".format(version)
-
 sphinx_gallery_conf = {
     "doc_module": "mne_bids",
     "reference_url": {
@@ -193,13 +182,4 @@ sphinx_gallery_conf = {
     "within_subsection_order": ExampleTitleSortKey,
     "gallery_dirs": "auto_examples",
     "filename_pattern": "^((?!sgskip).)*$",
-    "binder": {
-        # Required keys
-        "org": "mne-tools",
-        "repo": "mne-bids",
-        "branch": "gh-pages",  # noqa: E501 Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
-        "binderhub_url": "https://mybinder.org",  # noqa: E501 Any URL of a binderhub deployment. Must be full URL (e.g. https://mybinder.org).
-        "filepath_prefix": filepath_prefix,  # noqa: E501 A prefix to prepend to any filepaths in Binder links.
-        "dependencies": ["mne_bids[test,doc]"],
-    },
 }
