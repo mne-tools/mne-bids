@@ -1,4 +1,4 @@
-.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test check-manifest flake black pydocstyle pep build-doc dist-build
+.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test check-manifest black ruff pep build-doc dist-build
 
 all: clean inplace pep test build-doc dist-build
 
@@ -24,7 +24,7 @@ clean-e:
 clean: clean-build clean-pyc clean-so clean-ctags clean-cache clean-e
 
 inplace:
-	@python -m pip install -e .[full]
+	@python -m pip install -e .[dev]
 
 test:
 	@echo "Running tests"
@@ -41,19 +41,16 @@ check-manifest:
 	@echo "Checking MANIFEST.in"
 	@check-manifest .
 
-flake:
-	@echo "Running flake8"
-	@flake8 --count mne_bids examples
-
 black:
 	@echo "Running black"
 	@black --check .
 
-pydocstyle:
-	@echo "Running pydocstyle"
-	@pydocstyle .
+ruff:
+	@echo "Running ruff check"
+	@ruff check mne_bids
+	@ruff check examples/ --ignore=D103,D400,D205
 
-pep: flake pydocstyle check-manifest black
+pep: ruff check-manifest black
 
 build-doc:
 	@echo "Building documentation"
@@ -64,4 +61,6 @@ build-doc:
 dist-build:
 	@echo "Building dist"
 	rm -rf dist
+	@python -m pip install wheel setuptools build twine
 	@python -m build
+	@python -m twine check --strict dist/*
