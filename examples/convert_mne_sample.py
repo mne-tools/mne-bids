@@ -209,7 +209,7 @@ make_dataset_description(
 Alexandre Gramfort, Mainak Jas, and Stefan Appelhoff prepared and updated the \
 data in BIDS format.""",
     data_license="CC0",
-    ethics_approvals=["Human Subjects Division at the University of Washington"],  # noqa: E501
+    ethics_approvals=["Human Subjects Division at the University of Washington"],
     funding=[
         "NIH 5R01EB009048",
         "NIH 1R01EB009048",

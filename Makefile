@@ -43,12 +43,12 @@ check-manifest:
 
 ruff-format:
 	@echo "Running ruff format"
-	@ruff format mne_bids
-	@ruff format examples
+	@ruff format mne_bids/
+	@ruff format examples/
 
 ruff-check:
 	@echo "Running ruff check"
-	@ruff check mne_bids
+	@ruff check mne_bids/
 	@ruff check examples/ --ignore=D103,D400,D205
 
 pep: ruff-check check-manifest ruff-format
