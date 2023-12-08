@@ -17,7 +17,7 @@ Version 0.15 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* nobody yet
+* `Daniel McCloy`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -63,6 +63,8 @@ Detailed list of changes
 - The package build backend has been switched from ``setuptools`` to ``hatchling``. This
   only affects users who build and install MNE-BIDS from source, and should not lead to
   changed runtime behavior, by `Richard Höchenberger`_ (:gh:`1204`)
+- Display of the version number on the website is now truncated for over-long version strings,
+  by `Daniel McCloy`_ (:gh:`1206`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
