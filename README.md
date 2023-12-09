@@ -44,8 +44,7 @@ Citing
 If you use MNE-BIDS in your work, please cite our
 [publication in JOSS](https://doi.org/10.21105/joss.01896):
 
-
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C.,
+> Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C.,
 Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C.,
 Rockhill, A., Larson, E., Gramfort, A., & Jas, M. (2019): **MNE-BIDS: Organizing
 electrophysiological data into the BIDS format and facilitating their analysis.**
@@ -56,3 +55,4 @@ Please also cite one of the following papers to credit BIDS, depending on which 
 - [MEG-BIDS](https://doi.org/10.1038/sdata.2018.110)
 - [EEG-BIDS](https://doi.org/10.1038/s41597-019-0104-8)
 - [iEEG-BIDS](https://doi.org/10.1038/s41597-019-0105-7)
+- [NIRS-BIDS](https://doi.org/10.31219/osf.io/7nmcp)
