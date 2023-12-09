@@ -19,7 +19,6 @@ MNE-BIDS links BIDS and MNE-Python with the goal to make your analyses faster
 to code, more robust, and facilitate data and code sharing with co-workers
 and collaborators.
 
-
 What is this BIDS thing, anyway?
 --------------------------------
 BIDS, the Brain Imaging Data Structure, is a standard that describes how to
@@ -32,7 +31,6 @@ organize neuroimaging and electrophysiological data. In particular, it defines:
 
 The complete set of rules is written down in the
 `BIDS specification <https://bids-specification.readthedocs.io/>`_.
-
 
 Supported file formats
 ----------------------
@@ -62,6 +60,7 @@ data type you used:
 - `BIDS-MEG <http://doi.org/10.1038/sdata.2018.110>`_
 - `BIDS-EEG <https://doi.org/10.1038/s41597-019-0104-8>`_
 - `BIDS-iEEG <https://doi.org/10.1038/s41597-019-0105-7>`_
+- `BIDS-NIRS <https://doi.org/10.31219/osf.io/7nmcp>`_
 
 
 .. toctree::
