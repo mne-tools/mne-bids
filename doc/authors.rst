@@ -37,7 +37,7 @@
 .. _Anand Saini: https://github.com/anandsaini024
 .. _Mathieu Scheltienne: https://github.com/mscheltienne
 .. _Denis Engemann: https://github.com/dengemann
-.. _Bruno Hebling Vieira: https://bhvieira.github.io/
+.. _Bruno Hebling Vieira: https://github.com/bhvieira
 .. _Daniel McCloy: http://dan.mccloy.info
 .. _Moritz Gerster: http://moritz-gerster.com
 .. _Laetitia Fesselier: https://github.com/laemtl
