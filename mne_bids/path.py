@@ -959,6 +959,8 @@ class BIDSPath:
                 )
 
             if ENTITY_VALUE_TYPE[key] == "label":
+                if isinstance(val, int):
+                    val = str(val)
                 _validate_type(val, types=(None, str), item_name=key)
             else:
                 assert ENTITY_VALUE_TYPE[key] == "index"
