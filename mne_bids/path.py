@@ -958,34 +958,21 @@ class BIDSPath:
                     f"Key must be one of " f"{ALLOWED_PATH_ENTITIES}, got {key}"
                 )
 
+            if isinstance(val, int):
+                kwargs[key] = f"{val:02}"
+
             if ENTITY_VALUE_TYPE[key] == "label":
-                if isinstance(val, int):
-                    val = str(val)
                 _validate_type(val, types=(None, str), item_name=key)
             else:
                 assert ENTITY_VALUE_TYPE[key] == "index"
                 _validate_type(val, types=(int, str, None), item_name=key)
                 if isinstance(val, str) and not val.isdigit():
                     raise ValueError(f"{key} is not an index (Got {val})")
-                elif isinstance(val, int):
-                    kwargs[key] = f"{val:02}"
 
         # ensure extension starts with a '.'
         extension = kwargs.get("extension")
         if extension is not None and not extension.startswith("."):
-            warn(
-                f'extension should start with a period ".", but got: '
-                f'"{extension}". Prepending "." to form: ".{extension}". '
-                f"This will raise an exception starting with MNE-BIDS 0.12.",
-                category=FutureWarning,
-            )
             kwargs["extension"] = f".{extension}"
-            # Uncomment in 0.12, and remove above code:
-            #
-            # raise ValueError(
-            #     f'Extension must start wie a period ".", but got: '
-            #     f'{extension}'
-            # )
         del extension
 
         # error check entities

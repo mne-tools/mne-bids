@@ -1342,9 +1342,6 @@ def test_find_emptyroom_no_meas_date(tmp_path):
 
 def test_bids_path_label_vs_index_entity():
     """Test entities that must be strings vs those that may be an int."""
-    match = "subject must be an instance of None or str"
-    with pytest.raises(TypeError, match=match):
-        BIDSPath(subject=1)
     match = "root must be an instance of path-like or None"
     with pytest.raises(TypeError, match=match):
         BIDSPath(root=1, subject="01")
@@ -1472,12 +1469,6 @@ def test_setting_entities():
 
         setattr(bids_path, entity_name, None)
         assert getattr(bids_path, entity_name) is None
-
-
-def test_deprecation():
-    """Test deprecated behavior."""
-    with pytest.warns(FutureWarning, match="This will raise an exception"):
-        BIDSPath(extension="vhdr")  # no leading period
 
 
 def test_dont_create_dirs_on_fpath_access(tmp_path):

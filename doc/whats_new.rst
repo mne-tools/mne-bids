@@ -50,7 +50,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- nothing yet
+- Allow integer types to be passed to :class:`mne_bids.BIDSPath` by `Alex Rockhill`_ (:gh:`1215`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
