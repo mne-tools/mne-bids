@@ -959,7 +959,7 @@ class BIDSPath:
                 )
 
             if isinstance(val, int):
-                kwargs[key] = f"{val:02}"
+                kwargs[key] = f"{val}"
 
             if ENTITY_VALUE_TYPE[key] == "label":
                 _validate_type(val, types=(None, str), item_name=key)
