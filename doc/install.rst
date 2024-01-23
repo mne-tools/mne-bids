@@ -26,6 +26,7 @@ Optional:
 * ``pandas`` (>=1.3.2, for generating event statistics)
 * ``EDFlib-Python`` (>=1.0.6, for writing EDF data with ``mne`` versions <1.7)
 * ``edfio`` (>=0.2.1, for writing EDF data)
+* ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
 
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``

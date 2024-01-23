@@ -45,6 +45,7 @@ Detailed list of changes
 - MNE-BIDS now requires Python 3.9 or higher.
 - MNE-BIDS now requires MNE-Python 1.5.0 or higher.
 - ``edfio`` replaces ``EDFlib-Python`` for export to EDF with MNE-Python >= 1.7.0.
+- Installing ``mne-bids[full]`` will now also install ``defusedxml`` on all platforms.
 - Version requirements for optional dependency packages have been bumped up, see installation instructions.
 
 🪲 Bug fixes

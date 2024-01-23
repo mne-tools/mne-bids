@@ -25,7 +25,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
         key: style-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
@@ -53,7 +53,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
         key: build-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
@@ -170,7 +170,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Restore cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
         key: test-0-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('pyproject.toml') }}
@@ -258,7 +258,7 @@ jobs:
       shell: bash
       name: 'Get testing version'
 
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         key: ${{ env.TESTING_VERSION }}
         path: ~/mne_data
