@@ -45,6 +45,11 @@ def get_coil_types():
             FIFF.FIFFV_COIL_NM_122,
             FIFF.FIFFV_COIL_MAGNES_MAG,
             FIFF.FIFFV_COIL_BABY_MAG,
+            # support for OPM data
+            FIFF.FIFFV_COIL_QUSPIN_ZFOPM_MAG, # QuSpin v1
+            FIFF.FIFFV_COIL_QUSPIN_ZFOPM_MAG2, # QuSpin v2
+            FIFF.FIFFV_COIL_FIELDLINE_OPM_MAG_GEN1, # FieldLine v1
+            FIFF.FIFFV_COIL_KERNEL_OPM_MAG_GEN1, # Kernel
         ),
         megrefmag=(
             FIFF.FIFFV_COIL_KIT_REF_MAG,
