@@ -51,7 +51,8 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- nothing yet
+- The datatype in the dataframe returned by :func:`mne_bids.stats.count_events` is now
+  ``pandas.Int64Dtype`` instead of ``float64``.
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
