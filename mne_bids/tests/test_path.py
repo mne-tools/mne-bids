@@ -1342,6 +1342,9 @@ def test_find_emptyroom_no_meas_date(tmp_path):
 
 def test_bids_path_label_vs_index_entity():
     """Test entities that must be strings vs those that may be an int."""
+    match = "subject must be an instance of None or str"
+    with pytest.raises(TypeError, match=match):
+        BIDSPath(subject=1)
     match = "root must be an instance of path-like or None"
     with pytest.raises(TypeError, match=match):
         BIDSPath(root=1, subject="01")
