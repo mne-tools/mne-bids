@@ -1368,7 +1368,6 @@ def write_raw_bids(
     montage=None,
     acpc_aligned=False,
     overwrite=False,
-    events_data=None,
     verbose=None,
 ):
     """Save raw data to a BIDS-compliant folder structure.
@@ -1551,9 +1550,6 @@ def write_raw_bids(
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
-    events_data
-        .. deprecated:: 0.11
-           Use ``events`` instead.
 
     %(verbose)s
 
@@ -1614,21 +1610,6 @@ def write_raw_bids(
     mne.events_from_annotations
 
     """
-    if events_data is not None and events is not None:
-        raise ValueError("Only one of events and events_data can be passed.")
-
-    if events_data is not None:
-        warn(
-            message="The events_data parameter has been deprecated in favor "
-            "the new events parameter, to ensure better consistency  "
-            "with MNE-Python. The events_data parameter will be "
-            "removed in MNE-BIDS 0.14. Please use the events "
-            "parameter instead.",
-            category=FutureWarning,
-        )
-        events = events_data
-        del events_data
-
     if not isinstance(raw, BaseRaw):
         raise ValueError(
             "raw_file must be an instance of BaseRaw, " "got %s" % type(raw)
