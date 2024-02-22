@@ -67,6 +67,8 @@ Detailed list of changes
   changed runtime behavior, by `Richard Höchenberger`_ (:gh:`1204`)
 - Display of the version number on the website is now truncated for over-long version strings,
   by `Daniel McCloy`_ (:gh:`1206`)
+- The long deprecated ``events_data`` parameter has been fully removed from
+  :func:`~mne_bids.write_raw_bids` in favor of ``events``, by `Stefan Appelhoff`_ (:gh:`1229`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

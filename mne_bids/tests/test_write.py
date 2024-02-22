@@ -4052,44 +4052,6 @@ def test_repeat_write_location(tmpdir):
 
 
 @testing.requires_testing_data
-def test_events_data_deprecation(tmp_path):
-    """Test that passing events_data raises a FutureWarning."""
-    bids_root = tmp_path / "bids"
-    bids_path = _bids_path.copy().update(root=bids_root)
-    raw_path = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
-    events_path = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
-    event_id = {
-        "Auditory/Left": 1,
-        "Auditory/Right": 2,
-        "Visual/Left": 3,
-        "Visual/Right": 4,
-        "Smiley": 5,
-        "Button": 32,
-    }
-
-    # Drop unknown events.
-    events = mne.read_events(events_path)
-    events = events[events[:, 2] != 0]
-
-    raw = _read_raw_fif(raw_path)
-    with pytest.warns(FutureWarning, match="will be removed"):
-        write_raw_bids(
-            raw=raw, bids_path=bids_path, events_data=events, event_id=event_id
-        )
-
-    with pytest.raises(
-        ValueError, match="Only one of events and events_data can be passed"
-    ):
-        write_raw_bids(
-            raw=raw,
-            bids_path=bids_path,
-            events=events,
-            events_data=events,
-            event_id=event_id,
-        )
-
-
-@testing.requires_testing_data
 def test_unknown_extension(_bids_validate, tmp_path):
     """Write data with unknown extension to BIDS."""
     bids_root = tmp_path / "bids"
