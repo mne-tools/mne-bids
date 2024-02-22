@@ -958,9 +958,6 @@ class BIDSPath:
                     f"Key must be one of " f"{ALLOWED_PATH_ENTITIES}, got {key}"
                 )
 
-            if isinstance(val, int):
-                kwargs[key] = f"{val}"
-
             if ENTITY_VALUE_TYPE[key] == "label":
                 _validate_type(val, types=(None, str), item_name=key)
             else:
@@ -968,6 +965,8 @@ class BIDSPath:
                 _validate_type(val, types=(int, str, None), item_name=key)
                 if isinstance(val, str) and not val.isdigit():
                     raise ValueError(f"{key} is not an index (Got {val})")
+                else:
+                    kwargs[key] = f"{val}"
 
         # ensure extension starts with a '.'
         extension = kwargs.get("extension")
