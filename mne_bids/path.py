@@ -966,7 +966,7 @@ class BIDSPath:
                 if isinstance(val, str) and not val.isdigit():
                     raise ValueError(f"{key} is not an index (Got {val})")
                 elif isinstance(val, int):
-                    kwargs[key] = f"{val:02}"
+                    kwargs[key] = f"{val}"
 
         # ensure extension starts with a '.'
         extension = kwargs.get("extension")
