@@ -965,7 +965,7 @@ class BIDSPath:
                 _validate_type(val, types=(int, str, None), item_name=key)
                 if isinstance(val, str) and not val.isdigit():
                     raise ValueError(f"{key} is not an index (Got {val})")
-                else:
+                elif isinstance(val, int):
                     kwargs[key] = f"{val}"
 
         # ensure extension starts with a '.'
