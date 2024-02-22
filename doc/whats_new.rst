@@ -21,6 +21,8 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
+* `Alex Rockhill`_
+* `Eric Larson`_
 * `Laetitia Fesselier`_
 * `Richard Höchenberger`_
 * `Stefan Appelhoff`_
@@ -51,7 +53,9 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Allow integer types to be passed to :class:`mne_bids.BIDSPath` by `Alex Rockhill`_ (:gh:`1215`)
+- Allow integer types to be passed to :class:`mne_bids.BIDSPath`, by `Alex Rockhill`_ (:gh:`1215`)
+- The datatype in the dataframe returned by :func:`mne_bids.stats.count_events` is now
+  ``pandas.Int64Dtype`` instead of ``float64``, by `Eric Larson`_ (:gh:`1227`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
