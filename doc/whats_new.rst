@@ -21,6 +21,8 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
+* `Alex Rockhill`_
+* `Eric Larson`_
 * `Laetitia Fesselier`_
 * `Richard Höchenberger`_
 * `Stefan Appelhoff`_
@@ -38,6 +40,10 @@ Detailed list of changes
 
 - The experimental support for running MNE-BIDS examples from your browser using Binder has
   been removed, by `Stefan Appelhoff`_ (:gh:`1202`)
+- MNE-BIDS will no longer zero-pad ("zfill") entity indices passed to :class:`~mne_bids.BIDSPath`.
+  For example, If ``run=1`` is passed to MNE-BIDS, it will no longer be silently auto-converted to ``run-01``, by `Alex Rockhill`_ (:gh:`1215`)
+- MNE-BIDS will no longer warn about missing leading punctuation marks for extensions passed :class:`~mne_bids.BIDSPath`.
+  For example, MNE-BIDS will now silently auto-convert ``edf`` to ```.edf``, by `Alex Rockhill`_ (:gh:`1215`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -52,7 +58,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - The datatype in the dataframe returned by :func:`mne_bids.stats.count_events` is now
-  ``pandas.Int64Dtype`` instead of ``float64``.
+  ``pandas.Int64Dtype`` instead of ``float64``, by `Eric Larson`_ (:gh:`1227`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

@@ -966,24 +966,12 @@ class BIDSPath:
                 if isinstance(val, str) and not val.isdigit():
                     raise ValueError(f"{key} is not an index (Got {val})")
                 elif isinstance(val, int):
-                    kwargs[key] = f"{val:02}"
+                    kwargs[key] = f"{val}"
 
         # ensure extension starts with a '.'
         extension = kwargs.get("extension")
         if extension is not None and not extension.startswith("."):
-            warn(
-                f'extension should start with a period ".", but got: '
-                f'"{extension}". Prepending "." to form: ".{extension}". '
-                f"This will raise an exception starting with MNE-BIDS 0.12.",
-                category=FutureWarning,
-            )
             kwargs["extension"] = f".{extension}"
-            # Uncomment in 0.12, and remove above code:
-            #
-            # raise ValueError(
-            #     f'Extension must start wie a period ".", but got: '
-            #     f'{extension}'
-            # )
         del extension
 
         # error check entities
