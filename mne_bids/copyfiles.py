@@ -158,10 +158,15 @@ def copyfile_ctf(src, dest):
         ".hist",
         ".infods",
         ".bak",
-        "meg4",
+        ".meg4",
         ".newds",
         ".res4",
     )
+
+    # Consider CTF files that are split having consecutively numbered extensions
+    extra_ctf_file_types = tuple(f".{i}_meg4" for i in range(1, 21))  # cap at 20 is arbitrary
+    file_types += extra_ctf_file_types
+
     # Rename files in dest with the name of the dest directory
     fnames = [f for f in os.listdir(dest) if f.endswith(file_types)]
     bids_folder_name = op.splitext(op.split(dest)[-1])[0]
