@@ -18,6 +18,7 @@ Version 0.15 (unreleased)
 The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daniel McCloy`_
+* `Mara Wolter`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -59,6 +60,8 @@ Detailed list of changes
 
 - The datatype in the dataframe returned by :func:`mne_bids.stats.count_events` is now
   ``pandas.Int64Dtype`` instead of ``float64``, by `Eric Larson`_ (:gh:`1227`)
+- The :func:`mne_bids.copyfiles.copyfile_ctf` now accounts for files with ``.{integer}_meg4`` extension, instead of only .meg4,
+  when renaming the files of a .ds folder, by `Mara Wolter`_ (:gh:`1230`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

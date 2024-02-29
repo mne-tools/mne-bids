@@ -44,3 +44,4 @@
 .. _Jonathan Vanhoecke: https://github.com/JonathanVHoecke
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Pierre Guetschel: https://github.com/PierreGtch
+.. _Mara Wolter: https://github.com/marakw
