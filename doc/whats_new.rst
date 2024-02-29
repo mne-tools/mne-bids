@@ -18,6 +18,7 @@ Version 0.15 (unreleased)
 The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daniel McCloy`_
+* `Mara Wolter`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
