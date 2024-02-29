@@ -158,7 +158,7 @@ def copyfile_ctf(src, dest):
         ".hist",
         ".infods",
         ".bak",
-        ".meg4",
+        "meg4",
         ".newds",
         ".res4",
     )
