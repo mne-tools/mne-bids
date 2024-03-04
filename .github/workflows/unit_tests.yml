@@ -112,7 +112,7 @@ jobs:
   test:
     # For GitHub "required" CI checks, add in branch protection:
     # 7 checks:
-    # for each OS (ubuntu, macos, macos-14 windows):
+    # for each OS (ubuntu, macos, macos-14, windows):
     # 3.9 -> stable / full / stable
     # 3.12 -> stable / full / stable
     #
