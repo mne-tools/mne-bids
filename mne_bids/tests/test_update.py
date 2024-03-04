@@ -1,4 +1,5 @@
 """Test for the MNE BIDS updating of BIDS datasets."""
+
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD-3-Clause

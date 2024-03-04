@@ -3,6 +3,7 @@
 example usage:  $ mne_bids count_events --bids_root bids_root_path
 
 """
+
 # Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
 #
 # License: BSD-3-Clause

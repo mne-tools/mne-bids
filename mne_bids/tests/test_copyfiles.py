@@ -1,4 +1,5 @@
 """Testing copyfile functions."""
+
 # Authors: Chris Holdgraf <choldgraf@berkeley.edu>
 #          Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>

@@ -1,4 +1,5 @@
 """Utility and helper functions for MNE-BIDS."""
+
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>

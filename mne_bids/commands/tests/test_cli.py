@@ -1,4 +1,5 @@
 """Test command line."""
+
 # Authors: Teon L Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
