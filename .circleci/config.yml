@@ -14,7 +14,7 @@ _check_skip: &check_skip
 jobs:
   docs-build:
     machine:
-        image: ubuntu-2004:202111-01
+        image: default
     steps:
         - checkout
 
@@ -101,7 +101,7 @@ jobs:
 
   link-check:
     machine:
-        image: ubuntu-2004:202111-01
+        image: default
     steps:
       - checkout
 
