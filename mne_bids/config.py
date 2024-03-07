@@ -1,4 +1,5 @@
 """Configuration values for MNE-BIDS."""
+
 from mne import io
 from mne.io.constants import FIFF
 
@@ -444,9 +445,9 @@ BIDS_COORD_FRAME_DESCRIPTIONS = {
 
 for letter in ("a", "b", "c"):
     for sym in ("Sym", "Asym"):
-        BIDS_COORD_FRAME_DESCRIPTIONS[
-            f"mni152nlin2009{letter}{sym}"
-        ] = "Also known as ICBM (non-linear coregistration with 40 iterations,"
+        BIDS_COORD_FRAME_DESCRIPTIONS[f"mni152nlin2009{letter}{sym}"] = (
+            "Also known as ICBM (non-linear coregistration with 40 iterations,"
+        )
         " released in 2009). It comes in either three different flavours "
         "each in symmetric or asymmetric version."
 

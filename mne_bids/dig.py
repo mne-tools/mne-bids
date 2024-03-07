@@ -1,4 +1,5 @@
 """Read/write BIDS compatible electrode/coords structures from MNE."""
+
 # Authors: Adam Li <adam2392@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #          Alex Rockhill <aprockhill@mailbox.org>

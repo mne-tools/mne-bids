@@ -4,7 +4,6 @@
 #
 # License: BSD-3-Clause
 
-
 from mne_bids import BIDSPath, get_datatypes
 from mne_bids.config import EPHY_ALLOWED_DATATYPES
 
