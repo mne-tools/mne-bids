@@ -111,21 +111,25 @@ jobs:
 
   test:
     # For GitHub "required" CI checks, add in branch protection:
-    # 7 checks:
-    # for each OS (ubuntu, macos, macos-14, windows):
-    # 3.9 -> stable / full / stable
-    # 3.12 -> stable / full / stable
     #
-    # 3 additional checks:
-    # ubuntu / 3.12 / main / full / main
-    # ubuntu / 3.9 / prev / full / stable
-    # ubuntu / 3.12 / stable / minimal / stable
+    # 6 checks:
+    # for each OS (ubuntu, macos, windows):
+    # 3.9 / mne-stable / full / validator-stable
+    # 3.12 / mne-stable / full / validator-stable
+    #
+    # 1 additional check for Apple Silicon (doesn't support Python 3.9):
+    # 3.12 / mne-stable / full / validator-stable
+    #
+    # 5 additional checks with alternative MNE-Python and BIDS validator versions:
+    # ubuntu / 3.12 / mne-main / full / validator-main
+    # ubuntu / 3.9 / mne-prev / full / validator-stable
+    # ubuntu / 3.12 / mne-stable / minimal / validator-stable
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-14, windows-latest]  # macos-14 is Apple Silicon
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.9", "3.12"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
@@ -133,6 +137,15 @@ jobs:
 
         include:
           # special test runs running only on single CI systems to save resources
+          #
+          # macOS-14 (Apple Silicon) only works with Python 3.10+
+          # Once we drop support for Python 3.9, move it to the "proper" matrix above.
+          - os: macos-14
+            python-version: "3.12"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: validator-stable
+
           # Test development versions
           - os: ubuntu-latest
             python-version: "3.12"
