@@ -6,6 +6,7 @@ moving/renaming raw data files naively might lead to broken files, for example
 due to internal pointers that are not being updated.
 
 """
+
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>

@@ -1,4 +1,5 @@
 """Testing utilities for file io."""
+
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause

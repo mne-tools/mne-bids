@@ -1,4 +1,5 @@
 """BIDS compatible path functionality."""
+
 # Authors: Adam Li <adam2392@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #

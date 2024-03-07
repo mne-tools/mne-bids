@@ -1,4 +1,5 @@
 """Test for the MNE BIDSPath functions."""
+
 # Authors: Adam Li <adam2392@gmail.com>
 #          Richard Höchenberger <richard.hoechenberger@gmail.com>
 #

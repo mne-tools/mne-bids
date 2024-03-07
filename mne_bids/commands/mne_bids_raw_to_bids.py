@@ -4,6 +4,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw data.edf --bids_root new_path
 
 """
+
 # Authors: Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #

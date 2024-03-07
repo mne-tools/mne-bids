@@ -1,4 +1,5 @@
 """Private functions to handle tabular data."""
+
 from collections import OrderedDict
 from copy import deepcopy
 
