@@ -331,7 +331,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         # indicated by a trailing "Z" in the datetime string. If the "Z" is missing, the
         # time is represented as "local" time. We have no way to know what the local
         # time zone is at the *acquisition* site; so we simply assume the same time zone
-        # as the user's current system (this is what spec demands anyway).
+        # as the user's current system (this is what the spec demands anyway).
         acq_time_is_utc = acq_time.endswith("Z")
 
         # microseconds part in the acquisition time is optional; add it if missing
