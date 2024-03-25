@@ -62,6 +62,8 @@ Detailed list of changes
   ``pandas.Int64Dtype`` instead of ``float64``, by `Eric Larson`_ (:gh:`1227`)
 - The :func:`mne_bids.copyfiles.copyfile_ctf` now accounts for files with ``.{integer}_meg4`` extension, instead of only .meg4,
   when renaming the files of a .ds folder, by `Mara Wolter`_ (:gh:`1230`)
+- We fixed handling of time zones when reading ``*_scans.tsv`` files; specifically, non-UTC timestamps are now processed correctly,
+  by `Stefan Appelhoff`_ and `Richard Höchenberger`_  (:gh:`1240`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^

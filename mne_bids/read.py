@@ -327,12 +327,32 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     # extract the acquisition time from scans file
     acq_time = acq_times[row_ind]
     if acq_time != "n/a":
-        # microseconds in the acquisition time is optional
+        # BIDS allows the time to be stored in UTC with a zero time-zone offset, as
+        # indicated by a trailing "Z" in the datetime string. If the "Z" is missing, the
+        # time is represented as "local" time. We have no way to know what the local
+        # time zone is at the *acquisition* site; so we simply assume the same time zone
+        # as the user's current system (this is what the spec demands anyway).
+        acq_time_is_utc = acq_time.endswith("Z")
+
+        # microseconds part in the acquisition time is optional; add it if missing
         if "." not in acq_time:
-            # acquisition time ends with '.%fZ' microseconds string
-            acq_time += ".0Z"
-        acq_time = datetime.strptime(acq_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-        acq_time = acq_time.replace(tzinfo=timezone.utc)
+            if acq_time_is_utc:
+                acq_time = acq_time.replace("Z", ".0Z")
+            else:
+                acq_time += ".0"
+
+        date_format = "%Y-%m-%dT%H:%M:%S.%f"
+        if acq_time_is_utc:
+            date_format += "Z"
+
+        acq_time = datetime.strptime(acq_time, date_format)
+
+        if acq_time_is_utc:
+            # Enforce setting timezone to UTC without additonal conversion
+            acq_time = acq_time.replace(tzinfo=timezone.utc)
+        else:
+            # Convert time offset to UTC
+            acq_time = acq_time.astimezone(timezone.utc)
 
         logger.debug(
             f"Loaded {scans_fname} scans file to set " f"acq_time as {acq_time}."
