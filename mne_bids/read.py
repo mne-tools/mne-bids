@@ -341,7 +341,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
             else:
                 acq_time += ".0"
 
-        dt_string = "%Y-%m-%dT%H:%M:%S.%fZ"
+        dt_string = "%Y-%m-%dT%H:%M:%S.%f"
         if acq_time_is_utc:
             dt_string += "Z"
 
