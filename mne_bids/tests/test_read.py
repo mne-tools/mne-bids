@@ -601,7 +601,7 @@ def test_handle_scans_reading(tmp_path):
     acq_time_str = scans_tsv["acq_time"][0]
     acq_time = datetime.strptime(acq_time_str, "%Y-%m-%dT%H:%M:%S.%fZ")
     acq_time = acq_time.replace(tzinfo=timezone.utc)
-    new_acq_time = acq_time_str.split(".")[0]
+    new_acq_time = acq_time_str.split(".")[0] + "Z"
     assert acq_time == raw_01.info["meas_date"]
     scans_tsv["acq_time"][0] = new_acq_time
     _to_tsv(scans_tsv, scans_path)
@@ -609,11 +609,29 @@ def test_handle_scans_reading(tmp_path):
     # now re-load the data and it should be different
     # from the original date and the same as the newly altered date
     raw_02 = read_raw_bids(bids_path)
-    new_acq_time += ".0Z"
+    new_acq_time = new_acq_time.replace("Z", ".0Z")
     new_acq_time = datetime.strptime(new_acq_time, "%Y-%m-%dT%H:%M:%S.%fZ")
     new_acq_time = new_acq_time.replace(tzinfo=timezone.utc)
     assert raw_02.info["meas_date"] == new_acq_time
     assert new_acq_time != raw_01.info["meas_date"]
+
+    # Test without optional zero-offset UTC time-zone indicator (i.e., without trailing
+    # "Z")
+    for has_microsecs in (True, False):
+        new_acq_time_str = "2002-12-03T19:01:10"
+        date_format = "%Y-%m-%dT%H:%M:%S"
+        if has_microsecs:
+            new_acq_time_str += ".0"
+            date_format += ".%f"
+
+        scans_tsv["acq_time"][0] = new_acq_time_str
+        _to_tsv(scans_tsv, scans_path)
+
+        # now re-load the data and it should be different
+        # from the original date and the same as the newly altered date
+        raw_03 = read_raw_bids(bids_path)
+        new_acq_time = datetime.strptime(new_acq_time_str, date_format)
+        assert raw_03.info["meas_date"] == new_acq_time.astimezone(timezone.utc)
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
