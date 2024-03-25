@@ -341,11 +341,11 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
             else:
                 acq_time += ".0"
 
-        dt_string = "%Y-%m-%dT%H:%M:%S.%f"
+        date_format = "%Y-%m-%dT%H:%M:%S.%f"
         if acq_time_is_utc:
-            dt_string += "Z"
+            date_format += "Z"
 
-        acq_time = datetime.strptime(acq_time, dt_string)
+        acq_time = datetime.strptime(acq_time, date_format)
 
         if acq_time_is_utc:
             # Enforce setting timezone to UTC without additonal conversion
