@@ -327,10 +327,10 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     # extract the acquisition time from scans file
     acq_time = acq_times[row_ind]
     if acq_time != "n/a":
-        # BIDS allows the time to be stored in UTC with a time-zone offset, which is
+        # BIDS allows the time to be stored in UTC with a zero time-zone offset, as
         # indicated by a trailing "Z" in the datetime string. If the "Z" is missing, the
         # time is represented as "local" time. We have no way to know what the local
-        # time zone is at the acquisition site; so we simply assume the same time zone
+        # time zone is at the *acquisition* site; so we simply assume the same time zone
         # as the user's current system (this is what spec demands anyway).
         acq_time_is_utc = acq_time.endswith("Z")
 
