@@ -1888,10 +1888,7 @@ def write_raw_bids(
             bids_path.update(extension=".fif")
         elif bids_path.datatype in ["eeg", "ieeg"]:
             if ext not in [".vhdr", ".edf", ".bdf", ".EDF"]:
-                warn(
-                    "Converting data files to BrainVision format for anonymization",
-                    stacklevel=2,
-                )
+                warn("Converting data files to BrainVision format " "for anonymization")
                 convert = True
                 bids_path.update(extension=".vhdr")
     # Read in Raw object and extract metadata from Raw object if needed
@@ -2094,7 +2091,7 @@ def write_raw_bids(
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
         else:
-            warn(message="Converting data files to BrainVision format", stacklevel=2)
+            warn("Converting data files to BrainVision format")
             bids_path.update(suffix=bids_path.datatype, extension=".vhdr")
             # XXX Should we write durations here too?
             _write_raw_brainvision(
