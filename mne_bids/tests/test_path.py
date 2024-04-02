@@ -859,7 +859,7 @@ def test_make_filenames():
         datatype="ieeg",
     )
     expected_str = (
-        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_" "rec-seven_ieeg.json"
+        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.json"
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
@@ -902,7 +902,7 @@ def test_make_filenames():
     )  # noqa
 
     # what happens with scans.tsv file
-    with pytest.raises(ValueError, match="scans.tsv file name " "can only contain"):
+    with pytest.raises(ValueError, match="scans.tsv file name can only contain"):
         BIDSPath(
             subject=subject_id,
             session=session_id,
@@ -1188,7 +1188,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True, format="FIF")
     with pytest.raises(
         ValueError,
-        match="The provided recording does not " "have a measurement date set",
+        match="The provided recording does not have a measurement date set",
     ):
         bids_path.find_empty_room()
 

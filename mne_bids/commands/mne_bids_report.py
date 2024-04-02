@@ -35,7 +35,7 @@ def run():
     if not all([opt.bids_root]):
         parser.print_help()
         parser.error(
-            "Arguments missing. You need to specify the " "--bids_root parameter."
+            "Arguments missing. You need to specify the --bids_root parameter."
         )
 
     report = make_report(opt.bids_root)

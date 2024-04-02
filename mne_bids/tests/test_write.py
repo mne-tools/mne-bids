@@ -81,7 +81,7 @@ _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 warning_str = dict(
     channel_unit_changed="ignore:The unit for chann*.:RuntimeWarning:mne",
-    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:" "mne",
+    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:mne",
     nasion_not_found="ignore:.*nasion not found:RuntimeWarning:mne",
     unraisable_exception="ignore:.*Exception ignored.*:"
     "pytest.PytestUnraisableExceptionWarning",
@@ -1501,7 +1501,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # electrodes are not written w/o landmarks
     with pytest.raises(
-        RuntimeError, match="'head' coordinate frame must " "contain nasion"
+        RuntimeError, match="'head' coordinate frame must contain nasion"
     ):
         if warning_to_catch[dir_name] is None:
             write_raw_bids(**kwargs)
@@ -3048,7 +3048,7 @@ def test_coordsystem_json_compliance(
     _write_json(coordsystem_fname, new_coordsystem_json, overwrite=True)
     kwargs.update(bids_path=bids_path.copy().update(run="03"))
     with pytest.raises(
-        RuntimeError, match="Trying to write coordsystem.json, " "but it already exists"
+        RuntimeError, match="Trying to write coordsystem.json, but it already exists"
     ):
         write_raw_bids(**kwargs)
     _write_json(coordsystem_fname, coordsystem_json, overwrite=True)
@@ -3068,7 +3068,7 @@ def test_coordsystem_json_compliance(
         kwargs.update(bids_path=bids_path.copy().update(run="04"))
         with pytest.raises(
             RuntimeError,
-            match="Trying to write electrodes.tsv, " "but it already exists",
+            match="Trying to write electrodes.tsv, but it already exists",
         ):
             write_raw_bids(**kwargs)
 
@@ -3459,7 +3459,7 @@ def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmp_path):
 
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info["ch_names"][0]: "mag"})
-    with pytest.raises(ValueError, match="Got file extension .*" "for MEG data"):
+    with pytest.raises(ValueError, match="Got file extension .*for MEG data"):
         write_raw_bids(**kwargs)
 
 

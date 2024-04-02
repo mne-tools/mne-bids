@@ -239,9 +239,7 @@ def test_template_to_head():
     raw = _load_raw()
     montage_empty = mne.channels.make_dig_montage(hsp=[[0, 0, 0]])
     _set_montage_no_trans(raw, montage_empty)
-    with pytest.raises(
-        RuntimeError, match="No channel locations " "found in the montage"
-    ):
+    with pytest.raises(RuntimeError, match="No channel locations found in the montage"):
         template_to_head(raw.info, "fsaverage", coord_frame="auto")
 
     # test unexpected coordinate frame

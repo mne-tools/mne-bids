@@ -29,7 +29,7 @@ def run():
     parser.add_option(
         "--bids_root",
         dest="bids_root",
-        help="The path of the folder containing the BIDS " "dataset",
+        help="The path of the folder containing the BIDS dataset",
     )
     parser.add_option("--subject_id", dest="subject", help=("Subject name"))
     parser.add_option("--session_id", dest="session", help="Session name")
@@ -44,17 +44,17 @@ def run():
     parser.add_option(
         "--suffix",
         dest="suffix",
-        help="The filename suffix, i.e. the last part before " "the extension",
+        help="The filename suffix, i.e. the last part before the extension",
     )
     parser.add_option(
         "--ext",
         dest="extension",
-        help="The filename extension, including the leading " "period, e.g. .fif",
+        help="The filename extension, including the leading period, e.g. .fif",
     )
     parser.add_option(
         "--find_flat",
         dest="find_flat",
-        help="Whether to auto-detect flat channels and time " "segments",
+        help="Whether to auto-detect flat channels and time segments",
     )
     parser.add_option(
         "--l_freq", dest="l_freq", help="The high-pass filter cutoff frequency"
