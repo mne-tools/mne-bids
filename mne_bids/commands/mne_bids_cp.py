@@ -14,9 +14,7 @@ def run():
     """Run the cp command."""
     from mne.commands.utils import get_optparser
 
-    accepted_formats_msg = (
-        "(accepted formats: BrainVision .vhdr, " "EEGLAB .set, CTF .ds)"
-    )
+    accepted_formats_msg = "(accepted formats: BrainVision .vhdr, EEGLAB .set, CTF .ds)"
 
     parser = get_optparser(
         __file__,
@@ -29,7 +27,7 @@ def run():
         "-i",
         "--input",
         dest="input",
-        help=(f"path to the input file. {accepted_formats_msg}"),
+        help=f"path to the input file. {accepted_formats_msg}",
         metavar="INPUT",
     )
 
@@ -37,7 +35,7 @@ def run():
         "-o",
         "--output",
         dest="output",
-        help=("path to the output file (MUST be same format " "as input file)"),
+        help="path to the output file (MUST be same format as input file)",
         metavar="OUTPUT",
     )
 

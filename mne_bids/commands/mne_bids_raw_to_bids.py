@@ -30,7 +30,7 @@ def run():
     parser.add_option(
         "--subject_id",
         dest="subject_id",
-        help=("subject name in BIDS compatible format " "(01, 02, etc.)"),
+        help="subject name in BIDS compatible format (01, 02, etc.)",
     )
     parser.add_option(
         "--task", dest="task", help="name of the task the data is based on"

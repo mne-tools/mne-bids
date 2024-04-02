@@ -454,7 +454,7 @@ def _handle_info_reading(sidecar_fname, raw):
                     )
         else:
             addmsg = (
-                ".\n(Because no 'HeadCoilFrequency' data " "was found in the sidecar.)"
+                ".\n(Because no 'HeadCoilFrequency' data was found in the sidecar.)"
             )
             logger.info(msg.format(addmsg))
 

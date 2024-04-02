@@ -1141,7 +1141,7 @@ class BIDSPath:
             Returns ``None`` if none was found.
         """
         if self.datatype not in ("meg", None):
-            raise ValueError("Empty-room data is only supported for MEG " "datasets")
+            raise ValueError("Empty-room data is only supported for MEG datasets")
 
         if self.root is None:
             raise ValueError(
@@ -1251,7 +1251,7 @@ class BIDSPath:
         if self.root is None or self.subject is None:
             raise ValueError("root and subject must be set.")
         if self.datatype not in (None, "meg"):
-            raise ValueError("Can only find fine-calibration file for MEG " "datasets.")
+            raise ValueError("Can only find fine-calibration file for MEG datasets.")
 
         path = BIDSPath(
             subject=self.subject,

@@ -65,7 +65,7 @@ tiny_bids_root = mne_bids_root / "mne_bids" / "tests" / "data" / "tiny_bids"
 
 warning_str = dict(
     channel_unit_changed="ignore:The unit for chann*.:RuntimeWarning:mne",
-    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:" "mne",
+    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:mne",
     nasion_not_found="ignore:.*nasion not found:RuntimeWarning:mne",
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
 )
@@ -100,7 +100,7 @@ def test_not_implemented(tmp_path):
         with open(raw_fname, "w", encoding="utf-8"):
             pass
         with pytest.raises(
-            ValueError, match=("there is no IO support for " "this file format yet")
+            ValueError, match=("there is no IO support for this file format yet")
         ):
             _read_raw(raw_fname)
 
@@ -867,7 +867,7 @@ def test_handle_eeg_coords_reading(tmp_path):
     )
     _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", "besa")
     with pytest.warns(
-        RuntimeWarning, match="is not a BIDS-acceptable " "coordinate frame for EEG"
+        RuntimeWarning, match="is not a BIDS-acceptable coordinate frame for EEG"
     ):
         raw_test = read_raw_bids(bids_path)
         assert raw_test.info["dig"] is None
@@ -939,7 +939,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
         electrodes_dict[axis] = np.multiply(orig_electrodes_dict[axis], scaling)
     _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.warns(
-        RuntimeWarning, match="Coordinate unit is not " "an accepted BIDS unit"
+        RuntimeWarning, match="Coordinate unit is not an accepted BIDS unit"
     ):
         raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
 
@@ -967,9 +967,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
         _update_sidecar(coordsystem_fname, "iEEGCoordinateSystem", coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(
-            RuntimeWarning, match="not an MNE-Python " "coordinate frame"
-        ):
+        with pytest.warns(RuntimeWarning, match="not an MNE-Python coordinate frame"):
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
             assert raw_test.info["dig"] is not None
 
@@ -984,7 +982,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
         else:
             with pytest.warns(
-                RuntimeWarning, match="not an MNE-Python " "coordinate frame"
+                RuntimeWarning, match="not an MNE-Python coordinate frame"
             ):
                 raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
         assert raw_test.info["dig"] is not None
@@ -998,9 +996,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
 
     # if we delete the coordsystem.json file, an error will be raised
     os.remove(coordsystem_fname)
-    with pytest.raises(
-        RuntimeError, match="BIDS mandates that " "the coordsystem.json"
-    ):
+    with pytest.raises(RuntimeError, match="BIDS mandates that the coordsystem.json"):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes is not a subset of Raw
@@ -1014,7 +1010,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     _to_tsv(electrodes_dict, electrodes_fname)
     # popping off channels should not result in an error
     # however, a warning will be raised through mne-python
-    with pytest.warns(RuntimeWarning, match="DigMontage is " "only a subset of info"):
+    with pytest.warns(RuntimeWarning, match="DigMontage is only a subset of info"):
         read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
@@ -1030,7 +1026,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     # electrode coordinates should be nan
     # when coordinate is 'n/a'
     nan_chs = [electrodes_dict["name"][i] for i in [0, 3]]
-    with pytest.warns(RuntimeWarning, match="There are channels " "without locations"):
+    with pytest.warns(RuntimeWarning, match="There are channels without locations"):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
         for idx, ch in enumerate(raw.info["chs"]):
             if ch["ch_name"] in nan_chs:
