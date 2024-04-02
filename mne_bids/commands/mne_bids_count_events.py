@@ -37,7 +37,7 @@ def run():
         "--describe",
         dest="describe",
         action="store_true",
-        help=("If set print the descriptive statistics (min, max, etc.)."),
+        help="If set print the descriptive statistics (min, max, etc.).",
     )
 
     parser.add_option(

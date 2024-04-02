@@ -27,7 +27,7 @@ def run():
         "-i",
         "--input",
         dest="input",
-        help=(f"path to the input file. {accepted_formats_msg}"),
+        help=f"path to the input file. {accepted_formats_msg}",
         metavar="INPUT",
     )
 
@@ -35,7 +35,7 @@ def run():
         "-o",
         "--output",
         dest="output",
-        help=("path to the output file (MUST be same format as input file)"),
+        help="path to the output file (MUST be same format as input file)",
         metavar="OUTPUT",
     )
 

@@ -58,7 +58,7 @@ def run():
         dest="bids_root",
         help="The path of the folder containing the BIDS dataset",
     )
-    parser.add_option("--subject_id", dest="subject", help=("Subject name"))
+    parser.add_option("--subject_id", dest="subject", help="Subject name")
     parser.add_option("--session_id", dest="session", help="Session name")
     parser.add_option("--task", dest="task", help="Task name")
     parser.add_option("--acq", dest="acquisition", help="Acquisition parameter")

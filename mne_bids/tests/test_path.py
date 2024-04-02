@@ -961,7 +961,7 @@ def test_match(return_bids_test_dir):
     bids_path_01 = BIDSPath(root=bids_root, run="01")
     paths = bids_path_01.match()
     assert len(paths) == 3
-    assert paths[0].basename == ("sub-01_ses-01_task-testing_run-01_channels.tsv")
+    assert paths[0].basename == "sub-01_ses-01_task-testing_run-01_channels.tsv"
 
     bids_path_01 = BIDSPath(root=bids_root, subject="unknown")
     paths = bids_path_01.match()
