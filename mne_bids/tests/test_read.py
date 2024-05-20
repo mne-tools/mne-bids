@@ -429,7 +429,11 @@ def test_get_head_mri_trans(tmp_path):
     t1_bids_path = _bids_path.copy().update(
         root=tmp_path / "mri_root", task=None, run=None
     )
-    with pytest.warns(RuntimeWarning, match="Did not find any channels.tsv"):
+    with (
+        pytest.warns(RuntimeWarning, match="Did not find any channels.tsv"),
+        pytest.warns(RuntimeWarning, match=r"Did not find any eeg\.json"),
+        pytest.warns(RuntimeWarning, match=r"participants\.tsv file not found"),
+    ):
         get_head_mri_trans(
             bids_path=electrophys_bids_path,
             t1_bids_path=t1_bids_path,
@@ -439,25 +443,31 @@ def test_get_head_mri_trans(tmp_path):
 
     # bids_path without datatype is deprecated
     bids_path = electrophys_bids_path.copy().update(datatype=None)
-    with pytest.raises(FileNotFoundError):  # defaut location is all wrong!
-        with pytest.warns(DeprecationWarning, match="no datatype"):
-            get_head_mri_trans(
-                bids_path=bids_path,
-                t1_bids_path=t1_bids_path,
-                fs_subject="sample",
-                fs_subjects_dir=subjects_dir,
-            )
+    # defaut location is all wrong!
+    with (
+        pytest.raises(FileNotFoundError),
+        pytest.warns(DeprecationWarning, match="did not have a datatype"),
+    ):
+        get_head_mri_trans(
+            bids_path=bids_path,
+            t1_bids_path=t1_bids_path,
+            fs_subject="sample",
+            fs_subjects_dir=subjects_dir,
+        )
 
     # bids_path without suffix is deprecated
     bids_path = electrophys_bids_path.copy().update(suffix=None)
-    with pytest.raises(FileNotFoundError):  # defaut location is all wrong!
-        with pytest.warns(DeprecationWarning, match="no datatype"):
-            get_head_mri_trans(
-                bids_path=bids_path,
-                t1_bids_path=t1_bids_path,
-                fs_subject="sample",
-                fs_subjects_dir=subjects_dir,
-            )
+    # defaut location is all wrong!
+    with (
+        pytest.raises(FileNotFoundError),
+        pytest.warns(DeprecationWarning, match="did not have a suffix"),
+    ):
+        get_head_mri_trans(
+            bids_path=bids_path,
+            t1_bids_path=t1_bids_path,
+            fs_subject="sample",
+            fs_subjects_dir=subjects_dir,
+        )
 
     # Should fail for an unsupported coordinate frame
     raw = _read_raw_fif(raw_fname)
@@ -791,7 +801,13 @@ def test_handle_chpi_reading(tmp_path):
     meg_json_data_freq_mismatch["HeadCoilFrequency"][0] = 123
     _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
-    with pytest.warns(RuntimeWarning, match="Defaulting to .* mne.Raw object"):
+    with (
+        pytest.warns(RuntimeWarning, match="Defaulting to .* mne.Raw object"),
+        pytest.warns(
+            RuntimeWarning, match="This file contains raw Internal Active Shielding"
+        ),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         raw_read = read_raw_bids(bids_path)
 
     # cHPI "off" according to sidecar, but present in the data
@@ -866,8 +882,11 @@ def test_handle_eeg_coords_reading(tmp_path):
         bids_path, suffix="coordsystem", extension=".json"
     )
     _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", "besa")
-    with pytest.warns(
-        RuntimeWarning, match="is not a BIDS-acceptable coordinate frame for EEG"
+    with (
+        pytest.warns(
+            RuntimeWarning, match="is not a BIDS-acceptable coordinate frame for EEG"
+        ),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         raw_test = read_raw_bids(bids_path)
         assert raw_test.info["dig"] is None
@@ -938,8 +957,11 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     for axis in ["x", "y", "z"]:
         electrodes_dict[axis] = np.multiply(orig_electrodes_dict[axis], scaling)
     _to_tsv(electrodes_dict, electrodes_fname)
-    with pytest.warns(
-        RuntimeWarning, match="Coordinate unit is not an accepted BIDS unit"
+    with (
+        pytest.warns(
+            RuntimeWarning, match="Coordinate unit is not an accepted BIDS unit"
+        ),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
 
@@ -967,7 +989,10 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
         _update_sidecar(coordsystem_fname, "iEEGCoordinateSystem", coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(RuntimeWarning, match="not an MNE-Python coordinate frame"):
+        with (
+            pytest.warns(RuntimeWarning, match="not an MNE-Python coordinate frame"),
+            pytest.warns(RuntimeWarning, match="The unit for channel"),
+        ):
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
             assert raw_test.info["dig"] is not None
 
@@ -981,8 +1006,11 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
         if coord_frame in BIDS_TO_MNE_FRAMES:
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
         else:
-            with pytest.warns(
-                RuntimeWarning, match="not an MNE-Python coordinate frame"
+            with (
+                pytest.warns(
+                    RuntimeWarning, match="not an MNE-Python coordinate frame"
+                ),
+                pytest.warns(RuntimeWarning, match="The unit for channel"),
             ):
                 raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
         assert raw_test.info["dig"] is not None
@@ -1010,7 +1038,10 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     _to_tsv(electrodes_dict, electrodes_fname)
     # popping off channels should not result in an error
     # however, a warning will be raised through mne-python
-    with pytest.warns(RuntimeWarning, match="DigMontage is only a subset of info"):
+    with (
+        pytest.warns(RuntimeWarning, match="DigMontage is only a subset of info"),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
@@ -1026,7 +1057,10 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     # electrode coordinates should be nan
     # when coordinate is 'n/a'
     nan_chs = [electrodes_dict["name"][i] for i in [0, 3]]
-    with pytest.warns(RuntimeWarning, match="There are channels without locations"):
+    with (
+        pytest.warns(RuntimeWarning, match="There are channels without locations"),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
         for idx, ch in enumerate(raw.info["chs"]):
             if ch["ch_name"] in nan_chs:
@@ -1155,7 +1189,10 @@ def test_handle_non_mne_channel_type(tmp_path):
     channels_data["type"][ch_idx] = "FOOBAR"
     _to_tsv(data=channels_data, fname=channels_tsv_path)
 
-    with pytest.warns(RuntimeWarning, match='will be set to "misc"'):
+    with (
+        pytest.warns(RuntimeWarning, match='will be set to "misc"'),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         raw = read_raw_bids(bids_path)
 
     # Should be a 'misc' channel.
@@ -1285,10 +1322,13 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.load_data()
     raw.save(raw_path, overwrite=True)
 
-    with pytest.warns(
-        RuntimeWarning,
-        match="number of channels in the channels.tsv sidecar .* "
-        "does not match the number of channels in the raw data",
+    with (
+        pytest.warns(
+            RuntimeWarning,
+            match="number of channels in the channels.tsv sidecar .* "
+            "does not match the number of channels in the raw data",
+        ),
+        pytest.warns(RuntimeWarning, match="Cannot set channel type"),
     ):
         read_raw_bids(bids_path)
 
@@ -1299,10 +1339,13 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.rename_channels({ch_name_orig: ch_name_new})
     raw.save(raw_path, overwrite=True)
 
-    with pytest.warns(
-        RuntimeWarning,
-        match=f"Cannot set channel type for the following channels, as they "
-        f"are missing in the raw data: {ch_name_orig}",
+    with (
+        pytest.warns(
+            RuntimeWarning,
+            match=f"Cannot set channel type for the following channels, as they "
+            f"are missing in the raw data: {ch_name_orig}",
+        ),
+        pytest.warns(RuntimeWarning, match="The number of channels in the channels"),
     ):
         read_raw_bids(bids_path)
 
@@ -1318,10 +1361,14 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.rename_channels({ch_name_orig: ch_name_new})
     raw.save(raw_path, overwrite=True)
 
-    with pytest.warns(
-        RuntimeWarning,
-        match=f'Cannot set "bad" status for the following channels, as '
-        f"they are missing in the raw data: {ch_name_orig}",
+    with (
+        pytest.warns(
+            RuntimeWarning,
+            match=f'Cannot set "bad" status for the following channels, as '
+            f"they are missing in the raw data: {ch_name_orig}",
+        ),
+        pytest.warns(RuntimeWarning, match="The number of channels in the channels"),
+        pytest.warns(RuntimeWarning, match="Cannot set channel type"),
     ):
         read_raw_bids(bids_path)
 
@@ -1362,7 +1409,11 @@ def test_file_not_found(tmp_path):
 
     bp.update(extension=".fif")
     _read_raw_fif(raw_fname, verbose=False).save(bp.fpath)
-    with pytest.warns(RuntimeWarning, match=r"channels\.tsv"):
+    with (
+        pytest.warns(RuntimeWarning, match=r"channels\.tsv"),
+        pytest.warns(RuntimeWarning, match=r"Did not find any eeg\.json"),
+        pytest.warns(RuntimeWarning, match=r"participants\.tsv file not found"),
+    ):
         read_raw_bids(bp)  # smoke test
 
     bp.update(task=None)
