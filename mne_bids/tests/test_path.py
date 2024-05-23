@@ -1337,7 +1337,12 @@ def test_find_emptyroom_no_meas_date(tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True)
     os.remove(op.join(bids_root, "participants.tsv"))
 
-    with pytest.warns(RuntimeWarning, match="Could not retrieve .* date"):
+    with (
+        pytest.warns(RuntimeWarning, match="Could not retrieve .* date"),
+        pytest.warns(RuntimeWarning, match="participants.tsv file not found"),
+        pytest.warns(RuntimeWarning, match=r"Did not find any channels\.tsv"),
+        pytest.warns(RuntimeWarning, match=r"Did not find any meg\.json"),
+    ):
         bids_path.find_empty_room()
 
 

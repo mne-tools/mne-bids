@@ -608,7 +608,10 @@ def test_fif(_bids_validate, tmp_path):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype="eeg")
-    with pytest.warns(RuntimeWarning, match="Not setting position"):
+    with (
+        pytest.warns(RuntimeWarning, match="Not setting position"),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, "test-raw.fif"))
 
@@ -1174,7 +1177,10 @@ def test_ctf(_bids_validate, tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True)  # test overwrite
 
     _bids_validate(tmp_path)
-    with pytest.warns(RuntimeWarning, match="Did not find any events"):
+    with (
+        pytest.warns(RuntimeWarning, match="Did not find any events"),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         raw = read_raw_bids(bids_path=bids_path, extra_params=dict(clean_names=False))
 
     # test to check that running again with overwrite == False raises an error
@@ -1503,11 +1509,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     with pytest.raises(
         RuntimeError, match="'head' coordinate frame must contain nasion"
     ):
-        if warning_to_catch[dir_name] is None:
-            write_raw_bids(**kwargs)
-        else:
-            with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
-                write_raw_bids(**kwargs)
+        write_raw_bids(**kwargs)
 
     electrodes_fpath = _find_matching_sidecar(
         bids_path, suffix="electrodes", extension=".tsv", on_error="ignore"
@@ -1866,7 +1868,10 @@ def test_bdf(_bids_validate, tmp_path):
     # Now read the raw data back from BIDS, with the tampered TSV, to show
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
-    with pytest.warns(RuntimeWarning, match="Fp1 has changed from V .*"):
+    with (
+        pytest.warns(RuntimeWarning, match=r"The unit for channel\(s\) Fp1"),
+        pytest.warns(RuntimeWarning, match=r"The unit for channel\(s\) Status"),
+    ):
         raw = read_raw_bids(bids_path=bids_path)
     assert coil_type(raw.info, test_ch_idx) == "misc"
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
@@ -3366,10 +3371,21 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
             ):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(
-            RuntimeWarning, match=f"Converting data files to {format} format"
-        ):
-            bids_output_path = write_raw_bids(**kwargs)
+        if dir_name in ["EEGLAB", "NihonKohden", "curry"]:
+            with pytest.warns(
+                RuntimeWarning, match=f"Converting data files to {format} format"
+            ):
+                bids_output_path = write_raw_bids(**kwargs)
+        else:
+            with (
+                pytest.warns(
+                    RuntimeWarning, match=f"Converting data files to {format} format"
+                ),
+                pytest.warns(
+                    RuntimeWarning, match="EDF format requires equal-length data blocks"
+                ),
+            ):
+                bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
     raw2 = read_raw_bids(bids_output_path, extra_params=dict(preload=True))
