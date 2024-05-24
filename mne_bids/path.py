@@ -2441,6 +2441,10 @@ def _return_root_paths(root, datatype=None, ignore_json=True):
     else:
         paths = [p for p in paths if p.is_file()]
 
+    #only keep files which are of the form root/sub-*, such that we only look in 'sub'-folders
+    root_sub=str(root / 'sub-')
+    paths = [p for p in paths if str(p).startswith(root_sub)]
+
     return paths
 
 
