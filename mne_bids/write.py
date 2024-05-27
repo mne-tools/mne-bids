@@ -345,7 +345,7 @@ def _events_json(fname, overwrite=False):
                 "Onset (in seconds) of the event from the beginning of the first data "
                 "point. Negative onsets account for events before the first stored "
                 "data point. This column must appear first in the file."
-            )
+            ),
         },
         "duration": {
             "Requirement Level": "REQUIRED",
@@ -355,7 +355,7 @@ def _events_json(fname, overwrite=False):
                 "Must be zero, positive, or 'n/a' if unavailable. "
                 "A zero value indicates an impulse event. "
                 "This column must appear second in the file."
-            )
+            ),
         },
         "sample": {
             "Data type": "number",
