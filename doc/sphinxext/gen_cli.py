@@ -8,13 +8,14 @@ see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD-3-Clause
-import os
 import glob
-from os import path as op
+import os
+import shutil
 import sys
+from os import path as op
 
 import sphinx.util
-from mne.utils import run_subprocess, _replace_md5
+from mne.utils import hashfunc, run_subprocess
 
 
 def setup(app):
@@ -114,6 +115,17 @@ def generate_cli_rst(app=None):
             )
     _replace_md5(out_fname)
     print("[Done]")
+
+
+def _replace_md5(fname):
+    """Replace a file based on MD5sum."""
+    # adapted from sphinx-gallery
+    assert fname.endswith(".new")
+    fname_old = fname[:-4]
+    if os.path.isfile(fname_old) and hashfunc(fname) == hashfunc(fname_old):
+        os.remove(fname)
+    else:
+        shutil.move(fname, fname_old)
 
 
 # This is useful for testing/iterating to see what the result looks like

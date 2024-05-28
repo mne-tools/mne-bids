@@ -24,7 +24,7 @@ clean-e:
 clean: clean-build clean-pyc clean-so clean-ctags clean-cache clean-e
 
 inplace:
-	@python -m pip install -e .[dev]
+	@python -m pip install -e ".[dev]"
 
 test:
 	@echo "Running tests"

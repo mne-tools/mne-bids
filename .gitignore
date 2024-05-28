@@ -4,9 +4,11 @@ dist/
 *.egg*
 build
 coverage
+.coverage*
 *.xml
 .venv
 .ruff_cache
+sg_execution_times.rst
 
 # Sphinx documentation
 doc/_build/

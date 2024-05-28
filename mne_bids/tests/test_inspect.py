@@ -71,7 +71,7 @@ def test_inspect_single_file(tmp_path, save_changes):
     import matplotlib.pyplot as plt
     from mne.utils._testing import _click_ch_name
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -115,7 +115,7 @@ def test_inspect_multiple_files(tmp_path):
     matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -143,7 +143,7 @@ def test_inspect_set_and_unset_bads(tmp_path):
     import matplotlib.pyplot as plt
     from mne.utils._testing import _click_ch_name
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -217,7 +217,7 @@ def test_inspect_annotations(tmp_path):
     matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -273,7 +273,7 @@ def test_inspect_annotations_remove_all(tmp_path):
     matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -332,7 +332,7 @@ def test_inspect_dont_show_annotations(tmp_path):
     matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -350,7 +350,7 @@ def test_inspect_bads_and_annotations(tmp_path):
     import matplotlib.pyplot as plt
     from mne.utils._testing import _click_ch_name
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
@@ -391,7 +391,7 @@ def test_inspect_auto_flats(tmp_path, save_changes):
     matplotlib = pytest.importorskip("matplotlib")
     import matplotlib.pyplot as plt
 
-    matplotlib.use("Agg")
+    matplotlib.use("agg")
     plt.close("all")
 
     bids_root = setup_bids_test_dir(tmp_path)
