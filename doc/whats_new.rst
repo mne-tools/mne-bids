@@ -19,6 +19,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daniel McCloy`_
 * `Mara Wolter`_
+* `Julius Welzel`_	
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -34,7 +35,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- nothing yet
+- Including a description for ``onset`` and  ``duration`` in the ``events.json`` file, by `Julius Welzel`_ (:gh:`1255`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
