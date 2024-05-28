@@ -208,7 +208,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
             onset=[], duration=[], description=[], orig_time=raw.info["meas_date"]
         )
 
-    if matplotlib.get_backend() != "agg":
+    if matplotlib.get_backend().lower() != "agg":
         plt.show(block=True)
 
     _global_vars["raw_fig"] = fig
