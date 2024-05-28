@@ -430,7 +430,7 @@ def _save_raw_dialog_box(*, bads, bad_descriptions, annotations, bids_path):
     fig.canvas.mpl_connect("close_event", _dont_save_callback)
     fig.canvas.mpl_connect("key_press_event", _keypress_callback)
 
-    if matplotlib.get_backend() != "agg":
+    if matplotlib.get_backend().lower() != "agg":
         fig.show()
 
     _global_vars["dialog_fig"] = fig
