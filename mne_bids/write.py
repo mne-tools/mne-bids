@@ -338,7 +338,28 @@ def _events_json(fname, overwrite=False):
         Whether to overwrite the output file if it exists.
     """
     new_data = {
-        "sample": {"Description": "The event onset time in number of sampling points."},
+        "onset": {
+            "Description": (
+                "Onset (in seconds) of the event from the beginning of the first data"
+                "point. Negative onsets account for events before the first stored "
+                "data point."
+            ),
+            "Units": "s",
+        },
+        "duration": {
+            "Description": (
+                "Duration of the event in seconds from onset. "
+                "Must be zero, positive, or 'n/a' if unavailable. "
+                "A zero value indicates an impulse event. "
+            ),
+            "Units": "s",
+        },
+        "sample": {
+            "Description": (
+                "The event onset time in number of sampling points."
+                "First sample is 0."
+            ),
+        },
         "value": {
             "Description": (
                 "The event code (also known as trigger code or event ID) "
