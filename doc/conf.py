@@ -4,7 +4,7 @@ import sys
 from datetime import date
 
 import sphinx_gallery  # noqa: F401
-from sphinx_gallery.sorting import ExampleTitleSortKey
+from sphinx.config import is_serializable
 
 import mne_bids
 
@@ -179,7 +179,9 @@ sphinx_gallery_conf = {
     },
     "backreferences_dir": "generated",
     "examples_dirs": "../examples",
-    "within_subsection_order": ExampleTitleSortKey,
+    "within_subsection_order": "ExampleTitleSortKey",
     "gallery_dirs": "auto_examples",
     "filename_pattern": "^((?!sgskip).)*$",
 }
+
+assert is_serializable(sphinx_gallery_conf)

@@ -1,4 +1,5 @@
 """Command Line Interface for MNE-BIDS."""
+
 # Authors: Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #

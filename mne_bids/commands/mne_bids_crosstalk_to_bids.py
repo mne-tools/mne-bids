@@ -29,9 +29,9 @@ def run():
     parser.add_option(
         "--bids_root",
         dest="bids_root",
-        help="The path of the folder containing the BIDS " "dataset",
+        help="The path of the folder containing the BIDS dataset",
     )
-    parser.add_option("--subject_id", dest="subject", help=("Subject name"))
+    parser.add_option("--subject_id", dest="subject", help="Subject name")
     parser.add_option("--session_id", dest="session", help="Session name")
     parser.add_option("--file", dest="fname", help="The path of the crosstalk file")
     parser.add_option(
@@ -44,9 +44,7 @@ def run():
     opt, args = parser.parse_args()
     if args:
         parser.print_help()
-        parser.error(
-            f"Please do not specify arguments without flags. " f"Got: {args}.\n"
-        )
+        parser.error(f"Please do not specify arguments without flags. Got: {args}.\n")
 
     if opt.bids_root is None:
         parser.print_help()

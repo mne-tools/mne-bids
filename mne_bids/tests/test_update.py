@@ -1,4 +1,5 @@
 """Test for the MNE BIDS updating of BIDS datasets."""
+
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD-3-Clause
@@ -149,7 +150,7 @@ def test_update_sidecar_jsons(
 
     # error should raise if the file path doesn't exist
     error_bids_path = sidecar_path.copy().update(subject="02")
-    with pytest.raises(RuntimeError, match="Sidecar file " "does not exist."):
+    with pytest.raises(RuntimeError, match="Sidecar file does not exist."):
         update_sidecar_json(error_bids_path, _get_sidecar_json_update_file)
 
 

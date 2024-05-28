@@ -18,9 +18,12 @@ Version 0.15 (unreleased)
 The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daniel McCloy`_
+* `Mara Wolter`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
+* `Alex Rockhill`_
+* `Eric Larson`_
 * `Laetitia Fesselier`_
 * `Richard Höchenberger`_
 * `Stefan Appelhoff`_
@@ -38,6 +41,10 @@ Detailed list of changes
 
 - The experimental support for running MNE-BIDS examples from your browser using Binder has
   been removed, by `Stefan Appelhoff`_ (:gh:`1202`)
+- MNE-BIDS will no longer zero-pad ("zfill") entity indices passed to :class:`~mne_bids.BIDSPath`.
+  For example, If ``run=1`` is passed to MNE-BIDS, it will no longer be silently auto-converted to ``run-01``, by `Alex Rockhill`_ (:gh:`1215`)
+- MNE-BIDS will no longer warn about missing leading punctuation marks for extensions passed :class:`~mne_bids.BIDSPath`.
+  For example, MNE-BIDS will now silently auto-convert ``edf`` to ```.edf``, by `Alex Rockhill`_ (:gh:`1215`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -51,7 +58,12 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- nothing yet
+- The datatype in the dataframe returned by :func:`mne_bids.stats.count_events` is now
+  ``pandas.Int64Dtype`` instead of ``float64``, by `Eric Larson`_ (:gh:`1227`)
+- The :func:`mne_bids.copyfiles.copyfile_ctf` now accounts for files with ``.{integer}_meg4`` extension, instead of only .meg4,
+  when renaming the files of a .ds folder, by `Mara Wolter`_ (:gh:`1230`)
+- We fixed handling of time zones when reading ``*_scans.tsv`` files; specifically, non-UTC timestamps are now processed correctly,
+  by `Stefan Appelhoff`_ and `Richard Höchenberger`_  (:gh:`1240`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
@@ -66,6 +78,8 @@ Detailed list of changes
   changed runtime behavior, by `Richard Höchenberger`_ (:gh:`1204`)
 - Display of the version number on the website is now truncated for over-long version strings,
   by `Daniel McCloy`_ (:gh:`1206`)
+- The long deprecated ``events_data`` parameter has been fully removed from
+  :func:`~mne_bids.write_raw_bids` in favor of ``events``, by `Stefan Appelhoff`_ (:gh:`1229`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

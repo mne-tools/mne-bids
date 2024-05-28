@@ -1,4 +1,5 @@
 """Utility and helper functions for MNE-BIDS."""
+
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
@@ -202,7 +203,7 @@ def _age_on_date(bday, exp_date):
 
     """
     if exp_date < bday:
-        raise ValueError("The experimentation date must be after the birth " "date")
+        raise ValueError("The experimentation date must be after the birth date")
     if exp_date.month > bday.month:
         return exp_date.year - bday.year
     elif exp_date.month == bday.month:
@@ -438,7 +439,7 @@ def get_anonymization_daysback(raws, verbose=None):
             daysback_max_list.append(daysback_max)
     if not daysback_min_list or not daysback_max_list:
         raise ValueError(
-            "All measurement dates are None, " "pass any `daysback` value to anonymize."
+            "All measurement dates are None, pass any `daysback` value to anonymize."
         )
     daysback_min = max(daysback_min_list)
     daysback_max = min(daysback_max_list)

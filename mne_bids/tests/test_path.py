@@ -1,4 +1,5 @@
 """Test for the MNE BIDSPath functions."""
+
 # Authors: Adam Li <adam2392@gmail.com>
 #          Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
@@ -352,10 +353,10 @@ def test_parse_ext():
 @pytest.mark.parametrize(
     "fname",
     [
-        "sub-01_ses-02_task-test_run-3_split-01_meg.fif",
-        "sub-01_ses-02_task-test_run-3_split-01",
-        "/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif",  # noqa: E501
-        "sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif",
+        "sub-01_ses-02_task-test_run-3_split-1_meg.fif",
+        "sub-01_ses-02_task-test_run-3_split-1",
+        "/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-1_meg.fif",  # noqa: E501
+        "sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-1_meg.fif",
     ],
 )
 def test_get_bids_path_from_fname(fname):
@@ -377,12 +378,12 @@ def test_get_bids_path_from_fname(fname):
 @pytest.mark.parametrize(
     "fname",
     [
-        "sub-01_ses-02_task-test_run-3_split-01_desc-filtered_meg.fif",
-        "sub-01_ses-02_task-test_run-3_split-01_desc-filtered.fif",
-        "sub-01_ses-02_task-test_run-3_split-01_desc-filtered",
+        "sub-01_ses-02_task-test_run-3_split-1_desc-filtered_meg.fif",
+        "sub-01_ses-02_task-test_run-3_split-1_desc-filtered.fif",
+        "sub-01_ses-02_task-test_run-3_split-1_desc-filtered",
         (
             "/bids_root/sub-01/ses-02/meg/"
-            + "sub-01_ses-02_task-test_run-3_split-01_desc-filtered_meg.fif"
+            + "sub-01_ses-02_task-test_run-3_split-1_desc-filtered_meg.fif"
         ),
     ],
 )
@@ -394,7 +395,7 @@ def test_get_entities_from_fname(fname):
     assert params["run"] == "3"
     assert params["task"] == "test"
     assert params["description"] == "filtered"
-    assert params["split"] == "01"
+    assert params["split"] == "1"
     assert list(params.keys()) == [
         "subject",
         "session",
@@ -471,7 +472,7 @@ def test_get_entities_from_fname_errors(fname):
         # First candidate is disqualified (session doesn't match)
         (["sub-01_ses-01", "sub-01_ses-02"], ["sub-01_ses-02"]),
         # Multiple equally good candidates
-        (["sub-01_run-01", "sub-01_run-02"], ["sub-01_run-01", "sub-01_run-02"]),
+        (["sub-01_run-1", "sub-01_run-2"], ["sub-01_run-1", "sub-01_run-2"]),
     ],
 )
 def test_find_best_candidates(candidate_list, best_candidates):
@@ -796,7 +797,7 @@ def test_bids_path(return_bids_test_dir):
 
     # test that split gets properly set
     bids_path.update(split=1)
-    assert bids_path.basename == "sub-01_ses-02_task-03_split-01_ieeg.mat"
+    assert bids_path.basename == "sub-01_ses-02_task-03_split-1_ieeg.mat"
 
     # test home dir expansion
     bids_path = BIDSPath(root="~/foo")
@@ -858,7 +859,7 @@ def test_make_filenames():
         datatype="ieeg",
     )
     expected_str = (
-        "sub-one_ses-two_task-three_acq-four_run-01_proc-six_" "rec-seven_ieeg.json"
+        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.json"
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
@@ -869,7 +870,7 @@ def test_make_filenames():
     # subsets of keys works
     assert (
         BIDSPath(subject="one", task="three", run=4).basename
-        == "sub-one_task-three_run-04"
+        == "sub-one_task-three_run-4"
     )
     assert (
         BIDSPath(subject="one", task="three", suffix="meg", extension=".json").basename
@@ -897,11 +898,11 @@ def test_make_filenames():
     basename = BIDSPath(**prefix_data, check=False)
     assert (
         basename.basename
-        == "sub-one_ses-two_task-three_acq-four_run-01_proc-six_rec-seven_ieeg.h5"
+        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.h5"
     )  # noqa
 
     # what happens with scans.tsv file
-    with pytest.raises(ValueError, match="scans.tsv file name " "can only contain"):
+    with pytest.raises(ValueError, match="scans.tsv file name can only contain"):
         BIDSPath(
             subject=subject_id,
             session=session_id,
@@ -960,7 +961,7 @@ def test_match(return_bids_test_dir):
     bids_path_01 = BIDSPath(root=bids_root, run="01")
     paths = bids_path_01.match()
     assert len(paths) == 3
-    assert paths[0].basename == ("sub-01_ses-01_task-testing_run-01_" "channels.tsv")
+    assert paths[0].basename == "sub-01_ses-01_task-testing_run-01_channels.tsv"
 
     bids_path_01 = BIDSPath(root=bids_root, subject="unknown")
     paths = bids_path_01.match()
@@ -1187,7 +1188,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True, format="FIF")
     with pytest.raises(
         ValueError,
-        match="The provided recording does not " "have a measurement date set",
+        match="The provided recording does not have a measurement date set",
     ):
         bids_path.find_empty_room()
 
@@ -1336,7 +1337,12 @@ def test_find_emptyroom_no_meas_date(tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True)
     os.remove(op.join(bids_root, "participants.tsv"))
 
-    with pytest.warns(RuntimeWarning, match="Could not retrieve .* date"):
+    with (
+        pytest.warns(RuntimeWarning, match="Could not retrieve .* date"),
+        pytest.warns(RuntimeWarning, match="participants.tsv file not found"),
+        pytest.warns(RuntimeWarning, match=r"Did not find any channels\.tsv"),
+        pytest.warns(RuntimeWarning, match=r"Did not find any meg\.json"),
+    ):
         bids_path.find_empty_room()
 
 
@@ -1472,12 +1478,6 @@ def test_setting_entities():
 
         setattr(bids_path, entity_name, None)
         assert getattr(bids_path, entity_name) is None
-
-
-def test_deprecation():
-    """Test deprecated behavior."""
-    with pytest.warns(FutureWarning, match="This will raise an exception"):
-        BIDSPath(extension="vhdr")  # no leading period
 
 
 def test_dont_create_dirs_on_fpath_access(tmp_path):

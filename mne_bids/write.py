@@ -1,4 +1,5 @@
 """Make BIDS compatible directory structures and infer meta data from MNE."""
+
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
@@ -133,7 +134,7 @@ def _channels_tsv(raw, fname, overwrite=False):
         bio="Biological",
         ias="Internal Active Shielding",
         dbs="Deep Brain Stimulation",
-        fnirs_cw_amplitude="Near Infrared Spectroscopy " "(continuous wave)",
+        fnirs_cw_amplitude="Near Infrared Spectroscopy (continuous wave)",
         resp="Respiration",
         gsr="Galvanic skin response (electrodermal activity, EDA)",
         temperature="Temperature",
@@ -998,16 +999,16 @@ def _deface(image, landmarks, deface):
             theta = deface["theta"]
 
     if not _is_numeric(inset):
-        raise ValueError("inset must be numeric (float, int). " "Got %s" % type(inset))
+        raise ValueError(f"inset must be numeric (float, int). Got {type(inset)}")
 
     if not _is_numeric(theta):
-        raise ValueError("theta must be numeric (float, int). " "Got %s" % type(theta))
+        raise ValueError(f"theta must be numeric (float, int). Got {type(theta)}")
 
     if inset < 0:
-        raise ValueError("inset should be positive, " "Got %s" % inset)
+        raise ValueError("inset should be positive, Got {inset}")
 
     if not 0 <= theta < 90:
-        raise ValueError("theta should be between 0 and 90 " "degrees. Got %s" % theta)
+        raise ValueError("theta should be between 0 and 90 degrees. Got {theta}")
 
     # get image data, make a copy
     image_data = image.get_fdata().copy()
@@ -1368,7 +1369,6 @@ def write_raw_bids(
     montage=None,
     acpc_aligned=False,
     overwrite=False,
-    events_data=None,
     verbose=None,
 ):
     """Save raw data to a BIDS-compliant folder structure.
@@ -1551,9 +1551,6 @@ def write_raw_bids(
         and ``participants.tsv`` by a user will be retained.
         If ``False``, no existing data will be overwritten or
         replaced.
-    events_data
-        .. deprecated:: 0.11
-           Use ``events`` instead.
 
     %(verbose)s
 
@@ -1614,25 +1611,8 @@ def write_raw_bids(
     mne.events_from_annotations
 
     """
-    if events_data is not None and events is not None:
-        raise ValueError("Only one of events and events_data can be passed.")
-
-    if events_data is not None:
-        warn(
-            message="The events_data parameter has been deprecated in favor "
-            "the new events parameter, to ensure better consistency  "
-            "with MNE-Python. The events_data parameter will be "
-            "removed in MNE-BIDS 0.14. Please use the events "
-            "parameter instead.",
-            category=FutureWarning,
-        )
-        events = events_data
-        del events_data
-
     if not isinstance(raw, BaseRaw):
-        raise ValueError(
-            "raw_file must be an instance of BaseRaw, " "got %s" % type(raw)
-        )
+        raise ValueError("raw_file must be an instance of BaseRaw, got %s" % type(raw))
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
@@ -1681,7 +1661,7 @@ def write_raw_bids(
         )
 
     if events is not None and event_id is None:
-        raise ValueError("You passed events, but no event_id " "dictionary.")
+        raise ValueError("You passed events, but no event_id dictionary.")
 
     _validate_type(
         item=empty_room, item_name="empty_room", types=(mne.io.BaseRaw, BIDSPath, None)
@@ -1720,7 +1700,7 @@ def write_raw_bids(
 
         if symlink and ext != ".fif":
             raise NotImplementedError(
-                "Symlinks are currently only supported " "for FIFF files."
+                "Symlinks are currently only supported for FIFF files."
             )
 
         raw_orig = reader[ext](**raw._init_kwargs)
@@ -1908,7 +1888,7 @@ def write_raw_bids(
             bids_path.update(extension=".fif")
         elif bids_path.datatype in ["eeg", "ieeg"]:
             if ext not in [".vhdr", ".edf", ".bdf", ".EDF"]:
-                warn("Converting data files to BrainVision format " "for anonymization")
+                warn("Converting data files to BrainVision format for anonymization")
                 convert = True
                 bids_path.update(extension=".vhdr")
     # Read in Raw object and extract metadata from Raw object if needed
@@ -2090,7 +2070,7 @@ def write_raw_bids(
                 bids_path.fpath.unlink()
         else:
             raise FileExistsError(
-                f'"{bids_path.fpath}" already exists. ' "Please set overwrite to True."
+                f'"{bids_path.fpath}" already exists. Please set overwrite to True.'
             )
 
     # File saving branching logic
@@ -2608,7 +2588,7 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
         raise ValueError("bids_path must have root and subject set.")
     if bids_path.datatype not in (None, "meg"):
         raise ValueError(
-            "Can only write fine-calibration information for MEG " "datasets."
+            "Can only write fine-calibration information for MEG datasets."
         )
 
     _validate_type(
@@ -2678,7 +2658,7 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
         raise ValueError("bids_path must have root and subject set.")
     if bids_path.datatype not in (None, "meg"):
         raise ValueError(
-            "Can only write fine-calibration information for MEG " "datasets."
+            "Can only write fine-calibration information for MEG datasets."
         )
 
     _validate_type(fname, types=("path-like",), item_name="fname")

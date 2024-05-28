@@ -1,4 +1,5 @@
 """Configure all tests."""
+
 import mne
 import pytest
 

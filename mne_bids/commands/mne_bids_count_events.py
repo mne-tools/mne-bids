@@ -3,6 +3,7 @@
 example usage:  $ mne_bids count_events --bids_root bids_root_path
 
 """
+
 # Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
 #
 # License: BSD-3-Clause
@@ -36,7 +37,7 @@ def run():
         "--describe",
         dest="describe",
         action="store_true",
-        help=("If set print the descriptive statistics " "(min, max, etc.)."),
+        help="If set print the descriptive statistics (min, max, etc.).",
     )
 
     parser.add_option(
@@ -69,7 +70,7 @@ def run():
     if not all([opt.bids_root]):
         parser.print_help()
         parser.error(
-            "Arguments missing. You need to specify the " "--bids_root parameter."
+            "Arguments missing. You need to specify the --bids_root parameter."
         )
 
     if opt.output and Path(opt.output).exists() and not opt.overwrite:

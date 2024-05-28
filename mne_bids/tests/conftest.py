@@ -1,4 +1,5 @@
 """Configure tests."""
+
 import os
 import platform
 
@@ -32,3 +33,16 @@ def _bids_validate():
         run_subprocess(cmd, shell=shell)
 
     return _validate
+
+
+# Deal with:
+# Auto-close()ing of figures upon backend switching is deprecated since 3.8 and will
+# be removed in 3.10.  To suppress this warning, explicitly call plt.close('all')
+# first.
+@pytest.fixture(autouse=True)
+def close_all():
+    """Close all matplotlib plots, regardless of test status."""
+    import matplotlib.pyplot as plt
+
+    yield
+    plt.close("all")

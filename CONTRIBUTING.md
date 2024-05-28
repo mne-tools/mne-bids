@@ -53,7 +53,7 @@ Then, `git clone` your fork and install it in "editable" mode.
 ```Shell
 git clone https://github.com/<your-GitHub-username>/mne-bids
 cd ./mne-bids
-pip install -e .[dev]
+pip install -e ".[dev]"
 git config --local blame.ignoreRevsFile .git-blame-ignore-revs
 ```
 

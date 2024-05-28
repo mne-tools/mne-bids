@@ -3,7 +3,6 @@
 #
 # License: BSD-3-Clause
 
-
 from collections import OrderedDict as odict
 
 import pytest

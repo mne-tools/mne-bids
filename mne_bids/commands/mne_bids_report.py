@@ -3,6 +3,7 @@
 example usage:  $ mne_bids report --bids_root bids_root_path
 
 """
+
 # Authors: Alexandre Gramfort <alexandre.gramfort@inria.fr>
 #
 # License: BSD-3-Clause
@@ -34,7 +35,7 @@ def run():
     if not all([opt.bids_root]):
         parser.print_help()
         parser.error(
-            "Arguments missing. You need to specify the " "--bids_root parameter."
+            "Arguments missing. You need to specify the --bids_root parameter."
         )
 
     report = make_report(opt.bids_root)

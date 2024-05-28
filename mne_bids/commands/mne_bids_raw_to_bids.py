@@ -4,6 +4,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw data.edf --bids_root new_path
 
 """
+
 # Authors: Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
@@ -29,7 +30,7 @@ def run():
     parser.add_option(
         "--subject_id",
         dest="subject_id",
-        help=("subject name in BIDS compatible format " "(01, 02, etc.)"),
+        help="subject name in BIDS compatible format (01, 02, etc.)",
     )
     parser.add_option(
         "--task", dest="task", help="name of the task the data is based on"
@@ -44,9 +45,6 @@ def run():
     parser.add_option("--run", dest="run", help="run number for this dataset")
     parser.add_option(
         "--acq", dest="acq", help="acquisition parameter for this dataset"
-    )
-    parser.add_option(
-        "--events_data", dest="events_data", help="Deprecated. Pass --events instead."
     )
     parser.add_option("--events", dest="events", help="events file (events.tsv)")
     parser.add_option(
@@ -120,7 +118,6 @@ def run():
         event_id=opt.event_id,
         events=opt.events,
         overwrite=opt.overwrite,
-        events_data=opt.events_data,
         verbose=True,
     )
 

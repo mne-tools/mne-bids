@@ -4,7 +4,6 @@
 #
 # License: BSD-3-Clause
 
-
 from mne_bids import BIDSPath, get_datatypes
 from mne_bids.config import EPHY_ALLOWED_DATATYPES
 
@@ -32,6 +31,12 @@ def count_events(root_or_path, datatype="auto"):
     counts : pandas.DataFrame
         The pandas dataframe containing all the counts of trial_type
         in all matching events.tsv files.
+
+    Notes
+    -----
+    .. versionchanged:: 0.15
+       Table values were changed from floats (with NaN for missing values)
+       to Pandas nullable integer arrays.
     """
     import pandas as pd
 
@@ -105,7 +110,8 @@ def count_events(root_or_path, datatype="auto"):
             groups.append("trial_type")
 
         counts = df.groupby(groups).size()
-        counts = counts.unstack()
+        counts = counts.unstack(fill_value=-1)
+        counts.replace(-1, pd.NA, inplace=True)
 
         if "BAD_ACQ_SKIP" in counts.columns:
             counts = counts.drop("BAD_ACQ_SKIP", axis=1)

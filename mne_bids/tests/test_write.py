@@ -2,6 +2,7 @@
 
 For each supported file format, implement a test.
 """
+
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Teon L Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
@@ -80,7 +81,7 @@ _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 warning_str = dict(
     channel_unit_changed="ignore:The unit for chann*.:RuntimeWarning:mne",
-    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:" "mne",
+    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:mne",
     nasion_not_found="ignore:.*nasion not found:RuntimeWarning:mne",
     unraisable_exception="ignore:.*Exception ignored.*:"
     "pytest.PytestUnraisableExceptionWarning",
@@ -607,7 +608,10 @@ def test_fif(_bids_validate, tmp_path):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     bids_path.update(root=bids_root, datatype="eeg")
-    with pytest.warns(RuntimeWarning, match="Not setting position"):
+    with (
+        pytest.warns(RuntimeWarning, match="Not setting position"),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, "test-raw.fif"))
 
@@ -1173,7 +1177,10 @@ def test_ctf(_bids_validate, tmp_path):
     write_raw_bids(raw, bids_path, overwrite=True)  # test overwrite
 
     _bids_validate(tmp_path)
-    with pytest.warns(RuntimeWarning, match="Did not find any events"):
+    with (
+        pytest.warns(RuntimeWarning, match="Did not find any events"),
+        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    ):
         raw = read_raw_bids(bids_path=bids_path, extra_params=dict(clean_names=False))
 
     # test to check that running again with overwrite == False raises an error
@@ -1500,13 +1507,9 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
 
     # electrodes are not written w/o landmarks
     with pytest.raises(
-        RuntimeError, match="'head' coordinate frame must " "contain nasion"
+        RuntimeError, match="'head' coordinate frame must contain nasion"
     ):
-        if warning_to_catch[dir_name] is None:
-            write_raw_bids(**kwargs)
-        else:
-            with pytest.warns(RuntimeWarning, match=warning_to_catch[dir_name]):
-                write_raw_bids(**kwargs)
+        write_raw_bids(**kwargs)
 
     electrodes_fpath = _find_matching_sidecar(
         bids_path, suffix="electrodes", extension=".tsv", on_error="ignore"
@@ -1865,7 +1868,10 @@ def test_bdf(_bids_validate, tmp_path):
     # Now read the raw data back from BIDS, with the tampered TSV, to show
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
-    with pytest.warns(RuntimeWarning, match="Fp1 has changed from V .*"):
+    with (
+        pytest.warns(RuntimeWarning, match=r"The unit for channel\(s\) Fp1"),
+        pytest.warns(RuntimeWarning, match=r"The unit for channel\(s\) Status"),
+    ):
         raw = read_raw_bids(bids_path=bids_path)
     assert coil_type(raw.info, test_ch_idx) == "misc"
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
@@ -3047,7 +3053,7 @@ def test_coordsystem_json_compliance(
     _write_json(coordsystem_fname, new_coordsystem_json, overwrite=True)
     kwargs.update(bids_path=bids_path.copy().update(run="03"))
     with pytest.raises(
-        RuntimeError, match="Trying to write coordsystem.json, " "but it already exists"
+        RuntimeError, match="Trying to write coordsystem.json, but it already exists"
     ):
         write_raw_bids(**kwargs)
     _write_json(coordsystem_fname, coordsystem_json, overwrite=True)
@@ -3067,7 +3073,7 @@ def test_coordsystem_json_compliance(
         kwargs.update(bids_path=bids_path.copy().update(run="04"))
         with pytest.raises(
             RuntimeError,
-            match="Trying to write electrodes.tsv, " "but it already exists",
+            match="Trying to write electrodes.tsv, but it already exists",
         ):
             write_raw_bids(**kwargs)
 
@@ -3365,10 +3371,21 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
             ):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
-        with pytest.warns(
-            RuntimeWarning, match=f"Converting data files to {format} format"
-        ):
-            bids_output_path = write_raw_bids(**kwargs)
+        if dir_name in ["EEGLAB", "NihonKohden", "curry"]:
+            with pytest.warns(
+                RuntimeWarning, match=f"Converting data files to {format} format"
+            ):
+                bids_output_path = write_raw_bids(**kwargs)
+        else:
+            with (
+                pytest.warns(
+                    RuntimeWarning, match=f"Converting data files to {format} format"
+                ),
+                pytest.warns(
+                    RuntimeWarning, match="EDF format requires equal-length data blocks"
+                ),
+            ):
+                bids_output_path = write_raw_bids(**kwargs)
 
     # channel units should stay the same
     raw2 = read_raw_bids(bids_output_path, extra_params=dict(preload=True))
@@ -3458,7 +3475,7 @@ def test_error_write_meg_as_eeg(dir_name, format, fname, reader, tmp_path):
 
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info["ch_names"][0]: "mag"})
-    with pytest.raises(ValueError, match="Got file extension .*" "for MEG data"):
+    with pytest.raises(ValueError, match="Got file extension .*for MEG data"):
         write_raw_bids(**kwargs)
 
 
@@ -4049,44 +4066,6 @@ def test_repeat_write_location(tmpdir):
     # Re-writing with src == dest should error
     with pytest.raises(FileExistsError, match="Desired output BIDSPath"):
         write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
-
-
-@testing.requires_testing_data
-def test_events_data_deprecation(tmp_path):
-    """Test that passing events_data raises a FutureWarning."""
-    bids_root = tmp_path / "bids"
-    bids_path = _bids_path.copy().update(root=bids_root)
-    raw_path = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
-    events_path = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
-    event_id = {
-        "Auditory/Left": 1,
-        "Auditory/Right": 2,
-        "Visual/Left": 3,
-        "Visual/Right": 4,
-        "Smiley": 5,
-        "Button": 32,
-    }
-
-    # Drop unknown events.
-    events = mne.read_events(events_path)
-    events = events[events[:, 2] != 0]
-
-    raw = _read_raw_fif(raw_path)
-    with pytest.warns(FutureWarning, match="will be removed"):
-        write_raw_bids(
-            raw=raw, bids_path=bids_path, events_data=events, event_id=event_id
-        )
-
-    with pytest.raises(
-        ValueError, match="Only one of events and events_data can be passed"
-    ):
-        write_raw_bids(
-            raw=raw,
-            bids_path=bids_path,
-            events=events,
-            events_data=events,
-            event_id=event_id,
-        )
 
 
 @testing.requires_testing_data
