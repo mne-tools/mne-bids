@@ -19,7 +19,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daniel McCloy`_
 * `Mara Wolter`_
-* `Julius Welzel`_	
+* `Julius Welzel`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
