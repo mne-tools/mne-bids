@@ -339,25 +339,22 @@ def _events_json(fname, overwrite=False):
     """
     new_data = {
         "onset": {
-            "Requirement Level": "REQUIRED",
-            "Data type": "number",
             "Description": (
                 "Onset (in seconds) of the event from the beginning of the first data"
                 "point. Negative onsets account for events before the first stored "
                 "data point."
             ),
+            "Units": "s",
         },
         "duration": {
-            "Requirement Level": "REQUIRED",
-            "Data type": "number or 'n/a'",
             "Description": (
                 "Duration of the event in seconds from onset. "
                 "Must be zero, positive, or 'n/a' if unavailable. "
                 "A zero value indicates an impulse event. "
             ),
+            "Units": "s",
         },
         "sample": {
-            "Data type": "number",
             "Description": ("The event onset time in number of sampling points."),
         },
         "value": {
