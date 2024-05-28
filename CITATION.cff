@@ -175,6 +175,10 @@ authors:
       family-names: Wolter
       orcid: 'https://orcid.org/0000-0002-6785-9886'
       affiliation: 'Centre for Integrative Neuroscience, Tübingen, Germany'
+    - given-names: Julius
+      family-names: Welzel
+      affiliation: 'Department of Neurology, Kiel University, Germany'
+      orcid: 'https://orcid.org/0000-0003-4782-5360'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
@@ -264,10 +268,6 @@ preferred-citation:
       family-names: Rockhill
       affiliation: 'University of Oregon, Eugene OR, USA'
       orcid: 'https://orcid.org/0000-0003-3868-7453'
-    - given-names: Julius
-      family-names: Welzel
-      affiliation: 'Department of Neurology, Kiel University, Germany'
-      orcid: 'https://orcid.org/0000-0003-4782-5360'
     - given-names: Eric
       family-names: Larson
       affiliation: 'Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA'
