@@ -46,6 +46,15 @@ run = "01"
 acq = "01"
 task = "testing"
 
+sample_data_event_id = {
+    "Auditory/Left": 1,
+    "Auditory/Right": 2,
+    "Visual/Left": 3,
+    "Visual/Right": 4,
+    "Smiley": 5,
+    "Button": 32,
+}
+
 _bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq, task=task
 )
@@ -214,14 +223,6 @@ def test_get_head_mri_trans(tmp_path):
     """Test getting a trans object from BIDS data."""
     nib = pytest.importorskip("nibabel")
 
-    event_id = {
-        "Auditory/Left": 1,
-        "Auditory/Right": 2,
-        "Visual/Left": 3,
-        "Visual/Right": 4,
-        "Smiley": 5,
-        "Button": 32,
-    }
     events_fname = op.join(
         data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
     )
@@ -234,7 +235,9 @@ def test_get_head_mri_trans(tmp_path):
     # Write it to BIDS
     raw = _read_raw_fif(raw_fname)
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg", suffix="meg")
-    write_raw_bids(raw, bids_path, events=events, event_id=event_id, overwrite=False)
+    write_raw_bids(
+        raw, bids_path, events=events, event_id=sample_data_event_id, overwrite=False
+    )
 
     # We cannot recover trans if no MRI has yet been written
     with pytest.raises(FileNotFoundError, match="Did not find"):
@@ -300,7 +303,7 @@ def test_get_head_mri_trans(tmp_path):
     # sidecar, and also accept "nasion" instead of just "NAS"
     raw = _read_raw_fif(raw_fname)
     write_raw_bids(
-        raw, bids_path, events=events, event_id=event_id, overwrite=True
+        raw, bids_path, events=events, event_id=sample_data_event_id, overwrite=True
     )  # overwrite with new acq
     t1w_bids_path = write_anat(
         t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks, overwrite=True
@@ -576,6 +579,24 @@ def test_keep_essential_annotations(tmp_path):
 
     assert len(raw_read.annotations) == len(raw.annotations) == 1
     assert raw_read.annotations[0]["description"] == raw.annotations[0]["description"]
+
+
+@testing.requires_testing_data
+def test_adding_essential_annotations_to_dict(tmp_path):
+    """Test that essential Annotations are auto-added to the `event_id` dictionary."""
+    raw = _read_raw_fif(raw_fname)
+    annotations = mne.Annotations(
+        onset=[raw.times[0]], duration=[1], description=["BAD_ACQ_SKIP"]
+    )
+    raw.set_annotations(annotations)
+    events = mne.find_events(raw)
+
+    # see that no error is raised for missing event_id key for BAD_ACQ_SKIP
+    bids_path = BIDSPath(subject="01", task="task", datatype="meg", root=tmp_path)
+    with pytest.warns(RuntimeWarning, match="Acquisition skips detected"):
+        write_raw_bids(
+            raw, bids_path, overwrite=True, events=events, event_id=sample_data_event_id
+        )
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
