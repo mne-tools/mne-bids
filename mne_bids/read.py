@@ -158,11 +158,9 @@ def _read_events(events, event_id, raw, bids_path=None):
             # auto-add entries to `event_id` for "special" annotation values
             # (but only if they're needed)
             if set(desc_without_id) & special_annots:
-                existing_ids = set(event_id.values())
                 for annot in special_annots:
-                    # don't change value if key is present; use a value guaranteed to
-                    # not be in use
-                    event_id.setdefault(annot, max(existing_ids) + 1)
+                    # use a value guaranteed to not be in use
+                    event_id = {annot: max(event_id.values()) + 1} | event_id
                 # remove the "special" annots from the list of problematic annots
                 desc_without_id = sorted(set(desc_without_id) - special_annots)
             if desc_without_id:
