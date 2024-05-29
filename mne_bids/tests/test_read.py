@@ -590,13 +590,16 @@ def test_adding_essential_annotations_to_dict(tmp_path):
     )
     raw.set_annotations(annotations)
     events = mne.find_events(raw)
+    event_id = sample_data_event_id.copy()
+    obj_id = id(event_id)
 
     # see that no error is raised for missing event_id key for BAD_ACQ_SKIP
     bids_path = BIDSPath(subject="01", task="task", datatype="meg", root=tmp_path)
     with pytest.warns(RuntimeWarning, match="Acquisition skips detected"):
-        write_raw_bids(
-            raw, bids_path, overwrite=True, events=events, event_id=sample_data_event_id
-        )
+        write_raw_bids(raw, bids_path, overwrite=True, events=events, event_id=event_id)
+    # make sure we didn't modify the user-passed dict
+    assert event_id == sample_data_event_id
+    assert obj_id == id(event_id)
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
