@@ -28,6 +28,7 @@ The following authors had contributed before. Thank you for sticking around! �
 * `Laetitia Fesselier`_
 * `Richard Höchenberger`_
 * `Stefan Appelhoff`_
+* `Daniel McCloy`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,6 +47,8 @@ Detailed list of changes
   For example, If ``run=1`` is passed to MNE-BIDS, it will no longer be silently auto-converted to ``run-01``, by `Alex Rockhill`_ (:gh:`1215`)
 - MNE-BIDS will no longer warn about missing leading punctuation marks for extensions passed :class:`~mne_bids.BIDSPath`.
   For example, MNE-BIDS will now silently auto-convert ``edf`` to ```.edf``, by `Alex Rockhill`_ (:gh:`1215`)
+- MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if there are ``BAD_ACQ_SKIP`` annotations in the raw file and no corresponding key in ``event_id``.
+  Instead, it will automatically add the necessary key and assign an unused integer event code to it. By `Daniel McCloy`_ (:gh:`1258`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
