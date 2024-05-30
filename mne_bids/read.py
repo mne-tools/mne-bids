@@ -160,7 +160,7 @@ def _read_events(events, event_id, raw, bids_path=None):
             if set(desc_without_id) & special_annots:
                 for annot in special_annots:
                     # use a value guaranteed to not be in use
-                    event_id = {annot: max(event_id.values()) + 1} | event_id
+                    event_id = {annot: max(event_id.values()) + 90000} | event_id
                 # remove the "special" annots from the list of problematic annots
                 desc_without_id = sorted(set(desc_without_id) - special_annots)
             if desc_without_id:
