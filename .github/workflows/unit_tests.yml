@@ -291,7 +291,6 @@ jobs:
         files: ./coverage.xml
 
   build_docs:
-    needs: [style, build, test]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -306,7 +305,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: style-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: build_docs-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -319,4 +318,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: documentation
-        path: doc/_build_html
+        path: doc/_build/html

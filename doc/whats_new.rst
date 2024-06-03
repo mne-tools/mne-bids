@@ -17,18 +17,18 @@ Version 0.15 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Daniel McCloy`_
 * `Mara Wolter`_
 * `Julius Welzel`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Alex Rockhill`_
+* `Daniel McCloy`_
 * `Eric Larson`_
 * `Laetitia Fesselier`_
+* `Mathieu Scheltienne`_
 * `Richard Höchenberger`_
 * `Stefan Appelhoff`_
-* `Daniel McCloy`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~

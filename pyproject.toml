@@ -72,7 +72,7 @@ doc = [
     "matplotlib",
     "pillow",
     "pandas",
-    "mne-nirs @ https://github.com/mne-tools/mne-nirs/archive/refs/heads/main.zip",
+    "mne-nirs",
     "seaborn",
     "openneuro-py",
 ]
