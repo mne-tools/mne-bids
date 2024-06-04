@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
   
   
   
@@ -15,33 +15,36 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-
-  
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=124f375b"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/documentation_options.js?v=38b9782e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
@@ -60,19 +63,20 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/path';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/_modules/mne_bids/path.html" />
     <script type="text/javascript" src="../../_static/copybutton.js"></script>
     <script type="text/javascript" src="../../_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
 
   </head>
   
@@ -89,19 +93,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -109,7 +102,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -117,8 +109,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -127,7 +119,7 @@
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -137,6 +129,8 @@
       <div class="navbar-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="../../index.html">
   
@@ -145,7 +139,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
   
 </a></div>
     
@@ -156,58 +150,50 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../generated/cli.html">
     CLI
   </a>
 </li>
 
-            <li class="nav-item dropdown pst-header-nav-item">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
+
 <li class="nav-item ">
-  <a class="nav-link dropdown-item nav-internal" href="../../contribute.html">
+  <a class="nav-link nav-internal" href="../../contribute.html">
     Contribute
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -219,55 +205,43 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-2"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-2"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-2"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-2">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -278,7 +252,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -290,7 +264,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -302,15 +276,11 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
@@ -327,7 +297,8 @@ document.write(`
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -339,45 +310,45 @@ document.write(`
           
           
             <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../generated/cli.html">
     CLI
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../contribute.html">
     Contribute
   </a>
@@ -395,41 +366,33 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-3"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-3"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-3"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-3">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -440,7 +403,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -452,7 +415,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -483,8 +446,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -496,7 +457,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">mne_bids.path</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.path</span></li>
   </ul>
 </nav>
 </div>
@@ -516,10 +477,9 @@ document.write(`
   <h1>Source code for mne_bids.path</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;BIDS compatible path functionality.&quot;&quot;&quot;</span>
 
-<span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
-<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD-3-Clause</span>
+<span class="c1"># Authors: The MNE-BIDS developers</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -531,7 +491,6 @@ document.write(`
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">indent</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_check_fname</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
@@ -967,7 +926,7 @@ document.write(`
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">subject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The subject ID.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subject</span>
 
@@ -976,7 +935,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The acquisition session.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span>
 
@@ -985,7 +944,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The experimental task.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span>
 
@@ -994,7 +953,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The run number.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span>
 
@@ -1003,7 +962,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">run</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The acquisition parameters.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acquisition</span>
 
@@ -1012,7 +971,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">processing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">processing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The processing label.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processing</span>
 
@@ -1021,7 +980,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">processing</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">recording</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">recording</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The recording name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span>
 
@@ -1030,7 +989,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">recording</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">space</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The coordinate space for an anatomical or sensor position file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_space</span>
 
@@ -1039,7 +998,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">space</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The description entity.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_description</span>
 
@@ -1048,7 +1007,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The filename suffix.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suffix</span>
 
@@ -1057,7 +1016,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The root directory of the BIDS dataset.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span>
 
@@ -1066,7 +1025,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">datatype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The BIDS data type, e.g. ``&#39;anat&#39;``, ``&#39;meg&#39;``, ``&#39;eeg&#39;``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datatype</span>
 
@@ -1075,7 +1034,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The split of the continuous recording file for ``.fif`` data.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split</span>
 
@@ -1084,7 +1043,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">extension</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">extension</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The extension of the filename, including a leading period.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span>
 
@@ -1222,7 +1181,9 @@ document.write(`
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The root must not be None to remove files.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Planning:</span>
-        <span class="n">paths_matched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">ignore_json</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">)</span>
+        <span class="n">paths_matched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+            <span class="n">ignore_json</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_nosub</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check</span>
+        <span class="p">)</span>
         <span class="n">subjects</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">paths_to_delete</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="n">paths_to_update</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1431,7 +1392,7 @@ document.write(`
 <span class="sd">            If a boolean, controls whether to enforce BIDS conformity. This</span>
 <span class="sd">            will set the ``.check`` attribute accordingly. If ``None``, rely on</span>
 <span class="sd">            the existing ``.check`` attribute instead, which is set upon</span>
-<span class="sd">            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.</span>
+<span class="sd">            :class:`mne_bids.BIDSPath` instantiation. Defaults to ``None``.</span>
 <span class="sd">        **kwargs : dict</span>
 <span class="sd">            It can contain updates for valid BIDSPath entities:</span>
 <span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;, &#39;processing&#39;, &#39;run&#39;,</span>
@@ -1538,7 +1499,7 @@ document.write(`
 
 <div class="viewcode-block" id="BIDSPath.match">
 <a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match">[docs]</a>
-    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nosub</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of all matching paths in the root directory.</span>
 
 <span class="sd">        Performs a recursive search, starting in ``.root`` (if set), based on</span>
@@ -1548,10 +1509,13 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        ignore_json : bool</span>
 <span class="sd">            If ``True``, ignores json files. Defaults to ``True``.</span>
+<span class="sd">        ignore_nosub : bool</span>
+<span class="sd">            If ``True``, ignores all files that are not of the form ``root/sub-*``.</span>
+<span class="sd">            Defaults to ``False``.</span>
 <span class="sd">        check : bool</span>
 <span class="sd">            If ``True``, only returns paths that conform to BIDS. If ``False``</span>
 <span class="sd">            (default), the ``.check`` attribute of the returned</span>
-<span class="sd">            `mne_bids.BIDSPath` object will be set to ``True`` for paths that</span>
+<span class="sd">            :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that</span>
 <span class="sd">            do conform to BIDS, and to ``False`` for those that don&#39;t.</span>
 
 <span class="sd">        Returns</span>
@@ -1568,7 +1532,10 @@ document.write(`
             <span class="p">)</span>
 
         <span class="n">paths</span> <span class="o">=</span> <span class="n">_return_root_paths</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="n">ignore_json</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+            <span class="n">ignore_json</span><span class="o">=</span><span class="n">ignore_json</span><span class="p">,</span>
+            <span class="n">ignore_nosub</span><span class="o">=</span><span class="n">ignore_nosub</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span>
@@ -2013,7 +1980,7 @@ document.write(`
 <span class="k">def</span> <span class="nf">_check_max_depth</span><span class="p">(</span><span class="n">max_depth</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that max depth is a proper input.&quot;&quot;&quot;</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;`max_depth` must be a positive integer or None&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_depth</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_depth</span><span class="p">,</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">max_depth</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
@@ -2419,13 +2386,13 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Take all possible data types from &quot;entity&quot; table</span>
     <span class="c1"># (Appendix in BIDS spec)</span>
-    <span class="c1"># https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html  # noqa</span>
+    <span class="c1"># https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html</span>
     <span class="n">datatype_list</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;anat&quot;</span><span class="p">,</span> <span class="s2">&quot;func&quot;</span><span class="p">,</span> <span class="s2">&quot;dwi&quot;</span><span class="p">,</span> <span class="s2">&quot;fmap&quot;</span><span class="p">,</span> <span class="s2">&quot;beh&quot;</span><span class="p">,</span> <span class="s2">&quot;meg&quot;</span><span class="p">,</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;nirs&quot;</span><span class="p">)</span>
     <span class="n">datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
-        <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">datatype_list</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
-                <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_dir</span> <span class="ow">in</span> <span class="n">datatype_list</span> <span class="ow">and</span> <span class="n">_dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
+                <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_dir</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">datatypes</span></div>
 
@@ -2610,9 +2577,8 @@ document.write(`
 
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
         <span class="c1"># Skip ignored directories</span>
-        <span class="c1"># XXX In Python 3.9, we can use Path.is_relative_to() here</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ignore_dir</span><span class="p">))</span> <span class="k">for</span> <span class="n">ignore_dir</span> <span class="ow">in</span> <span class="n">ignore_dirs</span><span class="p">]</span>
+            <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">ignore_dir</span><span class="p">)</span> <span class="k">for</span> <span class="n">ignore_dir</span> <span class="ow">in</span> <span class="n">ignore_dirs</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">continue</span>
 
@@ -2773,7 +2739,7 @@ document.write(`
 
 <span class="k">def</span> <span class="nf">_path_to_str</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make sure var is a string or Path, return string representation.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;All path parameters must be either strings or &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;pathlib.Path objects. Found type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
@@ -2889,6 +2855,9 @@ document.write(`
     <span class="n">extensions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">datatypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">ignore_json</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">ignore_nosub</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get list of all matching paths for all matching entity values.</span>
 
@@ -2946,8 +2915,13 @@ document.write(`
 <span class="sd">    check : bool</span>
 <span class="sd">        If ``True``, only returns paths that conform to BIDS. If ``False``</span>
 <span class="sd">        (default), the ``.check`` attribute of the returned</span>
-<span class="sd">        `mne_bids.BIDSPath` object will be set to ``True`` for paths that</span>
+<span class="sd">        :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that</span>
 <span class="sd">        do conform to BIDS, and to ``False`` for those that don&#39;t.</span>
+<span class="sd">    ignore_json : bool</span>
+<span class="sd">        If ``True``, ignores json files. Defaults to ``False``.</span>
+<span class="sd">    ignore_nosub : bool</span>
+<span class="sd">        If ``True``, ignores all files that are not of the form ``root/sub-*``.</span>
+<span class="sd">        Defaults to ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2955,7 +2929,9 @@ document.write(`
 <span class="sd">        The matching paths.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">fpaths</span> <span class="o">=</span> <span class="n">_return_root_paths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatypes</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fpaths</span> <span class="o">=</span> <span class="n">_return_root_paths</span><span class="p">(</span>
+        <span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatypes</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="n">ignore_json</span><span class="p">,</span> <span class="n">ignore_nosub</span><span class="o">=</span><span class="n">ignore_nosub</span>
+    <span class="p">)</span>
 
     <span class="n">fpaths_filtered</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span>
         <span class="n">fpaths</span><span class="p">,</span>
@@ -2978,16 +2954,29 @@ document.write(`
 
 
 
-<span class="k">def</span> <span class="nf">_return_root_paths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all paths in root.</span>
+<span class="k">def</span> <span class="nf">_return_root_paths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nosub</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all file paths in root.</span>
 
 <span class="sd">    Can be filtered by datatype (which is present in the path but not in</span>
 <span class="sd">    the BIDSPath basename). Can also be list of datatypes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
 <span class="sd">    root : pathlib.Path | str</span>
 <span class="sd">        The root of the BIDS path.</span>
 <span class="sd">    datatype : str | array-like of str | None</span>
 <span class="sd">        The BIDS data type, e.g., ``&#39;anat&#39;``, ``&#39;func&#39;``, ``&#39;eeg&#39;``, ``&#39;meg&#39;``,</span>
 <span class="sd">        ``&#39;ieeg&#39;``.</span>
+<span class="sd">    ignore_json : bool</span>
+<span class="sd">        If ``True`` (default), do not return files ending with ``.json``.</span>
+<span class="sd">    ignore_nosub : bool</span>
+<span class="sd">        If ``True``, return only files of the form ``root/sub-*``. Defaults to</span>
+<span class="sd">        ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    paths : list of pathlib.Path</span>
+<span class="sd">        All paths in `root`, filtered according to the function parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>  <span class="c1"># if root is str</span>
 
@@ -2998,12 +2987,18 @@ document.write(`
         <span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;*.*&quot;</span>
 
     <span class="n">paths</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
-    <span class="c1"># Only keep files (not directories), and omit the JSON sidecars</span>
-    <span class="c1"># if ignore_json is True.</span>
+    <span class="c1"># Only keep files (not directories), ...</span>
+    <span class="c1"># and omit the JSON sidecars if `ignore_json` is True.</span>
     <span class="k">if</span> <span class="n">ignore_json</span><span class="p">:</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;.json&quot;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]</span>
+
+    <span class="c1"># only keep files which are of the form root/sub-*,</span>
+    <span class="c1"># such that we only look in &#39;sub&#39;-folders:</span>
+    <span class="k">if</span> <span class="n">ignore_nosub</span><span class="p">:</span>
+        <span class="n">root_sub</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;sub-&quot;</span><span class="p">)</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">root_sub</span><span class="p">)]</span>
 
     <span class="k">return</span> <span class="n">paths</span>
 
@@ -3024,7 +3019,7 @@ document.write(`
 <span class="sd">    check : bool</span>
 <span class="sd">        If ``True``, only returns paths that conform to BIDS. If ``False``</span>
 <span class="sd">        (default), the ``.check`` attribute of the returned</span>
-<span class="sd">        `mne_bids.BIDSPath` object will be set to ``True`` for paths that</span>
+<span class="sd">        :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that</span>
 <span class="sd">        do conform to BIDS, and to ``False`` for those that don&#39;t.</span>
 
 <span class="sd">    Returns</span>
@@ -3081,8 +3076,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -3093,7 +3088,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
       <br/>
     
   </p>
@@ -3102,7 +3097,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
@@ -3115,7 +3110,7 @@ document.write(`
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>

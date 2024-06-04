@@ -1,20 +1,18 @@
 """
-=====================================
-05. BIDS conversion for group studies
-=====================================
+=================================
+BIDS conversion for group studies
+=================================
+
 Here, we show how to do BIDS conversion for group studies.
 We will use the
 `EEG Motor Movement/Imagery Dataset <https://doi.org/10.13026/C28G6P>`_
 available on the PhysioBank database.
 We recommend that you go through the more basic BIDS conversion example before
 checking out this group conversion example: :ref:`ex-convert-mne-sample`
-"""
+"""  # noqa: E501 D205 D400
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Teon Brooks <teon.brooks@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Let us import ``mne_bids``

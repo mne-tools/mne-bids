@@ -1,7 +1,7 @@
 """
-==============================================================================
-07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
-==============================================================================
+==========================================================================
+Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
+==========================================================================
 
 When working with MEEG data in the domain of source localization, we usually
 have to deal with aligning several coordinate systems, such as the coordinate
@@ -26,13 +26,10 @@ See the documentation pages in the MNE docs for more information on
 
 .. note:: For this example you will need to install ``matplotlib`` and
           ``nilearn`` on top of your usual ``mne-bids`` installation.
+"""  # noqa: E501 D205 D400
 
-"""
-# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Alex Rockhill <aprockhill@mailbox.org>
-#          Alex Gramfort <alexandre.gramfort@inria.fr>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Let's import everything we need for this example:
@@ -323,7 +320,7 @@ plt.show()
 # .. _coregistration GUI:
 #    https://mne.tools/stable/auto_tutorials/forward/20_source_alignment.html#defining-the-headmri-trans-using-the-gui
 # .. _mne_source_coords:
-#    https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html
+#    https://mne.tools/stable/auto_tutorials/forward/20_source_alignment.html
 # .. _mne_sample_data:
 #    https://mne.tools/stable/documentation/datasets.html#sample
 #

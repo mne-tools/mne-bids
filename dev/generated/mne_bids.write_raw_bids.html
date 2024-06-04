@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</title>
+    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
   
   
   
@@ -16,33 +16,36 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=124f375b"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=38b9782e"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -61,7 +64,7 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.write_raw_bids';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
@@ -70,12 +73,13 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mne_bids.read_raw_bids" href="mne_bids.read_raw_bids.html" />
     <link rel="prev" title="API Documentation" href="../api.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.write_raw_bids.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
 
   </head>
   
@@ -92,19 +96,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -112,7 +105,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -120,8 +112,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -130,7 +122,7 @@
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -140,6 +132,8 @@
       <div class="navbar-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="../index.html">
   
@@ -148,7 +142,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
   
 </a></div>
     
@@ -159,58 +153,50 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item current active">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="cli.html">
     CLI
   </a>
 </li>
 
-            <li class="nav-item dropdown pst-header-nav-item">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
+
 <li class="nav-item ">
-  <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
+  <a class="nav-link nav-internal" href="../contribute.html">
     Contribute
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -222,55 +208,43 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-2"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-2"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-2"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-2">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -281,7 +255,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -293,7 +267,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -305,20 +279,16 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
-    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -332,7 +302,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -344,45 +315,45 @@ document.write(`
           
           
             <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item current active">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="cli.html">
     CLI
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../contribute.html">
     Contribute
   </a>
@@ -400,41 +371,33 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-3"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-3"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-3"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-3">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -445,7 +408,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -457,7 +420,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -536,8 +499,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -549,7 +510,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Documentation</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">mne_bids.wri...</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.write_raw_bids</span></li>
   </ul>
 </nav>
 </div>
@@ -570,7 +531,7 @@ document.write(`
 <h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.write_raw_bids">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_room</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_preload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">montage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acpc_aligned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">write_raw_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_columns_descriptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty_room</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_preload</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">montage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acpc_aligned</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Link to this definition">#</a></dt>
 <dd><p>Save raw data to a BIDS-compliant folder structure.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -590,11 +551,11 @@ in the sidecars manually.</p></li>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> that is not
+<dt><strong>raw</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a></span></dt><dd><p>The raw data. It must be an instance of <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> that is not
 already loaded from disk unless <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> is explicitly set
 to <code class="docutils literal notranslate"><span class="pre">True</span></code>. See warning for the <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> parameter.</p>
 </dd>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
 <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">task</span></code>, and <code class="docutils literal notranslate"><span class="pre">root</span></code> attributes set.
 If the <code class="docutils literal notranslate"><span class="pre">datatype</span></code> attribute is not set, it will be inferred from the
 recording data type found in <code class="docutils literal notranslate"><span class="pre">raw</span></code>. In case of multiple data types,
@@ -624,8 +585,8 @@ Example:</p>
 <p>Note that the extension is automatically inferred from the raw
 object.</p>
 </dd>
-<dt><strong>events</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/documentation/glossary.html#term-path-like" title="(in MNE v1.8)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
-sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>
+<dt><strong>events</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.8)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
+sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>
 (which are always written).
 If <code class="docutils literal notranslate"><span class="pre">path-like</span></code>, specifies the location of an MNE events file.
 If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
@@ -634,10 +595,10 @@ If a path or an array and <code class="docutils literal notranslate"><span class
 Mappings from event names to event codes (listed in the third
 column of the MNE events array) must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
 parameter; otherwise, an exception is raised. If
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a> are present, their descriptions must be
+<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a> are present, their descriptions must be
 included in <code class="docutils literal notranslate"><span class="pre">event_id</span></code> as well.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will only be inferred from the raw object’s
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>.</p>
+<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If specified, writes the union of <code class="docutils literal notranslate"><span class="pre">events</span></code> and
@@ -648,20 +609,26 @@ call <code class="docutils literal notranslate"><span class="pre">raw.set_annota
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Descriptions of all event codes must be specified via the
-<code class="docutils literal notranslate"><span class="pre">event_id</span></code> parameter.</p>
+<p>Either, descriptions of all event codes must be specified via the
+<code class="docutils literal notranslate"><span class="pre">event_id</span></code> parameter or each event must be accompanied by a
+row in <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code>.</p>
 </div>
 </dd>
-<dt><strong>event_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Descriptions or names describing the event codes, if you passed
+<dt><strong>event_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Descriptions or names describing the event codes, if you passed
 <code class="docutils literal notranslate"><span class="pre">events</span></code>. The descriptions will be written to the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code>
 column in <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. The dictionary keys correspond to the event
 description,s and the values to the event codes. You must specify a
 description for all event codes appearing in <code class="docutils literal notranslate"><span class="pre">events</span></code>. If your data
-contains <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>, you can use this parameter to
+contains <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>, you can use this parameter to
 assign event codes to each unique annotation description (mapping from
 description to event code).</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
+<dt><strong>event_metadata</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Metadata for each event in <code class="docutils literal notranslate"><span class="pre">events</span></code>. Each row corresponds to an event.</p>
+</dd>
+<dt><strong>extra_columns_descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>A dictionary that maps column names of the <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code> to descriptions.
+Each column of <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code> must have a corresponding entry in this.</p>
+</dd>
+<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
 If a dictionary, data will be anonymized depending on the dictionary
 keys: <code class="docutils literal notranslate"><span class="pre">daysback</span></code> is a required key, <code class="docutils literal notranslate"><span class="pre">keep_his</span></code> is optional.</p>
 <dl class="simple">
@@ -690,7 +657,7 @@ format lacks some necessary features.
 Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
 and to FIF for MEG data.</p>
 </dd>
-<dt><strong>symlink</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Instead of copying the source files, only create symbolic links to
+<dt><strong>symlink</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Instead of copying the source files, only create symbolic links to
 preserve storage space. This is only allowed when not anonymizing the
 data (i.e., <code class="docutils literal notranslate"><span class="pre">anonymize</span></code> must be <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 <div class="admonition note">
@@ -706,9 +673,9 @@ data again.</p>
 add support for Windows 10 at a later time.</p>
 </div>
 </dd>
-<dt><strong>empty_room</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
+<dt><strong>empty_room</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
 only supported for MEG data.
-If <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a>, you may pass raw data that was not preloaded
+If <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a>, you may pass raw data that was not preloaded
 (otherwise, pass <code class="docutils literal notranslate"><span class="pre">allow_preload=True</span></code>); i.e., it behaves similar to
 the <code class="docutils literal notranslate"><span class="pre">raw</span></code> parameter. The session name will be automatically generated
 from the raw object’s <code class="docutils literal notranslate"><span class="pre">info['meas_date']</span></code>.
@@ -716,10 +683,10 @@ If a <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPat
 same as in <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> (default) if you do not wish to
 specify an associated empty-room recording.</p>
 <div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 0.11: </span>Accepts <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a> data.</p>
+<p><span class="versionmodified changed">Changed in version 0.11: </span>Accepts <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a> data.</p>
 </div>
 </dd>
-<dt><strong>allow_preload</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allow writing of preloaded raw objects (i.e.,
+<dt><strong>allow_preload</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allow writing of preloaded raw objects (i.e.,
 <code class="docutils literal notranslate"><span class="pre">raw.preload</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>). Because the original file is ignored, you
 must specify what <code class="docutils literal notranslate"><span class="pre">format</span></code> to write (not <code class="docutils literal notranslate"><span class="pre">auto</span></code>).</p>
 <div class="admonition warning">
@@ -732,17 +699,17 @@ formats not supported by MNE or writing preprocessed derivatives.
 Be aware that these use cases are not fully supported.</p>
 </div>
 </dd>
-<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
+<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
 to be stored in a format other than “head” (the internal MNE
 coordinate frame that the data in <code class="docutils literal notranslate"><span class="pre">raw</span></code> is stored in).</p>
 </dd>
-<dt><strong>acpc_aligned</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>It is difficult to check whether the T1 scan is ACPC aligned which
+<dt><strong>acpc_aligned</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>It is difficult to check whether the T1 scan is ACPC aligned which
 means that “mri” coordinate space is “ACPC” BIDS coordinate space.
 So, this flag is required to be True when the digitization data
 is in “mri” for intracranial data to confirm that the T1 is
 ACPC-aligned.</p>
 </dd>
-<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
+<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any existing files with the same BIDS parameters
 will be overwritten with the exception of the <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>
@@ -754,9 +721,9 @@ and <code class="docutils literal notranslate"><span class="pre">participants.ts
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no existing data will be overwritten or
 replaced.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
-verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.12)"><span class="xref std std-ref">logging documentation</span></a> and
-<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.13)"><span class="xref std std-ref">logging documentation</span></a> and
+<a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
 </dd>
 </dl>
@@ -777,10 +744,10 @@ retrieved via <code class="docutils literal notranslate"><span class="pre">bids_
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
@@ -788,14 +755,14 @@ retrieved via <code class="docutils literal notranslate"><span class="pre">bids_
 <code class="docutils literal notranslate"><span class="pre">raw.info['meas_date']</span></code> are set to proper (not-<code class="docutils literal notranslate"><span class="pre">None</span></code>) values to allow
 for the correct computation of each participant’s age when creating
 <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>.</p>
-<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
+<p>This function will convert existing <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
 <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> to events. Additionally, any events supplied via
 <code class="docutils literal notranslate"><span class="pre">events</span></code> will be written too. To avoid writing of annotations,
 remove them from the raw file via <code class="docutils literal notranslate"><span class="pre">raw.set_annotations(None)</span></code> before
 invoking <code class="docutils literal notranslate"><span class="pre">write_raw_bids</span></code>.</p>
 <p>To write events encoded in a <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channel, you first need to create the
 events array manually and pass it to this function:</p>
-<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.find_events()</span></code></a> for more information on
+<p>See the documentation of <a class="reference external" href="https://mne.tools/stable/generated/mne.find_events.html#mne.find_events" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.find_events()</span></code></a> for more information on
 event extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
 <p>When anonymizing <code class="docutils literal notranslate"><span class="pre">.edf</span></code> files, then the file format for EDF limits
 how far back we can set the recording date. Therefore, all anonymized
@@ -814,33 +781,36 @@ lower-case, in compliance with the BIDS specification.</p>
 
 <section id="examples-using-mne-bids-write-raw-bids">
 <span id="sphx-glr-backreferences-mne-bids-write-raw-bids"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids</span></code><a class="headerlink" href="#examples-using-mne-bids-write-raw-bids" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><img alt="" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">02. Convert MNE sample data to BIDS format</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><img alt="" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></p>
-  <div class="sphx-glr-thumbnail-title">03. Interactive data inspection and bad channel selection</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><img alt="" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">04. Convert EEG data to BIDS format</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><img alt="" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></p>
-  <div class="sphx-glr-thumbnail-title">05. BIDS conversion for group studies</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><img alt="" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></p>
-  <div class="sphx-glr-thumbnail-title">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><img alt="" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">08. Convert iEEG data to BIDS format</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data &quot;manually&quot; in the BIDS format and how to..."><img alt="" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Manually storing empty room data</span></a></p>
-  <div class="sphx-glr-thumbnail-title">09. Manually storing empty room data</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS standard. In a second step we will read the organized dataset using MNE-BIDS."><img alt="" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">Convert MNE sample data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert MNE sample data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can be marked as &quot;bad&quot;, for example if the connected sensor produced mostly noise - or no signal at all. Similarly, you can declare channels as &quot;good&quot;, should you discover they were incorrectly marked as bad. Bad channel selection can also be performed non-interactively."><img alt="" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">Interactive data inspection and bad channel selection</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Interactive data inspection and bad channel selection</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">Convert EEG data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert EEG data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. We will use the EEG Motor Movement/Imagery Dataset available on the PhysioBank database. We recommend that you go through the more basic BIDS conversion example before checking out this group conversion example: ex-convert-mne-sample"><img alt="" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">BIDS conversion for group studies</span></a></p>
+  <div class="sphx-glr-thumbnail-title">BIDS conversion for group studies</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with aligning several coordinate systems, such as the coordinate systems of ..."><img alt="" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">Convert iEEG data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert iEEG data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS data. Specifically, we will follow these steps:"><img alt="" src="../_images/sphx_glr_convert_nirs_to_bids_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_nirs_to_bids.html#sphx-glr-auto-examples-convert-nirs-to-bids-py"><span class="std std-ref">Convert NIRS data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert NIRS data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data &quot;manually&quot; in the BIDS format and how to retrieve them."><img alt="" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">Manually storing empty room data</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Manually storing empty room data</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here how to use it."><img alt="" src="../_images/sphx_glr_bidspath_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">An introduction to BIDSPath</span></a></p>
+  <div class="sphx-glr-thumbnail-title">An introduction to BIDSPath</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><img alt="" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">13. Anonymizing a BIDS dataset</span></a></p>
-  <div class="sphx-glr-thumbnail-title">13. Anonymizing a BIDS dataset</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS data. Specifical..."><img alt="" src="../_images/sphx_glr_convert_nirs_to_bids_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/convert_nirs_to_bids.html#sphx-glr-auto-examples-convert-nirs-to-bids-py"><span class="std std-ref">13. Convert NIRS data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">13. Convert NIRS data to BIDS format</div>
+<p><a class="reference internal" href="../auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">Anonymizing a BIDS dataset</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Anonymizing a BIDS dataset</div>
 </div></div></section>
 </section>
 
@@ -879,7 +849,8 @@ lower-case, in compliance with the BIDS specification.</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -908,8 +879,8 @@ lower-case, in compliance with the BIDS specification.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -920,7 +891,7 @@ lower-case, in compliance with the BIDS specification.</p>
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
       <br/>
     
   </p>
@@ -929,7 +900,7 @@ lower-case, in compliance with the BIDS specification.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
@@ -942,7 +913,7 @@ lower-case, in compliance with the BIDS specification.</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>

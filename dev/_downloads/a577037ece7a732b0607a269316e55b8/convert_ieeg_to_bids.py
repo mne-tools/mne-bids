@@ -3,9 +3,9 @@
 
 .. currentmodule:: mne_bids
 
-====================================
-08. Convert iEEG data to BIDS format
-====================================
+================================
+Convert iEEG data to BIDS format
+================================
 
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
@@ -36,16 +36,12 @@ refer to the `iEEG part of the BIDS specification`_.
 
 .. _iEEG part of the BIDS specification: https://bids-specification.readthedocs.io/en/latest/modality-specific-files/intracranial-electroencephalography.html
 .. _appendix VIII: https://bids-specification.readthedocs.io/en/stable/appendices/coordinate-systems.html
-.. _background on FreeSurfer: https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne
-.. _MNE-Python coordinate frames: https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html
+.. _background on FreeSurfer: https://mne.tools/stable/auto_tutorials/forward/50_background_freesurfer_mne.html
+.. _MNE-Python coordinate frames: https://mne.tools/stable/auto_tutorials/forward/20_source_alignment.html
+"""  # noqa: E501 D400
 
-"""  # noqa: E501
-
-# Authors: Adam Li <adam2392@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Alex Rockhill <aprockhill@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 

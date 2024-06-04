@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
   
   
   
@@ -15,33 +15,36 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-
-  
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=124f375b"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/documentation_options.js?v=38b9782e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
@@ -60,19 +63,20 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/read';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/_modules/mne_bids/read.html" />
     <script type="text/javascript" src="../../_static/copybutton.js"></script>
     <script type="text/javascript" src="../../_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
 
   </head>
   
@@ -89,19 +93,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -109,7 +102,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -117,8 +109,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -127,7 +119,7 @@
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -137,6 +129,8 @@
       <div class="navbar-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="../../index.html">
   
@@ -145,7 +139,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
   
 </a></div>
     
@@ -156,58 +150,50 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../generated/cli.html">
     CLI
   </a>
 </li>
 
-            <li class="nav-item dropdown pst-header-nav-item">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
+
 <li class="nav-item ">
-  <a class="nav-link dropdown-item nav-internal" href="../../contribute.html">
+  <a class="nav-link nav-internal" href="../../contribute.html">
     Contribute
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -219,55 +205,43 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-2"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-2"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-2"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-2">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -278,7 +252,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -290,7 +264,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -302,15 +276,11 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
@@ -327,7 +297,8 @@ document.write(`
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -339,45 +310,45 @@ document.write(`
           
           
             <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../generated/cli.html">
     CLI
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../contribute.html">
     Contribute
   </a>
@@ -395,41 +366,33 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-3"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-3"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-3"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-3">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -440,7 +403,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -452,7 +415,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -483,8 +446,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -496,7 +457,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">mne_bids.read</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.read</span></li>
   </ul>
 </nav>
 </div>
@@ -516,18 +477,14 @@ document.write(`
   <h1>Source code for mne_bids.read</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Check whether a file format is supported by BIDS and then load it.&quot;&quot;&quot;</span>
 
-<span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
-<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
-<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
-<span class="c1">#          Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
-<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD-3-Clause</span>
+<span class="c1"># Authors: The MNE-BIDS developers</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">difflib</span> <span class="kn">import</span> <span class="n">get_close_matches</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
@@ -689,7 +646,7 @@ document.write(`
 
     <span class="c1"># If we have events, convert them to Annotations so they can be easily</span>
     <span class="c1"># merged with existing Annotations.</span>
-    <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ids_without_desc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">ids_without_desc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -720,6 +677,22 @@ document.write(`
         <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
         <span class="k">del</span> <span class="n">id_to_desc_map</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">new_annotations</span>
 
+    <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">annotations_from_events</span><span class="p">(</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Don&#39;t alter the original.</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># We use `+=` here because `Annotations.__iadd__()` does the right</span>
+        <span class="c1"># thing and also performs a sanity check on `Annotations.orig_time`.</span>
+        <span class="n">annotations</span> <span class="o">+=</span> <span class="n">new_annotations</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">new_annotations</span>
+
     <span class="c1"># Now convert the Annotations to events.</span>
     <span class="n">all_events</span><span class="p">,</span> <span class="n">all_desc</span> <span class="o">=</span> <span class="n">events_from_annotations</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
@@ -731,7 +704,7 @@ document.write(`
     <span class="c1"># Warn about missing events if not rest or empty-room data</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
         <span class="ow">not</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">)</span>
-        <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">&quot;emptyroom&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;noise&quot;</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s2">&quot;emptyroom&quot;</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;noise&quot;</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;No events found or provided. Please add annotations to the raw &quot;</span>
@@ -764,37 +737,71 @@ document.write(`
     <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># start from scratch</span>
 
     <span class="c1"># set data from participants tsv into subject_info</span>
+    <span class="c1"># TODO: Could potentially use &quot;comment&quot; someday to store other options e.g. in JSON</span>
+    <span class="c1"># https://github.com/mne-tools/fiff-constants/blob/e27f68cbf74dbfc5193ad429cc77900a59475181/DictionaryTags.txt#L369</span>
+    <span class="n">allowed_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    id his_id last_name first_name middle_name birthday sex hand weight height</span>
+<span class="sd">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">bad_key_vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">orig_value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;hand&quot;</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span>
-                <span class="n">what</span><span class="o">=</span><span class="n">col_name</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span> <span class="n">fro</span><span class="o">=</span><span class="s2">&quot;bids&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;mne&quot;</span>
-            <span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">col_name</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">fro</span><span class="o">=</span><span class="s2">&quot;bids&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;mne&quot;</span><span class="p">)</span>
             <span class="c1"># We don&#39;t know how to translate to MNE, so skip.</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">&quot;sex&quot;</span><span class="p">:</span>
                     <span class="n">info_str</span> <span class="o">=</span> <span class="s2">&quot;subject sex&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">info_str</span> <span class="o">=</span> <span class="s2">&quot;subject handedness&quot;</span>
-                <span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Unable to map &quot;</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s1">&quot; value &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot; to MNE. &#39;</span>
-                    <span class="sa">f</span><span class="s2">&quot;Not setting </span><span class="si">{</span><span class="n">info_str</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
+                <span class="n">bad_key_vals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">col_name</span><span class="p">,</span> <span class="n">orig_value</span><span class="p">,</span> <span class="n">info_str</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">])</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span>
+                        <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">365.25</span> <span class="o">*</span> <span class="n">value</span><span class="p">)))</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># adjust keys to match MNE nomenclature</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">col_name</span>
+        <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">&quot;participant_id&quot;</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;his_id&quot;</span>
+        <span class="k">elif</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;birthday&quot;</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_keys</span><span class="p">:</span>
+            <span class="n">bad_key_vals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">col_name</span><span class="p">,</span> <span class="n">orig_value</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+            <span class="k">continue</span>
 
         <span class="c1"># add data into raw.Info</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;his_id&quot;</span> <span class="k">if</span> <span class="n">col_name</span> <span class="o">==</span> <span class="s2">&quot;participant_id&quot;</span> <span class="k">else</span> <span class="n">col_name</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span>
             <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">bad_key_vals</span><span class="p">:</span>
+        <span class="n">warn_str</span> <span class="o">=</span> <span class="s2">&quot;Unable to map the following column(s) to to MNE:&quot;</span>
+        <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">orig_value</span><span class="p">,</span> <span class="n">info_str</span> <span class="ow">in</span> <span class="n">bad_key_vals</span><span class="p">:</span>
+            <span class="n">warn_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">info_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warn_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">info_str</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="n">warn_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;: </span><span class="si">{</span><span class="n">orig_value</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">warn_str</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
@@ -1142,7 +1149,7 @@ document.write(`
 
         <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># XXX Try again with uppercase spelling – this should be removed</span>
-            <span class="c1"># XXX once https://github.com/bids-standard/bids-validator/issues/1018  # noqa:E501</span>
+            <span class="c1"># XXX once https://github.com/bids-standard/bids-validator/issues/1018</span>
             <span class="c1"># XXX has been resolved.</span>
             <span class="c1"># XXX x-ref https://github.com/mne-tools/mne-bids/issues/481</span>
             <span class="n">updated_ch_type</span> <span class="o">=</span> <span class="n">bids_to_mne_ch_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_type</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
@@ -1203,7 +1210,9 @@ document.write(`
             <span class="sa">f</span><span class="s2">&quot;Cannot set channel type for the following channels, as they &quot;</span>
             <span class="sa">f</span><span class="s1">&#39;are missing in the raw data: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">channel_type_bids_mne_map_available_channels</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span>
+        <span class="n">channel_type_bids_mne_map_available_channels</span><span class="p">,</span> <span class="n">on_unit_change</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># Set bad channels based on _channels.tsv sidecar</span>
     <span class="k">if</span> <span class="s2">&quot;status&quot;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
@@ -1732,8 +1741,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1744,7 +1753,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
       <br/>
     
   </p>
@@ -1753,7 +1762,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
@@ -1766,7 +1775,7 @@ document.write(`
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>

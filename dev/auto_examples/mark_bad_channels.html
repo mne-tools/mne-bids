@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>03. Interactive data inspection and bad channel selection &#8212; MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</title>
+    <title>Interactive data inspection and bad channel selection &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
   
   
   
@@ -16,33 +16,36 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../_static/documentation_options.js?v=124f375b"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/documentation_options.js?v=38b9782e"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=fd10adb8"></script>
@@ -61,21 +64,22 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/mark_bad_channels';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="04. Convert EEG data to BIDS format" href="convert_eeg_to_bids.html" />
-    <link rel="prev" title="02. Convert MNE sample data to BIDS format" href="convert_mne_sample.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <link rel="next" title="Convert EEG data to BIDS format" href="convert_eeg_to_bids.html" />
+    <link rel="prev" title="Convert MNE sample data to BIDS format" href="convert_mne_sample.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/auto_examples/mark_bad_channels.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
 
   </head>
   
@@ -92,19 +96,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -112,7 +105,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -120,8 +112,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -130,7 +122,7 @@
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -140,6 +132,8 @@
       <div class="navbar-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="../index.html">
   
@@ -148,7 +142,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
   
 </a></div>
     
@@ -159,58 +153,50 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item current active">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../generated/cli.html">
     CLI
   </a>
 </li>
 
-            <li class="nav-item dropdown pst-header-nav-item">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
+
 <li class="nav-item ">
-  <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
+  <a class="nav-link nav-internal" href="../contribute.html">
     Contribute
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -222,55 +208,43 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-2"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-2"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-2"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-2">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -281,7 +255,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -293,7 +267,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -305,20 +279,16 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
-    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -332,7 +302,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -344,45 +315,45 @@ document.write(`
           
           
             <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item current active">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../generated/cli.html">
     CLI
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../contribute.html">
     Contribute
   </a>
@@ -400,41 +371,33 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-3"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-3"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-3"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-3">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -445,7 +408,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -457,7 +420,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -472,20 +435,20 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="read_bids_datasets.html">01. Read BIDS datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert_mne_sample.html">02. Convert MNE sample data to BIDS format</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">03. Interactive data inspection and bad channel selection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert_eeg_to_bids.html">04. Convert EEG data to BIDS format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert_group_studies.html">05. BIDS conversion for group studies</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rename_brainvision_files.html">06. Rename BrainVision EEG data files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert_mri_and_trans.html">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert_ieeg_to_bids.html">08. Convert iEEG data to BIDS format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert_empty_room.html">09. Manually storing empty room data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="bidspath.html">10. An introduction to BIDSPath</a></li>
-<li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">11. Creating BIDS-compatible folder names and filenames</a></li>
-<li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">12. Updating BIDS datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">13. Anonymizing a BIDS dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="convert_nirs_to_bids.html">13. Convert NIRS data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="read_bids_datasets.html">Read BIDS datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_mne_sample.html">Convert MNE sample data to BIDS format</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Interactive data inspection and bad channel selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_eeg_to_bids.html">Convert EEG data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_group_studies.html">BIDS conversion for group studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rename_brainvision_files.html">Rename BrainVision EEG data files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_mri_and_trans.html">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_ieeg_to_bids.html">Convert iEEG data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_nirs_to_bids.html">Convert NIRS data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="convert_empty_room.html">Manually storing empty room data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bidspath.html">An introduction to BIDSPath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
+<li class="toctree-l1"><a class="reference internal" href="update_bids_datasets.html">Updating BIDS datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
 </ul>
 </div>
 </nav></div>
@@ -513,8 +476,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -526,7 +487,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../use.html" class="nav-link">Using MNE-BIDS</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">03....</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Interactive data inspection and bad channel selection</span></li>
   </ul>
 </nav>
 </div>
@@ -549,17 +510,16 @@ document.write(`
 to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="interactive-data-inspection-and-bad-channel-selection">
-<span id="sphx-glr-auto-examples-mark-bad-channels-py"></span><h1>03. Interactive data inspection and bad channel selection<a class="headerlink" href="#interactive-data-inspection-and-bad-channel-selection" title="Link to this heading">#</a></h1>
+<span id="sphx-glr-auto-examples-mark-bad-channels-py"></span><h1>Interactive data inspection and bad channel selection<a class="headerlink" href="#interactive-data-inspection-and-bad-channel-selection" title="Link to this heading">#</a></h1>
 <p>You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
 Problematic channels can be marked as “bad”, for example if the connected
-sensor produced mostly noise – or no signal at all. Similarly, you can declare
+sensor produced mostly noise - or no signal at all. Similarly, you can declare
 channels as “good”, should you discover they were incorrectly marked as bad.
 Bad channel selection can also be performed non-interactively.</p>
 <p>Furthermore, you can view and edit the experimental events and mark time
 segments as “bad”.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Richard Höchenberger &lt;richard.hoechenberger@gmail.com&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD-3-Clause</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: The MNE-BIDS developers</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
 </pre></div>
 </div>
 <p>We will demonstrate how to mark individual channels as bad on the MNE
@@ -579,7 +539,7 @@ segments as “bad”.</p>
     <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span>
 <span class="p">)</span>
 
-<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s2">&quot;MEG&quot;</span><span class="p">,</span> <span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="s2">&quot;sample_audvis_raw.fif&quot;</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s2">&quot;MEG&quot;</span><span class="p">,</span> <span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="s2">&quot;sample_audvis_raw-eve.fif&quot;</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span>
@@ -607,10 +567,10 @@ tests and example runs, we simply delete it.</p>
 </pre></div>
 </div>
 <p>Now write the raw data to BIDS.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># Specify power line frequency as required by BIDS.</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># Specify power line frequency as required by BIDS.</span>
 <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span>
-    <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span>
+    <a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span>
     <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span>
     <span class="n">events</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events_fname</span></a><span class="p">,</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
@@ -664,10 +624,10 @@ the <em class="xref py py-obj">*_events.tsv</em> sidecar file will be updated up
 <h2>Non-interactive (programmatic) bad channel selection<a class="headerlink" href="#non-interactive-programmatic-bad-channel-selection" title="Link to this heading">#</a></h2>
 <p>Read the (now BIDS-formatted) data and print a list of channels currently
 marked as bad.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;The following channels are currently marked as bad:</span><span class="se">\n</span><span class="s2">&quot;</span>
-    <span class="sa">f</span><span class="s1">&#39;    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="sa">f</span><span class="s1">&#39;    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -680,15 +640,15 @@ Let’s assume that through visual data inspection, we found that two more
 MEG channels are problematic, and we would like to mark them as bad as well.
 To do that, we simply add them to a list, which we then pass to
 <a class="reference internal" href="../generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.mark_channels()</span></code></a>:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;MEG 0112&quot;</span><span class="p">,</span> <span class="s2">&quot;MEG 0131&quot;</span><span class="p">]</span>
-<a href="../generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mark_channels</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;MEG 0112&quot;</span><span class="p">,</span> <span class="s2">&quot;MEG 0131&quot;</span><span class="p">]</span>
+<a href="../generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mark_channels</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>That’s it! Let’s verify the result.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;After marking MEG 0112 and MEG 0131 as bad, the following channels &quot;</span>
-    <span class="sa">f</span><span class="s1">&#39;are now marked as bad:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="sa">f</span><span class="s1">&#39;are now marked as bad:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -705,14 +665,14 @@ which allows you to mark additional channels as bad while retaining the
 information about all channels that had <em>previously</em> been marked as bad.</p>
 <p>If you instead would like to <strong>replace</strong> the collection of bad channels
 entirely, pass the argument <code class="docutils literal notranslate"><span class="pre">overwrite=True</span></code>:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;MEG 0112&quot;</span><span class="p">,</span> <span class="s2">&quot;MEG 0131&quot;</span><span class="p">]</span>
-<a href="../generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mark_channels</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;MEG 0112&quot;</span><span class="p">,</span> <span class="s2">&quot;MEG 0131&quot;</span><span class="p">]</span>
+<a href="../generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mark_channels</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;After marking MEG 0112 and MEG 0131 as bad and passing &quot;</span>
     <span class="sa">f</span><span class="s2">&quot;`overwrite=True`, the following channels &quot;</span>
-    <span class="sa">f</span><span class="s1">&#39;are now marked as bad:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="sa">f</span><span class="s1">&#39;are now marked as bad:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -721,14 +681,14 @@ entirely, pass the argument <code class="docutils literal notranslate"><span cla
 </pre></div>
 </div>
 <p>Lastly, if you’re looking for a way to mark all channels as good, simply
-pass an empty list as <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>, combined with <code class="docutils literal notranslate"><span class="pre">overwrite=True</span></code>:</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a> <span class="o">=</span> <span class="p">[]</span>
-<a href="../generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mark_channels</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+pass <code class="docutils literal notranslate"><span class="pre">ch_names=&quot;all&quot;</span></code>, combined with <code class="docutils literal notranslate"><span class="pre">overwrite=True</span></code>:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+<a href="../generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mark_channels</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">ch_names</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bads</span></a><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;After passing `ch_names=[]` and `overwrite=True`, the following &quot;</span>
-    <span class="sa">f</span><span class="s1">&#39;channels are now marked as bad:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+    <span class="sa">f</span><span class="s1">&#39;channels are now marked as bad:</span><span class="se">\n</span><span class="s1">    </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="mne._fiff.meas_info.Info" class="sphx-glr-backref-module-mne-_fiff-meas_info sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -736,13 +696,16 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
     MEG 0113, MEG 0112, MEG 0111, MEG 0122, MEG 0123, MEG 0121, MEG 0132, MEG 0133, MEG 0131, MEG 0143, MEG 0142, MEG 0141, MEG 0213, MEG 0212, MEG 0211, MEG 0222, MEG 0223, MEG 0221, MEG 0232, MEG 0233, MEG 0231, MEG 0243, MEG 0242, MEG 0241, MEG 0313, MEG 0312, MEG 0311, MEG 0322, MEG 0323, MEG 0321, MEG 0333, MEG 0332, MEG 0331, MEG 0343, MEG 0342, MEG 0341, MEG 0413, MEG 0412, MEG 0411, MEG 0422, MEG 0423, MEG 0421, MEG 0432, MEG 0433, MEG 0431, MEG 0443, MEG 0442, MEG 0441, MEG 0513, MEG 0512, MEG 0511, MEG 0523, MEG 0522, MEG 0521, MEG 0532, MEG 0533, MEG 0531, MEG 0542, MEG 0543, MEG 0541, MEG 0613, MEG 0612, MEG 0611, MEG 0622, MEG 0623, MEG 0621, MEG 0633, MEG 0632, MEG 0631, MEG 0642, MEG 0643, MEG 0641, MEG 0713, MEG 0712, MEG 0711, MEG 0723, MEG 0722, MEG 0721, MEG 0733, MEG 0732, MEG 0731, MEG 0743, MEG 0742, MEG 0741, MEG 0813, MEG 0812, MEG 0811, MEG 0822, MEG 0823, MEG 0821, MEG 0913, MEG 0912, MEG 0911, MEG 0923, MEG 0922, MEG 0921, MEG 0932, MEG 0933, MEG 0931, MEG 0942, MEG 0943, MEG 0941, MEG 1013, MEG 1012, MEG 1011, MEG 1023, MEG 1022, MEG 1021, MEG 1032, MEG 1033, MEG 1031, MEG 1043, MEG 1042, MEG 1041, MEG 1112, MEG 1113, MEG 1111, MEG 1123, MEG 1122, MEG 1121, MEG 1133, MEG 1132, MEG 1131, MEG 1142, MEG 1143, MEG 1141, MEG 1213, MEG 1212, MEG 1211, MEG 1223, MEG 1222, MEG 1221, MEG 1232, MEG 1233, MEG 1231, MEG 1243, MEG 1242, MEG 1241, MEG 1312, MEG 1313, MEG 1311, MEG 1323, MEG 1322, MEG 1321, MEG 1333, MEG 1332, MEG 1331, MEG 1342, MEG 1343, MEG 1341, MEG 1412, MEG 1413, MEG 1411, MEG 1423, MEG 1422, MEG 1421, MEG 1433, MEG 1432, MEG 1431, MEG 1442, MEG 1443, MEG 1441, MEG 1512, MEG 1513, MEG 1511, MEG 1522, MEG 1523, MEG 1521, MEG 1533, MEG 1532, MEG 1531, MEG 1543, MEG 1542, MEG 1541, MEG 1613, MEG 1612, MEG 1611, MEG 1622, MEG 1623, MEG 1621, MEG 1632, MEG 1633, MEG 1631, MEG 1643, MEG 1642, MEG 1641, MEG 1713, MEG 1712, MEG 1711, MEG 1722, MEG 1723, MEG 1721, MEG 1732, MEG 1733, MEG 1731, MEG 1743, MEG 1742, MEG 1741, MEG 1813, MEG 1812, MEG 1811, MEG 1822, MEG 1823, MEG 1821, MEG 1832, MEG 1833, MEG 1831, MEG 1843, MEG 1842, MEG 1841, MEG 1912, MEG 1913, MEG 1911, MEG 1923, MEG 1922, MEG 1921, MEG 1932, MEG 1933, MEG 1931, MEG 1943, MEG 1942, MEG 1941, MEG 2013, MEG 2012, MEG 2011, MEG 2023, MEG 2022, MEG 2021, MEG 2032, MEG 2033, MEG 2031, MEG 2042, MEG 2043, MEG 2041, MEG 2113, MEG 2112, MEG 2111, MEG 2122, MEG 2123, MEG 2121, MEG 2133, MEG 2132, MEG 2131, MEG 2143, MEG 2142, MEG 2141, MEG 2212, MEG 2213, MEG 2211, MEG 2223, MEG 2222, MEG 2221, MEG 2233, MEG 2232, MEG 2231, MEG 2242, MEG 2243, MEG 2241, MEG 2312, MEG 2313, MEG 2311, MEG 2323, MEG 2322, MEG 2321, MEG 2332, MEG 2333, MEG 2331, MEG 2343, MEG 2342, MEG 2341, MEG 2412, MEG 2413, MEG 2411, MEG 2423, MEG 2422, MEG 2421, MEG 2433, MEG 2432, MEG 2431, MEG 2442, MEG 2443, MEG 2441, MEG 2512, MEG 2513, MEG 2511, MEG 2522, MEG 2523, MEG 2521, MEG 2533, MEG 2532, MEG 2531, MEG 2543, MEG 2542, MEG 2541, MEG 2612, MEG 2613, MEG 2611, MEG 2623, MEG 2622, MEG 2621, MEG 2633, MEG 2632, MEG 2631, MEG 2642, MEG 2643, MEG 2641, STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016, EEG 001, EEG 002, EEG 003, EEG 004, EEG 005, EEG 006, EEG 007, EEG 008, EEG 009, EEG 010, EEG 011, EEG 012, EEG 013, EEG 014, EEG 015, EEG 016, EEG 017, EEG 018, EEG 019, EEG 020, EEG 021, EEG 022, EEG 023, EEG 024, EEG 025, EEG 026, EEG 027, EEG 028, EEG 029, EEG 030, EEG 031, EEG 032, EEG 033, EEG 034, EEG 035, EEG 036, EEG 037, EEG 038, EEG 039, EEG 040, EEG 041, EEG 042, EEG 043, EEG 044, EEG 045, EEG 046, EEG 047, EEG 048, EEG 049, EEG 050, EEG 051, EEG 052, EEG 053, EEG 054, EEG 055, EEG 056, EEG 057, EEG 058, EEG 059, EEG 060, EOG 061
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.832 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 13.238 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mark-bad-channels-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/bcdfe0d0e220cf6da56beb8f9163c326/mark_bad_channels.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mark_bad_channels.ipynb</span></code></a></p>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3556547a51e51e9556bdd40badb8d4c8/mark_bad_channels.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mark_bad_channels.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/2d16cae3d55264a4b7d58ed70766e580/mark_bad_channels.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mark_bad_channels.zip</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -765,7 +728,7 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">02. Convert MNE sample data to BIDS format</p>
+        <p class="prev-next-title">Convert MNE sample data to BIDS format</p>
       </div>
     </a>
     <a class="right-next"
@@ -773,7 +736,7 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">04. Convert EEG data to BIDS format</p>
+        <p class="prev-next-title">Convert EEG data to BIDS format</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -784,7 +747,8 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -813,8 +777,8 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -825,7 +789,7 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
       <br/>
     
   </p>
@@ -834,7 +798,7 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
@@ -847,7 +811,7 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>

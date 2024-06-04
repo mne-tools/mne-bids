@@ -1,7 +1,7 @@
 """
-====================================
-13. Convert NIRS data to BIDS format
-====================================
+================================
+Convert NIRS data to BIDS format
+================================
 
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS
 data. Specifically, we will follow these steps:
@@ -15,12 +15,10 @@ data. Specifically, we will follow these steps:
 4. Cite ``mne-bids``.
 
 .. currentmodule:: mne_bids
+"""  # noqa: E501 D205 D400
 
-"""  # noqa: E501
-
-# Authors: Robert Luke <code@robertluke.net>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We are importing everything we need for this example:

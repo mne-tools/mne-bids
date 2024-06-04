@@ -1,17 +1,16 @@
 """
 .. _ex-convert-empty-room:
 
-====================================
-09. Manually storing empty room data
-====================================
+================================
+Manually storing empty room data
+================================
 
 This example demonstrates how to store empty room data "manually" in the BIDS
 format and how to retrieve them.
-"""
+"""  # noqa: E501 D400
 
-# Authors: Mainak Jas <mainakjas@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We are dealing with MEG data, which is often accompanied by so-called

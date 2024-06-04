@@ -1,7 +1,7 @@
 """
-==============================
-13. Anonymizing a BIDS dataset
-==============================
+==========================
+Anonymizing a BIDS dataset
+==========================
 
 Consider the following scenario:
 
@@ -18,12 +18,11 @@ MNE-BIDS provides a dedicated function, :func:`mne_bids.anonymize_dataset`,
 to do the heavy lifting for you, automatically.
 """  # noqa: D400 D205
 
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 import shutil
-from pathlib import Path
 
 import mne
 
@@ -37,7 +36,7 @@ from mne_bids import (
     write_raw_bids,
 )
 
-data_path = Path(mne.datasets.sample.data_path())
+data_path = mne.datasets.sample.data_path()
 event_id = {
     "Auditory/Left": 1,
     "Auditory/Right": 2,

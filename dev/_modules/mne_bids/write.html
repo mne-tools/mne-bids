@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
   
   
   
@@ -15,33 +15,36 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-
-  
-  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=124f375b"></script>
-    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/documentation_options.js?v=38b9782e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../_static/copybutton.js?v=fd10adb8"></script>
@@ -60,19 +63,20 @@
             </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/write';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/_modules/mne_bids/write.html" />
     <script type="text/javascript" src="../../_static/copybutton.js"></script>
     <script type="text/javascript" src="../../_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
 
   </head>
   
@@ -89,19 +93,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../../search.html"
       method="get">
@@ -109,7 +102,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -117,8 +109,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -127,7 +119,7 @@
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -137,6 +129,8 @@
       <div class="navbar-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="../../index.html">
   
@@ -145,7 +139,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
   
 </a></div>
     
@@ -156,58 +150,50 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../generated/cli.html">
     CLI
   </a>
 </li>
 
-            <li class="nav-item dropdown pst-header-nav-item">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
+
 <li class="nav-item ">
-  <a class="nav-link dropdown-item nav-internal" href="../../contribute.html">
+  <a class="nav-link nav-internal" href="../../contribute.html">
     Contribute
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -219,55 +205,43 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-2"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-2"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-2"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-2">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -278,7 +252,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -290,7 +264,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -302,15 +276,11 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
@@ -327,7 +297,8 @@ document.write(`
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -339,45 +310,45 @@ document.write(`
           
           
             <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../use.html">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../generated/cli.html">
     CLI
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../contribute.html">
     Contribute
   </a>
@@ -395,41 +366,33 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-3"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-3"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-3"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-3">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -440,7 +403,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -452,7 +415,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -483,8 +446,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -496,7 +457,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">mne_bids.write</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.write</span></li>
   </ul>
 </nav>
 </div>
@@ -516,14 +477,9 @@ document.write(`
   <h1>Source code for mne_bids.write</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Make BIDS compatible directory structures and infer meta data from MNE.&quot;&quot;&quot;</span>
 
-<span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
-<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
-<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
-<span class="c1">#          Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
-<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
-<span class="c1">#          Matt Sanderson &lt;matt.sanderson@mq.edu.au&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD-3-Clause</span>
+<span class="c1"># Authors: The MNE-BIDS developers</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
+
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
@@ -532,7 +488,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
@@ -611,7 +567,7 @@ document.write(`
 
 
 <span class="k">def</span> <span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -787,7 +743,9 @@ document.write(`
     <span class="k">return</span> <span class="n">fid_coords</span><span class="p">,</span> <span class="n">coord_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span>
+    <span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
 
 <span class="sd">    This function will write the mandatory &#39;onset&#39;, and &#39;duration&#39; columns as</span>
@@ -811,6 +769,9 @@ document.write(`
 <span class="sd">    trial_type : dict | None</span>
 <span class="sd">        Dictionary mapping a brief description key to an event id (value). For</span>
 <span class="sd">        example {&#39;Go&#39;: 1, &#39;No Go&#39;: 2}.</span>
+<span class="sd">    event_metadata : pandas.DataFrame | None</span>
+<span class="sd">        Additional metadata to be stored in the events.tsv file. Must have one</span>
+<span class="sd">        row per event.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
@@ -840,19 +801,30 @@ document.write(`
     <span class="k">else</span><span class="p">:</span>
         <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;trial_type&quot;</span><span class="p">]</span>
 
+    <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">event_metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Output filename.</span>
+<span class="sd">    extra_columns : dict | None</span>
+<span class="sd">        Dictionary with additional columns to be added to the events.json file.</span>
+<span class="sd">    has_trial_type : bool</span>
+<span class="sd">        Whether the events.tsv file should contain a &#39;trial_type&#39; column.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the output file if it exists.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">extra_columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extra_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
     <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;onset&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="p">(</span>
@@ -882,8 +854,15 @@ document.write(`
                 <span class="s2">&quot;associated with the event.&quot;</span>
             <span class="p">)</span>
         <span class="p">},</span>
-        <span class="s2">&quot;trial_type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;The type, category, or name of the event.&quot;</span><span class="p">},</span>
     <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">has_trial_type</span><span class="p">:</span>
+        <span class="n">new_data</span><span class="p">[</span><span class="s2">&quot;trial_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;The type, category, or name of the event.&quot;</span>
+        <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
 
     <span class="c1"># make sure to append any JSON fields added by the user</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
@@ -977,12 +956,14 @@ document.write(`
 
         <span class="c1"># determine the age of the participant</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;birthday&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># XXX: can be removed once MNE &gt;= 1.8 is required</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="o">*</span><span class="n">age</span><span class="p">)</span>
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meas_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">bday</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">age</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">age</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">age</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+            <span class="n">bday</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">age</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">age</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
                 <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">meas_date</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1006,6 +987,29 @@ document.write(`
             <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">height</span><span class="p">],</span>
         <span class="p">}</span>
     <span class="p">)</span>
+
+    <span class="c1"># XXX: Remove once MNE-Python &lt;1.9 is no longer supported</span>
+    <span class="c1"># Make sure that all entries to data are lists that</span>
+    <span class="c1"># contain scalars (i.e. not further lists). Fix if possible</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">cur_value</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># Check if all values are scalars</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cur_item</span> <span class="ow">in</span> <span class="n">cur_value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cur_item</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cur_item</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">new_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Value for key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> is a list with more &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;than one element. This is not supported. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Got: </span><span class="si">{</span><span class="n">cur_value</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_item</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
         <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
@@ -1805,7 +1809,7 @@ document.write(`
 
     <span class="c1"># Perform input checks</span>
     <span class="k">if</span> <span class="n">dataset_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;derivative&quot;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`dataset_type` must be either &quot;raw&quot; or &#39;</span> <span class="s1">&#39;&quot;derivative.&quot;&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`dataset_type` must be either &quot;raw&quot; or &quot;derivative.&quot;&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doi</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;doi:&quot;</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span>
@@ -1824,7 +1828,7 @@ document.write(`
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">generated_by</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;Name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">&#39;&quot;Name&quot; is a required field for each dict in &#39;</span> <span class="s2">&quot;generated_by&quot;</span>
+                    <span class="s1">&#39;&quot;Name&quot; is a required field for each dict in generated_by&#39;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">generated_by_keys</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_key</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="n">generated_by_keys</span><span class="p">))</span>
@@ -1884,7 +1888,7 @@ document.write(`
     <span class="c1"># if the user passed an author don&#39;t overwrite,</span>
     <span class="c1"># if there was an author there, only overwrite if `overwrite=True`</span>
     <span class="k">if</span> <span class="n">authors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">overwrite</span><span class="p">):</span>
-        <span class="n">description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Unspecified]&quot;</span><span class="p">]</span>
+        <span class="n">description</span><span class="p">[</span><span class="s2">&quot;Authors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;[Unspecified1]&quot;</span><span class="p">,</span> <span class="s2">&quot;[Unspecified2]&quot;</span><span class="p">]</span>
 
     <span class="c1"># Only write data that is not None</span>
     <span class="n">pop_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">description</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">]</span>
@@ -1902,6 +1906,8 @@ document.write(`
     <span class="n">bids_path</span><span class="p">,</span>
     <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extra_columns_descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -1934,7 +1940,7 @@ document.write(`
 <span class="sd">        already loaded from disk unless ``allow_preload`` is explicitly set</span>
 <span class="sd">        to ``True``. See warning for the ``allow_preload`` parameter.</span>
 <span class="sd">    bids_path : BIDSPath</span>
-<span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
+<span class="sd">        The file to write. The :class:`mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``subject``, ``task``, and ``root`` attributes set.</span>
 <span class="sd">        If the ``datatype`` attribute is not set, it will be inferred from the</span>
 <span class="sd">        recording data type found in ``raw``. In case of multiple data types,</span>
@@ -1987,8 +1993,9 @@ document.write(`
 <span class="sd">           call ``raw.set_annotations(None)`` before invoking this function.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">           Descriptions of all event codes must be specified via the</span>
-<span class="sd">           ``event_id`` parameter.</span>
+<span class="sd">           Either, descriptions of all event codes must be specified via the</span>
+<span class="sd">           ``event_id`` parameter or each event must be accompanied by a</span>
+<span class="sd">           row in ``event_metadata``.</span>
 
 <span class="sd">    event_id : dict | None</span>
 <span class="sd">        Descriptions or names describing the event codes, if you passed</span>
@@ -1999,6 +2006,11 @@ document.write(`
 <span class="sd">        contains :class:`~mne.Annotations`, you can use this parameter to</span>
 <span class="sd">        assign event codes to each unique annotation description (mapping from</span>
 <span class="sd">        description to event code).</span>
+<span class="sd">    event_metadata : pandas.DataFrame | None</span>
+<span class="sd">        Metadata for each event in ``events``. Each row corresponds to an event.</span>
+<span class="sd">    extra_columns_descriptions : dict | None</span>
+<span class="sd">        A dictionary that maps column names of the ``event_metadata`` to descriptions.</span>
+<span class="sd">        Each column of ``event_metadata`` must have a corresponding entry in this.</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If `None` (default), no anonymization is performed.</span>
 <span class="sd">        If a dictionary, data will be anonymized depending on the dictionary</span>
@@ -2154,7 +2166,7 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;raw_file must be an instance of BaseRaw, got </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;raw_file must be an instance of BaseRaw, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">preload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_preload</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -2202,8 +2214,24 @@ document.write(`
             <span class="s1">&#39;&quot;bids_path.task = &lt;task&gt;&quot;&#39;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You passed events, but no event_id dictionary.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;You passed events, but no event_id dictionary &quot;</span> <span class="s2">&quot;or event_metadata.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">extra_columns_descriptions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;You passed event_metadata, but no &quot;</span>
+            <span class="s2">&quot;extra_columns_descriptions dictionary.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">event_metadata</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_columns_descriptions</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Extra column </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> in event_metadata &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;is not described in extra_columns_descriptions.&quot;</span>
+                <span class="p">)</span>
 
     <span class="n">_validate_type</span><span class="p">(</span>
         <span class="n">item</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">&quot;empty_room&quot;</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -2340,7 +2368,7 @@ document.write(`
         <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;emptyroom&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">er_session</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;noise&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span>
         <span class="p">)</span>
-        <span class="n">write_raw_bids</span><span class="p">(</span>
+        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">write_raw_bids</span><span class="p">(</span>
             <span class="n">raw</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span>
             <span class="n">bids_path</span><span class="o">=</span><span class="n">er_bids_path</span><span class="p">,</span>
             <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2358,7 +2386,7 @@ document.write(`
         <span class="k">del</span> <span class="n">er_bids_path</span><span class="p">,</span> <span class="n">er_date</span><span class="p">,</span> <span class="n">er_session</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;empty_room&quot; is only supported for &#39;</span> <span class="s2">&quot;MEG data.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;empty_room&quot; is only supported for MEG data.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;You cannot write empty-room data and pass &quot;</span>
@@ -2409,7 +2437,18 @@ document.write(`
     <span class="p">)</span>
 
     <span class="c1"># For the remaining files, we can use BIDSPath to alter.</span>
-    <span class="n">readme_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;README&quot;</span><span class="p">)</span>
+    <span class="n">readme_suffixes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;.md&quot;</span><span class="p">,</span> <span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="s2">&quot;.txt&quot;</span><span class="p">)</span>
+    <span class="n">found_readmes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">readme_suffixes</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;README*&quot;</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found_readmes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Multiple README files found in the BIDS root folder. &quot;</span>
+            <span class="s2">&quot;This violates the BIDS specifications. &quot;</span>
+            <span class="s2">&quot;Please ensure there is only one README file.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">readme_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">((</span><span class="n">found_readmes</span> <span class="ow">or</span> <span class="p">[</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;README&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+
     <span class="n">participants_tsv_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;participants.tsv&quot;</span><span class="p">)</span>
     <span class="n">participants_json_fname</span> <span class="o">=</span> <span class="n">participants_tsv_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="s2">&quot;.json&quot;</span><span class="p">)</span>
 
@@ -2498,8 +2537,15 @@ document.write(`
     <span class="c1"># Write events.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
         <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
-            <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span>
+            <span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="p">,</span>
+            <span class="n">raw</span><span class="p">,</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">events_array</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">_events_tsv</span><span class="p">(</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span>
@@ -2507,9 +2553,17 @@ document.write(`
                 <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
                 <span class="n">fname</span><span class="o">=</span><span class="n">events_tsv_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
                 <span class="n">trial_type</span><span class="o">=</span><span class="n">event_desc_id_map</span><span class="p">,</span>
+                <span class="n">event_metadata</span><span class="o">=</span><span class="n">event_metadata</span><span class="p">,</span>
                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">events_json_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">has_trial_type</span> <span class="o">=</span> <span class="n">event_desc_id_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="n">_events_json</span><span class="p">(</span>
+                <span class="n">fname</span><span class="o">=</span><span class="n">events_json_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+                <span class="n">extra_columns</span><span class="o">=</span><span class="n">extra_columns_descriptions</span><span class="p">,</span>
+                <span class="n">has_trial_type</span><span class="o">=</span><span class="n">has_trial_type</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
         <span class="k">del</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_dur</span>
 
@@ -2517,7 +2571,7 @@ document.write(`
     <span class="c1"># already exist. Always set overwrite to False here. If users</span>
     <span class="c1"># want to edit their dataset_description, they can directly call</span>
     <span class="c1"># this function.</span>
-    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;[Unspecified]&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">_sidecar_json</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
@@ -2795,7 +2849,7 @@ document.write(`
 <span class="k">def</span> <span class="nf">_get_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
     <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
         <span class="n">landmarks</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
         <span class="n">landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="p">[</span><span class="n">landmark</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">landmark</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
@@ -2993,17 +3047,29 @@ document.write(`
 <span class="sd">        type (e.g., only EEG or MEG data) is present in the dataset, it will be</span>
 <span class="sd">        selected automatically.</span>
 <span class="sd">    ch_names : str | list of str</span>
-<span class="sd">        The names of the channel(s) to mark with a ``status`` and possibly a</span>
-<span class="sd">        ``description``. Can be an empty list to indicate all channel names.</span>
+<span class="sd">        The name(s) of the channel(s) to mark with a ``status`` (and optionally a</span>
+<span class="sd">        ``description``). The special value ``&quot;all&quot;`` will mark all channels.</span>
+
+<span class="sd">        .. versionchanged:: 0.16</span>
+<span class="sd">           The behavior of passing an empty list will change in version 0.17. In version</span>
+<span class="sd">           0.16 and older, an empty list would mark *all* channels. In version 0.17 and</span>
+<span class="sd">           newer, an empty list will be a no-op (no channels will be marked/changed).</span>
+
 <span class="sd">    status : &#39;good&#39; | &#39;bad&#39; | list of str</span>
-<span class="sd">        The status of the channels (&#39;good&#39;, or &#39;bad&#39;). Default is &#39;bad&#39;. If it</span>
-<span class="sd">        is a list, then must be a list of &#39;good&#39;, or &#39;bad&#39; that has the same</span>
-<span class="sd">        length as ``ch_names``.</span>
+<span class="sd">        The status of the channels (&#39;good&#39;, or &#39;bad&#39;). If it is a list, then must be a</span>
+<span class="sd">        list of &#39;good&#39;, or &#39;bad&#39; that has the same length as ``ch_names``.</span>
 <span class="sd">    descriptions : None | str | list of str</span>
-<span class="sd">        Descriptions of the reasons that lead to the exclusion of the</span>
+<span class="sd">        Descriptions of the reasons that lead to the marking (&#39;good&#39; or &#39;bad&#39;) of the</span>
 <span class="sd">        channel(s). If a list, it must match the length of ``ch_names``.</span>
 <span class="sd">        If ``None``, no descriptions are added.</span>
 <span class="sd">    %(verbose)s</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If the &#39;status&#39; or &#39;status_description&#39; columns were not present in the</span>
+<span class="sd">    corresponding tsv file before using this function, they may be created with default</span>
+<span class="sd">    values (&#39;good&#39; for status, &#39;n/a&#39; for status_description) for all channels that are</span>
+<span class="sd">    not differently specified (by using ``ch_names``, ``status``, and ``descriptions``).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -3051,15 +3117,28 @@ document.write(`
 
     <span class="c1"># if an empty list is passed in, then these are the entire list</span>
     <span class="c1"># of channels</span>
-    <span class="k">if</span> <span class="n">ch_names</span> <span class="o">==</span> <span class="p">[]:</span>
-        <span class="n">ch_names</span> <span class="o">=</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch_names</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">==</span> <span class="p">[]:</span>  <span class="c1"># casting to list avoids error if ch_names is np.ndarray</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;In version 0.17, the behavior of `mark_channels(..., ch_names=[])` will &quot;</span>
+            <span class="s2">&quot;change, from marking *all* channels to marking *no* channels. Pass &quot;</span>
+            <span class="s2">&quot;ch_names=&#39;all&#39; instead of ch_names=[] to keep the old behavior and &quot;</span>
+            <span class="s2">&quot;avoid this warning.&quot;</span><span class="p">,</span>
+            <span class="ne">FutureWarning</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+    <span class="c1"># TODO ↑↑↑ remove prior conditional block after 0.16 release ↑↑↑</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ch_names</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="n">ch_names</span> <span class="o">=</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch_names</span><span class="p">]</span>
 
     <span class="c1"># set descriptions based on how it&#39;s passed in</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descriptions</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="n">descriptions</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span>
+        <span class="n">write_descriptions</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">descriptions</span><span class="p">:</span>
+        <span class="n">write_descriptions</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span>
 
     <span class="c1"># make sure statuses is a list of strings</span>
@@ -3076,18 +3155,24 @@ document.write(`
             <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="s2">&quot;bad&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">status</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">({</span><span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="s2">&quot;bad&quot;</span><span class="p">}):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Setting the status of a channel must only be &quot;</span> <span class="s1">&#39;&quot;good&quot;, or &quot;bad&quot;.&#39;</span>
+            <span class="s1">&#39;Setting the status of a channel must only be &quot;good&quot;, or &quot;bad&quot;.&#39;</span>
         <span class="p">)</span>
 
     <span class="c1"># Read sidecar and create required columns if they do not exist.</span>
     <span class="k">if</span> <span class="s2">&quot;status&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No &quot;status&quot; column found in input file. Creating.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;No &quot;status&quot; column found in channels file.&#39;</span>
+            <span class="s1">&#39;Creating it with default value &quot;good&quot;.&#39;</span>
+        <span class="p">)</span>
         <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;good&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="s2">&quot;status_description&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No &quot;status_description&quot; column found in input file. &#39;</span> <span class="s2">&quot;Creating.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;status_description&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span> <span class="ow">and</span> <span class="n">write_descriptions</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s1">&#39;No &quot;status_description&quot; column found in input file. &#39;</span>
+            <span class="s1">&#39;Creating it with default value &quot;n/a&quot;.&#39;</span>
+        <span class="p">)</span>
         <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;status_description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
     <span class="c1"># Now actually mark the user-requested channels as bad.</span>
@@ -3098,13 +3183,13 @@ document.write(`
         <span class="n">idx</span> <span class="o">=</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Processing channel </span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;    status: bad</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;    status: </span><span class="si">{</span><span class="n">status_</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="sa">f</span><span class="s2">&quot;    description: </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">status_</span>
 
         <span class="c1"># only write if the description was passed in</span>
-        <span class="k">if</span> <span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
             <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;status_description&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
 
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">tsv_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -3210,7 +3295,7 @@ document.write(`
 <span class="sd">    ...                      root=op.join(data_path, &#39;mne_bids&#39;)) # doctest: +SKIP</span>
 <span class="sd">    &gt;&gt;&gt; write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +SKIP</span>
 <span class="sd">    Writing crosstalk file to ...sub-01_ses-test_acq-crosstalk_meg.fif</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;bids_path must have root and subject set.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;meg&quot;</span><span class="p">):</span>
@@ -3714,8 +3799,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -3726,7 +3811,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
       <br/>
     
   </p>
@@ -3735,7 +3820,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
@@ -3748,7 +3833,7 @@ document.write(`
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>

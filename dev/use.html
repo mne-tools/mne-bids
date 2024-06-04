@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Using MNE-BIDS &#8212; MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</title>
+    <title>Using MNE-BIDS &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
   
   
   
@@ -16,33 +16,36 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=3ee479438cf8b5e0d341" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=61a4c737" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=81d8d220" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="_static/documentation_options.js?v=124f375b"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/documentation_options.js?v=38b9782e"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=fd10adb8"></script>
@@ -62,21 +65,22 @@
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'use';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.15.3';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="01. Read BIDS datasets" href="auto_examples/read_bids_datasets.html" />
+    <link rel="next" title="Read BIDS datasets" href="auto_examples/read_bids_datasets.html" />
     <link rel="prev" title="Installation" href="install.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/index.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/use.html" />
     <script type="text/javascript" src="_static/copybutton.js"></script>
     <script type="text/javascript" src="_static/scrollfix.js"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
 
   </head>
   
@@ -93,19 +97,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -113,7 +106,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -121,8 +113,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -131,7 +123,7 @@
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -141,6 +133,8 @@
       <div class="navbar-item">
 
   
+    
+  
 
 <a class="navbar-brand logo" href="index.html">
   
@@ -149,7 +143,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.15.0.dev58+g8ea1024a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
   
 </a></div>
     
@@ -160,58 +154,50 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item current active">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="generated/cli.html">
     CLI
   </a>
 </li>
 
-            <li class="nav-item dropdown pst-header-nav-item">
-                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="pst-nav-more-links">
-                    More
-                </button>
-                <ul id="pst-nav-more-links" class="dropdown-menu">
-                    
+
 <li class="nav-item ">
-  <a class="nav-link dropdown-item nav-internal" href="contribute.html">
+  <a class="nav-link nav-internal" href="contribute.html">
     Contribute
   </a>
 </li>
 
-                </ul>
-            </li>
-            
   </ul>
 </nav></div>
       
@@ -223,55 +209,43 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
         <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-2"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-2"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-2"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-2">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
       
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+        <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -282,7 +256,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -294,7 +268,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -306,20 +280,16 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
-    <button class="sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -333,7 +303,8 @@ document.write(`
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -345,45 +316,45 @@ document.write(`
           
           
             <div class="navbar-item">
-<nav class="navbar-nav">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="whats_new.html">
     News
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="install.html">
     Install
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item current active">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
     Use
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="api.html">
     API
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="generated/cli.html">
     CLI
   </a>
 </li>
 
 
-<li class="nav-item pst-header-nav-item">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="contribute.html">
     Contribute
   </a>
@@ -401,41 +372,33 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
           <div class="navbar-item">
-<script>
-document.write(`
-  <div class="version-switcher__container dropdown">
-    <button id="pst-version-switcher-button-3"
-      type="button"
-      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
-      data-bs-toggle="dropdown"
-      aria-haspopup="listbox"
-      aria-controls="pst-version-switcher-list-3"
-      aria-label="Version switcher list"
-    >
-      Choose version  <!-- this text may get changed later by javascript -->
-      <span class="caret"></span>
-    </button>
-    <div id="pst-version-switcher-list-3"
-      class="version-switcher__menu dropdown-menu list-group-flush py-0"
-      role="listbox" aria-labelledby="pst-version-switcher-button-3">
-      <!-- dropdown will be populated by javascript on page load -->
-    </div>
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
   </div>
-`);
-</script></div>
+</div></div>
         
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+          <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Quick Links">
         <li class="nav-item">
           
@@ -446,7 +409,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square fa-lg" aria-hidden="true"></i></span>
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -458,7 +421,7 @@ document.write(`
           
           
           
-          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-discourse fa-lg" aria-hidden="true"></i></span>
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discourse</span></a>
         </li>
 </ul></div>
@@ -473,20 +436,20 @@ document.write(`
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/read_bids_datasets.html">01. Read BIDS datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_mne_sample.html">02. Convert MNE sample data to BIDS format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/mark_bad_channels.html">03. Interactive data inspection and bad channel selection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_eeg_to_bids.html">04. Convert EEG data to BIDS format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_group_studies.html">05. BIDS conversion for group studies</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/rename_brainvision_files.html">06. Rename BrainVision EEG data files</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_mri_and_trans.html">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html">08. Convert iEEG data to BIDS format</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_empty_room.html">09. Manually storing empty room data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/bidspath.html">10. An introduction to BIDSPath</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/create_bids_folder.html">11. Creating BIDS-compatible folder names and filenames</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/update_bids_datasets.html">12. Updating BIDS datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/anonymize_dataset.html">13. Anonymizing a BIDS dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_nirs_to_bids.html">13. Convert NIRS data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/read_bids_datasets.html">Read BIDS datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_mne_sample.html">Convert MNE sample data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/mark_bad_channels.html">Interactive data inspection and bad channel selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_eeg_to_bids.html">Convert EEG data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_group_studies.html">BIDS conversion for group studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/rename_brainvision_files.html">Rename BrainVision EEG data files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_mri_and_trans.html">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html">Convert iEEG data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_nirs_to_bids.html">Convert NIRS data to BIDS format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/convert_empty_room.html">Manually storing empty room data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/bidspath.html">An introduction to BIDSPath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/create_bids_folder.html">Creating BIDS-compatible folder names and filenames</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/update_bids_datasets.html">Updating BIDS datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/anonymize_dataset.html">Anonymizing a BIDS dataset</a></li>
 </ul>
 </div>
 </nav></div>
@@ -514,8 +477,6 @@ document.write(`
       
         <div class="header-article-item">
 
-
-
 <nav aria-label="Breadcrumb" class="d-print-none">
   <ul class="bd-breadcrumbs">
     
@@ -524,7 +485,7 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Using MNE-BIDS</li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Using MNE-BIDS</span></li>
   </ul>
 </nav>
 </div>
@@ -580,48 +541,48 @@ to learn everything you need!</p>
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
 <p>The following examples demonstrate some common use-cases of MNE-BIDS.</p>
 <p>The examples are loosely ordered from basic to more advanced use cases.</p>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the Op..."><img alt="" src="_images/sphx_glr_read_bids_datasets_thumb.png" />
-<p><a class="reference internal" href="auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">01. Read BIDS datasets</span></a></p>
-  <div class="sphx-glr-thumbnail-title">01. Read BIDS datasets</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><img alt="" src="_images/sphx_glr_convert_mne_sample_thumb.png" />
-<p><a class="reference internal" href="auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">02. Convert MNE sample data to BIDS format</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><img alt="" src="_images/sphx_glr_mark_bad_channels_thumb.png" />
-<p><a class="reference internal" href="auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></p>
-  <div class="sphx-glr-thumbnail-title">03. Interactive data inspection and bad channel selection</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><img alt="" src="_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">04. Convert EEG data to BIDS format</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><img alt="" src="_images/sphx_glr_convert_group_studies_thumb.png" />
-<p><a class="reference internal" href="auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></p>
-  <div class="sphx-glr-thumbnail-title">05. BIDS conversion for group studies</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is one of the recom..."><img alt="" src="_images/sphx_glr_rename_brainvision_files_thumb.png" />
-<p><a class="reference internal" href="auto_examples/rename_brainvision_files.html#sphx-glr-auto-examples-rename-brainvision-files-py"><span class="std std-ref">06. Rename BrainVision EEG data files</span></a></p>
-  <div class="sphx-glr-thumbnail-title">06. Rename BrainVision EEG data files</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><img alt="" src="_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p><a class="reference internal" href="auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></p>
-  <div class="sphx-glr-thumbnail-title">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><img alt="" src="_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
-<p><a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">08. Convert iEEG data to BIDS format</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data &quot;manually&quot; in the BIDS format and how to..."><img alt="" src="_images/sphx_glr_convert_empty_room_thumb.png" />
-<p><a class="reference internal" href="auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Manually storing empty room data</span></a></p>
-  <div class="sphx-glr-thumbnail-title">09. Manually storing empty room data</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here ho..."><img alt="" src="_images/sphx_glr_bidspath_thumb.png" />
-<p><a class="reference internal" href="auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">10. An introduction to BIDSPath</span></a></p>
-  <div class="sphx-glr-thumbnail-title">10. An introduction to BIDSPath</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier..."><img alt="" src="_images/sphx_glr_create_bids_folder_thumb.png" />
-<p><a class="reference internal" href="auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">11. Creating BIDS-compatible folder names and filenames</span></a></p>
-  <div class="sphx-glr-thumbnail-title">11. Creating BIDS-compatible folder names and filenames</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the ..."><img alt="" src="_images/sphx_glr_update_bids_datasets_thumb.png" />
-<p><a class="reference internal" href="auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">12. Updating BIDS datasets</span></a></p>
-  <div class="sphx-glr-thumbnail-title">12. Updating BIDS datasets</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, an important resource is the OpenNeuro database. OpenNeuro works great with MNE-BIDS because every dataset must pass a validator that tests to ensure its format meets BIDS specifications before the dataset can be uploaded, so you know the data will work with a script like in this example without modification."><img alt="" src="_images/sphx_glr_read_bids_datasets_thumb.png" />
+<p><a class="reference internal" href="auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">Read BIDS datasets</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Read BIDS datasets</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS standard. In a second step we will read the organized dataset using MNE-BIDS."><img alt="" src="_images/sphx_glr_convert_mne_sample_thumb.png" />
+<p><a class="reference internal" href="auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">Convert MNE sample data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert MNE sample data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can be marked as &quot;bad&quot;, for example if the connected sensor produced mostly noise - or no signal at all. Similarly, you can declare channels as &quot;good&quot;, should you discover they were incorrectly marked as bad. Bad channel selection can also be performed non-interactively."><img alt="" src="_images/sphx_glr_mark_bad_channels_thumb.png" />
+<p><a class="reference internal" href="auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">Interactive data inspection and bad channel selection</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Interactive data inspection and bad channel selection</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specifically, we will follow these steps:"><img alt="" src="_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
+<p><a class="reference internal" href="auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">Convert EEG data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert EEG data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. We will use the EEG Motor Movement/Imagery Dataset available on the PhysioBank database. We recommend that you go through the more basic BIDS conversion example before checking out this group conversion example: ex-convert-mne-sample"><img alt="" src="_images/sphx_glr_convert_group_studies_thumb.png" />
+<p><a class="reference internal" href="auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">BIDS conversion for group studies</span></a></p>
+  <div class="sphx-glr-thumbnail-title">BIDS conversion for group studies</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is one of the recommended formats to store EEG data within a BIDS dataset."><img alt="" src="_images/sphx_glr_rename_brainvision_files_thumb.png" />
+<p><a class="reference internal" href="auto_examples/rename_brainvision_files.html#sphx-glr-auto-examples-rename-brainvision-files-py"><span class="std std-ref">Rename BrainVision EEG data files</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Rename BrainVision EEG data files</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with aligning several coordinate systems, such as the coordinate systems of ..."><img alt="" src="_images/sphx_glr_convert_mri_and_trans_thumb.png" />
+<p><a class="reference internal" href="auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifically, we will follow these steps:"><img alt="" src="_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
+<p><a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">Convert iEEG data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert iEEG data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS data. Specifically, we will follow these steps:"><img alt="" src="_images/sphx_glr_convert_nirs_to_bids_thumb.png" />
+<p><a class="reference internal" href="auto_examples/convert_nirs_to_bids.html#sphx-glr-auto-examples-convert-nirs-to-bids-py"><span class="std std-ref">Convert NIRS data to BIDS format</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Convert NIRS data to BIDS format</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data &quot;manually&quot; in the BIDS format and how to retrieve them."><img alt="" src="_images/sphx_glr_convert_empty_room_thumb.png" />
+<p><a class="reference internal" href="auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">Manually storing empty room data</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Manually storing empty room data</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here how to use it."><img alt="" src="_images/sphx_glr_bidspath_thumb.png" />
+<p><a class="reference internal" href="auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">An introduction to BIDSPath</span></a></p>
+  <div class="sphx-glr-thumbnail-title">An introduction to BIDSPath</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hierarchy. MNE-BIDS comes with convenience functions if you wish to create these files/folders on your own."><img alt="" src="_images/sphx_glr_create_bids_folder_thumb.png" />
+<p><a class="reference internal" href="auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">Creating BIDS-compatible folder names and filenames</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Creating BIDS-compatible folder names and filenames</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the metadata stored in the Raw mne-python object. We can update the BIDS sidecar files via the update_sidecar_json function."><img alt="" src="_images/sphx_glr_update_bids_datasets_thumb.png" />
+<p><a class="reference internal" href="auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">Updating BIDS datasets</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Updating BIDS datasets</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><img alt="" src="_images/sphx_glr_anonymize_dataset_thumb.png" />
-<p><a class="reference internal" href="auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">13. Anonymizing a BIDS dataset</span></a></p>
-  <div class="sphx-glr-thumbnail-title">13. Anonymizing a BIDS dataset</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS data. Specifical..."><img alt="" src="_images/sphx_glr_convert_nirs_to_bids_thumb.png" />
-<p><a class="reference internal" href="auto_examples/convert_nirs_to_bids.html#sphx-glr-auto-examples-convert-nirs-to-bids-py"><span class="std std-ref">13. Convert NIRS data to BIDS format</span></a></p>
-  <div class="sphx-glr-thumbnail-title">13. Convert NIRS data to BIDS format</div>
+<p><a class="reference internal" href="auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">Anonymizing a BIDS dataset</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Anonymizing a BIDS dataset</div>
 </div></div><div class="toctree-wrapper compound">
 </div>
 <div class="sphx-glr-footer sphx-glr-footer-gallery docutils container">
@@ -660,7 +621,7 @@ to learn everything you need!</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">01. Read BIDS datasets</p>
+        <p class="prev-next-title">Read BIDS datasets</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -671,7 +632,8 @@ to learn everything you need!</p>
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -705,8 +667,8 @@ to learn everything you need!</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=3ee479438cf8b5e0d341"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -717,7 +679,7 @@ to learn everything you need!</p>
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
       <br/>
     
   </p>
@@ -726,7 +688,7 @@ to learn everything you need!</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>
@@ -739,7 +701,7 @@ to learn everything you need!</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.3.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
 </p></div>
       
     </div>
