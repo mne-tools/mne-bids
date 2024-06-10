@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.16.0.dev1+gdb40a049 documentation</title>
+    <title>08. Convert iEEG data to BIDS format &#8212; MNE-BIDS 0.16.0.dev2+gaf7c246f documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=3ee479438cf8b5e0d341" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=3ee479438cf8b5e0d341"></script>
 
-    <script src="../_static/documentation_options.js?v=a6fe368f"></script>
+    <script src="../_static/documentation_options.js?v=7c70db44"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev1+gdb40a049 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev2+gaf7c246f documentation</p>
   
 </a></div>
     
@@ -1064,19 +1064,6 @@ sub-1/ieeg/sub-1_task-motor_events.json
 participants.tsv
     1    participa age       sex       hand      weight    height
     2    sub-1     n/a       n/a       n/a       n/a       n/a
-sub-1/ieeg/sub-1_task-motor_channels.tsv
-    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de
-    2    LENT 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    3    LENT 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    4    LENT 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    5    LENT 4    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    6    LENT 5    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    7    LENT 6    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    8    LENT 7    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    9    LAMY 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    10   LAMY 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    11   LAMY 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
-    ...
 sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv
     1    name      x         y         z         size
     2    LENT 1    -0.021200 0.0158514 -0.039700 n/a
@@ -1089,6 +1076,19 @@ sub-1/ieeg/sub-1_space-ACPC_electrodes.tsv
     9    LAMY 1    -0.026011 -0.000693 -0.015478 n/a
     10   LAMY 2    -0.030600 -0.000148 -0.015200 n/a
     11   LAMY 3    -0.035536 0.0011150 -0.014882 n/a
+    ...
+sub-1/ieeg/sub-1_task-motor_channels.tsv
+    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de
+    2    LENT 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    3    LENT 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    4    LENT 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    5    LENT 4    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    6    LENT 5    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    7    LENT 6    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    8    LENT 7    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    9    LAMY 1    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    10   LAMY 2    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
+    11   LAMY 3    SEEG      V         0.0       499.70605 StereoEEG 999.41210 good      n/a
     ...
 </pre></div>
 </div>
@@ -1477,7 +1477,7 @@ better to save the raw data in the individual’s ACPC space. Thus, we
 recommend, if at all possible, saving BIDS iEEG data in ACPC coordinate space
 corresponding to the individual subject’s brain, not in a template
 coordinate frame.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.961 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.784 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/cf640e6bfa39f55978e620ef4269fd4c/convert_ieeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_ieeg_to_bids.ipynb</span></code></a></p>
@@ -1570,7 +1570,7 @@ coordinate frame.</p>
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-04.
+      © Copyright 2017-2024, MNE Developers. Last updated on 2024-06-10.
       <br/>
     
   </p>
