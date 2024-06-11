@@ -151,9 +151,18 @@ def _read_events(events, event_id, raw, bids_path=None):
                 'To specify custom event codes, please pass "event_id".'
             )
         else:
+            special_annots = {"BAD_ACQ_SKIP"}
             desc_without_id = sorted(
                 set(raw.annotations.description) - set(event_id.keys())
             )
+            # auto-add entries to `event_id` for "special" annotation values
+            # (but only if they're needed)
+            if set(desc_without_id) & special_annots:
+                for annot in special_annots:
+                    # use a value guaranteed to not be in use
+                    event_id = {annot: max(event_id.values()) + 90000} | event_id
+                # remove the "special" annots from the list of problematic annots
+                desc_without_id = sorted(set(desc_without_id) - special_annots)
             if desc_without_id:
                 raise ValueError(
                     f"The provided raw data contains annotations, but "
