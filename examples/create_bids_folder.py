@@ -20,7 +20,8 @@ wish to create these files/folders on your own.
 # First we will import the relevant functions
 
 import shutil
-from pathlib import Path
+
+import mne
 
 from mne_bids import BIDSPath
 
@@ -51,11 +52,11 @@ print(bids_path)
 #
 # You can also use MNE-BIDS to create folder hierarchies.
 
-my_root = Path(__file__).resolve().parent  # replace with *your* root folder
+my_root = mne.datasets.sample.data_path()  # replace with *your* root folder
 bids_path = BIDSPath(
-    subject="01", session="mysession", datatype="meg", root=my_root
+    subject="mneBIDStest", session="mysession", datatype="meg", root=my_root
 ).mkdir()
 print(bids_path.directory)
 
 # clean up
-shutil.rmtree(my_root / "sub-01")
+shutil.rmtree(my_root / "sub-mneBIDStest")

@@ -23,7 +23,6 @@ to do the heavy lifting for you, automatically.
 
 # %%
 import shutil
-from pathlib import Path
 
 import mne
 
@@ -37,7 +36,7 @@ from mne_bids import (
     write_raw_bids,
 )
 
-data_path = Path(mne.datasets.sample.data_path())
+data_path = mne.datasets.sample.data_path()
 event_id = {
     "Auditory/Left": 1,
     "Auditory/Right": 2,
