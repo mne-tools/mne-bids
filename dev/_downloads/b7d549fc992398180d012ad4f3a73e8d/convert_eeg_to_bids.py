@@ -22,9 +22,8 @@ data. Specifically, we will follow these steps:
 
 """  # noqa: E501
 
-# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We are importing everything we need for this example:

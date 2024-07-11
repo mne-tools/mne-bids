@@ -8,10 +8,9 @@
 BIDSPath is MNE-BIDS's working horse when it comes to file and folder
 operations. Learn here how to use it.
 """
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Obviously, to start exploring BIDSPath, we first need to import it.

@@ -24,11 +24,9 @@ In this tutorial, we show how ``read_raw_bids`` can be used to load and
 inspect BIDS-formatted data.
 
 """
-# Authors: Adam Li <adam2392@gmail.com>
-#          Richard Höchenberger <richard.hoechenberger@gmail.com>
-#          Alex Rockhill <aprockhill@mailbox.org>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Imports

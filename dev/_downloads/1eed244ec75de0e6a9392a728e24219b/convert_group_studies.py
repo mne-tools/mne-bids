@@ -10,11 +10,8 @@ We recommend that you go through the more basic BIDS conversion example before
 checking out this group conversion example: :ref:`ex-convert-mne-sample`
 """
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Teon Brooks <teon.brooks@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Let us import ``mne_bids``

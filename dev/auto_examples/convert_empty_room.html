@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>09. Manually storing empty room data &#8212; MNE-BIDS 0.16.0.dev7+g422a842a documentation</title>
+    <title>09. Manually storing empty room data &#8212; MNE-BIDS 0.16.0.dev8+g313fe101 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=63e1037a"></script>
+    <script src="../_static/documentation_options.js?v=fea48f8d"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev7+g422a842a documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev8+g313fe101 documentation</p>
   
 </a></div>
     
@@ -550,9 +550,8 @@ to download the full example code.</p>
 <span id="ex-convert-empty-room"></span><span id="sphx-glr-auto-examples-convert-empty-room-py"></span><h1>09. Manually storing empty room data<a class="headerlink" href="#manually-storing-empty-room-data" title="Link to this heading">#</a></h1>
 <p>This example demonstrates how to store empty room data “manually” in the BIDS
 format and how to retrieve them.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Mainak Jas &lt;mainakjas@gmail.com&gt;</span>
-<span class="c1">#</span>
-<span class="c1"># License: BSD-3-Clause</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: The MNE-BIDS developers</span>
+<span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
 </pre></div>
 </div>
 <p>We are dealing with MEG data, which is often accompanied by so-called
@@ -625,7 +624,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/par
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json&#39;...
-/home/circleci/project/examples/convert_empty_room.py:68: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events and event_id parameters. For resting state data, BIDS recommends naming the task using labels beginning with &quot;rest&quot;.
+/home/circleci/project/examples/convert_empty_room.py:67: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events and event_id parameters. For resting state data, BIDS recommends naming the task using labels beginning with &quot;rest&quot;.
   write_raw_bids(raw, bids_path, overwrite=True)
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json&#39;...
@@ -847,7 +846,7 @@ Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-/home/circleci/project/examples/convert_empty_room.py:117: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+/home/circleci/project/examples/convert_empty_room.py:116: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
 
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/meg/sub-01_ses-01*events.tsv&quot;
   er_bids_path = bids_path.find_empty_room()
@@ -872,7 +871,7 @@ Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-
 &lt;Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~296 kB, data not loaded&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.983 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.005 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/58cece9c8037ffebaaad2703d5ce7839/convert_empty_room.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_empty_room.ipynb</span></code></a></p>
@@ -942,7 +941,7 @@ Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-07-08.
+      © Copyright 2017-2024, MNE Developers. Last updated on 2024-07-11.
       <br/>
     
   </p>
