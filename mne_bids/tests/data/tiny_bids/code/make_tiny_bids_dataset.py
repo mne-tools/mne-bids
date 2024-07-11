@@ -1,5 +1,8 @@
 """Code used to generate the tiny_bids dataset."""
 
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 # %%
 import json
 from pathlib import Path

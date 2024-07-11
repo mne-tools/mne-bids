@@ -1,8 +1,8 @@
 """Testing automatic BIDS report."""
 
-# Authors: Adam Li <adam2392@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os.path as op
 import textwrap
 

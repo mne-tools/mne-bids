@@ -1,9 +1,8 @@
 """Test for the MNE BIDSPath functions."""
 
-# Authors: Adam Li <adam2392@gmail.com>
-#          Richard Höchenberger <richard.hoechenberger@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import os.path as op
 import shutil
@@ -15,7 +14,6 @@ import mne
 import pytest
 from mne.datasets import testing
 from mne.io import anonymize_info
-from test_read import _read_raw_fif, warning_str
 
 from mne_bids import (
     BIDSPath,
@@ -37,6 +35,8 @@ from mne_bids.path import (
     get_entities_from_fname,
     search_folder_for_text,
 )
+
+from .test_read import _read_raw_fif, warning_str
 
 subject_id = "01"
 session_id = "01"

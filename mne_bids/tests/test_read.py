@@ -1,8 +1,8 @@
 """Testing utilities for file io."""
 
-# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 import os
 import os.path as op
