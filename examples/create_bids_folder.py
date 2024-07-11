@@ -20,6 +20,7 @@ wish to create these files/folders on your own.
 # First we will import the relevant functions
 
 import shutil
+from pathlib import Path
 
 from mne_bids import BIDSPath
 
@@ -50,10 +51,11 @@ print(bids_path)
 #
 # You can also use MNE-BIDS to create folder hierarchies.
 
+my_root = Path(__file__).resolve().parent  # replace with *your* root folder
 bids_path = BIDSPath(
-    subject="01", session="mysession", datatype="meg", root="path/to/project"
+    subject="01", session="mysession", datatype="meg", root=my_root
 ).mkdir()
 print(bids_path.directory)
 
 # clean up
-shutil.rmtree(bids_path)
+shutil.rmtree(my_root / "sub-01")
