@@ -1,10 +1,8 @@
 """Read/write BIDS compatible electrode/coords structures from MNE."""
 
-# Authors: Adam Li <adam2392@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Alex Rockhill <aprockhill@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 import os.path as op
 import re

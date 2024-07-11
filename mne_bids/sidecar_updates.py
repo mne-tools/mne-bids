@@ -1,10 +1,7 @@
 """Update BIDS directory structures and sidecar files meta data."""
-# Authors: Adam Li <adam2392@gmail.com>
-#          Austin Hurst <mynameisaustinhurst@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          mne-bids developers
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 import json
 from collections import OrderedDict

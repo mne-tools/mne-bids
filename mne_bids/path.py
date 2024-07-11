@@ -1,9 +1,8 @@
 """BIDS compatible path functionality."""
 
-# Authors: Adam Li <adam2392@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import glob
 import json
 import os

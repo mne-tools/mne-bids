@@ -1,5 +1,8 @@
 """Private functions to handle tabular data."""
 
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from collections import OrderedDict
 from copy import deepcopy
 
