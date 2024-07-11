@@ -20,6 +20,8 @@ wish to create these files/folders on your own.
 # %%
 # First we will import the relevant functions
 
+import shutil
+
 from mne_bids import BIDSPath
 
 # %%
@@ -53,3 +55,6 @@ bids_path = BIDSPath(
     subject="01", session="mysession", datatype="meg", root="path/to/project"
 ).mkdir()
 print(bids_path.directory)
+
+# clean up
+shutil.rmtree(bids_path)
