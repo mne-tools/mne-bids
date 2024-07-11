@@ -6,6 +6,10 @@ Adapted from:
 https://doughellmann.com/blog/2010/05/09/defining-custom-roles-in-sphinx/
 
 """
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from docutils.nodes import reference
 from docutils.parsers.rst.roles import set_classes
 

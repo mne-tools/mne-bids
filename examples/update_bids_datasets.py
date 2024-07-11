@@ -10,10 +10,9 @@ We can update the BIDS sidecar files via the ``update_sidecar_json`` function.
 In this tutorial, we show how ``update_sidecar_json`` can be used to update and
 modify BIDS-formatted data.
 """
-# Authors: Adam Li <adam2392@gmail.com>
-#          mne-bids developers
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Imports

@@ -13,9 +13,8 @@ wish to create these files/folders on your own.
    ``write_raw_bids``. This example is for manually creating files/folders.
 """
 
-# Authors: Chris Holdgraf <choldgraf@berkeley.edu>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # First we will import the relevant functions

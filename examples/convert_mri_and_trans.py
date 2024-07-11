@@ -28,11 +28,9 @@ See the documentation pages in the MNE docs for more information on
           ``nilearn`` on top of your usual ``mne-bids`` installation.
 
 """
-# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Alex Rockhill <aprockhill@mailbox.org>
-#          Alex Gramfort <alexandre.gramfort@inria.fr>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Let's import everything we need for this example:
