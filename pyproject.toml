@@ -39,7 +39,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 scripts = { mne_bids = "mne_bids.commands.run:main" }
-dependencies = ["mne>=1.5", "numpy>=1.21.2", "scipy>=1.7.1"]
+dependencies = ["mne>=1.6", "numpy>=1.21.2", "scipy>=1.7.1"]
 
 [project.optional-dependencies]
 # Variants with dependencies that will get installed on top of those listed unter
