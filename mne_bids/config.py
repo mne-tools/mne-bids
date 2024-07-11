@@ -1,5 +1,8 @@
 """Configuration values for MNE-BIDS."""
 
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from mne import io
 from mne.io.constants import FIFF
 

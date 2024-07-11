@@ -3,11 +3,10 @@
 Inspired by MNE-Python's `gen_commands.py`
 see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 """
-# Authors: Eric Larson <larson.eric.d@gmail.com>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import glob
 import os
 import shutil

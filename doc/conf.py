@@ -1,4 +1,8 @@
 """Configure details for documentation with sphinx."""
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import sys
 from datetime import date
@@ -7,7 +11,6 @@ import sphinx_gallery  # noqa: F401
 from sphinx.config import is_serializable
 
 import mne_bids
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

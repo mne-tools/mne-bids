@@ -1,5 +1,8 @@
 """Code used to generate the tiny_bids dataset."""
 
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 # %%
 import json
 from pathlib import Path
@@ -110,7 +113,7 @@ dataset_description_json_path = tiny_bids_root / "dataset_description.json"
 ds_json = json.loads(dataset_description_json_path.read_text(encoding="utf-8"))
 
 ds_json["Name"] = "tiny_bids"
-ds_json["Authors"] = ["MNE-BIDS Developers", "And Friends"]
+ds_json["Authors"] = ["The MNE-BIDS developers", "And Friends"]
 
 with open(dataset_description_json_path, "w", encoding="utf-8") as fout:
     json.dump(ds_json, fout, indent=4)

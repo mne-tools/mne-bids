@@ -4,9 +4,9 @@ example usage:  $ mne_bids count_events --bids_root bids_root_path
 
 """
 
-# Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from pathlib import Path
 
 import mne_bids

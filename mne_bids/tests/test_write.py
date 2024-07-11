@@ -3,13 +3,9 @@
 For each supported file format, implement a test.
 """
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Teon L Brooks <teon.brooks@gmail.com>
-#          Chris Holdgraf <choldgraf@berkeley.edu>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Matt Sanderson <matt.sanderson@mq.edu.au>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import codecs
 import inspect
 import json

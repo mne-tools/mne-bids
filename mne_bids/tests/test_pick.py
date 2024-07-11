@@ -1,7 +1,7 @@
 """Test for the coil type picking function."""
-# Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 import os.path as op
 

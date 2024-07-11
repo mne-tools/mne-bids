@@ -1,8 +1,8 @@
 """Define coil types for MEG."""
 
-# Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from mne.io.constants import FIFF
 
 

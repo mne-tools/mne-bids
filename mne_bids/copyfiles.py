@@ -4,17 +4,11 @@ When writing BIDS datasets, we often move and/or rename raw data files. several
 original data formats have properties that restrict such operations. That is,
 moving/renaming raw data files naively might lead to broken files, for example
 due to internal pointers that are not being updated.
-
 """
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
-#          Teon Brooks <teon.brooks@gmail.com>
-#          Chris Holdgraf <choldgraf@berkeley.edu>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Matt Sanderson <matt.sanderson@mq.edu.au>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import os.path as op
 import re
