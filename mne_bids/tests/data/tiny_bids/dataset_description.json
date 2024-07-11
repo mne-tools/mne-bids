@@ -3,7 +3,7 @@
     "BIDSVersion": "1.7.0",
     "DatasetType": "raw",
     "Authors": [
-        "MNE-BIDS Developers",
+        "The MNE-BIDS developers",
         "And Friends"
     ]
 }
