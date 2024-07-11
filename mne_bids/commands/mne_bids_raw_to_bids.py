@@ -5,10 +5,9 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 
 """
 
-# Authors: Teon Brooks <teon.brooks@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from itertools import chain, repeat
 
 import mne_bids

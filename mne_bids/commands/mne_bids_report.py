@@ -4,9 +4,9 @@ example usage:  $ mne_bids report --bids_root bids_root_path
 
 """
 
-# Authors: Alexandre Gramfort <alexandre.gramfort@inria.fr>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import mne_bids
 from mne_bids import make_report
 
