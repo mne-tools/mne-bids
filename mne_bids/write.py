@@ -1814,7 +1814,7 @@ def write_raw_bids(
         er_bids_path = bids_path.copy().update(
             subject="emptyroom", session=er_session, task="noise", run=None
         )
-        write_raw_bids(
+        er_bids_path = write_raw_bids(
             raw=empty_room,
             bids_path=er_bids_path,
             events=None,
