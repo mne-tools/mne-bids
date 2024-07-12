@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.16.0.dev8+g313fe101 documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.16.0.dev9+gf4f903af documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=fea48f8d"></script>
+    <script src="../../_static/documentation_options.js?v=fa8b614b"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev8+g313fe101 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev9+gf4f903af documentation</p>
   
 </a></div>
     
@@ -850,7 +850,7 @@ document.write(`
         <span class="n">hpi</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;ident&quot;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_HPI</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">hpi</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">hpi</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">coords</span><span class="p">[</span><span class="s2">&quot;coil</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span><span class="p">[</span><span class="n">ident</span><span class="p">][</span><span class="s2">&quot;r&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">coords</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;coil</span><span class="si">{</span><span class="n">ident</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span><span class="p">[</span><span class="n">ident</span><span class="p">][</span><span class="s2">&quot;r&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
         <span class="n">fid_json</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;MEGCoordinateSystem&quot;</span><span class="p">:</span> <span class="n">sensor_coord_system</span><span class="p">,</span>
@@ -1357,7 +1357,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017-2024, MNE Developers. Last updated on 2024-07-11.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-07-12.
       <br/>
     
   </p>
