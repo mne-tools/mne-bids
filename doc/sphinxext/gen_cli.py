@@ -91,7 +91,7 @@ def generate_cli_rst(app=None):
             # Add code styling for the "Usage: " line
             for li, line in enumerate(output):
                 if line.startswith("Usage: mne_bids "):
-                    output[li] = "Usage: ``%s``" % line[7:]
+                    output[li] = f"Usage: ``{line[7:]}``"
                     break
 
             # Turn "Options:" into field list

@@ -587,7 +587,7 @@ def test_fif(_bids_validate, tmp_path):
             verbose=True,
             overwrite=False,
         )
-    bids_dir = op.join(bids_root, "sub-%s" % subject_id, "ses-%s" % session_id, "eeg")
+    bids_dir = op.join(bids_root, f"sub-{subject_id}", f"ses-{session_id}", "eeg")
     sidecar_basename = bids_path.copy()
     for sidecar in [
         "channels.tsv",

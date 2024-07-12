@@ -1628,7 +1628,7 @@ def write_raw_bids(
 
     """
     if not isinstance(raw, BaseRaw):
-        raise ValueError("raw_file must be an instance of BaseRaw, got %s" % type(raw))
+        raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
