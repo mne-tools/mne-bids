@@ -21,6 +21,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
+* `Daniel McCloy`_
 * `Stefan Appelhoff`_
 
 Detailed list of changes
@@ -44,7 +45,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- nothing yet
+- When anonymizing the date of a recording, MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if passing a `~mne.io.Raw` instance to ``empty_room``. By `Daniel McCloy`_ (:gh:`1270`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
