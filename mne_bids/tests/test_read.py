@@ -117,10 +117,10 @@ def test_not_implemented(tmp_path):
 def test_read_correct_inputs():
     """Test that inputs of read functions are correct."""
     bids_path = "sub-01_ses-01_meg.fif"
-    with pytest.raises(RuntimeError, match='"bids_path" must be a ' "BIDSPath object"):
+    with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         read_raw_bids(bids_path)
 
-    with pytest.raises(RuntimeError, match='"bids_path" must be a ' "BIDSPath object"):
+    with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         get_head_mri_trans(bids_path)
 
 

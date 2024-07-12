@@ -1282,7 +1282,7 @@ def make_dataset_description(
 
     # Perform input checks
     if dataset_type not in ["raw", "derivative"]:
-        raise ValueError('`dataset_type` must be either "raw" or ' '"derivative."')
+        raise ValueError('`dataset_type` must be either "raw" or "derivative."')
     if isinstance(doi, str):
         if not doi.startswith("doi:"):
             warn(
@@ -1301,7 +1301,7 @@ def make_dataset_description(
         for i in generated_by:
             if "Name" not in i:
                 raise ValueError(
-                    '"Name" is a required field for each dict in ' "generated_by"
+                    '"Name" is a required field for each dict in generated_by'
                 )
             if not set(i.keys()).issubset(generated_by_keys):
                 raise ValueError(msg_key.format(i.keys() - generated_by_keys))
@@ -1340,6 +1340,8 @@ def make_dataset_description(
             ("SourceDatasets", source_datasets),
         ]
     )
+
+    # remove HED
 
     # Handle potentially existing file contents
     if op.isfile(fname):
@@ -1832,7 +1834,7 @@ def write_raw_bids(
         del er_bids_path, er_date, er_session
     elif isinstance(empty_room, BIDSPath):
         if bids_path.datatype != "meg":
-            raise ValueError('"empty_room" is only supported for ' "MEG data.")
+            raise ValueError('"empty_room" is only supported for MEG data.')
         if data_is_emptyroom:
             raise ValueError(
                 "You cannot write empty-room data and pass "
@@ -2543,7 +2545,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
 
     if not all(status in ["good", "bad"] for status in status):
         raise ValueError(
-            "Setting the status of a channel must only be " '"good", or "bad".'
+            'Setting the status of a channel must only be "good", or "bad".'
         )
 
     # Read sidecar and create required columns if they do not exist.
@@ -2552,7 +2554,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         tsv_data["status"] = ["good"] * len(tsv_data["name"])
 
     if "status_description" not in tsv_data:
-        logger.info('No "status_description" column found in input file. ' "Creating.")
+        logger.info('No "status_description" column found in input file. Creating.')
         tsv_data["status_description"] = ["n/a"] * len(tsv_data["name"])
 
     # Now actually mark the user-requested channels as bad.

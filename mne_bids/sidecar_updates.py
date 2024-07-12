@@ -225,7 +225,7 @@ def update_anat_landmarks(
 
     if bids_path_mri.suffix is None:
         raise ValueError(
-            'Please specify the "suffix" entity of the provided ' "bids_path."
+            'Please specify the "suffix" entity of the provided bids_path.'
         )
     elif bids_path_mri.suffix not in ("T1w", "FLASH"):
         raise ValueError(
