@@ -332,7 +332,7 @@ def _write_coordsystem_json(
         hpi = {d["ident"]: d for d in dig if d["kind"] == FIFF.FIFFV_POINT_HPI}
         if hpi:
             for ident in hpi.keys():
-                coords["coil%d" % ident] = hpi[ident]["r"].tolist()
+                coords[f"coil{ident:d}"] = hpi[ident]["r"].tolist()
 
         fid_json = {
             "MEGCoordinateSystem": sensor_coord_system,
