@@ -320,7 +320,7 @@ def test_write_correct_inputs():
     raw = _read_raw_fif(raw_fname)
 
     bids_path_str = "sub-01_ses-01_meg.fif"
-    with pytest.raises(RuntimeError, match='"bids_path" must be a ' "BIDSPath object"):
+    with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         write_raw_bids(raw, bids_path_str)
 
     bids_path = _bids_path.copy()
@@ -377,7 +377,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
 
     # Check we raise warnings and errors where appropriate
     with pytest.raises(
-        ValueError, match='`dataset_type` must be either "raw" ' 'or "derivative."'
+        ValueError, match='`dataset_type` must be either "raw" or "derivative."'
     ):
         make_dataset_description(path=tmp_path, name="tst", dataset_type="src")
 
@@ -1450,7 +1450,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         overwrite=True,
         dataset_type="raw",
         ethics_approvals=["approved by S."],
-        hed_version="No HED used (just testing)",
     )
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
     with open(dataset_description_fpath, encoding="utf-8") as f:
@@ -1755,7 +1754,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         elif dir_name == "CNT":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / "c", raw, bids_path)
@@ -1765,7 +1764,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         elif dir_name == "curry":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / "d", raw, bids_path)
@@ -3355,13 +3354,13 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
         elif dir_name == "CNT":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 bids_output_path = write_raw_bids(**kwargs)
         elif dir_name == "curry":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 bids_output_path = write_raw_bids(**kwargs)
         else:
