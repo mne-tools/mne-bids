@@ -1341,8 +1341,6 @@ def make_dataset_description(
         ]
     )
 
-    # remove HED
-
     # Handle potentially existing file contents
     if op.isfile(fname):
         with open(fname, encoding="utf-8-sig") as fin:
