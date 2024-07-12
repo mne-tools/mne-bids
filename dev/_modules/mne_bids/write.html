@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.16.0.dev10+g4c3e7535 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.16.0.dev11+gdbdf957f documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=a6fa244f"></script>
+    <script src="../../_static/documentation_options.js?v=551676d2"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev10+g4c3e7535 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev11+gdbdf957f documentation</p>
   
 </a></div>
     
@@ -1802,7 +1802,7 @@ document.write(`
 
     <span class="c1"># Perform input checks</span>
     <span class="k">if</span> <span class="n">dataset_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;derivative&quot;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`dataset_type` must be either &quot;raw&quot; or &#39;</span> <span class="s1">&#39;&quot;derivative.&quot;&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`dataset_type` must be either &quot;raw&quot; or &quot;derivative.&quot;&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doi</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;doi:&quot;</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span>
@@ -1821,7 +1821,7 @@ document.write(`
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">generated_by</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;Name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">&#39;&quot;Name&quot; is a required field for each dict in &#39;</span> <span class="s2">&quot;generated_by&quot;</span>
+                    <span class="s1">&#39;&quot;Name&quot; is a required field for each dict in generated_by&#39;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">generated_by_keys</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg_key</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="n">generated_by_keys</span><span class="p">))</span>
@@ -2355,7 +2355,7 @@ document.write(`
         <span class="k">del</span> <span class="n">er_bids_path</span><span class="p">,</span> <span class="n">er_date</span><span class="p">,</span> <span class="n">er_session</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">!=</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;empty_room&quot; is only supported for &#39;</span> <span class="s2">&quot;MEG data.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;empty_room&quot; is only supported for MEG data.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;You cannot write empty-room data and pass &quot;</span>
@@ -3075,7 +3075,7 @@ document.write(`
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;good&quot;</span><span class="p">,</span> <span class="s2">&quot;bad&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">status</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Setting the status of a channel must only be &quot;</span> <span class="s1">&#39;&quot;good&quot;, or &quot;bad&quot;.&#39;</span>
+            <span class="s1">&#39;Setting the status of a channel must only be &quot;good&quot;, or &quot;bad&quot;.&#39;</span>
         <span class="p">)</span>
 
     <span class="c1"># Read sidecar and create required columns if they do not exist.</span>
@@ -3084,7 +3084,7 @@ document.write(`
         <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;good&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="s2">&quot;status_description&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No &quot;status_description&quot; column found in input file. &#39;</span> <span class="s2">&quot;Creating.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No &quot;status_description&quot; column found in input file. Creating.&#39;</span><span class="p">)</span>
         <span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;status_description&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
 
     <span class="c1"># Now actually mark the user-requested channels as bad.</span>
