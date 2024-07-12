@@ -43,14 +43,14 @@ Here we list the MNE-BIDS tools that you can use from the command line.
 
 command_rst = """
 
-.. _gen_%s:
+.. _gen_{0}:
 
-%s
-%s
+{1}
+{2}
 
 .. rst-class:: callout
 
-%s
+{3}
 
 """
 
@@ -104,8 +104,7 @@ def generate_cli_rst(app=None):
                 output.insert(ii + 4, "")
             output = "\n".join(output)
             f.write(
-                command_rst
-                % (
+                command_rst.format(
                     cmd_name,
                     cmd_name.replace("mne_bids_", "mne_bids "),
                     "=" * len(cmd_name),
