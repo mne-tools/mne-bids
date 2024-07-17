@@ -102,6 +102,8 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
+        if str(fname).endswith(".mff") and check_version("mne", "1.8"):
+            kwargs["events_as_annotations"] = True
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
         return raw
