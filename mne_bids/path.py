@@ -901,7 +901,7 @@ class BIDSPath:
             If a boolean, controls whether to enforce BIDS conformity. This
             will set the ``.check`` attribute accordingly. If ``None``, rely on
             the existing ``.check`` attribute instead, which is set upon
-            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
+            :class:`BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
             It can contain updates for valid BIDSPath entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
@@ -916,7 +916,7 @@ class BIDSPath:
         Examples
         --------
         If one creates a bids basename using
-        :func:`mne_bids.BIDSPath`:
+        :class:`BIDSPath`:
 
         >>> bids_path = BIDSPath(subject='test', session='two',
         ...                      task='mytask', suffix='channels',
@@ -1018,12 +1018,12 @@ class BIDSPath:
         check : bool
             If ``True``, only returns paths that conform to BIDS. If ``False``
             (default), the ``.check`` attribute of the returned
-            `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+            :class:`BIDSPath` object will be set to ``True`` for paths that
             do conform to BIDS, and to ``False`` for those that don't.
 
         Returns
         -------
-        bids_paths : list of mne_bids.BIDSPath
+        bids_paths : list of BIDSPath
             The matching paths.
         """
         if self.root is None:
@@ -1122,7 +1122,7 @@ class BIDSPath:
         """Find the corresponding empty-room file of an MEG recording.
 
         This will only work if the ``.root`` attribute of the
-        :class:`mne_bids.BIDSPath` instance has been set.
+        :class:`BIDSPath` instance has been set.
 
         Parameters
         ----------
@@ -1581,9 +1581,9 @@ def get_bids_path_from_fname(fname, check=True, verbose=None):
     Parameters
     ----------
     fname : path-like
-        The path to parse a `BIDSPath` from.
+        The path to parse a :class:`BIDSPath` from.
     check : bool
-        Whether to check if the generated `BIDSPath` complies with the BIDS
+        Whether to check if the generated :class:`BIDSPath` complies with the BIDS
         specification, i.e., whether all included entities and the suffix are
         valid.
     %(verbose)s
@@ -2382,12 +2382,12 @@ def find_matching_paths(
     check : bool
         If ``True``, only returns paths that conform to BIDS. If ``False``
         (default), the ``.check`` attribute of the returned
-        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        :class:`BIDSPath` object will be set to ``True`` for paths that
         do conform to BIDS, and to ``False`` for those that don't.
 
     Returns
     -------
-    bids_paths : list of mne_bids.BIDSPath
+    bids_paths : list of BIDSPath
         The matching paths.
 
     """
@@ -2459,12 +2459,12 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     check : bool
         If ``True``, only returns paths that conform to BIDS. If ``False``
         (default), the ``.check`` attribute of the returned
-        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        :class:`BIDSPath` object will be set to ``True`` for paths that
         do conform to BIDS, and to ``False`` for those that don't.
 
     Returns
     -------
-    bids_paths : list of mne_bids.BIDSPath
+    bids_paths : list of BIDSPath
         Bids paths.
 
     """
