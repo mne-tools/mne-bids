@@ -827,12 +827,9 @@ def test_handle_chpi_reading(tmp_path):
 
     with (
         pytest.warns(RuntimeWarning, match="Defaulting to .* mne.Raw object"),
-        pytest.warns(
-            RuntimeWarning, match="This file contains raw Internal Active Shielding"
-        ),
         pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
-        raw_read = read_raw_bids(bids_path)
+        raw_read = read_raw_bids(bids_path, extra_params=dict(allow_maxshield="yes"))
 
     # cHPI "off" according to sidecar, but present in the data
     meg_json_data_chpi_mismatch = meg_json_data.copy()
