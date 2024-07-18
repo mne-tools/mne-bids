@@ -901,7 +901,7 @@ class BIDSPath:
             If a boolean, controls whether to enforce BIDS conformity. This
             will set the ``.check`` attribute accordingly. If ``None``, rely on
             the existing ``.check`` attribute instead, which is set upon
-            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
+            :class:`mne_bids.BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
             It can contain updates for valid BIDSPath entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
@@ -1018,7 +1018,7 @@ class BIDSPath:
         check : bool
             If ``True``, only returns paths that conform to BIDS. If ``False``
             (default), the ``.check`` attribute of the returned
-            `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+            :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that
             do conform to BIDS, and to ``False`` for those that don't.
 
         Returns
@@ -2382,7 +2382,7 @@ def find_matching_paths(
     check : bool
         If ``True``, only returns paths that conform to BIDS. If ``False``
         (default), the ``.check`` attribute of the returned
-        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that
         do conform to BIDS, and to ``False`` for those that don't.
 
     Returns
@@ -2459,7 +2459,7 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     check : bool
         If ``True``, only returns paths that conform to BIDS. If ``False``
         (default), the ``.check`` attribute of the returned
-        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that
         do conform to BIDS, and to ``False`` for those that don't.
 
     Returns

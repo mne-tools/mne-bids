@@ -1410,7 +1410,7 @@ def write_raw_bids(
         already loaded from disk unless ``allow_preload`` is explicitly set
         to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : BIDSPath
-        The file to write. The `mne_bids.BIDSPath` instance passed here
+        The file to write. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``subject``, ``task``, and ``root`` attributes set.
         If the ``datatype`` attribute is not set, it will be inferred from the
         recording data type found in ``raw``. In case of multiple data types,

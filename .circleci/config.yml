@@ -48,7 +48,13 @@ jobs:
             name: Build the documentation
             no_output_timeout: 30m
             command: |
-              make build-doc
+              make build-doc 2>&1 | tee sphinx_log.txt
+
+        - run:
+            name: Check sphinx log for warnings (which are treated as errors)
+            when: always
+            command: |
+              ! grep "^.* WARNING: .*$" sphinx_log.txt
 
         - persist_to_workspace:
             root: doc/_build
