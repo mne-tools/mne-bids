@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.16.0.dev11+gdbdf957f documentation</title>
+    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.16.0.dev13+gaf12bc47 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=551676d2"></script>
+    <script src="../_static/documentation_options.js?v=90a0f115"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev11+gdbdf957f documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev13+gaf12bc47 documentation</p>
   
 </a></div>
     
@@ -596,7 +596,7 @@ in the sidecars manually.</p></li>
 already loaded from disk unless <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> is explicitly set
 to <code class="docutils literal notranslate"><span class="pre">True</span></code>. See warning for the <code class="docutils literal notranslate"><span class="pre">allow_preload</span></code> parameter.</p>
 </dd>
-<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
+<dt><strong>bids_path</strong><span class="classifier"><a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a></span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
 <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">task</span></code>, and <code class="docutils literal notranslate"><span class="pre">root</span></code> attributes set.
 If the <code class="docutils literal notranslate"><span class="pre">datatype</span></code> attribute is not set, it will be inferred from the
 recording data type found in <code class="docutils literal notranslate"><span class="pre">raw</span></code>. In case of multiple data types,
@@ -837,6 +837,9 @@ lower-case, in compliance with the BIDS specification.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data &quot;manually&quot; in the BIDS format and how to..."><img alt="" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Manually storing empty room data</span></a></p>
   <div class="sphx-glr-thumbnail-title">09. Manually storing empty room data</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here ho..."><img alt="" src="../_images/sphx_glr_bidspath_thumb.png" />
+<p><a class="reference internal" href="../auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">10. An introduction to BIDSPath</span></a></p>
+  <div class="sphx-glr-thumbnail-title">10. An introduction to BIDSPath</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><img alt="" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
 <p><a class="reference internal" href="../auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">13. Anonymizing a BIDS dataset</span></a></p>
   <div class="sphx-glr-thumbnail-title">13. Anonymizing a BIDS dataset</div>
@@ -922,7 +925,7 @@ lower-case, in compliance with the BIDS specification.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-07-12.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-07-19.
       <br/>
     
   </p>

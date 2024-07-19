@@ -48,7 +48,7 @@ bids_root = somato.data_path()
 #
 # We can use MNE-BIDS to print a tree of all
 # included files and folders. We pass the ``max_depth`` parameter to
-# `mne_bids.print_dir_tree` to the output to three levels of folders, for
+# :func:`mne_bids.print_dir_tree` to the output to three levels of folders, for
 # better readability in this example.
 
 print_dir_tree(bids_root, max_depth=3)

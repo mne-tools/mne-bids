@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What was new in previous releases? &#8212; MNE-BIDS 0.16.0.dev11+gdbdf957f documentation</title>
+    <title>What was new in previous releases? &#8212; MNE-BIDS 0.16.0.dev13+gaf12bc47 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=551676d2"></script>
+    <script src="_static/documentation_options.js?v=90a0f115"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -148,7 +148,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev11+gdbdf957f documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev13+gaf12bc47 documentation</p>
   
 </a></div>
     
@@ -989,7 +989,7 @@ are operating <strong>much</strong> faster now!</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">mne_bids.mark_bad_channels</span></code> deprecated in favor of <a class="reference internal" href="generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.mark_channels()</span></code></a>, which allows specifying the status to change channels to by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/882">#882</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname" title="mne_bids.get_entities_from_fname"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_entities_from_fname()</span></code></a> does not return <code class="docutils literal notranslate"><span class="pre">suffix</span></code> anymore as that is not considered a BIDS entity, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/883">#883</a>)</p></li>
 <li><p>Reading BIDS data with <code class="docutils literal notranslate"><span class="pre">&quot;HeadCoilFrequency&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;PowerLineFrequency&quot;</span></code> data specified in JSON sidecars will only “warn” in case of mismatches between Raw and JSON data, by <a class="reference external" href="https://www.researchgate.net/profile/Franziska-Von-Albedyll">Franziska von Albedyll</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/855">#855</a>)</p></li>
-<li><p>Accessing <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.fpath</span></code></a> emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use <em class="xref py py-obj">mne_bids.BIDSPath.fpath.exists()</em> to check whether the path exists in the file system, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/904">#904</a>)</p></li>
+<li><p>Accessing <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.fpath</span></code></a> emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use <code class="docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.fpath.exists()</span></code> to check whether the path exists in the file system, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/904">#904</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_entity_vals()</span></code></a> gained a new parameter, <code class="docutils literal notranslate"><span class="pre">ignore_dirs</span></code>, to exclude directories from the search, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> and <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/899">#899</a>, <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/908">#908</a>)</p></li>
 <li><p>In <a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a>, the deprecated parameters <code class="docutils literal notranslate"><span class="pre">raw</span></code>, <code class="docutils literal notranslate"><span class="pre">trans</span></code>, and <code class="docutils literal notranslate"><span class="pre">t1w</span></code> have been removed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/909">#909</a>)</p></li>
 <li><p>In <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, any EDF output is always stored with lower-case extension (<code class="docutils literal notranslate"><span class="pre">.edf</span></code>), by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/906">#906</a>)</p></li>
@@ -1030,13 +1030,13 @@ for supporting BIDS derivatives, i.e., storing modified data.</p>
 <li><p>You can now write preloaded and potentially modified data with
 <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> by passing <code class="docutils literal notranslate"><span class="pre">allow_preload=True</span></code>. This is
 a first step towards supporting derivative files.</p></li>
-<li><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> now has property getters and setters for all BIDS
+<li><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a> now has property getters and setters for all BIDS
 entities. What this means is that you can now do things like
 <code class="docutils literal notranslate"><span class="pre">bids_path.subject</span> <span class="pre">=</span> <span class="pre">'01'</span></code> instead of <code class="docutils literal notranslate"><span class="pre">bids_path.update(subject='01')</span></code>.</p></li>
 <li><p>We now support Deep Brain Stimulation (DBS) data.</p></li>
 <li><p>The way we handle anatomical landmarks was greatly revamped to ensure we’re
 always using the correct coordinate systems. A new function,
-<a class="reference internal" href="generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks</span></code></a>, helps with extracting fiducial points from
+<a class="reference internal" href="generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks" title="mne_bids.get_anat_landmarks"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_anat_landmarks()</span></code></a>, helps with extracting fiducial points from
 anatomical scans.</p></li>
 <li><p>When creating a BIDS dataset from FIFF files on macOS and Linux, MNE-BIDS
 can now optionally generate symbolic links to the original files instead of
@@ -1306,7 +1306,7 @@ been cooking for you!</p>
 <section id="id59">
 <h3>Notable changes<a class="headerlink" href="#id59" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>We introduce <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>, a new class for all BIDS file and folder
+<li><p>We introduce <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a>, a new class for all BIDS file and folder
 operations. All functions in MNE-BIDS that previously accepted filenames
 and folder locations (e.g. <code class="docutils literal notranslate"><span class="pre">bids_root</span></code>) have been updated to work with
 <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>. Others have been removed.
@@ -1399,7 +1399,7 @@ converted to and stored as events by <a class="reference internal" href="generat
 </section>
 <section id="id64">
 <h4>API changes<a class="headerlink" href="#id64" title="Link to this heading">#</a></h4>
-<p>In the transition to using <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>, the following functions have been updated:</p>
+<p>In the transition to using <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a>, the following functions have been updated:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_anat()</span></code></a> now accepts a <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instead of entities as keyword arguments, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/575">#575</a>)</p></li>
 <li><p>In <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a>, and <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">bids_basename</span></code> and <code class="docutils literal notranslate"><span class="pre">bids_root</span></code> keyword arguments have been removed. The functions now expect <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>, an instance of <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>, by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/525">#525</a>)</p></li>
@@ -1555,7 +1555,7 @@ such as config and headshape are copied correctly, by <a class="reference extern
 <section id="id71">
 <h3>API<a class="headerlink" href="#id71" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_dataset_description()</span></code></a> is now available from <a class="reference internal" href="api.html#module-mne_bids" title="mne_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids</span></code></a> main namespace, all copyfile functions are available from <a class="reference internal" href="api.html#module-mne_bids.copyfiles" title="mne_bids.copyfiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.copyfiles</span></code></a> namespace, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/196">#196</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_dataset_description()</span></code></a> is now available from <a class="reference internal" href="api.html#module-mne_bids" title="mne_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids</span></code></a> main namespace, all copyfile functions are available from <a class="reference internal" href="api.html#module-mne_bids.copyfiles" title="mne_bids.copyfiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.copyfiles()</span></code></a> namespace, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/196">#196</a>)</p></li>
 <li><p>Add support for non maxfiltered .fif files, by <a class="reference external" href="https://github.com/dnacombo">Maximilien Chaumon</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/171">#171</a>)</p></li>
 <li><p>Remove support for Neuroscan <code class="docutils literal notranslate"><span class="pre">.cnt</span></code> data because its support is no longer planned in BIDS, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/142">#142</a>)</p></li>
 <li><p>Remove support for Python 2 because it is no longer supported in MNE-Python, by <a class="reference external" href="https://teonbrooks.com">Teon Brooks</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/141">#141</a>)</p></li>
@@ -1837,7 +1837,7 @@ open towards integration of other modalities (iEEG, EEG), by <a class="reference
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-07-12.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-07-19.
       <br/>
     
   </p>
