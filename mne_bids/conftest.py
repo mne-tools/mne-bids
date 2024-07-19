@@ -13,6 +13,15 @@ def pytest_configure(config):
     config.addinivalue_line("usefixtures", "monkeypatch_mne")
 
 
+@pytest.fixture(autouse=True)
+def close_all():
+    """Close all figures after each test."""
+    yield
+    import matplotlib.pyplot as plt
+
+    plt.close("all")
+
+
 @pytest.fixture(scope="session")
 def monkeypatch_mne():
     """Monkeypatch MNE to ensure we have download=False everywhere in tests."""

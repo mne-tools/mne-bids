@@ -14,7 +14,7 @@ import os.path as op
 import shutil as sh
 import sys
 import warnings
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from glob import glob
 from pathlib import Path
 
@@ -102,6 +102,8 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
+        if str(fname).endswith(".mff") and check_version("mne", "1.8"):
+            kwargs["events_as_annotations"] = True
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
         return raw
@@ -222,9 +224,12 @@ def test_write_participants(_bids_validate, tmp_path):
 
     # add fake participants data
     raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=timezone.utc))
+    birthday = (1993, 1, 26)
+    if check_version("mne", "1.8"):
+        birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
-        "birthday": (1993, 1, 26),
+        "birthday": birthday,
         "sex": 1,
         "hand": 2,
     }
@@ -707,9 +712,12 @@ def test_fif(_bids_validate, tmp_path):
     # data
     # change the gender but don't force overwrite.
     raw = _read_raw_fif(raw_fname)
+    birthday = (1994, 1, 26)
+    if check_version("mne", "1.8"):
+        birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
-        "birthday": (1994, 1, 26),
+        "birthday": birthday,
         "sex": 2,
         "hand": 1,
     }

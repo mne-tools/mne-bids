@@ -11,7 +11,7 @@ import shutil
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import mne
@@ -456,12 +456,14 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
 
         # determine the age of the participant
         age = subject_info.get("birthday", None)
+        if isinstance(age, tuple):  # can be removed once MNE >= 1.8 is required
+            age = date(*age)
         meas_date = raw.info.get("meas_date", None)
         if isinstance(meas_date, (tuple, list, np.ndarray)):
             meas_date = meas_date[0]
 
         if meas_date is not None and age is not None:
-            bday = datetime(age[0], age[1], age[2], tzinfo=timezone.utc)
+            bday = datetime(age.year, age.month, age.day, tzinfo=timezone.utc)
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:
@@ -1408,7 +1410,7 @@ def write_raw_bids(
         already loaded from disk unless ``allow_preload`` is explicitly set
         to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : BIDSPath
-        The file to write. The `mne_bids.BIDSPath` instance passed here
+        The file to write. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``subject``, ``task``, and ``root`` attributes set.
         If the ``datatype`` attribute is not set, it will be inferred from the
         recording data type found in ``raw``. In case of multiple data types,

@@ -81,7 +81,7 @@ print(bids_path.session)
 # **data type**, i.e., ``meg`` for MEG data, ``eeg`` and ``ieeg`` for EEG and
 # iEEG data, or ``anat`` for anatomical MRI scans. Typically, MNE-BIDS will
 # infer the data type of your data automatically, for example when writing data
-# using `mne_bids.write_raw_bids`. For the sake of this example, however, we
+# using :func:`mne_bids.write_raw_bids`. For the sake of this example, however, we
 # are going to specify the data type explicitly.
 
 datatype = "eeg"

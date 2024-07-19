@@ -5,6 +5,7 @@
 
 # %%
 import json
+from datetime import date
 from pathlib import Path
 
 import mne
@@ -45,7 +46,7 @@ raw.info["subject_info"] = {
     "last_name": "Musterperson",
     "first_name": "Maxi",
     "middle_name": "Luka",
-    "birthday": (1970, 10, 20),
+    "birthday": date(1970, 10, 20),
     "sex": 2,
     "hand": 3,
 }
