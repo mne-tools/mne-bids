@@ -54,7 +54,7 @@ jobs:
             name: Check sphinx log for warnings (which are treated as errors)
             when: always
             command: |
-              ! grep "^.* WARNING: .*$" sphinx_log.txt
+              ! grep "^.*WARNING: .*$" sphinx_log.txt
 
         - persist_to_workspace:
             root: doc/_build
