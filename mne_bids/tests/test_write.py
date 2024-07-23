@@ -3158,16 +3158,21 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     # handle different edge cases
     if subject == "emptyroom":
         bids_path.update(task="noise", session=raw_date, suffix="meg", datatype="meg")
-        erm = dict()
+        erm = None
     else:
         bids_path.update(task="task", suffix="eeg", datatype="eeg")
         # make sure anonymization works when also writing empty room file
-        erm = dict(empty_room=raw.copy())
+        erm = raw.copy()
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
     orig_bids_path = bids_path.copy()
     bids_path = write_raw_bids(
-        raw, bids_path, overwrite=True, anonymize=anonymize, verbose=False, **erm
+        raw,
+        bids_path,
+        overwrite=True,
+        anonymize=anonymize,
+        verbose=False,
+        empty_room=erm,
     )
     # emptyroom recordings' session should match the recording date
     if subject == "emptyroom":
