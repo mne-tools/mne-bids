@@ -54,7 +54,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - MNE-BIDS now requires Python 3.9 or higher.
-- MNE-BIDS now requires MNE-Python 1.5.0 or higher.
+- MNE-BIDS now requires MNE-Python 1.6.0 or higher.
 - ``edfio`` replaces ``EDFlib-Python`` for export to EDF with MNE-Python >= 1.7.0.
 - Installing ``mne-bids[full]`` will now also install ``defusedxml`` on all platforms.
 - Version requirements for optional dependency packages have been bumped up, see installation instructions.
@@ -536,7 +536,7 @@ API and behavior changes
 
 - Reading BIDS data with ``"HeadCoilFrequency"`` and ``"PowerLineFrequency"`` data specified in JSON sidecars will only "warn" in case of mismatches between Raw and JSON data, by `Franziska von Albedyll`_ (:gh:`855`)
 
-- Accessing :attr:`mne_bids.BIDSPath.fpath` emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use `mne_bids.BIDSPath.fpath.exists()` to check whether the path exists in the file system, by `Richard Höchenberger`_ (:gh:`904`)
+- Accessing :attr:`mne_bids.BIDSPath.fpath` emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use ``mne_bids.BIDSPath.fpath.exists()`` to check whether the path exists in the file system, by `Richard Höchenberger`_ (:gh:`904`)
 
 - :func:`mne_bids.get_entity_vals` gained a new parameter, ``ignore_dirs``, to exclude directories from the search, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`899`, :gh:`908`)
 
@@ -587,13 +587,13 @@ Notable changes
 - You can now write preloaded and potentially modified data with
   :func:`mne_bids.write_raw_bids` by passing ``allow_preload=True``. This is
   a first step towards supporting derivative files.
-- `mne_bids.BIDSPath` now has property getters and setters for all BIDS
+- :func:`mne_bids.BIDSPath` now has property getters and setters for all BIDS
   entities. What this means is that you can now do things like
   ``bids_path.subject = '01'`` instead of ``bids_path.update(subject='01')``.
 - We now support Deep Brain Stimulation (DBS) data.
 - The way we handle anatomical landmarks was greatly revamped to ensure we're
   always using the correct coordinate systems. A new function,
-  `mne_bids.get_anat_landmarks`, helps with extracting fiducial points from
+  :func:`mne_bids.get_anat_landmarks`, helps with extracting fiducial points from
   anatomical scans.
 - When creating a BIDS dataset from FIFF files on macOS and Linux, MNE-BIDS
   can now optionally generate symbolic links to the original files instead of
@@ -859,7 +859,7 @@ been cooking for you!
 
 Notable changes
 ~~~~~~~~~~~~~~~
-- We introduce `mne_bids.BIDSPath`, a new class for all BIDS file and folder
+- We introduce :func:`mne_bids.BIDSPath`, a new class for all BIDS file and folder
   operations. All functions in MNE-BIDS that previously accepted filenames
   and folder locations (e.g. ``bids_root``) have been updated to work with
   ``BIDSPath``. Others have been removed.
@@ -956,7 +956,7 @@ Bug fixes
 API changes
 ^^^^^^^^^^^
 
-In the transition to using `mne_bids.BIDSPath`, the following functions have been updated:
+In the transition to using :func:`mne_bids.BIDSPath`, the following functions have been updated:
 
 - :func:`mne_bids.write_anat` now accepts a :class:`mne_bids.BIDSPath` instead of entities as keyword arguments, by `Adam Li`_ (:gh:`575`)
 - In :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, and :func:`mne_bids.get_head_mri_trans`, the ``bids_basename`` and ``bids_root`` keyword arguments have been removed. The functions now expect ``bids_path``, an instance of :class:`mne_bids.BIDSPath`, by `Adam Li`_ (:gh:`525`)
@@ -1110,7 +1110,7 @@ Bug
 API
 ~~~
 
-- :func:`make_dataset_description` is now available from `mne_bids` main namespace, all copyfile functions are available from `mne_bids.copyfiles` namespace, by `Stefan Appelhoff`_ (:gh:`196`)
+- :func:`make_dataset_description` is now available from `mne_bids` main namespace, all copyfile functions are available from :func:`mne_bids.copyfiles` namespace, by `Stefan Appelhoff`_ (:gh:`196`)
 - Add support for non maxfiltered .fif files, by `Maximilien Chaumon`_ (:gh:`171`)
 - Remove support for Neuroscan ``.cnt`` data because its support is no longer planned in BIDS, by `Stefan Appelhoff`_ (:gh:`142`)
 - Remove support for Python 2 because it is no longer supported in MNE-Python, by `Teon Brooks`_ (:gh:`141`)

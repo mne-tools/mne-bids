@@ -15,9 +15,8 @@ segments as "bad".
 .. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/30_annotate_raw.html#annotating-raw-objects-interactively
 """  # noqa: E501 D400 D205
 
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We will demonstrate how to mark individual channels as bad on the MNE

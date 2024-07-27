@@ -3,13 +3,9 @@
 For each supported file format, implement a test.
 """
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Teon L Brooks <teon.brooks@gmail.com>
-#          Chris Holdgraf <choldgraf@berkeley.edu>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Matt Sanderson <matt.sanderson@mq.edu.au>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import codecs
 import inspect
 import json
@@ -18,7 +14,7 @@ import os.path as op
 import shutil as sh
 import sys
 import warnings
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from glob import glob
 from pathlib import Path
 
@@ -106,6 +102,8 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
+        if str(fname).endswith(".mff") and check_version("mne", "1.8"):
+            kwargs["events_as_annotations"] = True
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
         return raw
@@ -226,9 +224,12 @@ def test_write_participants(_bids_validate, tmp_path):
 
     # add fake participants data
     raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=timezone.utc))
+    birthday = (1993, 1, 26)
+    if check_version("mne", "1.8"):
+        birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
-        "birthday": (1993, 1, 26),
+        "birthday": birthday,
         "sex": 1,
         "hand": 2,
     }
@@ -324,7 +325,7 @@ def test_write_correct_inputs():
     raw = _read_raw_fif(raw_fname)
 
     bids_path_str = "sub-01_ses-01_meg.fif"
-    with pytest.raises(RuntimeError, match='"bids_path" must be a ' "BIDSPath object"):
+    with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         write_raw_bids(raw, bids_path_str)
 
     bids_path = _bids_path.copy()
@@ -381,7 +382,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
 
     # Check we raise warnings and errors where appropriate
     with pytest.raises(
-        ValueError, match='`dataset_type` must be either "raw" ' 'or "derivative."'
+        ValueError, match='`dataset_type` must be either "raw" or "derivative."'
     ):
         make_dataset_description(path=tmp_path, name="tst", dataset_type="src")
 
@@ -591,7 +592,7 @@ def test_fif(_bids_validate, tmp_path):
             verbose=True,
             overwrite=False,
         )
-    bids_dir = op.join(bids_root, "sub-%s" % subject_id, "ses-%s" % session_id, "eeg")
+    bids_dir = op.join(bids_root, f"sub-{subject_id}", f"ses-{session_id}", "eeg")
     sidecar_basename = bids_path.copy()
     for sidecar in [
         "channels.tsv",
@@ -711,9 +712,12 @@ def test_fif(_bids_validate, tmp_path):
     # data
     # change the gender but don't force overwrite.
     raw = _read_raw_fif(raw_fname)
+    birthday = (1994, 1, 26)
+    if check_version("mne", "1.8"):
+        birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
-        "birthday": (1994, 1, 26),
+        "birthday": birthday,
         "sex": 2,
         "hand": 1,
     }
@@ -1454,7 +1458,6 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         overwrite=True,
         dataset_type="raw",
         ethics_approvals=["approved by S."],
-        hed_version="No HED used (just testing)",
     )
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
     with open(dataset_description_fpath, encoding="utf-8") as f:
@@ -1759,7 +1762,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         elif dir_name == "CNT":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / "c", raw, bids_path)
@@ -1769,7 +1772,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
         elif dir_name == "curry":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(tmp_path / "d", raw, bids_path)
@@ -3155,13 +3158,21 @@ def test_anonymize(subject, dir_name, fname, reader, tmp_path, _bids_validate):
     # handle different edge cases
     if subject == "emptyroom":
         bids_path.update(task="noise", session=raw_date, suffix="meg", datatype="meg")
+        erm = None
     else:
         bids_path.update(task="task", suffix="eeg", datatype="eeg")
+        # make sure anonymization works when also writing empty room file
+        erm = raw.copy()
     daysback_min, daysback_max = get_anonymization_daysback(raw)
     anonymize = dict(daysback=daysback_min + 1)
     orig_bids_path = bids_path.copy()
     bids_path = write_raw_bids(
-        raw, bids_path, overwrite=True, anonymize=anonymize, verbose=False
+        raw,
+        bids_path,
+        overwrite=True,
+        anonymize=anonymize,
+        verbose=False,
+        empty_room=erm,
     )
     # emptyroom recordings' session should match the recording date
     if subject == "emptyroom":
@@ -3356,13 +3367,13 @@ def test_convert_eeg_formats(dir_name, format, fname, reader, tmp_path):
         elif dir_name == "CNT":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 bids_output_path = write_raw_bids(**kwargs)
         elif dir_name == "curry":
             with pytest.warns(
                 RuntimeWarning,
-                match='Encountered data in "int" format. ' "Converting to float32.",
+                match='Encountered data in "int" format. Converting to float32.',
             ):
                 bids_output_path = write_raw_bids(**kwargs)
         else:

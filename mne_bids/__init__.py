@@ -1,5 +1,8 @@
 """MNE software for easily interacting with BIDS compatible datasets."""
 
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 try:
     from importlib.metadata import version
 

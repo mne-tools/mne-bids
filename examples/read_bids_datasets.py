@@ -24,11 +24,9 @@ In this tutorial, we show how ``read_raw_bids`` can be used to load and
 inspect BIDS-formatted data.
 
 """
-# Authors: Adam Li <adam2392@gmail.com>
-#          Richard Höchenberger <richard.hoechenberger@gmail.com>
-#          Alex Rockhill <aprockhill@mailbox.org>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Imports
@@ -80,7 +78,7 @@ openneuro.download(dataset=dataset, target_dir=bids_root, include=[f"sub-{subjec
 #
 # We can use MNE-BIDS to print a tree of all
 # included files and folders. We pass the ``max_depth`` parameter to
-# `mne_bids.print_dir_tree` to the output to four levels of folders, for
+# :func:`mne_bids.print_dir_tree` to the output to four levels of folders, for
 # better readability in this example.
 
 print_dir_tree(bids_root, max_depth=4)

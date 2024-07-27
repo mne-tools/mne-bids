@@ -3,11 +3,10 @@
 Inspired by MNE-Python's `gen_commands.py`
 see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 """
-# Authors: Eric Larson <larson.eric.d@gmail.com>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import glob
 import os
 import shutil
@@ -44,14 +43,14 @@ Here we list the MNE-BIDS tools that you can use from the command line.
 
 command_rst = """
 
-.. _gen_%s:
+.. _gen_{0}:
 
-%s
-%s
+{1}
+{2}
 
 .. rst-class:: callout
 
-%s
+{3}
 
 """
 
@@ -92,7 +91,7 @@ def generate_cli_rst(app=None):
             # Add code styling for the "Usage: " line
             for li, line in enumerate(output):
                 if line.startswith("Usage: mne_bids "):
-                    output[li] = "Usage: ``%s``" % line[7:]
+                    output[li] = f"Usage: ``{line[7:]}``"
                     break
 
             # Turn "Options:" into field list
@@ -105,8 +104,7 @@ def generate_cli_rst(app=None):
                 output.insert(ii + 4, "")
             output = "\n".join(output)
             f.write(
-                command_rst
-                % (
+                command_rst.format(
                     cmd_name,
                     cmd_name.replace("mne_bids_", "mne_bids "),
                     "=" * len(cmd_name),

@@ -1,9 +1,8 @@
 """BIDS compatible path functionality."""
 
-# Authors: Adam Li <adam2392@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import glob
 import json
 import os
@@ -904,7 +903,7 @@ class BIDSPath:
             If a boolean, controls whether to enforce BIDS conformity. This
             will set the ``.check`` attribute accordingly. If ``None``, rely on
             the existing ``.check`` attribute instead, which is set upon
-            `mne_bids.BIDSPath` instantiation. Defaults to ``None``.
+            :class:`mne_bids.BIDSPath` instantiation. Defaults to ``None``.
         **kwargs : dict
             It can contain updates for valid BIDSPath entities:
             'subject', 'session', 'task', 'acquisition', 'processing', 'run',
@@ -1024,7 +1023,7 @@ class BIDSPath:
         check : bool
             If ``True``, only returns paths that conform to BIDS. If ``False``
             (default), the ``.check`` attribute of the returned
-            `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+            :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that
             do conform to BIDS, and to ``False`` for those that don't.
 
         Returns
@@ -2394,7 +2393,7 @@ def find_matching_paths(
     check : bool
         If ``True``, only returns paths that conform to BIDS. If ``False``
         (default), the ``.check`` attribute of the returned
-        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that
         do conform to BIDS, and to ``False`` for those that don't.
     ignore_json : bool
         If ``True``, ignores json files. Defaults to ``False``.
@@ -2497,7 +2496,7 @@ def _fnames_to_bidspaths(fnames, root, check=False):
     check : bool
         If ``True``, only returns paths that conform to BIDS. If ``False``
         (default), the ``.check`` attribute of the returned
-        `mne_bids.BIDSPath` object will be set to ``True`` for paths that
+        :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that
         do conform to BIDS, and to ``False`` for those that don't.
 
     Returns

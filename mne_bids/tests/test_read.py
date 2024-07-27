@@ -1,8 +1,8 @@
 """Testing utilities for file io."""
 
-# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 import os
 import os.path as op
@@ -117,10 +117,10 @@ def test_not_implemented(tmp_path):
 def test_read_correct_inputs():
     """Test that inputs of read functions are correct."""
     bids_path = "sub-01_ses-01_meg.fif"
-    with pytest.raises(RuntimeError, match='"bids_path" must be a ' "BIDSPath object"):
+    with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         read_raw_bids(bids_path)
 
-    with pytest.raises(RuntimeError, match='"bids_path" must be a ' "BIDSPath object"):
+    with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         get_head_mri_trans(bids_path)
 
 
@@ -827,12 +827,9 @@ def test_handle_chpi_reading(tmp_path):
 
     with (
         pytest.warns(RuntimeWarning, match="Defaulting to .* mne.Raw object"),
-        pytest.warns(
-            RuntimeWarning, match="This file contains raw Internal Active Shielding"
-        ),
         pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
-        raw_read = read_raw_bids(bids_path)
+        raw_read = read_raw_bids(bids_path, extra_params=dict(allow_maxshield="yes"))
 
     # cHPI "off" according to sidecar, but present in the data
     meg_json_data_chpi_mismatch = meg_json_data.copy()

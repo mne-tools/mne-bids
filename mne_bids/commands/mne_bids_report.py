@@ -1,18 +1,18 @@
-"""Write raw files to BIDS format.
+"""Summarize basic properties of the dataset and write it to stdout.
 
 example usage:  $ mne_bids report --bids_root bids_root_path
 
 """
 
-# Authors: Alexandre Gramfort <alexandre.gramfort@inria.fr>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import mne_bids
 from mne_bids import make_report
 
 
 def run():
-    """Run the raw_to_bids command."""
+    """Run the make_report command."""
     from mne.commands.utils import get_optparser
 
     parser = get_optparser(

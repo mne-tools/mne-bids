@@ -1,7 +1,7 @@
 """Testing stats reporting."""
-# Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 import itertools
 

@@ -1,13 +1,8 @@
 """Make BIDS compatible directory structures and infer meta data from MNE."""
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
-#          Teon Brooks <teon.brooks@gmail.com>
-#          Chris Holdgraf <choldgraf@berkeley.edu>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Matt Sanderson <matt.sanderson@mq.edu.au>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 import os
 import os.path as op
@@ -16,7 +11,7 @@ import shutil
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import mne
@@ -461,12 +456,14 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
 
         # determine the age of the participant
         age = subject_info.get("birthday", None)
+        if isinstance(age, tuple):  # can be removed once MNE >= 1.8 is required
+            age = date(*age)
         meas_date = raw.info.get("meas_date", None)
         if isinstance(meas_date, (tuple, list, np.ndarray)):
             meas_date = meas_date[0]
 
         if meas_date is not None and age is not None:
-            bday = datetime(age[0], age[1], age[2], tzinfo=timezone.utc)
+            bday = datetime(age.year, age.month, age.day, tzinfo=timezone.utc)
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:
@@ -1287,7 +1284,7 @@ def make_dataset_description(
 
     # Perform input checks
     if dataset_type not in ["raw", "derivative"]:
-        raise ValueError('`dataset_type` must be either "raw" or ' '"derivative."')
+        raise ValueError('`dataset_type` must be either "raw" or "derivative."')
     if isinstance(doi, str):
         if not doi.startswith("doi:"):
             warn(
@@ -1306,7 +1303,7 @@ def make_dataset_description(
         for i in generated_by:
             if "Name" not in i:
                 raise ValueError(
-                    '"Name" is a required field for each dict in ' "generated_by"
+                    '"Name" is a required field for each dict in generated_by'
                 )
             if not set(i.keys()).issubset(generated_by_keys):
                 raise ValueError(msg_key.format(i.keys() - generated_by_keys))
@@ -1413,7 +1410,7 @@ def write_raw_bids(
         already loaded from disk unless ``allow_preload`` is explicitly set
         to ``True``. See warning for the ``allow_preload`` parameter.
     bids_path : BIDSPath
-        The file to write. The `mne_bids.BIDSPath` instance passed here
+        The file to write. The :class:`mne_bids.BIDSPath` instance passed here
         **must** have the ``subject``, ``task``, and ``root`` attributes set.
         If the ``datatype`` attribute is not set, it will be inferred from the
         recording data type found in ``raw``. In case of multiple data types,
@@ -1633,7 +1630,7 @@ def write_raw_bids(
 
     """
     if not isinstance(raw, BaseRaw):
-        raise ValueError("raw_file must be an instance of BaseRaw, got %s" % type(raw))
+        raise ValueError(f"raw_file must be an instance of BaseRaw, got {type(raw)}")
 
     if raw.preload is not False and not allow_preload:
         raise ValueError(
@@ -1819,7 +1816,7 @@ def write_raw_bids(
         er_bids_path = bids_path.copy().update(
             subject="emptyroom", session=er_session, task="noise", run=None
         )
-        write_raw_bids(
+        er_bids_path = write_raw_bids(
             raw=empty_room,
             bids_path=er_bids_path,
             events=None,
@@ -1837,7 +1834,7 @@ def write_raw_bids(
         del er_bids_path, er_date, er_session
     elif isinstance(empty_room, BIDSPath):
         if bids_path.datatype != "meg":
-            raise ValueError('"empty_room" is only supported for ' "MEG data.")
+            raise ValueError('"empty_room" is only supported for MEG data.')
         if data_is_emptyroom:
             raise ValueError(
                 "You cannot write empty-room data and pass "
@@ -2548,7 +2545,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
 
     if not all(status in ["good", "bad"] for status in status):
         raise ValueError(
-            "Setting the status of a channel must only be " '"good", or "bad".'
+            'Setting the status of a channel must only be "good", or "bad".'
         )
 
     # Read sidecar and create required columns if they do not exist.
@@ -2557,7 +2554,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         tsv_data["status"] = ["good"] * len(tsv_data["name"])
 
     if "status_description" not in tsv_data:
-        logger.info('No "status_description" column found in input file. ' "Creating.")
+        logger.info('No "status_description" column found in input file. Creating.')
         tsv_data["status_description"] = ["n/a"] * len(tsv_data["name"])
 
     # Now actually mark the user-requested channels as bad.
