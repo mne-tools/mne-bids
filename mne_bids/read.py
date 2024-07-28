@@ -683,7 +683,9 @@ def _handle_channels_reading(channels_fname, raw):
             f"Cannot set channel type for the following channels, as they "
             f'are missing in the raw data: {", ".join(sorted(ch_diff))}'
         )
-    raw.set_channel_types(channel_type_bids_mne_map_available_channels)
+    raw.set_channel_types(
+        channel_type_bids_mne_map_available_channels, on_unit_change="ignore"
+    )
 
     # Set bad channels based on _channels.tsv sidecar
     if "status" in channels_dict:
