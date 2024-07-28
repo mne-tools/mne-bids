@@ -833,7 +833,7 @@ def test_fif(_bids_validate, tmp_path):
     )
 
 
-@pytest.mark.parametrize("format", ("fif_no_chpi", "fif", "ctf", "kit"))
+@pytest.mark.parametrize("fmt", ("fif_no_chpi", "fif", "ctf", "kit"))
 @pytest.mark.filterwarnings(warning_str["maxshield"])
 @testing.requires_testing_data
 def test_chpi(_bids_validate, tmp_path, fmt):

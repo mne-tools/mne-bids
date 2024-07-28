@@ -1151,7 +1151,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
         events=events,
         resolution=resolution,
         unit=unit,
-        format=fmt,
+        fmt=fmt,
         meas_date=None,
     )
 
