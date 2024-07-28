@@ -108,7 +108,8 @@ source = "vcs"
 raw-options = { version_scheme = "release-branch-semver" }
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "D", "I"]
+select = ["A", "D", "E", "F", "I", "UP", "W"]
+ignore = ["A002"]
 exclude = ["__init__.py"]
 
 [tool.ruff.lint.pydocstyle]

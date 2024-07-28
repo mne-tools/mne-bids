@@ -41,12 +41,12 @@ def _pretty_str(listed):
     return "{}, and {}".format(", ".join(listed[:-1]), listed[-1])
 
 
-def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
+def _range_str(minval, maxval, meanval, stdval, n_unknown, typ):
     if minval == "n/a":
         return "ages all unknown"
 
     if n_unknown > 0:
-        unknown_str = f"; {n_unknown} with unknown {type}"
+        unknown_str = f"; {n_unknown} with unknown {typ}"
     else:
         unknown_str = ""
     return (

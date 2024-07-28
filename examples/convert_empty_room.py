@@ -7,7 +7,7 @@
 
 This example demonstrates how to store empty room data "manually" in the BIDS
 format and how to retrieve them.
-"""
+"""  # noqa: E501 D400
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause

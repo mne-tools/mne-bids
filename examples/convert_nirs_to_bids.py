@@ -15,8 +15,7 @@ data. Specifically, we will follow these steps:
 4. Cite ``mne-bids``.
 
 .. currentmodule:: mne_bids
-
-"""  # noqa: E501
+"""  # noqa: E501 D205 D400
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
