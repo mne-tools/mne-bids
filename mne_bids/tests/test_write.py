@@ -3360,7 +3360,7 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     # test formatting to BrainVision, EDF, or auto (BrainVision)
     if fmt in ["BrainVision", "auto"]:
         if dir_name == "NihonKohden":
-            with pytest.warns(RuntimeWarning, match='Encountered data in "short" fmt'):
+            with pytest.warns(RuntimeWarning, match='Encountered data in "short"'):
                 bids_output_path = write_raw_bids(**kwargs)
         elif dir_name == "CNT":
             with pytest.warns(
