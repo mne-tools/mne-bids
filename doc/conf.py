@@ -7,7 +7,6 @@ import os
 import sys
 from datetime import date
 
-import sphinx_gallery  # noqa: F401
 from sphinx.config import is_serializable
 
 import mne_bids
@@ -96,7 +95,7 @@ master_doc = "index"
 # General information about the project.
 project = "MNE-BIDS"
 today = date.today().isoformat()
-copyright = f"2017, The MNE-BIDS developers. Last updated on {today}"
+copyright = f"2017, The MNE-BIDS developers. Last updated on {today}"  # noqa: A001
 
 author = "The MNE-BIDS developers"
 

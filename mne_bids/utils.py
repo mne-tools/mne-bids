@@ -509,7 +509,7 @@ def _check_datatype(raw, datatype):
 
 def _import_nibabel(why="work with MRI data"):
     try:
-        import nibabel  # noqa
+        import nibabel
     except ImportError as exc:
         raise exc.__class__(
             f"nibabel is required to {why} but could not be imported, " f"got: {exc}"
@@ -523,7 +523,7 @@ def warn(
     category=RuntimeWarning,
     module="mne_bids",
     ignore_namespaces=("mne", "mne_bids"),
-):  # noqa: D103
+):
     """Emit a warning."""
     _warn(
         message,

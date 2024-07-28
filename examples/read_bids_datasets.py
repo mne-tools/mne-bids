@@ -23,7 +23,7 @@ function:
 In this tutorial, we show how ``read_raw_bids`` can be used to load and
 inspect BIDS-formatted data.
 
-"""
+"""  # noqa: D400
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause

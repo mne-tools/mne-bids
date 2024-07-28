@@ -1861,13 +1861,13 @@ def get_datatypes(root, verbose=None):
     """
     # Take all possible data types from "entity" table
     # (Appendix in BIDS spec)
-    # https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html  # noqa
+    # https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
     datatype_list = ("anat", "func", "dwi", "fmap", "beh", "meg", "eeg", "ieeg", "nirs")
     datatypes = list()
     for root, dirs, files in os.walk(root):
-        for dir in dirs:
-            if dir in datatype_list and dir not in datatypes:
-                datatypes.append(dir)
+        for _dir in dirs:
+            if _dir in datatype_list and _dir not in datatypes:
+                datatypes.append(_dir)
 
     return datatypes
 

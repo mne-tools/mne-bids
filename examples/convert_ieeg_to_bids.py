@@ -39,7 +39,7 @@ refer to the `iEEG part of the BIDS specification`_.
 .. _background on FreeSurfer: https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne
 .. _MNE-Python coordinate frames: https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html
 
-"""  # noqa: E501
+"""  # noqa: E501 D400
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause

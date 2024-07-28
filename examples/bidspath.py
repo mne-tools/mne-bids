@@ -7,7 +7,8 @@
 
 BIDSPath is MNE-BIDS's working horse when it comes to file and folder
 operations. Learn here how to use it.
-"""
+
+"""  # noqa: D400
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
