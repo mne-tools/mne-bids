@@ -3480,7 +3480,7 @@ def test_error_write_meg_as_eeg(dir_name, fmt, fname, reader, tmp_path):
         root=bids_root, datatype="eeg", extension=".vhdr"
     )
     raw = reader(raw_fname)
-    kwargs = dict(raw=raw, fmt="auto", bids_path=bids_path.update(datatype="meg"))
+    kwargs = dict(raw=raw, format="auto", bids_path=bids_path.update(datatype="meg"))
 
     # if we accidentally add MEG channels, then an error will occur
     raw.set_channel_types({raw.info["ch_names"][0]: "mag"})
