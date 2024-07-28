@@ -504,7 +504,6 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
 
 
 @testing.requires_testing_data
-@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @pytest.mark.filterwarnings(warning_str["maxshield"])
 def test_fif(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for fif."""
@@ -549,7 +548,8 @@ def test_fif(_bids_validate, tmp_path):
         {
             raw.ch_names[i]: "misc"
             for i in mne.pick_types(raw.info, stim=True, meg=False)
-        }
+        },
+        on_unit_change="ignore",
     )
     bids_root = tmp_path / "bids2"
     bids_path.update(root=bids_root)
@@ -611,7 +611,6 @@ def test_fif(_bids_validate, tmp_path):
     bids_path.update(root=bids_root, datatype="eeg")
     with (
         pytest.warns(RuntimeWarning, match="Not setting position"),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, "test-raw.fif"))
@@ -1055,8 +1054,7 @@ def test_kit(_bids_validate, tmp_path):
 
     _bids_validate(bids_root)
     assert op.exists(bids_root / "participants.tsv")
-    with pytest.warns(RuntimeWarning, match=".* changed from V to NA"):
-        read_raw_bids(bids_path=kit_bids_path)
+    read_raw_bids(bids_path=kit_bids_path)
 
     # ensure the marker file is produced in the right place
     marker_fname = BIDSPath(
@@ -1183,7 +1181,6 @@ def test_ctf(_bids_validate, tmp_path):
     _bids_validate(tmp_path)
     with (
         pytest.warns(RuntimeWarning, match="Did not find any events"),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         raw = read_raw_bids(bids_path=bids_path, extra_params=dict(clean_names=False))
 
@@ -1871,11 +1868,7 @@ def test_bdf(_bids_validate, tmp_path):
     # Now read the raw data back from BIDS, with the tampered TSV, to show
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
-    with (
-        pytest.warns(RuntimeWarning, match=r"The unit for channel\(s\) Fp1"),
-        pytest.warns(RuntimeWarning, match=r"The unit for channel\(s\) Status"),
-    ):
-        raw = read_raw_bids(bids_path=bids_path)
+    raw = read_raw_bids(bids_path=bids_path)
     assert coil_type(raw.info, test_ch_idx) == "misc"
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo="bar"))
@@ -4071,8 +4064,7 @@ def test_repeat_write_location(tmpdir):
     bids_path = write_raw_bids(raw, bids_path, verbose=False)
 
     # Read back in
-    with pytest.warns(RuntimeWarning, match=".* has changed from NA to V"):
-        raw = read_raw_bids(bids_path, verbose=False)
+    raw = read_raw_bids(bids_path, verbose=False)
 
     # Re-writing with src == dest should error
     with pytest.raises(FileExistsError, match="Desired output BIDSPath"):
