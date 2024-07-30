@@ -19,6 +19,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Daniel McCloy`_
 * `Mara Wolter`_
+* `Amaia Benitez`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -64,6 +65,7 @@ Detailed list of changes
   when renaming the files of a .ds folder, by `Mara Wolter`_ (:gh:`1230`)
 - We fixed handling of time zones when reading ``*_scans.tsv`` files; specifically, non-UTC timestamps are now processed correctly,
   by `Stefan Appelhoff`_ and `Richard Höchenberger`_  (:gh:`1240`)
+- Fixed KeyError in ``write_raw_bids()`` for OPM data by including additional OPM channels in ``get_coil_types()`` by `Amaia Benitez`_ (:gh:`1222`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
