@@ -57,10 +57,6 @@ authors:
       family-names: Rockhill
       affiliation: 'University of Oregon, Eugene OR, USA'
       orcid: 'https://orcid.org/0000-0003-3868-7453'
-    - given-names: Amaia
-      family-names: Benitez
-      affiliation: 'Magnetoencephalography Core, National Institutes of Health, Bethesda, Maryland, USA'
-      orcid: 'https://orcid.org/0000-0001-6364-7272'
     - given-names: Eric
       family-names: Larson
       affiliation: 'Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA'
@@ -183,6 +179,10 @@ authors:
       family-names: Welzel
       affiliation: 'Department of Neurology, Kiel University, Germany'
       orcid: 'https://orcid.org/0000-0003-4782-5360'
+    - given-names: Amaia
+      family-names: Benitez
+      affiliation: 'Magnetoencephalography Core, National Institutes of Health, Bethesda, Maryland, USA'
+      orcid: 'https://orcid.org/0000-0001-6364-7272'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

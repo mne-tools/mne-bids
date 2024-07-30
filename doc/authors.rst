@@ -45,5 +45,5 @@
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Mara Wolter: https://github.com/marakw
-.. _Amaia Benitez: https://github.com/AmaiaBA
 .. _Julius Welzel: https://github.com/JuliusWelzel
+.. _Amaia Benitez: https://github.com/AmaiaBA
