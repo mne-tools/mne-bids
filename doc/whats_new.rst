@@ -17,7 +17,7 @@ Version 0.16 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* nobody yet
+* `Amaia Benitez`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -37,6 +37,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - :func:`mne_bids.read_raw_bids` no longer warns about unit changes in channels upon reading, as that information is taken from ``channels.tsv`` and judged authorative, by `Stefan Appelhoff`_ (:gh:`1282`)
+- MEG OPM channels are now experimentally included, by `Amaia Benitez`_ (:gh:`1222`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
