@@ -9,11 +9,10 @@ We can update the BIDS sidecar files via the ``update_sidecar_json`` function.
 
 In this tutorial, we show how ``update_sidecar_json`` can be used to update and
 modify BIDS-formatted data.
-"""
-# Authors: Adam Li <adam2392@gmail.com>
-#          mne-bids developers
-#
-# License: BSD-3-Clause
+"""  # noqa: D205 D400
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Imports
@@ -49,7 +48,7 @@ bids_root = somato.data_path()
 #
 # We can use MNE-BIDS to print a tree of all
 # included files and folders. We pass the ``max_depth`` parameter to
-# `mne_bids.print_dir_tree` to the output to three levels of folders, for
+# :func:`mne_bids.print_dir_tree` to the output to three levels of folders, for
 # better readability in this example.
 
 print_dir_tree(bids_root, max_depth=3)

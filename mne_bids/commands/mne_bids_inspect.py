@@ -5,9 +5,9 @@ $ mne_bids inspect --subject_id=01 --task=experiment --session=test \
 --datatype=meg --suffix=meg --bids_root=bids_root
 
 """
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 from mne.utils import logger
 

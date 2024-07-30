@@ -1,10 +1,11 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.5
+    rev: v0.5.5
     hooks:
       - id: ruff
         name: ruff mne_bids/
         files: ^mne_bids/
+        args: ["--fix"]
       - id: ruff
         name: ruff examples/
         # D103: missing docstring in public function

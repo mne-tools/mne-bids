@@ -1,9 +1,8 @@
 """Test command line."""
 
-# Authors: Teon L Brooks <teon.brooks@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os.path as op
 from pathlib import Path
 

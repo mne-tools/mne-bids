@@ -1,8 +1,8 @@
 """Test for the MNE BIDS updating of BIDS datasets."""
 
-# Authors: Adam Li <adam2392@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 import os.path as op
 from pathlib import Path
@@ -280,8 +280,8 @@ def test_update_anat_landmarks(tmp_path):
     )
     expected_coords_in_voxels = np.array(
         [
-            [68.38202, 45.24057, 43.439808],  # noqa: E241
-            [42.27006, 30.758774, 74.09837],  # noqa: E202, E241
+            [68.38202, 45.24057, 43.439808],
+            [42.27006, 30.758774, 74.09837],
             [17.044853, 46.586075, 42.618504],
         ]
     )

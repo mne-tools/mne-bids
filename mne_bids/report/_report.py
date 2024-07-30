@@ -1,8 +1,8 @@
 """Make BIDS report from dataset and sidecar files."""
 
-# Authors: Adam Li <adam2392@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 import os.path as op
 import textwrap
@@ -41,12 +41,12 @@ def _pretty_str(listed):
     return "{}, and {}".format(", ".join(listed[:-1]), listed[-1])
 
 
-def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
+def _range_str(minval, maxval, meanval, stdval, n_unknown, typ):
     if minval == "n/a":
         return "ages all unknown"
 
     if n_unknown > 0:
-        unknown_str = f"; {n_unknown} with unknown {type}"
+        unknown_str = f"; {n_unknown} with unknown {typ}"
     else:
         unknown_str = ""
     return (

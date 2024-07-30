@@ -1,5 +1,8 @@
 """Configuration values for MNE-BIDS."""
 
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from mne import io
 from mne.io.constants import FIFF
 
@@ -313,7 +316,7 @@ ALLOWED_SPACES["ieeg"] = BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FR
 ALLOWED_SPACES["anat"] = None
 ALLOWED_SPACES["beh"] = None
 
-# See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
+# See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa: E501
 ENTITY_VALUE_TYPE = {
     "subject": "label",
     "session": "label",
@@ -337,8 +340,8 @@ BIDS_TO_MNE_FRAMES = {
     "ElektaNeuromag": "head",
     "ChietiItab": "head",
     "CapTrak": "head",
-    "ACPC": "ras",  # assumes T1 is ACPC-aligned, if not the coordinates are lost  # noqa
-    "fsaverage": "mni_tal",  # XXX: note fsaverage and MNI305 are the same  # noqa
+    "ACPC": "ras",  # assumes T1 is ACPC-aligned, if not the coordinates are lost
+    "fsaverage": "mni_tal",  # XXX: note fsaverage and MNI305 are the same
     "MNI305": "mni_tal",
 }
 

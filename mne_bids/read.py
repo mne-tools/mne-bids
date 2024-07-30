@@ -1,12 +1,8 @@
 """Check whether a file format is supported by BIDS and then load it."""
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
-#          Teon Brooks <teon.brooks@gmail.com>
-#          Chris Holdgraf <choldgraf@berkeley.edu>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 import os
 import os.path as op
@@ -151,9 +147,18 @@ def _read_events(events, event_id, raw, bids_path=None):
                 'To specify custom event codes, please pass "event_id".'
             )
         else:
+            special_annots = {"BAD_ACQ_SKIP"}
             desc_without_id = sorted(
                 set(raw.annotations.description) - set(event_id.keys())
             )
+            # auto-add entries to `event_id` for "special" annotation values
+            # (but only if they're needed)
+            if set(desc_without_id) & special_annots:
+                for annot in special_annots:
+                    # use a value guaranteed to not be in use
+                    event_id = {annot: max(event_id.values()) + 90000} | event_id
+                # remove the "special" annots from the list of problematic annots
+                desc_without_id = sorted(set(desc_without_id) - special_annots)
             if desc_without_id:
                 raise ValueError(
                     f"The provided raw data contains annotations, but "
@@ -617,7 +622,7 @@ def _handle_channels_reading(channels_fname, raw):
 
         if updated_ch_type is None:
             # XXX Try again with uppercase spelling – this should be removed
-            # XXX once https://github.com/bids-standard/bids-validator/issues/1018  # noqa:E501
+            # XXX once https://github.com/bids-standard/bids-validator/issues/1018
             # XXX has been resolved.
             # XXX x-ref https://github.com/mne-tools/mne-bids/issues/481
             updated_ch_type = bids_to_mne_ch_types.get(ch_type.upper(), None)
@@ -678,7 +683,9 @@ def _handle_channels_reading(channels_fname, raw):
             f"Cannot set channel type for the following channels, as they "
             f'are missing in the raw data: {", ".join(sorted(ch_diff))}'
         )
-    raw.set_channel_types(channel_type_bids_mne_map_available_channels)
+    raw.set_channel_types(
+        channel_type_bids_mne_map_available_channels, on_unit_change="ignore"
+    )
 
     # Set bad channels based on _channels.tsv sidecar
     if "status" in channels_dict:

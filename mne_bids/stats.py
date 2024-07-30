@@ -1,8 +1,7 @@
 """Some functions to extract stats from a BIDS dataset."""
 
-# Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 from mne_bids import BIDSPath, get_datatypes
 from mne_bids.config import EPHY_ALLOWED_DATATYPES

@@ -19,12 +19,10 @@ data. Specifically, we will follow these steps:
 
 .. _BrainVision format: https://www.brainproducts.com/support-resources/brainvision-core-data-format-1-0/
 .. _CapTrak: https://www.fieldtriptoolbox.org/faq/coordsys/#details-of-the-captrak-coordinate-system
+"""  # noqa: E501 D205 D400
 
-"""  # noqa: E501
-
-# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We are importing everything we need for this example:

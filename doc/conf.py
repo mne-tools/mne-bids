@@ -1,13 +1,15 @@
 """Configure details for documentation with sphinx."""
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import sys
 from datetime import date
 
-import sphinx_gallery  # noqa: F401
 from sphinx.config import is_serializable
 
 import mne_bids
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -92,10 +94,10 @@ master_doc = "index"
 
 # General information about the project.
 project = "MNE-BIDS"
-td = date.today()
-copyright = "2017-%s, MNE Developers. Last updated on %s" % (td.year, td.isoformat())
+today = date.today().isoformat()
+copyright = f"2017, The MNE-BIDS developers. Last updated on {today}"  # noqa: A001
 
-author = "MNE Developers"
+author = "The MNE-BIDS developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

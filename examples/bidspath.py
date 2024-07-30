@@ -7,11 +7,10 @@
 
 BIDSPath is MNE-BIDS's working horse when it comes to file and folder
 operations. Learn here how to use it.
-"""
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+"""  # noqa: D400
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Obviously, to start exploring BIDSPath, we first need to import it.
@@ -82,7 +81,7 @@ print(bids_path.session)
 # **data type**, i.e., ``meg`` for MEG data, ``eeg`` and ``ieeg`` for EEG and
 # iEEG data, or ``anat`` for anatomical MRI scans. Typically, MNE-BIDS will
 # infer the data type of your data automatically, for example when writing data
-# using `mne_bids.write_raw_bids`. For the sake of this example, however, we
+# using :func:`mne_bids.write_raw_bids`. For the sake of this example, however, we
 # are going to specify the data type explicitly.
 
 datatype = "eeg"

@@ -7,9 +7,9 @@
 What's new?
 ===========
 
-.. _changes_0_15:
+.. _changes_0_16:
 
-Version 0.15 (unreleased)
+Version 0.16 (unreleased)
 -------------------------
 
 👩🏽‍💻 Authors
@@ -17,16 +17,15 @@ Version 0.15 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
+* `Amaia Benitez`_
 * `Daniel McCloy`_
 * `Mara Wolter`_
-* `Amaia Benitez`_
+
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* `Alex Rockhill`_
+* `Daniel McCloy`_
 * `Eric Larson`_
-* `Laetitia Fesselier`_
-* `Richard Höchenberger`_
 * `Stefan Appelhoff`_
 
 Detailed list of changes
@@ -40,21 +39,13 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- The experimental support for running MNE-BIDS examples from your browser using Binder has
-  been removed, by `Stefan Appelhoff`_ (:gh:`1202`)
-- MNE-BIDS will no longer zero-pad ("zfill") entity indices passed to :class:`~mne_bids.BIDSPath`.
-  For example, If ``run=1`` is passed to MNE-BIDS, it will no longer be silently auto-converted to ``run-01``, by `Alex Rockhill`_ (:gh:`1215`)
-- MNE-BIDS will no longer warn about missing leading punctuation marks for extensions passed :class:`~mne_bids.BIDSPath`.
-  For example, MNE-BIDS will now silently auto-convert ``edf`` to ```.edf``, by `Alex Rockhill`_ (:gh:`1215`)
+- :func:`mne_bids.read_raw_bids` no longer warns about unit changes in channels upon reading, as that information is taken from ``channels.tsv`` and judged authorative, by `Stefan Appelhoff`_ (:gh:`1282`)
+- MEG OPM channels are now experimentally included, by `Amaia Benitez`_ (:gh:`1222`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- MNE-BIDS now requires Python 3.9 or higher.
-- MNE-BIDS now requires MNE-Python 1.5.0 or higher.
-- ``edfio`` replaces ``EDFlib-Python`` for export to EDF with MNE-Python >= 1.7.0.
-- Installing ``mne-bids[full]`` will now also install ``defusedxml`` on all platforms.
-- Version requirements for optional dependency packages have been bumped up, see installation instructions.
+- MNE-BIDS now requires MNE-Python 1.6.0 or higher.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
@@ -65,23 +56,13 @@ Detailed list of changes
   when renaming the files of a .ds folder, by `Mara Wolter`_ (:gh:`1230`)
 - We fixed handling of time zones when reading ``*_scans.tsv`` files; specifically, non-UTC timestamps are now processed correctly,
   by `Stefan Appelhoff`_ and `Richard Höchenberger`_  (:gh:`1240`)
-- Fixed KeyError in ``write_raw_bids()`` for OPM data by including additional OPM channels in ``get_coil_types()`` by `Amaia Benitez`_ (:gh:`1222`)
+- When anonymizing the date of a recording, MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if passing a `~mne.io.Raw` instance to ``empty_room``, by `Daniel McCloy`_ (:gh:`1270`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- The configuration of MNE-BIDS has been consolidated from several files (e.g., ``setup.cfg``,
-  ``setup.py``, ``requirements.txt``) and is now specified in a standard ``pyproject.toml``
-  file, by `Stefan Appelhoff`_ (:gh:`1202`)
-- Linting and code formatting is now done entirely using ``ruff``. Previously used tools
-  (e.g., ``flake8``, ``black``) have been fully replaced, by `Stefan Appelhoff`_ (:gh:`1203`)
-- The package build backend has been switched from ``setuptools`` to ``hatchling``. This
-  only affects users who build and install MNE-BIDS from source, and should not lead to
-  changed runtime behavior, by `Richard Höchenberger`_ (:gh:`1204`)
-- Display of the version number on the website is now truncated for over-long version strings,
-  by `Daniel McCloy`_ (:gh:`1206`)
-- The long deprecated ``events_data`` parameter has been fully removed from
-  :func:`~mne_bids.write_raw_bids` in favor of ``events``, by `Stefan Appelhoff`_ (:gh:`1229`)
+- Keep MNE-BIDS up to date with recent changes on participant birthday date handling in MNE-Python, by `Eric Larson`_ (gh:1278:)
+- Make rules for linting more strict, make quality assessment exceptions less permissive, by `Stefan Appelhoff`_ (gh:1283:)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

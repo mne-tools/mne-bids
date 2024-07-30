@@ -1,8 +1,7 @@
 """Inspect and annotate BIDS raw data."""
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 from pathlib import Path
 

@@ -5,9 +5,9 @@ $ mne_bids crosstalk_to_bids --subject_id=01 --session=test
 --bids_root=bids_root --file=ct_sparse.fif
 
 """
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#
-# License: BSD-3-Clause
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 from mne.utils import logger
 

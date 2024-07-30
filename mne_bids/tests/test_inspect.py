@@ -1,5 +1,8 @@
 """Test the interactive data inspector."""
 
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os.path as op
 
 import mne
