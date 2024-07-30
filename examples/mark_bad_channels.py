@@ -5,7 +5,7 @@
 
 You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
 Problematic channels can be marked as "bad", for example if the connected
-sensor produced mostly noise – or no signal at all. Similarly, you can declare
+sensor produced mostly noise - or no signal at all. Similarly, you can declare
 channels as "good", should you discover they were incorrectly marked as bad.
 Bad channel selection can also be performed non-interactively.
 

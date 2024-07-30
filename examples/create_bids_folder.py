@@ -11,7 +11,7 @@ wish to create these files/folders on your own.
 
    You may automatically convert Raw objects to BIDS-compatible files with
    ``write_raw_bids``. This example is for manually creating files/folders.
-"""
+"""  # noqa: E501 D205 D400
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause

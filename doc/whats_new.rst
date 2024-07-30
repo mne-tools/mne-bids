@@ -18,6 +18,7 @@ Version 0.16 (unreleased)
 The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Kaare Mikkelsen`_
+* `Amaia Benitez`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -36,7 +37,8 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- nothing yet
+- :func:`mne_bids.read_raw_bids` no longer warns about unit changes in channels upon reading, as that information is taken from ``channels.tsv`` and judged authorative, by `Stefan Appelhoff`_ (:gh:`1282`)
+- MEG OPM channels are now experimentally included, by `Amaia Benitez`_ (:gh:`1222`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -52,6 +54,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^
 
 - Keep MNE-BIDS up to date with recent changes on participant birthday date handling in MNE-Python, by `Eric Larson`_ (gh:1278:)
+- Make rules for linting more strict, make quality assessment exceptions less permissive, by `Stefan Appelhoff`_ (gh:1283:)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

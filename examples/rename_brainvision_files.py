@@ -27,7 +27,7 @@ For the command line version of this tool, see the :code:`cp` tool in the docs
 for the :ref:`Python Command Line Interface <python_cli>`.
 
 .. _BrainVision data format: https://www.brainproducts.com/support-resources/brainvision-core-data-format-1-0/
-"""  # noqa:E501
+"""  # noqa: E501 D205 D400
 
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause

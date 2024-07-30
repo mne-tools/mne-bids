@@ -354,7 +354,7 @@ def test_parse_ext():
     [
         "sub-01_ses-02_task-test_run-3_split-1_meg.fif",
         "sub-01_ses-02_task-test_run-3_split-1",
-        "/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-1_meg.fif",  # noqa: E501
+        "/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-1_meg.fif",
         "sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-1_meg.fif",
     ],
 )
@@ -898,7 +898,7 @@ def test_make_filenames():
     assert (
         basename.basename
         == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.h5"
-    )  # noqa
+    )
 
     # what happens with scans.tsv file
     with pytest.raises(ValueError, match="scans.tsv file name can only contain"):

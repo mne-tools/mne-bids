@@ -794,7 +794,6 @@ def test_handle_info_reading(tmp_path):
         assert raw.info["line_freq"] == 55
 
 
-@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @pytest.mark.filterwarnings(warning_str["maxshield"])
 @testing.requires_testing_data
 def test_handle_chpi_reading(tmp_path):
@@ -827,7 +826,6 @@ def test_handle_chpi_reading(tmp_path):
 
     with (
         pytest.warns(RuntimeWarning, match="Defaulting to .* mne.Raw object"),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         raw_read = read_raw_bids(bids_path, extra_params=dict(allow_maxshield="yes"))
 
@@ -842,7 +840,6 @@ def test_handle_chpi_reading(tmp_path):
 
 
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
-@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_handle_eeg_coords_reading(tmp_path):
     """Test reading iEEG coordinates from BIDS files."""
@@ -859,7 +856,7 @@ def test_handle_eeg_coords_reading(tmp_path):
     raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'eeg' data
-    raw.set_channel_types({ch: "eeg" for ch in raw.ch_names})
+    raw.set_channel_types({ch: "eeg" for ch in raw.ch_names}, on_unit_change="ignore")
 
     # set a `random` montage
     ch_names = raw.ch_names
@@ -903,11 +900,8 @@ def test_handle_eeg_coords_reading(tmp_path):
         bids_path, suffix="coordsystem", extension=".json"
     )
     _update_sidecar(coordsystem_fname, "EEGCoordinateSystem", "besa")
-    with (
-        pytest.warns(
-            RuntimeWarning, match="is not a BIDS-acceptable coordinate frame for EEG"
-        ),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    with pytest.warns(
+        RuntimeWarning, match="is not a BIDS-acceptable coordinate frame for EEG"
     ):
         raw_test = read_raw_bids(bids_path)
         assert raw_test.info["dig"] is None
@@ -915,7 +909,6 @@ def test_handle_eeg_coords_reading(tmp_path):
 
 @pytest.mark.parametrize("bids_path", [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str["nasion_not_found"])
-@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     """Test reading iEEG coordinates from BIDS files."""
@@ -926,7 +919,7 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'ecog'/'ieeg' data
-    raw.set_channel_types({ch: "ecog" for ch in raw.ch_names})
+    raw.set_channel_types({ch: "ecog" for ch in raw.ch_names}, on_unit_change="ignore")
 
     # coordinate frames in mne-python should all map correctly
     # set a `random` montage
@@ -978,11 +971,8 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     for axis in ["x", "y", "z"]:
         electrodes_dict[axis] = np.multiply(orig_electrodes_dict[axis], scaling)
     _to_tsv(electrodes_dict, electrodes_fname)
-    with (
-        pytest.warns(
-            RuntimeWarning, match="Coordinate unit is not an accepted BIDS unit"
-        ),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
+    with pytest.warns(
+        RuntimeWarning, match="Coordinate unit is not an accepted BIDS unit"
     ):
         raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
 
@@ -1012,7 +1002,6 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
         # and make sure all digpoints are MRI coordinate frame
         with (
             pytest.warns(RuntimeWarning, match="not an MNE-Python coordinate frame"),
-            pytest.warns(RuntimeWarning, match="The unit for channel"),
         ):
             raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
             assert raw_test.info["dig"] is not None
@@ -1031,7 +1020,6 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
                 pytest.warns(
                     RuntimeWarning, match="not an MNE-Python coordinate frame"
                 ),
-                pytest.warns(RuntimeWarning, match="The unit for channel"),
             ):
                 raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
         assert raw_test.info["dig"] is not None
@@ -1061,7 +1049,6 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     # however, a warning will be raised through mne-python
     with (
         pytest.warns(RuntimeWarning, match="DigMontage is only a subset of info"),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         read_raw_bids(bids_path=bids_fname, verbose=False)
 
@@ -1080,7 +1067,6 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     nan_chs = [electrodes_dict["name"][i] for i in [0, 3]]
     with (
         pytest.warns(RuntimeWarning, match="There are channels without locations"),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
         for idx, ch in enumerate(raw.info["chs"]):
@@ -1188,7 +1174,6 @@ def test_handle_channel_type_casing(tmp_path):
         read_raw_bids(bids_path)
 
 
-@pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
 def test_handle_non_mne_channel_type(tmp_path):
     """Test that channel types not known to MNE will be read as 'misc'."""
@@ -1212,7 +1197,6 @@ def test_handle_non_mne_channel_type(tmp_path):
 
     with (
         pytest.warns(RuntimeWarning, match='will be set to "misc"'),
-        pytest.warns(RuntimeWarning, match="The unit for channel"),
     ):
         raw = read_raw_bids(bids_path)
 

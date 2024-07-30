@@ -2671,7 +2671,7 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
     ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
     >>> write_meg_crosstalk(crosstalk_fname, bids_path) # doctest: +SKIP
     Writing crosstalk file to ...sub-01_ses-test_acq-crosstalk_meg.fif
-    """  # noqa: E501
+    """
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError("bids_path must have root and subject set.")
     if bids_path.datatype not in (None, "meg"):
