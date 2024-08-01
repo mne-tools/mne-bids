@@ -114,7 +114,7 @@ raw.info["line_freq"] = 50  # specify power line frequency as required by BIDS
 
 # Get the electrode coordinates
 testing_data = mne.datasets.testing.data_path()
-captrak_path = op.join(testing_data, "montage", "captrak_coords.bvct")
+captrak_path = testing_data / "montage" / "captrak_coords.bvct"
 montage = mne.channels.read_dig_captrak(captrak_path)
 
 # Rename the montage channel names only for this example, because as said
@@ -165,7 +165,7 @@ bids_root = op.join(mne_data_dir, "eegmmidb_bids_eeg_example")
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%

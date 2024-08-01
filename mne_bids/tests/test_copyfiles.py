@@ -24,7 +24,7 @@ from mne_bids.copyfiles import (
 from mne_bids.path import _parse_ext
 
 testing_path = testing.data_path(download=False)
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 
 
 @testing.requires_testing_data

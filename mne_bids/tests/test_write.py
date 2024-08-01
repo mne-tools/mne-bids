@@ -61,7 +61,7 @@ from mne_bids.utils import (
 )
 from mne_bids.write import _get_fid_coords
 
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
 subject_id2 = "02"
 session_id = "01"
@@ -478,8 +478,8 @@ def test_create_fif(_bids_validate, tmp_path):
     rng = np.random.RandomState(99)
     raw = mne.io.RawArray(rng.random((5, n_points)) * 1e-6, info)
     raw.info["line_freq"] = 60
-    raw.save(op.join(out_dir, "test-raw.fif"))
-    raw = _read_raw_fif(op.join(out_dir, "test-raw.fif"))
+    raw.save(out_dir / "test-raw.fif")
+    raw = _read_raw_fif(out_dir / "test-raw.fif")
     write_raw_bids(raw, bids_path, verbose=False, overwrite=True)
     _bids_validate(bids_root)
 
@@ -496,8 +496,8 @@ def test_line_freq(line_freq, _bids_validate, tmp_path):
     rng = np.random.RandomState(99)
     raw = mne.io.RawArray(rng.random((5, n_points)) * 1e-6, info)
 
-    raw.save(op.join(out_dir, "test-raw.fif"))
-    raw = _read_raw_fif(op.join(out_dir, "test-raw.fif"))
+    raw.save(out_dir / "test-raw.fif")
+    raw = _read_raw_fif(out_dir / "test-raw.fif")
     raw.info["line_freq"] = line_freq
     write_raw_bids(raw, bids_path, verbose=False, overwrite=True)
     _bids_validate(bids_root)
@@ -846,15 +846,13 @@ def test_fif(_bids_validate, tmp_path):
 def test_chpi(_bids_validate, tmp_path, fmt):
     """Test writing of cHPI information."""
     if fmt == "fif_no_chpi":
-        fif_raw_fname = op.join(
-            data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif"
-        )
+        fif_raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
         raw = _read_raw_fif(fif_raw_fname)
     elif fmt == "fif":
-        fif_raw_fname = op.join(data_path, "SSS", "test_move_anon_raw.fif")
+        fif_raw_fname = data_path / "SSS" / "test_move_anon_raw.fif"
         raw = _read_raw_fif(fif_raw_fname, allow_maxshield="yes")
     elif fmt == "ctf":
-        ctf_raw_fname = op.join(data_path, "CTF", "testdata_ctf.ds")
+        ctf_raw_fname = data_path / "CTF" / "testdata_ctf.ds"
         raw = _read_raw_ctf(ctf_raw_fname)
     elif fmt == "kit":
         kit_data_path = op.join(base_path, "kit", "tests", "data")
@@ -1039,14 +1037,14 @@ def test_fif_exci(tmp_path):
 def test_kit(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for KIT data."""
     bids_root = tmp_path / "bids"
-    kit_path = op.join(base_path, "kit", "tests", "data")
-    raw_fname = op.join(kit_path, "test.sqd")
-    events_fname = op.join(kit_path, "test-eve.txt")
-    hpi_fname = op.join(kit_path, "test_mrk.sqd")
-    hpi_pre_fname = op.join(kit_path, "test_mrk_pre.sqd")
-    hpi_post_fname = op.join(kit_path, "test_mrk_post.sqd")
-    electrode_fname = op.join(kit_path, "test.elp")
-    headshape_fname = op.join(kit_path, "test.hsp")
+    kit_path = base_path / "kit" / "tests" / "data"
+    raw_fname = kit_path / "test.sqd"
+    events_fname = kit_path / "test-eve.txt"
+    hpi_fname = kit_path / "test_mrk.sqd"
+    hpi_pre_fname = kit_path / "test_mrk_pre.sqd"
+    hpi_post_fname = kit_path / "test_mrk_post.sqd"
+    electrode_fname = kit_path / "test.elp"
+    headshape_fname = kit_path / "test.hsp"
     event_id = dict(cond=128)
 
     kit_bids_path = _bids_path.copy().update(
@@ -1061,7 +1059,7 @@ def test_kit(_bids_validate, tmp_path):
     )
 
     _bids_validate(bids_root)
-    assert op.exists(bids_root / "participants.tsv")
+    assert (bids_root / "participants.tsv").exists()
     read_raw_bids(bids_path=kit_bids_path)
 
     # ensure the marker file is produced in the right place
@@ -1075,7 +1073,7 @@ def test_kit(_bids_validate, tmp_path):
         datatype="meg",
         root=bids_root,
     )
-    assert op.exists(marker_fname)
+    assert marker_fname.exists()
 
     # test anonymize
     output_path = _test_anonymize(
@@ -1091,7 +1089,7 @@ def test_kit(_bids_validate, tmp_path):
     assert "STI 014" not in data["name"]
 
     # ensure the marker file is produced in the right place
-    assert op.exists(marker_fname)
+    assert marker_fname.exists()
 
     # test attempts at writing invalid event data
     event_data = np.loadtxt(events_fname)
@@ -1147,11 +1145,11 @@ def test_kit(_bids_validate, tmp_path):
         )
 
     # check that everything works with MRK markers, and CON files
-    kit_path = op.join(data_path, "KIT")
-    raw_fname = op.join(kit_path, "data_berlin.con")
-    hpi_fname = op.join(kit_path, "MQKIT_125.mrk")
-    electrode_fname = op.join(kit_path, "MQKIT_125.elp")
-    headshape_fname = op.join(kit_path, "MQKIT_125.hsp")
+    kit_path = data_path / "KIT"
+    raw_fname = kit_path / "data_berlin.con"
+    hpi_fname = kit_path / "MQKIT_125.mrk"
+    electrode_fname = kit_path / "MQKIT_125.elp"
+    headshape_fname = kit_path / "MQKIT_125.hsp"
     bids_root = tmp_path / "bids_kit_mrk"
     kit_bids_path = _bids_path.copy().update(
         acquisition=None, root=bids_root, suffix="meg"

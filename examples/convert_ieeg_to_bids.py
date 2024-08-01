@@ -165,7 +165,7 @@ bids_root = op.join(mne_data_dir, "ieeg_bids")
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%
@@ -330,7 +330,7 @@ print(text)
 
 # ensure the output path doesn't contain any leftover files from previous
 # tests and example runs
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # load our raw data again
@@ -459,7 +459,7 @@ print(
 
 # ensure the output path doesn't contain any leftover files from previous
 # tests and example runs
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # get a template mgz image to transform the montage to voxel coordinates

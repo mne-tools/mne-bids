@@ -9,6 +9,7 @@ For each supported coordinate frame, implement a test.
 import os
 import os.path as op
 import warnings
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -31,7 +32,7 @@ from mne_bids.dig import (
     template_to_head,
 )
 
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
 session_id = "01"
 run = "01"

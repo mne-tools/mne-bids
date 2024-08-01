@@ -3,8 +3,6 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os.path as op
-
 from mne.datasets import testing
 from mne.io import read_raw_fif
 
@@ -16,7 +14,7 @@ data_path = testing.data_path(download=False)
 @testing.requires_testing_data
 def test_coil_type():
     """Test the correct coil type is retrieved."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = read_raw_fif(raw_fname)
     assert coil_type(raw.info, 0) == "meggradplanar"
     assert coil_type(raw.info, 2) == "megmag"
