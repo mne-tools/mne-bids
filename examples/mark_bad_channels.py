@@ -61,7 +61,7 @@ bids_path = BIDSPath(
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%
