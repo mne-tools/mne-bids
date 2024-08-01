@@ -69,7 +69,7 @@ bids_root = op.join(mne_data_dir, "eegmmidb_bids_group_conversion")
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%
