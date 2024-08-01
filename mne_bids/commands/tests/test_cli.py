@@ -23,7 +23,7 @@ from mne_bids.commands import (
 )
 
 data_path = testing.data_path(download=False)
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
 task = "testing"
 datatype = "meg"
