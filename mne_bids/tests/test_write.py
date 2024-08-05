@@ -20,6 +20,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
+import pandas as pd
 import pytest
 from mne.datasets import testing
 from mne.io import anonymize_info
@@ -4112,4 +4113,44 @@ def test_write_neuromag122(_bids_validate, tmp_path):
         datatype="meg",
     )
     write_raw_bids(raw, bids_path, overwrite=True, allow_preload=True, format="FIF")
+    _bids_validate(bids_root)
+
+
+@testing.requires_testing_data
+def test_write_evt_metadata(_bids_validate, tmp_path):
+    """Test writing events and metadata to BIDS."""
+    bids_root = tmp_path / "bids"
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    raw = _read_raw_fif(raw_fname)
+    events = mne.find_events(raw, initial_event=True)
+    event_id = {"auditory/left": 1, "auditory/right": 2}
+    df_list = []
+    for idx, event in enumerate(events):
+        direction = None
+        if event[2] in (1, 3):
+            direction = 'left'
+        elif event[2] in (2, 4):
+            direction = 'right'
+
+        event_type = 'button_press' if event[2] == 32 else 'stimulus'
+        stimulus_kind = None
+        if event[2] == 5:
+            stimulus_kind = 'smiley'
+        elif event[2] in (1, 2):
+            stimulus_kind = 'auditory'
+        elif event[2] in (3, 4):
+            stimulus_kind = 'visual'
+
+        df_list.append({
+            'direction': direction,
+            'event_type': event_type,
+            'stimulus_kind': stimulus_kind
+        })
+
+    event_metadata = pd.DataFrame(df_list)
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
+    write_raw_bids(
+        raw, bids_path=bids_path, events=events, event_metadata=event_metadata, overwrite=True
+    )
     _bids_validate(bids_root)
