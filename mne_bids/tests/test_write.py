@@ -4151,7 +4151,12 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
 
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
     write_raw_bids(
-        raw, bids_path=bids_path, events=events, event_metadata=event_metadata, overwrite=True
+        raw, bids_path=bids_path, events=events, event_metadata=event_metadata, overwrite=True,
+        extra_columns_descriptions={
+            'direction': 'The direction of the stimulus',
+            'event_type': 'The type of the event',
+            'stimulus_kind': 'The stimulus modality'
+        }
     )
     _bids_validate(bids_root)
     events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
