@@ -4154,3 +4154,14 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
         raw, bids_path=bids_path, events=events, event_metadata=event_metadata, overwrite=True
     )
     _bids_validate(bids_root)
+    events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
+    events_json_path = events_tsv_path.copy().update(extension=".json")
+
+    assert events_tsv_path.fpath.exists()
+    assert events_json_path.fpath.exists()
+
+    events_json = json.loads(events_json_path.fpath.read_text())
+    events_tsv = _from_tsv(events_tsv_path)
+    for cur_col in event_metadata.columns:
+        assert cur_col in events_tsv
+        assert cur_col in events_json
