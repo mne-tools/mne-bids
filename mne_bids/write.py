@@ -292,6 +292,9 @@ def _events_tsv(
     trial_type : dict | None
         Dictionary mapping a brief description key to an event id (value). For
         example {'Go': 1, 'No Go': 2}.
+    event_metadata : pd.DataFrame | None
+        Additional metadata to be stored in the events.tsv file. Must have one
+        row per event.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -335,6 +338,10 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
     ----------
     fname : str | mne_bids.BIDSPath
         Output filename.
+    extra_columns : dict | None
+        Dictionary with additional columns to be added to the events.json file.
+    has_trial_type : bool
+        Whether the events.tsv file should contain a 'trial_type' column.
     overwrite : bool
         Whether to overwrite the output file if it exists.
     """
@@ -1494,6 +1501,11 @@ def write_raw_bids(
         contains :class:`~mne.Annotations`, you can use this parameter to
         assign event codes to each unique annotation description (mapping from
         description to event code).
+    event_metadata : pd.DataFrame | None
+        Metadata for each event in ``events``. Each row corresponds to an event.
+    extra_columns_descriptions : dict | None
+        A dictionary that maps column names of the ``event_metadata`` to descriptions.
+        Each column of ``event_metadata`` must have a corresponding entry in this.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
