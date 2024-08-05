@@ -266,7 +266,7 @@ def _get_fid_coords(dig_points, raise_error=True):
     return fid_coords, coord_frame
 
 
-def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False):
+def _events_tsv(events, durations, raw, fname, trial_type, event_metadata=None, overwrite=False):
     """Create an events.tsv file and save it.
 
     This function will write the mandatory 'onset', and 'duration' columns as
@@ -1378,6 +1378,7 @@ def write_raw_bids(
     bids_path,
     events=None,
     event_id=None,
+    event_metadata=None,
     *,
     anonymize=None,
     format="auto",
@@ -1463,8 +1464,9 @@ def write_raw_bids(
            call ``raw.set_annotations(None)`` before invoking this function.
 
         .. note::
-           Descriptions of all event codes must be specified via the
-           ``event_id`` parameter.
+           Either, descriptions of all event codes must be specified via the
+           ``event_id`` parameter or each event must be accompanied by a
+           row in ``event_metadata``.
 
     event_id : dict | None
         Descriptions or names describing the event codes, if you passed
@@ -1678,8 +1680,8 @@ def write_raw_bids(
             '"bids_path.task = <task>"'
         )
 
-    if events is not None and event_id is None:
-        raise ValueError("You passed events, but no event_id dictionary.")
+    if events is not None and event_id is None and event_metadata is None:
+        raise ValueError("You passed events, but no event_id dictionary or event_metadata.")
 
     _validate_type(
         item=empty_room, item_name="empty_room", types=(mne.io.BaseRaw, BIDSPath, None)
@@ -1974,7 +1976,7 @@ def write_raw_bids(
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events, event_id, raw, bids_path=bids_path
+            events, event_id, raw, bids_path=bids_path,
         )
         if events_array.size != 0:
             _events_tsv(
@@ -1983,6 +1985,7 @@ def write_raw_bids(
                 raw=raw,
                 fname=events_tsv_path.fpath,
                 trial_type=event_desc_id_map,
+                event_metadata=event_metadata,
                 overwrite=overwrite,
             )
             _events_json(fname=events_json_path.fpath, overwrite=overwrite)
