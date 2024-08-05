@@ -319,6 +319,10 @@ def _events_tsv(events, durations, raw, fname, trial_type, event_metadata=None, 
     else:
         del data["trial_type"]
 
+    if event_metadata is not None:
+        for key, values in event_metadata.items():
+            data[key] = values
+
     _write_tsv(fname, data, overwrite)
 
 
@@ -1978,6 +1982,10 @@ def write_raw_bids(
         events_array, event_dur, event_desc_id_map = _read_events(
             events, event_id, raw, bids_path=bids_path,
         )
+
+        if event_metadata is not None:
+            event_desc_id_map = None
+
         if events_array.size != 0:
             _events_tsv(
                 events=events_array,

@@ -4162,6 +4162,10 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
 
     events_json = json.loads(events_json_path.fpath.read_text())
     events_tsv = _from_tsv(events_tsv_path)
+
+    assert 'trial_type' not in events_tsv
+    assert 'trial_type' not in events_json
+
     for cur_col in event_metadata.columns:
         assert cur_col in events_tsv
         assert cur_col in events_json
