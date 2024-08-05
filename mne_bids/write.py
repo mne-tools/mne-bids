@@ -266,7 +266,9 @@ def _get_fid_coords(dig_points, raise_error=True):
     return fid_coords, coord_frame
 
 
-def _events_tsv(events, durations, raw, fname, trial_type, event_metadata=None, overwrite=False):
+def _events_tsv(
+    events, durations, raw, fname, trial_type, event_metadata=None, overwrite=False
+):
     """Create an events.tsv file and save it.
 
     This function will write the mandatory 'onset', and 'duration' columns as
@@ -371,10 +373,12 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
     }
 
     if has_trial_type:
-        new_data["trial_type"] = {"Description": "The type, category, or name of the event."}
+        new_data["trial_type"] = {
+            "Description": "The type, category, or name of the event."
+        }
 
     for key, value in extra_columns.items():
-        new_data[key] = {'Description': value}
+        new_data[key] = {"Description": value}
 
     # make sure to append any JSON fields added by the user
     fname = Path(fname)
@@ -1694,15 +1698,23 @@ def write_raw_bids(
         )
 
     if events is not None and event_id is None and event_metadata is None:
-        raise ValueError("You passed events, but no event_id dictionary or event_metadata.")
+        raise ValueError(
+            "You passed events, but no event_id dictionary " "or event_metadata."
+        )
 
     if event_metadata is not None and extra_columns_descriptions is None:
-        raise ValueError("You passed event_metadata, but no extra_columns_descriptions dictionary.")
+        raise ValueError(
+            "You passed event_metadata, but no "
+            "extra_columns_descriptions dictionary."
+        )
 
     if event_metadata is not None:
         for column in event_metadata.columns:
             if column not in extra_columns_descriptions:
-                raise ValueError(f"Extra column {column} in event_metadata is not described in extra_columns_descriptions.")
+                raise ValueError(
+                    f"Extra column {column} in event_metadata "
+                    f"is not described in extra_columns_descriptions."
+                )
 
     _validate_type(
         item=empty_room, item_name="empty_room", types=(mne.io.BaseRaw, BIDSPath, None)
@@ -1997,7 +2009,10 @@ def write_raw_bids(
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events, event_id, raw, bids_path=bids_path,
+            events,
+            event_id,
+            raw,
+            bids_path=bids_path,
         )
 
         if event_metadata is not None:
@@ -2015,8 +2030,12 @@ def write_raw_bids(
             )
             has_trial_type = event_desc_id_map is not None
 
-            _events_json(fname=events_json_path.fpath, extra_columns=extra_columns_descriptions,
-                         has_trial_type=has_trial_type, overwrite=overwrite)
+            _events_json(
+                fname=events_json_path.fpath,
+                extra_columns=extra_columns_descriptions,
+                has_trial_type=has_trial_type,
+                overwrite=overwrite,
+            )
         # Kepp events_array around for BrainVision writing below.
         del event_desc_id_map, events, event_id, event_dur
 

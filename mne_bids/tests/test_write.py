@@ -4123,40 +4123,45 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
     events = mne.find_events(raw, initial_event=True)
-    event_id = {"auditory/left": 1, "auditory/right": 2}
     df_list = []
     for idx, event in enumerate(events):
         direction = None
         if event[2] in (1, 3):
-            direction = 'left'
+            direction = "left"
         elif event[2] in (2, 4):
-            direction = 'right'
+            direction = "right"
 
-        event_type = 'button_press' if event[2] == 32 else 'stimulus'
+        event_type = "button_press" if event[2] == 32 else "stimulus"
         stimulus_kind = None
         if event[2] == 5:
-            stimulus_kind = 'smiley'
+            stimulus_kind = "smiley"
         elif event[2] in (1, 2):
-            stimulus_kind = 'auditory'
+            stimulus_kind = "auditory"
         elif event[2] in (3, 4):
-            stimulus_kind = 'visual'
+            stimulus_kind = "visual"
 
-        df_list.append({
-            'direction': direction,
-            'event_type': event_type,
-            'stimulus_kind': stimulus_kind
-        })
+        df_list.append(
+            {
+                "direction": direction,
+                "event_type": event_type,
+                "stimulus_kind": stimulus_kind,
+            }
+        )
 
     event_metadata = pd.DataFrame(df_list)
 
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
     write_raw_bids(
-        raw, bids_path=bids_path, events=events, event_metadata=event_metadata, overwrite=True,
+        raw,
+        bids_path=bids_path,
+        events=events,
+        event_metadata=event_metadata,
+        overwrite=True,
         extra_columns_descriptions={
-            'direction': 'The direction of the stimulus',
-            'event_type': 'The type of the event',
-            'stimulus_kind': 'The stimulus modality'
-        }
+            "direction": "The direction of the stimulus",
+            "event_type": "The type of the event",
+            "stimulus_kind": "The stimulus modality",
+        },
     )
     _bids_validate(bids_root)
     events_tsv_path = bids_path.copy().update(suffix="events", extension=".tsv")
@@ -4168,8 +4173,8 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
     events_json = json.loads(events_json_path.fpath.read_text())
     events_tsv = _from_tsv(events_tsv_path)
 
-    assert 'trial_type' not in events_tsv
-    assert 'trial_type' not in events_json
+    assert "trial_type" not in events_tsv
+    assert "trial_type" not in events_json
 
     for cur_col in event_metadata.columns:
         assert cur_col in events_tsv
