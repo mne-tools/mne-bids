@@ -46,4 +46,5 @@
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Mara Wolter: https://github.com/marakw
 .. _Julius Welzel: https://github.com/JuliusWelzel
+.. _Kaare Mikkelsen: https://github.com/kaare-mikkelsen
 .. _Amaia Benitez: https://github.com/AmaiaBA

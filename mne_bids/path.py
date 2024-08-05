@@ -695,7 +695,9 @@ class BIDSPath:
             raise RuntimeError("The root must not be None to remove files.")
 
         # Planning:
-        paths_matched = self.match(ignore_json=False, check=self.check)
+        paths_matched = self.match(
+            ignore_json=False, ignore_nosub=False, check=self.check
+        )
         subjects = set()
         paths_to_delete = list()
         paths_to_update = {}
@@ -1005,7 +1007,7 @@ class BIDSPath:
             raise e
         return self
 
-    def match(self, ignore_json=True, check=False):
+    def match(self, *, ignore_json=True, ignore_nosub=False, check=False):
         """Get a list of all matching paths in the root directory.
 
         Performs a recursive search, starting in ``.root`` (if set), based on
@@ -1015,6 +1017,9 @@ class BIDSPath:
         ----------
         ignore_json : bool
             If ``True``, ignores json files. Defaults to ``True``.
+        ignore_nosub : bool
+            If ``True``, ignores all files that are not of the form ``root/sub-*``.
+            Defaults to ``False``.
         check : bool
             If ``True``, only returns paths that conform to BIDS. If ``False``
             (default), the ``.check`` attribute of the returned
@@ -1035,7 +1040,10 @@ class BIDSPath:
             )
 
         paths = _return_root_paths(
-            self.root, datatype=self.datatype, ignore_json=ignore_json
+            self.root,
+            datatype=self.datatype,
+            ignore_json=ignore_json,
+            ignore_nosub=ignore_nosub,
         )
 
         fnames = _filter_fnames(
@@ -2325,6 +2333,9 @@ def find_matching_paths(
     extensions=None,
     datatypes=None,
     check=False,
+    *,
+    ignore_json=False,
+    ignore_nosub=False,
 ):
     """Get list of all matching paths for all matching entity values.
 
@@ -2384,6 +2395,11 @@ def find_matching_paths(
         (default), the ``.check`` attribute of the returned
         :class:`mne_bids.BIDSPath` object will be set to ``True`` for paths that
         do conform to BIDS, and to ``False`` for those that don't.
+    ignore_json : bool
+        If ``True``, ignores json files. Defaults to ``False``.
+    ignore_nosub : bool
+        If ``True``, ignores all files that are not of the form ``root/sub-*``.
+        Defaults to ``False``.
 
     Returns
     -------
@@ -2391,7 +2407,9 @@ def find_matching_paths(
         The matching paths.
 
     """
-    fpaths = _return_root_paths(root, datatype=datatypes, ignore_json=False)
+    fpaths = _return_root_paths(
+        root, datatype=datatypes, ignore_json=ignore_json, ignore_nosub=ignore_nosub
+    )
 
     fpaths_filtered = _filter_fnames(
         fpaths,
@@ -2413,16 +2431,29 @@ def find_matching_paths(
     return bids_paths
 
 
-def _return_root_paths(root, datatype=None, ignore_json=True):
-    """Return all paths in root.
+def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False):
+    """Return all file paths in root.
 
     Can be filtered by datatype (which is present in the path but not in
     the BIDSPath basename). Can also be list of datatypes.
+
+    Parameters
+    ----------
     root : pathlib.Path | str
         The root of the BIDS path.
     datatype : str | array-like of str | None
         The BIDS data type, e.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
         ``'ieeg'``.
+    ignore_json : bool
+        If ``True`` (default), do not return files ending with ``.json``.
+    ignore_nosub : bool
+        If ``True``, return only files of the form ``root/sub-*``. Defaults to
+        ``False``.
+
+    Returns
+    -------
+    paths : list of pathlib.Path
+        All paths in `root`, filtered according to the function parameters.
     """
     root = Path(root)  # if root is str
 
@@ -2433,12 +2464,18 @@ def _return_root_paths(root, datatype=None, ignore_json=True):
         search_str = "*.*"
 
     paths = root.rglob(search_str)
-    # Only keep files (not directories), and omit the JSON sidecars
-    # if ignore_json is True.
+    # Only keep files (not directories), ...
+    # and omit the JSON sidecars if `ignore_json` is True.
     if ignore_json:
         paths = [p for p in paths if p.is_file() and p.suffix != ".json"]
     else:
         paths = [p for p in paths if p.is_file()]
+
+    # only keep files which are of the form root/sub-*,
+    # such that we only look in 'sub'-folders:
+    if ignore_nosub:
+        root_sub = str(root / "sub-")
+        paths = [p for p in paths if str(p).startswith(root_sub)]
 
     return paths
 

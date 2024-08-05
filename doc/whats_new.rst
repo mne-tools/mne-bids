@@ -17,6 +17,7 @@ Version 0.16 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
+* `Kaare Mikkelsen`_
 * `Amaia Benitez`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
@@ -31,7 +32,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- nothing yet
+- :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths` now have additional parameters ``ignore_json`` and ``ignore_nosub``, to give users more control over which type of files are matched, by `Kaare Mikkelsen`_ (:gh:`1281`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
