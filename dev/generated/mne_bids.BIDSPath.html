@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.16.0.dev20+g3cbdbab8 documentation</title>
+    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.16.0.dev21+ge37d3b51 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=792f298f"></script>
+    <script src="../_static/documentation_options.js?v=279493c1"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev20+g3cbdbab8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev21+ge37d3b51 documentation</p>
   
 </a></div>
     
@@ -731,7 +731,7 @@ different properties look like for our object:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.get_empty_room_candidates" title="mne_bids.BIDSPath.get_empty_room_candidates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_empty_room_candidates</span></code></a>()</p></td>
 <td><p>Get the list of empty-room candidates for the given file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>([ignore_json, check])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>(*[, ignore_json, ignore_nosub, check])</p></td>
 <td><p>Get a list of all matching paths in the root directory.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.mkdir" title="mne_bids.BIDSPath.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mkdir</span></code></a>([exist_ok])</p></td>
@@ -919,7 +919,7 @@ contain an “AssociatedEmptyRoom” entry.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.match">
-<span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.match" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_json</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_nosub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.BIDSPath.match" title="Link to this definition">#</a></dt>
 <dd><p>Get a list of all matching paths in the root directory.</p>
 <p>Performs a recursive search, starting in <code class="docutils literal notranslate"><span class="pre">.root</span></code> (if set), based on
 <a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code></a> object. Ignores <code class="docutils literal notranslate"><span class="pre">.json</span></code> files.</p>
@@ -927,6 +927,9 @@ contain an “AssociatedEmptyRoom” entry.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>ignore_json</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, ignores json files. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>ignore_nosub</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, ignores all files that are not of the form <code class="docutils literal notranslate"><span class="pre">root/sub-*</span></code>.
+Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </dd>
 <dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only returns paths that conform to BIDS. If <code class="docutils literal notranslate"><span class="pre">False</span></code>
 (default), the <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute of the returned
@@ -1346,7 +1349,7 @@ or updates for ‘root’ or ‘datatype’.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-07-30.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-08-05.
       <br/>
     
   </p>
