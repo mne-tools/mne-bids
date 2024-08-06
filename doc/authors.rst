@@ -48,3 +48,4 @@
 .. _Julius Welzel: https://github.com/JuliusWelzel
 .. _Kaare Mikkelsen: https://github.com/kaare-mikkelsen
 .. _Amaia Benitez: https://github.com/AmaiaBA
+.. _Thomas Hartmann: https://github.com/thht
