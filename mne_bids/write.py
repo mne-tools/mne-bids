@@ -266,7 +266,9 @@ def _get_fid_coords(dig_points, raise_error=True):
     return fid_coords, coord_frame
 
 
-def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False):
+def _events_tsv(
+    events, durations, raw, fname, trial_type, event_metadata=None, overwrite=False
+):
     """Create an events.tsv file and save it.
 
     This function will write the mandatory 'onset', and 'duration' columns as
@@ -290,6 +292,9 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False):
     trial_type : dict | None
         Dictionary mapping a brief description key to an event id (value). For
         example {'Go': 1, 'No Go': 2}.
+    event_metadata : pandas.DataFrame | None
+        Additional metadata to be stored in the events.tsv file. Must have one
+        row per event.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -319,19 +324,30 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False):
     else:
         del data["trial_type"]
 
+    if event_metadata is not None:
+        for key, values in event_metadata.items():
+            data[key] = values
+
     _write_tsv(fname, data, overwrite)
 
 
-def _events_json(fname, overwrite=False):
+def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False):
     """Create participants.json for non-default columns in accompanying TSV.
 
     Parameters
     ----------
     fname : str | mne_bids.BIDSPath
         Output filename.
+    extra_columns : dict | None
+        Dictionary with additional columns to be added to the events.json file.
+    has_trial_type : bool
+        Whether the events.tsv file should contain a 'trial_type' column.
     overwrite : bool
         Whether to overwrite the output file if it exists.
     """
+    if extra_columns is None:
+        extra_columns = dict()
+
     new_data = {
         "onset": {
             "Description": (
@@ -361,8 +377,15 @@ def _events_json(fname, overwrite=False):
                 "associated with the event."
             )
         },
-        "trial_type": {"Description": "The type, category, or name of the event."},
     }
+
+    if has_trial_type:
+        new_data["trial_type"] = {
+            "Description": "The type, category, or name of the event."
+        }
+
+    for key, value in extra_columns.items():
+        new_data[key] = {"Description": value}
 
     # make sure to append any JSON fields added by the user
     fname = Path(fname)
@@ -1378,6 +1401,8 @@ def write_raw_bids(
     bids_path,
     events=None,
     event_id=None,
+    event_metadata=None,
+    extra_columns_descriptions=None,
     *,
     anonymize=None,
     format="auto",
@@ -1463,8 +1488,9 @@ def write_raw_bids(
            call ``raw.set_annotations(None)`` before invoking this function.
 
         .. note::
-           Descriptions of all event codes must be specified via the
-           ``event_id`` parameter.
+           Either, descriptions of all event codes must be specified via the
+           ``event_id`` parameter or each event must be accompanied by a
+           row in ``event_metadata``.
 
     event_id : dict | None
         Descriptions or names describing the event codes, if you passed
@@ -1475,6 +1501,11 @@ def write_raw_bids(
         contains :class:`~mne.Annotations`, you can use this parameter to
         assign event codes to each unique annotation description (mapping from
         description to event code).
+    event_metadata : pandas.DataFrame | None
+        Metadata for each event in ``events``. Each row corresponds to an event.
+    extra_columns_descriptions : dict | None
+        A dictionary that maps column names of the ``event_metadata`` to descriptions.
+        Each column of ``event_metadata`` must have a corresponding entry in this.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1678,8 +1709,24 @@ def write_raw_bids(
             '"bids_path.task = <task>"'
         )
 
-    if events is not None and event_id is None:
-        raise ValueError("You passed events, but no event_id dictionary.")
+    if events is not None and event_id is None and event_metadata is None:
+        raise ValueError(
+            "You passed events, but no event_id dictionary " "or event_metadata."
+        )
+
+    if event_metadata is not None and extra_columns_descriptions is None:
+        raise ValueError(
+            "You passed event_metadata, but no "
+            "extra_columns_descriptions dictionary."
+        )
+
+    if event_metadata is not None:
+        for column in event_metadata.columns:
+            if column not in extra_columns_descriptions:
+                raise ValueError(
+                    f"Extra column {column} in event_metadata "
+                    f"is not described in extra_columns_descriptions."
+                )
 
     _validate_type(
         item=empty_room, item_name="empty_room", types=(mne.io.BaseRaw, BIDSPath, None)
@@ -1974,8 +2021,15 @@ def write_raw_bids(
     # Write events.
     if not data_is_emptyroom:
         events_array, event_dur, event_desc_id_map = _read_events(
-            events, event_id, raw, bids_path=bids_path
+            events,
+            event_id,
+            raw,
+            bids_path=bids_path,
         )
+
+        if event_metadata is not None:
+            event_desc_id_map = None
+
         if events_array.size != 0:
             _events_tsv(
                 events=events_array,
@@ -1983,9 +2037,17 @@ def write_raw_bids(
                 raw=raw,
                 fname=events_tsv_path.fpath,
                 trial_type=event_desc_id_map,
+                event_metadata=event_metadata,
                 overwrite=overwrite,
             )
-            _events_json(fname=events_json_path.fpath, overwrite=overwrite)
+            has_trial_type = event_desc_id_map is not None
+
+            _events_json(
+                fname=events_json_path.fpath,
+                extra_columns=extra_columns_descriptions,
+                has_trial_type=has_trial_type,
+                overwrite=overwrite,
+            )
         # Kepp events_array around for BrainVision writing below.
         del event_desc_id_map, events, event_id, event_dur
 

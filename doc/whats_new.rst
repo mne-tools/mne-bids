@@ -19,6 +19,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Kaare Mikkelsen`_
 * `Amaia Benitez`_
+* `Thomas Hartmann`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -33,6 +34,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths` now have additional parameters ``ignore_json`` and ``ignore_nosub``, to give users more control over which type of files are matched, by `Kaare Mikkelsen`_ (:gh:`1281`)
+- :func:`mne_bids.write_raw_bids()` can now handle event metadata as a pandas DataFrame, by `Thomas Hartmann`_ (:gh:`1285`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

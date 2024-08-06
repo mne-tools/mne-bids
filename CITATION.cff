@@ -187,6 +187,10 @@ authors:
       family-names: Benitez
       affiliation: 'Magnetoencephalography Core, National Institutes of Health, Bethesda, Maryland, USA'
       orcid: 'https://orcid.org/0000-0001-6364-7272'
+    - given-names: Thomas
+      family-names: Hartmann
+      affiliation: 'Paris-Lodron-University Salzburg, Centre for Cogntitive Neuroscience, Department of Psychology, Salzburg, Austria'
+      orcid: 'https://orcid.org/0000-0002-8298-8125'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
