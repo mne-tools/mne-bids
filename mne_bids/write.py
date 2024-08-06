@@ -292,7 +292,7 @@ def _events_tsv(
     trial_type : dict | None
         Dictionary mapping a brief description key to an event id (value). For
         example {'Go': 1, 'No Go': 2}.
-    event_metadata : pd.DataFrame | None
+    event_metadata : pandas.DataFrame | None
         Additional metadata to be stored in the events.tsv file. Must have one
         row per event.
     overwrite : bool
@@ -1501,7 +1501,7 @@ def write_raw_bids(
         contains :class:`~mne.Annotations`, you can use this parameter to
         assign event codes to each unique annotation description (mapping from
         description to event code).
-    event_metadata : pd.DataFrame | None
+    event_metadata : pandas.DataFrame | None
         Metadata for each event in ``events``. Each row corresponds to an event.
     extra_columns_descriptions : dict | None
         A dictionary that maps column names of the ``event_metadata`` to descriptions.
