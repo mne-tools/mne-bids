@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.16.0.dev23+g20a4ce2d documentation</title>
+    <title>mne_bids.BIDSPath &#8212; MNE-BIDS 0.16.0.dev24+g648867f8 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=2a0106b4"></script>
+    <script src="../_static/documentation_options.js?v=ecb6202b"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev23+g20a4ce2d documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev24+g648867f8 documentation</p>
   
 </a></div>
     
@@ -636,7 +636,55 @@ The following filename suffix’s are accepted:
 </dd>
 </dl>
 </dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entities</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Return dictionary of the BIDS entities.</p>
+</dd>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.datatype" title="mne_bids.BIDSPath.datatype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datatype</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The BIDS data type, e.g.</p>
+</dd>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.basename" title="mne_bids.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Path basename.</p>
+</dd>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.root" title="mne_bids.BIDSPath.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
+</dd>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directory</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Get the BIDS parent directory.</p>
+</dd>
+<dt><a class="reference internal" href="#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Full filepath for this BIDS file.</p>
+</dd>
+<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to enforce BIDS conformity.</p>
+</dd>
 </dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<td><p>Copy the instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_empty_room</span></code></a>([use_sidecar_only, verbose])</p></td>
+<td><p>Find the corresponding empty-room file of an MEG recording.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_matching_sidecar</span></code></a>([suffix, extension, ...])</p></td>
+<td><p>Get the matching sidecar JSON path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.get_empty_room_candidates" title="mne_bids.BIDSPath.get_empty_room_candidates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_empty_room_candidates</span></code></a>()</p></td>
+<td><p>Get the list of empty-room candidates for the given file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>(*[, ignore_json, ignore_nosub, check])</p></td>
+<td><p>Get a list of all matching paths in the root directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.mkdir" title="mne_bids.BIDSPath.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mkdir</span></code></a>([exist_ok])</p></td>
+<td><p>Create the directory structure of the BIDS path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.rm" title="mne_bids.BIDSPath.rm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rm</span></code></a>(*[, safe_remove, verbose])</p></td>
+<td><p>Safely delete a set of files from a BIDS dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
+<td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p class="rubric">Notes</p>
 <p>BIDS entities are generally separated with a <code class="docutils literal notranslate"><span class="pre">&quot;_&quot;</span></code> character, while
 entity key/value pairs are separated with a <code class="docutils literal notranslate"><span class="pre">&quot;-&quot;</span></code> character.
@@ -695,56 +743,6 @@ different properties look like for our object:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span>
 <span class="go">/bids_dataset/sub-test2/ses-one/ieeg</span>
 </pre></div>
-</div>
-<dl class="field-list">
-<dt class="field-odd">Attributes<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entities</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Return dictionary of the BIDS entities.</p>
-</dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.datatype" title="mne_bids.BIDSPath.datatype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datatype</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The BIDS data type, e.g.</p>
-</dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.basename" title="mne_bids.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Path basename.</p>
-</dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.root" title="mne_bids.BIDSPath.root"><code class="xref py py-obj docutils literal notranslate"><span class="pre">root</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>The root directory of the BIDS dataset.</p>
-</dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.directory" title="mne_bids.BIDSPath.directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directory</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Get the BIDS parent directory.</p>
-</dd>
-<dt><a class="reference internal" href="#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a></span></dt><dd><p>Full filepath for this BIDS file.</p>
-</dd>
-<dt><strong>check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to enforce BIDS conformity.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
-<td><p>Copy the instance.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_empty_room</span></code></a>([use_sidecar_only, verbose])</p></td>
-<td><p>Find the corresponding empty-room file of an MEG recording.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_matching_sidecar" title="mne_bids.BIDSPath.find_matching_sidecar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_matching_sidecar</span></code></a>([suffix, extension, ...])</p></td>
-<td><p>Get the matching sidecar JSON path.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.get_empty_room_candidates" title="mne_bids.BIDSPath.get_empty_room_candidates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_empty_room_candidates</span></code></a>()</p></td>
-<td><p>Get the list of empty-room candidates for the given file.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>(*[, ignore_json, ignore_nosub, check])</p></td>
-<td><p>Get a list of all matching paths in the root directory.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.mkdir" title="mne_bids.BIDSPath.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mkdir</span></code></a>([exist_ok])</p></td>
-<td><p>Create the directory structure of the BIDS path.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.rm" title="mne_bids.BIDSPath.rm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rm</span></code></a>(*[, safe_remove, verbose])</p></td>
-<td><p>Safely delete a set of files from a BIDS dataset.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
-<td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="mne_bids.BIDSPath.__hash__">
@@ -1349,7 +1347,7 @@ or updates for ‘root’ or ‘datatype’.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-08-06.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-08-12.
       <br/>
     
   </p>
