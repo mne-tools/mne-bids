@@ -82,8 +82,8 @@ def _contains_row(data, row_data):
         # Cast row_value to the same dtype as data_value to avoid a NumPy
         # FutureWarning, see
         # https://github.com/mne-tools/mne-bids/pull/372
-        row_value = np.array(row_value, dtype=data_value.dtype)
-
+        if data_value.size > 0:
+            row_value = np.array(row_value, dtype=data_value.dtype)
         column_mask = np.isin(data_value, row_value)
         mask = column_mask if mask is None else (mask & column_mask)
     return np.any(mask)
