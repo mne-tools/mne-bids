@@ -2559,7 +2559,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
     # Read sidecar and create required columns if they do not exist.
     if "status" not in tsv_data:
         logger.info(
-            'No "status" column found in input file.'
+            'No "status" column found in channels file.'
             'Creating it with default value "good".'
         )
         tsv_data["status"] = ["good"] * len(tsv_data["name"])
