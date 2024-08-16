@@ -2463,9 +2463,8 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         The names of the channel(s) to mark with a ``status`` and possibly a
         ``description``. Can be an empty list to indicate all channel names.
     status : 'good' | 'bad' | list of str
-        The status of the channels ('good', or 'bad'). Default is 'bad'. If it
-        is a list, then must be a list of 'good', or 'bad' that has the same
-        length as ``ch_names``.
+        The status of the channels ('good', or 'bad'). If it is a list, then must be a
+        list of 'good', or 'bad' that has the same length as ``ch_names``.
     descriptions : None | str | list of str
         Descriptions of the reasons that lead to the exclusion of the
         channel(s). If a list, it must match the length of ``ch_names``.
@@ -2543,7 +2542,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
             f"({len(ch_names)})."
         )
 
-    if not all(status in ["good", "bad"] for status in status):
+    if not all(status_ in ["good", "bad"] for status_ in status):
         raise ValueError(
             'Setting the status of a channel must only be "good", or "bad".'
         )
@@ -2565,7 +2564,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         idx = tsv_data["name"].index(ch_name)
         logger.info(
             f"Processing channel {ch_name}:\n"
-            f"    status: bad\n"
+            f"    status: {status_}\n"
             f"    description: {description}"
         )
         tsv_data["status"][idx] = status_
