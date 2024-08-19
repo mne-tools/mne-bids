@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.16.0.dev24+g648867f8 documentation</title>
+    <title>mne_bids.mark_channels &#8212; MNE-BIDS 0.16.0.dev25+g283d8599 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=ecb6202b"></script>
+    <script src="../_static/documentation_options.js?v=8c0eec9f"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev24+g648867f8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev25+g283d8599 documentation</p>
   
 </a></div>
     
@@ -583,14 +583,13 @@ attribute <strong>may</strong> be set. If <code class="docutils literal notransl
 type (e.g., only EEG or MEG data) is present in the dataset, it will be
 selected automatically.</p>
 </dd>
-<dt><strong>ch_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The names of the channel(s) to mark with a <code class="docutils literal notranslate"><span class="pre">status</span></code> and possibly a
+<dt><strong>ch_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The names of the channel(s) to mark with a <code class="docutils literal notranslate"><span class="pre">status</span></code> and optionally a
 <code class="docutils literal notranslate"><span class="pre">description</span></code>. Can be an empty list to indicate all channel names.</p>
 </dd>
-<dt><strong>status</strong><span class="classifier">‘good’ | ‘bad’ | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The status of the channels (‘good’, or ‘bad’). Default is ‘bad’. If it
-is a list, then must be a list of ‘good’, or ‘bad’ that has the same
-length as <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>.</p>
+<dt><strong>status</strong><span class="classifier">‘good’ | ‘bad’ | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The status of the channels (‘good’, or ‘bad’). If it is a list, then must be a
+list of ‘good’, or ‘bad’ that has the same length as <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>.</p>
 </dd>
-<dt><strong>descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Descriptions of the reasons that lead to the exclusion of the
+<dt><strong>descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Descriptions of the reasons that lead to the marking (‘good’ or ‘bad’) of the
 channel(s). If a list, it must match the length of <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no descriptions are added.</p>
 </dd>
@@ -602,6 +601,11 @@ argument.</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>If the ‘status’ or ‘status_description’ columns were not present in the
+corresponding tsv file before using this function, they may be created with default
+values (‘good’ for status, ‘n/a’ for status_description) for all channels that are
+not differently specified (by using <code class="docutils literal notranslate"><span class="pre">ch_names</span></code>, <code class="docutils literal notranslate"><span class="pre">status</span></code>, and <code class="docutils literal notranslate"><span class="pre">descriptions</span></code>).</p>
 <p class="rubric">Examples</p>
 <p>Mark a single channel as bad.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./mne_bids/tests/data/tiny_bids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
@@ -712,7 +716,7 @@ channel.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-08-12.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-08-19.
       <br/>
     
   </p>
