@@ -2551,7 +2551,7 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
             f"({len(ch_names)})."
         )
 
-    if set(status) != {"good", "bad"}:
+    if not set(status).issubset({"good", "bad"}):
         raise ValueError(
             'Setting the status of a channel must only be "good", or "bad".'
         )
