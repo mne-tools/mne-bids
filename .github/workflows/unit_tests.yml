@@ -113,8 +113,8 @@ jobs:
   test:
     # For GitHub "required" CI checks, add in branch protection:
     #
-    # 6 checks:
-    # for each OS (ubuntu, macos, macos-13, windows):
+    # 8 checks:
+    # for each machine type (ubuntu, macos, macos-13, windows):
     # (NOTE: macos-13=x86_64, macos>13=arm64)
     # 3.10 / mne-stable / full / validator-stable
     # 3.12 / mne-stable / full / validator-stable
