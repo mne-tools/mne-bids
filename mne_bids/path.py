@@ -1473,7 +1473,7 @@ def search_folder_for_text(
 def _check_max_depth(max_depth):
     """Check that max depth is a proper input."""
     msg = "`max_depth` must be a positive integer or None"
-    if not isinstance(max_depth, (int, type(None))):
+    if not isinstance(max_depth, int | type(None)):
         raise ValueError(msg)
     if max_depth is None:
         max_depth = float("inf")
@@ -2217,7 +2217,7 @@ def _infer_datatype(*, root, sub, ses):
 
 def _path_to_str(var):
     """Make sure var is a string or Path, return string representation."""
-    if not isinstance(var, (Path, str)):
+    if not isinstance(var, Path | str):
         raise ValueError(
             f"All path parameters must be either strings or "
             f"pathlib.Path objects. Found type {type(var)}."

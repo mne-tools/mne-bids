@@ -153,7 +153,7 @@ def _from_tsv(fname, dtypes=None):
     data_dict = OrderedDict()
     if dtypes is None:
         dtypes = [str] * info.shape[1]
-    if not isinstance(dtypes, (list, tuple)):
+    if not isinstance(dtypes, list | tuple):
         dtypes = [dtypes] * info.shape[1]
     if not len(dtypes) == info.shape[1]:
         raise ValueError(
