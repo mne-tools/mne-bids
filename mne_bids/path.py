@@ -2057,9 +2057,8 @@ def get_entity_vals(
 
     for filename in filenames:
         # Skip ignored directories
-        # XXX In Python 3.9, we can use Path.is_relative_to() here
         if any(
-            [str(filename).startswith(str(ignore_dir)) for ignore_dir in ignore_dirs]
+            [Path(filename).is_relative_to(ignore_dir) for ignore_dir in ignore_dirs]
         ):
             continue
 
