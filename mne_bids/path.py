@@ -14,7 +14,6 @@ from io import StringIO
 from os import path as op
 from pathlib import Path
 from textwrap import indent
-from typing import Optional
 
 import numpy as np
 from mne.utils import _check_fname, _validate_type, logger, verbose
@@ -448,7 +447,7 @@ class BIDSPath:
         return Path(data_path)
 
     @property
-    def subject(self) -> Optional[str]:
+    def subject(self) -> str | None:
         """The subject ID."""
         return self._subject
 
@@ -457,7 +456,7 @@ class BIDSPath:
         self.update(subject=value)
 
     @property
-    def session(self) -> Optional[str]:
+    def session(self) -> str | None:
         """The acquisition session."""
         return self._session
 
@@ -466,7 +465,7 @@ class BIDSPath:
         self.update(session=value)
 
     @property
-    def task(self) -> Optional[str]:
+    def task(self) -> str | None:
         """The experimental task."""
         return self._task
 
@@ -475,7 +474,7 @@ class BIDSPath:
         self.update(task=value)
 
     @property
-    def run(self) -> Optional[str]:
+    def run(self) -> str | None:
         """The run number."""
         return self._run
 
@@ -484,7 +483,7 @@ class BIDSPath:
         self.update(run=value)
 
     @property
-    def acquisition(self) -> Optional[str]:
+    def acquisition(self) -> str | None:
         """The acquisition parameters."""
         return self._acquisition
 
@@ -493,7 +492,7 @@ class BIDSPath:
         self.update(acquisition=value)
 
     @property
-    def processing(self) -> Optional[str]:
+    def processing(self) -> str | None:
         """The processing label."""
         return self._processing
 
@@ -502,7 +501,7 @@ class BIDSPath:
         self.update(processing=value)
 
     @property
-    def recording(self) -> Optional[str]:
+    def recording(self) -> str | None:
         """The recording name."""
         return self._recording
 
@@ -511,7 +510,7 @@ class BIDSPath:
         self.update(recording=value)
 
     @property
-    def space(self) -> Optional[str]:
+    def space(self) -> str | None:
         """The coordinate space for an anatomical or sensor position file."""
         return self._space
 
@@ -520,7 +519,7 @@ class BIDSPath:
         self.update(space=value)
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """The description entity."""
         return self._description
 
@@ -529,7 +528,7 @@ class BIDSPath:
         self.update(description=value)
 
     @property
-    def suffix(self) -> Optional[str]:
+    def suffix(self) -> str | None:
         """The filename suffix."""
         return self._suffix
 
@@ -538,7 +537,7 @@ class BIDSPath:
         self.update(suffix=value)
 
     @property
-    def root(self) -> Optional[Path]:
+    def root(self) -> Path | None:
         """The root directory of the BIDS dataset."""
         return self._root
 
@@ -547,7 +546,7 @@ class BIDSPath:
         self.update(root=value)
 
     @property
-    def datatype(self) -> Optional[str]:
+    def datatype(self) -> str | None:
         """The BIDS data type, e.g. ``'anat'``, ``'meg'``, ``'eeg'``."""
         return self._datatype
 
@@ -556,7 +555,7 @@ class BIDSPath:
         self.update(datatype=value)
 
     @property
-    def split(self) -> Optional[str]:
+    def split(self) -> str | None:
         """The split of the continuous recording file for ``.fif`` data."""
         return self._split
 
@@ -565,7 +564,7 @@ class BIDSPath:
         self.update(split=value)
 
     @property
-    def extension(self) -> Optional[str]:
+    def extension(self) -> str | None:
         """The extension of the filename, including a leading period."""
         return self._extension
 
@@ -1474,7 +1473,7 @@ def search_folder_for_text(
 def _check_max_depth(max_depth):
     """Check that max depth is a proper input."""
     msg = "`max_depth` must be a positive integer or None"
-    if not isinstance(max_depth, (int, type(None))):
+    if not isinstance(max_depth, int | type(None)):
         raise ValueError(msg)
     if max_depth is None:
         max_depth = float("inf")
@@ -2057,9 +2056,8 @@ def get_entity_vals(
 
     for filename in filenames:
         # Skip ignored directories
-        # XXX In Python 3.9, we can use Path.is_relative_to() here
         if any(
-            [str(filename).startswith(str(ignore_dir)) for ignore_dir in ignore_dirs]
+            [Path(filename).is_relative_to(ignore_dir) for ignore_dir in ignore_dirs]
         ):
             continue
 
@@ -2219,7 +2217,7 @@ def _infer_datatype(*, root, sub, ses):
 
 def _path_to_str(var):
     """Make sure var is a string or Path, return string representation."""
-    if not isinstance(var, (Path, str)):
+    if not isinstance(var, Path | str):
         raise ValueError(
             f"All path parameters must be either strings or "
             f"pathlib.Path objects. Found type {type(var)}."

@@ -90,7 +90,7 @@ _FIFF_SPLIT_SIZE = "2GB"  # MNE-Python default; can be altered during debugging
 
 
 def _is_numeric(n):
-    return isinstance(n, (np.integer, np.floating, int, float))
+    return isinstance(n, np.integer | np.floating | int | float)
 
 
 def _channels_tsv(raw, fname, overwrite=False):
@@ -459,7 +459,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         if isinstance(age, tuple):  # can be removed once MNE >= 1.8 is required
             age = date(*age)
         meas_date = raw.info.get("meas_date", None)
-        if isinstance(meas_date, (tuple, list, np.ndarray)):
+        if isinstance(meas_date, tuple | list | np.ndarray):
             meas_date = meas_date[0]
 
         if meas_date is not None and age is not None:
@@ -2267,7 +2267,7 @@ def _get_t1w_mgh(fs_subject, fs_subjects_dir):
 def _get_landmarks(landmarks, image_nii, kind=""):
     import nibabel as nib
 
-    if isinstance(landmarks, (str, Path)):
+    if isinstance(landmarks, str | Path):
         landmarks, coord_frame = read_fiducials(landmarks)
         landmarks = np.array(
             [landmark["r"] for landmark in landmarks], dtype=float
