@@ -124,6 +124,11 @@ templates_path = ["_templates"]
 html_static_path = ["_static"]
 html_css_files = ["style.css"]
 
+# The number of items that will appear in the header before the dropdown menu kicks in
+html_theme_options = {
+  "header_links_before_dropdown": 6,
+}
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
