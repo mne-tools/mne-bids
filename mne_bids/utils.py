@@ -210,7 +210,7 @@ def _age_on_date(bday, exp_date):
 def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
-        if not isinstance(var, (str, type(None))):
+        if not isinstance(var, str | type(None)):
             raise ValueError(
                 f"You supplied a value ({var}) of type "
                 f"{type(var)}, where a string or None was "
@@ -271,7 +271,7 @@ def _get_mrk_meas_date(mrk):
     """Find the measurement date from a KIT marker file."""
     info = get_kit_info(mrk, False)[0]
     meas_date = info.get("meas_date", None)
-    if isinstance(meas_date, (tuple, list, np.ndarray)):
+    if isinstance(meas_date, tuple | list | np.ndarray):
         meas_date = meas_date[0]
     if isinstance(meas_date, datetime):
         meas_datetime = meas_date

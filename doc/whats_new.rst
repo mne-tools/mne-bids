@@ -19,6 +19,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Kaare Mikkelsen`_
 * `Amaia Benitez`_
+* `Thomas Hartmann`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -33,17 +34,20 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths` now have additional parameters ``ignore_json`` and ``ignore_nosub``, to give users more control over which type of files are matched, by `Kaare Mikkelsen`_ (:gh:`1281`)
+- :func:`mne_bids.write_raw_bids()` can now handle event metadata as a pandas DataFrame, by `Thomas Hartmann`_ (:gh:`1285`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - :func:`mne_bids.read_raw_bids` no longer warns about unit changes in channels upon reading, as that information is taken from ``channels.tsv`` and judged authorative, by `Stefan Appelhoff`_ (:gh:`1282`)
 - MEG OPM channels are now experimentally included, by `Amaia Benitez`_ (:gh:`1222`)
+- :func:`mne_bids.mark_channels` will no longer create a ``status_description`` column filled with ``n/a`` in the ``channels.tsv`` file, by `Stefan Appelhoff`_ (:gh:`1293`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
 - MNE-BIDS now requires MNE-Python 1.6.0 or higher.
+- MNE-BIDS now requires Python 3.10 or higher.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^

@@ -169,7 +169,7 @@ def _read_events(events, event_id, raw, bids_path=None):
 
     # If we have events, convert them to Annotations so they can be easily
     # merged with existing Annotations.
-    if events.size > 0:
+    if events.size > 0 and event_id is not None:
         ids_without_desc = set(events[:, 2]) - set(event_id.values())
         if ids_without_desc:
             raise ValueError(
@@ -199,6 +199,22 @@ def _read_events(events, event_id, raw, bids_path=None):
         annotations += new_annotations
         raw.set_annotations(annotations)
         del id_to_desc_map, annotations, new_annotations
+
+    if events.size > 0 and event_id is None:
+        new_annotations = mne.annotations_from_events(
+            events=events,
+            sfreq=raw.info["sfreq"],
+            orig_time=raw.annotations.orig_time,
+        )
+
+        raw = raw.copy()  # Don't alter the original.
+        annotations = raw.annotations.copy()
+
+        # We use `+=` here because `Annotations.__iadd__()` does the right
+        # thing and also performs a sanity check on `Annotations.orig_time`.
+        annotations += new_annotations
+        raw.set_annotations(annotations)
+        del annotations, new_annotations
 
     # Now convert the Annotations to events.
     all_events, all_desc = events_from_annotations(
