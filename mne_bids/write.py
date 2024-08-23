@@ -90,7 +90,7 @@ _FIFF_SPLIT_SIZE = "2GB"  # MNE-Python default; can be altered during debugging
 
 
 def _is_numeric(n):
-    return isinstance(n, (np.integer, np.floating, int, float))
+    return isinstance(n, np.integer | np.floating | int | float)
 
 
 def _channels_tsv(raw, fname, overwrite=False):
@@ -482,7 +482,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         if isinstance(age, tuple):  # can be removed once MNE >= 1.8 is required
             age = date(*age)
         meas_date = raw.info.get("meas_date", None)
-        if isinstance(meas_date, (tuple, list, np.ndarray)):
+        if isinstance(meas_date, tuple | list | np.ndarray):
             meas_date = meas_date[0]
 
         if meas_date is not None and age is not None:
@@ -2329,7 +2329,7 @@ def _get_t1w_mgh(fs_subject, fs_subjects_dir):
 def _get_landmarks(landmarks, image_nii, kind=""):
     import nibabel as nib
 
-    if isinstance(landmarks, (str, Path)):
+    if isinstance(landmarks, str | Path):
         landmarks, coord_frame = read_fiducials(landmarks)
         landmarks = np.array(
             [landmark["r"] for landmark in landmarks], dtype=float
@@ -2522,17 +2522,23 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         type (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
     ch_names : str | list of str
-        The names of the channel(s) to mark with a ``status`` and possibly a
+        The names of the channel(s) to mark with a ``status`` and optionally a
         ``description``. Can be an empty list to indicate all channel names.
     status : 'good' | 'bad' | list of str
-        The status of the channels ('good', or 'bad'). Default is 'bad'. If it
-        is a list, then must be a list of 'good', or 'bad' that has the same
-        length as ``ch_names``.
+        The status of the channels ('good', or 'bad'). If it is a list, then must be a
+        list of 'good', or 'bad' that has the same length as ``ch_names``.
     descriptions : None | str | list of str
-        Descriptions of the reasons that lead to the exclusion of the
+        Descriptions of the reasons that lead to the marking ('good' or 'bad') of the
         channel(s). If a list, it must match the length of ``ch_names``.
         If ``None``, no descriptions are added.
     %(verbose)s
+
+    Notes
+    -----
+    If the 'status' or 'status_description' columns were not present in the
+    corresponding tsv file before using this function, they may be created with default
+    values ('good' for status, 'n/a' for status_description) for all channels that are
+    not differently specified (by using ``ch_names``, ``status``, and ``descriptions``).
 
     Examples
     --------
@@ -2588,7 +2594,9 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
     # set descriptions based on how it's passed in
     if isinstance(descriptions, str):
         descriptions = [descriptions] * len(ch_names)
+        write_descriptions = True
     elif not descriptions:
+        write_descriptions = False
         descriptions = [None] * len(ch_names)
 
     # make sure statuses is a list of strings
@@ -2605,18 +2613,24 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
             f"({len(ch_names)})."
         )
 
-    if not all(status in ["good", "bad"] for status in status):
+    if not set(status).issubset({"good", "bad"}):
         raise ValueError(
             'Setting the status of a channel must only be "good", or "bad".'
         )
 
     # Read sidecar and create required columns if they do not exist.
     if "status" not in tsv_data:
-        logger.info('No "status" column found in input file. Creating.')
+        logger.info(
+            'No "status" column found in channels file.'
+            'Creating it with default value "good".'
+        )
         tsv_data["status"] = ["good"] * len(tsv_data["name"])
 
-    if "status_description" not in tsv_data:
-        logger.info('No "status_description" column found in input file. Creating.')
+    if "status_description" not in tsv_data and write_descriptions:
+        logger.info(
+            'No "status_description" column found in input file. '
+            'Creating it with default value "n/a".'
+        )
         tsv_data["status_description"] = ["n/a"] * len(tsv_data["name"])
 
     # Now actually mark the user-requested channels as bad.
@@ -2627,13 +2641,13 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         idx = tsv_data["name"].index(ch_name)
         logger.info(
             f"Processing channel {ch_name}:\n"
-            f"    status: bad\n"
+            f"    status: {status_}\n"
             f"    description: {description}"
         )
         tsv_data["status"][idx] = status_
 
         # only write if the description was passed in
-        if description is not None:
+        if description:
             tsv_data["status_description"][idx] = description
 
     _write_tsv(channels_fname, tsv_data, overwrite=True)
