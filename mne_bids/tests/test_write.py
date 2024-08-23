@@ -258,11 +258,17 @@ def test_write_participants(_bids_validate, tmp_path):
     write_raw_bids(raw, bids_path, verbose=False)
     data = _from_tsv(participants_tsv)
 
+    # write an alphanumeric subject
+    bids_path.update(subject="D04")
+    write_raw_bids(raw, bids_path, verbose=False)
+    data = _from_tsv(participants_tsv)
+
     # hand should have been written properly with now 'n/a' for sub-01 and
     # sub-03, but 'L' for sub-03
     assert data["hand"][data["participant_id"].index("sub-01")] == "n/a"
     assert data["hand"][data["participant_id"].index("sub-02")] == "n/a"
     assert data["hand"][data["participant_id"].index("sub-03")] == "L"
+    assert data["hand"][data["participant_id"].index("sub-D04")] == "L"
 
     # check to make sure participant data is overwritten, but keeps the fields
     # if there are extra fields that were user defined
