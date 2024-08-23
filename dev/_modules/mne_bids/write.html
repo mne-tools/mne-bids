@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.16.0.dev28+gf9199621 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.16.0.dev29+g471bd0cd documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=62292a13"></script>
+    <script src="../../_static/documentation_options.js?v=4a854790"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev28+gf9199621 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev29+g471bd0cd documentation</p>
   
 </a></div>
     
@@ -776,7 +776,9 @@ document.write(`
     <span class="k">return</span> <span class="n">fid_coords</span><span class="p">,</span> <span class="n">coord_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span>
+    <span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
 
 <span class="sd">    This function will write the mandatory &#39;onset&#39;, and &#39;duration&#39; columns as</span>
@@ -800,6 +802,9 @@ document.write(`
 <span class="sd">    trial_type : dict | None</span>
 <span class="sd">        Dictionary mapping a brief description key to an event id (value). For</span>
 <span class="sd">        example {&#39;Go&#39;: 1, &#39;No Go&#39;: 2}.</span>
+<span class="sd">    event_metadata : pandas.DataFrame | None</span>
+<span class="sd">        Additional metadata to be stored in the events.tsv file. Must have one</span>
+<span class="sd">        row per event.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
@@ -829,19 +834,30 @@ document.write(`
     <span class="k">else</span><span class="p">:</span>
         <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;trial_type&quot;</span><span class="p">]</span>
 
+    <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">event_metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fname : str | mne_bids.BIDSPath</span>
 <span class="sd">        Output filename.</span>
+<span class="sd">    extra_columns : dict | None</span>
+<span class="sd">        Dictionary with additional columns to be added to the events.json file.</span>
+<span class="sd">    has_trial_type : bool</span>
+<span class="sd">        Whether the events.tsv file should contain a &#39;trial_type&#39; column.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the output file if it exists.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">extra_columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extra_columns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
     <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;onset&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="p">(</span>
@@ -871,8 +887,15 @@ document.write(`
                 <span class="s2">&quot;associated with the event.&quot;</span>
             <span class="p">)</span>
         <span class="p">},</span>
-        <span class="s2">&quot;trial_type&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;The type, category, or name of the event.&quot;</span><span class="p">},</span>
     <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">has_trial_type</span><span class="p">:</span>
+        <span class="n">new_data</span><span class="p">[</span><span class="s2">&quot;trial_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="s2">&quot;The type, category, or name of the event.&quot;</span>
+        <span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">extra_columns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">new_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
 
     <span class="c1"># make sure to append any JSON fields added by the user</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
@@ -1893,6 +1916,8 @@ document.write(`
     <span class="n">bids_path</span><span class="p">,</span>
     <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">extra_columns_descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -1978,8 +2003,9 @@ document.write(`
 <span class="sd">           call ``raw.set_annotations(None)`` before invoking this function.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">           Descriptions of all event codes must be specified via the</span>
-<span class="sd">           ``event_id`` parameter.</span>
+<span class="sd">           Either, descriptions of all event codes must be specified via the</span>
+<span class="sd">           ``event_id`` parameter or each event must be accompanied by a</span>
+<span class="sd">           row in ``event_metadata``.</span>
 
 <span class="sd">    event_id : dict | None</span>
 <span class="sd">        Descriptions or names describing the event codes, if you passed</span>
@@ -1990,6 +2016,11 @@ document.write(`
 <span class="sd">        contains :class:`~mne.Annotations`, you can use this parameter to</span>
 <span class="sd">        assign event codes to each unique annotation description (mapping from</span>
 <span class="sd">        description to event code).</span>
+<span class="sd">    event_metadata : pandas.DataFrame | None</span>
+<span class="sd">        Metadata for each event in ``events``. Each row corresponds to an event.</span>
+<span class="sd">    extra_columns_descriptions : dict | None</span>
+<span class="sd">        A dictionary that maps column names of the ``event_metadata`` to descriptions.</span>
+<span class="sd">        Each column of ``event_metadata`` must have a corresponding entry in this.</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If `None` (default), no anonymization is performed.</span>
 <span class="sd">        If a dictionary, data will be anonymized depending on the dictionary</span>
@@ -2193,8 +2224,24 @@ document.write(`
             <span class="s1">&#39;&quot;bids_path.task = &lt;task&gt;&quot;&#39;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You passed events, but no event_id dictionary.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;You passed events, but no event_id dictionary &quot;</span> <span class="s2">&quot;or event_metadata.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">extra_columns_descriptions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;You passed event_metadata, but no &quot;</span>
+            <span class="s2">&quot;extra_columns_descriptions dictionary.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">event_metadata</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_columns_descriptions</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Extra column </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2"> in event_metadata &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;is not described in extra_columns_descriptions.&quot;</span>
+                <span class="p">)</span>
 
     <span class="n">_validate_type</span><span class="p">(</span>
         <span class="n">item</span><span class="o">=</span><span class="n">empty_room</span><span class="p">,</span> <span class="n">item_name</span><span class="o">=</span><span class="s2">&quot;empty_room&quot;</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">BaseRaw</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -2489,8 +2536,15 @@ document.write(`
     <span class="c1"># Write events.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data_is_emptyroom</span><span class="p">:</span>
         <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
-            <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span>
+            <span class="n">events</span><span class="p">,</span>
+            <span class="n">event_id</span><span class="p">,</span>
+            <span class="n">raw</span><span class="p">,</span>
+            <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">events_array</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">_events_tsv</span><span class="p">(</span>
                 <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span>
@@ -2498,9 +2552,17 @@ document.write(`
                 <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
                 <span class="n">fname</span><span class="o">=</span><span class="n">events_tsv_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
                 <span class="n">trial_type</span><span class="o">=</span><span class="n">event_desc_id_map</span><span class="p">,</span>
+                <span class="n">event_metadata</span><span class="o">=</span><span class="n">event_metadata</span><span class="p">,</span>
                 <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">events_json_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">has_trial_type</span> <span class="o">=</span> <span class="n">event_desc_id_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="n">_events_json</span><span class="p">(</span>
+                <span class="n">fname</span><span class="o">=</span><span class="n">events_json_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span>
+                <span class="n">extra_columns</span><span class="o">=</span><span class="n">extra_columns_descriptions</span><span class="p">,</span>
+                <span class="n">has_trial_type</span><span class="o">=</span><span class="n">has_trial_type</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
         <span class="k">del</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_dur</span>
 

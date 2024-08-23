@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.16.0.dev28+gf9199621 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.16.0.dev29+g471bd0cd documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=62292a13"></script>
+    <script src="../../_static/documentation_options.js?v=4a854790"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev28+gf9199621 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev29+g471bd0cd documentation</p>
   
 </a></div>
     
@@ -679,7 +679,7 @@ document.write(`
 
     <span class="c1"># If we have events, convert them to Annotations so they can be easily</span>
     <span class="c1"># merged with existing Annotations.</span>
-    <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ids_without_desc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">ids_without_desc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -709,6 +709,22 @@ document.write(`
         <span class="n">annotations</span> <span class="o">+=</span> <span class="n">new_annotations</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
         <span class="k">del</span> <span class="n">id_to_desc_map</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">new_annotations</span>
+
+    <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">annotations_from_events</span><span class="p">(</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Don&#39;t alter the original.</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># We use `+=` here because `Annotations.__iadd__()` does the right</span>
+        <span class="c1"># thing and also performs a sanity check on `Annotations.orig_time`.</span>
+        <span class="n">annotations</span> <span class="o">+=</span> <span class="n">new_annotations</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">new_annotations</span>
 
     <span class="c1"># Now convert the Annotations to events.</span>
     <span class="n">all_events</span><span class="p">,</span> <span class="n">all_desc</span> <span class="o">=</span> <span class="n">events_from_annotations</span><span class="p">(</span>
