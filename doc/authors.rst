@@ -1,3 +1,4 @@
+.. _Aaron Earle-Richardson: https://github.com/Aaronearlerichardson
 .. _Mainak Jas: https://jasmainak.github.io/
 .. _Teon Brooks: https://teonbrooks.com
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
