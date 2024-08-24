@@ -18,7 +18,8 @@ MNE-BIDS is a Python package that allows you to read and write
 Why?
 ----
 
-MNE-BIDS links BIDS and MNE-Python with the goal to make your analyses faster to code, more robust, and facilitate data and code sharing with co-workers and collaborators.
+MNE-BIDS links BIDS and MNE-Python with the goal to make your analyses faster to code and more robust,
+and to facilitate data and code sharing with co-workers and collaborators.
 
 How?
 ----
@@ -32,9 +33,8 @@ Getting Help
 ------------
 [<img alt="MNE Forum" src="https://user-images.githubusercontent.com/1681963/52239617-e2683480-289c-11e9-922b-5da55472e5b4.png" height=60/>](https://mne.discourse.group)
 
-For any usage questions, please post to the
-[MNE Forum](https://mne.discourse.group). Be sure to add the `mne-bids` tag to
-your question.
+For any usage questions, please post to the [MNE Forum](https://mne.discourse.group).
+Be sure to add the `mne-bids` tag to your question.
 
 Citing
 ------
