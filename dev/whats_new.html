@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.16.0.dev29+g471bd0cd documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.16.0.dev30+ga4759bf0 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=4a854790"></script>
+    <script src="_static/documentation_options.js?v=c66c7566"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev29+g471bd0cd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev30+ga4759bf0 documentation</p>
   
 </a></div>
     
@@ -526,8 +526,9 @@ document.write(`
 <h3>👩🏽‍💻 Authors<a class="headerlink" href="#authors" title="Link to this heading">#</a></h3>
 <p>The following authors contributed for the first time. Thank you so much! 🤩</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/kaare-mikkelsen">Kaare Mikkelsen</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Aaronearlerichardson">Aaron Earle-Richardson</a></p></li>
 <li><p><a class="reference external" href="https://github.com/AmaiaBA">Amaia Benitez</a></p></li>
+<li><p><a class="reference external" href="https://github.com/kaare-mikkelsen">Kaare Mikkelsen</a></p></li>
 <li><p><a class="reference external" href="https://github.com/thht">Thomas Hartmann</a></p></li>
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
@@ -565,6 +566,7 @@ document.write(`
 <h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>When anonymizing the date of a recording, MNE-BIDS will no longer error during <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_raw_bids</span></code></a> if passing a <a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Raw</span></code></a> instance to <code class="docutils literal notranslate"><span class="pre">empty_room</span></code>, by <a class="reference external" href="http://dan.mccloy.info">Daniel McCloy</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1270">#1270</a>)</p></li>
+<li><p>Dealing with alphanumeric <code class="docutils literal notranslate"><span class="pre">sub</span></code> entity labels is now fixed for <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>, by <a class="reference external" href="https://github.com/Aaronearlerichardson">Aaron Earle-Richardson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1291">#1291</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
@@ -665,7 +667,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-08-23.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-08-24.
       <br/>
     
   </p>
