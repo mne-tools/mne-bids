@@ -7,6 +7,7 @@ For each supported file format, implement a test.
 # SPDX-License-Identifier: BSD-3-Clause
 
 import codecs
+import inspect
 import json
 import os
 import os.path as op
@@ -621,9 +622,13 @@ def test_fif(_bids_validate, tmp_path):
         raw2, events2, event_id=event_id, tmin=-0.2, tmax=0.5, preload=True
     )
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
+    kwargs = dict()
+    # XXX: remove logic once support for mne<1.8 is dropped
+    if "copy" in inspect.getfullargspec(epochs.get_data).kwonlyargs:
+        kwargs["copy"] = False
     assert_array_almost_equal(
-        epochs.get_data(),
-        epochs2.get_data(),
+        epochs.get_data(**kwargs),
+        epochs2.get_data(**kwargs),
         decimal=4,
     )
     _bids_validate(bids_root)
