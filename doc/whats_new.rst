@@ -54,6 +54,7 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - When anonymizing the date of a recording, MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if passing a `~mne.io.Raw` instance to ``empty_room``, by `Daniel McCloy`_ (:gh:`1270`)
+- Dealing with alphanumeric ``sub`` entity labels is now fixed for :func:`~mne_bids.write_raw_bids`, by `Aaron Earle-Richardson`_ (:gh:`1291`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
