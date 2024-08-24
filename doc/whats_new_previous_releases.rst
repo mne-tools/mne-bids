@@ -511,7 +511,7 @@ Enhancements
 
 - Modify iEEG tutorial to use MNE ``raw`` object, by `Alex Rockhill`_ (:gh:`859`)
 
-- Add :func:`mne_bids.search_folder_for_text` to find specific metadata entries (e.g. all ``"n/a"`` sidecar data fields, or to check that "60 Hz" was written properly as the power line frequency), by `Alex Rockhill`_ (:gh: `870`)
+- Add :func:`mne_bids.search_folder_for_text` to find specific metadata entries (e.g. all ``"n/a"`` sidecar data fields, or to check that "60 Hz" was written properly as the power line frequency), by `Alex Rockhill`_ (:gh:`870`)
 
 - Add :func:`mne_bids.get_bids_path_from_fname` to return a :class:`mne_bids.BIDSPath` from a file path, by `Adam Li`_ (:gh:`883`)
 
@@ -566,7 +566,7 @@ Bug fixes
 
 - :func:`mne_bids.write_raw_bids` now raises an exception if the provided :class:`mne_bids.BIDSPath` doesn't contain ``subject`` and ``task`` entities, which are required for neurophysiological data, by `Richard Höchenberger`_ (:gh:`903`)
 
-- :func:`mne_bids.read_raw_bids` now handles datasets with multiple electrophysiological data types correctly, by `Richard Höchenberger`_ (:gh:`910`, :gh`916`)
+- :func:`mne_bids.read_raw_bids` now handles datasets with multiple electrophysiological data types correctly, by `Richard Höchenberger`_ (:gh:`910`, :gh:`916`)
 
 - More robust handling of situations where :func:`mne_bids.read_raw_bids` tries to read a file that does not exist, by `Richard Höchenberger`_ (:gh:`904`)
 
