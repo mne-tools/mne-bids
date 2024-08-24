@@ -47,7 +47,6 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- MNE-BIDS now requires MNE-Python 1.6.0 or higher.
 - MNE-BIDS now requires Python 3.10 or higher.
 
 🪲 Bug fixes
@@ -59,8 +58,8 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- Keep MNE-BIDS up to date with recent changes on participant birthday date handling in MNE-Python, by `Eric Larson`_ (gh:1278:)
-- Make rules for linting more strict, make quality assessment exceptions less permissive, by `Stefan Appelhoff`_ (gh:1283:)
+- Keep MNE-BIDS up to date with recent changes on participant birthday date handling in MNE-Python, by `Eric Larson`_ (:gh:`1278`)
+- Make rules for linting more strict, make quality assessment exceptions less permissive, by `Stefan Appelhoff`_ (:gh:`1283`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 

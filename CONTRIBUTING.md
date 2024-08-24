@@ -181,6 +181,12 @@ The latter command will result in a faster build but produce no plots in the exa
 More information on our documentation setup can be found in our
 [mne-bids WIKI](https://github.com/mne-tools/mne-bids/wiki).
 
+## A note on MNE-Python compatibility
+
+We aim to make `mne-bids` compatible with the current stable release of `mne`,  as well as the previous stable release.
+Both of these versions are tested in our continuous integration infrastructure.
+Additional versions of `mne` may be compatible, but this is not guaranteed.
+
 ## Instructions for first-time contributors
 
 When you are making your first contribution to `mne-bids`, we kindly request you to:

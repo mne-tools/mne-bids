@@ -479,7 +479,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
 
         # determine the age of the participant
         age = subject_info.get("birthday", None)
-        if isinstance(age, tuple):  # can be removed once MNE >= 1.8 is required
+        if isinstance(age, tuple):  # XXX: can be removed once MNE >= 1.8 is required
             age = date(*age)
         meas_date = raw.info.get("meas_date", None)
         if isinstance(meas_date, tuple | list | np.ndarray):

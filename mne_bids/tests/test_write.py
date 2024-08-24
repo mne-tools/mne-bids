@@ -623,7 +623,7 @@ def test_fif(_bids_validate, tmp_path):
     )
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
     kwargs = dict()
-    # XXX: remove logic once support for mne<1.6 is dropped
+    # XXX: remove logic once support for mne<1.8 is dropped
     if "copy" in inspect.getfullargspec(epochs.get_data).kwonlyargs:
         kwargs["copy"] = False
     assert_array_almost_equal(
