@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.16.0.dev30+ga4759bf0 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.16.0.dev31+g8c22bcf4 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../_static/documentation_options.js?v=c66c7566"></script>
+    <script src="../../_static/documentation_options.js?v=6730b44c"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -147,7 +147,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev30+ga4759bf0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev31+g8c22bcf4 documentation</p>
   
 </a></div>
     
@@ -989,7 +989,7 @@ document.write(`
 
         <span class="c1"># determine the age of the participant</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;birthday&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># can be removed once MNE &gt;= 1.8 is required</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">age</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># XXX: can be removed once MNE &gt;= 1.8 is required</span>
             <span class="n">age</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="o">*</span><span class="n">age</span><span class="p">)</span>
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meas_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
