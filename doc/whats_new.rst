@@ -17,8 +17,9 @@ Version 0.16 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Kaare Mikkelsen`_
+* `Aaron Earle-Richardson`_
 * `Amaia Benitez`_
+* `Kaare Mikkelsen`_
 * `Thomas Hartmann`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
