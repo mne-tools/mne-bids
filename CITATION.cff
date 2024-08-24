@@ -189,8 +189,11 @@ authors:
       orcid: 'https://orcid.org/0000-0001-6364-7272'
     - given-names: Thomas
       family-names: Hartmann
-      affiliation: 'Paris-Lodron-University Salzburg, Centre for Cogntitive Neuroscience, Department of Psychology, Salzburg, Austria'
+      affiliation: 'Paris-Lodron-University Salzburg, Centre for Cognitive Neuroscience, Department of Psychology, Salzburg, Austria'
       orcid: 'https://orcid.org/0000-0002-8298-8125'
+    - given-names: Aaron
+      family-names: Earle-Richardson
+      affiliation: 'Duke University School of Medicine, Department of Neurology'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
