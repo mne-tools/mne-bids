@@ -153,13 +153,6 @@ you can then simply use the following command from the root of the `mne-bids` re
 make test
 ```
 
-If you have installed the `bids-validator` on a per-user basis (that is, *not* globally),
-set the environment variable `VALIDATOR_EXECUTABLE` to point to the path of the `bids-validator` before invoking `pytest`:
-
-```Shell
-VALIDATOR_EXECUTABLE=../bids-validator/bids-validator/bin/bids-validator pytest
-```
-
 ## Building the documentation
 
 The documentation can be built using [Sphinx](https://www.sphinx-doc.org).

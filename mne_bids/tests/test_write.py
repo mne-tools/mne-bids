@@ -350,7 +350,10 @@ def test_make_dataset_description(tmp_path, monkeypatch):
 
     with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
-        assert dataset_description_json["Authors"] == ["[Unspecified]"]
+        assert dataset_description_json["Authors"] == [
+            "[Unspecified1]",
+            "[Unspecified2]",
+        ]
 
     make_dataset_description(
         path=tmp_path,
@@ -365,7 +368,10 @@ def test_make_dataset_description(tmp_path, monkeypatch):
 
     with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
-        assert dataset_description_json["Authors"] == ["[Unspecified]"]
+        assert dataset_description_json["Authors"] == [
+            "[Unspecified1]",
+            "[Unspecified2]",
+        ]
 
     make_dataset_description(
         path=tmp_path,

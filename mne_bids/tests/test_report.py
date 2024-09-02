@@ -45,7 +45,8 @@ def test_report(tmp_path):
 
     report = make_report(bids_root)
 
-    expected_report = f"""This dataset was created by [Unspecified] and conforms to BIDS version {BIDS_VERSION}.
+    expected_report = f""" The [Unspecified] dataset was created by [Unspecified1], and [Unspecified2] and
+conforms to BIDS version {BIDS_VERSION}.
 This report was generated with MNE-BIDS (https://doi.org/10.21105/joss.01896).
 The dataset consists of 1 participants (sex were all unknown; handedness were
 all unknown; ages all unknown) and 1 recording sessions: 01. Data was recorded
@@ -79,7 +80,8 @@ def test_report_no_participant_information(tmp_path):
 
     report = make_report(bids_root)
 
-    expected_report = f"""This dataset was created by [Unspecified] and conforms to BIDS version {BIDS_VERSION}.
+    expected_report = f""" The [Unspecified] dataset was created by [Unspecified1], and [Unspecified2] and
+conforms to BIDS version {BIDS_VERSION}.
 This report was generated with MNE-BIDS (https://doi.org/10.21105/joss.01896).
 The dataset consists of 1 participants (sex were all unknown; handedness were
 all unknown; ages all unknown) and 1 recording sessions: 01. Data was recorded
