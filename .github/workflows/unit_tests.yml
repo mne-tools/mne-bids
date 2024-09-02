@@ -169,7 +169,7 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: validator-stable
-          # Test minimal mne-bids install
+          # Test next gen BIDS schema validator
           - os: ubuntu-latest
             python-version: "3.12"
             mne-version: mne-stable
@@ -185,14 +185,9 @@ jobs:
         fetch-depth: 0
         fetch-tags: true
 
-<<<<<<< HEAD
-    - name: Set up Node.js
-      uses: actions/setup-node@v5
-=======
     - name: Set up Node.js (validator-stable and validator-main)
       if: matrix.bids-validator-version == 'validator-stable' || matrix.bids-validator-version == 'validator-main'
-      uses: actions/setup-node@v4
->>>>>>> ed6a5210 (CI: try schema BIDS validator)
+      uses: actions/setup-node@v5
       with:
         node-version: 20
 
@@ -277,6 +272,7 @@ jobs:
         popd
 
     - name: Display versions and environment information
+      shell: bash
       run: |
         echo $TZ
         date
