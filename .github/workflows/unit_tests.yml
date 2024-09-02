@@ -245,8 +245,13 @@ jobs:
 
     - name: Install BIDS validator (main-schema)
       if: matrix.bids-validator-version == 'validator-main-schema'
-      # If unmerged validator PRs are needed for testing, you can use
-      # https://github.com/<FORK>/bids-validator/raw/<BRANCH>/bids-validator/src/bids-validator.ts
+      # Follow documentation here:
+      #  - https://github.com/bids-standard/bids-validator/tree/master/bids-validator/src
+      #  - https://github.com/bids-standard/bids-examples/blob/7c18d6840982518a0251cfeb59fe5c4610099ea1/.github/workflows/validate_datasets.yml#L69-L75
+      #
+      # Note: in the future, we may want to make it easy to use:
+      #  - a different version of the validator (stable, main)
+      #  - a different version of the schema (stable, main)
       run: |
         deno install -Agf https://github.com/bids-standard/bids-validator/raw/deno-build/bids-validator.js
 
@@ -277,7 +282,7 @@ jobs:
         date
         echo "(npm version)"; npm --version
         echo "node"; node --version
-        echo "(deno version)"; deno --version
+        echo "(deno version)"; deno --version || echo ""
         echo "(bids-validator version)"; bids-validator --version
         echo "(python version)"; python --version
         echo "(which python)"; which python
