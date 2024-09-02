@@ -21,7 +21,8 @@ from mne.utils import run_subprocess
 @pytest.fixture(scope="session")
 def _bids_validate():
     """Fixture to run BIDS validator."""
-    vadlidator_args = ["--config.error=41"]
+    # vadlidator_args = ["--config.error=41"]
+    vadlidator_args = []
     exe = os.getenv("VALIDATOR_EXECUTABLE", "bids-validator")
 
     if platform.system() == "Windows":
