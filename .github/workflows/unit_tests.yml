@@ -155,7 +155,7 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: validator-stable
-          # Test minimal mne-bids install
+          # Test next gen BIDS schema validator
           - os: ubuntu-latest
             python-version: "3.12"
             mne-version: mne-stable
@@ -256,6 +256,7 @@ jobs:
         popd
 
     - name: Display versions and environment information
+      shell: bash
       run: |
         echo $TZ
         date
