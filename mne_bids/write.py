@@ -1386,7 +1386,7 @@ def make_dataset_description(
     # if the user passed an author don't overwrite,
     # if there was an author there, only overwrite if `overwrite=True`
     if authors is None and (description["Authors"] is None or overwrite):
-        description["Authors"] = ["[Unspecified]"]
+        description["Authors"] = ["[Unspecified1]", "[Unspecified2]"]
 
     # Only write data that is not None
     pop_keys = [key for key, val in description.items() if val is None]
@@ -2055,7 +2055,7 @@ def write_raw_bids(
     # already exist. Always set overwrite to False here. If users
     # want to edit their dataset_description, they can directly call
     # this function.
-    make_dataset_description(path=bids_path.root, name=" ", overwrite=False)
+    make_dataset_description(path=bids_path.root, name="[Unspecified]", overwrite=False)
 
     _sidecar_json(
         raw,
