@@ -276,11 +276,12 @@ jobs:
       run: |
         echo $TZ
         date
-        echo "npm"; npm --version
+        echo "(npm version)"; npm --version
         echo "node"; node --version
-        echo "bids-validator"; bids-validator --version
-        echo "python"; python --version
-        which python
+        echo "(deno version)"; deno --version
+        echo "(bids-validator version)"; bids-validator --version
+        echo "(python version)"; python --version
+        echo "(which python)"; which python
         mne sys_info
 
     - name: Install MNE-BIDS (minimal)
