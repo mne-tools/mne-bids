@@ -249,7 +249,6 @@ jobs:
       # https://github.com/<FORK>/bids-validator/raw/<BRANCH>/bids-validator/src/bids-validator.ts
       run: |
         deno install -Agf https://github.com/bids-standard/bids-validator/raw/deno-build/bids-validator.js
-        echo "BIDS_VALIDATOR_BRANCH=main-schema" >> $GITHUB_ENV
 
     - name: Download BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
