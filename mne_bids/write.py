@@ -2522,8 +2522,14 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
         type (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
     ch_names : str | list of str
-        The names of the channel(s) to mark with a ``status`` and optionally a
-        ``description``. Can be an empty list to indicate all channel names.
+        The name(s) of the channel(s) to mark with a ``status`` (and optionally a
+        ``description``). The special value ``"all"`` will mark all channels.
+
+        .. versionchanged:: 0.16
+           The behavior of passing an empty list will change in version 0.17. In version
+           0.16 and newer, an empty list would mark *all* channels. In version 0.17 and
+           later, an empty list will be a no-op (no channels will be marked/changed).
+
     status : 'good' | 'bad' | list of str
         The status of the channels ('good', or 'bad'). If it is a list, then must be a
         list of 'good', or 'bad' that has the same length as ``ch_names``.
@@ -2586,10 +2592,21 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
 
     # if an empty list is passed in, then these are the entire list
     # of channels
-    if ch_names == []:
-        ch_names = tsv_data["name"]
-    elif isinstance(ch_names, str):
-        ch_names = [ch_names]
+    if list(ch_names) == []:  # casting to list avoids error if ch_names is np.ndarray
+        warn(
+            "In version 0.17, the behavior of `mark_channels(..., ch_names=[])` will "
+            "change, from marking *all* channels to marking *no* channels. Pass "
+            "ch_names='all' instead of ch_names=[] to keep the old behavior and "
+            "avoid this warning.",
+            FutureWarning,
+        )
+        ch_names = "all"
+    # TODO ↑↑↑ remove prior conditional block after 0.16 release ↑↑↑
+    if isinstance(ch_names, str):
+        if ch_names == "all":
+            ch_names = tsv_data["name"]
+        else:
+            ch_names = [ch_names]
 
     # set descriptions based on how it's passed in
     if isinstance(descriptions, str):
