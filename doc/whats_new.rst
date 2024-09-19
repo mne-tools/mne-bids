@@ -43,7 +43,7 @@ Detailed list of changes
 - :func:`mne_bids.read_raw_bids` no longer warns about unit changes in channels upon reading, as that information is taken from ``channels.tsv`` and judged authorative, by `Stefan Appelhoff`_ (:gh:`1282`)
 - MEG OPM channels are now experimentally included, by `Amaia Benitez`_ (:gh:`1222`)
 - :func:`mne_bids.mark_channels` will no longer create a ``status_description`` column filled with ``n/a`` in the ``channels.tsv`` file, by `Stefan Appelhoff`_ (:gh:`1293`)
-- :func:`mark_channels(..., ch_names=[]) <mne_bids.mark_channels>` now raises a deprecation warning, and in future its behavior will change from marking *all* channels to marking *no* channels; to avoid the warning use ``mark_channels(..., ch_names="all"``, by `Daniel McCloy`_ (:gh:`1307`)
+- :func:`mark_channels(..., ch_names=[]) <mne_bids.mark_channels>` now raises a deprecation warning, and in future its behavior will change from marking *all* channels to marking *no* channels; to avoid the warning use ``mark_channels(..., ch_names="all")``, by `Daniel McCloy`_ (:gh:`1307`)
 
 
 🛠 Requirements
