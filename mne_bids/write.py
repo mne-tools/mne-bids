@@ -2527,8 +2527,8 @@ def mark_channels(bids_path, *, ch_names, status, descriptions=None, verbose=Non
 
         .. versionchanged:: 0.16
            The behavior of passing an empty list will change in version 0.17. In version
-           0.16 and newer, an empty list would mark *all* channels. In version 0.17 and
-           later, an empty list will be a no-op (no channels will be marked/changed).
+           0.16 and older, an empty list would mark *all* channels. In version 0.17 and
+           newer, an empty list will be a no-op (no channels will be marked/changed).
 
     status : 'good' | 'bad' | list of str
         The status of the channels ('good', or 'bad'). If it is a list, then must be a
