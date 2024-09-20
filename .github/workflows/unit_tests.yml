@@ -219,8 +219,9 @@ jobs:
 
     - name: Install BIDS validator (stable)
       if: matrix.bids-validator-version == 'validator-stable'
+      # XXX: Remove pin once this is solved: https://github.com/bids-standard/bids-validator/issues/2124
       run: |
-        npm install -g bids-validator
+        npm install -g bids-validator@1.14.10
 
     - name: Install BIDS validator (main-schema)
       if: matrix.bids-validator-version == 'validator-main-schema'
@@ -305,6 +306,8 @@ jobs:
       uses: codecov/codecov-action@v4
       with:
         files: ./coverage.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
+        verbose: true
 
   build_docs:
     runs-on: ubuntu-latest
