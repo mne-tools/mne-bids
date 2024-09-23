@@ -2490,7 +2490,7 @@ def test_mark_channels(
     # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
     # begin our actual tests, which should then add additional channels
     # to the list of bads, retaining the ones we're specifying here.
-    mark_channels(ch_names=[], bids_path=bids_path, status="good", verbose=False)
+    mark_channels(ch_names="all", bids_path=bids_path, status="good", verbose=False)
     _bids_validate(bids_root)
     raw = read_raw_bids(bids_path=bids_path, verbose=False)
     # Order is not preserved
@@ -2560,7 +2560,8 @@ def test_mark_channel_roundtrip(tmp_path):
 
     ch_names = raw.ch_names
     # first mark all channels as good
-    mark_channels(bids_path, ch_names=[], status="good", verbose=False)
+    with pytest.warns(FutureWarning, match=r"`mark_channels\(\.\.\., ch_names=\[\]\)`"):
+        mark_channels(bids_path, ch_names=[], status="good", verbose=False)
     tsv_data = _from_tsv(channels_fname)
     assert all(status == "good" for status in tsv_data["status"])
 
