@@ -446,7 +446,7 @@ def _save_bads(*, bads, descriptions, bids_path):
         The values to be written to the `status_description` column.
     """
     # We first make all channels not passed as bad here to be marked as good.
-    mark_channels(bids_path=bids_path, ch_names=[], status="good")
+    mark_channels(bids_path=bids_path, ch_names="all", status="good")
     mark_channels(
         bids_path=bids_path, ch_names=bads, status="bad", descriptions=descriptions
     )
