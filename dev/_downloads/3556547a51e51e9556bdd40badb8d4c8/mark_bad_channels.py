@@ -164,9 +164,9 @@ print(
 
 # %%
 # Lastly, if you're looking for a way to mark all channels as good, simply
-# pass an empty list as ``ch_names``, combined with ``overwrite=True``:
+# pass ``ch_names="all"``, combined with ``overwrite=True``:
 
-bads = []
+bads = "all"
 mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)

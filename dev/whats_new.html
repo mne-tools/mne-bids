@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.16.0.dev39+g1cbcfddf documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.16.0.dev40+g23503f12 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=79e870ab"></script>
+    <script src="_static/documentation_options.js?v=88b5580b"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev39+g1cbcfddf documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev40+g23503f12 documentation</p>
   
 </a></div>
     
@@ -553,6 +553,7 @@ document.write(`
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> no longer warns about unit changes in channels upon reading, as that information is taken from <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and judged authorative, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1282">#1282</a>)</p></li>
 <li><p>MEG OPM channels are now experimentally included, by <a class="reference external" href="https://github.com/AmaiaBA">Amaia Benitez</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1222">#1222</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.mark_channels()</span></code></a> will no longer create a <code class="docutils literal notranslate"><span class="pre">status_description</span></code> column filled with <code class="docutils literal notranslate"><span class="pre">n/a</span></code> in the <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> file, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1293">#1293</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.mark_channels.html#mne_bids.mark_channels" title="mne_bids.mark_channels"><code class="xref py py-func docutils literal notranslate"><span class="pre">mark_channels(...,</span> <span class="pre">ch_names=[])</span></code></a> now raises a deprecation warning, and in future its behavior will change from marking <em>all</em> channels to marking <em>no</em> channels; to avoid the warning use <code class="docutils literal notranslate"><span class="pre">mark_channels(...,</span> <span class="pre">ch_names=&quot;all&quot;)</span></code>, by <a class="reference external" href="http://dan.mccloy.info">Daniel McCloy</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1307">#1307</a>)</p></li>
 </ul>
 </section>
 <section id="requirements">
@@ -666,7 +667,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-09-20.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-09-23.
       <br/>
     
   </p>
