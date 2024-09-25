@@ -4187,3 +4187,21 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
     for cur_col in event_metadata.columns:
         assert cur_col in events_tsv
         assert cur_col in events_json
+
+
+@testing.requires_testing_data
+def test_write_bids_with_age_weight_info(tmp_path):
+    """Test writing participant.tsv when using np.arrays for weight and height."""
+    bids_root = tmp_path / "bids"
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    raw = _read_raw_fif(raw_fname)
+    raw.info['subject_info'] = {
+        'weight': np.array([75.]),
+        'height': np.array([180.]),
+    }
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=1)
+    write_raw_bids(raw, bids_path=bids_path)
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=2)
+    write_raw_bids(raw, bids_path=bids_path)
+
