@@ -515,8 +515,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
     # contain scalars (i.e. not further lists). Fix if possible
     for key in data.keys():
         cur_value = data[key]
-        if not isinstance(cur_value, list):
-            cur_value = [cur_value]
 
         # Check if all values are scalars
         new_value = []
