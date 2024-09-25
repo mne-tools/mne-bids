@@ -4195,13 +4195,12 @@ def test_write_bids_with_age_weight_info(tmp_path):
     bids_root = tmp_path / "bids"
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
-    raw.info['subject_info'] = {
-        'weight': np.array([75.]),
-        'height': np.array([180.]),
+    raw.info["subject_info"] = {
+        "weight": np.array([75.0]),
+        "height": np.array([180.0]),
     }
 
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=1)
     write_raw_bids(raw, bids_path=bids_path)
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=2)
     write_raw_bids(raw, bids_path=bids_path)
-
