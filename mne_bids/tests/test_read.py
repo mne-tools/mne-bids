@@ -148,8 +148,10 @@ def test_read_participants_data(tmp_path):
     participants_tsv_fpath = tmp_path / "participants.tsv"
     participants_tsv = _from_tsv(participants_tsv_fpath)
     participants_tsv["hand"][0] = "n/a"
+    participants_tsv["outcome"] = ["good"]  # e.g. clinical tutorial from MNE-Python
     _to_tsv(participants_tsv, participants_tsv_fpath)
-    raw = read_raw_bids(bids_path=bids_path)
+    with pytest.warns(RuntimeWarning, match="Unable to map"):
+        raw = read_raw_bids(bids_path=bids_path)
     assert raw.info["subject_info"]["hand"] == 0
     assert raw.info["subject_info"]["sex"] == 2
     assert raw.info["subject_info"]["weight"] == 70.5
@@ -163,6 +165,7 @@ def test_read_participants_data(tmp_path):
     # 'n/a' values should get omitted
     participants_tsv["weight"] = ["n/a"]
     participants_tsv["height"] = ["tall"]
+    del participants_tsv["outcome"]
 
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match="Unable to map"):

@@ -3414,10 +3414,10 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     assert channels_tsv["units"][0] == "V"
 
     if fmt == "BrainVision":
-        assert raw2.filenames[0].endswith(".eeg")
+        assert Path(raw2.filenames[0]).suffix == ".eeg"
         assert bids_output_path.extension == ".vhdr"
     elif fmt == "EDF":
-        assert raw2.filenames[0].endswith(".edf")
+        assert Path(raw2.filenames[0]).suffix == ".edf"
         assert bids_output_path.extension == ".edf"
 
     orig_len = len(raw)

@@ -260,6 +260,12 @@ def _handle_participants_reading(participants_fname, raw, subject):
     raw.info["subject_info"] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
+    allowed_keys = set(
+        """
+    id his_id last_name first_name middle_name birthday sex hand weight height
+    """.strip().split()
+    )
+    bad_key_vals = list()
     for col_name, value in participants_tsv.items():
         orig_value = value = value[row_ind]
         if col_name in ("sex", "hand"):
@@ -270,10 +276,7 @@ def _handle_participants_reading(participants_fname, raw, subject):
                     info_str = "subject sex"
                 else:
                     info_str = "subject handedness"
-                warn(
-                    f'Unable to map "{col_name}" value "{orig_value}" to MNE. '
-                    f"Not setting {info_str}."
-                )
+                bad_key_vals.append((col_name, orig_value, info_str))
         elif col_name in ("height", "weight"):
             try:
                 value = float(value)
@@ -304,10 +307,23 @@ def _handle_participants_reading(participants_fname, raw, subject):
             assert "birthday" not in participants_tsv
             key = "birthday"
 
+        if key not in allowed_keys:
+            bad_key_vals.append((col_name, orig_value, None))
+            continue
+
         # add data into raw.Info
         if value is not None:
             assert key not in raw.info["subject_info"]
             raw.info["subject_info"][key] = value
+
+    if bad_key_vals:
+        warn_str = "Unable to map the following column(s) to to MNE:"
+        for col_name, orig_value, info_str in bad_key_vals:
+            warn_str += f"\n{col_name}"
+            if info_str is not None:
+                warn_str += f" ({info_str})"
+            warn_str += f": {orig_value}"
+        warn(warn_str)
 
     return raw
 
