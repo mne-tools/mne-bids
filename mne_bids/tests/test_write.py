@@ -4093,9 +4093,9 @@ def test_unknown_extension(_bids_validate, tmp_path):
         write_raw_bids(raw, bids_path)
 
     # With preloaded data, writing should work.
-    raw._filenames = (raw.filenames[0].replace(".foo", ".fif"),)
+    raw._filenames = (Path(str(raw.filenames[0]).replace(".foo", ".fif")),)
     raw.load_data()
-    raw._filenames = (raw.filenames[0].replace(".fif", ".foo"),)
+    raw._filenames = (Path(str(raw.filenames[0]).replace(".fif", ".foo")),)
 
     write_raw_bids(raw, bids_path, allow_preload=True, format="FIF")
     _bids_validate(bids_root)
