@@ -7,7 +7,7 @@ import json
 import os
 import os.path as op
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from difflib import get_close_matches
 from pathlib import Path
 
@@ -261,10 +261,9 @@ def _handle_participants_reading(participants_fname, raw, subject):
 
     # set data from participants tsv into subject_info
     for col_name, value in participants_tsv.items():
+        orig_value = value = value[row_ind]
         if col_name in ("sex", "hand"):
-            value = _map_options(
-                what=col_name, key=value[row_ind], fro="bids", to="mne"
-            )
+            value = _map_options(what=col_name, key=value, fro="bids", to="mne")
             # We don't know how to translate to MNE, so skip.
             if value is None:
                 if col_name == "sex":
@@ -272,22 +271,40 @@ def _handle_participants_reading(participants_fname, raw, subject):
                 else:
                     info_str = "subject handedness"
                 warn(
-                    f'Unable to map "{col_name}" value "{value}" to MNE. '
+                    f'Unable to map "{col_name}" value "{orig_value}" to MNE. '
                     f"Not setting {info_str}."
                 )
         elif col_name in ("height", "weight"):
             try:
-                value = float(value[row_ind])
+                value = float(value)
             except ValueError:
                 value = None
-        else:
-            if value[row_ind] == "n/a":
+        elif col_name == "age":
+            if raw.info["meas_date"] is None:
                 value = None
-            else:
-                value = value[row_ind]
+            elif value is not None:
+                try:
+                    value = float(value)
+                except Exception:
+                    value = None
+                else:
+                    value = (
+                        raw.info["meas_date"]
+                        - timedelta(days=int(np.ceil(365.25 * value)))
+                    ).date()
+        else:
+            if value == "n/a":
+                value = None
+
+        # adjust keys to match MNE nomenclature
+        key = col_name
+        if col_name == "participant_id":
+            key = "his_id"
+        elif col_name == "age":
+            assert "birthday" not in participants_tsv
+            key = "birthday"
 
         # add data into raw.Info
-        key = "his_id" if col_name == "participant_id" else col_name
         if value is not None:
             assert key not in raw.info["subject_info"]
             raw.info["subject_info"][key] = value
