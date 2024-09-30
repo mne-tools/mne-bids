@@ -95,7 +95,7 @@ warning_str = dict(
     cnt_warning2="ignore:.*Could not define the number of bytes automatically."
     " Defaulting to 2.",
     cnt_warning3="ignore:.*Coordinate frame could not be inferred.*",
-    no_hand="ignore:.*Not setting subject handedness.:RuntimeWarning:mne",
+    no_hand=r"ignore:Unable to map.*\n.*subject handedness.*:RuntimeWarning:mne",
     no_montage=r"ignore:Not setting position of.*channel found in "
     r"montage.*:RuntimeWarning:mne",
 )
@@ -4086,7 +4086,7 @@ def test_unknown_extension(_bids_validate, tmp_path):
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     raw = _read_raw_fif(raw_fname)
-    raw._filenames = (raw.filenames[0].replace(".fif", ".foo"),)
+    raw._filenames = (Path(str(raw.filenames[0]).replace(".fif", ".foo")),)
 
     # When data is not preloaded, we should raise an exception.
     with pytest.raises(ValueError, match="file format not supported by BIDS"):

@@ -306,7 +306,6 @@ def _handle_participants_reading(participants_fname, raw, subject):
         if col_name == "participant_id":
             key = "his_id"
         elif col_name == "age":
-            assert "birthday" not in participants_tsv
             key = "birthday"
 
         if key not in allowed_keys:
