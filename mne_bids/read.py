@@ -260,6 +260,8 @@ def _handle_participants_reading(participants_fname, raw, subject):
     raw.info["subject_info"] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
+    # TODO: Could potentially use "comment" someday to store other options e.g. in JSON
+    # https://github.com/mne-tools/fiff-constants/blob/e27f68cbf74dbfc5193ad429cc77900a59475181/DictionaryTags.txt#L369
     allowed_keys = set(
         """
     id his_id last_name first_name middle_name birthday sex hand weight height
