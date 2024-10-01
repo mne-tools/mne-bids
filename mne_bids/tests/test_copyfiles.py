@@ -96,7 +96,7 @@ def test_copyfile_brainvision(tmp_path):
 
     # Try to read with MNE - if this works, the links are correct
     raw = mne.io.read_raw_brainvision(new_name)
-    assert raw.filenames[0] == (op.join(head, "tested_conversion.eeg"))
+    assert Path(raw.filenames[0]) == Path(head) / "tested_conversion.eeg"
 
     # Test with anonymization
     raw = mne.io.read_raw_brainvision(raw_fname)

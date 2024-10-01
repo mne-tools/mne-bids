@@ -7,7 +7,7 @@ import json
 import os
 import os.path as op
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from difflib import get_close_matches
 from pathlib import Path
 
@@ -260,37 +260,71 @@ def _handle_participants_reading(participants_fname, raw, subject):
     raw.info["subject_info"] = dict()  # start from scratch
 
     # set data from participants tsv into subject_info
+    # TODO: Could potentially use "comment" someday to store other options e.g. in JSON
+    # https://github.com/mne-tools/fiff-constants/blob/e27f68cbf74dbfc5193ad429cc77900a59475181/DictionaryTags.txt#L369
+    allowed_keys = set(
+        """
+    id his_id last_name first_name middle_name birthday sex hand weight height
+    """.strip().split()
+    )
+    bad_key_vals = list()
     for col_name, value in participants_tsv.items():
+        orig_value = value = value[row_ind]
         if col_name in ("sex", "hand"):
-            value = _map_options(
-                what=col_name, key=value[row_ind], fro="bids", to="mne"
-            )
+            value = _map_options(what=col_name, key=value, fro="bids", to="mne")
             # We don't know how to translate to MNE, so skip.
             if value is None:
                 if col_name == "sex":
                     info_str = "subject sex"
                 else:
                     info_str = "subject handedness"
-                warn(
-                    f'Unable to map "{col_name}" value "{value}" to MNE. '
-                    f"Not setting {info_str}."
-                )
+                bad_key_vals.append((col_name, orig_value, info_str))
         elif col_name in ("height", "weight"):
             try:
-                value = float(value[row_ind])
+                value = float(value)
             except ValueError:
                 value = None
-        else:
-            if value[row_ind] == "n/a":
+        elif col_name == "age":
+            if raw.info["meas_date"] is None:
                 value = None
-            else:
-                value = value[row_ind]
+            elif value is not None:
+                try:
+                    value = float(value)
+                except Exception:
+                    value = None
+                else:
+                    value = (
+                        raw.info["meas_date"]
+                        - timedelta(days=int(np.ceil(365.25 * value)))
+                    ).date()
+        else:
+            if value == "n/a":
+                value = None
+
+        # adjust keys to match MNE nomenclature
+        key = col_name
+        if col_name == "participant_id":
+            key = "his_id"
+        elif col_name == "age":
+            key = "birthday"
+
+        if key not in allowed_keys:
+            bad_key_vals.append((col_name, orig_value, None))
+            continue
 
         # add data into raw.Info
-        key = "his_id" if col_name == "participant_id" else col_name
         if value is not None:
             assert key not in raw.info["subject_info"]
             raw.info["subject_info"][key] = value
+
+    if bad_key_vals:
+        warn_str = "Unable to map the following column(s) to to MNE:"
+        for col_name, orig_value, info_str in bad_key_vals:
+            warn_str += f"\n{col_name}"
+            if info_str is not None:
+                warn_str += f" ({info_str})"
+            warn_str += f": {orig_value}"
+        warn(warn_str)
 
     return raw
 
