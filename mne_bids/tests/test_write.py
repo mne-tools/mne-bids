@@ -103,7 +103,7 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
-        if str(fname).endswith(".mff") and check_version("mne", "1.8"):
+        if Path(fname).suffix == ".mff" and check_version("mne", "1.8"):
             kwargs["events_as_annotations"] = True
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
@@ -3513,7 +3513,7 @@ def test_convert_meg_formats(dir_name, fmt, fname, reader, tmp_path):
     raw2 = read_raw_bids(bids_output_path)
 
     if fmt == "FIF":
-        assert raw2.filenames[0].endswith(".fif")
+        assert Path(raw2.filenames[0]).suffix == ".fif"
         assert bids_output_path.extension == ".fif"
 
     orig_len = len(raw)
@@ -4086,16 +4086,16 @@ def test_unknown_extension(_bids_validate, tmp_path):
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     raw = _read_raw_fif(raw_fname)
-    raw._filenames = (Path(str(raw.filenames[0]).replace(".fif", ".foo")),)
+    raw._filenames = (Path(raw.filenames[0]).with_suffix(".foo"),)
 
     # When data is not preloaded, we should raise an exception.
     with pytest.raises(ValueError, match="file format not supported by BIDS"):
         write_raw_bids(raw, bids_path)
 
     # With preloaded data, writing should work.
-    raw._filenames = (Path(str(raw.filenames[0]).replace(".foo", ".fif")),)
+    raw._filenames = (Path(raw.filenames[0]).with_suffix(".fif"),)
     raw.load_data()
-    raw._filenames = (Path(str(raw.filenames[0]).replace(".fif", ".foo")),)
+    raw._filenames = (Path(raw.filenames[0]).with_suffix(".foo"),)
 
     write_raw_bids(raw, bids_path, allow_preload=True, format="FIF")
     _bids_validate(bids_root)
