@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>13. Anonymizing a BIDS dataset &#8212; MNE-BIDS 0.16.0.dev41+g9575eabd documentation</title>
+    <title>13. Anonymizing a BIDS dataset &#8212; MNE-BIDS 0.16.0.dev42+gc18e45fe documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=8c375606"></script>
+    <script src="../_static/documentation_options.js?v=d25ed4c2"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -151,7 +151,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev41+g9575eabd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev42+gc18e45fe documentation</p>
   
 </a></div>
     
@@ -667,7 +667,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 35794 days (98.1 years).
+Shifting recording dates by 29752 days (81.5 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-1
@@ -675,10 +675,10 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/5 [00:00&lt;?,       ?it/s]
- 20%|██        | Anonymizing : 1/5 [00:00&lt;00:01,    3.20it/s]
+ 20%|██        | Anonymizing : 1/5 [00:00&lt;00:01,    3.05it/s]
  60%|██████    | Anonymizing : 3/5 [00:01&lt;00:00,    2.81it/s]
-100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.53it/s]
-100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.55it/s]
+100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.49it/s]
+100%|██████████| Anonymizing : 5/5 [00:03&lt;00:00,    1.52it/s]
 </pre></div>
 </div>
 <p>That’s it! Let’s have a look at directory structure of the anonymized
@@ -706,12 +706,12 @@ dataset.</p>
 |--------- sub-1_task-audiovisual_meg.fif
 |--------- sub-1_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19041206/
-|--------- sub-emptyroom_ses-19041206_scans.tsv
+|------ ses-19210622/
+|--------- sub-emptyroom_ses-19210622_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19041206_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19041206_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19041206_task-noise_meg.json
+|------------ sub-emptyroom_ses-19210622_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19210622_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19210622_task-noise_meg.json
 </pre></div>
 </div>
 <p>You can see that the subject ID was changed to a number (in this case, the
@@ -749,8 +749,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/1 [00:00&lt;?,       ?it/s]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.10s/it]
-100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.10s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.18s/it]
+100%|██████████| Anonymizing : 1/1 [00:02&lt;00:00,    2.18s/it]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -792,8 +792,8 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.34it/s]
- 75%|███████▌  | Anonymizing : 3/4 [00:01&lt;00:00,    2.85it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.18it/s]
+ 75%|███████▌  | Anonymizing : 3/4 [00:01&lt;00:00,    2.86it/s]
 100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.79it/s]
 |sub-emptyroom/
 |--- ses-20021126/
@@ -832,7 +832,7 @@ Determining &quot;daysback&quot; for anonymization.
     Input:  /home/circleci/mne_data/MNE-sample-data-bids
     Output: /home/circleci/mne_data/MNE-sample-data-bids-anon
 
-Shifting recording dates by 33561 days (91.9 years).
+Shifting recording dates by 33374 days (91.4 years).
 Using the following subject ID anonymization mapping:
 
     sub-ABC123 → sub-anonymous
@@ -840,9 +840,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.24it/s]
- 75%|███████▌  | Anonymizing : 3/4 [00:01&lt;00:00,    2.81it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.74it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.16it/s]
+ 75%|███████▌  | Anonymizing : 3/4 [00:01&lt;00:00,    2.85it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.78it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -860,12 +860,12 @@ Using the following subject ID anonymization mapping:
 |--------- sub-anonymous_task-audiovisual_meg.fif
 |--------- sub-anonymous_task-audiovisual_meg.json
 |--- sub-emptyroom/
-|------ ses-19110117/
-|--------- sub-emptyroom_ses-19110117_scans.tsv
+|------ ses-19110723/
+|--------- sub-emptyroom_ses-19110723_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-19110117_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-19110117_task-noise_meg.fif
-|------------ sub-emptyroom_ses-19110117_task-noise_meg.json
+|------------ sub-emptyroom_ses-19110723_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-19110723_task-noise_meg.fif
+|------------ sub-emptyroom_ses-19110723_task-noise_meg.json
 </pre></div>
 </div>
 </section>
@@ -922,7 +922,7 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.31it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.20it/s]
  75%|███████▌  | Anonymizing : 3/4 [00:01&lt;00:00,    2.85it/s]
 100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.78it/s]
 |MNE-sample-data-bids-anon/
@@ -967,9 +967,9 @@ Using the following subject ID anonymization mapping:
 
 
   0%|          | Anonymizing : 0/4 [00:00&lt;?,       ?it/s]
- 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.28it/s]
+ 25%|██▌       | Anonymizing : 1/4 [00:00&lt;00:00,    3.10it/s]
  75%|███████▌  | Anonymizing : 3/4 [00:01&lt;00:00,    2.83it/s]
-100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.75it/s]
+100%|██████████| Anonymizing : 4/4 [00:01&lt;00:00,    3.76it/s]
 |MNE-sample-data-bids-anon/
 |--- README
 |--- dataset_description.json
@@ -995,7 +995,7 @@ Using the following subject ID anonymization mapping:
 |------------ sub-emptyroom_ses-19221211_task-noise_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.430 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.586 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-anonymize-dataset-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/6a8efa177441ca0b84ef1b16e3806949/anonymize_dataset.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">anonymize_dataset.ipynb</span></code></a></p>
@@ -1090,7 +1090,7 @@ Using the following subject ID anonymization mapping:
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-09-24.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-10-01.
       <br/>
     
   </p>
