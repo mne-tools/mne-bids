@@ -4219,7 +4219,7 @@ def test_write_bids_with_age_weight_info(tmp_path):
         },
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="more than one element"):
         bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
         write_raw_bids(raw, bids_path=bids_path)
 
