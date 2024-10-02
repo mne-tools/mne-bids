@@ -4195,10 +4195,14 @@ def test_write_bids_with_age_weight_info(tmp_path):
     bids_root = tmp_path / "bids"
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
-    raw.info["subject_info"] = {
-        "weight": np.array([75.0]),
-        "height": np.array([180.0]),
-    }
+    dict.__setitem__(
+        raw.info,
+        "subject_info",
+        {
+            "weight": np.array([75.0]),
+            "height": np.array([180.0]),
+        },
+    )
 
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=1)
     write_raw_bids(raw, bids_path=bids_path)
@@ -4206,21 +4210,28 @@ def test_write_bids_with_age_weight_info(tmp_path):
     write_raw_bids(raw, bids_path=bids_path)
 
     # Test that we get a value error when we have more than one item
-    raw.info["subject_info"] = {
-        "weight": np.array([75.0, 10.2]),
-        "height": np.array([180.0]),
-    }
+    dict.__setitem__(
+        raw.info,
+        "subject_info",
+        {
+            "weight": np.array([75.0, 10.2]),
+            "height": np.array([180.0]),
+        },
+    )
 
     with pytest.raises(ValueError):
         bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
         write_raw_bids(raw, bids_path=bids_path)
 
     # Test that scalar data is handled correctly
-
-    raw.info["subject_info"] = {
-        "weight": 75.0,
-        "height": np.array([180.0]),
-    }
+    dict.__setitem__(
+        raw.info,
+        "subject_info",
+        {
+            "weight": 75.0,
+            "height": np.array([180.0]),
+        },
+    )
 
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
     write_raw_bids(raw, bids_path=bids_path)
