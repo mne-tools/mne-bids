@@ -525,7 +525,8 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
                 else:
                     raise ValueError(
                         f"Value for key {key} is a list with more "
-                        f"than one element. This is not supported."
+                        f"than one element. This is not supported. "
+                        f"Got: {cur_value}."
                     )
             else:
                 new_value.append(cur_item)
