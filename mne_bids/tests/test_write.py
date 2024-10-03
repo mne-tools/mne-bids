@@ -4188,7 +4188,7 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
         assert cur_col in events_tsv
         assert cur_col in events_json
 
-
+# XXX: Remove once MNE-Python <1.9 is no longer supported
 @testing.requires_testing_data
 def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
     """Test writing participant.tsv when using np.arrays for weight and height."""

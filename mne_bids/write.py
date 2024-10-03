@@ -511,6 +511,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         }
     )
 
+    # XXX: Remove once MNE-Python <1.9 is no longer supported
     # Make sure that all entries to data are lists that
     # contain scalars (i.e. not further lists). Fix if possible
     for key in data.keys():
