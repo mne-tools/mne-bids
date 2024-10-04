@@ -61,9 +61,9 @@ doc = [
 ]
 # Dependencies for using all mne_bids features
 full = [
-  "defusedxml", # For reading EGI MFF data and BrainVision montages
+  "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.2.1",
-  "EDFlib-Python >= 1.0.6", # XXX: drop once mne <1.7 is no longer supported
+  "EDFlib-Python >= 1.0.6",  # XXX: drop once mne <1.7 is no longer supported
   "eeglabio >= 0.0.2",
   "matplotlib >= 3.5.0",
   "nibabel >= 3.2.1",
@@ -102,7 +102,7 @@ exclude = [
 ]
 
 [tool.hatch.metadata]
-allow-direct-references = true # allow specifying URLs in our dependencies
+allow-direct-references = true  # allow specifying URLs in our dependencies
 
 [tool.hatch.version]
 raw-options = {version_scheme = "release-branch-semver"}
