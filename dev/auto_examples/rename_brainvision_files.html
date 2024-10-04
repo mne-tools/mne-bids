@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>06. Rename BrainVision EEG data files &#8212; MNE-BIDS 0.16.0.dev44+g65da1ae7 documentation</title>
+    <title>06. Rename BrainVision EEG data files &#8212; MNE-BIDS 0.16.0.dev45+g5bfb9b48 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=de2c55ac"></script>
+    <script src="../_static/documentation_options.js?v=65fe818e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev44+g65da1ae7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev45+g5bfb9b48 documentation</p>
   
 </a></div>
     
@@ -613,8 +613,8 @@ with the second argument.</p>
 
 <span class="c1"># Check that MNE-Python can read in both, the original as well as the renamed</span>
 <span class="c1"># data (two files: their contents are the same apart from the name)</span>
-<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">)</span>
-<span class="n">raw_renamed</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">)</span>
+<span class="n">raw_renamed</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Created &quot;test_renamed.eeg&quot; in &quot;/home/circleci/mne_data/MNE-testing-data/Brainvision&quot;.
@@ -630,7 +630,7 @@ Setting channel info structure...
 <section id="further-information">
 <h2>Further information<a class="headerlink" href="#further-information" title="Link to this heading">#</a></h2>
 <p>For converting data files, or writing new data to the BrainVision format, you
-can use <a class="reference external" href="https://mne.tools/dev/api/export.html#module-mne.export" title="(in MNE v1.9)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne.export</span></code></a> or have a look at the <a class="reference external" href="https://github.com/bids-standard/pybv">pybv</a> Python package.</p>
+can use <a class="reference external" href="https://mne.tools/stable/api/export.html#module-mne.export" title="(in MNE v1.8)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne.export</span></code></a> or have a look at the <a class="reference external" href="https://github.com/bids-standard/pybv">pybv</a> Python package.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
@@ -643,7 +643,7 @@ electroencephalography. Sci Data 6, 103 (2019).
 <a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
 </aside>
 </aside>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.023 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.030 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-rename-brainvision-files-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fecfce9ee6664349717e6262ae61875d/rename_brainvision_files.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">rename_brainvision_files.ipynb</span></code></a></p>
@@ -737,7 +737,7 @@ electroencephalography. Sci Data 6, 103 (2019).
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-10-03.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-10-04.
       <br/>
     
   </p>

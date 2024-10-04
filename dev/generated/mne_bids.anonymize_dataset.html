@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.anonymize_dataset &#8212; MNE-BIDS 0.16.0.dev44+g65da1ae7 documentation</title>
+    <title>mne_bids.anonymize_dataset &#8212; MNE-BIDS 0.16.0.dev45+g5bfb9b48 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=de2c55ac"></script>
+    <script src="../_static/documentation_options.js?v=65fe818e"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev44+g65da1ae7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev45+g5bfb9b48 documentation</p>
   
 </a></div>
     
@@ -571,9 +571,9 @@ personally identifiable information from the copy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_root_in</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/documentation/glossary.html#term-path-like" title="(in MNE v1.9)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The root directory of the input BIDS dataset.</p>
+<dt><strong>bids_root_in</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.8)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The root directory of the input BIDS dataset.</p>
 </dd>
-<dt><strong>bids_root_out</strong><span class="classifier"><a class="reference external" href="https://mne.tools/dev/documentation/glossary.html#term-path-like" title="(in MNE v1.9)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The directory to place the anonymized dataset into.</p>
+<dt><strong>bids_root_out</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.8)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The directory to place the anonymized dataset into.</p>
 </dd>
 <dt><strong>daysback</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | ‘auto’</span></dt><dd><p>Number of days by which to move back the recording date in time. If
 <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, tries to randomly pick a suitable number.</p>
@@ -589,9 +589,9 @@ it on the screen. If <code class="docutils literal notranslate"><span class="pre
 <code class="docutils literal notranslate"><span class="pre">anat</span></code>. Multiple data types may be passed as a collection of strings.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, try to anonymize the entire input dataset.</p>
 </dd>
-<dt><strong>random_state</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | instance of <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.2.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></span></dt><dd><p>A seed for the NumPy random number generator (RNG). If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+<dt><strong>random_state</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | instance of <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></span></dt><dd><p>A seed for the NumPy random number generator (RNG). If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
 the seed will be  obtained from the operating system
-(see  <a class="reference external" href="https://numpy.org/devdocs/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.2.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> for details), meaning it will most
+(see  <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> for details), meaning it will most
 likely produce different output every time this function or method is run.
 To achieve reproducible results, pass a value here to explicitly initialize
 the RNG with a defined state.
@@ -600,7 +600,7 @@ they are <code class="docutils literal notranslate"><span class="pre">'auto'</sp
 </dd>
 <dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
 verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.12)"><span class="xref std std-ref">logging documentation</span></a> and
-<a class="reference external" href="https://mne.tools/dev/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
+<a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
 </dd>
 </dl>
@@ -692,7 +692,7 @@ argument.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-10-03.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-10-04.
       <br/>
     
   </p>
