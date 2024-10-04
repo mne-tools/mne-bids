@@ -6,77 +6,71 @@ build-backend = "hatchling.build"
 name = "mne-bids"
 description = "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python"
 dynamic = ["version"]
-authors = [{ name = "The MNE-BIDS developers" }]
+authors = [{name = "The MNE-BIDS developers"}]
 maintainers = [
-    { name = "Stefan Appelhoff", email = "stefan.appelhoff@mailbox.org" },
+  {name = "Stefan Appelhoff", email = "stefan.appelhoff@mailbox.org"}
 ]
-license = { text = "BSD-3-Clause" }
-readme = { file = "README.md", content-type = "text/markdown" }
+license = {text = "BSD-3-Clause"}
+readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 keywords = [
-    "meg",
-    "eeg",
-    "ieeg",
-    "bids",
-    "brain imaging data structure",
-    "neuroscience",
-    "neuroimaging",
+  "meg",
+  "eeg",
+  "ieeg",
+  "bids",
+  "brain imaging data structure",
+  "neuroscience",
+  "neuroimaging"
 ]
 classifiers = [
-    "Topic :: Scientific/Engineering",
-    "Intended Audience :: Science/Research",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved",
-    "Topic :: Software Development",
-    "Topic :: Scientific/Engineering",
-    "Operating System :: Microsoft :: Windows",
-    "Operating System :: POSIX :: Linux",
-    "Operating System :: MacOS",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved",
+  "Topic :: Software Development",
+  "Topic :: Scientific/Engineering",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12"
 ]
-scripts = { mne_bids = "mne_bids.commands.run:main" }
+scripts = {mne_bids = "mne_bids.commands.run:main"}
 dependencies = ["mne>=1.6", "numpy>=1.21.2", "scipy>=1.7.1"]
 
 [project.optional-dependencies]
-# Variants with dependencies that will get installed on top of those listed unter
-# project.dependencies
-
 # Dependencies for using all mne_bids features
 full = [
-    "nibabel >= 3.2.1",
-    "pybv >= 0.7.5",
-    "eeglabio >= 0.0.2",
-    "pymatreader >= 0.0.30",
-    "matplotlib >= 3.5.0",
-    "pandas >= 1.3.2",
-    "EDFlib-Python >= 1.0.6", # XXX: drop once mne <1.7 is no longer supported
-    "edfio >= 0.2.1",
-    "defusedxml",             # For reading EGI MFF data and BrainVision montages
+  "nibabel >= 3.2.1",
+  "pybv >= 0.7.5",
+  "eeglabio >= 0.0.2",
+  "pymatreader >= 0.0.30",
+  "matplotlib >= 3.5.0",
+  "pandas >= 1.3.2",
+  "EDFlib-Python >= 1.0.6", # XXX: drop once mne <1.7 is no longer supported
+  "edfio >= 0.2.1",
+  "defusedxml" # For reading EGI MFF data and BrainVision montages
 ]
-
 # Dependencies for running the test infrastructure
 test = ["mne_bids[full]", "pytest >= 8", "pytest-cov", "pytest-sugar", "ruff"]
-
 # Dependencies for building the documentation
 doc = [
-    "intersphinx_registry",
-    "nilearn",
-    "sphinx>=7.4.7",
-    "sphinx_gallery",
-    "sphinx-copybutton",
-    "pydata-sphinx-theme",
-    "numpydoc",
-    "matplotlib",
-    "pillow",
-    "pandas",
-    "mne-nirs",
-    "seaborn",
-    "openneuro-py",
+  "intersphinx_registry",
+  "nilearn",
+  "sphinx>=7.4.7",
+  "sphinx_gallery",
+  "sphinx-copybutton",
+  "pydata-sphinx-theme",
+  "numpydoc",
+  "matplotlib",
+  "pillow",
+  "pandas",
+  "mne-nirs",
+  "seaborn",
+  "openneuro-py"
 ]
-
 # Dependencies for developer installations
 dev = ["mne_bids[test,doc,full]", "pre-commit"]
 
@@ -88,24 +82,64 @@ dev = ["mne_bids[test,doc,full]", "pre-commit"]
 "Forum" = "https://mne.discourse.group/"
 "Source Code" = "https://github.com/mne-tools/mne-bids"
 
-[tool.hatch.metadata]
-allow-direct-references = true # allow specifying URLs in our dependencies
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = ["pragma: no cover", "if 0:", "if __name__ == .__main__.:"]
+
+[tool.coverage.run]
+omit = ["*tests*"]
 
 [tool.hatch.build]
 exclude = [
-    "/.*",
-    "**/tests",
-    "/paper",
-    "/examples",
-    "/doc",
-    "/Makefile",
-    "/CITATION.cff",
-    "/CONTRIBUTING.md",
+  "/.*",
+  "**/tests",
+  "/paper",
+  "/examples",
+  "/doc",
+  "/Makefile",
+  "/CITATION.cff",
+  "/CONTRIBUTING.md"
 ]
+
+[tool.hatch.metadata]
+allow-direct-references = true # allow specifying URLs in our dependencies
 
 [tool.hatch.version]
 source = "vcs"
-raw-options = { version_scheme = "release-branch-semver" }
+raw-options = {version_scheme = "release-branch-semver"}
+
+[tool.pytest.ini_options]
+addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
+    --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
+filterwarnings = [
+  "error",
+  "ignore:Estimation of line frequency only supports.*:RuntimeWarning",
+  "ignore:There are channels without locations (n/a)*:RuntimeWarning",
+  "ignore:Did not find any electrodes.tsv.*:RuntimeWarning",
+  "ignore:Did not find any coordsystem.json.*:RuntimeWarning",
+  "ignore:Did not find any events.tsv.*:RuntimeWarning",
+  "ignore:No events found or provided.*:RuntimeWarning",
+  "ignore:Participants file not found for.*:RuntimeWarning",
+  "ignore:Converting to FIF for anonymization:RuntimeWarning",
+  "ignore:Converting to BV for anonymization:RuntimeWarning",
+  "ignore:Converting data files to BrainVision format:RuntimeWarning",
+  "ignore:Writing of electrodes.tsv is not supported for datatype.*:RuntimeWarning",
+  "ignore:numpy.ufunc size changed.*:RuntimeWarning",
+  "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
+  "ignore:MEG ref channel RMSP did not.*:RuntimeWarning",
+  "ignore:`product` is deprecated as of NumPy.*:DeprecationWarning",
+  # Python 3.10+ and NumPy 1.22 (and maybe also newer NumPy versions?)
+  "ignore:.*distutils\\.sysconfig module is deprecated.*:DeprecationWarning",
+  # numba with NumPy dev
+  "ignore:`np.MachAr` is deprecated.*:DeprecationWarning",
+  # old MNE _fake_click
+  "ignore:The .*_event function was deprecated in Matplotlib.*:",
+  "ignore:datetime\\.datetime\\.utcfromtimestamp.* is deprecated and scheduled for removal in a future version.*:DeprecationWarning",
+  # matplotlib
+  "ignore:Figure.*is non-interactive.*cannot be shown:UserWarning",
+  # NumPy 2.1 bug (probably)
+  "ignore:__array__ implementation doesn.*:DeprecationWarning"
+]
 
 [tool.ruff.lint]
 select = ["A", "D", "E", "F", "I", "UP", "W"]
@@ -114,43 +148,3 @@ exclude = ["__init__.py"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
-
-[tool.coverage.run]
-omit = ["*tests*"]
-
-[tool.coverage.report]
-# Regexes for lines to exclude from consideration
-exclude_lines = ["pragma: no cover", "if 0:", "if __name__ == .__main__.:"]
-
-[tool.pytest.ini_options]
-addopts = """--durations=20 -ra --junit-xml=junit-results.xml --tb=short
-    --ignore=doc --ignore=examples --ignore=mne_bids/tests/data"""
-filterwarnings = [
-    "error",
-    "ignore:Estimation of line frequency only supports.*:RuntimeWarning",
-    "ignore:There are channels without locations (n/a)*:RuntimeWarning",
-    "ignore:Did not find any electrodes.tsv.*:RuntimeWarning",
-    "ignore:Did not find any coordsystem.json.*:RuntimeWarning",
-    "ignore:Did not find any events.tsv.*:RuntimeWarning",
-    "ignore:No events found or provided.*:RuntimeWarning",
-    "ignore:Participants file not found for.*:RuntimeWarning",
-    "ignore:Converting to FIF for anonymization:RuntimeWarning",
-    "ignore:Converting to BV for anonymization:RuntimeWarning",
-    "ignore:Converting data files to BrainVision format:RuntimeWarning",
-    "ignore:Writing of electrodes.tsv is not supported for datatype.*:RuntimeWarning",
-    "ignore:numpy.ufunc size changed.*:RuntimeWarning",
-    "ignore:tostring\\(\\) is deprecated.*:DeprecationWarning",
-    "ignore:MEG ref channel RMSP did not.*:RuntimeWarning",
-    "ignore:`product` is deprecated as of NumPy.*:DeprecationWarning",
-    # Python 3.10+ and NumPy 1.22 (and maybe also newer NumPy versions?)
-    "ignore:.*distutils\\.sysconfig module is deprecated.*:DeprecationWarning",
-    # numba with NumPy dev
-    "ignore:`np.MachAr` is deprecated.*:DeprecationWarning",
-    # old MNE _fake_click
-    "ignore:The .*_event function was deprecated in Matplotlib.*:",
-    "ignore:datetime\\.datetime\\.utcfromtimestamp.* is deprecated and scheduled for removal in a future version.*:DeprecationWarning",
-    # matplotlib
-    "ignore:Figure.*is non-interactive.*cannot be shown:UserWarning",
-    # NumPy 2.1 bug (probably)
-    "ignore:__array__ implementation doesn.*:DeprecationWarning",
-]
