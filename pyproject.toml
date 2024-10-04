@@ -141,6 +141,12 @@ filterwarnings = [
   "ignore:__array__ implementation doesn.*:DeprecationWarning"
 ]
 
+[tool.tomlsort]
+all = true
+ignore_case = true
+trailing_comma_inline_array = true
+
+
 [tool.ruff.lint]
 select = ["A", "D", "E", "F", "I", "UP", "W"]
 ignore = ["A002"]
