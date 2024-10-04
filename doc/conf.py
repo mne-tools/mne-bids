@@ -164,7 +164,16 @@ html_sidebars = {}
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = get_intersphinx_mapping(
-    "matplotlib", "mne", "nibabel", "nilearn", "numpy", "pandas", "python", "scipy"
+    packages={
+        "matplotlib",
+        "mne",
+        "nibabel",
+        "nilearn",
+        "numpy",
+        "pandas",
+        "python",
+        "scipy",
+    }
 )
 intersphinx_mapping["mne-gui-addons"] = ("https://mne.tools/mne-gui-addons", None)
 intersphinx_timeout = 5
