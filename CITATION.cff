@@ -194,6 +194,10 @@ authors:
     - given-names: Aaron
       family-names: Earle-Richardson
       affiliation: 'Duke University School of Medicine, Department of Neurology'
+    - given-names: William
+      family-names: Turner
+      affilitation: 'Wu Tsai Neurosciences Institute, Stanford University'
+      orcid: https://orcid.org/0000-0001-8639-9769
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
