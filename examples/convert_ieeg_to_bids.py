@@ -36,8 +36,8 @@ refer to the `iEEG part of the BIDS specification`_.
 
 .. _iEEG part of the BIDS specification: https://bids-specification.readthedocs.io/en/latest/modality-specific-files/intracranial-electroencephalography.html
 .. _appendix VIII: https://bids-specification.readthedocs.io/en/stable/appendices/coordinate-systems.html
-.. _background on FreeSurfer: https://mne.tools/dev/auto_tutorials/source-modeling/plot_background_freesurfer_mne
-.. _MNE-Python coordinate frames: https://mne.tools/dev/auto_tutorials/source-modeling/plot_source_alignment.html
+.. _background on FreeSurfer: https://mne.tools/stable/auto_tutorials/forward/50_background_freesurfer_mne.html
+.. _MNE-Python coordinate frames: https://mne.tools/stable/auto_tutorials/forward/20_source_alignment.html
 """  # noqa: E501 D400
 
 # Authors: The MNE-BIDS developers
