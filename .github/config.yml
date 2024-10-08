@@ -10,7 +10,11 @@ newIssueWelcomeComment: >
 
 # Comment to be posted to on PRs from first time contributors in your repository
 newPRWelcomeComment: >
-  Hello! 👋 Thanks for opening your first pull request here! ❤️ We will try to get back to you soon. 🚴🏽‍♂️
+  Hello! 👋 Thanks for opening your first pull request here!
+
+  Please read the [contributor guide](https://github.com/mne-tools/mne-bids/blob/main/CONTRIBUTING.md),
+  and please follow the steps outlined in the *"Instructions for first-time contributors"* section therein.
+  ❤️ We will try to get back to you soon. 🚴🏽‍♂️
 
 # Configuration for first-pr-merge - https://github.com/behaviorbot/first-pr-merge
 

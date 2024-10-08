@@ -1,4 +1,8 @@
 """Private functions to handle tabular data."""
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -78,9 +82,9 @@ def _contains_row(data, row_data):
         # Cast row_value to the same dtype as data_value to avoid a NumPy
         # FutureWarning, see
         # https://github.com/mne-tools/mne-bids/pull/372
-        row_value = np.array(row_value, dtype=data_value.dtype)
-
-        column_mask = np.in1d(data_value, row_value)
+        if data_value.size > 0:
+            row_value = np.array(row_value, dtype=data_value.dtype)
+        column_mask = np.isin(data_value, row_value)
         mask = column_mask if mask is None else (mask & column_mask)
     return np.any(mask)
 
@@ -115,7 +119,7 @@ def _drop(data, values, column):
         dtype = np.array(values).dtype
     values = np.array(values, dtype=dtype)
 
-    mask = np.in1d(new_data_col, values, invert=True)
+    mask = np.isin(new_data_col, values, invert=True)
     for key in new_data.keys():
         new_data[key] = np.array(new_data[key])[mask].tolist()
     return new_data
@@ -140,18 +144,22 @@ def _from_tsv(fname, dtypes=None):
 
     """
     from .utils import warn  # avoid circular import
-    data = np.loadtxt(fname, dtype=str, delimiter='\t', ndmin=2,
-                      comments=None, encoding='utf-8-sig')
+
+    data = np.loadtxt(
+        fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding="utf-8-sig"
+    )
     column_names = data[0, :]
     info = data[1:, :]
     data_dict = OrderedDict()
     if dtypes is None:
         dtypes = [str] * info.shape[1]
-    if not isinstance(dtypes, (list, tuple)):
+    if not isinstance(dtypes, list | tuple):
         dtypes = [dtypes] * info.shape[1]
     if not len(dtypes) == info.shape[1]:
-        raise ValueError('dtypes length mismatch. Provided: {0}, '
-                         'Expected: {1}'.format(len(dtypes), info.shape[1]))
+        raise ValueError(
+            "dtypes length mismatch. "
+            f"Provided: {len(dtypes)}, Expected: {info.shape[1]}"
+        )
     empty_cols = 0
     for i, name in enumerate(column_names):
         values = info[:, i].astype(dtypes[i]).tolist()
@@ -179,9 +187,9 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with open(fname, 'w', encoding='utf-8-sig') as f:
+    with open(fname, "w", encoding="utf-8-sig") as f:
         f.write(output)
-        f.write('\n')
+        f.write("\n")
 
 
 def _tsv_to_str(data, rows=5):
@@ -204,12 +212,12 @@ def _tsv_to_str(data, rows=5):
     n_rows = len(data[col_names[0]])
     output = list()
     # write headings.
-    output.append('\t'.join(col_names))
+    output.append("\t".join(col_names))
 
     # write column data.
     max_rows = min(n_rows, rows)
     for idx in range(max_rows):
         row_data = list(str(data[key][idx]) for key in data)
-        output.append('\t'.join(row_data))
+        output.append("\t".join(row_data))
 
-    return '\n'.join(output)
+    return "\n".join(output)

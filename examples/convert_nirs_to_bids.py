@@ -15,12 +15,10 @@ data. Specifically, we will follow these steps:
 4. Cite ``mne-bids``.
 
 .. currentmodule:: mne_bids
+"""  # noqa: E501 D205 D400
 
-"""  # noqa: E501
-
-# Authors: Robert Luke <code@robertluke.net>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We are importing everything we need for this example:
@@ -31,7 +29,7 @@ import shutil
 import mne
 from mne_nirs import datasets  # For convenient downloading of example data
 
-from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
+from mne_bids import BIDSPath, print_dir_tree, write_raw_bids
 from mne_bids.stats import count_events
 
 # %%
@@ -71,7 +69,7 @@ file_path = data_dir / "sub-01" / "nirs" / "sub-01_task-tapping_nirs.snirf"
 
 # Load the data
 raw = mne.io.read_raw_snirf(file_path, preload=False)
-raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
+raw.info["line_freq"] = 50  # specify power line frequency as required by BIDS
 
 # Sanity check, show the optode positions
 raw.plot_sensors()
@@ -80,9 +78,7 @@ raw.plot_sensors()
 # I also like to rename the annotations to something meaningful and
 # set the duration of each stimulus
 
-trigger_info = {'1.0': 'Control',
-                '2.0': 'Tapping/Left',
-                '3.0': 'Tapping/Right'}
+trigger_info = {"1.0": "Control", "2.0": "Tapping/Left", "3.0": "Tapping/Right"}
 raw.annotations.rename(trigger_info)
 raw.annotations.set_durations(5.0)
 
@@ -106,11 +102,11 @@ raw.annotations.set_durations(5.0)
 print(write_raw_bids.__doc__)
 
 # zero padding to account for >100 subjects in this dataset
-subject_id = '01'
+subject_id = "01"
 
 # define a task name and a directory where to save the data to
-task = 'Tapping'
-bids_root = data_dir.with_name(data_dir.name + '-bids')
+task = "Tapping"
+bids_root = data_dir.with_name(data_dir.name + "-bids")
 print(bids_root)
 
 # %%
@@ -173,8 +169,8 @@ counts
 #
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = op.join(bids_root, 'README')
-with open(readme, 'r', encoding='utf-8-sig') as fid:
+readme = op.join(bids_root, "README")
+with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
 

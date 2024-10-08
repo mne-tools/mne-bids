@@ -4,7 +4,7 @@ Contributions are welcome in the form of feedback and discussion in issues,
 or pull requests for changes to the code.
 
 Once the implementation of a piece of functionality is considered to be bug
-free and properly documented (both API docs and an example script),
+free and properly documented (both in the API docs and with an example script),
 it can be incorporated into the `main` branch.
 
 To help developing `mne-bids`, you will need a few adjustments to your
@@ -24,10 +24,10 @@ To start with, you should install `mne-bids` as described in our
 [installation documentation](https://mne.tools/mne-bids/dev/install.html).
 For a development environment we recommend that you perform the installation in
 a dedicated Python environment,
-for example using `conda`.
+for example using `conda` (see: https://docs.conda.io/en/latest/miniconda.html).
 Afterwards, a few additional steps need to be performed.
-For all of the steps below we assume that you work in your dedicated `mne-bids`
-Python environment.
+
+**For all of the steps below we assume that you work in your dedicated `mne-bids` Python environment.**
 
 ### Clone MNE-Python and install it from the git repository
 
@@ -37,7 +37,7 @@ then navigate to the cloned repository using the `cd` command.
 Then from the `mne-python` root directory call:
 
 ```Shell
-pip uninstall mne
+pip uninstall mne --yes
 pip install -e .
 ```
 
@@ -52,21 +52,13 @@ Then, `git clone` your fork and install it in "editable" mode.
 
 ```Shell
 git clone https://github.com/<your-GitHub-username>/mne-bids
-pip install -e ./mne-bids
+cd ./mne-bids
+pip install -e ".[dev]"
+git config --local blame.ignoreRevsFile .git-blame-ignore-revs
 ```
 
+The last command is needed for `git diff` to work properly.
 You should now have both the `mne` and `mne-bids` development versions available in your Python environment.
-
-### Install additional Python packages required for development
-
-Navigate to the root of the `mne-bids` repository and call:
-
-```Shell
-pip install -r test_requirements.txt
-pip install -r doc/requirements.txt
-```
-
-This will install several packages to run tests, and build the documentation for `mne-bids`.
 
 ### Install the BIDS validator
 
@@ -106,7 +98,7 @@ bids-validator --version
 We use [GNU Make](https://www.gnu.org/software/make/) for developing `mne-bids`.
 We recommend that you install GNU Make and make use of our `Makefile` at the root
 of the repository.
-For most Linux and OSX operating systems, GNU Make will be already installed by default.
+For most Linux and macOS operating systems, GNU Make will be already installed by default.
 Windows users can download the [Chocolatey package manager](https://chocolatey.org/)
 and install [GNU Make from their repository](https://community.chocolatey.org/packages/make).
 
@@ -118,34 +110,54 @@ figure out how to run the commands without invoking `make`.
 
 We run several style checks on `mne-bids`.
 If you have accurately followed the steps to setup your `mne-bids` development version,
-you can simply call from the root of the `mne-bids` repository:
+you can simply use the following command from the root of the `mne-bids` repository:
 
 ```Shell
 make pep
 ```
 
+We use [ruff](https://docs.astral.sh/ruff/) to format our code.
+You can simply call `make ruff-format` from the root of the `mne-bids` repository
+to automatically convert your code to follow the appropriate style.
+
+### git pre-commit hooks
+
+We suggest installing our git pre-commit hooks to automatically run style
+checks before a commit is created:
+
+```Shell
+pre-commit install
+```
+
+You can also manually run the hooks via
+
+```Shell
+pre-commit run -a
+```
+
 ## Running tests
 
 We run tests using `pytest`.
+
+First you will need to download the MNE-Python testing data.
+Use the following command:
+
+```Shell
+python -c 'import mne; mne.datasets.testing.data_path(verbose=True)'
+```
+
 If you have accurately followed the steps to setup your `mne-bids` development version,
-you can simply call from the root of the `mne-bids` repository:
+you can then simply use the following command from the root of the `mne-bids` repository:
 
 ```Shell
 make test
-```
-
-If you have installed the `bids-validator` on a per-user basis (that is, *not* globally),
-set the environment variable `VALIDATOR_EXECUTABLE` to point to the path of the `bids-validator` before invoking `pytest`:
-
-```Shell
-VALIDATOR_EXECUTABLE=../bids-validator/bids-validator/bin/bids-validator pytest
 ```
 
 ## Building the documentation
 
 The documentation can be built using [Sphinx](https://www.sphinx-doc.org).
 If you have accurately followed the steps to setup your `mne-bids` development version,
-you can simply call from the root of the `mne-bids` repository:
+you can simply use the following command from the root of the `mne-bids` repository:
 
 ```Shell
 make build-doc
@@ -161,6 +173,28 @@ The latter command will result in a faster build but produce no plots in the exa
 
 More information on our documentation setup can be found in our
 [mne-bids WIKI](https://github.com/mne-tools/mne-bids/wiki).
+
+## A note on MNE-Python compatibility
+
+We aim to make `mne-bids` compatible with the current stable release of `mne`,  as well as the previous stable release.
+Both of these versions are tested in our continuous integration infrastructure.
+Additional versions of `mne` may be compatible, but this is not guaranteed.
+
+## Instructions for first-time contributors
+
+When you are making your first contribution to `mne-bids`, we kindly request you to:
+
+1. Create an account at [circleci](https://circleci.com/), because this will simplify running the automated test suite
+   of `mne-bids`.
+   Note: you can simply use your GitHub account to log in.
+1. Add yourself to the [list of authors](https://github.com/mne-tools/mne-bids/blob/main/doc/authors.rst).
+1. Add yourself to the [CITATION.cff](https://github.com/mne-tools/mne-bids/blob/main/CITATION.cff) file.
+   Note: please add yourself in the
+   ["authors" section](https://github.com/mne-tools/mne-bids/blob/fff6e90984ea0aa1e2914bb55e4197f7ec2800bf/CITATION.cff#L7C3-L7C3)
+   of that file, towards the end of the list of authors, but **before** `Alexandre Gramfort` and `Mainak Jas`.
+1. Update the [changelog](https://github.com/mne-tools/mne-bids/blob/main/doc/whats_new.rst) with your contribution.
+   Note: please follow the existing format and add your name as a list item under the heading saying:
+   `The following authors contributed for the first time. Thank you so much!`.
 
 ## Making a release
 

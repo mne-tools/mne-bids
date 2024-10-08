@@ -5,7 +5,7 @@
 
 You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
 Problematic channels can be marked as "bad", for example if the connected
-sensor produced mostly noise – or no signal at all. Similarly, you can declare
+sensor produced mostly noise - or no signal at all. Similarly, you can declare
 channels as "good", should you discover they were incorrectly marked as bad.
 Bad channel selection can also be performed non-interactively.
 
@@ -15,9 +15,8 @@ segments as "bad".
 .. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/30_annotate_raw.html#annotating-raw-objects-interactively
 """  # noqa: E501 D400 D205
 
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We will demonstrate how to mark individual channels as bad on the MNE
@@ -30,17 +29,30 @@ import os.path as op
 import shutil
 
 import mne
-from mne_bids import (BIDSPath, write_raw_bids, read_raw_bids,
-                      inspect_dataset, mark_channels)
+
+from mne_bids import (
+    BIDSPath,
+    inspect_dataset,
+    mark_channels,
+    read_raw_bids,
+    write_raw_bids,
+)
 
 data_path = mne.datasets.sample.data_path()
-raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
-events_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
-event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-            'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
-bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
-bids_path = BIDSPath(subject='01', session='01', task='audiovisual', run='01',
-                     root=bids_root)
+raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw.fif")
+events_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-eve.fif")
+event_id = {
+    "Auditory/Left": 1,
+    "Auditory/Right": 2,
+    "Visual/Left": 3,
+    "Visual/Right": 4,
+    "Smiley": 5,
+    "Button": 32,
+}
+bids_root = op.join(data_path, "..", "MNE-sample-data-bids")
+bids_path = BIDSPath(
+    subject="01", session="01", task="audiovisual", run="01", root=bids_root
+)
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -56,9 +68,15 @@ if op.exists(bids_root):
 # Now write the raw data to BIDS.
 
 raw = mne.io.read_raw_fif(raw_fname, verbose=False)
-raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
-write_raw_bids(raw, bids_path=bids_path, events=events_fname,
-               event_id=event_id, overwrite=True, verbose=False)
+raw.info["line_freq"] = 60  # Specify power line frequency as required by BIDS.
+write_raw_bids(
+    raw,
+    bids_path=bids_path,
+    events=events_fname,
+    event_id=event_id,
+    overwrite=True,
+    verbose=False,
+)
 
 # %%
 # Interactive use
@@ -81,7 +99,7 @@ inspect_dataset(bids_path)
 # high-frequency artifacts. This can make visual inspection easier. Let's
 # apply filters with a 1-Hz high-pass cutoff, and a 30-Hz low-pass cutoff:
 
-inspect_dataset(bids_path, l_freq=1., h_freq=30.)
+inspect_dataset(bids_path, l_freq=1.0, h_freq=30.0)
 
 # %%
 # By pressing the ``A`` key, you can toggle annotation mode to add, edit, or
@@ -98,8 +116,10 @@ inspect_dataset(bids_path, l_freq=1., h_freq=30.)
 # marked as bad.
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
-print(f'The following channels are currently marked as bad:\n'
-      f'    {", ".join(raw.info["bads"])}\n')
+print(
+    f"The following channels are currently marked as bad:\n"
+    f'    {", ".join(raw.info["bads"])}\n'
+)
 
 # %%
 # So currently, two channels are marked as bad: ``EEG 053`` and ``MEG 2443``.
@@ -108,16 +128,17 @@ print(f'The following channels are currently marked as bad:\n'
 # To do that, we simply add them to a list, which we then pass to
 # :func:`mne_bids.mark_channels`:
 
-bads = ['MEG 0112', 'MEG 0131']
-mark_channels(bids_path=bids_path, ch_names=bads, status='bad',
-              verbose=False)
+bads = ["MEG 0112", "MEG 0131"]
+mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 
 # %%
 # That's it! Let's verify the result.
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
-print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
-      f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+print(
+    f"After marking MEG 0112 and MEG 0131 as bad, the following channels "
+    f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+)
 
 # %%
 # As you can see, now a total of **four** channels is marked as bad: the ones
@@ -131,21 +152,25 @@ print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
 # If you instead would like to **replace** the collection of bad channels
 # entirely, pass the argument ``overwrite=True``:
 
-bads = ['MEG 0112', 'MEG 0131']
-mark_channels(bids_path=bids_path, ch_names=bads, status='bad', verbose=False)
+bads = ["MEG 0112", "MEG 0131"]
+mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
-print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
-      f'`overwrite=True`, the following channels '
-      f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+print(
+    f"After marking MEG 0112 and MEG 0131 as bad and passing "
+    f"`overwrite=True`, the following channels "
+    f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+)
 
 # %%
 # Lastly, if you're looking for a way to mark all channels as good, simply
-# pass an empty list as ``ch_names``, combined with ``overwrite=True``:
+# pass ``ch_names="all"``, combined with ``overwrite=True``:
 
-bads = []
-mark_channels(bids_path=bids_path, ch_names=bads, status='bad', verbose=False)
+bads = "all"
+mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
-print(f'After passing `ch_names=[]` and `overwrite=True`, the following '
-      f'channels are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+print(
+    f"After passing `ch_names=[]` and `overwrite=True`, the following "
+    f'channels are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+)

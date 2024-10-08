@@ -27,11 +27,10 @@ For the command line version of this tool, see the :code:`cp` tool in the docs
 for the :ref:`Python Command Line Interface <python_cli>`.
 
 .. _BrainVision data format: https://www.brainproducts.com/support-resources/brainvision-core-data-format-1-0/
-"""  # noqa:E501
+"""  # noqa: E501 D205 D400
 
-# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # We are importing everything we need for this example:
@@ -51,7 +50,7 @@ from mne_bids.copyfiles import copyfile_brainvision
 # .. warning:: This will download 1.6 GB of data!
 
 data_path = mne.datasets.testing.data_path()
-examples_dir = op.join(data_path, 'Brainvision')
+examples_dir = op.join(data_path, "Brainvision")
 
 # %%
 # Rename the recording
@@ -73,8 +72,8 @@ examples_dir = op.join(data_path, 'Brainvision')
 # Here, we rename a test file name:
 
 # Rename the file
-vhdr_file = op.join(examples_dir, 'Analyzer_nV_Export.vhdr')
-vhdr_file_renamed = op.join(examples_dir, 'test_renamed.vhdr')
+vhdr_file = op.join(examples_dir, "Analyzer_nV_Export.vhdr")
+vhdr_file_renamed = op.join(examples_dir, "test_renamed.vhdr")
 copyfile_brainvision(vhdr_file, vhdr_file_renamed, verbose=True)
 
 # Check that MNE-Python can read in both, the original as well as the renamed
@@ -89,11 +88,7 @@ raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
 # For converting data files, or writing new data to the BrainVision format, you
 # can use :mod:`mne.export` or have a look at the `pybv`_ Python package.
 #
-# There is node JS tool to check the integrity of your BrainVision files.
-# For that, see the `BrainVision Validator <bv-validator_>`_
-#
 # .. _`pybv`: https://github.com/bids-standard/pybv
-# .. _`bv-validator`: https://github.com/sappelhoff/brainvision-validator
 #
 # References
 # ----------

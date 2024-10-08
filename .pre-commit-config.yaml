@@ -1,0 +1,39 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        name: ruff mne_bids/
+        files: ^mne_bids/
+        args: ["--fix"]
+      - id: ruff
+        name: ruff examples/
+        # D103: missing docstring in public function
+        # D400: docstring first line must end with period
+        # D205: 1 blank line required between summary line and description
+        args: ["--ignore=D103,D400,D205"]
+        files: ^examples/
+      - id: ruff-format
+        name: ruff format mne_bids/
+        files: ^mne_bids/
+      - id: ruff-format
+        name: ruff format examples/
+        files: ^examples/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-ast
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-docstring-first
+
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.23.1
+    hooks:
+      - id: toml-sort-fix
+        files: pyproject.toml

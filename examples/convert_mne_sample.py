@@ -13,15 +13,10 @@ In a second step we will read the organized dataset using MNE-BIDS.
 
 .. _BIDS dataset_description.json definition: https://bids-specification.readthedocs.io/en/latest/modality-agnostic-files.html#dataset-description
 .. _ds000248 dataset_description.json: https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json
-"""  # noqa: D400 D205 E501
+"""  # noqa: D400 E501
 
-# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
-#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
-#          Teon Brooks <teon.brooks@gmail.com>
-#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
-#          Richard Höchenberger <richard.hoechenberger@gmail.com>
-#
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # First we import some basic Python libraries, followed by MNE-Python and its
@@ -29,15 +24,21 @@ In a second step we will read the organized dataset using MNE-BIDS.
 
 import json
 import os.path as op
-from pprint import pprint
 import shutil
+from pprint import pprint
 
 import mne
 from mne.datasets import sample
 
-from mne_bids import (write_raw_bids, read_raw_bids, write_meg_calibration,
-                      write_meg_crosstalk, BIDSPath, print_dir_tree,
-                      make_dataset_description)
+from mne_bids import (
+    BIDSPath,
+    make_dataset_description,
+    print_dir_tree,
+    read_raw_bids,
+    write_meg_calibration,
+    write_meg_crosstalk,
+    write_raw_bids,
+)
 from mne_bids.stats import count_events
 
 # %%
@@ -48,13 +49,19 @@ from mne_bids.stats import count_events
 # from. `output_path` determines where we will write the BIDS conversion to.
 
 data_path = sample.data_path()
-event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-            'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+event_id = {
+    "Auditory/Left": 1,
+    "Auditory/Right": 2,
+    "Visual/Left": 3,
+    "Visual/Right": 4,
+    "Smiley": 5,
+    "Button": 32,
+}
 
-raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
-er_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')  # empty room
-events_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
-output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
+raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw.fif")
+er_fname = op.join(data_path, "MEG", "sample", "ernoise_raw.fif")  # empty room
+events_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-eve.fif")
+output_path = op.join(data_path, "..", "MNE-sample-data-bids")
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -85,16 +92,12 @@ raw = mne.io.read_raw(raw_fname)
 raw_er = mne.io.read_raw(er_fname)
 
 # specify power line frequency as required by BIDS
-raw.info['line_freq'] = 60
-raw_er.info['line_freq'] = 60
+raw.info["line_freq"] = 60
+raw_er.info["line_freq"] = 60
 
-task = 'audiovisual'
+task = "audiovisual"
 bids_path = BIDSPath(
-    subject='01',
-    session='01',
-    task=task,
-    run='1',
-    root=output_path
+    subject="01", session="01", task=task, run="1", datatype="meg", root=output_path
 )
 write_raw_bids(
     raw=raw,
@@ -102,7 +105,7 @@ write_raw_bids(
     events=events_fname,
     event_id=event_id,
     empty_room=raw_er,
-    overwrite=True
+    overwrite=True,
 )
 
 # %%
@@ -110,10 +113,8 @@ write_raw_bids(
 # sidecar files that describe our data is correct.
 
 # Get the sidecar ``.json`` file
-sidecar_json_bids_path = bids_path.copy().update(extension='.json')
-sidecar_json_content = sidecar_json_bids_path.fpath.read_text(
-    encoding='utf-8-sig'
-)
+sidecar_json_bids_path = bids_path.copy().update(suffix="meg", extension=".json")
+sidecar_json_content = sidecar_json_bids_path.fpath.read_text(encoding="utf-8-sig")
 print(sidecar_json_content)
 
 # %%
@@ -121,8 +122,8 @@ print(sidecar_json_content)
 # are required when processing Elekta/Neuromag/MEGIN data using MaxFilter®.
 # Let's store these data in appropriate places, too.
 
-cal_fname = op.join(data_path, 'SSS', 'sss_cal_mgh.dat')
-ct_fname = op.join(data_path, 'SSS', 'ct_sparse_mgh.fif')
+cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
+ct_fname = op.join(data_path, "SSS", "ct_sparse_mgh.fif")
 
 write_meg_calibration(cal_fname, bids_path)
 write_meg_crosstalk(ct_fname, bids_path)
@@ -151,7 +152,7 @@ raw = read_raw_bids(bids_path=bids_path)
 
 events, event_id = mne.events_from_annotations(raw)
 epochs = mne.Epochs(raw, events, event_id)
-epochs['Auditory'].average().plot()
+epochs["Auditory"].average().plot()
 
 # %%
 # We can easily get the :class:`mne_bids.BIDSPath` of the empty-room recording
@@ -173,8 +174,8 @@ print(bids_path.meg_crosstalk_fpath)
 # The README created by :func:`write_raw_bids` also takes care of the citation
 # for mne-bids. If you are preparing a manuscript, please make sure to also
 # cite MNE-BIDS there.
-readme = op.join(output_path, 'README')
-with open(readme, 'r', encoding='utf-8-sig') as fid:
+readme = op.join(output_path, "README")
+with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
 
@@ -202,8 +203,8 @@ make_dataset_description(
     acknowledgements="""\
 Alexandre Gramfort, Mainak Jas, and Stefan Appelhoff prepared and updated the \
 data in BIDS format.""",
-    data_license='CC0',
-    ethics_approvals=['Human Subjects Division at the University of Washington'],  # noqa: E501
+    data_license="CC0",
+    ethics_approvals=["Human Subjects Division at the University of Washington"],
     funding=[
         "NIH 5R01EB009048",
         "NIH 1R01EB009048",
@@ -215,18 +216,18 @@ data in BIDS format.""",
         "ANR-11-IDEX-0003-02",
         "ERC-StG-263584",
         "ERC-StG-676943",
-        "ANR-14-NEUC-0002-01"
+        "ANR-14-NEUC-0002-01",
     ],
     references_and_links=[
         "https://doi.org/10.1016/j.neuroimage.2014.02.017",
         "https://doi.org/10.3389/fnins.2013.00267",
-        "https://mne.tools/stable/overview/datasets_index.html#sample"
+        "https://mne.tools/stable/documentation/datasets.html#sample",
     ],
     doi="doi:10.18112/openneuro.ds000248.v1.2.4",
-    overwrite=True
+    overwrite=True,
 )
-desc_json_path = bids_path.root / 'dataset_description.json'
-with open(desc_json_path, 'r', encoding='utf-8-sig') as fid:
+desc_json_path = bids_path.root / "dataset_description.json"
+with open(desc_json_path, encoding="utf-8-sig") as fid:
     pprint(json.loads(fid.read()))
 
 # %%

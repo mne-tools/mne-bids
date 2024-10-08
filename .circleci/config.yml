@@ -1,22 +1,35 @@
 # See: https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
 version: 2.1
 
+_check_skip: &check_skip
+  name: Check-skip
+  command: |
+    set -e
+    export COMMIT_MESSAGE=$(git log --format=oneline -n 1);
+    if [[ -v CIRCLE_PULL_REQUEST ]] && ([[ "$COMMIT_MESSAGE" == *"[skip circle]"* ]] || [[ "$COMMIT_MESSAGE" == *"[circle skip]"* ]]); then
+      echo "Skip detected, exiting job ${CIRCLE_JOB} for PR ${CIRCLE_PULL_REQUEST}."
+      circleci-agent step halt;
+    fi
+
 jobs:
   docs-build:
     machine:
-        image: ubuntu-2004:202111-01
+        image: default
     steps:
         - checkout
+
+        - run:
+            <<: *check_skip
 
         # restore cache from last build. Unless __init__.py has changed since then
         - restore_cache:
             keys:
-              - data-cache-5-{{ checksum "./mne_bids/__init__.py" }}
+              - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
 
         # Also restore pip cache to speed up installations
         - restore_cache:
             keys:
-              - pip-cache-1-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+              - pip-cache-0-{{ checksum "./pyproject.toml" }}
 
         - run:
             name: Setup Python3 environment
@@ -28,15 +41,20 @@ jobs:
             name: Install Python packages
             command: |
               python -m pip install --upgrade --progress-bar off pip
-              python -m pip install --upgrade --progress-bar off -r test_requirements.txt
-              python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
-              python -m pip install --upgrade git+https://github.com/mne-tools/mne-python
-              python -m pip install -e .
+              python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
+              python -m pip install -e .[test,doc]
 
         - run:
             name: Build the documentation
+            no_output_timeout: 30m
             command: |
-              make build-doc
+              make build-doc 2>&1 | tee sphinx_log.txt
+
+        - run:
+            name: Check sphinx log for warnings (which are treated as errors)
+            when: always
+            command: |
+              ! grep "^.*WARNING: .*$" sphinx_log.txt
 
         - persist_to_workspace:
             root: doc/_build
@@ -48,13 +66,13 @@ jobs:
 
         # Store the data cache
         - save_cache:
-            key: data-cache-5-{{ checksum "./mne_bids/__init__.py" }}
+            key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
             paths:
               - ~/mne_data
 
         # Store pip cache
         - save_cache:
-            key: pip-cache-1-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+            key: pip-cache-0-{{ checksum "./pyproject.toml" }}
             paths:
               - ~/.cache/pip
 
@@ -89,7 +107,7 @@ jobs:
 
   link-check:
     machine:
-        image: ubuntu-2004:202111-01
+        image: default
     steps:
       - checkout
 
@@ -98,7 +116,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - pip-cache-1-{{ checksum "./test_requirements.txt" }}-{{ checksum "./doc/requirements.txt" }}
+            - pip-cache-0-{{ checksum "./pyproject.toml" }}
 
       - run:
           name: Setup Python3 environment
@@ -110,13 +128,12 @@ jobs:
           name: Install Python packages
           command: |
             python -m pip install --upgrade --progress-bar off pip
-            python -m pip install --upgrade --progress-bar off -r test_requirements.txt
-            python -m pip install --upgrade --progress-bar off -r doc/requirements.txt
-            python -m pip install --upgrade --no-deps git+https://github.com/mne-tools/mne-python
-            python -m pip install -e .
+            python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
+            python -m pip install -e .[test,doc]
 
       - run:
           name: Check links
+          no_output_timeout: 30m
           command: |
             make -C doc linkcheck
 

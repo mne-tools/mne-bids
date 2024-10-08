@@ -105,9 +105,10 @@ authors:
       family-names: Niso Galán
       affiliation: 'Psychological & Brain Sciences, Indiana University, Bloomington, IN, USA'
       orcid: 'https://orcid.org/0000-0001-5872-8924'
-    - given-names: Richard
-      family-names: Koehler
+    - given-names: Richard M.
+      family-names: Köhler
       orcid: 'https://orcid.org/0000-0002-5219-1289'
+      affiliation: 'Movement Disorder and Neuromodulation Unit, Department of Neurology, Charité – Universitätsmedizin Berlin, Germany'
     - given-names: Robert
       family-names: Luke
       orcid: 'https://orcid.org/0000-0002-4930-8351'
@@ -158,6 +159,45 @@ authors:
     - given-names: Fesselier
       family-names: Laetitia
       affiliation: 'McGill Centre for Integrative Neuroscience, McGill University, Montreal, Canada'
+    - given-names: Jonathan
+      family-names: Vanhoecke
+      orcid: 'https://orcid.org/0000-0002-9857-1519'
+      affiliation: 'Movement Disorder and Neuromodulation Unit, Department of Neurology, Charité – Universitätsmedizin Berlin, Germany'
+    - given-names: Ford
+      family-names: McDonald
+      affiliation: 'Behavior and NeuroData Core, Brown University, Providence, RI, USA'
+      orcid: 'https://orcid.org/0009-0004-5099-7109'
+    - given-names: Pierre
+      family-names: Guetschel
+      orcid: 'https://orcid.org/0000-0002-8933-7640'
+      affiliation: 'Donders Institute for Brain, Cognition and Behaviour, Radboud University, Nijmegen, Netherlands'
+    - given-names: Mara
+      family-names: Wolter
+      orcid: 'https://orcid.org/0000-0002-6785-9886'
+      affiliation: 'Centre for Integrative Neuroscience, Tübingen, Germany'
+    - given-names: Julius
+      family-names: Welzel
+      affiliation: 'Department of Neurology, Kiel University, Germany'
+      orcid: 'https://orcid.org/0000-0003-4782-5360'
+    - given-names: Kaare
+      family-names: Mikkelsen
+      affiliation: 'Department of Electrical and Computer Engineering, Aarhus University, Denmark'
+      orcid: 'https://orcid.org/0000-0002-7360-8629'
+    - given-names: Amaia
+      family-names: Benitez
+      affiliation: 'Magnetoencephalography Core, National Institutes of Health, Bethesda, Maryland, USA'
+      orcid: 'https://orcid.org/0000-0001-6364-7272'
+    - given-names: Thomas
+      family-names: Hartmann
+      affiliation: 'Paris-Lodron-University Salzburg, Centre for Cognitive Neuroscience, Department of Psychology, Salzburg, Austria'
+      orcid: 'https://orcid.org/0000-0002-8298-8125'
+    - given-names: Aaron
+      family-names: Earle-Richardson
+      affiliation: 'Duke University School of Medicine, Department of Neurology'
+    - given-names: William
+      family-names: Turner
+      affiliation: 'Wu Tsai Neurosciences Institute, Stanford University'
+      orcid: 'https://orcid.org/0000-0001-8639-9769'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

@@ -1,44 +1,47 @@
 """Configure details for documentation with sphinx."""
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import os
 import sys
 from datetime import date
 
-import sphinx_gallery  # noqa: F401
-from sphinx_gallery.sorting import ExampleTitleSortKey
+from intersphinx_registry import get_intersphinx_mapping
+from sphinx.config import is_serializable
 
 import mne_bids
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 curdir = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(os.path.join(curdir, '..', 'mne_bids')))
-sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
+sys.path.append(os.path.abspath(os.path.join(curdir, "..", "mne_bids")))
+sys.path.append(os.path.abspath(os.path.join(curdir, "sphinxext")))
 
 
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-# needs_sphinx = '1.0'
+needs_sphinx = "2.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.githubpages',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx_gallery.gen_gallery',
-    'numpydoc',
-    'sphinx_copybutton',
-    'gen_cli',  # custom extension, see ./sphinxext/gen_cli.py
-    'gh_substitutions',  # custom extension, see ./sphinxext/gh_substitutions.py
+    "sphinx.ext.githubpages",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx_gallery.gen_gallery",
+    "numpydoc",
+    "sphinx_copybutton",
+    "gen_cli",  # custom extension, see ./sphinxext/gen_cli.py
+    "gh_substitutions",  # custom extension, see ./sphinxext/gh_substitutions.py
 ]
 
 # configure sphinx-copybutton
@@ -50,51 +53,52 @@ numpydoc_xref_param_type = True
 numpydoc_class_members_toctree = False
 numpydoc_attributes_as_param_list = True
 numpydoc_xref_aliases = {
-    'BIDSPath': ':class:`BIDSPath <mne_bids.BIDSPath>`',
-    'path-like': ':term:`path-like <mne:path-like>`',
-    'array-like': ':term:`array_like <numpy:array_like>`',
-    'int': ':class:`int <python:int>`',
-    'bool': ':class:`bool <python:bool>`',
-    'float': ':class:`float <python:float>`',
-    'list': ':class:`list <python:list>`',
-    'tuple': ':class:`tuple <python:tuple>`',
-    'NibabelImageObject': 'nibabel.spatialimages.SpatialImage',
+    "BIDSPath": ":class:`BIDSPath <mne_bids.BIDSPath>`",
+    "path-like": ":term:`path-like <mne:path-like>`",
+    "array-like": ":term:`array_like <numpy:array_like>`",
+    "int": ":class:`int <python:int>`",
+    "bool": ":class:`bool <python:bool>`",
+    "float": ":class:`float <python:float>`",
+    "list": ":class:`list <python:list>`",
+    "tuple": ":class:`tuple <python:tuple>`",
+    "NibabelImageObject": "nibabel.spatialimages.SpatialImage",
 }
 numpydoc_xref_ignore = {
     # words
-    'instance', 'instances', 'of'
+    "instance",
+    "instances",
+    "of",
 }
 
 
 # generate autosummary even if no references
 autosummary_generate = True
-autodoc_default_options = {'inherited-members': None}
-default_role = 'autolink'  # XXX silently allows bad syntax, someone should fix
+autodoc_default_options = {"inherited-members": None}
+default_role = "autolink"  # XXX silently allows bad syntax, someone should fix
 
 # configure linkcheck
 # https://sphinx-doc.org/en/master/usage/configuration.html?#options-for-the-linkcheck-builder
 linkcheck_retries = 2
 linkcheck_rate_limit_timeout = 15.0
 linkcheck_ignore = [
-    r'https://www.researchgate.net/profile/.*',
+    r"https://www.researchgate.net/profile/.*",
 ]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = u'MNE-BIDS'
-td = date.today()
-copyright = u'2017-%s, MNE Developers. Last updated on %s' % (td.year,
-                                                              td.isoformat())
+project = "MNE-BIDS"
+today = date.today().isoformat()
+copyright = f"2017, The MNE-BIDS developers. Last updated on {today}"  # noqa: A001
 
-author = u'MNE Developers'
+author = "The MNE-BIDS developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -108,104 +112,82 @@ release = version
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['auto_examples/index.rst', '_build', 'Thumbs.db',
-                    '.DS_Store']
+exclude_patterns = ["auto_examples/index.rst", "_build", "Thumbs.db", ".DS_Store"]
 
 # HTML options (e.g., theme)
 html_show_sourcelink = False
 html_copy_source = False
 
-html_theme = 'pydata_sphinx_theme'
+html_theme = "pydata_sphinx_theme"
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
-html_static_path = ['_static']
-html_css_files = ['style.css']
+templates_path = ["_templates"]
+html_static_path = ["_static"]
+html_css_files = ["style.css"]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
+switcher_version_match = "dev" if "dev" in release else version
 html_theme_options = {
-    'icon_links': [
-        dict(name='GitHub',
-             url='https://github.com/mne-tools/mne-bids',
-             icon='fab fa-github-square'),
-        dict(name='Discourse',
-             url='https://mne.discourse.group/tags/mne-bids',
-             icon='fab fa-discourse'),
+    "icon_links": [
+        dict(
+            name="GitHub",
+            url="https://github.com/mne-tools/mne-bids",
+            icon="fab fa-github-square",
+        ),
+        dict(
+            name="Discourse",
+            url="https://mne.discourse.group/tags/mne-bids",
+            icon="fab fa-discourse",
+        ),
     ],
-    'icon_links_label': 'Quick Links',  # for screen reader
-    'use_edit_page_button': False,
-    'navigation_with_keys': False,
-    'show_toc_level': 1,
-    'navbar_end': ['version-switcher', 'navbar-icon-links'],
-    'analytics': dict(google_analytics_id='G-C8SH9E98QC'),
+    "icon_links_label": "Quick Links",  # for screen reader
+    "use_edit_page_button": False,
+    "navigation_with_keys": False,
+    "show_toc_level": 1,
+    "header_links_before_dropdown": 6,
+    "navbar_end": ["theme-switcher", "version-switcher", "navbar-icon-links"],
+    "analytics": dict(google_analytics_id="G-C8SH9E98QC"),
+    "switcher": {
+        "json_url": "https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json",  # noqa: E501
+        "version_match": switcher_version_match,
+    },
 }
 
 html_context = {
-    'versions_dropdown': {
-        'dev': 'v0.13 (devel)',
-        'stable': 'v0.12 (stable)',
-        'v0.11': 'v0.11',
-        'v0.10': 'v0.10',
-        'v0.9': 'v0.9',
-        'v0.8': 'v0.8',
-        'v0.7': 'v0.7',
-        'v0.6': 'v0.6',
-        'v0.5': 'v0.5',
-        'v0.4': 'v0.4',
-        'v0.3': 'v0.3',
-        'v0.2': 'v0.2',
-        'v0.1': 'v0.1',
-    },
+    "default_mode": "auto",
+    "doc_path": "doc",
 }
 
 html_sidebars = {}
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
-    'mne': ('https://mne.tools/dev', None),
-    'numpy': ('https://numpy.org/devdocs', None),
-    'scipy': ('https://scipy.github.io/devdocs', None),
-    'matplotlib': ('https://matplotlib.org', None),
-    'nilearn': ('http://nilearn.github.io/stable', None),
-    'pandas': ('https://pandas.pydata.org/pandas-docs/dev', None),
-    'nibabel': ('https://nipy.org/nibabel', None),
-}
+intersphinx_mapping = get_intersphinx_mapping(
+    packages={
+        "matplotlib",
+        "mne",
+        "nibabel",
+        "nilearn",
+        "numpy",
+        "pandas",
+        "python",
+        "scipy",
+    }
+)
+intersphinx_mapping["mne-gui-addons"] = ("https://mne.tools/mne-gui-addons", None)
 intersphinx_timeout = 5
 
-# Resolve binder filepath_prefix. From the docs:
-# "A prefix to append to the filepath in the Binder links. You should use this
-# if you will store your built documentation in a sub-folder of a repository,
-# instead of in the root."
-# we will store dev docs in a `dev` subdirectory and all other docs in a
-# directory "v" + version_str. E.g., "v0.3"
-if 'dev' in version:
-    filepath_prefix = 'dev'
-else:
-    filepath_prefix = 'v{}'.format(version)
-
 sphinx_gallery_conf = {
-    'doc_module': 'mne_bids',
-    'reference_url': {
-        'mne_bids': None,
+    "doc_module": "mne_bids",
+    "reference_url": {
+        "mne_bids": None,
     },
-    'backreferences_dir': 'generated',
-    'examples_dirs': '../examples',
-    'within_subsection_order': ExampleTitleSortKey,
-    'gallery_dirs': 'auto_examples',
-    'filename_pattern': '^((?!sgskip).)*$',
-    'binder': {
-        # Required keys
-        'org': 'mne-tools',
-        'repo': 'mne-bids',
-        'branch': 'gh-pages',  # noqa: E501 Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
-        'binderhub_url': 'https://mybinder.org',  # noqa: E501 Any URL of a binderhub deployment. Must be full URL (e.g. https://mybinder.org).
-        'filepath_prefix': filepath_prefix,  # noqa: E501 A prefix to prepend to any filepaths in Binder links.
-        'dependencies': [
-            '../test_requirements.txt',
-            './requirements.txt',
-        ],
-    }
+    "backreferences_dir": "generated",
+    "examples_dirs": "../examples",
+    "within_subsection_order": "ExampleTitleSortKey",
+    "gallery_dirs": "auto_examples",
+    "filename_pattern": "^((?!sgskip).)*$",
 }
+
+assert is_serializable(sphinx_gallery_conf)

@@ -1,0 +1,11 @@
+{
+    "sample": {
+        "Description": "The event onset time in number of sampling points."
+    },
+    "value": {
+        "Description": "The event code (also known as trigger code or event ID) associated with the event."
+    },
+    "trial_type": {
+        "Description": "The type, category, or name of the event."
+    }
+}

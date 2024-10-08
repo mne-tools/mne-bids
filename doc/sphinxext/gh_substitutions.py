@@ -6,6 +6,10 @@ Adapted from:
 https://doughellmann.com/blog/2010/05/09/defining-custom-roles-in-sphinx/
 
 """
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 from docutils.nodes import reference
 from docutils.parsers.rst.roles import set_classes
 
@@ -19,9 +23,9 @@ def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
         # direct link mode
         slug = text
     else:
-        slug = 'issues/' + text
-    text = '#' + text
-    ref = 'https://github.com/mne-tools/mne-bids/' + slug
+        slug = "issues/" + text
+    text = "#" + text
+    ref = "https://github.com/mne-tools/mne-bids/" + slug
     set_classes(options)
     node = reference(rawtext, text, refuri=ref, **options)
     return [node], []
@@ -29,5 +33,5 @@ def gh_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
 
 def setup(app):
     """Do setup."""
-    app.add_role('gh', gh_role)
+    app.add_role("gh", gh_role)
     return

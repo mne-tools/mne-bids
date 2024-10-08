@@ -30,7 +30,7 @@ body:
         ([MWE](https://en.wikipedia.org/wiki/Minimal_Working_Example))
         to replicate your problem, using one of the
         [datasets shipped with MNE-Python](https://mne.tools/dev/overview/datasets_index.html),
-        preferably the one called [sample](https://mne.tools/dev/overview/datasets_index.html#sample).
+        preferably the one called [sample](https://mne.tools/stable/documentation/datasets.html#sample).
         If you can't replicate on a built-in dataset, provide also a link to a small,
         anonymized portion of your data that does yield the error.
       render: Python

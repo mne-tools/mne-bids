@@ -1,0 +1,9 @@
+{
+    "acq_time":{
+        "Description": "date of the first acquistion of the session",
+        "TermURL": "https://tools.ietf.org/html/rfc3339#section-5.6"
+    },
+    "pathology":{
+        "Description": "Disease state of the subject when applicable"
+    }
+}

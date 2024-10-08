@@ -18,31 +18,43 @@ MNE-BIDS provides a dedicated function, :func:`mne_bids.anonymize_dataset`,
 to do the heavy lifting for you, automatically.
 """  # noqa: D400 D205
 
-# Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
-# License: BSD-3-Clause
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 import shutil
-from pathlib import Path
+
 import mne
+
 from mne_bids import (
-    BIDSPath, write_raw_bids, write_anat, write_meg_calibration,
-    write_meg_crosstalk, anonymize_dataset, print_dir_tree
+    BIDSPath,
+    anonymize_dataset,
+    print_dir_tree,
+    write_anat,
+    write_meg_calibration,
+    write_meg_crosstalk,
+    write_raw_bids,
 )
 
-data_path = Path(mne.datasets.sample.data_path())
-event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-            'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+data_path = mne.datasets.sample.data_path()
+event_id = {
+    "Auditory/Left": 1,
+    "Auditory/Right": 2,
+    "Visual/Left": 3,
+    "Visual/Right": 4,
+    "Smiley": 5,
+    "Button": 32,
+}
 
-raw_path = data_path / 'MEG' / 'sample' / 'sample_audvis_raw.fif'
-raw_er_path = data_path / 'MEG' / 'sample' / 'ernoise_raw.fif'  # empty-room
-events_path = data_path / 'MEG' / 'sample' / 'sample_audvis_raw-eve.fif'
-cal_path = data_path / 'SSS' / 'sss_cal_mgh.dat'
-ct_path = data_path / 'SSS' / 'ct_sparse_mgh.fif'
-t1w_path = data_path / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
+raw_path = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
+raw_er_path = data_path / "MEG" / "sample" / "ernoise_raw.fif"  # empty-room
+events_path = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
+cal_path = data_path / "SSS" / "sss_cal_mgh.dat"
+ct_path = data_path / "SSS" / "ct_sparse_mgh.fif"
+t1w_path = data_path / "subjects" / "sample" / "mri" / "T1.mgz"
 
-bids_root = data_path.parent / 'MNE-sample-data-bids'
-bids_root_anon = data_path.parent / 'MNE-sample-data-bids-anon'
+bids_root = data_path.parent / "MNE-sample-data-bids"
+bids_root_anon = data_path.parent / "MNE-sample-data-bids-anon"
 
 # %%
 # To ensure the output paths don't contain any leftover files from previous
@@ -58,25 +70,29 @@ if bids_root_anon.exists():
 
 # %%
 bids_path = BIDSPath(
-    subject='ABC123', task='audiovisual', root=bids_root, datatype='meg'
+    subject="ABC123", task="audiovisual", root=bids_root, datatype="meg"
 )
 bids_path_er = bids_path.copy().update(
-    subject='emptyroom', task='noise', session='20021206'
+    subject="emptyroom", task="noise", session="20021206"
 )
 
 raw = mne.io.read_raw_fif(raw_path, verbose=False)
 raw_er = mne.io.read_raw_fif(raw_er_path, verbose=False)
 # specify power line frequency as required by BIDS
-raw.info['line_freq'] = 60
-raw_er.info['line_freq'] = 60
+raw.info["line_freq"] = 60
+raw_er.info["line_freq"] = 60
 
 # Write empty-room data
 write_raw_bids(raw=raw_er, bids_path=bids_path_er, verbose=False)
 
 # Write experimental MEG data, fine-calibration and crosstalk files
 write_raw_bids(
-    raw=raw, bids_path=bids_path, events=events_path, event_id=event_id,
-    empty_room=bids_path_er, verbose=False
+    raw=raw,
+    bids_path=bids_path,
+    events=events_path,
+    event_id=event_id,
+    empty_room=bids_path_er,
+    verbose=False,
 )
 write_meg_calibration(cal_path, bids_path=bids_path, verbose=False)
 write_meg_crosstalk(ct_path, bids_path=bids_path, verbose=False)
@@ -88,12 +104,10 @@ mri_landmarks = mne.channels.make_dig_montage(
     lpa=[66.08580, 51.33362, 46.52982],
     nasion=[41.87363, 32.24694, 74.55314],
     rpa=[17.23812, 53.08294, 47.01789],
-    coord_frame='mri_voxel'
+    coord_frame="mri_voxel",
 )
-bids_path.datatype = 'anat'
-write_anat(
-    image=t1w_path, bids_path=bids_path, landmarks=mri_landmarks, verbose=False
-)
+bids_path.datatype = "anat"
+write_anat(image=t1w_path, bids_path=bids_path, landmarks=mri_landmarks, verbose=False)
 
 # %%
 # Basic anonymization
@@ -126,7 +140,7 @@ shutil.rmtree(bids_root_anon)
 anonymize_dataset(
     bids_root_in=bids_root,
     bids_root_out=bids_root_anon,
-    datatypes='anat'  # Only anatomical data
+    datatypes="anat",  # Only anatomical data
 )
 print_dir_tree(bids_root_anon)
 
@@ -143,10 +157,10 @@ shutil.rmtree(bids_root_anon)
 anonymize_dataset(
     bids_root_in=bids_root,
     bids_root_out=bids_root_anon,
-    datatypes='meg',  # Only MEG data
-    daysback=10
+    datatypes="meg",  # Only MEG data
+    daysback=10,
 )
-print_dir_tree(bids_root_anon / 'sub-emptyroom')  # Easy to see effects here
+print_dir_tree(bids_root_anon / "sub-emptyroom")  # Easy to see effects here
 
 # %%
 # Specifying subject IDs
@@ -160,16 +174,13 @@ print_dir_tree(bids_root_anon / 'sub-emptyroom')  # Easy to see effects here
 
 shutil.rmtree(bids_root_anon)
 
-subject_mapping = {
-    'ABC123': 'anonymous',
-    'emptyroom': 'emptyroom'
-}
+subject_mapping = {"ABC123": "anonymous", "emptyroom": "emptyroom"}
 
 anonymize_dataset(
     bids_root_in=bids_root,
     bids_root_out=bids_root_anon,
-    datatypes='meg',
-    subject_mapping=subject_mapping
+    datatypes="meg",
+    subject_mapping=subject_mapping,
 )
 print_dir_tree(bids_root_anon)
 
@@ -201,12 +212,12 @@ print_dir_tree(bids_root_anon)
 #    anonymize the entire dataset again.
 
 for i in range(2):
-    print(f'\n\nRun {i+1}\n')
+    print(f"\n\nRun {i + 1}\n")
     shutil.rmtree(bids_root_anon)
     anonymize_dataset(
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon,
-        datatypes='meg',
-        random_state=42
+        datatypes="meg",
+        random_state=42,
     )
     print_dir_tree(bids_root_anon)

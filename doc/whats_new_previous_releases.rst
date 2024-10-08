@@ -7,6 +7,170 @@
 What was new in previous releases?
 ==================================
 
+.. _changes_0_15:
+
+Version 0.15 (2024-06-04)
+-------------------------
+
+👩🏽‍💻 Authors
+~~~~~~~~~~~~~~~
+
+The following authors contributed for the first time. Thank you so much! 🤩
+
+* `Mara Wolter`_
+* `Julius Welzel`_
+
+The following authors had contributed before. Thank you for sticking around! 🤘
+
+* `Alex Rockhill`_
+* `Daniel McCloy`_
+* `Eric Larson`_
+* `Laetitia Fesselier`_
+* `Mathieu Scheltienne`_
+* `Richard Höchenberger`_
+* `Stefan Appelhoff`_
+
+Detailed list of changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+🚀 Enhancements
+^^^^^^^^^^^^^^^
+
+- Including a description for ``onset`` and  ``duration`` in the ``events.json`` file, by `Julius Welzel`_ (:gh:`1255`)
+
+🧐 API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- The experimental support for running MNE-BIDS examples from your browser using Binder has
+  been removed, by `Stefan Appelhoff`_ (:gh:`1202`)
+- MNE-BIDS will no longer zero-pad ("zfill") entity indices passed to :class:`~mne_bids.BIDSPath`.
+  For example, If ``run=1`` is passed to MNE-BIDS, it will no longer be silently auto-converted to ``run-01``, by `Alex Rockhill`_ (:gh:`1215`)
+- MNE-BIDS will no longer warn about missing leading punctuation marks for extensions passed :class:`~mne_bids.BIDSPath`.
+  For example, MNE-BIDS will now silently auto-convert ``edf`` to ```.edf``, by `Alex Rockhill`_ (:gh:`1215`)
+- MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if there are ``BAD_ACQ_SKIP`` annotations in the raw file and no corresponding key in ``event_id``.
+  Instead, it will automatically add the necessary key and assign an unused integer event code to it. By `Daniel McCloy`_ (:gh:`1258`)
+
+🛠 Requirements
+^^^^^^^^^^^^^^^
+
+- MNE-BIDS now requires Python 3.9 or higher.
+- MNE-BIDS now requires MNE-Python 1.6.0 or higher.
+- ``edfio`` replaces ``EDFlib-Python`` for export to EDF with MNE-Python >= 1.7.0.
+- Installing ``mne-bids[full]`` will now also install ``defusedxml`` on all platforms.
+- Version requirements for optional dependency packages have been bumped up, see installation instructions.
+
+🪲 Bug fixes
+^^^^^^^^^^^^
+
+- The datatype in the dataframe returned by :func:`mne_bids.stats.count_events` is now
+  ``pandas.Int64Dtype`` instead of ``float64``, by `Eric Larson`_ (:gh:`1227`)
+- The :func:`mne_bids.copyfiles.copyfile_ctf` now accounts for files with ``.{integer}_meg4`` extension, instead of only .meg4,
+  when renaming the files of a .ds folder, by `Mara Wolter`_ (:gh:`1230`)
+- We fixed handling of time zones when reading ``*_scans.tsv`` files; specifically, non-UTC timestamps are now processed correctly,
+  by `Stefan Appelhoff`_ and `Richard Höchenberger`_  (:gh:`1240`)
+
+⚕️ Code health
+^^^^^^^^^^^^^^
+
+- The configuration of MNE-BIDS has been consolidated from several files (e.g., ``setup.cfg``,
+  ``setup.py``, ``requirements.txt``) and is now specified in a standard ``pyproject.toml``
+  file, by `Stefan Appelhoff`_ (:gh:`1202`)
+- Linting and code formatting is now done entirely using ``ruff``. Previously used tools
+  (e.g., ``flake8``, ``black``) have been fully replaced, by `Stefan Appelhoff`_ (:gh:`1203`)
+- The package build backend has been switched from ``setuptools`` to ``hatchling``. This
+  only affects users who build and install MNE-BIDS from source, and should not lead to
+  changed runtime behavior, by `Richard Höchenberger`_ (:gh:`1204`)
+- Display of the version number on the website is now truncated for over-long version strings,
+  by `Daniel McCloy`_ (:gh:`1206`)
+- The long deprecated ``events_data`` parameter has been fully removed from
+  :func:`~mne_bids.write_raw_bids` in favor of ``events``, by `Stefan Appelhoff`_ (:gh:`1229`)
+
+.. _changes_0_14:
+
+Version 0.14 (2023-11-16)
+-------------------------
+
+👩🏽‍💻 Authors
+~~~~~~~~~~~~~~~
+
+The following authors contributed:
+
+* `Eric Larson`_
+* `Laetitia Fesselier`_
+* `Mathieu Scheltienne`_
+* `Richard Höchenberger`_
+* `Stefan Appelhoff`_
+
+Detailed list of changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+🚀 Enhancements
+^^^^^^^^^^^^^^^
+
+- Enable exporting to the EEGLAB data format (``.set``), by `Laetitia Fesselier`_ and `Stefan Appelhoff`_ (:gh:`1187`)
+
+🪲 Bug fixes
+^^^^^^^^^^^^
+
+- Fix reading when the channel order differs between ``*_channels.tsv`` and the raw data file, which would previously throw an error, by `Richard Höchenberger`_ (:gh:`1171`)
+- Fix bug with writing crosstalk and calibration files when subject is ``"emptyroom"``, by `Eric Larson`_ (:gh:`1189`)
+- Make ``recording`` entity available for :func:`mne_bids.get_entity_vals`, by `Stefan Appelhoff`_ (:gh:`1182`)
+
+.. _changes_0_13:
+
+Version 0.13 (2023-08-21)
+-------------------------
+
+👩🏽‍💻 Authors
+~~~~~~~~~~~~~~~
+
+The following authors contributed for the first time. Thank you so much! 🤩
+
+* `Ford McDonald`_
+* `Jonathan Vanhoecke`_
+* `Laetitia Fesselier`_
+* `Pierre Guetschel`_
+
+The following authors had contributed before. Thank you for sticking around! 🤘
+
+* `Adam Li`_
+* `Alexandre Gramfort`_
+* `Eric Larson`_
+* `Richard Höchenberger`_
+* `Stefan Appelhoff`_
+
+Detailed list of changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+🚀 Enhancements
+^^^^^^^^^^^^^^^
+
+- :class:`~mne_bids.BIDSPath` now supports the new ``"sessions"`` suffix, by `Jonathan Vanhoecke`_ and `Richard Höchenberger`_ (:gh:`1137`)
+- The :func:`~mne_bids.BIDSPath.rm` method will safely delete all the files compatible with that path and update the ``scans.tsv`` and ``participants.tsv`` files accordingly, by `Pierre Guetschel`_ and `Adam Li`_ (:gh:`1149`)
+
+🧐 API and behavior changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- When writing events, we now also create an ``*_events.json`` file in addition to ``*_events.tsv``. This ensures compatibility with the upcoming release of BIDS 1.9, by `Richard Höchenberger`_ (:gh:`1132`)
+- We silenced warnings about missing ``events.tsv`` files when reading empty-room or resting-state data, by `Richard Höchenberger`_ (:gh:`1133`)
+- BTi 'processed data files' (pdf) will no longer be renamed to ``c,rf*`` by default. Instead, they will be copied over without name changes. When reading BTi data via ``mne-bids``, more informative log and error messages will help choosing the right course of action, by `Stefan Appelhoff`_ (:gh:`1160`)
+
+🛠 Requirements
+^^^^^^^^^^^^^^^
+
+- MNE-BIDS now requires MNE-Python 1.4 or newer.
+
+🪲 Bug fixes
+^^^^^^^^^^^^
+
+- Amending a dataset now works in cases where the newly-written data contains additional participant properties (new columns in ``participants.tsv``) not found in the existing dataset, by `Richard Höchenberger`_ (:gh:`1113`)
+- Fix ``raw_to_bids`` CLI tool to properly recognize boolean and numeric values for the ``line_freq`` and ``overwrite`` parameters, by `Stefan Appelhoff`_ (:gh:`1125`)
+- Fix :func:`~mne_bids.copyfiles.copyfile_eeglab` to prevent data type conversion leading to an ``eeg_checkset`` failure when trying to load the file in EEGLAB, by `Laetitia Fesselier`_ (:gh:`1126`)
+- Improve compatibility with latest MNE-Python, by `Eric Larson`_ (:gh:`1128`)
+- Working with :class:`~mne_bids.BIDSPath` would sometimes inadvertently create new directories, contaminating the BIDS dataset, by `Richard Höchenberger`_ (:gh:`1139`)
+- Fix thrown error if the ``BIDSVersion`` defined in ``dataset_description.json`` file does not match the MNE-BIDS compliant ``BIDSVersion``, ensuring backwards compatibility across BIDS complient tools, by `Ford McDonald`_ (:gh:`1147`)
+- Copying BTi files without a headshape file will no longer raise an error, the file will simply be copied, and the missing headshape file will be ignored, by `Stefan Appelhoff`_ (:gh:`1158`)
+
 .. _changes_0_12:
 
 Version 0.12 (2022-12-18)
@@ -347,7 +511,7 @@ Enhancements
 
 - Modify iEEG tutorial to use MNE ``raw`` object, by `Alex Rockhill`_ (:gh:`859`)
 
-- Add :func:`mne_bids.search_folder_for_text` to find specific metadata entries (e.g. all ``"n/a"`` sidecar data fields, or to check that "60 Hz" was written properly as the power line frequency), by `Alex Rockhill`_ (:gh: `870`)
+- Add :func:`mne_bids.search_folder_for_text` to find specific metadata entries (e.g. all ``"n/a"`` sidecar data fields, or to check that "60 Hz" was written properly as the power line frequency), by `Alex Rockhill`_ (:gh:`870`)
 
 - Add :func:`mne_bids.get_bids_path_from_fname` to return a :class:`mne_bids.BIDSPath` from a file path, by `Adam Li`_ (:gh:`883`)
 
@@ -372,7 +536,7 @@ API and behavior changes
 
 - Reading BIDS data with ``"HeadCoilFrequency"`` and ``"PowerLineFrequency"`` data specified in JSON sidecars will only "warn" in case of mismatches between Raw and JSON data, by `Franziska von Albedyll`_ (:gh:`855`)
 
-- Accessing :attr:`mne_bids.BIDSPath.fpath` emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use `mne_bids.BIDSPath.fpath.exists()` to check whether the path exists in the file system, by `Richard Höchenberger`_ (:gh:`904`)
+- Accessing :attr:`mne_bids.BIDSPath.fpath` emit a warning anymore if the path does not exist. This behavior was unreliable and yielded confusing error messages in certain use cases. Use ``mne_bids.BIDSPath.fpath.exists()`` to check whether the path exists in the file system, by `Richard Höchenberger`_ (:gh:`904`)
 
 - :func:`mne_bids.get_entity_vals` gained a new parameter, ``ignore_dirs``, to exclude directories from the search, by `Adam Li`_ and `Richard Höchenberger`_ (:gh:`899`, :gh:`908`)
 
@@ -402,7 +566,7 @@ Bug fixes
 
 - :func:`mne_bids.write_raw_bids` now raises an exception if the provided :class:`mne_bids.BIDSPath` doesn't contain ``subject`` and ``task`` entities, which are required for neurophysiological data, by `Richard Höchenberger`_ (:gh:`903`)
 
-- :func:`mne_bids.read_raw_bids` now handles datasets with multiple electrophysiological data types correctly, by `Richard Höchenberger`_ (:gh:`910`, :gh`916`)
+- :func:`mne_bids.read_raw_bids` now handles datasets with multiple electrophysiological data types correctly, by `Richard Höchenberger`_ (:gh:`910`, :gh:`916`)
 
 - More robust handling of situations where :func:`mne_bids.read_raw_bids` tries to read a file that does not exist, by `Richard Höchenberger`_ (:gh:`904`)
 
@@ -423,13 +587,13 @@ Notable changes
 - You can now write preloaded and potentially modified data with
   :func:`mne_bids.write_raw_bids` by passing ``allow_preload=True``. This is
   a first step towards supporting derivative files.
-- `mne_bids.BIDSPath` now has property getters and setters for all BIDS
+- :func:`mne_bids.BIDSPath` now has property getters and setters for all BIDS
   entities. What this means is that you can now do things like
   ``bids_path.subject = '01'`` instead of ``bids_path.update(subject='01')``.
 - We now support Deep Brain Stimulation (DBS) data.
 - The way we handle anatomical landmarks was greatly revamped to ensure we're
   always using the correct coordinate systems. A new function,
-  `mne_bids.get_anat_landmarks`, helps with extracting fiducial points from
+  :func:`mne_bids.get_anat_landmarks`, helps with extracting fiducial points from
   anatomical scans.
 - When creating a BIDS dataset from FIFF files on macOS and Linux, MNE-BIDS
   can now optionally generate symbolic links to the original files instead of
@@ -695,7 +859,7 @@ been cooking for you!
 
 Notable changes
 ~~~~~~~~~~~~~~~
-- We introduce `mne_bids.BIDSPath`, a new class for all BIDS file and folder
+- We introduce :func:`mne_bids.BIDSPath`, a new class for all BIDS file and folder
   operations. All functions in MNE-BIDS that previously accepted filenames
   and folder locations (e.g. ``bids_root``) have been updated to work with
   ``BIDSPath``. Others have been removed.
@@ -781,7 +945,7 @@ Bug fixes
 - Fix :func:`write_raw_bids` when ``info['dig']`` is ``None``, by `Alexandre Gramfort`_ (:gh:`452`)
 - :func:`mne_bids.write_raw_bids` now applies ``verbose`` to the functions that read events, by `Evgenii Kalenkovich`_ (:gh:`453`)
 - Fix ``raw_to_bids`` CLI tool to work with non-FIFF files, by `Austin Hurst`_ (:gh:`456`)
-- Fix :func:`mne_bids.write_raw_bids` to output BTI and CTF data in the ``scans.tsv`` according to the BIDS specification, by `Adam Li`_ (:gh:`465`)
+- Fix :func:`mne_bids.write_raw_bids` to output BTi and CTF data in the ``scans.tsv`` according to the BIDS specification, by `Adam Li`_ (:gh:`465`)
 - :func:`mne_bids.read_raw_bids` now populates the list of bad channels based on ``*_channels.tsv`` if (and only if) a ``status`` column is present, ignoring similar metadata stored in raw file (which will still be used if **no** ``status`` column is present in ``*_channels.tsv``), by `Richard Höchenberger`_ (:gh:`499`)
 - Ensure that ``Raw.info['bads']`` returned by :func:`mne_bids.read_raw_bids` is always a list, by `Richard Höchenberger`_ (:gh:`501`)
 - :func:`mne_bids.write_raw_bids` now ensures that **all** parts of the :class:`mne.io.Raw` instance stay in sync when using anonymization to shift dates, e.g. ``raw.annotations``, by `Richard Höchenberger`_ (:gh:`504`)
@@ -792,7 +956,7 @@ Bug fixes
 API changes
 ^^^^^^^^^^^
 
-In the transition to using `mne_bids.BIDSPath`, the following functions have been updated:
+In the transition to using :func:`mne_bids.BIDSPath`, the following functions have been updated:
 
 - :func:`mne_bids.write_anat` now accepts a :class:`mne_bids.BIDSPath` instead of entities as keyword arguments, by `Adam Li`_ (:gh:`575`)
 - In :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, and :func:`mne_bids.get_head_mri_trans`, the ``bids_basename`` and ``bids_root`` keyword arguments have been removed. The functions now expect ``bids_path``, an instance of :class:`mne_bids.BIDSPath`, by `Adam Li`_ (:gh:`525`)
@@ -946,7 +1110,7 @@ Bug
 API
 ~~~
 
-- :func:`make_dataset_description` is now available from `mne_bids` main namespace, all copyfile functions are available from `mne_bids.copyfiles` namespace, by `Stefan Appelhoff`_ (:gh:`196`)
+- :func:`make_dataset_description` is now available from `mne_bids` main namespace, all copyfile functions are available from :func:`mne_bids.copyfiles` namespace, by `Stefan Appelhoff`_ (:gh:`196`)
 - Add support for non maxfiltered .fif files, by `Maximilien Chaumon`_ (:gh:`171`)
 - Remove support for Neuroscan ``.cnt`` data because its support is no longer planned in BIDS, by `Stefan Appelhoff`_ (:gh:`142`)
 - Remove support for Python 2 because it is no longer supported in MNE-Python, by `Teon Brooks`_ (:gh:`141`)

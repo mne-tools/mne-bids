@@ -1,6 +1,6 @@
-.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e inplace test check-manifest flake pydocstyle pep build-doc
+.PHONY: all clean-pyc clean-so clean-build clean-ctags clean-cache clean-e clean inplace test ruff-check ruff-format pep build-doc dist-build
 
-all: clean inplace pep test build-doc
+all: clean inplace pep test build-doc dist-build
 
 clean-pyc:
 	find . -name "*.pyc" | xargs rm -f
@@ -24,7 +24,7 @@ clean-e:
 clean: clean-build clean-pyc clean-so clean-ctags clean-cache clean-e
 
 inplace:
-	python setup.py develop
+	@python -m pip install -e ".[dev]"
 
 test:
 	@echo "Running tests"
@@ -32,24 +32,22 @@ test:
 	--doctest-modules \
 	--cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ \
 	--cov-report=xml \
-	--cov-config=setup.cfg \
+	--cov-config=pyproject.toml \
 	--verbose \
 	--ignore mne-python \
 	--ignore examples
 
-check-manifest:
-	@echo "Checking MANIFEST.in"
-	@check-manifest .
+ruff-format:
+	@echo "Running ruff format"
+	@ruff format mne_bids/
+	@ruff format examples/
 
-flake:
-	@echo "Running flake8"
-	@flake8 --count mne_bids examples
+ruff-check:
+	@echo "Running ruff check"
+	@ruff check mne_bids/
+	@ruff check examples/ --ignore=D103,D400,D205
 
-pydocstyle:
-	@echo "Running pydocstyle"
-	@pydocstyle .
-
-pep: flake pydocstyle check-manifest
+pep: ruff-check ruff-format
 
 build-doc:
 	@echo "Building documentation"
@@ -60,4 +58,6 @@ build-doc:
 dist-build:
 	@echo "Building dist"
 	rm -rf dist
+	@python -m pip install build twine
 	@python -m build
+	@python -m twine check --strict dist/*

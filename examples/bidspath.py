@@ -7,10 +7,10 @@
 
 BIDSPath is MNE-BIDS's working horse when it comes to file and folder
 operations. Learn here how to use it.
-"""
-# Author: Richard Höchenberger <richard.hoechenberger@gmail.com>
-#
-# License: BSD-3-Clause
+"""  # noqa: D400
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
 
 # %%
 # Obviously, to start exploring BIDSPath, we first need to import it.
@@ -36,7 +36,7 @@ from mne_bids import BIDSPath
 
 # We are using a pathlib.Path object for convenience, but you could just use
 # a string to specify ``bids_root`` here.
-bids_root = Path(mne_bids.__file__).parent / 'tests' / 'data' / 'tiny_bids'
+bids_root = Path(mne_bids.__file__).parent / "tests" / "data" / "tiny_bids"
 
 # %%
 # This refers to a folder named ``my_bids_root`` in the current working
@@ -51,7 +51,7 @@ print(bids_path.root)
 # identifiers**. We can either create a new ``BIDSPath``, or update our
 # existing one. The value can be retrieved via the ``.subject`` attribute.
 
-subject = '01'
+subject = "01"
 
 # Option 1: Create an entirely new BIDSPath.
 bids_path_new = BIDSPath(subject=subject, root=bids_root)
@@ -72,7 +72,7 @@ print(bids_path.subject)
 # information on our experimental session, and try to retrieve it again via
 # ``.session``.
 
-session = 'eeg'
+session = "eeg"
 bids_path.update(session=session)
 print(bids_path.session)
 
@@ -81,10 +81,10 @@ print(bids_path.session)
 # **data type**, i.e., ``meg`` for MEG data, ``eeg`` and ``ieeg`` for EEG and
 # iEEG data, or ``anat`` for anatomical MRI scans. Typically, MNE-BIDS will
 # infer the data type of your data automatically, for example when writing data
-# using `mne_bids.write_raw_bids`. For the sake of this example, however, we
+# using :func:`mne_bids.write_raw_bids`. For the sake of this example, however, we
 # are going to specify the data type explicitly.
 
-datatype = 'eeg'
+datatype = "eeg"
 bids_path.update(datatype=datatype)
 print(bids_path.datatype)
 
@@ -128,7 +128,7 @@ bids_path.entities
 # and implies that no value has been set. Let us add a ``run`` entity, and
 # remove the ``session``:
 
-run = '01'
+run = "01"
 session = None
 bids_path.update(run=run, session=session)
 bids_path
@@ -141,17 +141,11 @@ bids_path
 print(bids_path.fpath)
 
 # %%
-# Oups! The cell above produced a ``RuntimeWarning`` that our data file could
-# not be found. That's because we changed the ``run`` and ``session`` entities
-# above, and the ``tiny_bids`` dataset does not contain corresponding data.
-#
-# That shows us that ``BIDSPath`` is doing a lot of guess-work and checking
-# in the background, but note that this may change in the future.
-#
-# For now, let's revert to the last working iteration of our ``bids_path``
-# instance.
+# However, for the sake of the present examples, let's revert to the iteration
+# of our ``bids_path`` instance with no ``run`` and ``session="eeg"``, as that
+# file exists in the ``tiny_bids`` dataset.
 
-bids_path.update(run=None, session='eeg')
+bids_path.update(run=None, session="eeg")
 print(bids_path.fpath)
 
 # %%
@@ -171,7 +165,7 @@ print(bids_path.fpath)
 # ``.tsv``.
 # Let's put our new knowledge to use!
 
-bids_path.update(suffix='eeg', extension='.vhdr')
+bids_path.update(suffix="eeg", extension=".vhdr")
 print(bids_path.fpath)
 bids_path
 
