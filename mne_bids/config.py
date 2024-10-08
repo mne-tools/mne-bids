@@ -174,13 +174,16 @@ ALLOWED_INPUT_EXTENSIONS = (
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
+    # datatypes:
     "meg",
     "markers",
     "eeg",
     "ieeg",
     "emg",
+    "nirs",
     "T1w",
-    "FLASH",  # datatype
+    "FLASH",
+    # sidecars:
     "participants",
     "scans",
     "sessions",
@@ -188,13 +191,14 @@ ALLOWED_FILENAME_SUFFIX = [
     "optodes",
     "channels",
     "coordsystem",
-    "events",  # sidecars
+    "events",
+    # MEG-specific sidecars:
     "headshape",
-    "digitizer",  # meg-specific sidecars
+    "digitizer",
+    # behavioral:
     "beh",
     "physio",
-    "stim",  # behavioral
-    "nirs",
+    "stim",
 ]
 
 # converts suffix to known path modalities
@@ -214,9 +218,9 @@ SUFFIX_TO_DATATYPE = {
 ALLOWED_FILENAME_EXTENSIONS = (
     ALLOWED_INPUT_EXTENSIONS
     + [".json", ".tsv", ".tsv.gz", ".nii", ".nii.gz"]
-    + [".pos", ".eeg", ".vmrk"]
-    + [".dat", ".EEG"]  # extra datatype-specific metadata files.
-    + [".mrk"]  # extra eeg extensions  # KIT/Yokogawa/Ricoh marker coil
+    + [".pos", ".eeg", ".vmrk"]  # extra datatype-specific metadata files.
+    + [".dat", ".EEG"]  # extra eeg extensions
+    + [".mrk"]  # KIT/Yokogawa/Ricoh marker coil
 )
 
 # allowed BIDSPath entities
