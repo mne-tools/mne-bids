@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.16.0.dev46+gc11fb3d3 documentation</title>
+    <title>mne_bids.write_raw_bids &#8212; MNE-BIDS 0.16.0.dev47+g420686e2 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../_static/documentation_options.js?v=68773c16"></script>
+    <script src="../_static/documentation_options.js?v=701ba7a4"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -150,7 +150,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev46+gc11fb3d3 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.16.0.dev47+g420686e2 documentation</p>
   
 </a></div>
     
@@ -618,7 +618,7 @@ Example:</p>
 <p>Note that the extension is automatically inferred from the raw
 object.</p>
 </dd>
-<dt><strong>events</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.8)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
+<dt><strong>events</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.8)"><span class="xref std std-term">path-like</span></a> | <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
 sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotations</span></code></a>
 (which are always written).
 If <code class="docutils literal notranslate"><span class="pre">path-like</span></code>, specifies the location of an MNE events file.
@@ -647,7 +647,7 @@ call <code class="docutils literal notranslate"><span class="pre">raw.set_annota
 row in <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code>.</p>
 </div>
 </dd>
-<dt><strong>event_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Descriptions or names describing the event codes, if you passed
+<dt><strong>event_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Descriptions or names describing the event codes, if you passed
 <code class="docutils literal notranslate"><span class="pre">events</span></code>. The descriptions will be written to the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code>
 column in <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. The dictionary keys correspond to the event
 description,s and the values to the event codes. You must specify a
@@ -656,12 +656,12 @@ contains <a class="reference external" href="https://mne.tools/stable/generated/
 assign event codes to each unique annotation description (mapping from
 description to event code).</p>
 </dd>
-<dt><strong>event_metadata</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Metadata for each event in <code class="docutils literal notranslate"><span class="pre">events</span></code>. Each row corresponds to an event.</p>
+<dt><strong>event_metadata</strong><span class="classifier"><a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v2.2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Metadata for each event in <code class="docutils literal notranslate"><span class="pre">events</span></code>. Each row corresponds to an event.</p>
 </dd>
-<dt><strong>extra_columns_descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>A dictionary that maps column names of the <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code> to descriptions.
+<dt><strong>extra_columns_descriptions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>A dictionary that maps column names of the <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code> to descriptions.
 Each column of <code class="docutils literal notranslate"><span class="pre">event_metadata</span></code> must have a corresponding entry in this.</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
+<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
 If a dictionary, data will be anonymized depending on the dictionary
 keys: <code class="docutils literal notranslate"><span class="pre">daysback</span></code> is a required key, <code class="docutils literal notranslate"><span class="pre">keep_his</span></code> is optional.</p>
 <dl class="simple">
@@ -690,7 +690,7 @@ format lacks some necessary features.
 Conversion may be forced to BrainVision, EDF, or EEGLAB for (i)EEG,
 and to FIF for MEG data.</p>
 </dd>
-<dt><strong>symlink</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Instead of copying the source files, only create symbolic links to
+<dt><strong>symlink</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Instead of copying the source files, only create symbolic links to
 preserve storage space. This is only allowed when not anonymizing the
 data (i.e., <code class="docutils literal notranslate"><span class="pre">anonymize</span></code> must be <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p>
 <div class="admonition note">
@@ -706,7 +706,7 @@ data again.</p>
 add support for Windows 10 at a later time.</p>
 </div>
 </dd>
-<dt><strong>empty_room</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
+<dt><strong>empty_room</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw</span></code></a> | <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">BIDSPath</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The empty-room recording to be associated with this file. This is
 only supported for MEG data.
 If <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a>, you may pass raw data that was not preloaded
 (otherwise, pass <code class="docutils literal notranslate"><span class="pre">allow_preload=True</span></code>); i.e., it behaves similar to
@@ -719,7 +719,7 @@ specify an associated empty-room recording.</p>
 <p><span class="versionmodified changed">Changed in version 0.11: </span>Accepts <a class="reference external" href="https://mne.tools/stable/generated/mne.io.Raw.html#mne.io.Raw" title="(in MNE v1.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Raw</span></code></a> data.</p>
 </div>
 </dd>
-<dt><strong>allow_preload</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allow writing of preloaded raw objects (i.e.,
+<dt><strong>allow_preload</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, allow writing of preloaded raw objects (i.e.,
 <code class="docutils literal notranslate"><span class="pre">raw.preload</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>). Because the original file is ignored, you
 must specify what <code class="docutils literal notranslate"><span class="pre">format</span></code> to write (not <code class="docutils literal notranslate"><span class="pre">auto</span></code>).</p>
 <div class="admonition warning">
@@ -732,17 +732,17 @@ formats not supported by MNE or writing preprocessed derivatives.
 Be aware that these use cases are not fully supported.</p>
 </div>
 </dd>
-<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
+<dt><strong>montage</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="(in MNE v1.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.channels.DigMontage</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>The montage with channel positions if channel position data are
 to be stored in a format other than “head” (the internal MNE
 coordinate frame that the data in <code class="docutils literal notranslate"><span class="pre">raw</span></code> is stored in).</p>
 </dd>
-<dt><strong>acpc_aligned</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>It is difficult to check whether the T1 scan is ACPC aligned which
+<dt><strong>acpc_aligned</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>It is difficult to check whether the T1 scan is ACPC aligned which
 means that “mri” coordinate space is “ACPC” BIDS coordinate space.
 So, this flag is required to be True when the digitization data
 is in “mri” for intracranial data to confirm that the T1 is
 ACPC-aligned.</p>
 </dd>
-<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
+<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, any existing files with the same BIDS parameters
 will be overwritten with the exception of the <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>
@@ -754,8 +754,8 @@ and <code class="docutils literal notranslate"><span class="pre">participants.ts
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no existing data will be overwritten or
 replaced.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
-verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.12)"><span class="xref std std-ref">logging documentation</span></a> and
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
+verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.13)"><span class="xref std std-ref">logging documentation</span></a> and
 <a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.8)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
 argument.</p>
 </dd>
@@ -923,7 +923,7 @@ lower-case, in compliance with the BIDS specification.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-10-06.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-10-08.
       <br/>
     
   </p>
