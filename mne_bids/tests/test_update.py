@@ -294,18 +294,20 @@ def test_update_anat_landmarks(tmp_path):
             mri_json["AnatomicalLandmarkCoordinates"][landmark], expected_coords
         )
 
+
 @testing.requires_testing_data
-@pytest.mark.parametrize('extension', [None, '.txt', '.rst', '.md'])
+@pytest.mark.parametrize("extension", [None, ".txt", ".rst", ".md"])
 def test_readme_conflicts(extension, _get_bids_test_dir):
+    """Test that exisiting README files are respected with any extension."""
     bids_root = _get_bids_test_dir
-    assert Path(bids_root, 'README').exists()
-    all_readmes = Path(bids_root).rglob('README*')
+    assert Path(bids_root, "README").exists()
+    all_readmes = Path(bids_root).rglob("README*")
     assert len(list(all_readmes)) == 1
     if extension is not None:
-        shutil.move(Path(bids_root, 'README'), Path(bids_root, f'README{extension}'))
+        shutil.move(Path(bids_root, "README"), Path(bids_root, f"README{extension}"))
 
     bids_path = BIDSPath(
-        subject='02',
+        subject="02",
         session=session_id,
         run=1,
         acquisition=acq,
@@ -318,7 +320,7 @@ def test_readme_conflicts(extension, _get_bids_test_dir):
     raw = mne.io.read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path, overwrite=False)
-    all_readmes = Path(bids_root).rglob('README*')
+    all_readmes = Path(bids_root).rglob("README*")
     assert len(list(all_readmes)) == 1
     shutil.rmtree(bids_root)
-    print('hi')
+    print("hi")
