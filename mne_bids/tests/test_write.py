@@ -95,7 +95,7 @@ warning_str = dict(
     cnt_warning2="ignore:.*Could not define the number of bytes automatically."
     " Defaulting to 2.",
     cnt_warning3="ignore:.*Coordinate frame could not be inferred.*",
-    no_hand="ignore:.*Not setting subject handedness.:RuntimeWarning:mne",
+    no_hand=r"ignore:Unable to map.*\n.*subject handedness.*:RuntimeWarning:mne",
     no_montage=r"ignore:Not setting position of.*channel found in "
     r"montage.*:RuntimeWarning:mne",
 )
@@ -103,7 +103,7 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
-        if str(fname).endswith(".mff") and check_version("mne", "1.8"):
+        if Path(fname).suffix == ".mff" and check_version("mne", "1.8"):
             kwargs["events_as_annotations"] = True
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
@@ -3414,10 +3414,10 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     assert channels_tsv["units"][0] == "V"
 
     if fmt == "BrainVision":
-        assert raw2.filenames[0].endswith(".eeg")
+        assert Path(raw2.filenames[0]).suffix == ".eeg"
         assert bids_output_path.extension == ".vhdr"
     elif fmt == "EDF":
-        assert raw2.filenames[0].endswith(".edf")
+        assert Path(raw2.filenames[0]).suffix == ".edf"
         assert bids_output_path.extension == ".edf"
 
     orig_len = len(raw)
@@ -3513,7 +3513,7 @@ def test_convert_meg_formats(dir_name, fmt, fname, reader, tmp_path):
     raw2 = read_raw_bids(bids_output_path)
 
     if fmt == "FIF":
-        assert raw2.filenames[0].endswith(".fif")
+        assert Path(raw2.filenames[0]).suffix == ".fif"
         assert bids_output_path.extension == ".fif"
 
     orig_len = len(raw)
@@ -4086,16 +4086,16 @@ def test_unknown_extension(_bids_validate, tmp_path):
     raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     raw = _read_raw_fif(raw_fname)
-    raw._filenames = (raw.filenames[0].replace(".fif", ".foo"),)
+    raw._filenames = (Path(raw.filenames[0]).with_suffix(".foo"),)
 
     # When data is not preloaded, we should raise an exception.
     with pytest.raises(ValueError, match="file format not supported by BIDS"):
         write_raw_bids(raw, bids_path)
 
     # With preloaded data, writing should work.
-    raw._filenames = (raw.filenames[0].replace(".foo", ".fif"),)
+    raw._filenames = (Path(raw.filenames[0]).with_suffix(".fif"),)
     raw.load_data()
-    raw._filenames = (raw.filenames[0].replace(".fif", ".foo"),)
+    raw._filenames = (Path(raw.filenames[0]).with_suffix(".foo"),)
 
     write_raw_bids(raw, bids_path, allow_preload=True, format="FIF")
     _bids_validate(bids_root)
@@ -4187,3 +4187,48 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
     for cur_col in event_metadata.columns:
         assert cur_col in events_tsv
         assert cur_col in events_json
+
+
+# XXX: Remove once MNE-Python <1.9 is no longer supported
+@testing.requires_testing_data
+def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
+    """Test writing participant.tsv when using np.arrays for weight and height."""
+    bids_root = tmp_path / "bids"
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    raw = _read_raw_fif(raw_fname)
+    # disable MNE-Python 1.9+ validation for the duration of this test
+    if "subject_info" in getattr(mne.Info, "_attributes", {}):
+        monkeypatch.setitem(
+            mne.Info._attributes,
+            "subject_info",
+            lambda val, **kwargs: val,
+        )
+    raw.info["subject_info"] = {
+        "weight": np.array([75.0]),
+        "height": np.array([180.0]),
+    }
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=1)
+    write_raw_bids(raw, bids_path=bids_path)
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=2)
+    write_raw_bids(raw, bids_path=bids_path)
+
+    # Test that we get a value error when we have more than one item
+    raw.info["subject_info"] = {
+        "weight": np.array([75.0, 10.2]),
+        "height": np.array([180.0]),
+    }
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
+    assert_array_equal(raw.info["subject_info"]["weight"], [75.0, 10.2])
+    with pytest.raises(ValueError, match="more than one element"):
+        write_raw_bids(raw, bids_path=bids_path)
+
+    # Test that scalar data is handled correctly
+    raw.info["subject_info"] = {
+        "weight": 75.0,
+        "height": np.array([180.0]),
+    }
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
+    write_raw_bids(raw, bids_path=bids_path)
