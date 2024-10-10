@@ -77,7 +77,7 @@ def _get_bids_test_dir(tmp_path_factory):
     return bids_root
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def _get_sidecar_json_update_file(_get_bids_test_dir):
     """Return path to a sidecar JSON updating file."""
     bids_root = _get_bids_test_dir
