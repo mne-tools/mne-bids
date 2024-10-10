@@ -5,6 +5,7 @@
 
 import json
 import os.path as op
+import shutil
 from pathlib import Path
 
 import mne
@@ -38,7 +39,7 @@ bids_path = BIDSPath(
 )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def _get_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp("mnebids_utils_test_bids_ds"))
@@ -292,3 +293,32 @@ def test_update_anat_landmarks(tmp_path):
         assert np.allclose(
             mri_json["AnatomicalLandmarkCoordinates"][landmark], expected_coords
         )
+
+@testing.requires_testing_data
+@pytest.mark.parametrize('extension', [None, '.txt', '.rst', '.md'])
+def test_readme_conflicts(extension, _get_bids_test_dir):
+    bids_root = _get_bids_test_dir
+    assert Path(bids_root, 'README').exists()
+    all_readmes = Path(bids_root).rglob('README*')
+    assert len(list(all_readmes)) == 1
+    if extension is not None:
+        shutil.move(Path(bids_root, 'README'), Path(bids_root, f'README{extension}'))
+
+    bids_path = BIDSPath(
+        subject='02',
+        session=session_id,
+        run=1,
+        acquisition=acq,
+        task=task,
+        suffix="meg",
+        root=_get_bids_test_dir,
+    )
+
+    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw = mne.io.read_raw_fif(raw_fname)
+
+    write_raw_bids(raw, bids_path, overwrite=False)
+    all_readmes = Path(bids_root).rglob('README*')
+    assert len(list(all_readmes)) == 1
+    shutil.rmtree(bids_root)
+    print('hi')
