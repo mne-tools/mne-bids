@@ -323,3 +323,27 @@ def test_readme_conflicts(extension, _get_bids_test_dir):
     all_readmes = Path(bids_root).rglob("README*")
     assert len(list(all_readmes)) == 1
     shutil.rmtree(bids_root)
+
+
+@testing.requires_testing_data
+def test_multiple_readmes_invalid(_get_bids_test_dir):
+    """Test that multiple README files are not allowed."""
+    bids_root = _get_bids_test_dir
+    assert Path(bids_root, "README").exists()
+    shutil.copy(Path(bids_root, "README"), Path(bids_root, "README.md"))
+    bids_path = BIDSPath(
+        subject="02",
+        session=session_id,
+        run=1,
+        acquisition=acq,
+        task=task,
+        suffix="meg",
+        root=_get_bids_test_dir,
+    )
+
+    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw = mne.io.read_raw_fif(raw_fname)
+
+    with pytest.raises(RuntimeError, match="Multiple README files found"):
+        write_raw_bids(raw, bids_path, overwrite=False)
+    shutil.rmtree(bids_root)
