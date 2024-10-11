@@ -1955,12 +1955,18 @@ def write_raw_bids(
     )
 
     # For the remaining files, we can use BIDSPath to alter.
-    readme_fname = op.join(bids_path.root, "README")
-    allowed_readme_extensions = ("", ".md", ".txt", ".rst")
-    for cur_extension in allowed_readme_extensions:
-        if Path(bids_path.root, f"README{cur_extension}").exists():
-            readme_fname = Path(bids_path.root, f"README{cur_extension}")
-            break
+    readme_suffixes = ("", ".md", ".rst", ".txt")
+    found_readmes = sorted(
+        filter(lambda x: x.suffix in readme_suffixes, bids_path.root.glob("README*"))
+    )
+    if len(found_readmes) > 1:
+        raise RuntimeError(
+            "Multiple README files found in the BIDS root folder. "
+            "This violates the BIDS specifications. "
+            "Please ensure there is only one README file."
+        )
+    readme_fname = str((found_readmes or [bids_path.root / "README"])[0])
+
     participants_tsv_fname = op.join(bids_path.root, "participants.tsv")
     participants_json_fname = participants_tsv_fname.replace(".tsv", ".json")
 
