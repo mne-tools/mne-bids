@@ -323,4 +323,3 @@ def test_readme_conflicts(extension, _get_bids_test_dir):
     all_readmes = Path(bids_root).rglob("README*")
     assert len(list(all_readmes)) == 1
     shutil.rmtree(bids_root)
-    print("hi")
