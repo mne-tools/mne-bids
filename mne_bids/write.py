@@ -1959,7 +1959,7 @@ def write_raw_bids(
     allowed_readme_extensions = ("", ".md", ".txt", ".rst")
     for cur_extension in allowed_readme_extensions:
         if Path(bids_path.root, f"README{cur_extension}").exists():
-            readme_fname = str(Path(bids_path.root, f"README{cur_extension}"))
+            readme_fname = Path(bids_path.root, f"README{cur_extension}")
             break
     participants_tsv_fname = op.join(bids_path.root, "participants.tsv")
     participants_json_fname = participants_tsv_fname.replace(".tsv", ".json")
