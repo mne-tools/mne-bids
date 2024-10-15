@@ -1,0 +1,16 @@
+[
+    "read_bids_datasets.py",
+    "convert_mne_sample.py",
+    "mark_bad_channels.py",
+    "convert_eeg_to_bids.py",
+    "convert_group_studies.py",
+    "rename_brainvision_files.py",
+    "convert_mri_and_trans.py",
+    "convert_ieeg_to_bids.py",
+    "convert_nirs_to_bids.py",
+    "convert_empty_room.py",
+    "bidspath.py",
+    "create_bids_folder.py",
+    "update_bids_datasets.py",
+    "anonymize_dataset.py"
+]
