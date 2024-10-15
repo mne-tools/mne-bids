@@ -1,7 +1,7 @@
 """
-=====================================
-05. BIDS conversion for group studies
-=====================================
+=================================
+BIDS conversion for group studies
+=================================
 
 Here, we show how to do BIDS conversion for group studies.
 We will use the
