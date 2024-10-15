@@ -521,12 +521,11 @@ def _import_nibabel(why="work with MRI data"):
 
 # better example sorting, without relying on numbers in example titles
 def _example_sorter(filename):
-    """Sort for MNE-BIDS example filenames in a custom order.
+    """Sort MNE-BIDS example filenames in a custom order.
 
-    Examples not explicitly listed in `EXAMPLE_ORDER` above will be sorted at the end.
-    This is here (instead of in `conf.py`) because it needs to be *importable* for it
-    to work correctly in Sphinx Gallery / maintain serializability of the sphinx gallery
-    config dict in `conf.py`.
+    Examples not explicitly listed in `EXAMPLE_ORDER` will be sorted at the end. This
+    function is defined here (instead of in `conf.py`) because it must be *importable*
+    in order for the sphinx gallery config dict in `conf.py` to remain serializable.
     """
     with open(Path(__file__).parents[1] / "doc" / "example_order.json") as fid:
         EXAMPLE_ORDER = json.load(fid)
