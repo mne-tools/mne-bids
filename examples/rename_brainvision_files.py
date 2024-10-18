@@ -1,7 +1,7 @@
 """
-=====================================
-06. Rename BrainVision EEG data files
-=====================================
+=================================
+Rename BrainVision EEG data files
+=================================
 
 According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is
 one of the recommended formats to store EEG data within a BIDS dataset.

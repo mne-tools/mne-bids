@@ -1,7 +1,7 @@
 """
-====================================
-13. Convert NIRS data to BIDS format
-====================================
+================================
+Convert NIRS data to BIDS format
+================================
 
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of NIRS
 data. Specifically, we will follow these steps:

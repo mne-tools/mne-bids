@@ -1,9 +1,9 @@
 """
 .. _read_bids_datasets-example:
 
-======================
-01. Read BIDS datasets
-======================
+==================
+Read BIDS datasets
+==================
 
 When working with electrophysiological data in the BIDS format, an important
 resource is the `OpenNeuro <https://openneuro.org/>`_ database. OpenNeuro
