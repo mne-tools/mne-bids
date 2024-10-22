@@ -20,6 +20,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 * `Aaron Earle-Richardson`_
 * `Amaia Benitez`_
 * `Kaare Mikkelsen`_
+* `Simon Kern`_
 * `Thomas Hartmann`_
 * `William Turner`_
 
@@ -55,6 +56,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
+- Writing MEGIN data with MNE channel types `chpi` will now map to BIDS type HLU by `Simon Kern`_ (:gh:`1325`)
 - When anonymizing the date of a recording, MNE-BIDS will no longer error during `~mne_bids.write_raw_bids` if passing a `~mne.io.Raw` instance to ``empty_room``, by `Daniel McCloy`_ (:gh:`1270`)
 - Dealing with alphanumeric ``sub`` entity labels is now fixed for :func:`~mne_bids.write_raw_bids`, by `Aaron Earle-Richardson`_ (:gh:`1291`)
 - When processing subject_info data that MNE Python imports as numpy arrays with only one item, MNE-BIDS now unpacks these, resulting in a correct participants.tsv, by `Thomas Hartmann`_ (:gh:`1310`)

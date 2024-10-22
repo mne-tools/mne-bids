@@ -39,6 +39,36 @@ def test_get_ch_type_mapping():
     with pytest.raises(ValueError, match='specified from "bogus" to "mne"'):
         _get_ch_type_mapping(fro="bogus", to="mne")
 
+    # check that all mne types have a corresponding BIDS translation
+    # last update from mne 0.19.0.
+    mne_valid_types = [
+        "bio",
+        "chpi",
+        "dbs",
+        # "dipole",  # currently not converted
+        "ecg",
+        "ecog",
+        "eeg",
+        "emg",
+        "eog",
+        "exci",
+        # "eyetrack",  # currently not converted
+        # "fnirs",  # currently not converted
+        # "gof",  # currently not converted
+        "gsr",
+        "ias",
+        "misc",
+        # "meg",  # inferred in more detail
+        "resp",
+        "seeg",
+        "stim",
+        "syst",
+        "temperature",
+    ]
+    map_mne_to_bids = _get_ch_type_mapping(fro="mne", to="bids")
+    for ch_type in mne_valid_types:
+        assert ch_type in map_mne_to_bids
+
 
 def test_handle_datatype():
     """Test the automatic extraction of datatype from the data."""
