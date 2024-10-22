@@ -40,24 +40,25 @@ def test_get_ch_type_mapping():
         _get_ch_type_mapping(fro="bogus", to="mne")
 
     # check that all mne types have a corresponding BIDS translation
-    # last update from mne 0.19.0. The following have been removed:
-    # dipole, fnirs, gof, we could add them to BIDS conversion though
+    # last update from mne 0.19.0.
     mne_valid_types = [
         "bio",
         "chpi",
         "dbs",
-        "dipole",
+        # "dipole",  # currently not converted
         "ecg",
         "ecog",
         "eeg",
         "emg",
         "eog",
         "exci",
-        "eyetrack",
+        # "eyetrack",  # currently not converted
+        # "fnirs",  # currently not converted
+        # "gof",  # currently not converted
         "gsr",
         "ias",
         "misc",
-        "meg",
+        # "meg",  # inferred in more detail
         "resp",
         "seeg",
         "stim",
