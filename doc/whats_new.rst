@@ -62,6 +62,7 @@ Detailed list of changes
 - When processing subject_info data that MNE Python imports as numpy arrays with only one item, MNE-BIDS now unpacks these, resulting in a correct participants.tsv, by `Thomas Hartmann`_ (:gh:`1310`)
 - Fixed broken links in examples 7 and 8, by `William Turner`_ (:gh:`1316`)
 - All valid extensions for ``README`` files are now accepted. This prevents an extra ``README`` file being created, when one with a ``.txt``, ``.md``, or ``.rst`` extension is already present. By `Thomas Hartmann`_ (:gh:`1318`)
+- A warning was given if no events were provided but the task was starting with 'rest' as recommended by `Simon Kern`_ (:gh:`1327`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
