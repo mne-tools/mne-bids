@@ -82,7 +82,7 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             megrefgradaxial="MEGREFGRADAXIAL",
             meggradplanar="MEGGRADPLANAR",
             megrefmag="MEGREFMAG",
-            chpi="MEGOTHER",
+            chpi="HLU",
             ias="MEGOTHER",
             syst="MEGOTHER",
             exci="MEGOTHER",
