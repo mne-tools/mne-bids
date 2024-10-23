@@ -18,6 +18,8 @@ Why?
 MNE-BIDS links BIDS and MNE-Python with the goal to make your analyses faster to code and more robust,
 and to facilitate data and code sharing with co-workers and collaborators.
 
+Having your data in BIDS format also allows the use of automated pipelines, for example [mne-bids-pipeline](https://mne.tools/mne-bids-pipeline/).
+
 What is this BIDS thing, anyway?
 --------------------------------
 BIDS, the Brain Imaging Data Structure,
