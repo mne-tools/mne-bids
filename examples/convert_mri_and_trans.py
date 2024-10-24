@@ -1,7 +1,7 @@
 """
-==============================================================================
-07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
-==============================================================================
+==========================================================================
+Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
+==========================================================================
 
 When working with MEEG data in the domain of source localization, we usually
 have to deal with aligning several coordinate systems, such as the coordinate
