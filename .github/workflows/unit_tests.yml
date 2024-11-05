@@ -213,13 +213,13 @@ jobs:
       if: matrix.bids-validator-version == 'validator-main'
       run: |
         pushd ..
-        git clone --depth 1 https://github.com/bids-standard/bids-validator
+        git clone --depth 1 https://github.com/bids-standard/legacy-validator
         popd
 
     - name: Install BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
       run: |
-        pushd ../bids-validator
+        pushd ../legacy-validator
         # Generate the full development node_modules
         npm install
         # Build & bundle the bids-validator CLI package
