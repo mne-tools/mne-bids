@@ -185,7 +185,7 @@ sphinx_gallery_conf = {
     },
     "backreferences_dir": "generated",
     "examples_dirs": "../examples",
-    "within_subsection_order": "ExampleTitleSortKey",
+    "within_subsection_order": "mne_bids.utils._example_sorter",
     "gallery_dirs": "auto_examples",
     "filename_pattern": "^((?!sgskip).)*$",
 }

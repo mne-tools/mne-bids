@@ -1,7 +1,7 @@
 """
-=========================================================
-03. Interactive data inspection and bad channel selection
-=========================================================
+=====================================================
+Interactive data inspection and bad channel selection
+=====================================================
 
 You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
 Problematic channels can be marked as "bad", for example if the connected

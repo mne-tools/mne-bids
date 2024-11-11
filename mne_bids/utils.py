@@ -8,6 +8,7 @@ import os
 import re
 from datetime import date, datetime, timedelta, timezone
 from os import path as op
+from pathlib import Path
 
 import numpy as np
 from mne import pick_types
@@ -517,6 +518,22 @@ def _import_nibabel(why="work with MRI data"):
         ) from None
     else:
         return nibabel
+
+
+# better example sorting, without relying on numbers in example titles
+def _example_sorter(filename):
+    """Sort MNE-BIDS example filenames in a custom order.
+
+    Examples not explicitly listed in `EXAMPLE_ORDER` will be sorted at the end. This
+    function is defined here (instead of in `conf.py`) because it must be *importable*
+    in order for the sphinx gallery config dict in `conf.py` to remain serializable.
+    """
+    with open(Path(__file__).parents[1] / "doc" / "example_order.json") as fid:
+        EXAMPLE_ORDER = json.load(fid)
+
+    if filename not in EXAMPLE_ORDER:
+        EXAMPLE_ORDER.append(filename)
+    return EXAMPLE_ORDER.index(filename)
 
 
 def warn(

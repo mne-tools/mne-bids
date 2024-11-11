@@ -1,7 +1,7 @@
 """
-==============================
-13. Anonymizing a BIDS dataset
-==============================
+==========================
+Anonymizing a BIDS dataset
+==========================
 
 Consider the following scenario:
 
