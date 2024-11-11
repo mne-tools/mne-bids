@@ -64,7 +64,7 @@ test = ["mne_bids[full]", "pytest >= 8", "pytest-cov", "pytest-sugar", "ruff"]
 doc = [
     "nilearn",
     "sphinx>=7.4.7",
-    "sphinx_gallery",
+    "https://github.com/sphinx-gallery/sphinx-gallery/archive/refs/heads/master.zip",
     "sphinx-copybutton",
     "pydata-sphinx-theme",
     "numpydoc",
