@@ -4187,3 +4187,48 @@ def test_write_evt_metadata(_bids_validate, tmp_path):
     for cur_col in event_metadata.columns:
         assert cur_col in events_tsv
         assert cur_col in events_json
+
+
+# XXX: Remove once MNE-Python <1.9 is no longer supported
+@testing.requires_testing_data
+def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
+    """Test writing participant.tsv when using np.arrays for weight and height."""
+    bids_root = tmp_path / "bids"
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    raw = _read_raw_fif(raw_fname)
+    # disable MNE-Python 1.9+ validation for the duration of this test
+    if "subject_info" in getattr(mne.Info, "_attributes", {}):
+        monkeypatch.setitem(
+            mne.Info._attributes,
+            "subject_info",
+            lambda val, **kwargs: val,
+        )
+    raw.info["subject_info"] = {
+        "weight": np.array([75.0]),
+        "height": np.array([180.0]),
+    }
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=1)
+    write_raw_bids(raw, bids_path=bids_path)
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=2)
+    write_raw_bids(raw, bids_path=bids_path)
+
+    # Test that we get a value error when we have more than one item
+    raw.info["subject_info"] = {
+        "weight": np.array([75.0, 10.2]),
+        "height": np.array([180.0]),
+    }
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
+    assert_array_equal(raw.info["subject_info"]["weight"], [75.0, 10.2])
+    with pytest.raises(ValueError, match="more than one element"):
+        write_raw_bids(raw, bids_path=bids_path)
+
+    # Test that scalar data is handled correctly
+    raw.info["subject_info"] = {
+        "weight": 75.0,
+        "height": np.array([180.0]),
+    }
+
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
+    write_raw_bids(raw, bids_path=bids_path)

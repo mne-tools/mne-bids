@@ -206,21 +206,20 @@ jobs:
 
     - name: Install BIDS validator (stable)
       if: matrix.bids-validator-version == 'validator-stable'
-      # XXX: Remove pin once this is solved: https://github.com/bids-standard/bids-validator/issues/2124
       run: |
-        npm install -g bids-validator@1.14.10
+        npm install -g bids-validator
 
     - name: Download BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
       run: |
         pushd ..
-        git clone --depth 1 https://github.com/bids-standard/bids-validator
+        git clone --depth 1 https://github.com/bids-standard/legacy-validator
         popd
 
     - name: Install BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
       run: |
-        pushd ../bids-validator
+        pushd ../legacy-validator
         # Generate the full development node_modules
         npm install
         # Build & bundle the bids-validator CLI package
@@ -297,7 +296,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: build_docs-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: build_docs-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

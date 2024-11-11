@@ -7,6 +7,7 @@ import os
 import sys
 from datetime import date
 
+from intersphinx_registry import get_intersphinx_mapping
 from sphinx.config import is_serializable
 
 import mne_bids
@@ -162,17 +163,19 @@ html_context = {
 html_sidebars = {}
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "mne": ("https://mne.tools/dev", None),
-    "mne-gui-addons": ("https://mne.tools/mne-gui-addons", None),
-    "numpy": ("https://numpy.org/devdocs", None),
-    "scipy": ("https://scipy.github.io/devdocs", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "nilearn": ("http://nilearn.github.io/stable", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/dev", None),
-    "nibabel": ("https://nipy.org/nibabel", None),
-}
+intersphinx_mapping = get_intersphinx_mapping(
+    packages={
+        "matplotlib",
+        "mne",
+        "nibabel",
+        "nilearn",
+        "numpy",
+        "pandas",
+        "python",
+        "scipy",
+    }
+)
+intersphinx_mapping["mne-gui-addons"] = ("https://mne.tools/mne-gui-addons", None)
 intersphinx_timeout = 5
 
 sphinx_gallery_conf = {

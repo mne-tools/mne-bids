@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.8
+    rev: v0.7.2
     hooks:
       - id: ruff
         name: ruff mne_bids/
@@ -21,7 +21,7 @@ repos:
         files: ^examples/
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -31,3 +31,9 @@ repos:
       - id: check-added-large-files
       - id: check-case-conflict
       - id: check-docstring-first
+
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.23.1
+    hooks:
+      - id: toml-sort-fix
+        files: pyproject.toml

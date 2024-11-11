@@ -227,7 +227,7 @@ def _read_events(events, event_id, raw, bids_path=None):
     # Warn about missing events if not rest or empty-room data
     if (all_events.size == 0 and bids_path.task is not None) and (
         not bids_path.task.startswith("rest")
-        or not (bids_path.subject == "emptyroom" and bids_path.task == "noise")
+        and not (bids_path.subject == "emptyroom" and bids_path.task == "noise")
     ):
         warn(
             "No events found or provided. Please add annotations to the raw "

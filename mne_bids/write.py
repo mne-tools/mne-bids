@@ -511,6 +511,29 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         }
     )
 
+    # XXX: Remove once MNE-Python <1.9 is no longer supported
+    # Make sure that all entries to data are lists that
+    # contain scalars (i.e. not further lists). Fix if possible
+    for key in data.keys():
+        cur_value = data[key]
+
+        # Check if all values are scalars
+        new_value = []
+        for cur_item in cur_value:
+            if isinstance(cur_item, list | tuple | np.ndarray):
+                if len(cur_item) == 1:
+                    new_value.append(cur_item[0])
+                else:
+                    raise ValueError(
+                        f"Value for key {key} is a list with more "
+                        f"than one element. This is not supported. "
+                        f"Got: {cur_value}."
+                    )
+            else:
+                new_value.append(cur_item)
+
+        data[key] = new_value
+
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
         # whether the new data exists identically in the previous data
@@ -1932,7 +1955,18 @@ def write_raw_bids(
     )
 
     # For the remaining files, we can use BIDSPath to alter.
-    readme_fname = op.join(bids_path.root, "README")
+    readme_suffixes = ("", ".md", ".rst", ".txt")
+    found_readmes = sorted(
+        filter(lambda x: x.suffix in readme_suffixes, bids_path.root.glob("README*"))
+    )
+    if len(found_readmes) > 1:
+        raise RuntimeError(
+            "Multiple README files found in the BIDS root folder. "
+            "This violates the BIDS specifications. "
+            "Please ensure there is only one README file."
+        )
+    readme_fname = str((found_readmes or [bids_path.root / "README"])[0])
+
     participants_tsv_fname = op.join(bids_path.root, "participants.tsv")
     participants_json_fname = participants_tsv_fname.replace(".tsv", ".json")
 
