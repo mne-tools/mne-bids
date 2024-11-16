@@ -9,7 +9,7 @@ What's new?
 
 .. _changes_0_16:
 
-Version 0.16 (unreleased)
+Version 0.16 (2024-11-16)
 -------------------------
 
 👩🏽‍💻 Authors
@@ -28,6 +28,9 @@ The following authors had contributed before. Thank you for sticking around! �
 
 * `Daniel McCloy`_
 * `Eric Larson`_
+* `Mathieu Scheltienne`_
+* `Richard Höchenberger`_
+* `Scott Huberty`_
 * `Stefan Appelhoff`_
 
 Detailed list of changes
@@ -52,6 +55,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - MNE-BIDS now requires Python 3.10 or higher.
+- MNE-BIDS now requires ``mne`` 1.7 or higher.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
@@ -69,6 +73,8 @@ Detailed list of changes
 
 - Keep MNE-BIDS up to date with recent changes on participant birthday date handling in MNE-Python, by `Eric Larson`_ (:gh:`1278`)
 - Make rules for linting more strict, make quality assessment exceptions less permissive, by `Stefan Appelhoff`_ (:gh:`1283`)
+- Updates to use ``intersphinx_registry`` and sorting TOML files, by `Mathieu Scheltienne`_ (:gh:`1314`)
+- Fix dropdown menu in website, by `Scott Huberty`_ (:gh:`1298`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
