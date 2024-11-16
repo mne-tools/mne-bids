@@ -25,7 +25,6 @@ segments as "bad".
 # Let's start by importing the required modules and functions, reading the
 # "sample" data, and writing it in the BIDS format.
 
-import os.path as op
 import shutil
 
 import mne
@@ -39,8 +38,8 @@ from mne_bids import (
 )
 
 data_path = mne.datasets.sample.data_path()
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw.fif")
-events_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-eve.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
+events_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
 event_id = {
     "Auditory/Left": 1,
     "Auditory/Right": 2,
@@ -49,7 +48,7 @@ event_id = {
     "Smiley": 5,
     "Button": 32,
 }
-bids_root = op.join(data_path, "..", "MNE-sample-data-bids")
+bids_root = data_path.parent / "MNE-sample-data-bids"
 bids_path = BIDSPath(
     subject="01", session="01", task="audiovisual", run="01", root=bids_root
 )
@@ -61,7 +60,7 @@ bids_path = BIDSPath(
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%
@@ -118,7 +117,7 @@ inspect_dataset(bids_path, l_freq=1.0, h_freq=30.0)
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"The following channels are currently marked as bad:\n"
-    f'    {", ".join(raw.info["bads"])}\n'
+    f"    {', '.join(raw.info['bads'])}\n"
 )
 
 # %%
@@ -137,7 +136,7 @@ mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"After marking MEG 0112 and MEG 0131 as bad, the following channels "
-    f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+    f"are now marked as bad:\n    {', '.join(raw.info['bads'])}\n"
 )
 
 # %%
@@ -159,7 +158,7 @@ raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"After marking MEG 0112 and MEG 0131 as bad and passing "
     f"`overwrite=True`, the following channels "
-    f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+    f"are now marked as bad:\n    {', '.join(raw.info['bads'])}\n"
 )
 
 # %%
@@ -172,5 +171,5 @@ mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"After passing `ch_names=[]` and `overwrite=True`, the following "
-    f'channels are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+    f"channels are now marked as bad:\n    {', '.join(raw.info['bads'])}\n"
 )

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.anonymize_dataset &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
+    <title>mne_bids.events_file_to_annotation_kwargs &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
   
   
   
@@ -56,7 +56,7 @@
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.anonymize_dataset';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.events_file_to_annotation_kwargs';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
@@ -66,9 +66,9 @@
         </script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mne_bids.find_matching_paths" href="mne_bids.find_matching_paths.html" />
-    <link rel="prev" title="mne_bids.update_sidecar_json" href="mne_bids.update_sidecar_json.html" />
-    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.anonymize_dataset.html" />
+    <link rel="next" title="mne_bids.stats.count_events" href="mne_bids.stats.count_events.html" />
+    <link rel="prev" title="mne_bids.find_matching_paths" href="mne_bids.find_matching_paths.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.events_file_to_annotation_kwargs.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
 
@@ -454,9 +454,9 @@
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.get_datatypes.html">mne_bids.get_datatypes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.inspect_dataset.html">mne_bids.inspect_dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.update_sidecar_json.html">mne_bids.update_sidecar_json</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.anonymize_dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.anonymize_dataset.html">mne_bids.anonymize_dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.find_matching_paths.html">mne_bids.find_matching_paths</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mne_bids.events_file_to_annotation_kwargs.html">mne_bids.events_file_to_annotation_kwargs</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.events_file_to_annotation_kwargs</a></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mne_bids.stats.count_events.html">mne_bids.stats.count_events</a></li>
@@ -511,7 +511,7 @@
     
     <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Documentation</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.anonymize_dataset</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.events_file_to_annotation_kwargs</span></li>
   </ul>
 </nav>
 </div>
@@ -528,61 +528,99 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="mne-bids-anonymize-dataset">
-<h1>mne_bids.anonymize_dataset<a class="headerlink" href="#mne-bids-anonymize-dataset" title="Link to this heading">#</a></h1>
+  <section id="mne-bids-events-file-to-annotation-kwargs">
+<h1>mne_bids.events_file_to_annotation_kwargs<a class="headerlink" href="#mne-bids-events-file-to-annotation-kwargs" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="mne_bids.anonymize_dataset">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">anonymize_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bids_root_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_root_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daysback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject_mapping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatypes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#anonymize_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.anonymize_dataset" title="Link to this definition">#</a></dt>
-<dd><p>Anonymize a BIDS dataset.</p>
-<p>This function creates a copy of a BIDS dataset, and tries to remove all
-personally identifiable information from the copy.</p>
+<dt class="sig sig-object py" id="mne_bids.events_file_to_annotation_kwargs">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">events_file_to_annotation_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/mne_bids/read.html#events_file_to_annotation_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.events_file_to_annotation_kwargs" title="Link to this definition">#</a></dt>
+<dd><p>Read the <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> file and extract onset, duration, and description.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>bids_root_in</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.10)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The root directory of the input BIDS dataset.</p>
+<dt><strong>events_fname</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The file path to the <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> file.</p>
 </dd>
-<dt><strong>bids_root_out</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.10)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The directory to place the anonymized dataset into.</p>
+</dl>
 </dd>
-<dt><strong>daysback</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | ‘auto’</span></dt><dd><p>Number of days by which to move back the recording date in time. If
-<code class="docutils literal notranslate"><span class="pre">'auto'</span></code>, tries to randomly pick a suitable number.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>kwargs_dict</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>A dictionary containing the following keys:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>‘onset’<span class="classifier">np.ndarray</span></dt><dd><p>The onset times of the events in seconds.</p>
 </dd>
-<dt><strong>subject_mapping</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#callable" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a> | ‘auto’ | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>How to anonymize subject IDs. If a dictionary, maps the original IDs
-(keys) to the anonymized IDs (values). If a function, must be one that
-accepts the original IDs as a list of strings and returns a dictionary
-with original IDs as keys and anonymized IDs as values. If <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>,
-automatically produces a mapping (zero-padded numerical IDs) and prints
-it on the screen. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, subject IDs are not changed.</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘duration’<span class="classifier">np.ndarray</span></dt><dd><p>The durations of the events in seconds.</p>
 </dd>
-<dt><strong>datatypes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Which data type to anonymize. If can be <code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">anat</span></code>. Multiple data types may be passed as a collection of strings.
-If <code class="docutils literal notranslate"><span class="pre">None</span></code>, try to anonymize the entire input dataset.</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘description’<span class="classifier">np.ndarray</span></dt><dd><p>The descriptions of the events.</p>
 </dd>
-<dt><strong>random_state</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | instance of <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RandomState</span></code></a></span></dt><dd><p>A seed for the NumPy random number generator (RNG). If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-the seed will be  obtained from the operating system
-(see  <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomState</span></code></a> for details), meaning it will most
-likely produce different output every time this function or method is run.
-To achieve reproducible results, pass a value here to explicitly initialize
-the RNG with a defined state.
-The RNG will be used to derive <code class="docutils literal notranslate"><span class="pre">daysback</span></code> and <code class="docutils literal notranslate"><span class="pre">subject_mapping</span></code> if
-they are <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>.</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘event_id’<span class="classifier">dict</span></dt><dd><p>A dictionary mapping event descriptions to integer event IDs.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Control verbosity of the logging output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, use the default
-verbosity level. See the <a class="reference external" href="https://docs.python.org/3/tutorial/stdlib2.html#tut-logging" title="(in Python v3.13)"><span class="xref std std-ref">logging documentation</span></a> and
-<a class="reference external" href="https://mne.tools/stable/generated/mne.verbose.html#mne.verbose" title="(in MNE v1.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.verbose()</span></code></a> for details. Should only be passed as a keyword
-argument.</p>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘extras’<span class="classifier">list of dict</span></dt><dd><p>A list of dictionaries containing additional columns from the
+<code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> file. Each dictionary corresponds to a row.
+This corresponds to the <code class="docutils literal notranslate"><span class="pre">extras</span></code> argument of class
+<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The function handles the following cases:</p>
+<ul class="simple">
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> column is available, it uses it for event descriptions.</p></li>
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">stim_type</span></code> column is available, it uses it for backward compatibility.</p></li>
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">value</span></code> column is available, it uses it to create the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>.</p></li>
+<li><p>If none of the above columns are available, it defaults to using ‘n/a’ for
+descriptions and 1 for event IDs.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a sample DataFrame</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;onset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;trial_type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;event1&#39;</span><span class="p">,</span> <span class="s1">&#39;event2&#39;</span><span class="p">,</span> <span class="s1">&#39;event1&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;sample&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">]</span>
+<span class="go">        &#39;foo&#39;: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],</span>
+<span class="go">... }</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Write the DataFrame to a temporary file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;events.tsv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">events_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Read the events file using the function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events_dict</span> <span class="o">=</span> <span class="n">events_file_to_annotation_kwargs</span><span class="p">(</span><span class="n">events_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events_dict</span>
+<span class="go">{&#39;onset&#39;: array([0.1, 0.2, 0.3]),</span>
+<span class="go">&#39;duration&#39;: array([0.1, 0.1, 0.1]),</span>
+<span class="go">&#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;),</span>
+<span class="go">&#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2},</span>
+<span class="go">&#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}]}</span>
+</pre></div>
+</div>
 </dd></dl>
 
-<section id="examples-using-mne-bids-anonymize-dataset">
-<span id="sphx-glr-backreferences-mne-bids-anonymize-dataset"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.anonymize_dataset</span></code><a class="headerlink" href="#examples-using-mne-bids-anonymize-dataset" title="Link to this heading">#</a></h2>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Consider the following scenario:"><img alt="" src="../_images/sphx_glr_anonymize_dataset_thumb.png" />
-<p><a class="reference internal" href="../auto_examples/anonymize_dataset.html#sphx-glr-auto-examples-anonymize-dataset-py"><span class="std std-ref">Anonymizing a BIDS dataset</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Anonymizing a BIDS dataset</div>
-</div></div></section>
-</section>
+<span class="target" id="sphx-glr-backreferences-mne-bids-events-file-to-annotation-kwargs"></span></section>
 
 
                 </article>
@@ -595,20 +633,20 @@ argument.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mne_bids.update_sidecar_json.html"
+       href="mne_bids.find_matching_paths.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">mne_bids.update_sidecar_json</p>
+        <p class="prev-next-title">mne_bids.find_matching_paths</p>
       </div>
     </a>
     <a class="right-next"
-       href="mne_bids.find_matching_paths.html"
+       href="mne_bids.stats.count_events.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mne_bids.find_matching_paths</p>
+        <p class="prev-next-title">mne_bids.stats.count_events</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -631,8 +669,7 @@ argument.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.anonymize_dataset"><code class="docutils literal notranslate"><span class="pre">anonymize_dataset()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-using-mne-bids-anonymize-dataset">Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.anonymize_dataset</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.events_file_to_annotation_kwargs"><code class="docutils literal notranslate"><span class="pre">events_file_to_annotation_kwargs()</span></code></a></li>
 </ul>
   </nav></div>
 

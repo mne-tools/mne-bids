@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
   
   
   
@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,10 +26,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -38,12 +38,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=38b9782e"></script>
+    <script src="../../_static/documentation_options.js?v=287be518"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,18 +55,13 @@
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
-    <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('js', new Date());
-                gtag('config', 'G-C8SH9E98QC');
-            </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/dig';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -76,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
+  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
 
   </head>
   
@@ -139,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
   
 </a></div>
     
@@ -426,9 +421,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -480,20 +480,19 @@
 <span class="c1"># Authors: The MNE-BIDS developers</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
-<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">_picks_to_idx</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FIFF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">_picks_to_idx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_check_option</span><span class="p">,</span> <span class="n">_validate_type</span><span class="p">,</span> <span class="n">get_subjects_dir</span><span class="p">,</span> <span class="n">logger</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_SPACES</span><span class="p">,</span>
     <span class="n">BIDS_COORD_FRAME_DESCRIPTIONS</span><span class="p">,</span>
     <span class="n">BIDS_COORDINATE_UNITS</span><span class="p">,</span>
@@ -503,9 +502,9 @@
     <span class="n">MNE_STR_TO_FRAME</span><span class="p">,</span>
     <span class="n">MNE_TO_BIDS_FRAMES</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
-<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSPath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.tsv_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">_from_tsv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_import_nibabel</span><span class="p">,</span>
     <span class="n">_scale_coord_to_meters</span><span class="p">,</span>
     <span class="n">_write_json</span><span class="p">,</span>
@@ -517,16 +516,16 @@
 <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span> <span class="n">coord_unit</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span> <span class="n">coord_unit</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read associated electrodes.tsv and populate raw.</span>
 
 <span class="sd">    Handle xyz coordinates and coordinate frame of each channel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading electrode &quot;</span> <span class="sa">f</span><span class="s2">&quot;coords from </span><span class="si">{</span><span class="n">electrodes_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading electrode coords from </span><span class="si">{</span><span class="n">electrodes_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">electrodes_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">)</span>
     <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_float_or_nan</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_float_or_nan</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
         <span class="k">else</span><span class="p">:</span>
@@ -550,7 +549,7 @@
     <span class="k">return</span> <span class="n">montage</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_coordsystem_reading</span><span class="p">(</span><span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_coordsystem_reading</span><span class="p">(</span><span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read associated coordsystem.json.</span>
 
 <span class="sd">    Handle reading the coordinate frame and coordinate unit</span>
@@ -579,7 +578,7 @@
     <span class="k">return</span> <span class="n">coord_frame</span><span class="p">,</span> <span class="n">coord_unit</span>
 
 
-<span class="k">def</span> <span class="nf">_get_impedances</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_impedances</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the impedance values in kOhm from raw.impedances.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;impedances&quot;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
@@ -596,7 +595,7 @@
     <span class="k">return</span> <span class="n">impedances</span>
 
 
-<span class="k">def</span> <span class="nf">_write_electrodes_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_electrodes_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an electrodes.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -619,7 +618,7 @@
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_STIM_CH</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not writing stim chan </span><span class="si">{</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;to electrodes.tsv&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not writing stim chan </span><span class="si">{</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> to electrodes.tsv&quot;</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">][:</span><span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">][:</span><span class="mi">3</span><span class="p">],</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
@@ -685,7 +684,7 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_optodes_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_optodes_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a optodes.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -751,7 +750,7 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_coordsystem_json</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_coordsystem_json</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">raw</span><span class="p">,</span>
     <span class="n">unit</span><span class="p">,</span>
@@ -863,7 +862,7 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fid_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_dig_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_dig_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write BIDS formatted DigMontage from Raw instance.</span>
 
 <span class="sd">    Handles coordsystem.json and electrodes.tsv writing</span>
@@ -1002,7 +1001,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">,</span> <span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fpath</span><span class="p">,</span> <span class="n">coordsystem_fpath</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read MNE-Python formatted DigMontage from BIDS files.</span>
 
 <span class="sd">    Handles coordinatesystem.json and electrodes.tsv reading</span>
@@ -1096,7 +1095,7 @@
 <div class="viewcode-block" id="template_to_head">
 <a class="viewcode-back" href="../../generated/mne_bids.template_to_head.html#mne_bids.template_to_head">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">template_to_head</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">template_to_head</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">coord_frame</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform a BIDS standard template montage to the head coordinate frame.</span>
 
 <span class="sd">    Parameters</span>
@@ -1190,7 +1189,7 @@
 <div class="viewcode-block" id="convert_montage_to_ras">
 <a class="viewcode-back" href="../../generated/mne_bids.convert_montage_to_ras.html#mne_bids.convert_montage_to_ras">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">convert_montage_to_ras</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_montage_to_ras</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a montage from surface RAS (m) to scanner RAS (m).</span>
 
 <span class="sd">    Parameters</span>
@@ -1204,8 +1203,8 @@
     <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s2">&quot;converting a montage to RAS&quot;</span><span class="p">)</span>
 
     <span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">T1_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;mri&quot;</span><span class="p">,</span> <span class="s2">&quot;T1.mgz&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">T1_fname</span><span class="p">):</span>
+    <span class="n">T1_fname</span> <span class="o">=</span> <span class="n">subjects_dir</span> <span class="o">/</span> <span class="n">subject</span> <span class="o">/</span> <span class="s2">&quot;mri&quot;</span> <span class="o">/</span> <span class="s2">&quot;T1.mgz&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">T1_fname</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Freesurfer subject (</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">) and/or &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;subjects_dir (</span><span class="si">{</span><span class="n">subjects_dir</span><span class="si">}</span><span class="s2">, incorrectly &quot;</span>
@@ -1232,7 +1231,7 @@
 <div class="viewcode-block" id="convert_montage_to_mri">
 <a class="viewcode-back" href="../../generated/mne_bids.convert_montage_to_mri.html#mne_bids.convert_montage_to_mri">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">convert_montage_to_mri</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_montage_to_mri</span><span class="p">(</span><span class="n">montage</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a montage from scanner RAS (m) to surface RAS (m).</span>
 
 <span class="sd">    Parameters</span>
@@ -1252,8 +1251,8 @@
     <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s2">&quot;converting a montage to MRI&quot;</span><span class="p">)</span>
 
     <span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">T1_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="s2">&quot;mri&quot;</span><span class="p">,</span> <span class="s2">&quot;T1.mgz&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">T1_fname</span><span class="p">):</span>
+    <span class="n">T1_fname</span> <span class="o">=</span> <span class="n">subjects_dir</span> <span class="o">/</span> <span class="n">subject</span> <span class="o">/</span> <span class="s2">&quot;mri&quot;</span> <span class="o">/</span> <span class="s2">&quot;T1.mgz&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">T1_fname</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Freesurfer subject (</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">) and/or &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;subjects_dir (</span><span class="si">{</span><span class="n">subjects_dir</span><span class="si">}</span><span class="s2">, incorrectly &quot;</span>
@@ -1304,8 +1303,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1316,7 +1315,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
       <br/>
     
   </p>
@@ -1325,7 +1324,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
@@ -1338,7 +1337,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.utils &#8212; MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</title>
+    <title>mne_bids.utils &#8212; MNE-BIDS 0.18.0.dev1+g8787a658a documentation</title>
   
   
   
@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,10 +26,10 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -38,12 +38,12 @@
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=81d8d220" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=38b9782e"></script>
+    <script src="../../_static/documentation_options.js?v=287be518"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -55,18 +55,13 @@
                 gtag('js', new Date());
                 gtag('config', 'G-C8SH9E98QC');
             </script>
-    <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){ dataLayer.push(arguments); }
-                gtag('js', new Date());
-                gtag('config', 'G-C8SH9E98QC');
-            </script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_bids/utils';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
         </script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -76,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.16.0.dev60+g9f86bc39" />
+  <meta name="docsearch:version" content="0.18.0.dev1+g8787a658a" />
 
   </head>
   
@@ -139,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.16.0.dev60+g9f86bc39 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev1+g8787a658a documentation</p>
   
 </a></div>
     
@@ -426,9 +421,14 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -480,28 +480,27 @@
 <span class="c1"># Authors: The MNE-BIDS developers</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">pick_types</span>
-<span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">make_standard_montage</span>
-<span class="kn">from</span> <span class="nn">mne.io.kit.kit</span> <span class="kn">import</span> <span class="n">get_kit_info</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">_warn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">pick_types</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_standard_montage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.kit.kit</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_kit_info</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span><span class="p">,</span> <span class="n">verbose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span> <span class="k">as</span> <span class="n">_warn</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_to_tsv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.tsv_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">_to_tsv</span>
 
 <span class="c1"># This regex matches key-val pairs. Any characters are allowed in the key and</span>
 <span class="c1"># the value, except these special symbols: - _ . \ /</span>
 <span class="n">param_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([^-_\.</span><span class="se">\\</span><span class="s2">\/]+)-([^-_\.</span><span class="se">\\</span><span class="s2">\/]+)&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_ensure_tuple</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_tuple</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a tuple.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">()</span>
@@ -511,7 +510,7 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s2">&quot;mne&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;bids&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s2">&quot;mne&quot;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s2">&quot;bids&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Map between BIDS and MNE nomenclatures for channel types.</span>
 
 <span class="sd">    Parameters</span>
@@ -564,6 +563,9 @@
             <span class="n">ias</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
             <span class="n">syst</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
             <span class="n">exci</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
+            <span class="c1"># Eye tracking</span>
+            <span class="n">eyegaze</span><span class="o">=</span><span class="s2">&quot;EYEGAZE&quot;</span><span class="p">,</span>
+            <span class="n">pupil</span><span class="o">=</span><span class="s2">&quot;PUPIL&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">fro</span> <span class="o">==</span> <span class="s2">&quot;bids&quot;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s2">&quot;mne&quot;</span><span class="p">:</span>
@@ -587,6 +589,9 @@
             <span class="n">VEOG</span><span class="o">=</span><span class="s2">&quot;eog&quot;</span><span class="p">,</span>
             <span class="n">HEOG</span><span class="o">=</span><span class="s2">&quot;eog&quot;</span><span class="p">,</span>
             <span class="n">DBS</span><span class="o">=</span><span class="s2">&quot;dbs&quot;</span><span class="p">,</span>
+            <span class="c1"># Eye tracking</span>
+            <span class="n">EYEGAZE</span><span class="o">=</span><span class="s2">&quot;eyegaze&quot;</span><span class="p">,</span>
+            <span class="n">PUPIL</span><span class="o">=</span><span class="s2">&quot;pupil&quot;</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -598,7 +603,7 @@
     <span class="k">return</span> <span class="n">mapping</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_handle_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if datatype exists in raw object or infer datatype if possible.</span>
 
 <span class="sd">    Parameters</span>
@@ -665,7 +670,7 @@
     <span class="k">return</span> <span class="n">datatype</span>
 
 
-<span class="k">def</span> <span class="nf">_age_on_date</span><span class="p">(</span><span class="n">bday</span><span class="p">,</span> <span class="n">exp_date</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_age_on_date</span><span class="p">(</span><span class="n">bday</span><span class="p">,</span> <span class="n">exp_date</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate age from birthday and experiment date.</span>
 
 <span class="sd">    Parameters</span>
@@ -686,7 +691,7 @@
     <span class="k">return</span> <span class="n">exp_date</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">bday</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="mi">1</span>
 
 
-<span class="k">def</span> <span class="nf">_check_types</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_types</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make sure all vars are str or None.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
@@ -697,14 +702,15 @@
             <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write JSON to a file.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. Please set overwrite to True.&#39;</span>
         <span class="p">)</span>
 
-    <span class="n">json_output</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">json_output</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_output</span><span class="p">)</span>
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -713,9 +719,10 @@
 
 
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write an ordered dictionary to a .tsv file.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. Please set overwrite to True.&#39;</span>
         <span class="p">)</span>
@@ -724,9 +731,9 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write text to a file.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. Please set overwrite to True.&#39;</span>
         <span class="p">)</span>
@@ -737,16 +744,16 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform checks on a value to make sure it adheres to the spec.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ii</span> <span class="ow">in</span> <span class="n">val</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">]):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Unallowed `-`, `_`, or `/` found in key/value pair&quot;</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Unallowed `-`, `_`, or `/` found in key/value pair </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
 
 
-<span class="k">def</span> <span class="nf">_get_mrk_meas_date</span><span class="p">(</span><span class="n">mrk</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_mrk_meas_date</span><span class="p">(</span><span class="n">mrk</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the measurement date from a KIT marker file.&quot;&quot;&quot;</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">get_kit_info</span><span class="p">(</span><span class="n">mrk</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">meas_date</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;meas_date&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -761,7 +768,7 @@
     <span class="k">return</span> <span class="n">meas_datetime</span>
 
 
-<span class="k">def</span> <span class="nf">_infer_eeg_placement_scheme</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_eeg_placement_scheme</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Based on the channel names, try to infer an EEG placement scheme.</span>
 
 <span class="sd">    Parameters</span>
@@ -794,7 +801,7 @@
     <span class="k">return</span> <span class="n">placement_scheme</span>
 
 
-<span class="k">def</span> <span class="nf">_scale_coord_to_meters</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_scale_coord_to_meters</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale units to meters (mne-python default).&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;cm&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">)</span>
@@ -804,7 +811,7 @@
         <span class="k">return</span> <span class="n">coord</span>
 
 
-<span class="k">def</span> <span class="nf">_check_empty_room_basename</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_empty_room_basename</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">!=</span> <span class="s2">&quot;emptyroom&quot;</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="c1"># only check task entity for emptyroom when it is the sidecar/MEG file</span>
@@ -819,7 +826,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the `anonymize` dict.&quot;&quot;&quot;</span>
     <span class="c1"># if info[&#39;meas_date&#39;] None, then the dates are not stored</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -848,7 +855,7 @@
     <span class="k">return</span> <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="p">,</span> <span class="n">keep_source</span>
 
 
-<span class="k">def</span> <span class="nf">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the min and max number of daysback necessary to satisfy BIDS specs.</span>
 
 <span class="sd">    Parameters</span>
@@ -876,7 +883,7 @@
 <div class="viewcode-block" id="get_anonymization_daysback">
 <a class="viewcode-back" href="../../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">get_anonymization_daysback</span><span class="p">(</span><span class="n">raws</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_anonymization_daysback</span><span class="p">(</span><span class="n">raws</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the group min and max number of daysback necessary for BIDS specs.</span>
 
 <span class="sd">    .. warning:: It is important that you remember the anonymization</span>
@@ -930,7 +937,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_stamp_to_dt</span><span class="p">(</span><span class="n">utc_stamp</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_stamp_to_dt</span><span class="p">(</span><span class="n">utc_stamp</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert POSIX timestamp to datetime object in Windows-friendly way.&quot;&quot;&quot;</span>
     <span class="c1"># This is a windows datetime bug for timestamp &lt; 0. A negative value</span>
     <span class="c1"># is needed for anonymization which requires the date to be moved back</span>
@@ -946,7 +953,7 @@
     <span class="p">)</span>  <span class="c1"># day, sec, μs</span>
 
 
-<span class="k">def</span> <span class="nf">_check_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">datatype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if datatype exists in given raw object.</span>
 
 <span class="sd">    Parameters</span>
@@ -989,19 +996,19 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_import_nibabel</span><span class="p">(</span><span class="n">why</span><span class="o">=</span><span class="s2">&quot;work with MRI data&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_import_nibabel</span><span class="p">(</span><span class="n">why</span><span class="o">=</span><span class="s2">&quot;work with MRI data&quot;</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">nibabel</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">nibabel</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">exc</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;nibabel is required to </span><span class="si">{</span><span class="n">why</span><span class="si">}</span><span class="s2"> but could not be imported, &quot;</span> <span class="sa">f</span><span class="s2">&quot;got: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="sa">f</span><span class="s2">&quot;nibabel is required to </span><span class="si">{</span><span class="n">why</span><span class="si">}</span><span class="s2"> but could not be imported, got: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">nibabel</span>
 
 
 <span class="c1"># better example sorting, without relying on numbers in example titles</span>
-<span class="k">def</span> <span class="nf">_example_sorter</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_example_sorter</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort MNE-BIDS example filenames in a custom order.</span>
 
 <span class="sd">    Examples not explicitly listed in `EXAMPLE_ORDER` will be sorted at the end. This</span>
@@ -1016,7 +1023,7 @@
     <span class="k">return</span> <span class="n">EXAMPLE_ORDER</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">warn</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">warn</span><span class="p">(</span>
     <span class="n">message</span><span class="p">,</span>
     <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">,</span>
     <span class="n">module</span><span class="o">=</span><span class="s2">&quot;mne_bids&quot;</span><span class="p">,</span>
@@ -1062,8 +1069,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1074,7 +1081,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-16.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
       <br/>
     
   </p>
@@ -1083,7 +1090,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
@@ -1096,7 +1103,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>
