@@ -45,8 +45,8 @@ refer to the `iEEG part of the BIDS specification`_.
 
 # %%
 
-import os.path as op
 import shutil
+from pathlib import Path
 
 import mne
 import nibabel as nib
@@ -77,9 +77,9 @@ misc_path = mne.datasets.misc.data_path()
 
 # The electrode coords data are in the tsv file format
 # which is easily read in using numpy
-raw = mne.io.read_raw_fif(op.join(misc_path, "seeg", "sample_seeg_ieeg.fif"))
+raw = mne.io.read_raw_fif(misc_path / "seeg" / "sample_seeg_ieeg.fif")
 raw.info["line_freq"] = 60  # specify power line frequency as required by BIDS
-subjects_dir = op.join(misc_path, "seeg")  # Freesurfer recon-all directory
+subjects_dir = misc_path / "seeg"  # Freesurfer recon-all directory
 
 # %%
 # When the locations of the channels in this dataset were found in
@@ -153,10 +153,10 @@ subject_id = "1"
 task = "motor"
 
 # get MNE-Python directory w/ example data
-mne_data_dir = mne.get_config("MNE_DATASETS_MISC_PATH")
+mne_data_dir = Path(mne.get_config("MNE_DATASETS_MISC_PATH"))
 
 # There is the root directory for where we will write our data.
-bids_root = op.join(mne_data_dir, "ieeg_bids")
+bids_root = mne_data_dir / "ieeg_bids"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -182,7 +182,7 @@ bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
 # plot T1 to show that it is ACPC-aligned
 # note that the origin is centered on the anterior commissure (AC)
 # with the y-axis passing through the posterior commissure (PC)
-T1_fname = op.join(subjects_dir, "sample_seeg", "mri", "T1.mgz")
+T1_fname = subjects_dir / "sample_seeg" / "mri" / "T1.mgz"
 fig = plot_anat(T1_fname, cut_coords=(0, 0, 0))
 fig.axes["x"].ax.annotate(
     "AC",
@@ -295,7 +295,7 @@ print(
 # We can see that the appropriate citations are already written in the README.
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = op.join(bids_root, "README")
+readme = bids_root / "README"
 with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
@@ -334,7 +334,7 @@ if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # load our raw data again
-raw = mne.io.read_raw_fif(op.join(misc_path, "seeg", "sample_seeg_ieeg.fif"))
+raw = mne.io.read_raw_fif(misc_path / "seeg" / "sample_seeg_ieeg.fif")
 raw.info["line_freq"] = 60  # specify power line frequency as required by BIDS
 
 # get Talairach transform
@@ -463,15 +463,15 @@ if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # get a template mgz image to transform the montage to voxel coordinates
-subjects_dir = op.join(mne.datasets.sample.data_path(), "subjects")
-template_T1 = nib.load(op.join(subjects_dir, "fsaverage", "mri", "T1.mgz"))
+subjects_dir = mne.datasets.sample.data_path() / "subjects"
+template_T1 = nib.load(subjects_dir / "fsaverage" / "mri" / "T1.mgz")
 
 # get voxels to surface RAS and scanner RAS transforms
 vox_mri_t = template_T1.header.get_vox2ras_tkr()  # surface RAS
 vox_ras_t = template_T1.header.get_vox2ras()  # scanner RAS
 
 raw = mne.io.read_raw_fif(
-    op.join(misc_path, "seeg", "sample_seeg_ieeg.fif")  # load our raw data again
+    misc_path / "seeg" / "sample_seeg_ieeg.fif"  # load our raw data again
 )
 montage = raw.get_montage()  # get the original montage
 montage.apply_trans(trans)  # head->mri
