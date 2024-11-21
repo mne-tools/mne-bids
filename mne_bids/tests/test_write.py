@@ -3868,7 +3868,7 @@ def test_anonymize_dataset(_bids_validate, tmpdir):
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon,
         datatypes=["meg", "anat"],
-        random_state=42,
+        random_state=1442792182,
     )
     _bids_validate(bids_root_anon)
     assert (bids_root_anon / "sub-1" / "ses-01" / "meg").exists()
