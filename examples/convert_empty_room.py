@@ -42,7 +42,7 @@ from mne_bids import BIDSPath, print_dir_tree, read_raw_bids, write_raw_bids
 data_path = sample.data_path()
 raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
 
-bids_root = data_path / ".." / "MNE-sample-data-bids"
+bids_root = data_path.parent / "MNE-sample-data-bids"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
