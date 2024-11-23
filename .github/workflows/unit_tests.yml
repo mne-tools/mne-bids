@@ -310,3 +310,4 @@ jobs:
       with:
         name: documentation
         path: doc/_build/html
+        include-hidden-files: true
