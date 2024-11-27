@@ -17,7 +17,7 @@ Version 0.17 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* Nobody yet
+* `Christian O'Reilly`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -29,7 +29,8 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- Nothing yet
+- :func:`mne_bids.write_raw_bids()` can now handle mne `Raw` objects with `eyegaze` and `pupil` channels, by `Christian O'Reilly`_ (:gh:`1344`)
+
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
