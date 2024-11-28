@@ -87,6 +87,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             ias="MEGOTHER",
             syst="MEGOTHER",
             exci="MEGOTHER",
+            # Eye tracking
+            eyegaze="EYEGAZE",
+            pupil="PUPIL",
         )
 
     elif fro == "bids" and to == "mne":
@@ -110,6 +113,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             VEOG="eog",
             HEOG="eog",
             DBS="dbs",
+            # Eye tracking
+            EYEGAZE="eyegaze",
+            PUPIL="pupil",
         )
     else:
         raise ValueError(

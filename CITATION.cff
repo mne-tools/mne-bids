@@ -198,6 +198,10 @@ authors:
       family-names: Turner
       affiliation: 'Wu Tsai Neurosciences Institute, Stanford University'
       orcid: 'https://orcid.org/0000-0001-8639-9769'
+    - given-names: Christian
+      family-names: O'Reilly
+      affiliation: 'Computer Science and Engineering, University of South Carolina'
+      orcid: 'https://orcid.org/0000-0002-3149-4934'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
