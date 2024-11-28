@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.utils &#8212; MNE-BIDS 0.17.0.dev7+g5d40f8d9 documentation</title>
+    <title>mne_bids.utils &#8212; MNE-BIDS 0.17.0.dev8+ga65941f1 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=b2c2a3b3"></script>
+    <script src="../../_static/documentation_options.js?v=87a1a982"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -76,7 +76,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev7+g5d40f8d9" />
+  <meta name="docsearch:version" content="0.17.0.dev8+ga65941f1" />
 
   </head>
   
@@ -139,7 +139,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev7+g5d40f8d9 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev8+ga65941f1 documentation</p>
   
 </a></div>
     
@@ -564,6 +564,9 @@
             <span class="n">ias</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
             <span class="n">syst</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
             <span class="n">exci</span><span class="o">=</span><span class="s2">&quot;MEGOTHER&quot;</span><span class="p">,</span>
+            <span class="c1"># Eye tracking</span>
+            <span class="n">eyegaze</span><span class="o">=</span><span class="s2">&quot;EYEGAZE&quot;</span><span class="p">,</span>
+            <span class="n">pupil</span><span class="o">=</span><span class="s2">&quot;PUPIL&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">fro</span> <span class="o">==</span> <span class="s2">&quot;bids&quot;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s2">&quot;mne&quot;</span><span class="p">:</span>
@@ -587,6 +590,9 @@
             <span class="n">VEOG</span><span class="o">=</span><span class="s2">&quot;eog&quot;</span><span class="p">,</span>
             <span class="n">HEOG</span><span class="o">=</span><span class="s2">&quot;eog&quot;</span><span class="p">,</span>
             <span class="n">DBS</span><span class="o">=</span><span class="s2">&quot;dbs&quot;</span><span class="p">,</span>
+            <span class="c1"># Eye tracking</span>
+            <span class="n">EYEGAZE</span><span class="o">=</span><span class="s2">&quot;eyegaze&quot;</span><span class="p">,</span>
+            <span class="n">PUPIL</span><span class="o">=</span><span class="s2">&quot;pupil&quot;</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -1074,7 +1080,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-25.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-11-28.
       <br/>
     
   </p>
