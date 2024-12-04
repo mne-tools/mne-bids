@@ -494,13 +494,13 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     expected_file = op.join("sub-01", "ses-01", "meg", "sub-01_ses-01_coordsystem.json")
     assert str(sidecar_fname).endswith(expected_file)
 
-    # Find multiple sidecars, tied in score, triggering an error
+    # create a duplicate sidecar, which will be tied in match score, triggering an error
+    dupe = Path(str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"))
+    dupe.touch()
     with pytest.raises(RuntimeError, match="Expected to find a single"):
-        open(
-            str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"), "w"
-        ).close()
         print_dir_tree(bids_root)
         bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
+    dupe.unlink()  # clean up extra file
 
     # Find nothing and raise.
     with pytest.raises(RuntimeError, match="Did not find any"):
