@@ -269,8 +269,7 @@ def test_rm(return_bids_test_dir, capsys, tmp_path):
     bids_root = tmp_path / "mnebids_utils_test_bids_ds"
     shutil.copytree(return_bids_test_dir, bids_root)
 
-    # without providing all the entities, ambiguous when trying
-    # to use fpath
+    # without providing all the entities, ambiguous when trying to use fpath
     bids_path = BIDSPath(
         subject=subject_id,
         session=session_id,
