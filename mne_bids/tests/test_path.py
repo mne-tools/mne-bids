@@ -1358,7 +1358,7 @@ def test_bids_path_label_vs_index_entity():
 
 
 @testing.requires_testing_data
-def test_meg_calibration_fpath(return_bids_test_dir):
+def test_meg_calibration_fpath(return_bids_test_dir, tmp_path):
     """Test BIDSPath.meg_calibration_fpath."""
     bids_root = return_bids_test_dir
 
@@ -1382,15 +1382,18 @@ def test_meg_calibration_fpath(return_bids_test_dir):
     with pytest.raises(ValueError, match="Can only find .* for MEG"):
         bids_path_.meg_calibration_fpath
 
-    # Delete the fine-calibration file. BIDSPath.meg_calibration_fpath
-    # should then return None.
+    # Move the fine-calibration file. BIDSPath.meg_calibration_fpath should then be None
     bids_path_ = _bids_path.copy().update(subject="01", root=bids_root)
-    Path(bids_path_.meg_calibration_fpath).unlink()
+    src = Path(bids_path_.meg_calibration_fpath)
+    src.rename(tmp_path / src.name)
     assert bids_path_.meg_calibration_fpath is None
+    # restore the file
+    (tmp_path / src.name).rename(src)
+    assert bids_path_.meg_calibration_fpath is not None
 
 
 @testing.requires_testing_data
-def test_meg_crosstalk_fpath(return_bids_test_dir):
+def test_meg_crosstalk_fpath(return_bids_test_dir, tmp_path):
     """Test BIDSPath.meg_crosstalk_fpath."""
     bids_root = return_bids_test_dir
 
@@ -1414,11 +1417,14 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
     with pytest.raises(ValueError, match="Can only find .* for MEG"):
         bids_path.meg_crosstalk_fpath
 
-    # Delete the crosstalk file. BIDSPath.meg_crosstalk_fpath should then
-    # return None.
+    # Move the crosstalk file. BIDSPath.meg_crosstalk_fpath should then be None.
     bids_path = _bids_path.copy().update(subject="01", root=bids_root)
-    Path(bids_path.meg_crosstalk_fpath).unlink()
+    src = Path(bids_path.meg_crosstalk_fpath)
+    src.rename(tmp_path / src.name)
     assert bids_path.meg_crosstalk_fpath is None
+    # restore the file
+    (tmp_path / src.name).rename(src)
+    assert bids_path.meg_crosstalk_fpath is not None
 
 
 @testing.requires_testing_data
