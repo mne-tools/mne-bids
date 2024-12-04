@@ -509,7 +509,7 @@ def test_handle_events_reading(tmp_path):
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw = _handle_events_reading(events_fname, raw)
+    raw, _ = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
     # Test with a `stim_type` column instead of `trial_type`.
@@ -523,7 +523,7 @@ def test_handle_events_reading(tmp_path):
     _to_tsv(events, events_fname)
 
     with pytest.warns(RuntimeWarning, match="This column should be renamed"):
-        raw = _handle_events_reading(events_fname, raw)
+        raw, _ = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
     # Test with same `trial_type` referring to different `value`:
@@ -538,7 +538,7 @@ def test_handle_events_reading(tmp_path):
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw = _handle_events_reading(events_fname, raw)
+    raw, _ = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
     assert len(events) == 5
@@ -555,7 +555,7 @@ def test_handle_events_reading(tmp_path):
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw = _handle_events_reading(events_fname, raw)
+    raw, _ = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
     ids = list(event_id.keys())
     assert len(ids) == 1

@@ -550,18 +550,17 @@ def _handle_events_reading(events_fname, raw):
     if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, "n/a", trial_type_col_name)
+        trial_types = events_dict[trial_type_col_name]
 
         if "value" in events_dict:
-            # Check whether the `trial_type` <> `value` mapping is unique.
-            trial_types = events_dict[trial_type_col_name]
             values = np.asarray(events_dict["value"], dtype=str)
+            # Check whether the `trial_type` <> `value` mapping is unique.
             for trial_type in np.unique(trial_types):
                 idx = np.where(trial_type == np.atleast_1d(trial_types))[0]
                 matching_values = values[idx]
-
                 if len(np.unique(matching_values)) > 1:
-                    # Event type descriptors are ambiguous; create hierarchical
-                    # event descriptors.
+                    # Event type descriptors are ambiguous; create hierarchical event
+                    # descriptors (to ensure trial_type -> integerID is 1:1)
                     logger.info(
                         f'The event "{trial_type}" refers to multiple event '
                         f"values. Creating hierarchical event names."
@@ -574,20 +573,23 @@ def _handle_events_reading(events_fname, raw):
                             f"    Renaming event: {trial_type} -> " f"{new_name}"
                         )
                         trial_types[ii] = new_name
-            descriptions = np.asarray(trial_types, dtype=str)
         else:
-            descriptions = np.asarray(events_dict[trial_type_col_name], dtype=str)
+            values = np.arange(len(trial_types))
+        descriptions = np.asarray(trial_types, dtype=str)
     elif "value" in events_dict:
         # If we don't have a proper description of the events, perhaps we have
         # at least an event value?
         # Drop events unrelated to value
         events_dict = _drop(events_dict, "n/a", "value")
-        descriptions = np.asarray(events_dict["value"], dtype=str)
+        values = events_dict["value"]
+        descriptions = np.asarray(values, dtype=str)
 
     # Worst case, we go with 'n/a' for all events
     else:
         descriptions = np.array(["n/a"] * len(events_dict["onset"]), dtype=str)
+        values = np.ones_like(descriptions)
 
+    event_id = dict(zip(descriptions, values))
     # Deal with "n/a" strings before converting to float
     onsets = np.array(
         [np.nan if on == "n/a" else on for on in events_dict["onset"]], dtype=float
@@ -622,7 +624,7 @@ def _handle_events_reading(events_fname, raw):
     if len(annot_to_keep):
         raw.set_annotations(raw.annotations + annot_to_keep)
 
-    return raw
+    return raw, event_id
 
 
 def _get_bads_from_tsv_data(tsv_data):
@@ -756,7 +758,9 @@ def _handle_channels_reading(channels_fname, raw):
 
 
 @verbose
-def read_raw_bids(bids_path, extra_params=None, verbose=None):
+def read_raw_bids(
+    bids_path, extra_params=None, *, return_event_dict=False, verbose=None
+):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -781,6 +785,11 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         Note that the ``exclude`` parameter, which is supported by some
         MNE-Python readers, is not supported; instead, you need to subset
         your channels **after** reading.
+    return_event_dict : bool
+        Whether to return a dictionary that maps annotation descriptions to integer
+        event IDs, in addition to the :class:`~mne.io.Raw` object. This can be passed to
+        :func:`mne.events_from_annotations` to recreate the original description → value
+        mapping in the ``*_events.tsv`` file.
     %(verbose)s
 
     Returns
@@ -923,9 +932,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
     events_fname = _find_matching_sidecar(
         bids_path, suffix="events", extension=".tsv", on_error=on_error
     )
-
     if events_fname is not None:
-        raw = _handle_events_reading(events_fname, raw)
+        raw, event_id = _handle_events_reading(events_fname, raw)
 
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
@@ -989,6 +997,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         raw.info["subject_info"] = dict()
 
     assert raw.annotations.orig_time == raw.info["meas_date"]
+    if return_event_dict:
+        return raw, event_id
     return raw
 
 
