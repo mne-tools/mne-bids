@@ -1037,6 +1037,7 @@ def test_match(return_bids_test_dir):
 
     assert bids_path_01.match(check=True) == []
     assert bids_path_01.match(check=False)[0].fpath.name == "sub-01_foo.eeg"
+    bids_path_01.fpath.unlink()  # clean up created file
 
 
 @testing.requires_testing_data
@@ -1118,6 +1119,7 @@ def test_find_matching_paths(return_bids_test_dir):
         check=False,
     )
     assert paths_match == paths_find
+    bids_path_01.fpath.unlink()  # clean up created file
 
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
