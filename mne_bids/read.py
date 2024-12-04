@@ -573,23 +573,31 @@ def _handle_events_reading(events_fname, raw):
                             f"    Renaming event: {trial_type} -> " f"{new_name}"
                         )
                         trial_types[ii] = new_name
+            # for making the event_id dict, we can drop any where `value` is `n/a`
+            events_dict_culled = _drop(events_dict, "n/a", "value")
+            event_id = dict(
+                zip(
+                    events_dict_culled[trial_type_col_name],
+                    np.asarray(events_dict_culled["value"], dtype=int),
+                )
+            )
         else:
-            values = np.arange(len(trial_types))
+            event_id = dict(zip(trial_types, np.arange(len(trial_types))))
         descriptions = np.asarray(trial_types, dtype=str)
     elif "value" in events_dict:
         # If we don't have a proper description of the events, perhaps we have
         # at least an event value?
         # Drop events unrelated to value
         events_dict = _drop(events_dict, "n/a", "value")
-        values = events_dict["value"]
+        values = events_dict["value"].astype(int)
         descriptions = np.asarray(values, dtype=str)
+        event_id = dict(zip(descriptions, values))
 
     # Worst case, we go with 'n/a' for all events
     else:
         descriptions = np.array(["n/a"] * len(events_dict["onset"]), dtype=str)
         values = np.ones_like(descriptions)
-
-    event_id = dict(zip(descriptions, values))
+        event_id = dict(zip(descriptions, values))
     # Deal with "n/a" strings before converting to float
     onsets = np.array(
         [np.nan if on == "n/a" else on for on in events_dict["onset"]], dtype=float
