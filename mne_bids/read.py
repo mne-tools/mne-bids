@@ -772,15 +772,19 @@ def read_raw_bids(
         your channels **after** reading.
     return_event_dict : bool
         Whether to return a dictionary that maps annotation descriptions to integer
-        event IDs, in addition to the :class:`~mne.io.Raw` object. This can be passed to
-        :func:`mne.events_from_annotations` to recreate the original description → value
-        mapping in the ``*_events.tsv`` file.
+        event IDs, in addition to the :class:`~mne.io.Raw` object. If a ``value`` column
+        is present in the ``*_events.tsv`` file, it will be used as the source of the
+        integer event ID values (events with ``value="n/a"`` will be omitted).
     %(verbose)s
 
     Returns
     -------
     raw : mne.io.Raw
         The data as MNE-Python Raw object.
+    event_id : dict
+        A mapping from event descriptions to integer event IDs, suitable for,
+        e.g., passing to :func:`mne.events_from_annotations`. Only returned if
+        ``return_event_dict=True``.
 
     Raises
     ------
