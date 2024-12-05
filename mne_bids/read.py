@@ -534,6 +534,9 @@ def _handle_events_reading(events_fname, raw):
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
+    # drop events where onset is n/a
+    events_dict = _drop(events_dict, "n/a", "onset")
+
     # Get the descriptions of the events
     if "trial_type" in events_dict:
         trial_type_col_name = "trial_type"
@@ -605,13 +608,6 @@ def _handle_events_reading(events_fname, raw):
     durations = np.array(
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
-
-    # Keep only events where onset is known
-    good_events_idx = ~np.isnan(onsets)
-    onsets = onsets[good_events_idx]
-    durations = durations[good_events_idx]
-    descriptions = descriptions[good_events_idx]
-    del good_events_idx
 
     # Add events as Annotations, but keep essential Annotations present in
     # raw file
