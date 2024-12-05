@@ -263,14 +263,13 @@ def test_make_folders(tmp_path):
 
 
 @testing.requires_testing_data
-def test_rm(return_bids_test_dir, capsys, tmp_path_factory):
+def test_rm(return_bids_test_dir, capsys, tmp_path):
     """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
-    bids_root = str(tmp_path_factory.mktemp("test_rm") / "mnebids_utils_test_bids_ds")
+    bids_root = tmp_path / "mnebids_utils_test_bids_ds"
     shutil.copytree(return_bids_test_dir, bids_root)
 
-    # without providing all the entities, ambiguous when trying
-    # to use fpath
+    # without providing all the entities, ambiguous when trying to use fpath
     bids_path = BIDSPath(
         subject=subject_id,
         session=session_id,
@@ -494,13 +493,13 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     expected_file = op.join("sub-01", "ses-01", "meg", "sub-01_ses-01_coordsystem.json")
     assert str(sidecar_fname).endswith(expected_file)
 
-    # Find multiple sidecars, tied in score, triggering an error
+    # create a duplicate sidecar, which will be tied in match score, triggering an error
+    dupe = Path(str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"))
+    dupe.touch()
     with pytest.raises(RuntimeError, match="Expected to find a single"):
-        open(
-            str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"), "w"
-        ).close()
         print_dir_tree(bids_root)
         bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
+    dupe.unlink()  # clean up extra file
 
     # Find nothing and raise.
     with pytest.raises(RuntimeError, match="Did not find any"):
@@ -1038,6 +1037,7 @@ def test_match(return_bids_test_dir):
 
     assert bids_path_01.match(check=True) == []
     assert bids_path_01.match(check=False)[0].fpath.name == "sub-01_foo.eeg"
+    bids_path_01.fpath.unlink()  # clean up created file
 
 
 @testing.requires_testing_data
@@ -1119,6 +1119,7 @@ def test_find_matching_paths(return_bids_test_dir):
         check=False,
     )
     assert paths_match == paths_find
+    bids_path_01.fpath.unlink()  # clean up created file
 
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
@@ -1358,7 +1359,7 @@ def test_bids_path_label_vs_index_entity():
 
 
 @testing.requires_testing_data
-def test_meg_calibration_fpath(return_bids_test_dir):
+def test_meg_calibration_fpath(return_bids_test_dir, tmp_path):
     """Test BIDSPath.meg_calibration_fpath."""
     bids_root = return_bids_test_dir
 
@@ -1382,15 +1383,18 @@ def test_meg_calibration_fpath(return_bids_test_dir):
     with pytest.raises(ValueError, match="Can only find .* for MEG"):
         bids_path_.meg_calibration_fpath
 
-    # Delete the fine-calibration file. BIDSPath.meg_calibration_fpath
-    # should then return None.
+    # Move the fine-calibration file. BIDSPath.meg_calibration_fpath should then be None
     bids_path_ = _bids_path.copy().update(subject="01", root=bids_root)
-    Path(bids_path_.meg_calibration_fpath).unlink()
+    src = Path(bids_path_.meg_calibration_fpath)
+    src.rename(tmp_path / src.name)
     assert bids_path_.meg_calibration_fpath is None
+    # restore the file
+    (tmp_path / src.name).rename(src)
+    assert bids_path_.meg_calibration_fpath is not None
 
 
 @testing.requires_testing_data
-def test_meg_crosstalk_fpath(return_bids_test_dir):
+def test_meg_crosstalk_fpath(return_bids_test_dir, tmp_path):
     """Test BIDSPath.meg_crosstalk_fpath."""
     bids_root = return_bids_test_dir
 
@@ -1414,11 +1418,14 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
     with pytest.raises(ValueError, match="Can only find .* for MEG"):
         bids_path.meg_crosstalk_fpath
 
-    # Delete the crosstalk file. BIDSPath.meg_crosstalk_fpath should then
-    # return None.
+    # Move the crosstalk file. BIDSPath.meg_crosstalk_fpath should then be None.
     bids_path = _bids_path.copy().update(subject="01", root=bids_root)
-    Path(bids_path.meg_crosstalk_fpath).unlink()
+    src = Path(bids_path.meg_crosstalk_fpath)
+    src.rename(tmp_path / src.name)
     assert bids_path.meg_crosstalk_fpath is None
+    # restore the file
+    (tmp_path / src.name).rename(src)
+    assert bids_path.meg_crosstalk_fpath is not None
 
 
 @testing.requires_testing_data

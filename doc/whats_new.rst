@@ -22,6 +22,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Stefan Appelhoff`_
+* `Daniel McCloy`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,7 +51,7 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- Nothing yet
+- Tests that were adding or deleting files to/from a session-scoped dataset now properly clean up after themselves, by `Daniel McCloy`_ (:gh:`1347`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
