@@ -597,6 +597,7 @@ def _handle_events_reading(events_fname, raw):
     # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
     annot_from_events = mne.Annotations(onset=ons, duration=durs, description=descrs)
+    raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [
         idx
@@ -606,9 +607,8 @@ def _handle_events_reading(events_fname, raw):
     annot_to_keep = annot_from_raw[annot_idx_to_keep]
 
     if len(annot_to_keep):
-        annot_from_events += annot_to_keep
+        raw.set_annotations(raw.annotations + annot_to_keep)
 
-    raw.set_annotations(annot_from_events)
     return raw, event_id
 
 
