@@ -527,26 +527,27 @@ def _handle_info_reading(sidecar_fname, raw):
 
 
 def _handle_events_reading(events_fname, raw):
-    """Read associated events.tsv and populate raw.
-
-    Handle onset, duration, and description of each event.
-    """
+    """Read associated events.tsv and convert valid events to annotations on Raw."""
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
     # drop events where onset is n/a
     events_dict = _drop(events_dict, "n/a", "onset")
 
-    # Get the descriptions of the events
+    # Get event descriptions. Use `trial_type` column if available.
     if "trial_type" in events_dict:
         trial_type_col_name = "trial_type"
-    elif "stim_type" in events_dict:  # Backward-compat with old datasets.
+    # allow `stim_type` for backward-compat with old datasets.
+    elif "stim_type" in events_dict:
         trial_type_col_name = "stim_type"
         warn(
-            f'The events file, {events_fname}, contains a "stim_type" '
-            f'column. This column should be renamed to "trial_type" for '
-            f"BIDS compatibility."
+            f'The events file, {events_fname}, contains a "stim_type" column. This '
+            'column should be renamed to "trial_type" for BIDS compatibility.'
         )
+    # If we lack proper event descriptions, perhaps we have at least an event value?
+    elif "value" in events_dict:
+        trial_type_col_name = "value"
+    # Worst case: all events will become `n/a` and all values will be `1`
     else:
         trial_type_col_name = None
 
@@ -554,10 +555,9 @@ def _handle_events_reading(events_fname, raw):
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, "n/a", trial_type_col_name)
         trial_types = events_dict[trial_type_col_name]
-
+        # handle event values (if provided); ensure pairings are 1 value per description
         if "value" in events_dict:
             values = np.asarray(events_dict["value"], dtype=str)
-            # Check whether the `trial_type` <> `value` mapping is unique.
             for trial_type in np.unique(trial_types):
                 idx = np.where(trial_type == np.atleast_1d(trial_types))[0]
                 matching_values = values[idx]
@@ -565,42 +565,29 @@ def _handle_events_reading(events_fname, raw):
                     # Event type descriptors are ambiguous; create hierarchical event
                     # descriptors (to ensure trial_type -> integerID is 1:1)
                     logger.info(
-                        f'The event "{trial_type}" refers to multiple event '
-                        f"values. Creating hierarchical event names."
+                        f'The event "{trial_type}" refers to multiple event values.'
+                        "Creating hierarchical event names."
                     )
                     for ii in idx:
                         value = values[ii]
                         value = "na" if value == "n/a" else value
                         new_name = f"{trial_type}/{value}"
-                        logger.info(
-                            f"    Renaming event: {trial_type} -> " f"{new_name}"
-                        )
+                        logger.info(f"    Renaming event: {trial_type} -> {new_name}")
                         trial_types[ii] = new_name
-            # for making the event_id dict, we can drop any where `value` is `n/a`
-            events_dict_culled = _drop(events_dict, "n/a", "value")
+            # drop rows where `value` is `n/a` & convert remaining `value` to int (only
+            # when making our `event_id` dict; `value = n/a` doesn't prevent annotation)
+            culled = _drop(events_dict, "n/a", "value")
             event_id = dict(
-                zip(
-                    events_dict_culled[trial_type_col_name],
-                    np.asarray(events_dict_culled["value"], dtype=int),
-                )
+                zip(culled[trial_type_col_name], np.asarray(culled["value"], dtype=int))
             )
         else:
             event_id = dict(zip(trial_types, np.arange(len(trial_types))))
         descriptions = np.asarray(trial_types, dtype=str)
-    elif "value" in events_dict:
-        # If we don't have a proper description of the events, perhaps we have
-        # at least an event value?
-        # Drop events unrelated to value
-        events_dict = _drop(events_dict, "n/a", "value")
-        values = events_dict["value"].astype(int)
-        descriptions = np.asarray(values, dtype=str)
-        event_id = dict(zip(descriptions, values))
 
-    # Worst case, we go with 'n/a' for all events
+    # Worst case: all events become `n/a` and all values become `1`
     else:
         descriptions = np.array(["n/a"] * len(events_dict["onset"]), dtype=str)
-        values = np.ones_like(descriptions)
-        event_id = dict(zip(descriptions, values))
+        event_id = dict((descriptions[0], 1))
     # Deal with "n/a" strings before converting to float
     onsets = np.array(
         [np.nan if on == "n/a" else on for on in events_dict["onset"]], dtype=float
@@ -609,8 +596,7 @@ def _handle_events_reading(events_fname, raw):
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
-    # Add events as Annotations, but keep essential Annotations present in
-    # raw file
+    # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
 
     annot_from_events = mne.Annotations(
