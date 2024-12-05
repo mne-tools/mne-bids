@@ -582,27 +582,21 @@ def _handle_events_reading(events_fname, raw):
             )
         else:
             event_id = dict(zip(trial_types, np.arange(len(trial_types))))
-        descriptions = np.asarray(trial_types, dtype=str)
+        descrs = np.asarray(trial_types, dtype=str)
 
     # Worst case: all events become `n/a` and all values become `1`
     else:
-        descriptions = np.array(["n/a"] * len(events_dict["onset"]), dtype=str)
-        event_id = dict((descriptions[0], 1))
+        descrs = np.full(len(events_dict["onset"]), "n/a")
+        event_id = dict((descrs[0], 1))
     # Deal with "n/a" strings before converting to float
-    onsets = np.array(
-        [np.nan if on == "n/a" else on for on in events_dict["onset"]], dtype=float
-    )
-    durations = np.array(
+    ons = np.asarray(events_dict["onset"], dtype=float)
+    durs = np.array(
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
     # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
-
-    annot_from_events = mne.Annotations(
-        onset=onsets, duration=durations, description=descriptions
-    )
-    raw.set_annotations(annot_from_events)
+    annot_from_events = mne.Annotations(onset=ons, duration=durs, description=descrs)
 
     annot_idx_to_keep = [
         idx
@@ -612,8 +606,9 @@ def _handle_events_reading(events_fname, raw):
     annot_to_keep = annot_from_raw[annot_idx_to_keep]
 
     if len(annot_to_keep):
-        raw.set_annotations(raw.annotations + annot_to_keep)
+        annot_from_events += annot_to_keep
 
+    raw.set_annotations(annot_from_events)
     return raw, event_id
 
 
