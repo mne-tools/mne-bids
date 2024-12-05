@@ -381,8 +381,8 @@ def test_get_head_mri_trans(tmp_path):
     # Case 3: write with suffix for kind
     landmarks2 = landmarks.copy()
     landmarks2.dig[0]["r"] *= -1
-    landmarks2.save(tmp_path / "landmarks2.fif")
-    landmarks2 = tmp_path / "landmarks2.fif"
+    landmarks2.save(tmp_path / "landmarks2-dig.fif")
+    landmarks2 = tmp_path / "landmarks2-dig.fif"
     write_anat(
         t1w_mgh,
         bids_path=t1_bids_path,
