@@ -587,7 +587,7 @@ def _handle_events_reading(events_fname, raw):
     # Worst case: all events become `n/a` and all values become `1`
     else:
         descrs = np.full(len(events_dict["onset"]), "n/a")
-        event_id = dict((descrs[0], 1))
+        event_id = {descrs[0]: 1}
     # Deal with "n/a" strings before converting to float
     ons = np.asarray(events_dict["onset"], dtype=float)
     durs = np.array(
