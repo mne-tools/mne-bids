@@ -45,7 +45,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- Nothing yet
+- :func:`mne_bids.read_raw_bids` can optionally return an ``event_id`` dictionary suitable for use with :func:`mne.events_from_annotations`, and if a ``values`` column is present in ``events.tsv`` it will be used as the source of the integer event ID codes, by `Daniel McCloy`_ (:gh:`1349`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
