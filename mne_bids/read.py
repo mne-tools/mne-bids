@@ -527,89 +527,76 @@ def _handle_info_reading(sidecar_fname, raw):
 
 
 def _handle_events_reading(events_fname, raw):
-    """Read associated events.tsv and populate raw.
-
-    Handle onset, duration, and description of each event.
-    """
+    """Read associated events.tsv and convert valid events to annotations on Raw."""
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
-    # Get the descriptions of the events
+    # drop events where onset is n/a
+    events_dict = _drop(events_dict, "n/a", "onset")
+
+    # Get event descriptions. Use `trial_type` column if available.
     if "trial_type" in events_dict:
         trial_type_col_name = "trial_type"
-    elif "stim_type" in events_dict:  # Backward-compat with old datasets.
+    # allow `stim_type` for backward-compat with old datasets.
+    elif "stim_type" in events_dict:
         trial_type_col_name = "stim_type"
         warn(
-            f'The events file, {events_fname}, contains a "stim_type" '
-            f'column. This column should be renamed to "trial_type" for '
-            f"BIDS compatibility."
+            f'The events file, {events_fname}, contains a "stim_type" column. This '
+            'column should be renamed to "trial_type" for BIDS compatibility.'
         )
+    # If we lack proper event descriptions, perhaps we have at least an event value?
+    elif "value" in events_dict:
+        trial_type_col_name = "value"
+    # Worst case: all events will become `n/a` and all values will be `1`
     else:
         trial_type_col_name = None
 
     if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, "n/a", trial_type_col_name)
-
+        trial_types = events_dict[trial_type_col_name]
+        # handle event values (if provided); ensure pairings are 1 value per description
         if "value" in events_dict:
-            # Check whether the `trial_type` <> `value` mapping is unique.
-            trial_types = events_dict[trial_type_col_name]
             values = np.asarray(events_dict["value"], dtype=str)
             for trial_type in np.unique(trial_types):
                 idx = np.where(trial_type == np.atleast_1d(trial_types))[0]
                 matching_values = values[idx]
-
                 if len(np.unique(matching_values)) > 1:
-                    # Event type descriptors are ambiguous; create hierarchical
-                    # event descriptors.
+                    # Event type descriptors are ambiguous; create hierarchical event
+                    # descriptors (to ensure trial_type -> integerID is 1:1)
                     logger.info(
-                        f'The event "{trial_type}" refers to multiple event '
-                        f"values. Creating hierarchical event names."
+                        f'The event "{trial_type}" refers to multiple event values.'
+                        "Creating hierarchical event names."
                     )
                     for ii in idx:
                         value = values[ii]
                         value = "na" if value == "n/a" else value
                         new_name = f"{trial_type}/{value}"
-                        logger.info(
-                            f"    Renaming event: {trial_type} -> " f"{new_name}"
-                        )
+                        logger.info(f"    Renaming event: {trial_type} -> {new_name}")
                         trial_types[ii] = new_name
-            descriptions = np.asarray(trial_types, dtype=str)
+            # drop rows where `value` is `n/a` & convert remaining `value` to int (only
+            # when making our `event_id` dict; `value = n/a` doesn't prevent annotation)
+            culled = _drop(events_dict, "n/a", "value")
+            event_id = dict(
+                zip(culled[trial_type_col_name], np.asarray(culled["value"], dtype=int))
+            )
         else:
-            descriptions = np.asarray(events_dict[trial_type_col_name], dtype=str)
-    elif "value" in events_dict:
-        # If we don't have a proper description of the events, perhaps we have
-        # at least an event value?
-        # Drop events unrelated to value
-        events_dict = _drop(events_dict, "n/a", "value")
-        descriptions = np.asarray(events_dict["value"], dtype=str)
+            event_id = dict(zip(trial_types, np.arange(len(trial_types))))
+        descrs = np.asarray(trial_types, dtype=str)
 
-    # Worst case, we go with 'n/a' for all events
+    # Worst case: all events become `n/a` and all values become `1`
     else:
-        descriptions = np.array(["n/a"] * len(events_dict["onset"]), dtype=str)
-
+        descrs = np.full(len(events_dict["onset"]), "n/a")
+        event_id = {descrs[0]: 1}
     # Deal with "n/a" strings before converting to float
-    onsets = np.array(
-        [np.nan if on == "n/a" else on for on in events_dict["onset"]], dtype=float
-    )
-    durations = np.array(
+    ons = np.asarray(events_dict["onset"], dtype=float)
+    durs = np.array(
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
-    # Keep only events where onset is known
-    good_events_idx = ~np.isnan(onsets)
-    onsets = onsets[good_events_idx]
-    durations = durations[good_events_idx]
-    descriptions = descriptions[good_events_idx]
-    del good_events_idx
-
-    # Add events as Annotations, but keep essential Annotations present in
-    # raw file
+    # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
-
-    annot_from_events = mne.Annotations(
-        onset=onsets, duration=durations, description=descriptions
-    )
+    annot_from_events = mne.Annotations(onset=ons, duration=durs, description=descrs)
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [
@@ -622,7 +609,7 @@ def _handle_events_reading(events_fname, raw):
     if len(annot_to_keep):
         raw.set_annotations(raw.annotations + annot_to_keep)
 
-    return raw
+    return raw, event_id
 
 
 def _get_bads_from_tsv_data(tsv_data):
@@ -756,7 +743,9 @@ def _handle_channels_reading(channels_fname, raw):
 
 
 @verbose
-def read_raw_bids(bids_path, extra_params=None, verbose=None):
+def read_raw_bids(
+    bids_path, extra_params=None, *, return_event_dict=False, verbose=None
+):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -781,12 +770,21 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         Note that the ``exclude`` parameter, which is supported by some
         MNE-Python readers, is not supported; instead, you need to subset
         your channels **after** reading.
+    return_event_dict : bool
+        Whether to return a dictionary that maps annotation descriptions to integer
+        event IDs, in addition to the :class:`~mne.io.Raw` object. If a ``value`` column
+        is present in the ``*_events.tsv`` file, it will be used as the source of the
+        integer event ID values (events with ``value="n/a"`` will be omitted).
     %(verbose)s
 
     Returns
     -------
     raw : mne.io.Raw
         The data as MNE-Python Raw object.
+    event_id : dict
+        A mapping from event descriptions to integer event IDs, suitable for,
+        e.g., passing to :func:`mne.events_from_annotations`. Only returned if
+        ``return_event_dict=True``.
 
     Raises
     ------
@@ -923,9 +921,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
     events_fname = _find_matching_sidecar(
         bids_path, suffix="events", extension=".tsv", on_error=on_error
     )
-
     if events_fname is not None:
-        raw = _handle_events_reading(events_fname, raw)
+        raw, event_id = _handle_events_reading(events_fname, raw)
 
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
@@ -989,6 +986,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=None):
         raw.info["subject_info"] = dict()
 
     assert raw.annotations.orig_time == raw.info["meas_date"]
+    if return_event_dict:
+        return raw, event_id
     return raw
 
 
