@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.17.0.dev12+g3710a1cf documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.17.0.dev13+g46f284bf documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
-    <script src="../../_static/documentation_options.js?v=ed389260"></script>
+    <script src="../../_static/documentation_options.js?v=8b64e48f"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -76,7 +76,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev12+g3710a1cf" />
+  <meta name="docsearch:version" content="0.17.0.dev13+g46f284bf" />
 
   </head>
   
@@ -139,7 +139,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev12+g3710a1cf documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev13+g46f284bf documentation</p>
   
 </a></div>
     
@@ -1004,89 +1004,76 @@
 
 
 <span class="k">def</span> <span class="nf">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read associated events.tsv and populate raw.</span>
-
-<span class="sd">    Handle onset, duration, and description of each event.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read associated events.tsv and convert valid events to annotations on Raw.&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading events from </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
 
-    <span class="c1"># Get the descriptions of the events</span>
+    <span class="c1"># drop events where onset is n/a</span>
+    <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;onset&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get event descriptions. Use `trial_type` column if available.</span>
     <span class="k">if</span> <span class="s2">&quot;trial_type&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
         <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s2">&quot;trial_type&quot;</span>
-    <span class="k">elif</span> <span class="s2">&quot;stim_type&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>  <span class="c1"># Backward-compat with old datasets.</span>
+    <span class="c1"># allow `stim_type` for backward-compat with old datasets.</span>
+    <span class="k">elif</span> <span class="s2">&quot;stim_type&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
         <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s2">&quot;stim_type&quot;</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;The events file, </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s1">, contains a &quot;stim_type&quot; &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;column. This column should be renamed to &quot;trial_type&quot; for &#39;</span>
-            <span class="sa">f</span><span class="s2">&quot;BIDS compatibility.&quot;</span>
+            <span class="sa">f</span><span class="s1">&#39;The events file, </span><span class="si">{</span><span class="n">events_fname</span><span class="si">}</span><span class="s1">, contains a &quot;stim_type&quot; column. This &#39;</span>
+            <span class="s1">&#39;column should be renamed to &quot;trial_type&quot; for BIDS compatibility.&#39;</span>
         <span class="p">)</span>
+    <span class="c1"># If we lack proper event descriptions, perhaps we have at least an event value?</span>
+    <span class="k">elif</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+        <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
+    <span class="c1"># Worst case: all events will become `n/a` and all values will be `1`</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">trial_type_col_name</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">trial_type_col_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Drop events unrelated to a trial type</span>
         <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="n">trial_type_col_name</span><span class="p">)</span>
-
+        <span class="n">trial_types</span> <span class="o">=</span> <span class="n">events_dict</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">]</span>
+        <span class="c1"># handle event values (if provided); ensure pairings are 1 value per description</span>
         <span class="k">if</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
-            <span class="c1"># Check whether the `trial_type` &lt;&gt; `value` mapping is unique.</span>
-            <span class="n">trial_types</span> <span class="o">=</span> <span class="n">events_dict</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">]</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">trial_type</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">trial_types</span><span class="p">):</span>
                 <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">trial_type</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">trial_types</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">matching_values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">matching_values</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="c1"># Event type descriptors are ambiguous; create hierarchical</span>
-                    <span class="c1"># event descriptors.</span>
+                    <span class="c1"># Event type descriptors are ambiguous; create hierarchical event</span>
+                    <span class="c1"># descriptors (to ensure trial_type -&gt; integerID is 1:1)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">&#39;The event &quot;</span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s1">&quot; refers to multiple event &#39;</span>
-                        <span class="sa">f</span><span class="s2">&quot;values. Creating hierarchical event names.&quot;</span>
+                        <span class="sa">f</span><span class="s1">&#39;The event &quot;</span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s1">&quot; refers to multiple event values.&#39;</span>
+                        <span class="s2">&quot;Creating hierarchical event names.&quot;</span>
                     <span class="p">)</span>
                     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">:</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;na&quot;</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">else</span> <span class="n">value</span>
                         <span class="n">new_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;    Renaming event: </span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s2"> -&gt; &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Renaming event: </span><span class="si">{</span><span class="n">trial_type</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="n">trial_types</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_name</span>
-            <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+            <span class="c1"># drop rows where `value` is `n/a` &amp; convert remaining `value` to int (only</span>
+            <span class="c1"># when making our `event_id` dict; `value = n/a` doesn&#39;t prevent annotation)</span>
+            <span class="n">culled</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+            <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span><span class="n">culled</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">culled</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="n">trial_type_col_name</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
-        <span class="c1"># If we don&#39;t have a proper description of the events, perhaps we have</span>
-        <span class="c1"># at least an event value?</span>
-        <span class="c1"># Drop events unrelated to value</span>
-        <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
-        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+            <span class="n">event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">trial_types</span><span class="p">))))</span>
+        <span class="n">descrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">trial_types</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 
-    <span class="c1"># Worst case, we go with &#39;n/a&#39; for all events</span>
+    <span class="c1"># Worst case: all events become `n/a` and all values become `1`</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s2">&quot;n/a&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-
+        <span class="n">descrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]),</span> <span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
+        <span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">descrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="mi">1</span><span class="p">}</span>
     <span class="c1"># Deal with &quot;n/a&quot; strings before converting to float</span>
-    <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">on</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">else</span> <span class="n">on</span> <span class="k">for</span> <span class="n">on</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
-    <span class="p">)</span>
-    <span class="n">durations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="n">ons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;onset&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">durs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">du</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span> <span class="k">else</span> <span class="n">du</span> <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
     <span class="p">)</span>
 
-    <span class="c1"># Keep only events where onset is known</span>
-    <span class="n">good_events_idx</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">onsets</span><span class="p">)</span>
-    <span class="n">onsets</span> <span class="o">=</span> <span class="n">onsets</span><span class="p">[</span><span class="n">good_events_idx</span><span class="p">]</span>
-    <span class="n">durations</span> <span class="o">=</span> <span class="n">durations</span><span class="p">[</span><span class="n">good_events_idx</span><span class="p">]</span>
-    <span class="n">descriptions</span> <span class="o">=</span> <span class="n">descriptions</span><span class="p">[</span><span class="n">good_events_idx</span><span class="p">]</span>
-    <span class="k">del</span> <span class="n">good_events_idx</span>
-
-    <span class="c1"># Add events as Annotations, but keep essential Annotations present in</span>
-    <span class="c1"># raw file</span>
+    <span class="c1"># Add events as Annotations, but keep essential Annotations present in raw file</span>
     <span class="n">annot_from_raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-    <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span>
-        <span class="n">onset</span><span class="o">=</span><span class="n">onsets</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">descriptions</span>
-    <span class="p">)</span>
+    <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="n">onset</span><span class="o">=</span><span class="n">ons</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">durs</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">descrs</span><span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot_from_events</span><span class="p">)</span>
 
     <span class="n">annot_idx_to_keep</span> <span class="o">=</span> <span class="p">[</span>
@@ -1099,7 +1086,7 @@
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">annot_to_keep</span><span class="p">):</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span> <span class="o">+</span> <span class="n">annot_to_keep</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">raw</span>
+    <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span>
 
 
 <span class="k">def</span> <span class="nf">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">):</span>
@@ -1235,7 +1222,9 @@
 <div class="viewcode-block" id="read_raw_bids">
 <a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">return_event_dict</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
 
 <span class="sd">    Will attempt to read associated events.tsv and channels.tsv files to</span>
@@ -1260,12 +1249,21 @@
 <span class="sd">        Note that the ``exclude`` parameter, which is supported by some</span>
 <span class="sd">        MNE-Python readers, is not supported; instead, you need to subset</span>
 <span class="sd">        your channels **after** reading.</span>
+<span class="sd">    return_event_dict : bool</span>
+<span class="sd">        Whether to return a dictionary that maps annotation descriptions to integer</span>
+<span class="sd">        event IDs, in addition to the :class:`~mne.io.Raw` object. If a ``value`` column</span>
+<span class="sd">        is present in the ``*_events.tsv`` file, it will be used as the source of the</span>
+<span class="sd">        integer event ID values (events with ``value=&quot;n/a&quot;`` will be omitted).</span>
 <span class="sd">    %(verbose)s</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    raw : mne.io.Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    event_id : dict</span>
+<span class="sd">        A mapping from event descriptions to integer event IDs, suitable for,</span>
+<span class="sd">        e.g., passing to :func:`mne.events_from_annotations`. Only returned if</span>
+<span class="sd">        ``return_event_dict=True``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -1402,9 +1400,8 @@
     <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span>
         <span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;events&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span>
     <span class="p">)</span>
-
     <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated channels.tsv to get information about the</span>
     <span class="c1"># status and type of present channels</span>
@@ -1468,6 +1465,8 @@
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;subject_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
     <span class="k">assert</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span> <span class="o">==</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">return_event_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span>
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
@@ -1753,7 +1752,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-12-09.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2024-12-10.
       <br/>
     
   </p>
