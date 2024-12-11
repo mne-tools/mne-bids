@@ -54,7 +54,7 @@ def check_usage(module, force_help=False):
 def test_raw_to_bids(tmp_path):
     """Test mne_bids raw_to_bids."""
     output_path = str(tmp_path)
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     # Check that help is printed
     check_usage(mne_bids_raw_to_bids)
 
@@ -150,7 +150,7 @@ def test_mark_bad_channels_single_file(tmp_path):
 
     # Create test dataset.
     output_path = str(tmp_path)
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     events_fname = op.join(
         data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
     )
@@ -237,7 +237,7 @@ def test_mark_bad_channels_multiple_files(tmp_path):
 
     # Create test dataset.
     output_path = str(tmp_path)
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     events_fname = op.join(
         data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
     )
@@ -344,7 +344,7 @@ def test_count_events(tmp_path):
 
     # Create test dataset.
     output_path = str(tmp_path)
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     raw = mne.io.read_raw(raw_fname)
     raw.info["line_freq"] = 60.0
@@ -393,7 +393,7 @@ def test_inspect(tmp_path):
     subject = "01"
     task = "test"
     datatype = "meg"
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     raw = mne.io.read_raw(raw_fname)
     raw.info["line_freq"] = 60.0

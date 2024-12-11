@@ -49,7 +49,7 @@ data_path = testing.data_path(download=False)
 
 def _load_raw():
     """Load the sample raw data."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw(raw_fname)
     raw.drop_channels(raw.info["bads"])
     raw.info["line_freq"] = 60
@@ -338,11 +338,11 @@ def test_convert_montage():
     raw = _load_raw()
     montage = raw.get_montage()
     trans = mne.read_trans(
-        op.join(data_path, "MEG", "sample", "sample_audvis_trunc-trans.fif")
+        data_path / "MEG" / "sample" / "sample_audvis_trunc-trans.fif"
     )
     montage.apply_trans(trans)
 
-    subjects_dir = op.join(data_path, "subjects")
+    subjects_dir = data_path / "subjects"
     # test read
     with pytest.raises(RuntimeError, match="incorrectly formatted"):
         convert_montage_to_mri(montage, "foo", subjects_dir)

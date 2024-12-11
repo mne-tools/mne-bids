@@ -63,10 +63,10 @@ _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
 data_path = testing.data_path(download=False)
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
 # Data with cHPI info
-raw_fname_chpi = op.join(data_path, "SSS", "test_move_anon_raw.fif")
+raw_fname_chpi = data_path / "SSS" / "test_move_anon_raw.fif"
 
 # Tiny BIDS testing dataset
 mne_bids_root = Path(mne_bids.__file__).parents[1]
@@ -229,7 +229,7 @@ def test_get_head_mri_trans(tmp_path):
     events_fname = op.join(
         data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
     )
-    subjects_dir = op.join(data_path, "subjects")
+    subjects_dir = data_path / "subjects"
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -253,7 +253,7 @@ def test_get_head_mri_trans(tmp_path):
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path
-    t1w_mgh = op.join(data_path, "subjects", "sample", "mri", "T1.mgz")
+    t1w_mgh = data_path / "subjects" / "sample" / "mri" / "T1.mgz"
     t1w_mgh = nib.load(t1w_mgh)
 
     landmarks = get_anat_landmarks(
@@ -278,7 +278,7 @@ def test_get_head_mri_trans(tmp_path):
     raw.info["dig"][0]["r"] = np.full(3, np.nan)
     sh.rmtree(anat_dir)
     bad_landmarks = get_anat_landmarks(
-        t1w_mgh, raw.info, trans, "sample", op.join(data_path, "subjects")
+        t1w_mgh, raw.info, trans, "sample", data_path / "subjects"
     )
     write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=bad_landmarks)
     with pytest.raises(RuntimeError, match="AnatomicalLandmarkCoordinates"):
@@ -873,7 +873,7 @@ def test_handle_eeg_coords_reading(tmp_path):
         root=tmp_path,
     )
 
-    raw_fname = op.join(data_path, "EDF", "test_reduced.edf")
+    raw_fname = data_path / "EDF" / "test_reduced.edf"
     raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'eeg' data
@@ -933,7 +933,7 @@ def test_handle_eeg_coords_reading(tmp_path):
 @testing.requires_testing_data
 def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     """Test reading iEEG coordinates from BIDS files."""
-    raw_fname = op.join(data_path, "EDF", "test_reduced.edf")
+    raw_fname = data_path / "EDF" / "test_reduced.edf"
     bids_fname = bids_path.copy().update(
         datatype="ieeg", suffix="ieeg", extension=".edf", root=tmp_path
     )
@@ -1105,7 +1105,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
     """Test getting a trans object from BIDS data in CTF."""
     nib = pytest.importorskip("nibabel")
 
-    ctf_data_path = op.join(data_path, "CTF")
+    ctf_data_path = data_path / "CTF"
     raw_ctf_fname = op.join(ctf_data_path, fname)
     raw_ctf = _read_raw_ctf(raw_ctf_fname, clean_names=True)
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg", suffix="meg")
@@ -1116,7 +1116,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path
-    t1w_mgh = op.join(data_path, "subjects", "sample", "mri", "T1.mgz")
+    t1w_mgh = data_path / "subjects" / "sample" / "mri" / "T1.mgz"
     t1w_mgh = nib.load(t1w_mgh)
 
     t1w_bids_path = BIDSPath(
@@ -1127,7 +1127,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
         raw_ctf.info,
         trans,
         fs_subject="sample",
-        fs_subjects_dir=op.join(data_path, "subjects"),
+        fs_subjects_dir=data_path / "subjects",
     )
     write_anat(t1w_mgh, bids_path=t1w_bids_path, landmarks=landmarks)
 
@@ -1136,7 +1136,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
         bids_path=bids_path,
         extra_params=dict(clean_names=True),
         fs_subject="sample",
-        fs_subjects_dir=op.join(data_path, "subjects"),
+        fs_subjects_dir=data_path / "subjects",
     )
 
     assert_almost_equal(trans["trans"], estimated_trans["trans"])

@@ -43,7 +43,7 @@ bids_path = BIDSPath(
 def _get_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp("mnebids_utils_test_bids_ds"))
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -56,8 +56,8 @@ def _get_bids_test_dir(tmp_path_factory):
     events_fname = op.join(
         data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
     )
-    cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
-    crosstalk_fname = op.join(data_path, "SSS", "ct_sparse.fif")
+    cal_fname = data_path / "SSS" / "sss_cal_mgh.dat"
+    crosstalk_fname = data_path / "SSS" / "ct_sparse.fif"
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info["line_freq"] = 60
@@ -316,7 +316,7 @@ def test_readme_conflicts(extension, _get_bids_test_dir):
         root=_get_bids_test_dir,
     )
 
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw_fif(raw_fname)
 
     write_raw_bids(raw, bids_path, overwrite=False)
@@ -341,7 +341,7 @@ def test_multiple_readmes_invalid(_get_bids_test_dir):
         root=_get_bids_test_dir,
     )
 
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw_fif(raw_fname)
 
     with pytest.raises(RuntimeError, match="Multiple README files found"):

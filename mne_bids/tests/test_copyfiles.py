@@ -188,8 +188,8 @@ def test_copyfile_edfbdf_uppercase(tmp_path):
 
     # Test regular copying
     for ext in [".edf", ".bdf"]:
-        raw_fname = op.join(data_path, "test" + ext)
-        new_name = op.join(bids_root, "test_copy" + ext.upper())
+        raw_fname = data_path / f"test{ext}"
+        new_name = bids_root / f"test_copy{ext.upper()}"
 
         with pytest.warns(RuntimeWarning, match="Upper-case extension"):
             copyfile_edf(raw_fname, new_name)
@@ -203,8 +203,8 @@ def test_copyfile_edfbdf_uppercase(tmp_path):
 def test_copyfile_eeglab(tmp_path, fname):
     """Test the copying of EEGlab set and fdt files."""
     bids_root = str(tmp_path)
-    data_path = op.join(testing_path, "EEGLAB")
-    raw_fname = op.join(data_path, fname)
+    data_path = testing_path / "EEGLAB"
+    raw_fname = data_path / fname
     new_name = op.join(bids_root, f"CONVERTED_{fname}.set")
 
     # IO error testing
@@ -227,10 +227,10 @@ def test_copyfile_kit(tmp_path):
     """Test copying and renaming KIT files to a new location."""
     output_path = str(tmp_path)
     data_path = base_path / "kit" / "tests" / "data"
-    raw_fname = op.join(data_path, "test.sqd")
-    hpi_fname = op.join(data_path, "test_mrk.sqd")
-    electrode_fname = op.join(data_path, "test.elp")
-    headshape_fname = op.join(data_path, "test.hsp")
+    raw_fname = data_path / "test.sqd"
+    hpi_fname = data_path / "test_mrk.sqd"
+    electrode_fname = data_path / "test.elp"
+    headshape_fname = data_path / "test.hsp"
     subject_id = "01"
     session_id = "01"
     run = "01"
