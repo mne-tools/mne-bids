@@ -149,7 +149,7 @@ def test_age_on_date():
 def test_infer_eeg_placement_scheme():
     """Test inferring a correct EEG placement scheme."""
     # no eeg channels case (e.g., MEG data)
-    data_path = op.join(base_path, "bti", "tests", "data")
+    data_path = base_path / "bti" / "tests" / "data"
     raw_fname = op.join(data_path, "test_pdf_linux")
     config_fname = op.join(data_path, "test_config_linux")
     headshape_fname = op.join(data_path, "test_hs_linux")
@@ -158,7 +158,7 @@ def test_infer_eeg_placement_scheme():
     assert placement_scheme == "n/a"
 
     # 1020 case
-    data_path = op.join(base_path, "brainvision", "tests", "data")
+    data_path = base_path / "brainvision" / "tests" / "data"
     raw_fname = op.join(data_path, "test.vhdr")
     raw = mne.io.read_raw_brainvision(raw_fname)
     placement_scheme = _infer_eeg_placement_scheme(raw)

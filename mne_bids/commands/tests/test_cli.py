@@ -95,8 +95,8 @@ def test_raw_to_bids(tmp_path):
         mne_bids_raw_to_bids.run()
 
     # Test EDF files as well
-    edf_data_path = op.join(base_path, "edf", "tests", "data")
-    edf_fname = op.join(edf_data_path, "test.edf")
+    edf_data_path = base_path / "edf" / "tests" / "data"
+    edf_fname = edf_data_path / "test.edf"
     with ArgvSetter(
         (
             "--subject_id",
@@ -125,9 +125,9 @@ def test_raw_to_bids(tmp_path):
 def test_cp(tmp_path):
     """Test mne_bids cp."""
     output_path = str(tmp_path)
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
-    outname = op.join(output_path, "test2.vhdr")
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
+    outname = output_path / "test2.vhdr"
 
     # Check that help is printed
     check_usage(mne_bids_cp)

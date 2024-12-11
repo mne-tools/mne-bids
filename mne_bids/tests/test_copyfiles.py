@@ -30,8 +30,8 @@ base_path = Path(mne.__file__).parent / "io"
 @testing.requires_testing_data
 def test_get_brainvision_encoding():
     """Test getting the file-encoding from a BrainVision header."""
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
 
     with pytest.raises(UnicodeDecodeError):
         with open(raw_fname, encoding="ascii") as f:
@@ -44,11 +44,11 @@ def test_get_brainvision_encoding():
 
 def test_get_brainvision_paths(tmp_path):
     """Test getting the file links from a BrainVision header."""
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
 
     with pytest.raises(ValueError):
-        _get_brainvision_paths(op.join(data_path, "test.eeg"))
+        _get_brainvision_paths(data_path / "test.eeg")
 
     # Write some temporary test files
     with open(tmp_path / "test1.vhdr", "w") as f:
@@ -76,10 +76,10 @@ def test_get_brainvision_paths(tmp_path):
 )
 def test_copyfile_brainvision(tmp_path):
     """Test the copying of BrainVision vhdr, vmrk and eeg files."""
-    bids_root = str(tmp_path)
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
-    new_name = op.join(bids_root, "tested_conversion.vhdr")
+    bids_root = tmp_path
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
+    new_name = bids_root / "tested_conversion.vhdr"
 
     # IO error testing
     with pytest.raises(ValueError, match="Need to move data with same"):
@@ -112,18 +112,18 @@ def test_copyfile_edf(tmp_path):
     """Test the anonymization of EDF/BDF files."""
     bids_root = tmp_path / "bids1"
     bids_root.mkdir()
-    data_path = op.join(base_path, "edf", "tests", "data")
+    data_path = base_path / "edf" / "tests" / "data"
 
     # Test regular copying
     for ext in [".edf", ".bdf"]:
-        raw_fname = op.join(data_path, "test" + ext)
-        new_name = op.join(bids_root, "test_copy" + ext)
+        raw_fname = data_path / f"test{ext}"
+        new_name = bids_root / f"test_copy{ext}"
         copyfile_edf(raw_fname, new_name)
 
     # IO error testing
     with pytest.raises(ValueError, match="Need to move data with same"):
-        raw_fname = op.join(data_path, "test.edf")
-        new_name = op.join(bids_root, "test_copy.bdf")
+        raw_fname = data_path / "test.edf"
+        new_name = bids_root / "test_copy.bdf"
         copyfile_edf(raw_fname, new_name)
 
     # Add some subject info to an EDF to test anonymization
@@ -184,7 +184,7 @@ def test_copyfile_edfbdf_uppercase(tmp_path):
     """Test the copying of EDF/BDF files with upper-case extension."""
     bids_root = tmp_path / "bids1"
     bids_root.mkdir()
-    data_path = op.join(base_path, "edf", "tests", "data")
+    data_path = base_path / "edf" / "tests" / "data"
 
     # Test regular copying
     for ext in [".edf", ".bdf"]:
@@ -226,7 +226,7 @@ def test_copyfile_eeglab(tmp_path, fname):
 def test_copyfile_kit(tmp_path):
     """Test copying and renaming KIT files to a new location."""
     output_path = str(tmp_path)
-    data_path = op.join(base_path, "kit", "tests", "data")
+    data_path = base_path / "kit" / "tests" / "data"
     raw_fname = op.join(data_path, "test.sqd")
     hpi_fname = op.join(data_path, "test_mrk.sqd")
     electrode_fname = op.join(data_path, "test.elp")
