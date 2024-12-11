@@ -31,8 +31,6 @@ inspect BIDS-formatted data.
 # Imports
 # -------
 # We are importing everything we need for this example:
-import os
-import os.path as op
 
 import openneuro
 from mne.datasets import sample
@@ -65,9 +63,8 @@ dataset = "ds002778"
 subject = "pd6"
 
 # Download one subject's data from each dataset
-bids_root = op.join(op.dirname(sample.data_path()), dataset)
-if not op.isdir(bids_root):
-    os.makedirs(bids_root)
+bids_root = sample.data_path().parent / dataset
+bids_root.mkdir(parents=True, exist_ok=True)
 
 openneuro.download(dataset=dataset, target_dir=bids_root, include=[f"sub-{subject}"])
 

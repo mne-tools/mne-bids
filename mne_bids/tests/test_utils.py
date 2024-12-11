@@ -3,7 +3,6 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os.path as op
 from datetime import datetime
 from pathlib import Path
 
@@ -22,7 +21,7 @@ from mne_bids.utils import (
     _infer_eeg_placement_scheme,
 )
 
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
 session_id = "01"
 run = "01"
@@ -149,17 +148,17 @@ def test_age_on_date():
 def test_infer_eeg_placement_scheme():
     """Test inferring a correct EEG placement scheme."""
     # no eeg channels case (e.g., MEG data)
-    data_path = op.join(base_path, "bti", "tests", "data")
-    raw_fname = op.join(data_path, "test_pdf_linux")
-    config_fname = op.join(data_path, "test_config_linux")
-    headshape_fname = op.join(data_path, "test_hs_linux")
+    data_path = base_path / "bti" / "tests" / "data"
+    raw_fname = data_path / "test_pdf_linux"
+    config_fname = data_path / "test_config_linux"
+    headshape_fname = data_path / "test_hs_linux"
     raw = mne.io.read_raw_bti(raw_fname, config_fname, headshape_fname)
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == "n/a"
 
     # 1020 case
-    data_path = op.join(base_path, "brainvision", "tests", "data")
-    raw_fname = op.join(data_path, "test.vhdr")
+    data_path = base_path / "brainvision" / "tests" / "data"
+    raw_fname = data_path / "test.vhdr"
     raw = mne.io.read_raw_brainvision(raw_fname)
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == "based on the extended 10/20 system"

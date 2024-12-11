@@ -31,7 +31,7 @@ def _copytree(src, dst, **kwargs):
     except sh.Error as error:
         # `copytree` throws an error if copying to + from NFS even though
         # the copy is successful (see https://bugs.python.org/issue24564)
-        if "[Errno 22]" not in str(error) or not op.exists(dst):
+        if "[Errno 22]" not in str(error) or not Path(dst).exists():
             raise
 
 
@@ -70,7 +70,7 @@ def _get_brainvision_paths(vhdr_path):
 
     Parameters
     ----------
-    vhdr_path : str
+    vhdr_path : os.PathLike
         Path to the header file.
 
     Returns
@@ -80,9 +80,10 @@ def _get_brainvision_paths(vhdr_path):
         the returned tuple.
 
     """
+    vhdr_path = Path(vhdr_path)
     fname, ext = _parse_ext(vhdr_path)
     if ext != ".vhdr":
-        raise ValueError(f'Expecting file ending in ".vhdr",' f" but got {ext}")
+        raise ValueError(f"Expecting file ending in '.vhdr', but got {ext}")
 
     # Header file seems fine
     # extract encoding from brainvision header file, or default to utf-8
@@ -96,14 +97,14 @@ def _get_brainvision_paths(vhdr_path):
     eeg_file_match = re.search(r"DataFile=(.*\.(eeg|dat))", " ".join(lines))
 
     if not eeg_file_match:
-        raise ValueError("Could not find a .eeg or .dat file link in" f" {vhdr_path}")
+        raise ValueError(f"Could not find a .eeg or .dat file link in {vhdr_path}")
     else:
         eeg_file = eeg_file_match.groups()[0]
 
     # Try to find marker file .vmrk
     vmrk_file_match = re.search(r"MarkerFile=(.*\.vmrk)", " ".join(lines))
     if not vmrk_file_match:
-        raise ValueError("Could not find a .vmrk file link in" f" {vhdr_path}")
+        raise ValueError(f"Could not find a .vmrk file link in {vhdr_path}")
     else:
         vmrk_file = vmrk_file_match.groups()[0]
 
@@ -114,11 +115,12 @@ def _get_brainvision_paths(vhdr_path):
     assert os.sep not in vmrk_file
 
     # Assert the paths exist
-    head, tail = op.split(vhdr_path)
-    eeg_file_path = op.join(head, eeg_file)
-    vmrk_file_path = op.join(head, vmrk_file)
-    assert op.exists(eeg_file_path)
-    assert op.exists(vmrk_file_path)
+    head, _ = op.split(vhdr_path)
+    head = Path(head)
+    eeg_file_path = head / eeg_file
+    vmrk_file_path = head / vmrk_file
+    assert eeg_file_path.exists()
+    assert vmrk_file_path.exists()
 
     # Return the paths
     return (eeg_file_path, vmrk_file_path)
@@ -340,7 +342,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     enc = _get_brainvision_encoding(vhdr_src)
 
     # raise warning if binary file has .dat extension
-    if ".dat" in eeg_file_path:
+    if eeg_file_path.suffix == ".dat":
         warn(
             "The file extension of your binary EEG data file is .dat, while "
             "the expected extension for raw data is .eeg. "
