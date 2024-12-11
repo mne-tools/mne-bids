@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import json
-import os.path as op
 import re
 import warnings
 from collections import OrderedDict
@@ -722,8 +721,8 @@ def convert_montage_to_ras(montage, subject, subjects_dir=None, verbose=None):
     nib = _import_nibabel("converting a montage to RAS")
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    T1_fname = op.join(subjects_dir, subject, "mri", "T1.mgz")
-    if not op.isfile(T1_fname):
+    T1_fname = subjects_dir / subject / "mri" / "T1.mgz"
+    if not T1_fname.is_file():
         raise RuntimeError(
             f"Freesurfer subject ({subject}) and/or "
             f"subjects_dir ({subjects_dir}, incorrectly "
@@ -767,8 +766,8 @@ def convert_montage_to_mri(montage, subject, subjects_dir=None, verbose=None):
     nib = _import_nibabel("converting a montage to MRI")
 
     subjects_dir = get_subjects_dir(subjects_dir, raise_error=True)
-    T1_fname = op.join(subjects_dir, subject, "mri", "T1.mgz")
-    if not op.isfile(T1_fname):
+    T1_fname = subjects_dir / subject / "mri" / "T1.mgz"
+    if not T1_fname.is_file():
         raise RuntimeError(
             f"Freesurfer subject ({subject}) and/or "
             f"subjects_dir ({subjects_dir}, incorrectly "

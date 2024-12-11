@@ -22,7 +22,6 @@ data. Specifically, we will follow these steps:
 
 # %%
 # We are importing everything we need for this example:
-import os.path as op
 import pathlib
 import shutil
 
@@ -169,7 +168,7 @@ counts
 #
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = op.join(bids_root, "README")
+readme = bids_root / "README"
 with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)

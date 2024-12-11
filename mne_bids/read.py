@@ -5,7 +5,6 @@
 
 import json
 import os
-import os.path as op
 import re
 from datetime import datetime, timedelta, timezone
 from difflib import get_close_matches
@@ -977,7 +976,7 @@ def read_raw_bids(
     # read in associated subject info from participants.tsv
     participants_tsv_path = bids_root / "participants.tsv"
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_path):
+    if participants_tsv_path.exists():
         raw = _handle_participants_reading(
             participants_fname=participants_tsv_path, raw=raw, subject=subject
         )
