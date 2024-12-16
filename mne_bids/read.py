@@ -574,12 +574,23 @@ def _handle_events_reading(events_fname, raw):
                         new_name = f"{trial_type}/{value}"
                         logger.info(f"    Renaming event: {trial_type} -> {new_name}")
                         trial_types[ii] = new_name
-            # drop rows where `value` is `n/a` & convert remaining `value` to int (only
-            # when making our `event_id` dict; `value = n/a` doesn't prevent annotation)
+            # make a copy with rows dropped where `value` is `n/a` (only for making our
+            # `event_id` dict; `value = n/a` doesn't prevent making annotations).
             culled = _drop(events_dict, "n/a", "value")
-            event_id = dict(
-                zip(culled[trial_type_col_name], np.asarray(culled["value"], dtype=int))
-            )
+            # Often (but not always!) the `value` column was written by MNE-BIDS and
+            # represents integer event IDs (as would be found in MNE-Python events
+            # arrays / event_id dicts). But in case not, let's be defensive:
+            culled_vals = culled["value"]
+            try:
+                culled_vals = np.asarray(culled_vals, dtype=float)
+            except ValueError:
+                pass
+            else:
+                try:
+                    culled_vals = culled_vals.astype(int)
+                except ValueError:
+                    pass
+            event_id = dict(zip(culled[trial_type_col_name], culled_vals))
         else:
             event_id = dict(zip(trial_types, np.arange(len(trial_types))))
         descrs = np.asarray(trial_types, dtype=str)
