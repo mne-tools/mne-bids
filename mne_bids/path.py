@@ -2455,25 +2455,31 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     """
     root = Path(root)  # if root is str
 
-    if datatype is not None:
-        datatype = _ensure_tuple(datatype)
-        search_str = f'*/{"|".join(datatype)}/*'
-    else:
+    if datatype is None and not ignore_nosub:
         search_str = "*.*"
+    else:
 
-    paths = root.rglob(search_str)
+        if datatype is not None:
+            datatype = _ensure_tuple(datatype)
+            search_str = f'**/{"|".join(datatype)}/*'
+
+        else:
+            search_str = "**/*.*"
+        if ignore_nosub:
+            search_str = "sub-*/" + search_str
+
+        paths = list(
+            map(
+                lambda fn: Path(root, fn),
+                glob.glob(search_str, root_dir=root, recursive=True),
+            )
+        )
     # Only keep files (not directories), ...
     # and omit the JSON sidecars if `ignore_json` is True.
     if ignore_json:
         paths = [p for p in paths if p.is_file() and p.suffix != ".json"]
     else:
         paths = [p for p in paths if p.is_file()]
-
-    # only keep files which are of the form root/sub-*,
-    # such that we only look in 'sub'-folders:
-    if ignore_nosub:
-        root_sub = str(root / "sub-")
-        paths = [p for p in paths if str(p).startswith(root_sub)]
 
     return paths
 
