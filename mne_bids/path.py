@@ -2468,6 +2468,10 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
             search_str = search_str + ".*"
         else:
             search_str = "**/*.*"
+
+        # only browse files which are of the form root/sub-*,
+        # such that we truely only look in 'sub'-folders:
+
         if ignore_nosub:
             search_str = "sub-*/" + search_str
 
