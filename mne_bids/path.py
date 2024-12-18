@@ -2464,6 +2464,8 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
             datatype = _ensure_tuple(datatype)
             search_str = f'**/{"|".join(datatype)}/*'
 
+            # I think this one is more appropriate
+            search_str = search_str + ".*"
         else:
             search_str = "**/*.*"
         if ignore_nosub:
