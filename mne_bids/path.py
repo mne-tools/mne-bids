@@ -2457,6 +2457,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
 
     if datatype is None and not ignore_nosub:
         search_str = "*.*"
+        paths = root.rglob(search_str)
     else:
 
         if datatype is not None:
