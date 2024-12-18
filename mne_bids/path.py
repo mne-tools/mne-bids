@@ -14,6 +14,7 @@ from io import StringIO
 from os import path as op
 from pathlib import Path
 from textwrap import indent
+from itertools import chain as iter_chain
 
 import numpy as np
 from mne.utils import _check_fname, _validate_type, logger, verbose
@@ -1897,6 +1898,7 @@ def get_entity_vals(
     ignore_modalities=None,
     ignore_datatypes=None,
     ignore_dirs=("derivatives", "sourcedata"),
+    include_match=None,
     with_key=False,
     verbose=None,
 ):
@@ -1956,6 +1958,11 @@ def get_entity_vals(
     ignore_dirs : str | array-like of str | None
         Directories nested directly within ``root`` to ignore. If ``None``,
         include all directories in the search.
+
+        .. versionadded:: 0.17-dev
+    include_match : str | array-like of str | None
+        Apply a starting match pragma following Unix style pattern syntax from
+        package glob to prefilter search criterion.
 
         .. versionadded:: 0.9
     with_key : bool
@@ -2052,7 +2059,13 @@ def get_entity_vals(
 
     p = re.compile(rf"{entity_long_abbr_map[entity_key]}-(.*?)_")
     values = list()
-    filenames = root.glob(f"**/*{entity_long_abbr_map[entity_key]}-*_*")
+    search_str = f"**/*{entity_long_abbr_map[entity_key]}-*_*"
+    if include_match is not None:
+        include_match = _ensure_tuple(include_match)
+        filenames = [root.glob(im + search_str) for im in include_match]
+        filenames = iter_chain(*filenames)
+    else:
+        filenames = root.glob(search_str)
 
     for filename in filenames:
         # Skip ignored directories
