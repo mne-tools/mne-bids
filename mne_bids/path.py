@@ -2430,7 +2430,7 @@ def find_matching_paths(
 
 
 def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False):
-    """Return all file paths in root.
+    """Return all file paths + .ds paths in root.
 
     Can be filtered by datatype (which is present in the path but not in
     the BIDSPath basename). Can also be list of datatypes.
@@ -2451,7 +2451,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     Returns
     -------
     paths : list of pathlib.Path
-        All paths in `root`, filtered according to the function parameters.
+        All files + .ds paths in `root`, filtered according to the function parameters.
     """
     root = Path(root)  # if root is str
 
@@ -2478,9 +2478,21 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     # Only keep files (not directories), ...
     # and omit the JSON sidecars if `ignore_json` is True.
     if ignore_json:
-        paths = [p for p in paths if p.is_file() and p.suffix != ".json"]
+        paths = [
+            p
+            for p in paths
+            if (p.is_file() and p.suffix != ".json")
+            # do we really want to do this here?
+            or (p.is_dir() and p.suffix == ".ds")
+        ]
     else:
-        paths = [p for p in paths if p.is_file()]
+        paths = [
+            p
+            for p in paths
+            if p.is_file()
+            # do we really want to do this here
+            or (p.is_dir() and p.suffix == ".ds")
+        ]
 
     return paths
 
