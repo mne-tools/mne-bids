@@ -226,14 +226,14 @@ def _check_types(variables):
             )
 
 
-def _write_json(fname, dictionary, overwrite=False):
+def _write_json(fname, dictionary, overwrite=False, ensure_ascii=False):
     """Write JSON to a file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
-    json_output = json.dumps(dictionary, indent=4)
+    json_output = json.dumps(dictionary, indent=4, ensure_ascii=ensure_ascii)
     with open(fname, "w", encoding="utf-8") as fid:
         fid.write(json_output)
         fid.write("\n")
