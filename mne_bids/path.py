@@ -11,10 +11,10 @@ import shutil as sh
 from copy import deepcopy
 from datetime import datetime
 from io import StringIO
+from itertools import chain as iter_chain
 from os import path as op
 from pathlib import Path
 from textwrap import indent
-from itertools import chain as iter_chain
 
 import numpy as np
 from mne.utils import _check_fname, _validate_type, logger, verbose
@@ -2472,7 +2472,6 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
         search_str = "*.*"
         paths = root.rglob(search_str)
     else:
-
         if datatype is not None:
             datatype = _ensure_tuple(datatype)
             search_str = f'**/{"|".join(datatype)}/*'
