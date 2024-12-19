@@ -1939,6 +1939,13 @@ def write_raw_bids(
 
     data_path = bids_path.mkdir().directory
 
+    # Check if eye tracking channels are present
+    eyetrack_ch_names = _get_eyetrack_ch_names(raw)
+    if eyetrack_ch_names:
+        _write_eyetrack_tsvs(raw, bids_path, overwrite=overwrite)
+        logger.debug(f"Dropping eyetracking channels from raw: {eyetrack_ch_names}")
+        raw.drop_channels(eyetrack_ch_names)
+
     # create *_scans.tsv
     session_path = BIDSPath(
         subject=bids_path.subject, session=bids_path.session, root=bids_path.root
@@ -2267,6 +2274,301 @@ def write_raw_bids(
     logger.info(f"Wrote {scans_path.fpath} entry with " f"{scan_relative_fpath}.")
 
     return bids_path
+
+
+def _get_eyetrack_ch_names(raw):
+    """Check if the raw object contains eyetracking data.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        The raw object.
+
+    Returns
+    -------
+    list
+        A list with the names of the eyetracking channels, if any.
+    """
+    if not isinstance(raw, BaseRaw):
+        raise ValueError("raw must be an instance of BaseRaw.")
+    ch_types = raw.get_channel_types()
+    eye_chs = [
+        ch for ch, ch_type in zip(raw.ch_names, ch_types)
+        if ch_type in ["eyegaze", "pupil"]
+        ]
+    return eye_chs
+
+
+def _write_eyetrack_tsvs(raw, bids_path, overwrite, calibration=None):
+    """Write a *_physio.tsv file.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        The raw data.
+    bids_path : mne_bids.BIDSPath
+        The BIDSPath object.
+    overwrite : bool
+        Whether to overwrite existing files.
+    """
+    logger.info("Writing eyetracking data to physio.tsv files.")
+    # Write the physio files to the modality that eyetracking was collected with.
+    # TODO: Support writing eyetracking data collected without another modality
+    datatype = bids_path.datatype
+    if datatype is None:
+        raise ValueError("datatype must be specified in the BIDSPath object.")
+    # Find the modality directory
+    modality_dir = bids_path.directory
+    # Find the eyetracking channels
+    info_array = np.array([raw.ch_names, raw.get_channel_types()]).T
+    eyegaze_ch_idx = np.where(info_array[:, 1] == "eyegaze")[0]
+    pupil_ch_idx = np.where(info_array[:, 1] == "pupil")[0]
+    assert len(eyegaze_ch_idx)
+    assert len(pupil_ch_idx)
+    # What eyes were recorded.
+    left_eye_chs = []
+    right_eye_chs = []
+    for idx in eyegaze_ch_idx:
+        # index 3 the loc array specifies left/right eye
+        which_eye = raw.info["chs"][idx]["loc"][3]
+        if which_eye == -1:
+            left_eye_chs.append(raw.ch_names[idx])
+        elif which_eye == 1:
+            right_eye_chs.append(raw.ch_names[idx])
+        else:
+            raise ValueError(
+                "A raw object with eyetrack channels must specify the eye that each "
+                "channel corresponds to in raw.info['chs'][channel_index]['loc'][3]. "
+                "This value must be -1 for the left eye, or 1 for the right eye. "
+                f"Got {which_eye}."
+            )
+    # If we have data for both eyes, left eye is eye1 and right eye is eye2
+    if all([len(left_eye_chs) and len(right_eye_chs)]):
+        eye1_chs = left_eye_chs
+        eye2_chs = right_eye_chs
+    # Otherwise, if we only have data for one eye, that eye is eye1
+    elif len(left_eye_chs):
+        eye1_chs = left_eye_chs
+        eye2_chs = []
+    elif len(right_eye_chs):
+        eye1_chs = []
+        eye2_chs = right_eye_chs
+    # Write the *_physio.tsv file for each eye
+    if len(eye1_chs) > 0:
+        eye1_data = raw.get_data(picks=eye1_chs)
+        times = raw.times
+        # fname= Path(modality_dir) / f"{bids_path.subject}_recording-eye1_physio.tsv"
+        fname = bids_path.copy().update(
+            recording="eye1", suffix="physio", extension=".tsv", check=False
+            ).fpath
+        _write_physio_tsv(times, eye1_data, fname, overwrite)
+        json_dict = {
+                    # Required fields
+                    "SamplingFrequency": raw.info["sfreq"],
+                    "StartTime": times[0],
+                    "Columns": ["time"] + eye1_chs,
+                    "PhysioType": "eyetrack",
+                    "EnvironmentCoordinates": "top-left",  # pixel (0, 0) is top-left of screen
+                    "RecordedEye": "right" if len(right_eye_chs) else "left",
+                    "SampleCoordinateUnits": "pixel",
+                    "SampleCoordinateSystem": "gaze-on-screen",
+                    # Optional fields
+                    eye1_chs[0]: {
+                        "description": "The x-coordinate of the gaze on the screen in pixels.",
+                        "units": "a.u"
+                    },
+                    eye1_chs[1]: {
+                        "description": "The y-coordinate of the gaze on the screen in pixels.",
+                        "units": "a.u"
+                    },
+                    "time": {
+                        "description": "The timestamp of the data, in seconds.",
+                        "units": "s"
+                    }
+                }
+        fname = bids_path.copy().update(
+            recording="eye1", suffix="physio", extension=".json", check=False
+            ).fpath
+        _write_physio_json(json_dict, fname, overwrite)
+        # Now write physioevents TSV.
+        fname = bids_path.copy().update(
+            recording="eye1", suffix="physioevents", extension=".tsv", check=False
+            ).fpath
+        _write_eyetrack_events_tsv(
+            raw=raw,
+            fname_tsv=fname,
+            overwrite=overwrite
+        )
+    if len(eye2_chs) > 0:
+        eye2_data = raw.get_data(picks=eye2_chs)
+        times = raw.times
+        fname = bids_path.copy().update(
+            recording="eye2", suffix="physio", extension=".tsv", check=False
+            ).fpath
+        _write_physio_tsv(times, eye2_data, fname, overwrite)
+        json_dict = {
+            # Required fields
+            "SamplingFrequency": raw.info["sfreq"],
+            "StartTime": times[0],
+            "Columns": ["time"] + [eye2_chs], # XXX: define dynamically
+            "PhysioType": "eyetrack",
+            "EnvironmentCoordinates": "top-left",  # pixel (0, 0) is top-left of screen
+            "RecordedEye": "right" if len(right_eye_chs) else "left",
+            "SampleCoordinateUnits": "pixel",
+            "SampleCoordinateSystem": "gaze-on-screen",
+            # Optional fields
+            eye2_chs[0]: {
+                "description": "The x-coordinate of the gaze on the screen in pixels.",
+                "units": "a.u"
+            },
+            eye2_chs[1]: {
+                "description": "The y-coordinate of the gaze on the screen in pixels.",
+                "units": "a.u"
+            },
+            "time": {
+                "description": "The timestamp of the data, in seconds.",
+                "units": "s"
+            }
+        }
+        fname = bids_path.copy().update(
+            recording="eye2", suffix="physio", extension=".json", check=False
+            ).fpath
+        _write_physio_json(json_dict, fname, overwrite)
+        # Now write physio events TSV.
+        fname = bids_path.copy().update(
+            recording="eye2", suffix="physioevents", extension=".tsv", check=False
+            ).fpath
+        _write_eyetrack_events_tsv(
+            raw=raw,
+            fname_tsv=fname,
+            overwrite=overwrite
+        )
+
+
+def _write_eyetrack_events_tsv(*, raw, fname_tsv, overwrite):
+    """Write a *_events.tsv file."""
+    raw = raw.copy()
+    annotations = raw.annotations.copy()
+    annotations.rename({"BAD_blink": "blink"})
+    raw.set_annotations(annotations)
+    eye_annot_indices = []
+    # Get the names of eyetracking channels
+    eye_ch_names = [
+        ch_name
+        for ch_name, ch_type
+        in zip(raw.ch_names, raw.get_channel_types())
+        if ch_type in ["eyegaze", "pupil"]
+        ]
+    # Get the indices of the annotations that contain eyetracking channels
+    for annot_idx, this_annot in enumerate(annotations):
+        if any(
+            [ch_name in this_annot["ch_names"] for ch_name in eye_ch_names]
+            ):
+            eye_annot_indices.append(annot_idx)
+    if len(eye_annot_indices) == 0:
+        raise ValueError("No eyetracking annotations found.")
+    # Get the descriptions of the eyetracking annotations
+    eye_annotations = annotations[eye_annot_indices]
+    descriptions = eye_annotations.description
+    durations = eye_annotations.duration
+    # Use mne.events_from_annotations to convert the annotations to events
+    unique_descriptions = np.unique(descriptions)
+    event_ids = {desc: ii for ii, desc in enumerate(unique_descriptions, start=1)}
+    events, event_id = mne.events_from_annotations(raw, event_id=event_ids)
+    # Let's use the _events_tsv function to write the file.
+    assert len(durations) == len(events)
+    _events_tsv(
+        events=events,
+        durations=durations,
+        raw=raw,
+        fname=fname_tsv,
+        trial_type=event_id,
+        event_metadata=None,
+        overwrite=overwrite,
+    )
+    # Write the JSON file
+    fname_json = fname_tsv.with_suffix(".json")
+    _events_json(fname_json, extra_columns=None, has_trial_type=True, overwrite=False)
+
+
+def _write_physio_tsv(times, data, fname, overwrite):
+    """Write a *_physio.tsv file.
+
+    Parameters
+    ----------
+    time : np.ndarray
+        The time.
+    data : np.ndarray
+        The data.
+    fname : str
+        The file name.
+    overwrite : bool
+        Whether to overwrite existing files.
+    """
+    # Check for overwrite
+    if op.isfile(fname) and not overwrite:
+        raise FileExistsError(f"{fname} already exists. Set overwrite=True to overwrite.")
+    # Check the data
+    if data.shape[1] != len(times):
+        raise ValueError("Data and time must have the same length.")
+    # put the times and data into a numpy array
+    times = np.array(times) # in seconds
+    eye_data = np.array(data)
+    data = np.vstack((times, eye_data)).T
+    # Write the file
+    np.savetxt(fname, data, delimiter="\t", fmt="%1.3f", encoding="utf-8")
+
+
+def _write_physio_json(json_dict, fname, overwrite):
+    """Write a *_physio.json file.
+
+    Parameters
+    ----------
+    json_dict : dict
+        The JSON dictionary.
+    fname : str
+        The file name.
+    overwrite : bool
+        Whether to overwrite existing files.
+    """
+    # Check for overwrite
+    if op.isfile(fname) and not overwrite:
+        raise FileExistsError(f"{fname} already exists. Set overwrite=True to overwrite.")
+    # Write the file
+    with open(fname, "w") as f:
+        json.dump(json_dict, f, indent=4)
+
+
+
+def _write_eyetrack_physio_tsv_eye(raw, bids_path, modality_dir, ch_names, eye, overwrite):
+    """Write a *_physio.tsv file for a single eye.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        The raw data.
+    bids_path : mne_bids.BIDSPath
+        The BIDSPath object.
+    modality_dir : str
+        The directory for the modality.
+    ch_names : list of str
+        The channel names for the eye.
+    eye : str
+        The eye name.
+    overwrite : bool
+        Whether to overwrite existing files.
+    """
+    # Get the data
+    data = raw.get_data(picks=ch_names)
+    # Get the sample rate
+    sample_rate = raw.info["sfreq"]
+    # Get the time
+    time = raw.times
+    # Get the units
+    units = [raw.info["chs"][raw.ch_names.index(ch_name)]["unit"] for ch_name in ch_names]
+    # Write the file
+    fname = op.join(modality_dir, f"{bids_path.subject}_{eye}_physio.tsv")
+    _write_physio_tsv(data, time, sample_rate, units, fname, overwrite)
 
 
 def get_anat_landmarks(image, info, trans, fs_subject, fs_subjects_dir=None):
