@@ -2280,9 +2280,11 @@ def _filter_fnames(
         r"_proc-(" + "|".join(processing) + ")" if processing else r"(|_proc-([^_]+))"
     )
     space_str = r"_space-(" + "|".join(space) + ")" if space else r"(|_space-([^_]+))"
-    rec_str = (r"_recording-(" + "|".join(recording) + ")"
-               if recording else r"(|_recording-([^_]+))"
-               )
+    rec_str = (
+        r"_recording-(" + "|".join(recording) + ")"
+        if recording
+        else r"(|_recording-([^_]+))"
+    )
     split_str = r"_split-(" + "|".join(split) + ")" if split else r"(|_split-([^_]+))"
     desc_str = (
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
