@@ -387,10 +387,9 @@ def test_make_dataset_description(tmp_path, monkeypatch):
     with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
         assert dataset_description_json["Authors"] == ["MNE B.", "MNE P.", "MNE Ł."]
-
-    # If the text on disk is unicode, json.load will convert it. So let's test that the
-    # text was encoded correctly on disk.
-    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
+        # If the text on disk is unicode, json.load will convert it. So let's test that
+        # the text was encoded correctly on disk.
+        fid.seek(0)
         # don't use json.load here, as it will convert unicode to str
         dataset_description_string = fid.read()
         # Check that U+0141 was correctly encoded as Ł on disk
