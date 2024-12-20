@@ -857,7 +857,7 @@ def test_make_filenames():
         datatype="ieeg",
     )
     expected_str = (
-        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.json"
+        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.json"
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
@@ -896,7 +896,7 @@ def test_make_filenames():
     basename = BIDSPath(**prefix_data, check=False)
     assert (
         basename.basename
-        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.h5"
+        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.h5"
     )
 
     # what happens with scans.tsv file
