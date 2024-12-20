@@ -376,7 +376,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
     make_dataset_description(
         path=tmp_path,
         name="tst2",
-        authors="MNE B., MNE P.",
+        authors="MNE B., MNE P., MNE Ł.",
         funding="GSOC2019, GSOC2021",
         references_and_links="https://doi.org/10.21105/joss.01896",
         dataset_type="derivative",
@@ -386,7 +386,15 @@ def test_make_dataset_description(tmp_path, monkeypatch):
 
     with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
-        assert dataset_description_json["Authors"] == ["MNE B.", "MNE P."]
+        assert dataset_description_json["Authors"] == ["MNE B.", "MNE P.", "MNE Ł."]
+
+    # If the text on disk is unicode, json.load will convert it. So let's test that the
+    # text was encoded correctly on disk.
+    with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
+        # don't use json.load here, as it will convert unicode to str
+        dataset_description_string = fid.read()
+        # Check that U+0141 was correctly encoded as Ł on disk
+        assert "MNE Ł." in dataset_description_string
 
     # Check we raise warnings and errors where appropriate
     with pytest.raises(
