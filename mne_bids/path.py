@@ -2487,12 +2487,8 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
         if ignore_nosub:
             search_str = "sub-*/" + search_str
 
-        paths = list(
-            map(
-                lambda fn: Path(root, fn),
-                glob.glob(search_str, root_dir=root, recursive=True),
-            )
-        )
+        paths = [ Path(root, fn) for fn in glob.iglob(search_str, root_dir=root, recursive=True) ]
+
     # Only keep files (not directories), ...
     # and omit the JSON sidecars if `ignore_json` is True.
     if ignore_json:
