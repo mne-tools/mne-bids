@@ -586,19 +586,19 @@ def _handle_events_reading(events_fname, raw):
             culled_vals = culled["value"]
             try:
                 culled_vals = np.asarray(culled_vals, dtype=float)
-            except ValueError:
+            except ValueError:  # contained strings or complex numbers
                 pass
             else:
                 try:
                     culled_vals = culled_vals.astype(int)
-                except ValueError:
+                except ValueError:  # numeric, but has some non-integer values
                     pass
             event_id = dict(zip(culled[trial_type_col_name], culled_vals))
         else:
             event_id = dict(zip(trial_types, np.arange(len(trial_types))))
         descrs = np.asarray(trial_types, dtype=str)
 
-    # Deal with "n/a" strings before converting to float
+    # convert onsets & durations to floats ("n/a" onsets were already dropped)
     ons = np.asarray(events_dict["onset"], dtype=float)
     durs = np.array(
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
