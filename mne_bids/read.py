@@ -548,9 +548,11 @@ def _handle_events_reading(events_fname, raw):
     # If we lack proper event descriptions, perhaps we have at least an event value?
     elif "value" in events_dict:
         trial_type_col_name = "value"
-    # Worst case: all events will become `n/a` and all values will be `1`
+    # Worst case: all events become `n/a` and all values become `1`
     else:
         trial_type_col_name = None
+        descrs = np.full(len(events_dict["onset"]), "n/a")
+        event_id = {descrs[0]: 1}
 
     if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
@@ -596,10 +598,6 @@ def _handle_events_reading(events_fname, raw):
             event_id = dict(zip(trial_types, np.arange(len(trial_types))))
         descrs = np.asarray(trial_types, dtype=str)
 
-    # Worst case: all events become `n/a` and all values become `1`
-    else:
-        descrs = np.full(len(events_dict["onset"]), "n/a")
-        event_id = {descrs[0]: 1}
     # Deal with "n/a" strings before converting to float
     ons = np.asarray(events_dict["onset"], dtype=float)
     durs = np.array(
