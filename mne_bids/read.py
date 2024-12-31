@@ -572,8 +572,8 @@ def _handle_events_reading(events_fname, raw):
                         "Creating hierarchical event names."
                     )
                     for ii in idx:
-                        value = values[ii]
-                        value = "na" if value == "n/a" else value
+                        # strip `/` from `n/a` before incorporating into trial type name
+                        value = values[ii] if values[ii] != "n/a" else "na"
                         new_name = f"{trial_type}/{value}"
                         logger.info(f"    Renaming event: {trial_type} -> {new_name}")
                         trial_types[ii] = new_name
