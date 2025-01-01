@@ -7,7 +7,6 @@ For each supported file format, implement a test.
 # SPDX-License-Identifier: BSD-3-Clause
 
 import codecs
-import inspect
 import json
 import os
 import os.path as op
@@ -103,7 +102,7 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
-        if Path(fname).suffix == ".mff" and check_version("mne", "1.8"):
+        if Path(fname).suffix == ".mff":
             kwargs["events_as_annotations"] = True
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
@@ -226,8 +225,7 @@ def test_write_participants(_bids_validate, tmp_path):
     # add fake participants data
     raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=timezone.utc))
     birthday = (1993, 1, 26)
-    if check_version("mne", "1.8"):
-        birthday = date(*birthday)
+    birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
         "birthday": birthday,
@@ -636,9 +634,7 @@ def test_fif(_bids_validate, tmp_path):
     )
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
     kwargs = dict()
-    # XXX: remove logic once support for mne<1.8 is dropped
-    if "copy" in inspect.getfullargspec(epochs.get_data).kwonlyargs:
-        kwargs["copy"] = False
+    kwargs["copy"] = False
     assert_array_almost_equal(
         epochs.get_data(**kwargs),
         epochs2.get_data(**kwargs),
@@ -727,8 +723,7 @@ def test_fif(_bids_validate, tmp_path):
     # change the gender but don't force overwrite.
     raw = _read_raw_fif(raw_fname)
     birthday = (1994, 1, 26)
-    if check_version("mne", "1.8"):
-        birthday = date(*birthday)
+    birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
         "birthday": birthday,

@@ -12,9 +12,9 @@ Dependencies
 
 Required:
 
-* ``mne`` (>=1.7)
-* ``numpy`` (>=1.21.2)
-* ``scipy`` (>=1.7.1)
+* ``mne`` (>=1.8)
+* ``numpy`` (>=1.23)
+* ``scipy`` (>=1.9)
 
 Optional:
 
@@ -22,7 +22,7 @@ Optional:
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
 * ``eeglabio`` (>=0.0.2, for writing EEGLAB data)
 * ``pymatreader`` (for other operations with EEGLAB data)
-* ``matplotlib`` (>=3.5.0, for using the interactive data inspector)
+* ``matplotlib`` (>=3.6, for using the interactive data inspector)
 * ``pandas`` (>=1.3.2, for generating event statistics)
 * ``edfio`` (>=0.2.1, for writing EDF data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
