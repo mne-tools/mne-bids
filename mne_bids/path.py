@@ -2088,7 +2088,7 @@ def get_entity_vals(
         ):
             continue
         if ignore_recordings and any(
-            [f"_rec-{a}_" in filename.stem for a in ignore_recordings]
+            [f"_recording-{a}_" in filename.stem for a in ignore_recordings]
         ):
             continue
         if ignore_splits and any(
@@ -2280,7 +2280,11 @@ def _filter_fnames(
         r"_proc-(" + "|".join(processing) + ")" if processing else r"(|_proc-([^_]+))"
     )
     space_str = r"_space-(" + "|".join(space) + ")" if space else r"(|_space-([^_]+))"
-    rec_str = r"_rec-(" + "|".join(recording) + ")" if recording else r"(|_rec-([^_]+))"
+    rec_str = (
+        r"_recording-(" + "|".join(recording) + ")"
+        if recording
+        else r"(|_recording-([^_]+))"
+    )
     split_str = r"_split-(" + "|".join(split) + ")" if split else r"(|_split-([^_]+))"
     desc_str = (
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"

@@ -235,7 +235,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "run": "run",
     "proc": "processing",
     "space": "space",
-    "rec": "recording",
+    "recording": "recording",
     "split": "split",
     "desc": "description",
 }
