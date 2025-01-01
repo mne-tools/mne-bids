@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "hatchling.build"
-requires = ["hatch-vcs", "hatchling"]
+requires = ["hatch-vcs", "hatchling==1.26.3"]
 
 [project]
 authors = [{name = "The MNE-BIDS developers"}]
