@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.17.0.dev15+g3f59b0e0 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.17.0.dev16+gad67a042 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=7569da5b"></script>
+    <script src="_static/documentation_options.js?v=40c2fd43"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -80,7 +80,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev15+g3f59b0e0" />
+  <meta name="docsearch:version" content="0.17.0.dev16+gad67a042" />
 
   </head>
   
@@ -143,7 +143,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev15+g3f59b0e0 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev16+gad67a042 documentation</p>
   
 </a></div>
     
@@ -532,6 +532,7 @@
 <h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> can optionally return an <code class="docutils literal notranslate"><span class="pre">event_id</span></code> dictionary suitable for use with <a class="reference external" href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v1.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.events_from_annotations()</span></code></a>, and if a <code class="docutils literal notranslate"><span class="pre">values</span></code> column is present in <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> it will be used as the source of the integer event ID codes, by <a class="reference external" href="http://dan.mccloy.info">Daniel McCloy</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1349">#1349</a>)</p></li>
+<li><p>BIDS dictates that the recording entity should be displayed as “_recording-” in the filename. This PR makes <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>  correctly display “_recording-” (instead of “_rec-”) in BIDSPath.fpath. By <a class="reference external" href="https://github.com/scott-huberty">Scott Huberty</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1348">#1348</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_dataset_description()</span></code></a> now correctly encodes the dataset description as UTF-8 on disk, by <a class="reference external" href="https://github.com/scott-huberty">Scott Huberty</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1357">#1357</a>)</p></li>
 </ul>
 </section>
