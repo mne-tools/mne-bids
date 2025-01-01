@@ -19,7 +19,7 @@ classifiers = [
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development",
 ]
-dependencies = ["mne>=1.7", "numpy>=1.21.2", "scipy>=1.7.1"]
+dependencies = ["mne>=1.8", "numpy>=1.23", "scipy>=1.9"]
 description = "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python"
 dynamic = ["version"]
 keywords = [
@@ -64,14 +64,14 @@ full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.2.1",
   "eeglabio >= 0.0.2",
-  "matplotlib >= 3.5.0",
+  "matplotlib >= 3.6",
   "nibabel >= 3.2.1",
   "pandas >= 1.3.2",
   "pybv >= 0.7.5",
   "pymatreader",
 ]
 # Dependencies for running the test infrastructure
-test = ["mne_bids[full]", "pytest >= 8", "pytest-cov", "pytest-sugar", "ruff"]
+test = ["mne_bids[full]", "pytest", "pytest-cov", "pytest-sugar", "ruff"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"

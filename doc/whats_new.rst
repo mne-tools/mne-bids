@@ -42,7 +42,7 @@ Detailed list of changes
 🛠 Requirements
 ^^^^^^^^^^^^^^^
 
-- Nothing yet
+- MNE-BIDS now requires ``mne`` 1.8 or higher.
 
 🪲 Bug fixes
 ^^^^^^^^^^^^
