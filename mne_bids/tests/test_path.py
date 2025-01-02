@@ -100,6 +100,15 @@ def test_get_keys(return_bids_test_dir):
         ("bogus", None, None),
         ("subject", [subject_id], None),
         ("session", [session_id], None),
+        (
+            "session",
+            [],
+            dict(
+                ignore_tasks="testing",
+                ignore_acquisitions=("calibration", "crosstalk"),
+                ignore_suffixes=("scans", "coordsystem"),
+            ),
+        ),
         ("run", [run, "02"], None),
         ("acquisition", ["calibration", "crosstalk"], None),
         ("task", [task], None),
@@ -153,7 +162,6 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         )
         if entity not in ("acquisition", "run"):
             assert "deriv" in entities
-
     # Clean up
     shutil.rmtree(deriv_path)
 
