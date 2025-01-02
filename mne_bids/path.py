@@ -1950,7 +1950,7 @@ def get_entity_vals(
 
         .. versionadded:: 0.11
     ignore_modalities : str | array-like of str | None
-        Modalities(s) to ignore. If ``None``, include all modalities.
+        Modalities to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
         Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
         ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
