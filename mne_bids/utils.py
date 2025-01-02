@@ -87,6 +87,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             ias="MEGOTHER",
             syst="MEGOTHER",
             exci="MEGOTHER",
+            # Eye tracking
+            eyegaze="EYEGAZE",
+            pupil="PUPIL",
         )
 
     elif fro == "bids" and to == "mne":
@@ -110,6 +113,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             VEOG="eog",
             HEOG="eog",
             DBS="dbs",
+            # Eye tracking
+            EYEGAZE="eyegaze",
+            PUPIL="pupil",
         )
     else:
         raise ValueError(
@@ -227,7 +233,7 @@ def _write_json(fname, dictionary, overwrite=False):
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
-    json_output = json.dumps(dictionary, indent=4)
+    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
     with open(fname, "w", encoding="utf-8") as fid:
         fid.write(json_output)
         fid.write("\n")

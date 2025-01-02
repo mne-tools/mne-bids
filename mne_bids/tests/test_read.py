@@ -381,8 +381,8 @@ def test_get_head_mri_trans(tmp_path):
     # Case 3: write with suffix for kind
     landmarks2 = landmarks.copy()
     landmarks2.dig[0]["r"] *= -1
-    landmarks2.save(tmp_path / "landmarks2.fif")
-    landmarks2 = tmp_path / "landmarks2.fif"
+    landmarks2.save(tmp_path / "landmarks2-dig.fif")
+    landmarks2 = tmp_path / "landmarks2-dig.fif"
     write_anat(
         t1w_mgh,
         bids_path=t1_bids_path,
@@ -509,8 +509,11 @@ def test_handle_events_reading(tmp_path):
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw = _handle_events_reading(events_fname, raw)
-    events, event_id = mne.events_from_annotations(raw)
+    raw, event_id = _handle_events_reading(events_fname, raw)
+    ev_arr, ev_dict = mne.events_from_annotations(raw)
+    assert list(ev_dict.values()) == [1, 2]  # auto-assigned
+    want = len(events["onset"]) - 1  # one onset was n/a
+    assert want == len(raw.annotations) == len(ev_arr) == len(ev_dict)
 
     # Test with a `stim_type` column instead of `trial_type`.
     events = {
@@ -523,8 +526,23 @@ def test_handle_events_reading(tmp_path):
     _to_tsv(events, events_fname)
 
     with pytest.warns(RuntimeWarning, match="This column should be renamed"):
-        raw = _handle_events_reading(events_fname, raw)
+        raw, _ = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
+
+    # Test with only a `value` column.
+    events = {
+        "onset": [11, 12, 13, 14, 15],
+        "duration": ["n/a", "n/a", 0.1, 0.1, "n/a"],
+        "value": [3, 1, 1, 3, "n/a"],
+    }
+    events_fname = tmp_path / "bids3" / "sub-01_task-test_events.json"
+    events_fname.parent.mkdir()
+    _to_tsv(events, events_fname)
+
+    raw, event_id = _handle_events_reading(events_fname, raw)
+    ev_arr, ev_dict = mne.events_from_annotations(raw, event_id=event_id)
+    assert len(ev_arr) == len(events["value"]) - 1  # one value was n/a
+    assert {"1": 1, "3": 3} == event_id == ev_dict
 
     # Test with same `trial_type` referring to different `value`:
     # The events should be renamed automatically
@@ -534,32 +552,42 @@ def test_handle_events_reading(tmp_path):
         "trial_type": ["event1", "event1", "event2", "event3", "event3"],
         "value": [1, 2, 3, 4, "n/a"],
     }
-    events_fname = tmp_path / "bids3" / "sub-01_task-test_events.json"
-    events_fname.parent.mkdir()
-    _to_tsv(events, events_fname)
-
-    raw = _handle_events_reading(events_fname, raw)
-    events, event_id = mne.events_from_annotations(raw)
-
-    assert len(events) == 5
-    assert "event1/1" in event_id
-    assert "event1/2" in event_id
-    assert "event3/4" in event_id
-    assert "event3/na" in event_id  # 'n/a' value should become 'na'
-    # The event with unique value mapping should not be renamed
-    assert "event2" in event_id
-
-    # Test without any kind of event description.
-    events = {"onset": [11, 12, "n/a"], "duration": ["n/a", "n/a", "n/a"]}
     events_fname = tmp_path / "bids4" / "sub-01_task-test_events.json"
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw = _handle_events_reading(events_fname, raw)
-    events, event_id = mne.events_from_annotations(raw)
-    ids = list(event_id.keys())
-    assert len(ids) == 1
-    assert ids == ["n/a"]
+    raw, event_id = _handle_events_reading(events_fname, raw)
+    ev_arr, ev_dict = mne.events_from_annotations(raw)
+    # `event_id` will exclude the last event, as its value is `n/a`, but `ev_dict` won't
+    # exclude it (it's made from annotations, which don't know about missing `value`s)
+    assert len(event_id) == len(ev_dict) - 1
+    # check the renaming
+    assert len(ev_arr) == 5
+    assert "event1/1" in ev_dict
+    assert "event1/2" in ev_dict
+    assert "event3/4" in ev_dict
+    assert "event3/na" in ev_dict  # 'n/a' value should become 'na'
+    assert "event2" in ev_dict  # has unique value mapping; should not be renamed
+
+    # Test without any kind of event description.
+    events = {"onset": [11, 12, "n/a"], "duration": ["n/a", "n/a", "n/a"]}
+    events_fname = tmp_path / "bids5" / "sub-01_task-test_events.json"
+    events_fname.parent.mkdir()
+    _to_tsv(events, events_fname)
+
+    raw, event_id = _handle_events_reading(events_fname, raw)
+    ev_arr, ev_dict = mne.events_from_annotations(raw)
+    assert event_id == ev_dict == {"n/a": 1}  # fallback behavior
+
+    # Test with only a (non-numeric) `value` column
+    events = {"onset": [10, 15], "duration": [1, 1], "value": ["A", "B"]}
+    events_fname = tmp_path / "bids6" / "sub-01_task-test_events.tsv"
+    events_fname.parent.mkdir()
+    _to_tsv(events, events_fname)
+    raw, event_id = _handle_events_reading(events_fname, raw)
+    # don't pass event_id to mne.events_from_annotatations; its values are strings
+    assert event_id == {"A": "A", "B": "B"}
+    assert raw.annotations.description.tolist() == ["A", "B"]
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
