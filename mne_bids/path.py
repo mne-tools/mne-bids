@@ -1897,6 +1897,7 @@ def get_entity_vals(
     ignore_modalities=None,
     ignore_datatypes=None,
     ignore_dirs=("derivatives", "sourcedata"),
+    ignore_suffixes=None,
     with_key=False,
     verbose=None,
 ):
@@ -1958,6 +1959,11 @@ def get_entity_vals(
         include all directories in the search.
 
         .. versionadded:: 0.9
+    ignore_suffixes : str | array-like of str | None
+        Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for
+        ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.
+
+        .. versionadded:: 0.17
     with_key : bool
         If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
@@ -2043,7 +2049,7 @@ def get_entity_vals(
     ignore_splits = _ensure_tuple(ignore_splits)
     ignore_descriptions = _ensure_tuple(ignore_descriptions)
     ignore_modalities = _ensure_tuple(ignore_modalities)
-
+    ignore_suffixes = _ensure_tuple(ignore_suffixes)
     ignore_dirs = _ensure_tuple(ignore_dirs)
     existing_ignore_dirs = [
         root / d for d in ignore_dirs if (root / d).exists() and (root / d).is_dir()
@@ -2061,6 +2067,10 @@ def get_entity_vals(
         ):
             continue
 
+        if ignore_suffixes and any(
+            [filename.stem.endswith(s) for s in ignore_suffixes]
+        ):
+            continue
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any(
