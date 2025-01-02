@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import glob
+import inspect
 import json
 import os
 import re
@@ -1996,6 +1997,7 @@ def get_entity_vals(
     .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities
 
     """
+    params = inspect.signature(get_entity_vals).parameters  # for debug messages
     root = _check_fname(
         fname=root,
         overwrite="read",
@@ -2120,6 +2122,15 @@ def get_entity_vals(
             value = f"{entity_long_abbr_map[entity_key]}-{value}"
         if value not in values:
             values.append(value)
+            # display all non-default params passed into the function
+            param_string = ", ".join(
+                f"{k}={v!r}"
+                for k, v in inspect.currentframe().f_back.f_locals.items()
+                if k in params and v != params[k].default
+            )
+            logger.debug(
+                "%s matched by get_entity_vals(%s)", filename.name, param_string
+            )
     return sorted(values)
 
 
