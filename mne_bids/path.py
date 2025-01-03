@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import glob
+import inspect
 import json
 import os
 import re
@@ -1897,6 +1898,7 @@ def get_entity_vals(
     ignore_modalities=None,
     ignore_datatypes=None,
     ignore_dirs=("derivatives", "sourcedata"),
+    ignore_suffixes=None,
     with_key=False,
     verbose=None,
 ):
@@ -1949,7 +1951,7 @@ def get_entity_vals(
 
         .. versionadded:: 0.11
     ignore_modalities : str | array-like of str | None
-        Modalities(s) to ignore. If ``None``, include all modalities.
+        Modalities to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
         Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
         ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
@@ -1958,6 +1960,11 @@ def get_entity_vals(
         include all directories in the search.
 
         .. versionadded:: 0.9
+    ignore_suffixes : str | array-like of str | None
+        Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for
+        ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.
+
+        .. versionadded:: 0.17
     with_key : bool
         If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
@@ -1990,6 +1997,7 @@ def get_entity_vals(
     .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities
 
     """
+    params = inspect.signature(get_entity_vals).parameters  # for debug messages
     root = _check_fname(
         fname=root,
         overwrite="read",
@@ -2043,7 +2051,7 @@ def get_entity_vals(
     ignore_splits = _ensure_tuple(ignore_splits)
     ignore_descriptions = _ensure_tuple(ignore_descriptions)
     ignore_modalities = _ensure_tuple(ignore_modalities)
-
+    ignore_suffixes = _ensure_tuple(ignore_suffixes)
     ignore_dirs = _ensure_tuple(ignore_dirs)
     existing_ignore_dirs = [
         root / d for d in ignore_dirs if (root / d).exists() and (root / d).is_dir()
@@ -2061,6 +2069,10 @@ def get_entity_vals(
         ):
             continue
 
+        if ignore_suffixes and any(
+            [filename.stem.endswith(s) for s in ignore_suffixes]
+        ):
+            continue
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any(
@@ -2110,6 +2122,15 @@ def get_entity_vals(
             value = f"{entity_long_abbr_map[entity_key]}-{value}"
         if value not in values:
             values.append(value)
+            # display all non-default params passed into the function
+            param_string = ", ".join(
+                f"{k}={v!r}"
+                for k, v in inspect.currentframe().f_back.f_locals.items()
+                if k in params and v != params[k].default
+            )
+            logger.debug(
+                "%s matched by get_entity_vals(%s)", filename.name, param_string
+            )
     return sorted(values)
 
 
