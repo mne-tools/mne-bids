@@ -13,7 +13,7 @@ EEGLABIO_VERSION = "0.0.2"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-EPHY_ALLOWED_DATATYPES = ["meg", "eeg", "ieeg", "nirs"]
+EPHY_ALLOWED_DATATYPES = ["meg", "eeg", "ieeg", "nirs", "emg"]
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh"]
 
@@ -84,6 +84,8 @@ ieeg_manufacturers = {
     ".EEG": "Nihon Kohden",
 }
 
+emg_manufacturers = {}  # TODO
+
 nirs_manufacturers = {".snirf": "SNIRF"}
 
 # file-extension map to mne-python readers
@@ -115,6 +117,7 @@ reader = {
 MANUFACTURERS = dict()
 MANUFACTURERS.update(meg_manufacturers)
 MANUFACTURERS.update(eeg_manufacturers)
+MANUFACTURERS.update(emg_manufacturers)
 MANUFACTURERS.update(ieeg_manufacturers)
 MANUFACTURERS.update(nirs_manufacturers)
 
@@ -135,6 +138,10 @@ allowed_extensions_eeg = [
     ".set",  # EEGLAB, potentially accompanied by .fdt
 ]
 
+allowed_extensions_emg = [
+    ".edf",  # European Data Format
+]
+
 allowed_extensions_ieeg = [
     ".vhdr",  # BrainVision, accompanied by .vmrk, .eeg
     ".edf",  # European Data Format
@@ -151,6 +158,7 @@ allowed_extensions_nirs = [
 ALLOWED_DATATYPE_EXTENSIONS = {
     "meg": allowed_extensions_meg,
     "eeg": allowed_extensions_eeg,
+    "emg": allowed_extensions_emg,
     "ieeg": allowed_extensions_ieeg,
     "nirs": allowed_extensions_nirs,
 }
@@ -169,12 +177,16 @@ ALLOWED_INPUT_EXTENSIONS = (
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
+    # datatypes:
     "meg",
     "markers",
     "eeg",
     "ieeg",
+    "emg",
+    "nirs",
     "T1w",
-    "FLASH",  # datatype
+    "FLASH",
+    # sidecars:
     "participants",
     "scans",
     "sessions",
@@ -182,13 +194,14 @@ ALLOWED_FILENAME_SUFFIX = [
     "optodes",
     "channels",
     "coordsystem",
-    "events",  # sidecars
+    "events",
+    # MEG-specific sidecars:
     "headshape",
-    "digitizer",  # meg-specific sidecars
+    "digitizer",
+    # behavioral:
     "beh",
     "physio",
-    "stim",  # behavioral
-    "nirs",
+    "stim",
 ]
 
 # converts suffix to known path modalities
@@ -199,6 +212,7 @@ SUFFIX_TO_DATATYPE = {
     "markers": "meg",
     "eeg": "eeg",
     "ieeg": "ieeg",
+    "emg": "emg",
     "T1w": "anat",
     "FLASH": "anat",
 }
@@ -207,9 +221,9 @@ SUFFIX_TO_DATATYPE = {
 ALLOWED_FILENAME_EXTENSIONS = (
     ALLOWED_INPUT_EXTENSIONS
     + [".json", ".tsv", ".tsv.gz", ".nii", ".nii.gz"]
-    + [".pos", ".eeg", ".vmrk"]
-    + [".dat", ".EEG"]  # extra datatype-specific metadata files.
-    + [".mrk"]  # extra eeg extensions  # KIT/Yokogawa/Ricoh marker coil
+    + [".pos", ".eeg", ".vmrk"]  # extra datatype-specific metadata files.
+    + [".dat", ".EEG"]  # extra eeg extensions
+    + [".mrk"]  # KIT/Yokogawa/Ricoh marker coil
 )
 
 # allowed BIDSPath entities
@@ -313,6 +327,7 @@ ALLOWED_SPACES["meg"] = ALLOWED_SPACES["eeg"] = (
     + BIDS_EEG_COORDINATE_FRAMES
 )
 ALLOWED_SPACES["ieeg"] = BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FRAMES
+ALLOWED_SPACES["emg"] = None  # TODO revise if we support digitization of EMG sensors
 ALLOWED_SPACES["anat"] = None
 ALLOWED_SPACES["beh"] = None
 
@@ -486,6 +501,7 @@ REFERENCES = {
     "Pollonini, L. (2023). fNIRS-BIDS, the Brain Imaging Data Structure "
     "Extended to Functional Near-Infrared Spectroscopy. PsyArXiv. "
     "https://doi.org/10.31219/osf.io/7nmcp",
+    "emg": "In preparation",
 }
 
 
