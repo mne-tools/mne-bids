@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.17.0.dev19+g41ce36a4 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.17.0.dev20+g18bd9739 documentation</title>
   
   
   
@@ -29,7 +29,7 @@
   <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 <link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=2641d958"></script>
+    <script src="../../_static/documentation_options.js?v=80f87c15"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -77,7 +77,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev19+g41ce36a4" />
+  <meta name="docsearch:version" content="0.17.0.dev20+g18bd9739" />
 
   </head>
   
@@ -140,7 +140,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev19+g41ce36a4 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev20+g18bd9739 documentation</p>
   
 </a></div>
     
@@ -486,28 +486,28 @@
 <span class="c1"># Authors: The MNE-BIDS developers</span>
 <span class="c1"># SPDX-License-Identifier: BSD-3-Clause</span>
 
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">import</span> <span class="nn">mne.preprocessing</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Epochs</span><span class="p">,</span> <span class="n">channel_type</span>
-<span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_get_meg_system</span><span class="p">,</span> <span class="n">_unit2human</span>
-<span class="kn">from</span> <span class="nn">mne.chpi</span> <span class="kn">import</span> <span class="n">get_chpi_info</span>
-<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
-<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
-<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">_picks_to_idx</span>
-<span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne.preprocessing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Epochs</span><span class="p">,</span> <span class="n">channel_type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.channels.channels</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_meg_system</span><span class="p">,</span> <span class="n">_unit2human</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.chpi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_chpi_info</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_fiducials</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">FIFF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.io.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">_picks_to_idx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span><span class="p">,</span> <span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Bunch</span><span class="p">,</span>
     <span class="n">ProgressBar</span><span class="p">,</span>
     <span class="n">_validate_type</span><span class="p">,</span>
@@ -516,15 +516,15 @@
     <span class="n">logger</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">linalg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BIDSPath</span><span class="p">,</span>
     <span class="n">get_anonymization_daysback</span><span class="p">,</span>
     <span class="n">get_bids_path_from_fname</span><span class="p">,</span>
     <span class="n">read_raw_bids</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_INPUT_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ANONYMIZED_JSON_KEY_WHITELIST</span><span class="p">,</span>
@@ -541,7 +541,7 @@
     <span class="n">_map_options</span><span class="p">,</span>
     <span class="n">reader</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.copyfiles</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">copyfile_brainvision</span><span class="p">,</span>
     <span class="n">copyfile_bti</span><span class="p">,</span>
     <span class="n">copyfile_ctf</span><span class="p">,</span>
@@ -549,13 +549,13 @@
     <span class="n">copyfile_eeglab</span><span class="p">,</span>
     <span class="n">copyfile_kit</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_coordsystem_json</span><span class="p">,</span> <span class="n">_write_dig_bids</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_path_to_str</span>
-<span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
-<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
-<span class="kn">from</span> <span class="nn">mne_bids.sidecar_updates</span> <span class="kn">import</span> <span class="n">update_sidecar_json</span>
-<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_combine_rows</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_from_tsv</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.dig</span><span class="w"> </span><span class="kn">import</span> <span class="n">_write_coordsystem_json</span><span class="p">,</span> <span class="n">_write_dig_bids</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_path_to_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">coil_type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.read</span><span class="w"> </span><span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.sidecar_updates</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_sidecar_json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.tsv_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">_combine_rows</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_from_tsv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_age_on_date</span><span class="p">,</span>
     <span class="n">_check_anonymize</span><span class="p">,</span>
     <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
@@ -572,11 +572,11 @@
 <span class="n">_FIFF_SPLIT_SIZE</span> <span class="o">=</span> <span class="s2">&quot;2GB&quot;</span>  <span class="c1"># MNE-Python default; can be altered during debugging</span>
 
 
-<span class="k">def</span> <span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a channels.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -705,7 +705,7 @@
 <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">_get_fid_coords</span><span class="p">(</span><span class="n">dig_points</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_fid_coords</span><span class="p">(</span><span class="n">dig_points</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the fiducial coordinates from a DigMontage.</span>
 
 <span class="sd">    Parameters</span>
@@ -749,7 +749,7 @@
     <span class="k">return</span> <span class="n">fid_coords</span><span class="p">,</span> <span class="n">coord_frame</span>
 
 
-<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_events_tsv</span><span class="p">(</span>
     <span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">event_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
@@ -814,7 +814,7 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_events_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">extra_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">has_trial_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
 
 <span class="sd">    Parameters</span>
@@ -881,7 +881,7 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_readme</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_readme</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a README file and save it.</span>
 
 <span class="sd">    This will write a README file containing an MNE-BIDS citation.</span>
@@ -921,7 +921,7 @@
     <span class="n">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a participants.tsv file and save it.</span>
 
 <span class="sd">    This will append any new participant data to the current list if it</span>
@@ -1070,7 +1070,7 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_participants_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_participants_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create participants.json for non-default columns in accompanying TSV.</span>
 
 <span class="sd">    Parameters</span>
@@ -1115,7 +1115,7 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">new_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">keep_source</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">keep_source</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a scans.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -1209,7 +1209,7 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_load_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;image&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;image&quot;</span><span class="p">):</span>
     <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nib</span><span class="o">.</span><span class="n">all_image_classes</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1235,7 +1235,7 @@
     <span class="k">return</span> <span class="n">image</span>
 
 
-<span class="k">def</span> <span class="nf">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span><span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span><span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from head space to MRI space.</span>
 
 <span class="sd">    Parameters</span>
@@ -1254,7 +1254,7 @@
     <span class="k">return</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">move</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e3</span>
 
 
-<span class="k">def</span> <span class="nf">_mri_landmarks_to_mri_voxels</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">t1_mgh</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mri_landmarks_to_mri_voxels</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">t1_mgh</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from MRI surface RAS space to MRI voxel space.</span>
 
 <span class="sd">    Parameters</span>
@@ -1277,7 +1277,7 @@
     <span class="k">return</span> <span class="n">vox_landmarks</span>
 
 
-<span class="k">def</span> <span class="nf">_mri_voxels_to_mri_scanner_ras</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mri_voxels_to_mri_scanner_ras</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from MRI voxel space to MRI scanner RAS space.</span>
 
 <span class="sd">    Parameters</span>
@@ -1298,7 +1298,7 @@
     <span class="k">return</span> <span class="n">ras_landmarks</span>
 
 
-<span class="k">def</span> <span class="nf">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span><span class="n">ras_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mri_scanner_ras_to_mri_voxels</span><span class="p">(</span><span class="n">ras_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert landmarks from MRI scanner RAS space to MRI to MRI voxel space.</span>
 
 <span class="sd">    Parameters</span>
@@ -1320,7 +1320,7 @@
     <span class="k">return</span> <span class="n">vox_landmarks</span>
 
 
-<span class="k">def</span> <span class="nf">_sidecar_json</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_sidecar_json</span><span class="p">(</span>
     <span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">emptyroom_fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the suffix and save it.</span>
@@ -1533,7 +1533,7 @@
     <span class="k">return</span> <span class="n">fname</span>
 
 
-<span class="k">def</span> <span class="nf">_deface</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_deface</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">):</span>
     <span class="n">nib</span> <span class="o">=</span> <span class="n">_import_nibabel</span><span class="p">(</span><span class="s2">&quot;deface MRIs&quot;</span><span class="p">)</span>
 
     <span class="n">inset</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">)</span>
@@ -1589,7 +1589,7 @@
     <span class="k">return</span> <span class="n">image</span>
 
 
-<span class="k">def</span> <span class="nf">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save out the raw file in FIF.</span>
 
 <span class="sd">    Parameters</span>
@@ -1610,7 +1610,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save out the raw file in BrainVision format.</span>
 
 <span class="sd">    Parameters</span>
@@ -1630,7 +1630,7 @@
             <span class="sa">f</span><span class="s2">&quot;pybv &gt;= </span><span class="si">{</span><span class="n">PYBV_VERSION</span><span class="si">}</span><span class="s2"> is required for converting&quot;</span>
             <span class="s2">&quot; file to BrainVision format&quot;</span>
         <span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">pybv</span> <span class="kn">import</span> <span class="n">write_brainvision</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pybv</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_brainvision</span>
 
     <span class="c1"># Subtract raw.first_samp because brainvision marks events starting from</span>
     <span class="c1"># the first available data point and ignores the raw.first_samp</span>
@@ -1683,7 +1683,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_edf</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store data as EDF.</span>
 
 <span class="sd">    Parameters</span>
@@ -1699,7 +1699,7 @@
     <span class="n">raw</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_eeglab</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Store data as EEGLAB.</span>
 
 <span class="sd">    Parameters</span>
@@ -1718,7 +1718,7 @@
 <div class="viewcode-block" id="make_dataset_description">
 <a class="viewcode-back" href="../../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">make_dataset_description</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_dataset_description</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">path</span><span class="p">,</span>
     <span class="n">name</span><span class="p">,</span>
@@ -1905,7 +1905,7 @@
 <div class="viewcode-block" id="write_raw_bids">
 <a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_raw_bids</span><span class="p">(</span>
     <span class="n">raw</span><span class="p">,</span>
     <span class="n">bids_path</span><span class="p">,</span>
     <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2758,7 +2758,7 @@
 
 <div class="viewcode-block" id="get_anat_landmarks">
 <a class="viewcode-back" href="../../generated/mne_bids.get_anat_landmarks.html#mne_bids.get_anat_landmarks">[docs]</a>
-<span class="k">def</span> <span class="nf">get_anat_landmarks</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_anat_landmarks</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">trans</span><span class="p">,</span> <span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get anatomical landmarks in MRI voxel coordinates.</span>
 
 <span class="sd">    This function transforms the fiducial points from &quot;head&quot; to MRI &quot;voxel&quot;</span>
@@ -2833,9 +2833,9 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_t1w_mgh</span><span class="p">(</span><span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_t1w_mgh</span><span class="p">(</span><span class="n">fs_subject</span><span class="p">,</span> <span class="n">fs_subjects_dir</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the T1w image in MGH format.&quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">nibabel</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nib</span>
 
     <span class="n">fs_subjects_dir</span> <span class="o">=</span> <span class="n">get_subjects_dir</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">t1_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fs_subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_subject</span> <span class="o">/</span> <span class="s2">&quot;mri&quot;</span> <span class="o">/</span> <span class="s2">&quot;T1.mgz&quot;</span>
@@ -2850,8 +2850,8 @@
     <span class="k">return</span> <span class="n">t1w_mgh</span>
 
 
-<span class="k">def</span> <span class="nf">_get_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="n">image_nii</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">nibabel</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nib</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
         <span class="n">landmarks</span><span class="p">,</span> <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">read_fiducials</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
@@ -2889,7 +2889,7 @@
 <div class="viewcode-block" id="write_anat">
 <a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_anat</span><span class="p">(</span>
     <span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
@@ -3039,7 +3039,7 @@
 <div class="viewcode-block" id="mark_channels">
 <a class="viewcode-back" href="../../generated/mne_bids.mark_channels.html#mne_bids.mark_channels">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mark_channels</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Update status and description of channels in an existing BIDS dataset.</span>
 
 <span class="sd">    Parameters</span>
@@ -3203,7 +3203,7 @@
 <div class="viewcode-block" id="write_meg_calibration">
 <a class="viewcode-back" href="../../generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.</span>
 
 <span class="sd">    Parameters</span>
@@ -3278,7 +3278,7 @@
 <div class="viewcode-block" id="write_meg_crosstalk">
 <a class="viewcode-back" href="../../generated/mne_bids.write_meg_crosstalk.html#mne_bids.write_meg_crosstalk">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">write_meg_crosstalk</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_meg_crosstalk</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN crosstalk information to disk.</span>
 
 <span class="sd">    Parameters</span>
@@ -3328,7 +3328,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_get_daysback</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_daysback</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span> <span class="n">bids_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">BIDSPath</span><span class="p">],</span> <span class="n">rng</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">,</span> <span class="n">show_progress_thresh</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to find a suitable &quot;daysback&quot; for anonymization.</span>
@@ -3397,7 +3397,7 @@
     <span class="k">return</span> <span class="n">daysback</span>
 
 
-<span class="k">def</span> <span class="nf">_check_crosstalk_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">:</span> <span class="n">BIDSPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_crosstalk_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">:</span> <span class="n">BIDSPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="n">is_crosstalk_path</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span>
         <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span>
@@ -3407,7 +3407,7 @@
     <span class="k">return</span> <span class="n">is_crosstalk_path</span>
 
 
-<span class="k">def</span> <span class="nf">_check_finecal_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">:</span> <span class="n">BIDSPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_finecal_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">:</span> <span class="n">BIDSPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="n">is_finecal_path</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span>
         <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span>
@@ -3420,7 +3420,7 @@
 <div class="viewcode-block" id="anonymize_dataset">
 <a class="viewcode-back" href="../../generated/mne_bids.anonymize_dataset.html#mne_bids.anonymize_dataset">[docs]</a>
 <span class="nd">@verbose</span>
-<span class="k">def</span> <span class="nf">anonymize_dataset</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">anonymize_dataset</span><span class="p">(</span>
     <span class="n">bids_root_in</span><span class="p">,</span>
     <span class="n">bids_root_out</span><span class="p">,</span>
     <span class="n">daysback</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -3815,7 +3815,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-03.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-07.
       <br/>
     
   </p>
