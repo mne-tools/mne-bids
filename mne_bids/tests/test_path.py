@@ -1165,6 +1165,13 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
 
+    # Test that when there is a noise task file in the subject directory it will take precedence
+    # over the emptyroom directory file
+    er_noise_task_path = er_bids_path.copy().update(subject="01", session="01", task="noise")
+    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
+    recovered_er_bids_path = bids_path.find_empty_room()
+    assert er_noise_task_path == recovered_er_bids_path
+
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, "sub-emptyroom"))
     dates = ["20021204", "20021201", "20021001"]
