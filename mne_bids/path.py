@@ -69,11 +69,18 @@ def _find_empty_room_candidates(bids_path):
     del allowed_extensions[allowed_extensions.index(".pdf")]
 
     # Get possible noise task files in the same directory as the recording.
-    noisetask_fns = [
+    noisetask_tmp = [
         candidate
         for candidate in noisetask_path.match()
         if candidate.extension in allowed_extensions
     ]
+    # For some reason a single file can produce multiple hits in the match function. Remove dups
+    noisetask_fns = []
+    for i in range(len(noisetask_tmp)):
+        fn = noisetask_tmp.pop()
+        if not any(fn.fpath == f.fpath for f in noisetask_fns):
+            noisetask_fns.append(fn)
+
 
     # If we have more than one noise task file, we need to disambiguate.
     # It might be that it's a
@@ -95,8 +102,9 @@ def _find_empty_room_candidates(bids_path):
         )
         warn(msg)
         noisetask_fns = []
-    else:
+    elif len(noisetask_fns) == 1:
         return noisetask_fns[0]
+
 
     if not emptyroom_dir.exists() and not noisetask_fns:
         return list()
