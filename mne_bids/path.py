@@ -60,7 +60,7 @@ def _find_empty_room_candidates(bids_path):
 
     # Find matching "task-noise" files in the same directory as the recording.
     noisetask_path = bids_path.update(
-        split=None, task="noise", datatype=datatype, suffix=datatype
+        split=None, run=None, task="noise", datatype=datatype, suffix=datatype
     )
 
     allowed_extensions = list(reader.keys())
@@ -74,11 +74,15 @@ def _find_empty_room_candidates(bids_path):
         for candidate in noisetask_path.match()
         if candidate.extension in allowed_extensions
     ]
-    # For some reason a single file can produce multiple hits in the match function. Remove dups
+    print(noisetask_tmp)
+    # For some reason a single file can produce multiple hits in the match function.
+    # Remove dups
     noisetask_fns = []
     for i in range(len(noisetask_tmp)):
         fn = noisetask_tmp.pop()
-        if not any(fn.fpath == f.fpath for f in noisetask_fns):
+        if len(noisetask_tmp) == 0 or not any(
+            fn.fpath == f.fpath for f in noisetask_fns
+        ):
             noisetask_fns.append(fn)
 
     # If we have more than one noise task file, we need to disambiguate.

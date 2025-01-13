@@ -1138,6 +1138,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
         task="audiovisual",
         run="01",
         root=bids_root,
+        datatype="meg",
         suffix="meg",
     )
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
@@ -1167,29 +1168,26 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Test that when there is a noise task file in the subject directory it will take
     # precedence over the emptyroom directory file
-    er_noise_task_path = er_bids_path.copy().update(
-        subject="01", session="01", task="noise"
+    os.remove(er_bids_path.fpath)
+    er_noise_task_path = bids_path.copy().update(
+        run=None, task="noise",
     )
-    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
-    recovered_er_bids_path = bids_path.find_empty_room()
-    assert er_noise_task_path == recovered_er_bids_path
 
-    # Test that when there is a split noise task file that the correct one is
-    # chosen (split 01)
-    os.remove(er_noise_task_path.fpath)
-    er_noise_task_path.update(split="01")
     write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_noise_task_path == recovered_er_bids_path
 
     # Check that when there are multiple matches that cannot be resolved via assigning
     # split=01 that the sub-emptyroom is the fallback
-    er_noise_task_path.update(run="100")
-    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
-    recovered_er_bids_path = bids_path.find_empty_room()
+    dup_noise_task_path = er_noise_task_path.copy()
+    dup_noise_task_path.update(run="100", split=None)
+    write_raw_bids(er_raw, dup_noise_task_path, overwrite=True, verbose=False)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True, verbose=False)
+    with pytest.warns(RuntimeWarning):
+        recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
     os.remove(er_noise_task_path.fpath)
-    os.remove(er_noise_task_path.update(split="01").fpath)
+    os.remove(dup_noise_task_path.fpath)
 
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, "sub-emptyroom"))
