@@ -75,7 +75,8 @@ def _find_empty_room_candidates(bids_path):
         if candidate.extension in allowed_extensions
     ]
 
-    # If we have more than one noise task file, we need to disambiguate. It might be that it's a
+    # If we have more than one noise task file, we need to disambiguate.
+    # It might be that it's a
     # split recording.
     if len(noisetask_fns) > 1 and any(path.split is not None for path in noisetask_fns):
         noisetask_path.update(spilt="01")
@@ -85,8 +86,8 @@ def _find_empty_room_candidates(bids_path):
             if candidate.extension in allowed_extensions
         ]
 
-    # If it wasn't a split recording, warn the user that something is wonky, then resort to
-    # looking for sub-emptyroom recordings and date-matching.
+    # If it wasn't a split recording, warn the user that something is wonky,
+    # then resort to looking for sub-emptyroom recordings and date-matching.
     if len(noisetask_fns) > 1:
         msg = (
             "Found more than one matching noise task file."
@@ -138,8 +139,8 @@ def _find_matched_empty_room(bids_path):
     from mne_bids import read_raw_bids  # avoid circular import.
 
     candidates = _find_empty_room_candidates(bids_path)
-    # If a single candidate is returned, then there's a same-session noise task recording that
-    # takes priority.
+    # If a single candidate is returned, then there's a same-session noise
+    # task recording that takes priority.
     if not isinstance(candidates, list):
         return candidates
 
