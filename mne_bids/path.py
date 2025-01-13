@@ -59,7 +59,9 @@ def _find_empty_room_candidates(bids_path):
     emptyroom_dir = BIDSPath(root=bids_root, subject="emptyroom").directory
 
     # Find matching "task-noise" files in the same directory as the recording.
-    noisetask_path = bids_path.update(split=None, task="noise", datatype=datatype, suffix=datatype)
+    noisetask_path = bids_path.update(
+        split=None, task="noise", datatype=datatype, suffix=datatype
+    )
 
     allowed_extensions = list(reader.keys())
     # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
@@ -86,8 +88,10 @@ def _find_empty_room_candidates(bids_path):
     # If it wasn't a split recording, warn the user that something is wonky, then resort to
     # looking for sub-emptyroom recordings and date-matching.
     if len(noisetask_fns) > 1:
-        msg = ("Found more than one matching noise task file."
-        " Falling back to looking for sub-emptyroom recordings and date-matching.")
+        msg = (
+            "Found more than one matching noise task file."
+            " Falling back to looking for sub-emptyroom recordings and date-matching."
+        )
         warn(msg)
         noisetask_fns = []
     else:
@@ -98,7 +102,9 @@ def _find_empty_room_candidates(bids_path):
 
     # Check the 'emptyroom' subject for empty-room recording sessions.
     emptyroom_session_dirs = [
-        x for x in emptyroom_dir.iterdir() if x.is_dir() and str(x.name).startswith("ses-")
+        x
+        for x in emptyroom_dir.iterdir()
+        if x.is_dir() and str(x.name).startswith("ses-")
     ]
     if not emptyroom_session_dirs:  # No session sub-directories found
         emptyroom_session_dirs = [emptyroom_dir]
@@ -106,7 +112,9 @@ def _find_empty_room_candidates(bids_path):
     # Now try to discover all recordings inside the session directories.
     candidate_er_fnames = []
     for session_dir in emptyroom_session_dirs:
-        dir_contents = glob.glob(op.join(session_dir, datatype, f"sub-emptyroom_*_{datatype}*"))
+        dir_contents = glob.glob(
+            op.join(session_dir, datatype, f"sub-emptyroom_*_{datatype}*")
+        )
         for item in dir_contents:
             item = Path(item)
             if (item.suffix in allowed_extensions) or (
