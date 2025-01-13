@@ -81,7 +81,6 @@ def _find_empty_room_candidates(bids_path):
         if not any(fn.fpath == f.fpath for f in noisetask_fns):
             noisetask_fns.append(fn)
 
-
     # If we have more than one noise task file, we need to disambiguate.
     # It might be that it's a
     # split recording.
@@ -104,7 +103,6 @@ def _find_empty_room_candidates(bids_path):
         noisetask_fns = []
     elif len(noisetask_fns) == 1:
         return noisetask_fns[0]
-
 
     if not emptyroom_dir.exists() and not noisetask_fns:
         return list()
