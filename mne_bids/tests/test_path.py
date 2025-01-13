@@ -1170,7 +1170,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     # precedence over the emptyroom directory file
     os.remove(er_bids_path.fpath)
     er_noise_task_path = bids_path.copy().update(
-        run=None, task="noise",
+        run=None,
+        task="noise",
     )
 
     write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
