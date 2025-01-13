@@ -74,7 +74,6 @@ def _find_empty_room_candidates(bids_path):
         for candidate in noisetask_path.match()
         if candidate.extension in allowed_extensions
     ]
-    print(noisetask_tmp)
     # For some reason a single file can produce multiple hits in the match function.
     # Remove dups
     noisetask_fns = []
