@@ -531,7 +531,8 @@ def _handle_events_reading(events_fname, raw):
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
-    # drop events where onset is n/a
+    # drop events where onset is n/a; we can't annotate them and thus don't need entries
+    # for them in event_id either
     events_dict = _drop(events_dict, "n/a", "onset")
 
     # Get event descriptions. Use `trial_type` column if available.
@@ -547,9 +548,11 @@ def _handle_events_reading(events_fname, raw):
     # If we lack proper event descriptions, perhaps we have at least an event value?
     elif "value" in events_dict:
         trial_type_col_name = "value"
-    # Worst case: all events will become `n/a` and all values will be `1`
+    # Worst case: all events become `n/a` and all values become `1`
     else:
         trial_type_col_name = None
+        descrs = np.full(len(events_dict["onset"]), "n/a")
+        event_id = {descrs[0]: 1}
 
     if trial_type_col_name is not None:
         # Drop events unrelated to a trial type
@@ -569,26 +572,33 @@ def _handle_events_reading(events_fname, raw):
                         "Creating hierarchical event names."
                     )
                     for ii in idx:
-                        value = values[ii]
-                        value = "na" if value == "n/a" else value
+                        # strip `/` from `n/a` before incorporating into trial type name
+                        value = values[ii] if values[ii] != "n/a" else "na"
                         new_name = f"{trial_type}/{value}"
                         logger.info(f"    Renaming event: {trial_type} -> {new_name}")
                         trial_types[ii] = new_name
-            # drop rows where `value` is `n/a` & convert remaining `value` to int (only
-            # when making our `event_id` dict; `value = n/a` doesn't prevent annotation)
+            # make a copy with rows dropped where `value` is `n/a` (only for making our
+            # `event_id` dict; `value = n/a` doesn't prevent making annotations).
             culled = _drop(events_dict, "n/a", "value")
-            event_id = dict(
-                zip(culled[trial_type_col_name], np.asarray(culled["value"], dtype=int))
-            )
+            # Often (but not always!) the `value` column was written by MNE-BIDS and
+            # represents integer event IDs (as would be found in MNE-Python events
+            # arrays / event_id dicts). But in case not, let's be defensive:
+            culled_vals = culled["value"]
+            try:
+                culled_vals = np.asarray(culled_vals, dtype=float)
+            except ValueError:  # contained strings or complex numbers
+                pass
+            else:
+                try:
+                    culled_vals = culled_vals.astype(int)
+                except ValueError:  # numeric, but has some non-integer values
+                    pass
+            event_id = dict(zip(culled[trial_type_col_name], culled_vals))
         else:
             event_id = dict(zip(trial_types, np.arange(len(trial_types))))
         descrs = np.asarray(trial_types, dtype=str)
 
-    # Worst case: all events become `n/a` and all values become `1`
-    else:
-        descrs = np.full(len(events_dict["onset"]), "n/a")
-        event_id = {descrs[0]: 1}
-    # Deal with "n/a" strings before converting to float
+    # convert onsets & durations to floats ("n/a" onsets were already dropped)
     ons = np.asarray(events_dict["onset"], dtype=float)
     durs = np.array(
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float

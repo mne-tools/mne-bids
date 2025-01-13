@@ -100,6 +100,15 @@ def test_get_keys(return_bids_test_dir):
         ("bogus", None, None),
         ("subject", [subject_id], None),
         ("session", [session_id], None),
+        (
+            "session",
+            [],
+            dict(
+                ignore_tasks="testing",
+                ignore_acquisitions=("calibration", "crosstalk"),
+                ignore_suffixes=("scans", "coordsystem"),
+            ),
+        ),
         ("run", [run, "02"], None),
         ("acquisition", ["calibration", "crosstalk"], None),
         ("task", [task], None),
@@ -153,7 +162,6 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         )
         if entity not in ("acquisition", "run"):
             assert "deriv" in entities
-
     # Clean up
     shutil.rmtree(deriv_path)
 
@@ -857,7 +865,7 @@ def test_make_filenames():
         datatype="ieeg",
     )
     expected_str = (
-        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.json"
+        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.json"
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
@@ -896,7 +904,7 @@ def test_make_filenames():
     basename = BIDSPath(**prefix_data, check=False)
     assert (
         basename.basename
-        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.h5"
+        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.h5"
     )
 
     # what happens with scans.tsv file

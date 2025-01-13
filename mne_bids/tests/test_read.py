@@ -579,6 +579,16 @@ def test_handle_events_reading(tmp_path):
     ev_arr, ev_dict = mne.events_from_annotations(raw)
     assert event_id == ev_dict == {"n/a": 1}  # fallback behavior
 
+    # Test with only a (non-numeric) `value` column
+    events = {"onset": [10, 15], "duration": [1, 1], "value": ["A", "B"]}
+    events_fname = tmp_path / "bids6" / "sub-01_task-test_events.tsv"
+    events_fname.parent.mkdir()
+    _to_tsv(events, events_fname)
+    raw, event_id = _handle_events_reading(events_fname, raw)
+    # don't pass event_id to mne.events_from_annotatations; its values are strings
+    assert event_id == {"A": "A", "B": "B"}
+    assert raw.annotations.description.tolist() == ["A", "B"]
+
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
