@@ -18,6 +18,7 @@ Version 0.17 (unreleased)
 The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Christian O'Reilly`_
+* `Berk Gerçek`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -33,6 +34,7 @@ Detailed list of changes
 
 - :func:`mne_bids.write_raw_bids()` can now handle mne `Raw` objects with `eyegaze` and `pupil` channels, by `Christian O'Reilly`_ (:gh:`1344`)
 - :func:`mne_bids.get_entity_vals()` has a new parameter ``ignore_suffixes`` to easily ignore sidecar files, by `Daniel McCloy`_ (:gh:`1362`)
+- Empty-room matching now preferentially finds recordings in the subject directory tagged as `task-noise` before looking in the `sub-emptyroom` directories. This adds support for a part of the BIDS specification for ER recordings, by `Berk Gerçek`_ (:gh:`1364`)
 
 
 🧐 API and behavior changes
