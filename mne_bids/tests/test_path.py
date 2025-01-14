@@ -1195,8 +1195,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     with pytest.warns(RuntimeWarning):
         recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
-    os.remove(er_noise_task_path.fpath)
-    os.remove(dup_noise_task_path.fpath)
+    er_noise_task_path.fpath.unlink()
+    dup_noise_task_path.fpath.unlink()
 
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, "sub-emptyroom"))
