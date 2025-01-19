@@ -89,7 +89,7 @@ def _find_empty_room_candidates(bids_path):
     # It might be that it's a
     # split recording.
     if len(noisetask_fns) > 1 and any(path.split is not None for path in noisetask_fns):
-        noisetask_path.update(spilt="01")
+        noisetask_path.update(split="01")
         noisetask_fns = [
             candidate
             for candidate in noisetask_path.match()

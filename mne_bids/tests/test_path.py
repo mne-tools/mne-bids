@@ -1176,7 +1176,6 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     # Test that when there is a noise task file in the subject directory it will take
     # precedence over the emptyroom directory file
-    os.remove(er_bids_path.fpath)
     er_noise_task_path = bids_path.copy().update(
         run=None,
         task="noise",
@@ -1185,6 +1184,21 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_noise_task_path == recovered_er_bids_path
+    er_noise_task_path.fpath.unlink()
+
+    # When a split empty room file is present, the first split should be returned as the matching
+    # empty room file
+    split_er_bids_path = er_noise_task_path.copy().update(split="01", extension=".fif")
+    split_er_bids_path.fpath.touch()
+    split_er_bids_path2 = split_er_bids_path.copy().update(
+        split="02", extension=".fif"
+    )  # not used
+    split_er_bids_path2.fpath.touch()
+    recovered_er_bids_path = bids_path.find_empty_room()
+    assert split_er_bids_path == recovered_er_bids_path
+    split_er_bids_path.fpath.unlink()
+    split_er_bids_path2.fpath.unlink()
+    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
 
     # Check that when there are multiple matches that cannot be resolved via assigning
     # split=01 that the sub-emptyroom is the fallback
