@@ -6,7 +6,7 @@
 .. _Anand Saini: https://github.com/anandsaini024
 .. _Ariel Rokem: https://github.com/arokem
 .. _Austin Hurst: https://github.com/a-hurst
-.. _Berk Gercek: https://github.com/berkgercek
+.. _Berk Gerçek: https://github.com/berkgercek
 .. _Bruno Hebling Vieira: https://github.com/bhvieira
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
 .. _Clemens Brunner: https://github.com/cbrnr
