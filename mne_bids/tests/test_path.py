@@ -1186,8 +1186,8 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
     assert er_noise_task_path == recovered_er_bids_path
     er_noise_task_path.fpath.unlink()
 
-    # When a split empty room file is present, the first split should be returned as the matching
-    # empty room file
+    # When a split empty room file is present, the first split should be returned as
+    # the matching empty room file
     split_er_bids_path = er_noise_task_path.copy().update(split="01", extension=".fif")
     split_er_bids_path.fpath.touch()
     split_er_bids_path2 = split_er_bids_path.copy().update(
