@@ -1150,6 +1150,9 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
         suffix="meg",
     )
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    noroot = bids_path.copy().update(root=None)
+    with pytest.raises(ValueError, match="The root of the"):
+        noroot.find_empty_room()
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
