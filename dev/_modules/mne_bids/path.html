@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.17.0.dev20+g18bd9739 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=80f87c15"></script>
+    <script src="../../_static/documentation_options.js?v=7ab182ce"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -77,7 +77,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev20+g18bd9739" />
+  <meta name="docsearch:version" content="0.17.0.dev21+gd7d08dd8" />
 
   </head>
   
@@ -140,7 +140,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev20+g18bd9739 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</p>
   
 </a></div>
     
@@ -539,12 +539,62 @@
     <span class="n">datatype</span> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>  <span class="c1"># We&#39;re only concerned about MEG data here</span>
     <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="c1"># Create a path for the empty-room directory to be used for matching.</span>
     <span class="n">emptyroom_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s2">&quot;emptyroom&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">directory</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="c1"># Find matching &quot;task-noise&quot; files in the same directory as the recording.</span>
+    <span class="n">noisetask_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;noise&quot;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span>
+    <span class="p">)</span>
+
+    <span class="n">allowed_extensions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="c1"># `.pdf` is just a &quot;virtual&quot; extension for BTi data (which is stored inside</span>
+    <span class="c1"># a dedicated directory that doesn&#39;t have an extension)</span>
+    <span class="k">del</span> <span class="n">allowed_extensions</span><span class="p">[</span><span class="n">allowed_extensions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">)]</span>
+
+    <span class="c1"># Get possible noise task files in the same directory as the recording.</span>
+    <span class="n">noisetask_tmp</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">candidate</span>
+        <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">noisetask_path</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="n">allowed_extensions</span>
+    <span class="p">]</span>
+    <span class="c1"># For some reason a single file can produce multiple hits in the match function.</span>
+    <span class="c1"># Remove dups</span>
+    <span class="n">noisetask_fns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">noisetask_tmp</span><span class="p">)):</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">noisetask_tmp</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">noisetask_tmp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">fn</span><span class="o">.</span><span class="n">fpath</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="n">fpath</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">noisetask_fns</span>
+        <span class="p">):</span>
+            <span class="n">noisetask_fns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+    <span class="c1"># If we have more than one noise task file, we need to disambiguate.</span>
+    <span class="c1"># It might be that it&#39;s a</span>
+    <span class="c1"># split recording.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">noisetask_fns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">noisetask_fns</span><span class="p">):</span>
+        <span class="n">noisetask_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;01&quot;</span><span class="p">)</span>
+        <span class="n">noisetask_fns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">candidate</span>
+            <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">noisetask_path</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="n">allowed_extensions</span>
+        <span class="p">]</span>
+
+    <span class="c1"># If it wasn&#39;t a split recording, warn the user that something is wonky,</span>
+    <span class="c1"># then resort to looking for sub-emptyroom recordings and date-matching.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">noisetask_fns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Found more than one matching noise task file.&quot;</span>
+            <span class="s2">&quot; Falling back to looking for sub-emptyroom recordings and date-matching.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">noisetask_fns</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">noisetask_fns</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">noisetask_fns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">noisetask_fns</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
 
-    <span class="c1"># Find the empty-room recording sessions.</span>
+    <span class="c1"># Check the &#39;emptyroom&#39; subject for empty-room recording sessions.</span>
     <span class="n">emptyroom_session_dirs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">x</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
@@ -554,12 +604,6 @@
         <span class="n">emptyroom_session_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">emptyroom_dir</span><span class="p">]</span>
 
     <span class="c1"># Now try to discover all recordings inside the session directories.</span>
-
-    <span class="n">allowed_extensions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-    <span class="c1"># `.pdf` is just a &quot;virtual&quot; extension for BTi data (which is stored inside</span>
-    <span class="c1"># a dedicated directory that doesn&#39;t have an extension)</span>
-    <span class="k">del</span> <span class="n">allowed_extensions</span><span class="p">[</span><span class="n">allowed_extensions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">)]</span>
-
     <span class="n">candidate_er_fnames</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">session_dir</span> <span class="ow">in</span> <span class="n">emptyroom_session_dirs</span><span class="p">:</span>
         <span class="n">dir_contents</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span>
@@ -588,6 +632,10 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_raw_bids</span>  <span class="c1"># avoid circular import.</span>
 
     <span class="n">candidates</span> <span class="o">=</span> <span class="n">_find_empty_room_candidates</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+    <span class="c1"># If a single candidate is returned, then there&#39;s a same-session noise</span>
+    <span class="c1"># task recording that takes priority.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">candidates</span>
 
     <span class="c1"># Walk through recordings, trying to extract the recording date:</span>
     <span class="c1"># First, from the filename; and if that fails, from `info[&#39;meas_date&#39;]`.</span>
@@ -3119,7 +3167,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-07.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-20.
       <br/>
     
   </p>
