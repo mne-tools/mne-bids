@@ -56,12 +56,62 @@ def _find_empty_room_candidates(bids_path):
     datatype = "meg"  # We're only concerned about MEG data here
     bids_fname = bids_path.update(suffix=datatype).fpath
     _, ext = _parse_ext(bids_fname)
+    # Create a path for the empty-room directory to be used for matching.
     emptyroom_dir = BIDSPath(root=bids_root, subject="emptyroom").directory
 
-    if not emptyroom_dir.exists():
+    # Find matching "task-noise" files in the same directory as the recording.
+    noisetask_path = bids_path.update(
+        split=None, run=None, task="noise", datatype=datatype, suffix=datatype
+    )
+
+    allowed_extensions = list(reader.keys())
+    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
+    # a dedicated directory that doesn't have an extension)
+    del allowed_extensions[allowed_extensions.index(".pdf")]
+
+    # Get possible noise task files in the same directory as the recording.
+    noisetask_tmp = [
+        candidate
+        for candidate in noisetask_path.match()
+        if candidate.extension in allowed_extensions
+    ]
+    # For some reason a single file can produce multiple hits in the match function.
+    # Remove dups
+    noisetask_fns = []
+    for i in range(len(noisetask_tmp)):
+        fn = noisetask_tmp.pop()
+        if len(noisetask_tmp) == 0 or not any(
+            fn.fpath == f.fpath for f in noisetask_fns
+        ):
+            noisetask_fns.append(fn)
+
+    # If we have more than one noise task file, we need to disambiguate.
+    # It might be that it's a
+    # split recording.
+    if len(noisetask_fns) > 1 and any(path.split is not None for path in noisetask_fns):
+        noisetask_path.update(split="01")
+        noisetask_fns = [
+            candidate
+            for candidate in noisetask_path.match()
+            if candidate.extension in allowed_extensions
+        ]
+
+    # If it wasn't a split recording, warn the user that something is wonky,
+    # then resort to looking for sub-emptyroom recordings and date-matching.
+    if len(noisetask_fns) > 1:
+        msg = (
+            "Found more than one matching noise task file."
+            " Falling back to looking for sub-emptyroom recordings and date-matching."
+        )
+        warn(msg)
+        noisetask_fns = []
+    elif len(noisetask_fns) == 1:
+        return noisetask_fns[0]
+
+    if not emptyroom_dir.exists() and not noisetask_fns:
         return list()
 
-    # Find the empty-room recording sessions.
+    # Check the 'emptyroom' subject for empty-room recording sessions.
     emptyroom_session_dirs = [
         x
         for x in emptyroom_dir.iterdir()
@@ -71,12 +121,6 @@ def _find_empty_room_candidates(bids_path):
         emptyroom_session_dirs = [emptyroom_dir]
 
     # Now try to discover all recordings inside the session directories.
-
-    allowed_extensions = list(reader.keys())
-    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
-    # a dedicated directory that doesn't have an extension)
-    del allowed_extensions[allowed_extensions.index(".pdf")]
-
     candidate_er_fnames = []
     for session_dir in emptyroom_session_dirs:
         dir_contents = glob.glob(
@@ -105,6 +149,10 @@ def _find_matched_empty_room(bids_path):
     from mne_bids import read_raw_bids  # avoid circular import.
 
     candidates = _find_empty_room_candidates(bids_path)
+    # If a single candidate is returned, then there's a same-session noise
+    # task recording that takes priority.
+    if not isinstance(candidates, list):
+        return candidates
 
     # Walk through recordings, trying to extract the recording date:
     # First, from the filename; and if that fails, from `info['meas_date']`.
