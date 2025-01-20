@@ -905,9 +905,9 @@ class BIDSPath:
                     msg = (
                         "Found more than one matching data file for the "
                         "requested recording. While searching:\n"
-                        f'{indent(repr(self), "    ")}\n'
+                        f"{indent(repr(self), '    ')}\n"
                         f"Found {len(matching_paths)} paths:\n"
-                        f'{indent(matching_paths_str, "    ")}\n'
+                        f"{indent(matching_paths_str, '    ')}\n"
                         "Cannot proceed due to the "
                         "ambiguity. This is likely a problem with your "
                         "BIDS dataset. Please run the BIDS validator on "
@@ -1005,7 +1005,7 @@ class BIDSPath:
 
             if key not in ENTITY_VALUE_TYPE:
                 raise ValueError(
-                    f"Key must be one of " f"{ALLOWED_PATH_ENTITIES}, got {key}"
+                    f"Key must be one of {ALLOWED_PATH_ENTITIES}, got {key}"
                 )
 
             if ENTITY_VALUE_TYPE[key] == "label":
@@ -1152,7 +1152,7 @@ class BIDSPath:
                 allowed_spaces_for_dtype = ALLOWED_SPACES.get(datatype, None)
                 if allowed_spaces_for_dtype is None:
                     raise ValueError(
-                        f"space entity is not valid for datatype " f"{self.datatype}"
+                        f"space entity is not valid for datatype {self.datatype}"
                     )
                 elif space not in allowed_spaces_for_dtype:
                     raise ValueError(
@@ -1462,7 +1462,9 @@ def _truncate_tsv_line(line, lim=10):
     """Truncate a line to the specified number of characters."""
     return "".join(
         [
-            str(val) + (lim - len(val)) * " " if len(val) < lim else f"{val[:lim - 1]} "
+            str(val) + (lim - len(val)) * " "
+            if len(val) < lim
+            else f"{val[: lim - 1]} "
             for val in line.split("\t")
         ]
     )
@@ -1762,7 +1764,7 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
 
         if on_error in ("raise", "warn"):
             if key not in fname_vals:
-                msg = f'Unexpected entity "{key}" found in ' f'filename "{fname}"'
+                msg = f'Unexpected entity "{key}" found in filename "{fname}"'
                 if on_error == "raise":
                     raise KeyError(msg)
                 elif on_error == "warn":
@@ -1864,10 +1866,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # If this was expected, simply return None, otherwise, raise an exception.
     msg = None
     if len(best_candidates) == 0:
-        msg = (
-            f"Did not find any {search_suffix} "
-            f"associated with {bids_path.basename}."
-        )
+        msg = f"Did not find any {search_suffix} associated with {bids_path.basename}."
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
         msg = (
@@ -2085,7 +2084,7 @@ def get_entity_vals(
 
     if entity_key not in entities:
         raise ValueError(
-            f'`key` must be one of: {", ".join(entities)}. ' f"Got: {entity_key}"
+            f"`key` must be one of: {', '.join(entities)}. Got: {entity_key}"
         )
 
     ignore_subjects = _ensure_tuple(ignore_subjects)
@@ -2530,7 +2529,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
 
     if datatype is not None:
         datatype = _ensure_tuple(datatype)
-        search_str = f'*/{"|".join(datatype)}/*'
+        search_str = f"*/{'|'.join(datatype)}/*"
     else:
         search_str = "*.*"
 

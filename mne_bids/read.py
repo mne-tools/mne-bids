@@ -126,7 +126,7 @@ def _read_events(events, event_id, raw, bids_path=None):
     # retrieve events
     if isinstance(events, np.ndarray):
         if events.ndim != 2:
-            raise ValueError("Events must have two dimensions, " f"found {events.ndim}")
+            raise ValueError(f"Events must have two dimensions, found {events.ndim}")
         if events.shape[1] != 3:
             raise ValueError(
                 "Events must have second dimension of length 3, "
@@ -164,7 +164,7 @@ def _read_events(events, event_id, raw, bids_path=None):
                     f"The provided raw data contains annotations, but "
                     f'"event_id" does not contain entries for all annotation '
                     f"descriptions. The following entries are missing: "
-                    f'{", ".join(desc_without_id)}'
+                    f"{', '.join(desc_without_id)}"
                 )
 
     # If we have events, convert them to Annotations so they can be easily
@@ -174,7 +174,7 @@ def _read_events(events, event_id, raw, bids_path=None):
         if ids_without_desc:
             raise ValueError(
                 f"No description was specified for the following event(s): "
-                f'{", ".join([str(x) for x in sorted(ids_without_desc)])}. '
+                f"{', '.join([str(x) for x in sorted(ids_without_desc)])}. "
                 f"Please add them to the event_id dictionary, or drop them "
                 f"from the events array."
             )
@@ -409,9 +409,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
             # Convert time offset to UTC
             acq_time = acq_time.astimezone(timezone.utc)
 
-        logger.debug(
-            f"Loaded {scans_fname} scans file to set " f"acq_time as {acq_time}."
-        )
+        logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
         # First set measurement date to None and then call call anonymize() to
         # remove any traces of the measurement date we wish
         # to replace – it might lurk out in more places than just
@@ -728,7 +726,7 @@ def _handle_channels_reading(channels_fname, raw):
     if ch_diff:
         warn(
             f"Cannot set channel type for the following channels, as they "
-            f'are missing in the raw data: {", ".join(sorted(ch_diff))}'
+            f"are missing in the raw data: {', '.join(sorted(ch_diff))}"
         )
     raw.set_channel_types(
         channel_type_bids_mne_map_available_channels, on_unit_change="ignore"
@@ -744,7 +742,7 @@ def _handle_channels_reading(channels_fname, raw):
             warn(
                 f'Cannot set "bad" status for the following channels, as '
                 f"they are missing in the raw data: "
-                f'{", ".join(sorted(ch_diff))}'
+                f"{', '.join(sorted(ch_diff))}"
             )
 
         raw.info["bads"] = bads_avail
@@ -875,7 +873,7 @@ def read_raw_bids(
             and raw_path.is_symlink()
         ):
             target_path = raw_path.resolve()
-            logger.info(f"Resolving symbolic link: " f"{raw_path} -> {target_path}")
+            logger.info(f"Resolving symbolic link: {raw_path} -> {target_path}")
             raw_path = target_path
         config_path = None
 
@@ -1124,7 +1122,7 @@ def get_head_mri_trans(
 
     if t1w_json_path is None or not t1w_json_path.exists():
         raise FileNotFoundError(
-            f"Did not find T1w JSON sidecar file, tried location: " f"{t1w_json_path}"
+            f"Did not find T1w JSON sidecar file, tried location: {t1w_json_path}"
         )
     for extension in (".nii", ".nii.gz"):
         t1w_path_candidate = t1w_json_path.with_suffix(extension)
@@ -1135,7 +1133,7 @@ def get_head_mri_trans(
     if not t1w_bids_path.fpath.exists():
         raise FileNotFoundError(
             f"Did not find T1w recording file, tried location: "
-            f'{t1w_path_candidate.name.replace(".nii.gz", "")}[.nii, .nii.gz]'
+            f"{t1w_path_candidate.name.replace('.nii.gz', '')}[.nii, .nii.gz]"
         )
 
     # Get MRI landmarks from the JSON sidecar
