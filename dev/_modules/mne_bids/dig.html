@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.17.0.dev22+gade8e4aa documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=7ab182ce"></script>
+    <script src="../../_static/documentation_options.js?v=93de8d8d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -77,7 +77,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev21+gd7d08dd8" />
+  <meta name="docsearch:version" content="0.17.0.dev22+gade8e4aa" />
 
   </head>
   
@@ -140,7 +140,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev22+gade8e4aa documentation</p>
   
 </a></div>
     
@@ -528,7 +528,7 @@
 
 <span class="sd">    Handle xyz coordinates and coordinate frame of each channel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading electrode &quot;</span> <span class="sa">f</span><span class="s2">&quot;coords from </span><span class="si">{</span><span class="n">electrodes_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading electrode coords from </span><span class="si">{</span><span class="n">electrodes_fname</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">electrodes_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">)</span>
     <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
 
@@ -625,7 +625,7 @@
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s2">&quot;kind&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_STIM_CH</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not writing stim chan </span><span class="si">{</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;to electrodes.tsv&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not writing stim chan </span><span class="si">{</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> to electrodes.tsv&quot;</span><span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">][:</span><span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">][:</span><span class="mi">3</span><span class="p">],</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;n/a&quot;</span><span class="p">)</span>
@@ -1322,7 +1322,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-20.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-21.
       <br/>
     
   </p>

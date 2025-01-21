@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.17.0.dev22+gade8e4aa documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=7ab182ce"></script>
+    <script src="../../_static/documentation_options.js?v=93de8d8d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -77,7 +77,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev21+gd7d08dd8" />
+  <meta name="docsearch:version" content="0.17.0.dev22+gade8e4aa" />
 
   </head>
   
@@ -140,7 +140,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev22+gade8e4aa documentation</p>
   
 </a></div>
     
@@ -850,8 +850,7 @@
         <span class="p">},</span>
         <span class="s2">&quot;sample&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;Description&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="s2">&quot;The event onset time in number of sampling points.&quot;</span>
-                <span class="s2">&quot;First sample is 0.&quot;</span>
+                <span class="s2">&quot;The event onset time in number of sampling points.First sample is 0.&quot;</span>
             <span class="p">),</span>
         <span class="p">},</span>
         <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -1658,8 +1657,7 @@
     <span class="c1"># ensuring that int16 can represent the data in original units.</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span> <span class="o">!=</span> <span class="s2">&quot;single&quot;</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Encountered data in &quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="si">}</span><span class="s1">&quot; format. &#39;</span>
-            <span class="s2">&quot;Converting to float32.&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;Encountered data in &quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="si">}</span><span class="s1">&quot; format. Converting to float32.&#39;</span><span class="p">,</span>
             <span class="ne">RuntimeWarning</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -2220,13 +2218,12 @@
 
     <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;You passed events, but no event_id dictionary &quot;</span> <span class="s2">&quot;or event_metadata.&quot;</span>
+            <span class="s2">&quot;You passed events, but no event_id dictionary or event_metadata.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">extra_columns_descriptions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;You passed event_metadata, but no &quot;</span>
-            <span class="s2">&quot;extra_columns_descriptions dictionary.&quot;</span>
+            <span class="s2">&quot;You passed event_metadata, but no extra_columns_descriptions dictionary.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">event_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2406,7 +2403,7 @@
     <span class="k">if</span> <span class="n">associated_er_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Empty-room data file not found: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">associated_er_path</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Empty-room data file not found: </span><span class="si">{</span><span class="n">associated_er_path</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># Turn it into a path relative to the BIDS root</span>
@@ -2750,7 +2747,7 @@
         <span class="n">keep_source</span><span class="o">=</span><span class="n">keep_source</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">scans_path</span><span class="o">.</span><span class="n">fpath</span><span class="si">}</span><span class="s2"> entry with &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">scan_relative_fpath</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">scans_path</span><span class="o">.</span><span class="n">fpath</span><span class="si">}</span><span class="s2"> entry with </span><span class="si">{</span><span class="n">scan_relative_fpath</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
@@ -3522,7 +3519,7 @@
     <span class="k">if</span> <span class="s2">&quot;emptyroom&quot;</span> <span class="ow">in</span> <span class="n">subject_mapping</span> <span class="ow">and</span> <span class="n">subject_mapping</span><span class="p">[</span><span class="s2">&quot;emptyroom&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;emptyroom&quot;</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;You requested to change the &quot;emptyroom&quot; subject ID &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;(to </span><span class="si">{</span><span class="n">subject_mapping</span><span class="p">[</span><span class="s2">&quot;emptyroom&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">). It is not &#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;(to </span><span class="si">{</span><span class="n">subject_mapping</span><span class="p">[</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">). It is not &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;recommended to do this!&quot;</span>
         <span class="p">)</span>
 
@@ -3606,7 +3603,7 @@
     <span class="k">if</span> <span class="n">subjects_missing_mapping_keys</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;The subject_mapping dictionary does not contain an entry for &quot;</span>
-            <span class="sa">f</span><span class="s1">&#39;subject ID: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subjects_missing_mapping_keys</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;subject ID: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subjects_missing_mapping_keys</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="n">_</span><span class="p">,</span> <span class="n">unique_vals_idx</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
@@ -3617,11 +3614,11 @@
         <span class="n">keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">subject_mapping</span><span class="o">.</span><span class="n">values</span><span class="p">()))[</span><span class="n">non_unique_vals_idx</span><span class="p">]</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;The subject_mapping dictionary contains duplicated anonymized &quot;</span>
-            <span class="sa">f</span><span class="s1">&#39;subjet IDs: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;subjet IDs: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="c1"># Produce some logging output</span>
-    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;    Input:  </span><span class="si">{</span><span class="n">bids_root_in</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;    Output: </span><span class="si">{</span><span class="n">bids_root_out</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    Input:  </span><span class="si">{</span><span class="n">bids_root_in</span><span class="si">}</span><span class="se">\n</span><span class="s2">    Output: </span><span class="si">{</span><span class="n">bids_root_out</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="n">daysback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">+=</span> <span class="s2">&quot;Not shifting recording dates (found anatomical scans only).</span><span class="se">\n</span><span class="s2">&quot;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -3815,7 +3812,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-20.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-21.
       <br/>
     
   </p>

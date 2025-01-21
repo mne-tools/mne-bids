@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.17.0.dev22+gade8e4aa documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=7ab182ce"></script>
+    <script src="../../_static/documentation_options.js?v=93de8d8d"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -77,7 +77,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev21+gd7d08dd8" />
+  <meta name="docsearch:version" content="0.17.0.dev22+gade8e4aa" />
 
   </head>
   
@@ -140,7 +140,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev21+gd7d08dd8 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev22+gade8e4aa documentation</p>
   
 </a></div>
     
@@ -609,7 +609,7 @@
     <span class="c1"># retrieve events</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Events must have two dimensions, &quot;</span> <span class="sa">f</span><span class="s2">&quot;found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Events must have two dimensions, found </span><span class="si">{</span><span class="n">events</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Events must have second dimension of length 3, &quot;</span>
@@ -647,7 +647,7 @@
                     <span class="sa">f</span><span class="s2">&quot;The provided raw data contains annotations, but &quot;</span>
                     <span class="sa">f</span><span class="s1">&#39;&quot;event_id&quot; does not contain entries for all annotation &#39;</span>
                     <span class="sa">f</span><span class="s2">&quot;descriptions. The following entries are missing: &quot;</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_without_id</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">desc_without_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
 
     <span class="c1"># If we have events, convert them to Annotations so they can be easily</span>
@@ -657,7 +657,7 @@
         <span class="k">if</span> <span class="n">ids_without_desc</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;No description was specified for the following event(s): &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">sorted</span><span class="p">(</span><span class="n">ids_without_desc</span><span class="p">)])</span><span class="si">}</span><span class="s1">. &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">sorted</span><span class="p">(</span><span class="n">ids_without_desc</span><span class="p">)])</span><span class="si">}</span><span class="s2">. &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Please add them to the event_id dictionary, or drop them &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;from the events array.&quot;</span>
             <span class="p">)</span>
@@ -892,9 +892,7 @@
             <span class="c1"># Convert time offset to UTC</span>
             <span class="n">acq_time</span> <span class="o">=</span> <span class="n">acq_time</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s2"> scans file to set &quot;</span> <span class="sa">f</span><span class="s2">&quot;acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s2">.&quot;</span>
-        <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s2"> scans file to set acq_time as </span><span class="si">{</span><span class="n">acq_time</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="c1"># First set measurement date to None and then call call anonymize() to</span>
         <span class="c1"># remove any traces of the measurement date we wish</span>
         <span class="c1"># to replace – it might lurk out in more places than just</span>
@@ -1211,7 +1209,7 @@
     <span class="k">if</span> <span class="n">ch_diff</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Cannot set channel type for the following channels, as they &quot;</span>
-            <span class="sa">f</span><span class="s1">&#39;are missing in the raw data: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;are missing in the raw data: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span>
         <span class="n">channel_type_bids_mne_map_available_channels</span><span class="p">,</span> <span class="n">on_unit_change</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span>
@@ -1227,7 +1225,7 @@
             <span class="n">warn</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;Cannot set &quot;bad&quot; status for the following channels, as &#39;</span>
                 <span class="sa">f</span><span class="s2">&quot;they are missing in the raw data: &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">ch_diff</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads_avail</span>
@@ -1360,7 +1358,7 @@
             <span class="ow">and</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="n">target_path</span> <span class="o">=</span> <span class="n">raw_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resolving symbolic link: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">target_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Resolving symbolic link: </span><span class="si">{</span><span class="n">raw_path</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">target_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">raw_path</span> <span class="o">=</span> <span class="n">target_path</span>
         <span class="n">config_path</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1612,7 +1610,7 @@
 
     <span class="k">if</span> <span class="n">t1w_json_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">t1w_json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Did not find T1w JSON sidecar file, tried location: &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1w_json_path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Did not find T1w JSON sidecar file, tried location: </span><span class="si">{</span><span class="n">t1w_json_path</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.nii&quot;</span><span class="p">,</span> <span class="s2">&quot;.nii.gz&quot;</span><span class="p">):</span>
         <span class="n">t1w_path_candidate</span> <span class="o">=</span> <span class="n">t1w_json_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">extension</span><span class="p">)</span>
@@ -1623,7 +1621,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">t1w_bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Did not find T1w recording file, tried location: &quot;</span>
-            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">t1w_path_candidate</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.nii.gz&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">[.nii, .nii.gz]&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1w_path_candidate</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">[.nii, .nii.gz]&quot;</span>
         <span class="p">)</span>
 
     <span class="c1"># Get MRI landmarks from the JSON sidecar</span>
@@ -1768,7 +1766,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-20.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-01-21.
       <br/>
     
   </p>
