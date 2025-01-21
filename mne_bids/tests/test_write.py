@@ -87,10 +87,8 @@ warning_str = dict(
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
     edfblocks="ignore:.*EDF format requires equal-length data "
     "blocks:RuntimeWarning:mne",
-    brainvision_unit="ignore:Encountered unsupported "
-    "non-voltage units*.:UserWarning",
-    cnt_warning1="ignore:.*Could not parse meas date from the header. "
-    "Setting to None.",
+    brainvision_unit="ignore:Encountered unsupported non-voltage units*.:UserWarning",
+    cnt_warning1="ignore:.*Could not parse meas date from the header. Setting to None.",
     cnt_warning2="ignore:.*Could not define the number of bytes automatically."
     " Defaulting to 2.",
     cnt_warning3="ignore:.*Coordinate frame could not be inferred.*",
@@ -3561,9 +3559,7 @@ def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     # the datatype inside the file (e.g. EEG -> 'FIF' or MEG -> 'BrainVision')
     with pytest.raises(
         ValueError,
-        match='The input "format" .* is not an '
-        "accepted input format for "
-        ".* datatype.",
+        match='The input "format" .* is not an accepted input format for .* datatype.',
     ):
         if dir_name == "CTF":
             new_format = "BrainVision"

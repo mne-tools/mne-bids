@@ -97,7 +97,7 @@ def update_sidecar_json(bids_path, entries, verbose=None):
     # get the file path
     fpath = bids_path.fpath
     if not fpath.exists():
-        raise RuntimeError(f"Sidecar file does not " f"exist for {fpath}.")
+        raise RuntimeError(f"Sidecar file does not exist for {fpath}.")
 
     # sidecar update either from file, or as dictionary
     if isinstance(entries, dict):
@@ -255,7 +255,7 @@ def update_anat_landmarks(
         raise ValueError(
             f"Could not find an MRI scan. Please check the provided "
             f"bids_path. Tried the following filenames: "
-            f'{", ".join([p.name for p in tried_paths])}'
+            f"{', '.join([p.name for p in tried_paths])}"
         )
 
     if not isinstance(landmarks, DigMontage):  # it's pathlike
@@ -303,7 +303,7 @@ def update_anat_landmarks(
             f"The provided DigMontage did not contain all required cardinal "
             f"points (nasion and left and right pre-auricular points). The "
             f"following points are missing: "
-            f'{", ".join(missing_points)}'
+            f"{', '.join(missing_points)}"
         )
 
     bids_path_json = bids_path.copy().update(extension=".json")

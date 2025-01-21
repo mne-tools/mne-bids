@@ -142,7 +142,7 @@ filterwarnings = [
 
 [tool.ruff.lint]
 exclude = ["__init__.py"]
-ignore = ["A002"]
+ignore = ["A002", "A005"]
 select = ["A", "D", "E", "F", "I", "UP", "W"]
 
 [tool.ruff.lint.pydocstyle]
