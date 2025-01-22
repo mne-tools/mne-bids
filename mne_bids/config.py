@@ -469,9 +469,9 @@ for letter in ("a", "b", "c"):
     for sym in ("Sym", "Asym"):
         BIDS_COORD_FRAME_DESCRIPTIONS[f"mni152nlin2009{letter}{sym}"] = (
             "Also known as ICBM (non-linear coregistration with 40 iterations,"
+            " released in 2009). It comes in three different flavours "
+            "each in symmetric or asymmetric version."
         )
-        " released in 2009). It comes in either three different flavours "
-        "each in symmetric or asymmetric version."
 
 REFERENCES = {
     "mne-bids": "Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., "
