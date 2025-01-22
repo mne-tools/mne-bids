@@ -1006,10 +1006,10 @@ def _sidecar_json(
     ]
 
     ch_info_json_emg = [
-        # ("EEGReference", "n/a"),
-        # ("EEGGround", "n/a"),
-        # ("EEGPlacementScheme", _infer_eeg_placement_scheme(raw)),
-        # ("Manufacturer", manufacturer)
+        ("EMGReference", "n/a"),
+        ("EMGGround", "n/a"),
+        ("EMGPlacementScheme", "n/a"),
+        ("Manufacturer", manufacturer),
     ]
 
     ch_info_json_ieeg = [
