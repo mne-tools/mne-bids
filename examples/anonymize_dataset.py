@@ -1,7 +1,7 @@
 """
-==============================
-13. Anonymizing a BIDS dataset
-==============================
+==========================
+Anonymizing a BIDS dataset
+==========================
 
 Consider the following scenario:
 
@@ -194,7 +194,7 @@ print_dir_tree(bids_root_anon)
 # To ensure results are reproducible across runs, you can pass the
 # ``random_state`` parameter, causing the random number generator to produce
 # the same results every time you execute the function. This may come in handy
-# e.g. in situations where you discover a problem with the data while working
+# in situations where you discover a problem with the data while working
 # with the anonymized dataset, fix the issue in the original dataset, and
 # run anonymization again.
 #
@@ -202,6 +202,15 @@ print_dir_tree(bids_root_anon)
 # dataset, meaning it will always be assigned the anonymized ID ``1``. Only
 # in a dataset with multiple subjects will the effects of randomly-picked IDs
 # become apparent.)
+#
+# A good random seed is truly random. Avoid using random seeds from popular
+# culture, like "42", or "1337". To obtain a truly random seed, you can paste
+# the following into your console:
+# ``python -c "import secrets; print(secrets.randbits(31))"``
+# Here, 31 bits correspond to the maximum seed "size" that the the legacy
+# ``RandomState`` by NumPy, which many scientific libraries still rely on,
+# can accept. For more information, see also this blog post on
+# `NumPy RNG best practices <https://blog.scientific-python.org/numpy/numpy-rng/>`_.
 #
 # .. note::
 #    Passing ``random_state`` merely guarantees that subject IDs and time shift
@@ -218,6 +227,6 @@ for i in range(2):
         bids_root_in=bids_root,
         bids_root_out=bids_root_anon,
         datatypes="meg",
-        random_state=42,
+        random_state=293201004,
     )
     print_dir_tree(bids_root_anon)

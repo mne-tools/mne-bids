@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "hatchling.build"
-requires = ["hatch-vcs", "hatchling"]
+requires = ["hatch-vcs", "hatchling==1.26.3"]
 
 [project]
 authors = [{name = "The MNE-BIDS developers"}]
@@ -19,7 +19,7 @@ classifiers = [
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development",
 ]
-dependencies = ["mne>=1.6", "numpy>=1.21.2", "scipy>=1.7.1"]
+dependencies = ["mne>=1.8", "numpy>=1.23", "scipy>=1.9"]
 description = "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python"
 dynamic = ["version"]
 keywords = [
@@ -57,22 +57,21 @@ doc = [
   "seaborn",
   "sphinx-copybutton",
   "sphinx>=7.4.7",
-  "sphinx_gallery",
+  "sphinx_gallery @ https://github.com/sphinx-gallery/sphinx-gallery/archive/refs/heads/master.zip",
 ]
 # Dependencies for using all mne_bids features
 full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.2.1",
-  "EDFlib-Python >= 1.0.6",  # XXX: drop once mne <1.7 is no longer supported
   "eeglabio >= 0.0.2",
-  "matplotlib >= 3.5.0",
+  "matplotlib >= 3.6",
   "nibabel >= 3.2.1",
   "pandas >= 1.3.2",
   "pybv >= 0.7.5",
-  "pymatreader >= 0.0.30",
+  "pymatreader",
 ]
 # Dependencies for running the test infrastructure
-test = ["mne_bids[full]", "pytest >= 8", "pytest-cov", "pytest-sugar", "ruff"]
+test = ["mne_bids[full]", "pytest", "pytest-cov", "pytest-sugar", "ruff"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"
@@ -143,7 +142,7 @@ filterwarnings = [
 
 [tool.ruff.lint]
 exclude = ["__init__.py"]
-ignore = ["A002"]
+ignore = ["A002", "A005"]
 select = ["A", "D", "E", "F", "I", "UP", "W"]
 
 [tool.ruff.lint.pydocstyle]

@@ -3,9 +3,9 @@
 
 .. _ex-convert-mne-sample:
 
-==========================================
-02. Convert MNE sample data to BIDS format
-==========================================
+======================================
+Convert MNE sample data to BIDS format
+======================================
 
 In this example we will use MNE-BIDS to organize the MNE sample data according
 to the BIDS standard.

@@ -39,6 +39,36 @@ def test_get_ch_type_mapping():
     with pytest.raises(ValueError, match='specified from "bogus" to "mne"'):
         _get_ch_type_mapping(fro="bogus", to="mne")
 
+    # check that all mne types have a corresponding BIDS translation
+    # last update from mne 0.19.0.
+    mne_valid_types = [
+        "bio",
+        "chpi",
+        "dbs",
+        # "dipole",  # currently not converted
+        "ecg",
+        "ecog",
+        "eeg",
+        "emg",
+        "eog",
+        "exci",
+        # "eyetrack",  # currently not converted
+        # "fnirs",  # currently not converted
+        # "gof",  # currently not converted
+        "gsr",
+        "ias",
+        "misc",
+        # "meg",  # inferred in more detail
+        "resp",
+        "seeg",
+        "stim",
+        "syst",
+        "temperature",
+    ]
+    map_mne_to_bids = _get_ch_type_mapping(fro="mne", to="bids")
+    for ch_type in mne_valid_types:
+        assert ch_type in map_mne_to_bids
+
 
 def test_handle_datatype():
     """Test the automatic extraction of datatype from the data."""
@@ -153,7 +183,7 @@ def test_check_datatype():
     # check behavior for unsupported data types
     for datatype in (None, "anat"):
         with pytest.raises(
-            ValueError, match=f"The specified datatype " f"{datatype} is currently not"
+            ValueError, match=f"The specified datatype {datatype} is currently not"
         ):
             _check_datatype(raw_eeg, datatype)
     # check behavior for matching data type
@@ -169,6 +199,6 @@ def test_check_datatype():
         (raw_eeg, "ieeg"),
     ]:
         with pytest.raises(
-            ValueError, match=f"The specified datatype " f"{datatype} was not found"
+            ValueError, match=f"The specified datatype {datatype} was not found"
         ):
             _check_datatype(raw, datatype)

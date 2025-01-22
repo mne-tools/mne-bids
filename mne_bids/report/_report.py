@@ -260,7 +260,7 @@ def _summarize_scans(root, session=None):
     if session is None:
         search_str = "*_scans.tsv"
     else:
-        search_str = f"*ses-{session}" f"*_scans.tsv"
+        search_str = f"*ses-{session}*_scans.tsv"
     scans_fpaths = list(root.rglob(search_str))
     if len(scans_fpaths) == 0:
         warn(

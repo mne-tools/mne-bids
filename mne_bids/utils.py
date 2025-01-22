@@ -8,6 +8,7 @@ import os
 import re
 from datetime import date, datetime, timedelta, timezone
 from os import path as op
+from pathlib import Path
 
 import numpy as np
 from mne import pick_types
@@ -82,9 +83,13 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             megrefgradaxial="MEGREFGRADAXIAL",
             meggradplanar="MEGGRADPLANAR",
             megrefmag="MEGREFMAG",
+            chpi="HLU",
             ias="MEGOTHER",
             syst="MEGOTHER",
             exci="MEGOTHER",
+            # Eye tracking
+            eyegaze="EYEGAZE",
+            pupil="PUPIL",
         )
 
     elif fro == "bids" and to == "mne":
@@ -108,6 +113,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             VEOG="eog",
             HEOG="eog",
             DBS="dbs",
+            # Eye tracking
+            EYEGAZE="eyegaze",
+            PUPIL="pupil",
         )
     else:
         raise ValueError(
@@ -229,7 +237,7 @@ def _write_json(fname, dictionary, overwrite=False):
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
-    json_output = json.dumps(dictionary, indent=4)
+    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
     with open(fname, "w", encoding="utf-8") as fid:
         fid.write(json_output)
         fid.write("\n")
@@ -266,7 +274,7 @@ def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
     if any(ii in val for ii in ["-", "_", "/"]):
         raise ValueError(
-            "Unallowed `-`, `_`, or `/` found in key/value pair" f" {key}: {val}"
+            f"Unallowed `-`, `_`, or `/` found in key/value pair {key}: {val}"
         )
     return key, val
 
@@ -516,10 +524,26 @@ def _import_nibabel(why="work with MRI data"):
         import nibabel
     except ImportError as exc:
         raise exc.__class__(
-            f"nibabel is required to {why} but could not be imported, " f"got: {exc}"
+            f"nibabel is required to {why} but could not be imported, got: {exc}"
         ) from None
     else:
         return nibabel
+
+
+# better example sorting, without relying on numbers in example titles
+def _example_sorter(filename):
+    """Sort MNE-BIDS example filenames in a custom order.
+
+    Examples not explicitly listed in `EXAMPLE_ORDER` will be sorted at the end. This
+    function is defined here (instead of in `conf.py`) because it must be *importable*
+    in order for the sphinx gallery config dict in `conf.py` to remain serializable.
+    """
+    with open(Path(__file__).parents[1] / "doc" / "example_order.json") as fid:
+        EXAMPLE_ORDER = json.load(fid)
+
+    if filename not in EXAMPLE_ORDER:
+        EXAMPLE_ORDER.append(filename)
+    return EXAMPLE_ORDER.index(filename)
 
 
 def warn(

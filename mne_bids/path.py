@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import glob
+import inspect
 import json
 import os
 import re
@@ -55,12 +56,62 @@ def _find_empty_room_candidates(bids_path):
     datatype = "meg"  # We're only concerned about MEG data here
     bids_fname = bids_path.update(suffix=datatype).fpath
     _, ext = _parse_ext(bids_fname)
+    # Create a path for the empty-room directory to be used for matching.
     emptyroom_dir = BIDSPath(root=bids_root, subject="emptyroom").directory
 
-    if not emptyroom_dir.exists():
+    # Find matching "task-noise" files in the same directory as the recording.
+    noisetask_path = bids_path.update(
+        split=None, run=None, task="noise", datatype=datatype, suffix=datatype
+    )
+
+    allowed_extensions = list(reader.keys())
+    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
+    # a dedicated directory that doesn't have an extension)
+    del allowed_extensions[allowed_extensions.index(".pdf")]
+
+    # Get possible noise task files in the same directory as the recording.
+    noisetask_tmp = [
+        candidate
+        for candidate in noisetask_path.match()
+        if candidate.extension in allowed_extensions
+    ]
+    # For some reason a single file can produce multiple hits in the match function.
+    # Remove dups
+    noisetask_fns = []
+    for i in range(len(noisetask_tmp)):
+        fn = noisetask_tmp.pop()
+        if len(noisetask_tmp) == 0 or not any(
+            fn.fpath == f.fpath for f in noisetask_fns
+        ):
+            noisetask_fns.append(fn)
+
+    # If we have more than one noise task file, we need to disambiguate.
+    # It might be that it's a
+    # split recording.
+    if len(noisetask_fns) > 1 and any(path.split is not None for path in noisetask_fns):
+        noisetask_path.update(split="01")
+        noisetask_fns = [
+            candidate
+            for candidate in noisetask_path.match()
+            if candidate.extension in allowed_extensions
+        ]
+
+    # If it wasn't a split recording, warn the user that something is wonky,
+    # then resort to looking for sub-emptyroom recordings and date-matching.
+    if len(noisetask_fns) > 1:
+        msg = (
+            "Found more than one matching noise task file."
+            " Falling back to looking for sub-emptyroom recordings and date-matching."
+        )
+        warn(msg)
+        noisetask_fns = []
+    elif len(noisetask_fns) == 1:
+        return noisetask_fns[0]
+
+    if not emptyroom_dir.exists() and not noisetask_fns:
         return list()
 
-    # Find the empty-room recording sessions.
+    # Check the 'emptyroom' subject for empty-room recording sessions.
     emptyroom_session_dirs = [
         x
         for x in emptyroom_dir.iterdir()
@@ -70,12 +121,6 @@ def _find_empty_room_candidates(bids_path):
         emptyroom_session_dirs = [emptyroom_dir]
 
     # Now try to discover all recordings inside the session directories.
-
-    allowed_extensions = list(reader.keys())
-    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
-    # a dedicated directory that doesn't have an extension)
-    del allowed_extensions[allowed_extensions.index(".pdf")]
-
     candidate_er_fnames = []
     for session_dir in emptyroom_session_dirs:
         dir_contents = glob.glob(
@@ -104,6 +149,10 @@ def _find_matched_empty_room(bids_path):
     from mne_bids import read_raw_bids  # avoid circular import.
 
     candidates = _find_empty_room_candidates(bids_path)
+    # If a single candidate is returned, then there's a same-session noise
+    # task recording that takes priority.
+    if not isinstance(candidates, list):
+        return candidates
 
     # Walk through recordings, trying to extract the recording date:
     # First, from the filename; and if that fails, from `info['meas_date']`.
@@ -856,9 +905,9 @@ class BIDSPath:
                     msg = (
                         "Found more than one matching data file for the "
                         "requested recording. While searching:\n"
-                        f'{indent(repr(self), "    ")}\n'
+                        f"{indent(repr(self), '    ')}\n"
                         f"Found {len(matching_paths)} paths:\n"
-                        f'{indent(matching_paths_str, "    ")}\n'
+                        f"{indent(matching_paths_str, '    ')}\n"
                         "Cannot proceed due to the "
                         "ambiguity. This is likely a problem with your "
                         "BIDS dataset. Please run the BIDS validator on "
@@ -956,7 +1005,7 @@ class BIDSPath:
 
             if key not in ENTITY_VALUE_TYPE:
                 raise ValueError(
-                    f"Key must be one of " f"{ALLOWED_PATH_ENTITIES}, got {key}"
+                    f"Key must be one of {ALLOWED_PATH_ENTITIES}, got {key}"
                 )
 
             if ENTITY_VALUE_TYPE[key] == "label":
@@ -1103,7 +1152,7 @@ class BIDSPath:
                 allowed_spaces_for_dtype = ALLOWED_SPACES.get(datatype, None)
                 if allowed_spaces_for_dtype is None:
                     raise ValueError(
-                        f"space entity is not valid for datatype " f"{self.datatype}"
+                        f"space entity is not valid for datatype {self.datatype}"
                     )
                 elif space not in allowed_spaces_for_dtype:
                     raise ValueError(
@@ -1413,7 +1462,9 @@ def _truncate_tsv_line(line, lim=10):
     """Truncate a line to the specified number of characters."""
     return "".join(
         [
-            str(val) + (lim - len(val)) * " " if len(val) < lim else f"{val[:lim - 1]} "
+            str(val) + (lim - len(val)) * " "
+            if len(val) < lim
+            else f"{val[: lim - 1]} "
             for val in line.split("\t")
         ]
     )
@@ -1713,7 +1764,7 @@ def get_entities_from_fname(fname, on_error="raise", verbose=None):
 
         if on_error in ("raise", "warn"):
             if key not in fname_vals:
-                msg = f'Unexpected entity "{key}" found in ' f'filename "{fname}"'
+                msg = f'Unexpected entity "{key}" found in filename "{fname}"'
                 if on_error == "raise":
                     raise KeyError(msg)
                 elif on_error == "warn":
@@ -1815,10 +1866,7 @@ def _find_matching_sidecar(bids_path, suffix=None, extension=None, on_error="rai
     # If this was expected, simply return None, otherwise, raise an exception.
     msg = None
     if len(best_candidates) == 0:
-        msg = (
-            f"Did not find any {search_suffix} "
-            f"associated with {bids_path.basename}."
-        )
+        msg = f"Did not find any {search_suffix} associated with {bids_path.basename}."
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
         msg = (
@@ -1897,6 +1945,7 @@ def get_entity_vals(
     ignore_modalities=None,
     ignore_datatypes=None,
     ignore_dirs=("derivatives", "sourcedata"),
+    ignore_suffixes=None,
     with_key=False,
     verbose=None,
 ):
@@ -1949,7 +1998,7 @@ def get_entity_vals(
 
         .. versionadded:: 0.11
     ignore_modalities : str | array-like of str | None
-        Modalities(s) to ignore. If ``None``, include all modalities.
+        Modalities to ignore. If ``None``, include all modalities.
     ignore_datatypes : str | array-like of str | None
         Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
         ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
@@ -1958,6 +2007,11 @@ def get_entity_vals(
         include all directories in the search.
 
         .. versionadded:: 0.9
+    ignore_suffixes : str | array-like of str | None
+        Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for
+        ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.
+
+        .. versionadded:: 0.17
     with_key : bool
         If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
@@ -1990,6 +2044,7 @@ def get_entity_vals(
     .. [1] https://bids-specification.rtfd.io/en/latest/common-principles.html#entities
 
     """
+    params = inspect.signature(get_entity_vals).parameters  # for debug messages
     root = _check_fname(
         fname=root,
         overwrite="read",
@@ -2029,7 +2084,7 @@ def get_entity_vals(
 
     if entity_key not in entities:
         raise ValueError(
-            f'`key` must be one of: {", ".join(entities)}. ' f"Got: {entity_key}"
+            f"`key` must be one of: {', '.join(entities)}. Got: {entity_key}"
         )
 
     ignore_subjects = _ensure_tuple(ignore_subjects)
@@ -2043,7 +2098,7 @@ def get_entity_vals(
     ignore_splits = _ensure_tuple(ignore_splits)
     ignore_descriptions = _ensure_tuple(ignore_descriptions)
     ignore_modalities = _ensure_tuple(ignore_modalities)
-
+    ignore_suffixes = _ensure_tuple(ignore_suffixes)
     ignore_dirs = _ensure_tuple(ignore_dirs)
     existing_ignore_dirs = [
         root / d for d in ignore_dirs if (root / d).exists() and (root / d).is_dir()
@@ -2061,6 +2116,10 @@ def get_entity_vals(
         ):
             continue
 
+        if ignore_suffixes and any(
+            [filename.stem.endswith(s) for s in ignore_suffixes]
+        ):
+            continue
         if ignore_datatypes and filename.parent.name in ignore_datatypes:
             continue
         if ignore_subjects and any(
@@ -2088,7 +2147,7 @@ def get_entity_vals(
         ):
             continue
         if ignore_recordings and any(
-            [f"_rec-{a}_" in filename.stem for a in ignore_recordings]
+            [f"_recording-{a}_" in filename.stem for a in ignore_recordings]
         ):
             continue
         if ignore_splits and any(
@@ -2110,6 +2169,15 @@ def get_entity_vals(
             value = f"{entity_long_abbr_map[entity_key]}-{value}"
         if value not in values:
             values.append(value)
+            # display all non-default params passed into the function
+            param_string = ", ".join(
+                f"{k}={v!r}"
+                for k, v in inspect.currentframe().f_back.f_locals.items()
+                if k in params and v != params[k].default
+            )
+            logger.debug(
+                "%s matched by get_entity_vals(%s)", filename.name, param_string
+            )
     return sorted(values)
 
 
@@ -2280,7 +2348,11 @@ def _filter_fnames(
         r"_proc-(" + "|".join(processing) + ")" if processing else r"(|_proc-([^_]+))"
     )
     space_str = r"_space-(" + "|".join(space) + ")" if space else r"(|_space-([^_]+))"
-    rec_str = r"_rec-(" + "|".join(recording) + ")" if recording else r"(|_rec-([^_]+))"
+    rec_str = (
+        r"_recording-(" + "|".join(recording) + ")"
+        if recording
+        else r"(|_recording-([^_]+))"
+    )
     split_str = r"_split-(" + "|".join(split) + ")" if split else r"(|_split-([^_]+))"
     desc_str = (
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
@@ -2457,7 +2529,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
 
     if datatype is not None:
         datatype = _ensure_tuple(datatype)
-        search_str = f'*/{"|".join(datatype)}/*'
+        search_str = f"*/{'|'.join(datatype)}/*"
     else:
         search_str = "*.*"
 

@@ -22,6 +22,9 @@ jobs:
         python-version: ["3.12"]
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -65,6 +68,9 @@ jobs:
         python -m pip install build twine
 
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Build sdist
       run: python -m build --sdist
     - name: Check sdist
@@ -81,6 +87,9 @@ jobs:
       run: python -m pip uninstall -y mne-bids
 
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Build wheel
       run: python -m build --wheel
     - name: Check wheel
@@ -97,18 +106,21 @@ jobs:
       run: python -m pip uninstall -y mne-bids
 
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Test extras install
       run: |
         python -m pip install .[full]
         python -c 'import mne_bids; print(mne_bids.__version__)'
-        python -c 'import nibabel; print(nibabel.__version__)'
-        python -c 'import pybv; print(pybv.__version__)'
-        python -c 'import eeglabio; print(eeglabio.__version__)'
-        python -c 'import pymatreader; print(pymatreader.__version__)'
-        python -c 'import matplotlib; print(matplotlib.__version__)'
-        python -c 'import pandas; print(pandas.__version__)'
-        python -c 'import EDFlib; print("EDFlib has no .__version__")'
+        python -c 'import defusedxml; print(defusedxml.__version__)'
         python -c 'import edfio; print(edfio.__version__)'
+        python -c 'import eeglabio; print(eeglabio.__version__)'
+        python -c 'import matplotlib; print(matplotlib.__version__)'
+        python -c 'import nibabel; print(nibabel.__version__)'
+        python -c 'import pandas; print(pandas.__version__)'
+        python -c 'import pybv; print(pybv.__version__)'
+        python -c 'import pymatreader; print(pymatreader.__version__)'
 
   test:
     # For GitHub "required" CI checks, add in branch protection:
@@ -161,6 +173,9 @@ jobs:
       FORCE_COLOR: true
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
@@ -187,16 +202,14 @@ jobs:
     - name: Install MNE (stable)
       if: matrix.mne-version == 'mne-stable'
       run: |
-        git clone --single-branch --branch maint/1.8 https://github.com/mne-tools/mne-python.git
+        git clone --single-branch --branch maint/1.9 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
     - name: Install MNE (previous stable)
       if: matrix.mne-version == 'mne-prev-stable'
-      # Have to install NumPy<2.1 here because of a change in positional arg handling + MNE 1.7
-      # XXX: drop when mne < 1.8 is no longer supported
       run: |
-        git clone --single-branch --branch maint/1.7 https://github.com/mne-tools/mne-python.git
-        python -m pip install -e ./mne-python "numpy<2.1"
+        git clone --single-branch --branch maint/1.8 https://github.com/mne-tools/mne-python.git
+        python -m pip install -e ./mne-python
 
     - name: Install MNE (main)
       if: matrix.mne-version == 'mne-main'
@@ -206,21 +219,20 @@ jobs:
 
     - name: Install BIDS validator (stable)
       if: matrix.bids-validator-version == 'validator-stable'
-      # XXX: Remove pin once this is solved: https://github.com/bids-standard/bids-validator/issues/2124
       run: |
-        npm install -g bids-validator@1.14.10
+        npm install -g bids-validator
 
     - name: Download BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
       run: |
         pushd ..
-        git clone --depth 1 https://github.com/bids-standard/bids-validator
+        git clone --depth 1 https://github.com/bids-standard/legacy-validator
         popd
 
     - name: Install BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
       run: |
-        pushd ../bids-validator
+        pushd ../legacy-validator
         # Generate the full development node_modules
         npm install
         # Build & bundle the bids-validator CLI package
@@ -276,7 +288,7 @@ jobs:
       run: make test
 
     - name: Upload coverage stats to codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         files: ./coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
@@ -290,6 +302,9 @@ jobs:
         python-version: ["3.12"]
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        fetch-tags: true
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -297,7 +312,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: build_docs-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: build_docs-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -311,3 +326,4 @@ jobs:
       with:
         name: documentation
         path: doc/_build/html
+        include-hidden-files: true

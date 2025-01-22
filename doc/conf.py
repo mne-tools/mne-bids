@@ -114,6 +114,11 @@ release = version
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ["auto_examples/index.rst", "_build", "Thumbs.db", ".DS_Store"]
 
+nitpick_ignore_regex = [
+    # needs https://github.com/sphinx-doc/sphinx/issues/13178
+    ("py:class", r".*pathlib\._local\.Path"),
+]
+
 # HTML options (e.g., theme)
 html_show_sourcelink = False
 html_copy_source = False
@@ -185,7 +190,7 @@ sphinx_gallery_conf = {
     },
     "backreferences_dir": "generated",
     "examples_dirs": "../examples",
-    "within_subsection_order": "ExampleTitleSortKey",
+    "within_subsection_order": "mne_bids.utils._example_sorter",
     "gallery_dirs": "auto_examples",
     "filename_pattern": "^((?!sgskip).)*$",
 }

@@ -12,19 +12,18 @@ Dependencies
 
 Required:
 
-* ``mne`` (>=1.6)
-* ``numpy`` (>=1.21.2)
-* ``scipy`` (>=1.7.0)
+* ``mne`` (>=1.8)
+* ``numpy`` (>=1.23)
+* ``scipy`` (>=1.9)
 
 Optional:
 
 * ``nibabel`` (>=3.2.1, for processing MRI data)
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
 * ``eeglabio`` (>=0.0.2, for writing EEGLAB data)
-* ``pymatreader`` (>=0.0.30, for other operations with EEGLAB data)
-* ``matplotlib`` (>=3.5.0, for using the interactive data inspector)
+* ``pymatreader`` (for other operations with EEGLAB data)
+* ``matplotlib`` (>=3.6, for using the interactive data inspector)
 * ``pandas`` (>=1.3.2, for generating event statistics)
-* ``EDFlib-Python`` (>=1.0.6, for writing EDF data with ``mne`` versions <1.7)
 * ``edfio`` (>=0.2.1, for writing EDF data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
 
