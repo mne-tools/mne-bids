@@ -166,13 +166,17 @@ ALLOWED_DATATYPE_EXTENSIONS = {
 # allow additional extensions that are not BIDS
 # compliant, but we will convert to the
 # recommended formats
-ALLOWED_INPUT_EXTENSIONS = (
-    allowed_extensions_meg
-    + allowed_extensions_eeg
-    + allowed_extensions_ieeg
-    + allowed_extensions_nirs
-    + [".lay", ".EEG", ".cnt", ".CNT", ".bin", ".cdt"]
+ALLOWED_INPUT_EXTENSIONS = sorted(
+    set(
+        allowed_extensions_meg
+        + allowed_extensions_eeg
+        + allowed_extensions_emg
+        + allowed_extensions_ieeg
+        + allowed_extensions_nirs
+        + [".lay", ".EEG", ".cnt", ".CNT", ".bin", ".cdt"]
+    )
 )
+
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
