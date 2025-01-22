@@ -331,7 +331,7 @@ ALLOWED_SPACES["meg"] = ALLOWED_SPACES["eeg"] = (
     + BIDS_EEG_COORDINATE_FRAMES
 )
 ALLOWED_SPACES["ieeg"] = BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FRAMES
-ALLOWED_SPACES["emg"] = None  # TODO revise if we support digitization of EMG sensors
+ALLOWED_SPACES["emg"] = None  # TODO revise if we support digitization of EMG sensors?
 ALLOWED_SPACES["anat"] = None
 ALLOWED_SPACES["beh"] = None
 
