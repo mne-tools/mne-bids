@@ -7,7 +7,6 @@ For each supported file format, implement a test.
 # SPDX-License-Identifier: BSD-3-Clause
 
 import codecs
-import inspect
 import json
 import os
 import os.path as op
@@ -88,10 +87,8 @@ warning_str = dict(
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
     edfblocks="ignore:.*EDF format requires equal-length data "
     "blocks:RuntimeWarning:mne",
-    brainvision_unit="ignore:Encountered unsupported "
-    "non-voltage units*.:UserWarning",
-    cnt_warning1="ignore:.*Could not parse meas date from the header. "
-    "Setting to None.",
+    brainvision_unit="ignore:Encountered unsupported non-voltage units*.:UserWarning",
+    cnt_warning1="ignore:.*Could not parse meas date from the header. Setting to None.",
     cnt_warning2="ignore:.*Could not define the number of bytes automatically."
     " Defaulting to 2.",
     cnt_warning3="ignore:.*Coordinate frame could not be inferred.*",
@@ -103,7 +100,7 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
-        if Path(fname).suffix == ".mff" and check_version("mne", "1.8"):
+        if Path(fname).suffix == ".mff":
             kwargs["events_as_annotations"] = True
         raw = read_raw(fname, *args, **kwargs)
         raw.info["line_freq"] = 60
@@ -226,8 +223,7 @@ def test_write_participants(_bids_validate, tmp_path):
     # add fake participants data
     raw.set_meas_date(datetime(year=1994, month=1, day=26, tzinfo=timezone.utc))
     birthday = (1993, 1, 26)
-    if check_version("mne", "1.8"):
-        birthday = date(*birthday)
+    birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
         "birthday": birthday,
@@ -376,7 +372,7 @@ def test_make_dataset_description(tmp_path, monkeypatch):
     make_dataset_description(
         path=tmp_path,
         name="tst2",
-        authors="MNE B., MNE P.",
+        authors="MNE B., MNE P., MNE Ł.",
         funding="GSOC2019, GSOC2021",
         references_and_links="https://doi.org/10.21105/joss.01896",
         dataset_type="derivative",
@@ -386,7 +382,14 @@ def test_make_dataset_description(tmp_path, monkeypatch):
 
     with open(op.join(tmp_path, "dataset_description.json"), encoding="utf-8") as fid:
         dataset_description_json = json.load(fid)
-        assert dataset_description_json["Authors"] == ["MNE B.", "MNE P."]
+        assert dataset_description_json["Authors"] == ["MNE B.", "MNE P.", "MNE Ł."]
+        # If the text on disk is unicode, json.load will convert it. So let's test that
+        # the text was encoded correctly on disk.
+        fid.seek(0)
+        # don't use json.load here, as it will convert unicode to str
+        dataset_description_string = fid.read()
+        # Check that U+0141 was correctly encoded as Ł on disk
+        assert "MNE Ł." in dataset_description_string
 
     # Check we raise warnings and errors where appropriate
     with pytest.raises(
@@ -629,9 +632,7 @@ def test_fif(_bids_validate, tmp_path):
     )
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
     kwargs = dict()
-    # XXX: remove logic once support for mne<1.8 is dropped
-    if "copy" in inspect.getfullargspec(epochs.get_data).kwonlyargs:
-        kwargs["copy"] = False
+    kwargs["copy"] = False
     assert_array_almost_equal(
         epochs.get_data(**kwargs),
         epochs2.get_data(**kwargs),
@@ -720,8 +721,7 @@ def test_fif(_bids_validate, tmp_path):
     # change the gender but don't force overwrite.
     raw = _read_raw_fif(raw_fname)
     birthday = (1994, 1, 26)
-    if check_version("mne", "1.8"):
-        birthday = date(*birthday)
+    birthday = date(*birthday)
     raw.info["subject_info"] = {
         "his_id": subject_id2,
         "birthday": birthday,
@@ -3559,9 +3559,7 @@ def test_convert_raw_errors(dir_name, fname, reader, tmp_path):
     # the datatype inside the file (e.g. EEG -> 'FIF' or MEG -> 'BrainVision')
     with pytest.raises(
         ValueError,
-        match='The input "format" .* is not an '
-        "accepted input format for "
-        ".* datatype.",
+        match='The input "format" .* is not an accepted input format for .* datatype.',
     ):
         if dir_name == "CTF":
             new_format = "BrainVision"

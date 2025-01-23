@@ -44,9 +44,7 @@ def run():
     opt, args = parser.parse_args()
     if args:
         parser.print_help()
-        parser.error(
-            f"Please do not specify arguments without flags. " f"Got: {args}.\n"
-        )
+        parser.error(f"Please do not specify arguments without flags. Got: {args}.\n")
 
     if opt.bids_root is None:
         parser.print_help()

@@ -202,16 +202,14 @@ jobs:
     - name: Install MNE (stable)
       if: matrix.mne-version == 'mne-stable'
       run: |
-        git clone --single-branch --branch maint/1.8 https://github.com/mne-tools/mne-python.git
+        git clone --single-branch --branch maint/1.9 https://github.com/mne-tools/mne-python.git
         python -m pip install -e ./mne-python
 
     - name: Install MNE (previous stable)
       if: matrix.mne-version == 'mne-prev-stable'
-      # Have to install NumPy<2.1 here because of a change in positional arg handling + MNE 1.7
-      # XXX: drop when mne < 1.8 is no longer supported
       run: |
-        git clone --single-branch --branch maint/1.7 https://github.com/mne-tools/mne-python.git
-        python -m pip install -e ./mne-python "numpy<2.1"
+        git clone --single-branch --branch maint/1.8 https://github.com/mne-tools/mne-python.git
+        python -m pip install -e ./mne-python
 
     - name: Install MNE (main)
       if: matrix.mne-version == 'mne-main'

@@ -11,7 +11,7 @@ import shutil
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import mne
@@ -367,8 +367,7 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
         },
         "sample": {
             "Description": (
-                "The event onset time in number of sampling points."
-                "First sample is 0."
+                "The event onset time in number of sampling points.First sample is 0."
             ),
         },
         "value": {
@@ -479,8 +478,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
 
         # determine the age of the participant
         age = subject_info.get("birthday", None)
-        if isinstance(age, tuple):  # XXX: can be removed once MNE >= 1.8 is required
-            age = date(*age)
         meas_date = raw.info.get("meas_date", None)
         if isinstance(meas_date, tuple | list | np.ndarray):
             meas_date = meas_date[0]
@@ -1177,8 +1174,7 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != "single":
         warn(
-            f'Encountered data in "{raw.orig_format}" format. '
-            "Converting to float32.",
+            f'Encountered data in "{raw.orig_format}" format. Converting to float32.',
             RuntimeWarning,
         )
 
@@ -1734,13 +1730,12 @@ def write_raw_bids(
 
     if events is not None and event_id is None and event_metadata is None:
         raise ValueError(
-            "You passed events, but no event_id dictionary " "or event_metadata."
+            "You passed events, but no event_id dictionary or event_metadata."
         )
 
     if event_metadata is not None and extra_columns_descriptions is None:
         raise ValueError(
-            "You passed event_metadata, but no "
-            "extra_columns_descriptions dictionary."
+            "You passed event_metadata, but no extra_columns_descriptions dictionary."
         )
 
     if event_metadata is not None:
@@ -1920,7 +1915,7 @@ def write_raw_bids(
     if associated_er_path is not None:
         if not associated_er_path.exists():
             raise FileNotFoundError(
-                f"Empty-room data file not found: " f"{associated_er_path}"
+                f"Empty-room data file not found: {associated_er_path}"
             )
 
         # Turn it into a path relative to the BIDS root
@@ -2271,7 +2266,7 @@ def write_raw_bids(
         keep_source=keep_source,
         overwrite=overwrite,
     )
-    logger.info(f"Wrote {scans_path.fpath} entry with " f"{scan_relative_fpath}.")
+    logger.info(f"Wrote {scans_path.fpath} entry with {scan_relative_fpath}.")
 
     return bids_path
 
@@ -3320,7 +3315,7 @@ def anonymize_dataset(
     if "emptyroom" in subject_mapping and subject_mapping["emptyroom"] != "emptyroom":
         warn(
             f'You requested to change the "emptyroom" subject ID '
-            f'(to {subject_mapping["emptyroom"]}). It is not '
+            f"(to {subject_mapping['emptyroom']}). It is not "
             f"recommended to do this!"
         )
 
@@ -3404,7 +3399,7 @@ def anonymize_dataset(
     if subjects_missing_mapping_keys:
         raise IndexError(
             f"The subject_mapping dictionary does not contain an entry for "
-            f'subject ID: {", ".join(subjects_missing_mapping_keys)}'
+            f"subject ID: {', '.join(subjects_missing_mapping_keys)}"
         )
 
     _, unique_vals_idx, counts = np.unique(
@@ -3415,11 +3410,11 @@ def anonymize_dataset(
         keys = np.array(list(subject_mapping.values()))[non_unique_vals_idx]
         raise ValueError(
             f"The subject_mapping dictionary contains duplicated anonymized "
-            f'subjet IDs: {", ".join(keys)}'
+            f"subjet IDs: {', '.join(keys)}"
         )
 
     # Produce some logging output
-    msg = f"\n" f"    Input:  {bids_root_in}\n" f"    Output: {bids_root_out}\n" f"\n"
+    msg = f"\n    Input:  {bids_root_in}\n    Output: {bids_root_out}\n\n"
     if daysback is None:
         msg += "Not shifting recording dates (found anatomical scans only).\n"
     else:

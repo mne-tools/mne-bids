@@ -126,7 +126,7 @@ def run():
         return  # XXX should be return with an error code?
 
     logger.info(
-        f'Marking channels {", ".join(ch_names)} as bad in '
+        f"Marking channels {', '.join(ch_names)} as bad in "
         f"{len(bids_paths)} recording(s) …"
     )
     for bids_path in bids_paths:

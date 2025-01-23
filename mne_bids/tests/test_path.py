@@ -100,6 +100,15 @@ def test_get_keys(return_bids_test_dir):
         ("bogus", None, None),
         ("subject", [subject_id], None),
         ("session", [session_id], None),
+        (
+            "session",
+            [],
+            dict(
+                ignore_tasks="testing",
+                ignore_acquisitions=("calibration", "crosstalk"),
+                ignore_suffixes=("scans", "coordsystem"),
+            ),
+        ),
         ("run", [run, "02"], None),
         ("acquisition", ["calibration", "crosstalk"], None),
         ("task", [task], None),
@@ -153,7 +162,6 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         )
         if entity not in ("acquisition", "run"):
             assert "deriv" in entities
-
     # Clean up
     shutil.rmtree(deriv_path)
 
@@ -169,12 +177,9 @@ def test_search_folder_for_text(capsys):
     captured = capsys.readouterr()
     assert "sub-01_ses-eeg_task-rest_eeg.json" in captured.out
     assert (
-        (
-            "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-            "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
-        )
-        in captured.out
-    )
+        "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+        "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
+    ) in captured.out
     # test if pathlib.Path object
     search_folder_for_text("n/a", Path(test_dir))
 
@@ -182,12 +187,9 @@ def test_search_folder_for_text(capsys):
     out = search_folder_for_text("n/a", test_dir, line_numbers=False, return_str=True)
     assert "sub-01_ses-eeg_task-rest_eeg.json" in out
     assert (
-        (
-            "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-            "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
-        )
-        in out
-    )
+        "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+        "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
+    ) in out
 
 
 def test_print_dir_tree(capsys):
@@ -412,10 +414,7 @@ def test_get_entities_from_fname(fname):
     "fname",
     [
         "sub-01_ses-02_task-test_run-3_split-01_meg.fif",
-        (
-            "/bids_root/sub-01/ses-02/meg/"
-            "sub-01_ses-02_task-test_run-3_split-01_meg.fif"
-        ),
+        ("/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif"),
         "sub-01_ses-02_task-test_run-3_split-01_foo-tfr_meg.fif",
     ],
 )
@@ -857,7 +856,7 @@ def test_make_filenames():
         datatype="ieeg",
     )
     expected_str = (
-        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.json"
+        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.json"
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
@@ -896,7 +895,7 @@ def test_make_filenames():
     basename = BIDSPath(**prefix_data, check=False)
     assert (
         basename.basename
-        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.h5"
+        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.h5"
     )
 
     # what happens with scans.tsv file
@@ -1138,9 +1137,13 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
         task="audiovisual",
         run="01",
         root=bids_root,
+        datatype="meg",
         suffix="meg",
     )
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    noroot = bids_path.copy().update(root=None)
+    with pytest.raises(ValueError, match="The root of the"):
+        noroot.find_empty_room()
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
@@ -1164,6 +1167,44 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
+
+    # Test that when there is a noise task file in the subject directory it will take
+    # precedence over the emptyroom directory file
+    er_noise_task_path = bids_path.copy().update(
+        run=None,
+        task="noise",
+    )
+
+    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
+    recovered_er_bids_path = bids_path.find_empty_room()
+    assert er_noise_task_path == recovered_er_bids_path
+    er_noise_task_path.fpath.unlink()
+
+    # When a split empty room file is present, the first split should be returned as
+    # the matching empty room file
+    split_er_bids_path = er_noise_task_path.copy().update(split="01", extension=".fif")
+    split_er_bids_path.fpath.touch()
+    split_er_bids_path2 = split_er_bids_path.copy().update(
+        split="02", extension=".fif"
+    )  # not used
+    split_er_bids_path2.fpath.touch()
+    recovered_er_bids_path = bids_path.find_empty_room()
+    assert split_er_bids_path == recovered_er_bids_path
+    split_er_bids_path.fpath.unlink()
+    split_er_bids_path2.fpath.unlink()
+    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
+
+    # Check that when there are multiple matches that cannot be resolved via assigning
+    # split=01 that the sub-emptyroom is the fallback
+    dup_noise_task_path = er_noise_task_path.copy()
+    dup_noise_task_path.update(run="100", split=None)
+    write_raw_bids(er_raw, dup_noise_task_path, overwrite=True, verbose=False)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True, verbose=False)
+    with pytest.warns(RuntimeWarning):
+        recovered_er_bids_path = bids_path.find_empty_room()
+    assert er_bids_path == recovered_er_bids_path
+    er_noise_task_path.fpath.unlink()
+    dup_noise_task_path.fpath.unlink()
 
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, "sub-emptyroom"))

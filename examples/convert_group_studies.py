@@ -50,7 +50,7 @@ runs = [
 run_map = dict(zip(runs, range(1, 4)))
 
 for subject_id in subject_ids:
-    eegbci.load_data(subject=subject_id, runs=runs, update_path=True)
+    eegbci.load_data(subjects=subject_id, runs=runs, update_path=True)
 
 # get path to MNE directory with the downloaded example data
 mne_data_dir = mne.get_config("MNE_DATASETS_EEGBCI_PATH")
@@ -81,7 +81,7 @@ raw_list = list()
 bids_list = list()
 for subject_id in subject_ids:
     for run in runs:
-        raw_fname = eegbci.load_data(subject=subject_id, runs=run)[0]
+        raw_fname = eegbci.load_data(subjects=subject_id, runs=run)[0]
         raw = mne.io.read_raw_edf(raw_fname)
         raw.info["line_freq"] = 50  # specify power line frequency
         raw_list.append(raw)
