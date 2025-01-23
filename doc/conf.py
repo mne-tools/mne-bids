@@ -115,7 +115,7 @@ release = version
 exclude_patterns = ["auto_examples/index.rst", "_build", "Thumbs.db", ".DS_Store"]
 
 nitpick_ignore_regex = [
-    # needs https://github.com/sphinx-doc/sphinx/issues/13178
+    # TODO can be removed when min. Sphinx version is 8.2
     ("py:class", r".*pathlib\._local\.Path"),
 ]
 
