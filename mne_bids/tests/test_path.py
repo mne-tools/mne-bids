@@ -172,7 +172,7 @@ def test_path_benchmark(tmp_path_factory):
     """Benchmark exploring bids tree."""
     tmp_bids_root = tmp_path_factory.mktemp("abc")
 
-    derivatives = ["derivatives/derivatives" + str(i) for i in range(17)]
+    derivatives = [Path("derivatives", "derivatives" + str(i)) for i in range(17)]
 
     bids_subdirectories = ["", "sourcedata", *derivatives]
 
