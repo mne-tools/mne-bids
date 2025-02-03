@@ -5,10 +5,12 @@
 .. _Amaia Benitez: https://github.com/AmaiaBA
 .. _Anand Saini: https://github.com/anandsaini024
 .. _Ariel Rokem: https://github.com/arokem
+.. _Arne Gottwald: https://github.com/waldie11
 .. _Austin Hurst: https://github.com/a-hurst
 .. _Berk Gerçek: https://github.com/berkgercek
 .. _Bruno Hebling Vieira: https://github.com/bhvieira
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
+.. _Christian O'Reilly: https://github.com/christian-oreilly
 .. _Clemens Brunner: https://github.com/cbrnr
 .. _Daniel McCloy: http://dan.mccloy.info
 .. _Denis Engemann: https://github.com/dengemann
@@ -52,4 +54,3 @@
 .. _Tom Donoghue: https://github.com/TomDonoghue
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
-.. _Christian O'Reilly: https://github.com/christian-oreilly
