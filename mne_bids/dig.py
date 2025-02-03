@@ -45,7 +45,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, coord_unit):
 
     Handle xyz coordinates and coordinate frame of each channel.
     """
-    logger.info("Reading electrode " f"coords from {electrodes_fname}.")
+    logger.info(f"Reading electrode coords from {electrodes_fname}.")
     electrodes_dict = _from_tsv(electrodes_fname)
     ch_names_tsv = electrodes_dict["name"]
 
@@ -142,7 +142,7 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
     x, y, z, names = list(), list(), list(), list()
     for ch in raw.info["chs"]:
         if ch["kind"] == FIFF.FIFFV_STIM_CH:
-            logger.debug(f"Not writing stim chan {ch['ch_name']} " f"to electrodes.tsv")
+            logger.debug(f"Not writing stim chan {ch['ch_name']} to electrodes.tsv")
             continue
         elif np.isnan(ch["loc"][:3]).any() or np.allclose(ch["loc"][:3], 0):
             x.append("n/a")

@@ -118,7 +118,7 @@ inspect_dataset(bids_path, l_freq=1.0, h_freq=30.0)
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"The following channels are currently marked as bad:\n"
-    f'    {", ".join(raw.info["bads"])}\n'
+    f"    {', '.join(raw.info['bads'])}\n"
 )
 
 # %%
@@ -137,7 +137,7 @@ mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"After marking MEG 0112 and MEG 0131 as bad, the following channels "
-    f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+    f"are now marked as bad:\n    {', '.join(raw.info['bads'])}\n"
 )
 
 # %%
@@ -159,7 +159,7 @@ raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"After marking MEG 0112 and MEG 0131 as bad and passing "
     f"`overwrite=True`, the following channels "
-    f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+    f"are now marked as bad:\n    {', '.join(raw.info['bads'])}\n"
 )
 
 # %%
@@ -172,5 +172,5 @@ mark_channels(bids_path=bids_path, ch_names=bads, status="bad", verbose=False)
 raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(
     f"After passing `ch_names=[]` and `overwrite=True`, the following "
-    f'channels are now marked as bad:\n    {", ".join(raw.info["bads"])}\n'
+    f"channels are now marked as bad:\n    {', '.join(raw.info['bads'])}\n"
 )

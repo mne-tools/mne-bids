@@ -59,7 +59,7 @@ from mne_bids.stats import count_events
 # to the "eyes closed" task.
 subject = 1
 run = 2
-eegbci.load_data(subject=subject, runs=run, update_path=True)
+eegbci.load_data(subjects=subject, runs=run, update_path=True)
 
 # %%
 # Let's see whether the data has been downloaded using a quick visualization
@@ -94,7 +94,7 @@ print_dir_tree(data_dir)
 # It prevents the data from being loaded and modified when converting to BIDS.
 
 # Load the data from "2 minutes eyes closed rest"
-edf_path = eegbci.load_data(subject=subject, runs=run)[0]
+edf_path = eegbci.load_data(subjects=subject, runs=run)[0]
 raw = mne.io.read_raw_edf(edf_path, preload=False)
 raw.info["line_freq"] = 50  # specify power line frequency as required by BIDS
 

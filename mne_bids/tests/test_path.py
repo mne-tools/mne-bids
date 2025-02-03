@@ -100,6 +100,15 @@ def test_get_keys(return_bids_test_dir):
         ("bogus", None, None),
         ("subject", [subject_id], None),
         ("session", [session_id], None),
+        (
+            "session",
+            [],
+            dict(
+                ignore_tasks="testing",
+                ignore_acquisitions=("calibration", "crosstalk"),
+                ignore_suffixes=("scans", "coordsystem"),
+            ),
+        ),
         ("run", [run, "02"], None),
         ("acquisition", ["calibration", "crosstalk"], None),
         ("task", [task], None),
@@ -153,7 +162,6 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         )
         if entity not in ("acquisition", "run"):
             assert "deriv" in entities
-
     # Clean up
     shutil.rmtree(deriv_path)
 
@@ -169,12 +177,9 @@ def test_search_folder_for_text(capsys):
     captured = capsys.readouterr()
     assert "sub-01_ses-eeg_task-rest_eeg.json" in captured.out
     assert (
-        (
-            "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-            "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
-        )
-        in captured.out
-    )
+        "    1    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+        "    2    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
+    ) in captured.out
     # test if pathlib.Path object
     search_folder_for_text("n/a", Path(test_dir))
 
@@ -182,12 +187,9 @@ def test_search_folder_for_text(capsys):
     out = search_folder_for_text("n/a", test_dir, line_numbers=False, return_str=True)
     assert "sub-01_ses-eeg_task-rest_eeg.json" in out
     assert (
-        (
-            "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
-            "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
-        )
-        in out
-    )
+        "    name      type      units     low_cutof high_cuto descripti sampling_ status    status_de\n"  # noqa: E501
+        "    Fp1       EEG       µV        0.0159154 1000.0    ElectroEn 5000.0    good      n/a"  # noqa: E501
+    ) in out
 
 
 def test_print_dir_tree(capsys):
@@ -263,14 +265,13 @@ def test_make_folders(tmp_path):
 
 
 @testing.requires_testing_data
-def test_rm(return_bids_test_dir, capsys, tmp_path_factory):
+def test_rm(return_bids_test_dir, capsys, tmp_path):
     """Test BIDSPath's rm method to remove files."""
     # for some reason, mne's logger can't be captured by caplog....
-    bids_root = str(tmp_path_factory.mktemp("test_rm") / "mnebids_utils_test_bids_ds")
+    bids_root = tmp_path / "mnebids_utils_test_bids_ds"
     shutil.copytree(return_bids_test_dir, bids_root)
 
-    # without providing all the entities, ambiguous when trying
-    # to use fpath
+    # without providing all the entities, ambiguous when trying to use fpath
     bids_path = BIDSPath(
         subject=subject_id,
         session=session_id,
@@ -413,10 +414,7 @@ def test_get_entities_from_fname(fname):
     "fname",
     [
         "sub-01_ses-02_task-test_run-3_split-01_meg.fif",
-        (
-            "/bids_root/sub-01/ses-02/meg/"
-            "sub-01_ses-02_task-test_run-3_split-01_meg.fif"
-        ),
+        ("/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_split-01_meg.fif"),
         "sub-01_ses-02_task-test_run-3_split-01_foo-tfr_meg.fif",
     ],
 )
@@ -494,13 +492,13 @@ def test_find_matching_sidecar(return_bids_test_dir, tmp_path):
     expected_file = op.join("sub-01", "ses-01", "meg", "sub-01_ses-01_coordsystem.json")
     assert str(sidecar_fname).endswith(expected_file)
 
-    # Find multiple sidecars, tied in score, triggering an error
+    # create a duplicate sidecar, which will be tied in match score, triggering an error
+    dupe = Path(str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"))
+    dupe.touch()
     with pytest.raises(RuntimeError, match="Expected to find a single"):
-        open(
-            str(sidecar_fname).replace("coordsystem.json", "2coordsystem.json"), "w"
-        ).close()
         print_dir_tree(bids_root)
         bids_path.find_matching_sidecar(suffix="coordsystem", extension=".json")
+    dupe.unlink()  # clean up extra file
 
     # Find nothing and raise.
     with pytest.raises(RuntimeError, match="Did not find any"):
@@ -858,7 +856,7 @@ def test_make_filenames():
         datatype="ieeg",
     )
     expected_str = (
-        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.json"
+        "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.json"
     )
     assert BIDSPath(**prefix_data).basename == expected_str
     assert (
@@ -897,7 +895,7 @@ def test_make_filenames():
     basename = BIDSPath(**prefix_data, check=False)
     assert (
         basename.basename
-        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_rec-seven_ieeg.h5"
+        == "sub-one_ses-two_task-three_acq-four_run-1_proc-six_recording-seven_ieeg.h5"
     )
 
     # what happens with scans.tsv file
@@ -1038,6 +1036,7 @@ def test_match(return_bids_test_dir):
 
     assert bids_path_01.match(check=True) == []
     assert bids_path_01.match(check=False)[0].fpath.name == "sub-01_foo.eeg"
+    bids_path_01.fpath.unlink()  # clean up created file
 
 
 @testing.requires_testing_data
@@ -1119,6 +1118,7 @@ def test_find_matching_paths(return_bids_test_dir):
         check=False,
     )
     assert paths_match == paths_find
+    bids_path_01.fpath.unlink()  # clean up created file
 
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
@@ -1137,9 +1137,13 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
         task="audiovisual",
         run="01",
         root=bids_root,
+        datatype="meg",
         suffix="meg",
     )
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    noroot = bids_path.copy().update(root=None)
+    with pytest.raises(ValueError, match="The root of the"):
+        noroot.find_empty_room()
 
     # No empty-room data present.
     er_basename = bids_path.find_empty_room()
@@ -1163,6 +1167,44 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 
     recovered_er_bids_path = bids_path.find_empty_room()
     assert er_bids_path == recovered_er_bids_path
+
+    # Test that when there is a noise task file in the subject directory it will take
+    # precedence over the emptyroom directory file
+    er_noise_task_path = bids_path.copy().update(
+        run=None,
+        task="noise",
+    )
+
+    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
+    recovered_er_bids_path = bids_path.find_empty_room()
+    assert er_noise_task_path == recovered_er_bids_path
+    er_noise_task_path.fpath.unlink()
+
+    # When a split empty room file is present, the first split should be returned as
+    # the matching empty room file
+    split_er_bids_path = er_noise_task_path.copy().update(split="01", extension=".fif")
+    split_er_bids_path.fpath.touch()
+    split_er_bids_path2 = split_er_bids_path.copy().update(
+        split="02", extension=".fif"
+    )  # not used
+    split_er_bids_path2.fpath.touch()
+    recovered_er_bids_path = bids_path.find_empty_room()
+    assert split_er_bids_path == recovered_er_bids_path
+    split_er_bids_path.fpath.unlink()
+    split_er_bids_path2.fpath.unlink()
+    write_raw_bids(er_raw, er_noise_task_path, overwrite=True, verbose=False)
+
+    # Check that when there are multiple matches that cannot be resolved via assigning
+    # split=01 that the sub-emptyroom is the fallback
+    dup_noise_task_path = er_noise_task_path.copy()
+    dup_noise_task_path.update(run="100", split=None)
+    write_raw_bids(er_raw, dup_noise_task_path, overwrite=True, verbose=False)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True, verbose=False)
+    with pytest.warns(RuntimeWarning):
+        recovered_er_bids_path = bids_path.find_empty_room()
+    assert er_bids_path == recovered_er_bids_path
+    er_noise_task_path.fpath.unlink()
+    dup_noise_task_path.fpath.unlink()
 
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, "sub-emptyroom"))
@@ -1358,7 +1400,7 @@ def test_bids_path_label_vs_index_entity():
 
 
 @testing.requires_testing_data
-def test_meg_calibration_fpath(return_bids_test_dir):
+def test_meg_calibration_fpath(return_bids_test_dir, tmp_path):
     """Test BIDSPath.meg_calibration_fpath."""
     bids_root = return_bids_test_dir
 
@@ -1382,15 +1424,18 @@ def test_meg_calibration_fpath(return_bids_test_dir):
     with pytest.raises(ValueError, match="Can only find .* for MEG"):
         bids_path_.meg_calibration_fpath
 
-    # Delete the fine-calibration file. BIDSPath.meg_calibration_fpath
-    # should then return None.
+    # Move the fine-calibration file. BIDSPath.meg_calibration_fpath should then be None
     bids_path_ = _bids_path.copy().update(subject="01", root=bids_root)
-    Path(bids_path_.meg_calibration_fpath).unlink()
+    src = Path(bids_path_.meg_calibration_fpath)
+    src.rename(tmp_path / src.name)
     assert bids_path_.meg_calibration_fpath is None
+    # restore the file
+    (tmp_path / src.name).rename(src)
+    assert bids_path_.meg_calibration_fpath is not None
 
 
 @testing.requires_testing_data
-def test_meg_crosstalk_fpath(return_bids_test_dir):
+def test_meg_crosstalk_fpath(return_bids_test_dir, tmp_path):
     """Test BIDSPath.meg_crosstalk_fpath."""
     bids_root = return_bids_test_dir
 
@@ -1414,11 +1459,14 @@ def test_meg_crosstalk_fpath(return_bids_test_dir):
     with pytest.raises(ValueError, match="Can only find .* for MEG"):
         bids_path.meg_crosstalk_fpath
 
-    # Delete the crosstalk file. BIDSPath.meg_crosstalk_fpath should then
-    # return None.
+    # Move the crosstalk file. BIDSPath.meg_crosstalk_fpath should then be None.
     bids_path = _bids_path.copy().update(subject="01", root=bids_root)
-    Path(bids_path.meg_crosstalk_fpath).unlink()
+    src = Path(bids_path.meg_crosstalk_fpath)
+    src.rename(tmp_path / src.name)
     assert bids_path.meg_crosstalk_fpath is None
+    # restore the file
+    (tmp_path / src.name).rename(src)
+    assert bids_path.meg_crosstalk_fpath is not None
 
 
 @testing.requires_testing_data

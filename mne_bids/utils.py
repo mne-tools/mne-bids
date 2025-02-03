@@ -87,6 +87,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             ias="MEGOTHER",
             syst="MEGOTHER",
             exci="MEGOTHER",
+            # Eye tracking
+            eyegaze="EYEGAZE",
+            pupil="PUPIL",
         )
 
     elif fro == "bids" and to == "mne":
@@ -110,6 +113,9 @@ def _get_ch_type_mapping(fro="mne", to="bids"):
             VEOG="eog",
             HEOG="eog",
             DBS="dbs",
+            # Eye tracking
+            EYEGAZE="eyegaze",
+            PUPIL="pupil",
         )
     else:
         raise ValueError(
@@ -227,7 +233,7 @@ def _write_json(fname, dictionary, overwrite=False):
             f'"{fname}" already exists. Please set overwrite to True.'
         )
 
-    json_output = json.dumps(dictionary, indent=4)
+    json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
     with open(fname, "w", encoding="utf-8") as fid:
         fid.write(json_output)
         fid.write("\n")
@@ -264,7 +270,7 @@ def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
     if any(ii in val for ii in ["-", "_", "/"]):
         raise ValueError(
-            "Unallowed `-`, `_`, or `/` found in key/value pair" f" {key}: {val}"
+            f"Unallowed `-`, `_`, or `/` found in key/value pair {key}: {val}"
         )
     return key, val
 
@@ -514,7 +520,7 @@ def _import_nibabel(why="work with MRI data"):
         import nibabel
     except ImportError as exc:
         raise exc.__class__(
-            f"nibabel is required to {why} but could not be imported, " f"got: {exc}"
+            f"nibabel is required to {why} but could not be imported, got: {exc}"
         ) from None
     else:
         return nibabel

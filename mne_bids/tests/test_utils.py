@@ -183,7 +183,7 @@ def test_check_datatype():
     # check behavior for unsupported data types
     for datatype in (None, "anat"):
         with pytest.raises(
-            ValueError, match=f"The specified datatype " f"{datatype} is currently not"
+            ValueError, match=f"The specified datatype {datatype} is currently not"
         ):
             _check_datatype(raw_eeg, datatype)
     # check behavior for matching data type
@@ -199,6 +199,6 @@ def test_check_datatype():
         (raw_eeg, "ieeg"),
     ]:
         with pytest.raises(
-            ValueError, match=f"The specified datatype " f"{datatype} was not found"
+            ValueError, match=f"The specified datatype {datatype} was not found"
         ):
             _check_datatype(raw, datatype)

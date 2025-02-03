@@ -82,7 +82,7 @@ def _get_brainvision_paths(vhdr_path):
     """
     fname, ext = _parse_ext(vhdr_path)
     if ext != ".vhdr":
-        raise ValueError(f'Expecting file ending in ".vhdr",' f" but got {ext}")
+        raise ValueError(f'Expecting file ending in ".vhdr", but got {ext}')
 
     # Header file seems fine
     # extract encoding from brainvision header file, or default to utf-8
@@ -96,14 +96,14 @@ def _get_brainvision_paths(vhdr_path):
     eeg_file_match = re.search(r"DataFile=(.*\.(eeg|dat))", " ".join(lines))
 
     if not eeg_file_match:
-        raise ValueError("Could not find a .eeg or .dat file link in" f" {vhdr_path}")
+        raise ValueError(f"Could not find a .eeg or .dat file link in {vhdr_path}")
     else:
         eeg_file = eeg_file_match.groups()[0]
 
     # Try to find marker file .vmrk
     vmrk_file_match = re.search(r"MarkerFile=(.*\.vmrk)", " ".join(lines))
     if not vmrk_file_match:
-        raise ValueError("Could not find a .vmrk file link in" f" {vhdr_path}")
+        raise ValueError(f"Could not find a .vmrk file link in {vhdr_path}")
     else:
         vmrk_file = vmrk_file_match.groups()[0]
 
@@ -275,7 +275,7 @@ def _anonymize_brainvision(vhdr_file, date):
 
     # Go through VHDR
     pattern = re.compile(r"^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$")
-    replace = f'at {date.strftime("%H:%M:%S")} :'
+    replace = f"at {date.strftime('%H:%M:%S')} :"
     _replace_file(vhdr_file, pattern, replace)
 
 
@@ -544,7 +544,7 @@ def copyfile_eeglab(src, dest):
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
         raise ValueError(
-            f"Need to move data with same extension" f" but got {ext_src}, {ext_dest}"
+            f"Need to move data with same extension but got {ext_src}, {ext_dest}"
         )
 
     # Load the EEG struct
