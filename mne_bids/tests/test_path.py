@@ -170,15 +170,20 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
 
 def test_path_benchmark(tmp_path_factory):
     """Benchmark exploring bids tree."""
-    tmp_bids_root = tmp_path_factory.mktemp("abc")
+    # This benchmark is to verify the speed-up in function call get_entity_vals with
+    # `include_match=sub-*/` in face of a bids tree which hosts derivatives and sourcedata.
+    n_subjects = 20
+    n_sessions = 10
+    n_derivatives = 17
+    tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
 
-    derivatives = [Path(f"derivatives", f"derivatives" + str(i)) for i in range(17)]
+    derivatives = [Path(f"derivatives", f"derivatives" + str(i)) for i in range(n_derivatives)]
 
     bids_subdirectories = [f"", f"sourcedata", *derivatives]
 
     # Create a BIDS compliant directory tree with high number of branches
-    for i in range(1, 20):
-        for j in range(1, 9):
+    for i in range(1, n_subjects):
+        for j in range(1, n_sessions):
             for subdir in bids_subdirectories:
                 for datatype in [f"eeg", f"meg"]:
                     bids_subdir = BIDSPath(
