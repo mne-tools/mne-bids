@@ -7,10 +7,12 @@ import os
 import os.path as op
 import shutil
 import shutil as sh
+import timeit
 from datetime import datetime, timezone
 from pathlib import Path
 
 import mne
+import numpy as np
 import pytest
 from mne.datasets import testing
 from mne.io import anonymize_info
@@ -164,6 +166,105 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
             assert "deriv" in entities
     # Clean up
     shutil.rmtree(deriv_path)
+
+
+def test_path_benchmark(tmp_path_factory):
+    """Benchmark exploring bids tree."""
+    # This benchmark is to verify the speed-up in function call get_entity_vals with
+    # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
+    n_subjects = 20
+    n_sessions = 10
+    n_derivatives = 17
+    tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
+
+    derivatives = [
+        Path("derivatives", "derivatives" + str(i)) for i in range(n_derivatives)
+    ]
+
+    bids_subdirectories = ["", "sourcedata", *derivatives]
+
+    # Create a BIDS compliant directory tree with high number of branches
+    for i in range(1, n_subjects):
+        for j in range(1, n_sessions):
+            for subdir in bids_subdirectories:
+                for datatype in ["eeg", "meg"]:
+                    bids_subdir = BIDSPath(
+                        subject=str(i),
+                        session=str(j),
+                        datatype=datatype,
+                        task="audvis",
+                        root=str(tmp_bids_root / subdir),
+                    )
+                    bids_subdir.mkdir(exist_ok=True)
+                    Path(bids_subdir.root / "participants.tsv").touch()
+                    Path(bids_subdir.root / "participants.csv").touch()
+                    Path(bids_subdir.root / "README").touch()
+
+                    # os.makedirs(bids_subdir.directory, exist_ok=True)
+                    Path(
+                        bids_subdir.directory, bids_subdir.basename + "_events.tsv"
+                    ).touch()
+                    Path(
+                        bids_subdir.directory, bids_subdir.basename + "_events.csv"
+                    ).touch()
+
+                    if datatype == "meg":
+                        ctf_path = Path(
+                            bids_subdir.directory, bids_subdir.basename + "_meg.ds"
+                        )
+                        ctf_path.mkdir(exist_ok=True)
+                        Path(ctf_path, bids_subdir.basename + ".meg4").touch()
+                        Path(ctf_path, bids_subdir.basename + ".hc").touch()
+                        Path(ctf_path / "hz.ds").mkdir(exist_ok=True)
+                        Path(ctf_path / "hz.ds" / "hz.meg4").touch()
+                        Path(ctf_path / "hz.ds" / "hz.hc").touch()
+
+    # apply nosub on find_matching_matchs with root level bids directory should
+    # yield a performance boost of order of length from bids_subdirectories.
+    timed_all, timed_ignored_nosub = (
+        timeit.timeit(
+            "mne_bids.find_matching_paths(tmp_bids_root)",
+            setup="import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'",
+            number=1,
+        ),
+        timeit.timeit(
+            "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
+            setup="import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'",
+            number=10,
+        )
+        / 10,
+    )
+
+    assert (
+        timed_all / (10 * np.maximum(1, np.floor(len(bids_subdirectories) / 10)))
+        # while this should be of same order, lets give it some space by a factor of 2
+        > 0.5 * timed_ignored_nosub
+    )
+
+    # apply include_match on get_entity_vals with root level bids directory should
+    # yield a performance boost of order of length from bids_subdirectories.
+    timed_entity, timed_entity_match = (
+        timeit.timeit(
+            "mne_bids.get_entity_vals(tmp_bids_root, 'session')",
+            setup="import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'",
+            number=1,
+        ),
+        timeit.timeit(
+            "mne_bids.get_entity_vals(tmp_bids_root, 'session', include_match='sub-*/')",  # noqa: E501
+            setup="import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'",
+            number=10,
+        )
+        / 10,
+    )
+
+    assert (
+        timed_entity / (10 * np.maximum(1, np.floor(len(bids_subdirectories) / 10)))
+        # while this should be of same order, lets give it some space by a factor of 2
+        > 0.5 * timed_entity_match
+    )
+
+    # Clean up
+    shutil.rmtree(tmp_bids_root)
 
 
 def test_search_folder_for_text(capsys):
