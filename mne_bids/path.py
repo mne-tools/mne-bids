@@ -2571,7 +2571,8 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
             p
             for p in paths
             if (p.is_file() and p.suffix != ".json")
-            # do we really want to do this here?
+            # XXX: generalize with a private func that takes
+            # a config of which "data format" are to be expected like .ds
             or (p.is_dir() and p.suffix == ".ds")
         ]
     else:
