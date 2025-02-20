@@ -171,7 +171,7 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
 def test_path_benchmark(tmp_path_factory):
     """Benchmark exploring bids tree."""
     # This benchmark is to verify the speed-up in function call get_entity_vals with
-    # `include_match=sub-*/` in face of a bids tree which hosts derivatives and sourcedata.
+    # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
     n_subjects = 20
     n_sessions = 10
     n_derivatives = 17
