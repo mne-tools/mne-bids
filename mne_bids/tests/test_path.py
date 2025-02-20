@@ -177,45 +177,47 @@ def test_path_benchmark(tmp_path_factory):
     n_derivatives = 17
     tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
 
-    derivatives = [Path(f"derivatives", f"derivatives" + str(i)) for i in range(n_derivatives)]
+    derivatives = [
+        Path("derivatives", "derivatives" + str(i)) for i in range(n_derivatives)
+    ]
 
-    bids_subdirectories = [f"", f"sourcedata", *derivatives]
+    bids_subdirectories = ["", "sourcedata", *derivatives]
 
     # Create a BIDS compliant directory tree with high number of branches
     for i in range(1, n_subjects):
         for j in range(1, n_sessions):
             for subdir in bids_subdirectories:
-                for datatype in [f"eeg", f"meg"]:
+                for datatype in ["eeg", "meg"]:
                     bids_subdir = BIDSPath(
                         subject=str(i),
                         session=str(j),
                         datatype=datatype,
-                        task=f"audvis",
+                        task="audvis",
                         root=str(tmp_bids_root / subdir),
                     )
                     bids_subdir.mkdir(exist_ok=True)
-                    Path(bids_subdir.root / f"participants.tsv").touch()
-                    Path(bids_subdir.root / f"participants.csv").touch()
-                    Path(bids_subdir.root / f"README").touch()
+                    Path(bids_subdir.root / "participants.tsv").touch()
+                    Path(bids_subdir.root / "participants.csv").touch()
+                    Path(bids_subdir.root / "README").touch()
 
                     # os.makedirs(bids_subdir.directory, exist_ok=True)
                     Path(
-                        bids_subdir.directory, bids_subdir.basename + f"_events.tsv"
+                        bids_subdir.directory, bids_subdir.basename + "_events.tsv"
                     ).touch()
                     Path(
-                        bids_subdir.directory, bids_subdir.basename + f"_events.csv"
+                        bids_subdir.directory, bids_subdir.basename + "_events.csv"
                     ).touch()
 
-                    if datatype == f"meg":
+                    if datatype == "meg":
                         ctf_path = Path(
-                            bids_subdir.directory, bids_subdir.basename + f"_meg.ds"
+                            bids_subdir.directory, bids_subdir.basename + "_meg.ds"
                         )
                         ctf_path.mkdir(exist_ok=True)
-                        Path(ctf_path, bids_subdir.basename + f".meg4").touch()
-                        Path(ctf_path, bids_subdir.basename + f".hc").touch()
-                        Path(ctf_path / f"hz.ds").mkdir(exist_ok=True)
-                        Path(ctf_path / f"hz.ds" / f"hz.meg4").touch()
-                        Path(ctf_path / f"hz.ds" / f"hz.hc").touch()
+                        Path(ctf_path, bids_subdir.basename + ".meg4").touch()
+                        Path(ctf_path, bids_subdir.basename + ".hc").touch()
+                        Path(ctf_path / "hz.ds").mkdir(exist_ok=True)
+                        Path(ctf_path / "hz.ds" / "hz.meg4").touch()
+                        Path(ctf_path / "hz.ds" / "hz.hc").touch()
 
     # apply nosub on find_matching_matchs with root level bids directory should
     # yield a performance boost of order of length from bids_subdirectories.
