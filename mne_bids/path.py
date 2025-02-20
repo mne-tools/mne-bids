@@ -2010,7 +2010,7 @@ def get_entity_vals(
         Directories nested directly within ``root`` to ignore. If ``None``,
         include all directories in the search.
 
-        .. versionadded:: 0.17
+        .. versionadded:: 0.9
     ignore_suffixes : str | array-like of str | None
         Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for
         ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.
@@ -2018,7 +2018,7 @@ def get_entity_vals(
         Apply a starting match pragma following Unix style pattern syntax from
         package glob to prefilter search criterion.
 
-        .. versionadded:: 0.9
+        .. versionadded:: 0.17
     with_key : bool
         If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
