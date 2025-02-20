@@ -2580,7 +2580,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
             p
             for p in paths
             if p.is_file()
-            # do we really want to do this here
+            # XXX: see above, generalize with private func
             or (p.is_dir() and p.suffix == ".ds")
         ]
 
