@@ -12,7 +12,6 @@ import shutil as sh
 from copy import deepcopy
 from datetime import datetime
 from io import StringIO
-from itertools import chain as iter_chain
 from os import path as op
 from pathlib import Path
 from textwrap import indent
@@ -2017,8 +2016,9 @@ def get_entity_vals(
 
         .. versionadded:: 0.17
     include_match : str | array-like of str | None
-        Apply a starting match pragma following Unix style pattern syntax from
-        package glob to prefilter search criterion.
+        Glob-style match string(s) of directories to include in the search (i.e., each
+        must end with ``"/"``). ``None`` (the default) is equivalent to ``"**/"``
+        (within any subdirectory of the BIDS root).
 
         .. versionadded:: 0.17
     with_key : bool
@@ -2119,8 +2119,7 @@ def get_entity_vals(
     search_str = f"**/*{entity_long_abbr_map[entity_key]}-*_*"
     if include_match is not None:
         include_match = _ensure_tuple(include_match)
-        filenames = [root.glob(im + search_str) for im in include_match]
-        filenames = iter_chain(*filenames)
+        filenames = [f for im in include_match for f in root.glob(im + search_str)]
     else:
         filenames = root.glob(search_str)
 
@@ -2543,8 +2542,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     root = Path(root)  # if root is str
 
     if datatype is None and not ignore_nosub:
-        search_str = "*.*"
-        paths = root.rglob(search_str)
+        paths = root.rglob("*.*")
     else:
         if datatype is not None:
             datatype = _ensure_tuple(datatype)
@@ -2557,6 +2555,7 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
         if ignore_nosub:
             search_str = f"sub-*/{search_str}"
         # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
+        # Most of the speedup is from using glob.iglob here.
         paths = [
             Path(root, fn)
             for fn in glob.iglob(search_str, root_dir=root, recursive=True)

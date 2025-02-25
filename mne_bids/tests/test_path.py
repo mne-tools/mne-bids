@@ -171,8 +171,8 @@ def test_path_benchmark(tmp_path_factory):
     """Benchmark exploring bids tree."""
     # This benchmark is to verify the speed-up in function call get_entity_vals with
     # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
-    n_subjects = 20
-    n_sessions = 10
+    n_subjects = 10
+    n_sessions = 5
     n_derivatives = 17
     tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
 
@@ -250,6 +250,15 @@ def test_path_benchmark(tmp_path_factory):
     # while this should be of same order, lets give it some space by a factor of 2
     target = 2 * timed_entity / len(bids_subdirectories)
     assert timed_entity_match < target
+
+    # and these should be equivalent
+    out_1 = get_entity_vals(tmp_bids_root, "session")
+    out_2 = get_entity_vals(tmp_bids_root, "session", include_match="**/")
+    assert out_1 == out_2
+    out_3 = get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
+    assert out_2 == out_3  # all are sub-* vals
+    out_4 = get_entity_vals(tmp_bids_root, "session", include_match="none/")
+    assert out_4 == []
 
 
 def test_search_folder_for_text(capsys):
