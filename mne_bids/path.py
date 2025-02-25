@@ -2016,9 +2016,9 @@ def get_entity_vals(
 
         .. versionadded:: 0.17
     include_match : str | array-like of str | None
-        Glob-style match string(s) of directories to include in the search (i.e., each
+        Glob-style pattern(s) of *directories* to include in the search (i.e., each
         must end with ``"/"``). ``None`` (the default) is equivalent to ``"**/"``
-        (within any subdirectory of the BIDS root).
+        (search within any subdirectory of the BIDS root).
 
         .. versionadded:: 0.17
     with_key : bool
