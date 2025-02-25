@@ -2014,6 +2014,8 @@ def get_entity_vals(
     ignore_suffixes : str | array-like of str | None
         Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for
         ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.
+
+        .. versionadded:: 0.17
     include_match : str | array-like of str | None
         Apply a starting match pragma following Unix style pattern syntax from
         package glob to prefilter search criterion.
@@ -2542,24 +2544,19 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
 
     if datatype is None and not ignore_nosub:
         search_str = "*.*"
-        paths = root.rglob(search_str)
     else:
         if datatype is not None:
             datatype = _ensure_tuple(datatype)
-            search_str = f"**/{'|'.join(datatype)}/.*"
+            search_str = f"**/{'|'.join(datatype)}/*.*"
         else:
             search_str = "**/*.*"
 
         # only browse files which are of the form root/sub-*,
         # such that we truely only look in 'sub'-folders:
-
         if ignore_nosub:
-            search_str = "sub-*/" + search_str
+            search_str = f"sub-*/{search_str}"
 
-        paths = [
-            Path(root, fn)
-            for fn in glob.iglob(search_str, root_dir=root, recursive=True)
-        ]
+    paths = root.rglob(search_str)
 
     # Only keep files (not directories), ...
     # and omit the JSON sidecars if `ignore_json` is True.

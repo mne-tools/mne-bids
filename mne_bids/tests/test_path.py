@@ -1046,7 +1046,7 @@ def test_filter_fnames(entities, expected_n_matches):
 
 
 @testing.requires_testing_data
-def test_match(return_bids_test_dir):
+def test_match_basic(return_bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = Path(return_bids_test_dir)
 
@@ -1138,6 +1138,27 @@ def test_match(return_bids_test_dir):
     assert bids_path_01.match(check=True) == []
     assert bids_path_01.match(check=False)[0].fpath.name == "sub-01_foo.eeg"
     bids_path_01.fpath.unlink()  # clean up created file
+
+
+def test_match_advanced(tmp_path):
+    """Test additional match functionality."""
+    bids_root = tmp_path
+    fnames = (
+        "sub-01/nirs/sub-01_task-tapping_events.tsv",
+        "sub-02/nirs/sub-02_task-tapping_events.tsv",
+    )
+    for fname in fnames:
+        this_path = Path(bids_root / fname)
+        this_path.parent.mkdir(parents=True, exist_ok=True)
+        this_path.touch()
+    path = BIDSPath(
+        root=bids_root,
+        datatype="nirs",
+        suffix="events",
+        extension=".tsv",
+    )
+    matches = path.match()
+    assert len(matches) == len(fnames), path
 
 
 @testing.requires_testing_data
