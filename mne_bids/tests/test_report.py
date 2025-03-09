@@ -3,7 +3,6 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os.path as op
 import textwrap
 
 import mne
@@ -26,7 +25,7 @@ _bids_path = BIDSPath(
 
 # Get the MNE testing sample data
 data_path = testing.data_path(download=False)
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
 warning_str = dict(
     channel_unit_changed="ignore:The unit for chann*.:RuntimeWarning:mne",

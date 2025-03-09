@@ -22,7 +22,7 @@ from mne_bids.utils import (
     _infer_eeg_placement_scheme,
 )
 
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
 session_id = "01"
 run = "01"
