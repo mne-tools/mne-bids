@@ -7,6 +7,7 @@ import os
 import os.path as op
 import shutil
 import shutil as sh
+import timeit
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -164,6 +165,100 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
             assert "deriv" in entities
     # Clean up
     shutil.rmtree(deriv_path)
+
+
+def test_path_benchmark(tmp_path_factory):
+    """Benchmark exploring bids tree."""
+    # This benchmark is to verify the speed-up in function call get_entity_vals with
+    # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
+    n_subjects = 10
+    n_sessions = 5
+    n_derivatives = 17
+    tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
+
+    derivatives = [
+        Path("derivatives", "derivatives" + str(i)) for i in range(n_derivatives)
+    ]
+
+    bids_subdirectories = ["", "sourcedata", *derivatives]
+
+    # Create a BIDS compliant directory tree with high number of branches
+    for i in range(1, n_subjects):
+        for j in range(1, n_sessions):
+            for subdir in bids_subdirectories:
+                for datatype in ["eeg", "meg"]:
+                    bids_subdir = BIDSPath(
+                        subject=str(i),
+                        session=str(j),
+                        datatype=datatype,
+                        task="audvis",
+                        root=str(tmp_bids_root / subdir),
+                    )
+                    bids_subdir.mkdir(exist_ok=True)
+                    Path(bids_subdir.root / "participants.tsv").touch()
+                    Path(bids_subdir.root / "participants.csv").touch()
+                    Path(bids_subdir.root / "README").touch()
+
+                    # os.makedirs(bids_subdir.directory, exist_ok=True)
+                    Path(
+                        bids_subdir.directory, bids_subdir.basename + "_events.tsv"
+                    ).touch()
+                    Path(
+                        bids_subdir.directory, bids_subdir.basename + "_events.csv"
+                    ).touch()
+
+                    if datatype == "meg":
+                        ctf_path = Path(
+                            bids_subdir.directory, bids_subdir.basename + "_meg.ds"
+                        )
+                        ctf_path.mkdir(exist_ok=True)
+                        Path(ctf_path, bids_subdir.basename + ".meg4").touch()
+                        Path(ctf_path, bids_subdir.basename + ".hc").touch()
+                        Path(ctf_path / "hz.ds").mkdir(exist_ok=True)
+                        Path(ctf_path / "hz.ds" / "hz.meg4").touch()
+                        Path(ctf_path / "hz.ds" / "hz.hc").touch()
+
+    # apply nosub on find_matching_matchs with root level bids directory should
+    # yield a performance boost of order of length from bids_subdirectories.
+    setup = "import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'"
+    timed_all = timeit.timeit(
+        "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
+    )
+    timed_ignored_nosub = timeit.timeit(
+        "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
+        setup=setup,
+        number=1,
+    )
+
+    # while this should be of same order, lets give it some space by a factor of 2
+    target = 2 * timed_all / len(bids_subdirectories)
+    assert timed_ignored_nosub < target
+
+    # apply include_match on get_entity_vals with root level bids directory should
+    # yield a performance boost of order of length from bids_subdirectories.
+    timed_entity = timeit.timeit(
+        "mne_bids.get_entity_vals(tmp_bids_root, 'session')",
+        setup=setup,
+        number=1,
+    )
+    timed_entity_match = timeit.timeit(
+        "mne_bids.get_entity_vals(tmp_bids_root, 'session', include_match='sub-*/')",  # noqa: E501
+        setup=setup,
+        number=1,
+    )
+
+    # while this should be of same order, lets give it some space by a factor of 2
+    target = 2 * timed_entity / len(bids_subdirectories)
+    assert timed_entity_match < target
+
+    # and these should be equivalent
+    out_1 = get_entity_vals(tmp_bids_root, "session")
+    out_2 = get_entity_vals(tmp_bids_root, "session", include_match="**/")
+    assert out_1 == out_2
+    out_3 = get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
+    assert out_2 == out_3  # all are sub-* vals
+    out_4 = get_entity_vals(tmp_bids_root, "session", include_match="none/")
+    assert out_4 == []
 
 
 def test_search_folder_for_text(capsys):
@@ -945,7 +1040,7 @@ def test_filter_fnames(entities, expected_n_matches):
 
 
 @testing.requires_testing_data
-def test_match(return_bids_test_dir):
+def test_match_basic(return_bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = Path(return_bids_test_dir)
 
@@ -1037,6 +1132,27 @@ def test_match(return_bids_test_dir):
     assert bids_path_01.match(check=True) == []
     assert bids_path_01.match(check=False)[0].fpath.name == "sub-01_foo.eeg"
     bids_path_01.fpath.unlink()  # clean up created file
+
+
+def test_match_advanced(tmp_path):
+    """Test additional match functionality."""
+    bids_root = tmp_path
+    fnames = (
+        "sub-01/nirs/sub-01_task-tapping_events.tsv",
+        "sub-02/nirs/sub-02_task-tapping_events.tsv",
+    )
+    for fname in fnames:
+        this_path = Path(bids_root / fname)
+        this_path.parent.mkdir(parents=True, exist_ok=True)
+        this_path.touch()
+    path = BIDSPath(
+        root=bids_root,
+        datatype="nirs",
+        suffix="events",
+        extension=".tsv",
+    )
+    matches = path.match()
+    assert len(matches) == len(fnames), path
 
 
 @testing.requires_testing_data
