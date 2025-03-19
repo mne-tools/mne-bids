@@ -79,6 +79,7 @@ from mne_bids.utils import (
     _handle_datatype,
     _import_nibabel,
     _infer_eeg_placement_scheme,
+    _infer_emg_placement_scheme,
     _stamp_to_dt,
     _write_json,
     _write_text,
@@ -1008,7 +1009,8 @@ def _sidecar_json(
     ch_info_json_emg = [
         ("EMGReference", "n/a"),
         ("EMGGround", "n/a"),
-        ("EMGPlacementScheme", "n/a"),
+        # TODO EMG: must be one of Measured, ChannelSpecific, Other
+        ("EMGPlacementScheme", _infer_emg_placement_scheme(raw)),
         ("Manufacturer", manufacturer),
     ]
 
@@ -2050,6 +2052,10 @@ def write_raw_bids(
         # if we have an available DigMontage
         if montage is not None or (raw.info["dig"] is not None and raw.info["dig"]):
             _write_dig_bids(bids_path, raw, montage, acpc_aligned, overwrite)
+    elif bids_path.datatype == "emg":
+        # TODO EMG: this is where to handle EMG coordsystem. We're not going to have a
+        #           DigMontage (probably) so need another way to intake the info
+        pass
     else:
         logger.info(
             f"Writing of electrodes.tsv is not supported "
@@ -2202,12 +2208,22 @@ def write_raw_bids(
                     else bids_path.fpath
                 ),
             )
-        elif bids_path.datatype in ["eeg", "ieeg"] and format == "EDF":
+        elif bids_path.datatype in ["eeg", "emg", "ieeg"] and format == "EDF":
             warn("Converting data files to EDF format")
+            bids_path.update(extension=".edf")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
+        elif bids_path.datatype in ["emg"] and format == "BDF":
+            # TODO EMG
+            raise NotImplementedError("Conversion to BDF not yet supported.")
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
+        elif bids_path.datatype in ["emg"]:
+            # TODO EMG: when writing to BDF is possible, that will be the default here
+            # instead. cf: https://github.com/the-siesta-group/edfio/issues/62
+            bids_path.update(extension=".edf")
+            warn("Converting data files to EDF format")
+            _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn("Converting data files to BrainVision format")
             bids_path.update(suffix=bids_path.datatype, extension=".vhdr")

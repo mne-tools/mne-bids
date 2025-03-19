@@ -19,11 +19,13 @@ ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh"]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
 EEG_CONVERT_FORMATS = ["BrainVision", "auto"]
+EMG_CONVERT_FORMATS = ["EDF", "BDF", "auto"]
 IEEG_CONVERT_FORMATS = ["BrainVision", "auto"]
 NIRS_CONVERT_FORMATS = ["auto"]
 CONVERT_FORMATS = {
     "meg": MEG_CONVERT_FORMATS,
     "eeg": EEG_CONVERT_FORMATS,
+    "emg": EMG_CONVERT_FORMATS,
     "ieeg": IEEG_CONVERT_FORMATS,
     "nirs": NIRS_CONVERT_FORMATS,
 }
@@ -140,6 +142,9 @@ allowed_extensions_eeg = [
 
 allowed_extensions_emg = [
     ".edf",  # European Data Format
+    ".bdf",  # Biosemi
+    # TODO EMG: .bdf support awaits https://github.com/the-siesta-group/edfio/issues/62
+    # and corresponding downstream changes in MNE-Python and here in MNE-BIDS
 ]
 
 allowed_extensions_ieeg = [
