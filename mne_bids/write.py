@@ -37,6 +37,7 @@ from scipy import linalg
 
 from mne_bids import (
     BIDSPath,
+    __version__,
     get_anonymization_daysback,
     get_bids_path_from_fname,
     read_raw_bids,
@@ -1297,7 +1298,9 @@ def make_dataset_description(
         doi:10.5281/zenodo.3686061).
     generated_by : list of dict | None
         Used to specify provenance of the dataset. See BIDS specification
-        for details.
+        for details. If ``None``, a basic description containing MNE-BIDS name, version,
+        and URL will be generated for you. To suppress this behavior, pass an empty
+        list.
     source_datasets : list of dict | None
         Used to specify the locations and relevant attributes of all source
         datasets. Each dict in the list represents one source dataset and
@@ -1349,9 +1352,16 @@ def make_dataset_description(
                 )
             if not set(i.keys()).issubset(generated_by_keys):
                 raise ValueError(msg_key.format(i.keys() - generated_by_keys))
+    elif generated_by is not None:
+        raise ValueError(msg_type.format("generated_by"))
     else:
-        if generated_by is not None:
-            raise ValueError(msg_type.format("generated_by"))
+        generated_by = [
+            dict(
+                Name="MNE-BIDS",
+                Version=__version__,
+                CodeURL="https://mne.tools/mne-bids/",
+            )
+        ]
 
     source_ds_keys = set(["URL", "DOI", "Version"])
     if isinstance(source_datasets, list):
