@@ -34,7 +34,6 @@ See the documentation pages in the MNE docs for more information on
 # %%
 # Let's import everything we need for this example:
 
-import os.path as op
 import shutil
 
 import matplotlib.pyplot as plt
@@ -67,10 +66,10 @@ event_id = {
     "Smiley": 5,
     "Button": 32,
 }
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw.fif")
-events_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-eve.fif")
-output_path = op.abspath(op.join(data_path, "..", "MNE-sample-data-bids"))
-fs_subjects_dir = op.join(data_path, "subjects")  # FreeSurfer subjects dir
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
+events_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
+output_path = data_path.parent / "MNE-sample-data-bids"
+fs_subjects_dir = data_path / "subjects"  # FreeSurfer subjects dir
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -79,7 +78,7 @@ fs_subjects_dir = op.join(data_path, "subjects")  # FreeSurfer subjects dir
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(output_path):
+if output_path.exists():
     shutil.rmtree(output_path)
 
 # %%
@@ -109,10 +108,10 @@ print_dir_tree(output_path)
 # matrix :code:`trans`.
 
 # Get the path to our MRI scan
-t1_fname = op.join(fs_subjects_dir, "sample", "mri", "T1.mgz")
+t1_fname = fs_subjects_dir / "sample" / "mri" / "T1.mgz"
 
 # Load the transformation matrix and show what it looks like
-trans_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-trans.fif")
+trans_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-trans.fif"
 trans = mne.read_trans(trans_fname)
 print(trans)
 
@@ -189,7 +188,7 @@ mri_pos = head_to_mri(
 )
 
 # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
-t1_nii_fname = op.join(anat_dir, "sub-01_ses-01_T1w.nii.gz")
+t1_nii_fname = anat_dir / "sub-01_ses-01_T1w.nii.gz"
 
 # Plot it
 fig, axs = plt.subplots(3, 1, figsize=(7, 7), facecolor="k")
@@ -209,7 +208,7 @@ plt.show()
 #
 # We can write another types of MRI data such as FLASH images for BEM models
 
-flash_fname = op.join(fs_subjects_dir, "sample", "mri", "flash", "mef05.mgz")
+flash_fname = fs_subjects_dir / "sample" / "mri" / "flash" / "mef05.mgz"
 
 flash_bids_path = BIDSPath(subject=sub, session=ses, root=output_path, suffix="FLASH")
 
@@ -231,7 +230,7 @@ t1w_bids_path = write_anat(
 anat_dir = t1w_bids_path.directory
 
 # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
-t1_nii_fname = op.join(anat_dir, "sub-01_ses-01_T1w.nii.gz")
+t1_nii_fname = anat_dir / "sub-01_ses-01_T1w.nii.gz"
 
 # Plot it
 fig, ax = plt.subplots()
@@ -264,7 +263,7 @@ flash_bids_path = write_anat(
 )
 
 # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
-flash_nii_fname = op.join(anat_dir, "sub-01_ses-01_FLASH.nii.gz")
+flash_nii_fname = anat_dir / "sub-01_ses-01_FLASH.nii.gz"
 
 # Plot it
 fig, ax = plt.subplots()

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>BIDS conversion for group studies &#8212; MNE-BIDS 0.17.0.dev34+gb208a8cd documentation</title>
+    <title>BIDS conversion for group studies &#8212; MNE-BIDS 0.17.0.dev35+g8fe59282 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8bcf3369"></script>
+    <script src="../_static/documentation_options.js?v=2bdc3931"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev34+gb208a8cd" />
+  <meta name="docsearch:version" content="0.17.0.dev35+g8fe59282" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev34+gb208a8cd documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev35+g8fe59282 documentation</p>
   
 </a></div>
     
@@ -518,8 +518,8 @@ checking out this group conversion example: <a class="reference internal" href="
 </pre></div>
 </div>
 <p>Let us import <code class="docutils literal notranslate"><span class="pre">mne_bids</span></code></p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">eegbci</span>
@@ -553,13 +553,14 @@ checking out this group conversion example: <a class="reference internal" href="
     <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># get path to MNE directory with the downloaded example data</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s2">&quot;MNE-eegbci-data&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <span class="n">eegbci</span><span class="o">.</span><span class="n">data_path</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="pathlib.Path" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class"><span class="n">Path</span></a><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s2">&quot;MNE_DATASETS_EEGBCI_PATH&quot;</span><span class="p">))</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">/</span> <span class="s2">&quot;MNE-eegbci-data&quot;</span>
 </pre></div>
 </div>
 <p>Let us loop over the subjects and create BIDS-compatible folder</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make a path where we can save the data to</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s2">&quot;eegmmidb_bids_group_conversion&quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">/</span> <span class="s2">&quot;eegmmidb_bids_group_conversion&quot;</span>
 </pre></div>
 </div>
 <p>To ensure the output path doesn’t contain any leftover files from previous
@@ -568,8 +569,8 @@ tests and example runs, we simply delete it.</p>
 <p class="admonition-title">Warning</p>
 <p>Do not delete directories that may contain important data!</p>
 </div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.exists" title="os.path.exists" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">exists</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">):</span>
-    <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.exists" title="pathlib.Path.exists" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-method"><span class="n">bids_root</span><span class="o">.</span><span class="n">exists</span></a><span class="p">():</span>
+    <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p>Get a list of the raw objects for this dataset to use their dates
@@ -589,7 +590,7 @@ BIDS-compatible names that will be used to save the files in BIDS.</p>
             <span class="n">session</span><span class="o">=</span><span class="s2">&quot;01&quot;</span><span class="p">,</span>
             <span class="n">task</span><span class="o">=</span><span class="s2">&quot;MotorImagery&quot;</span><span class="p">,</span>
             <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_map</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">]</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
+            <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span>
         <span class="p">)</span>
         <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_list</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
 
@@ -649,7 +650,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 Copying data files to sub-001_ses-01_task-MotorImagery_run-01_eeg.edf
-/home/circleci/project/examples/convert_group_studies.py:109: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/examples/convert_group_studies.py:110: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.edf.
@@ -667,7 +668,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 Copying data files to sub-001_ses-01_task-MotorImagery_run-02_eeg.edf
-/home/circleci/project/examples/convert_group_studies.py:109: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/examples/convert_group_studies.py:110: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.edf.
@@ -685,7 +686,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 Copying data files to sub-001_ses-01_task-MotorImagery_run-03_eeg.edf
-/home/circleci/project/examples/convert_group_studies.py:109: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/examples/convert_group_studies.py:110: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.edf.
@@ -703,7 +704,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 Copying data files to sub-002_ses-01_task-MotorImagery_run-01_eeg.edf
-/home/circleci/project/examples/convert_group_studies.py:109: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/examples/convert_group_studies.py:110: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.edf.
@@ -721,7 +722,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 Copying data files to sub-002_ses-01_task-MotorImagery_run-02_eeg.edf
-/home/circleci/project/examples/convert_group_studies.py:109: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/examples/convert_group_studies.py:110: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.edf.
@@ -739,14 +740,14 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 Copying data files to sub-002_ses-01_task-MotorImagery_run-03_eeg.edf
-/home/circleci/project/examples/convert_group_studies.py:109: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
+/home/circleci/project/examples/convert_group_studies.py:110: RuntimeWarning: EDF/EDF+/BDF files contain two fields for recording dates.Due to file format limitations, one of these fields only supports 2-digit years. The date for that field will be set to 85 (i.e., 1985), the earliest possible date. The true anonymized date is stored in the scans.tsv file.
   write_raw_bids(
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.edf.
 </pre></div>
 </div>
 <p>Now let’s see the structure of the BIDS folder we created.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_group_conversion/
@@ -795,7 +796,7 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-
 </pre></div>
 </div>
 <p>Now let’s get an overview of the events on the whole dataset</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a> <span class="o">=</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a> <span class="o">=</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="pandas.core.frame.DataFrame" class="sphx-glr-backref-module-pandas-core-frame sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">counts</span></a>
 </pre></div>
 </div>
@@ -890,7 +891,7 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-
 </div>
 <br />
 <br /><p>Now let’s generate a report on the dataset.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_report</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">(</span><span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_report</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">(</span><span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_report</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -911,7 +912,7 @@ average 64.0 (std = 0.0) recording channels per scan, out of which 64.0 (std =
 0.0) were used in analysis (0.0 +/- 0.0 were removed from analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.244 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.282 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/241c30601b8e062b34a8b85829a39a45/convert_group_studies.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_group_studies.ipynb</span></code></a></p>
