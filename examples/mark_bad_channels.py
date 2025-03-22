@@ -25,7 +25,6 @@ segments as "bad".
 # Let's start by importing the required modules and functions, reading the
 # "sample" data, and writing it in the BIDS format.
 
-import os.path as op
 import shutil
 
 import mne
@@ -39,8 +38,8 @@ from mne_bids import (
 )
 
 data_path = mne.datasets.sample.data_path()
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw.fif")
-events_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-eve.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
+events_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
 event_id = {
     "Auditory/Left": 1,
     "Auditory/Right": 2,
@@ -49,7 +48,7 @@ event_id = {
     "Smiley": 5,
     "Button": 32,
 }
-bids_root = op.join(data_path, "..", "MNE-sample-data-bids")
+bids_root = data_path.parent / "MNE-sample-data-bids"
 bids_path = BIDSPath(
     subject="01", session="01", task="audiovisual", run="01", root=bids_root
 )

@@ -1073,7 +1073,7 @@ def test_kit(_bids_validate, tmp_path):
         datatype="meg",
         root=bids_root,
     )
-    assert marker_fname.exists()
+    assert marker_fname.fpath.exists()
 
     # test anonymize
     output_path = _test_anonymize(
@@ -1089,7 +1089,7 @@ def test_kit(_bids_validate, tmp_path):
     assert "STI 014" not in data["name"]
 
     # ensure the marker file is produced in the right place
-    assert marker_fname.exists()
+    assert marker_fname.fpath.exists()
 
     # test attempts at writing invalid event data
     event_data = np.loadtxt(events_fname)

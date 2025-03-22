@@ -26,8 +26,8 @@ data. Specifically, we will follow these steps:
 
 # %%
 # We are importing everything we need for this example:
-import os.path as op
 import shutil
+from pathlib import Path
 
 import mne
 from mne.datasets import eegbci
@@ -66,8 +66,8 @@ eegbci.load_data(subjects=subject, runs=run, update_path=True)
 # of the directory tree.
 
 # get MNE directory with example data
-mne_data_dir = mne.get_config("MNE_DATASETS_EEGBCI_PATH")
-data_dir = op.join(mne_data_dir, "MNE-eegbci-data")
+mne_data_dir = Path(mne.get_config("MNE_DATASETS_EEGBCI_PATH"))
+data_dir = mne_data_dir / "MNE-eegbci-data"
 
 print_dir_tree(data_dir)
 
@@ -156,7 +156,7 @@ subject_id = "001"
 
 # define a task name and a directory where to save the data to
 task = "RestEyesClosed"
-bids_root = op.join(mne_data_dir, "eegmmidb_bids_eeg_example")
+bids_root = mne_data_dir / "eegmmidb_bids_eeg_example"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -218,7 +218,7 @@ counts
 #
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = op.join(bids_root, "README")
+readme = bids_root / "README"
 with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)
