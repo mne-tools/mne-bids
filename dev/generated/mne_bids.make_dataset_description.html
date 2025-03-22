@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.make_dataset_description &#8212; MNE-BIDS 0.17.0.dev33+ga36db9e7 documentation</title>
+    <title>mne_bids.make_dataset_description &#8212; MNE-BIDS 0.17.0.dev34+gb208a8cd documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=cfe5357d"></script>
+    <script src="../_static/documentation_options.js?v=8bcf3369"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev33+ga36db9e7" />
+  <meta name="docsearch:version" content="0.17.0.dev34+gb208a8cd" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev33+ga36db9e7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev34+gb208a8cd documentation</p>
   
 </a></div>
     
@@ -577,7 +577,9 @@ paper). Must be of the form <code class="docutils literal notranslate"><span cla
 doi:10.5281/zenodo.3686061).</p>
 </dd>
 <dt><strong>generated_by</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Used to specify provenance of the dataset. See BIDS specification
-for details.</p>
+for details. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a basic description containing MNE-BIDS name, version,
+and URL will be generated for you. To suppress this behavior, pass an empty
+list.</p>
 </dd>
 <dt><strong>source_datasets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Used to specify the locations and relevant attributes of all source
 datasets. Each dict in the list represents one source dataset and
@@ -687,7 +689,7 @@ by mne_bids.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-03-17.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-03-22.
       <br/>
     
   </p>
