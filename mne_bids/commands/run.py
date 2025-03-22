@@ -3,16 +3,15 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import glob
-import os.path as op
 import subprocess
 import sys
+from pathlib import Path
 
 import mne_bids
 
-mne_bin_dir = op.abspath(op.dirname(mne_bids.__file__))
-valid_commands = sorted(glob.glob(op.join(mne_bin_dir, "commands", "mne_bids_*.py")))
-valid_commands = [c.split(op.sep)[-1][9:-3] for c in valid_commands]
+mne_bin_dir = Path(mne_bids.__file__).parent
+valid_command_paths = sorted((mne_bin_dir / "commands").glob("mne_bids_*.py"))
+valid_commands = [cmd.stem.lstrip("mne_bids_") for cmd in valid_command_paths]
 
 
 def print_help():
@@ -42,5 +41,5 @@ def main():
         sys.exit(0)
     else:
         cmd = sys.argv[1]
-        cmd_path = op.join(mne_bin_dir, "commands", f"mne_bids_{cmd}.py")
+        cmd_path = mne_bin_dir / "commands" / f"mne_bids_{cmd}.py"
         sys.exit(subprocess.call([sys.executable, cmd_path] + sys.argv[2:]))

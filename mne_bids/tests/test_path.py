@@ -54,7 +54,7 @@ _bids_path = BIDSPath(
 def return_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp("mnebids_utils_test_bids_ds"))
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -1242,7 +1242,7 @@ def test_find_matching_paths(return_bids_test_dir):
 @testing.requires_testing_data
 def test_find_empty_room(return_bids_test_dir, tmp_path):
     """Test reading of empty room data."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     bids_root = tmp_path / "bids"
     bids_root.mkdir()
 
@@ -1426,7 +1426,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 @testing.requires_testing_data
 def test_find_emptyroom_ties(tmp_path):
     """Test that we receive a warning on a date tie."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     bids_root = str(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
@@ -1440,7 +1440,7 @@ def test_find_emptyroom_ties(tmp_path):
 
     raw = _read_raw_fif(raw_fname)
 
-    er_raw_fname = op.join(data_path, "MEG", "sample", "ernoise_raw.fif")
+    er_raw_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
     raw.set_meas_date(meas_date)
@@ -1463,7 +1463,7 @@ def test_find_emptyroom_ties(tmp_path):
 @testing.requires_testing_data
 def test_find_emptyroom_no_meas_date(tmp_path):
     """Test that we warn if measurement date can be read or inferred."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     bids_root = str(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root)
@@ -1481,7 +1481,7 @@ def test_find_emptyroom_no_meas_date(tmp_path):
     er_basename = er_bids_path.basename
     raw = _read_raw_fif(raw_fname)
 
-    er_raw_fname = op.join(data_path, "MEG", "sample", "ernoise_raw.fif")
+    er_raw_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
     er_raw.set_meas_date(er_meas_date)

@@ -63,7 +63,7 @@ _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
 data_path = testing.data_path(download=False)
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
 # Data with cHPI info
 raw_fname_chpi = op.join(data_path, "SSS", "test_move_anon_raw.fif")
@@ -249,7 +249,7 @@ def test_get_head_mri_trans(tmp_path):
         )
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
-    trans = mne.read_trans(raw_fname.replace("_raw.fif", "-trans.fif"))
+    trans = mne.read_trans(str(raw_fname).replace("_raw.fif", "-trans.fif"))
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path
@@ -1122,7 +1122,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
     write_raw_bids(raw_ctf, bids_path, overwrite=False)
 
     # Take a fake trans
-    trans = mne.read_trans(raw_fname.replace("_raw.fif", "-trans.fif"))
+    trans = mne.read_trans(str(raw_fname).replace("_raw.fif", "-trans.fif"))
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path

@@ -8,10 +8,9 @@ see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 # SPDX-License-Identifier: BSD-3-Clause
 
 import glob
-import os
 import shutil
 import sys
-from os import path as op
+from pathlib import Path
 
 import sphinx.util
 from mne.utils import hashfunc, run_subprocess
@@ -57,27 +56,24 @@ command_rst = """
 
 def generate_cli_rst(app=None):
     """Generate the command line interface docs."""
-    out_dir = op.abspath(op.join(op.dirname(__file__), "..", "generated"))
-    if not op.isdir(out_dir):
-        os.mkdir(out_dir)
-    out_fname = op.join(out_dir, "cli.rst.new")
+    out_dir = Path(__file__).resolve().parent.parent / "generated"
+    out_dir.mkdir(exist_ok=True)
+    out_fname = out_dir / "cli.rst.new"
 
-    cli_path = op.abspath(
-        op.join(os.path.dirname(__file__), "..", "..", "mne_bids", "commands")
-    )
+    cli_path = Path(__file__).resolve().parent.parent.parent / "mne_bids" / "commands"
     fnames = sorted(
-        [op.basename(fname) for fname in glob.glob(op.join(cli_path, "mne_bids*.py"))]
+        [Path(fname).name for fname in glob.glob(str(cli_path / "mne_bids*.py"))]
     )
     iterator = sphinx.util.display.status_iterator(
         fnames, "generating MNE-BIDS cli help ... ", length=len(fnames)
     )
-    with open(out_fname, "w", encoding="utf-8") as f:
+    with out_fname.open("w", encoding="utf-8") as f:
         f.write(header)
         for fname in iterator:
             cmd_name = fname[:-3]
-            run_name = op.join(cli_path, fname)
+            run_name = cli_path / fname
             output, _ = run_subprocess(
-                [sys.executable, run_name, "--help"], verbose=False
+                [sys.executable, str(run_name), "--help"], verbose=False
             )
             output = output.splitlines()
 
@@ -118,12 +114,12 @@ def generate_cli_rst(app=None):
 def _replace_md5(fname):
     """Replace a file based on MD5sum."""
     # adapted from sphinx-gallery
-    assert fname.endswith(".new")
-    fname_old = fname[:-4]
-    if os.path.isfile(fname_old) and hashfunc(fname) == hashfunc(fname_old):
-        os.remove(fname)
+    assert fname.name.endswith(".new")
+    fname_old = fname.with_suffix("")
+    if fname_old.is_file() and hashfunc(fname) == hashfunc(fname_old):
+        fname.unlink()
     else:
-        shutil.move(fname, fname_old)
+        shutil.move(str(fname), str(fname_old))
 
 
 # This is useful for testing/iterating to see what the result looks like

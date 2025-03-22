@@ -2728,9 +2728,9 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
     Examples
     --------
     >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
-    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat') # doctest: +SKIP
+    >>> calibration_fname = data_path / 'SSS' / 'sss_cal_3053.dat' # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    ...                      root=data_path / 'mne_bids') # doctest: +SKIP
     >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +SKIP
     Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...
     """  # noqa: E501

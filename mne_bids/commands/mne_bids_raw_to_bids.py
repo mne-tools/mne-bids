@@ -90,7 +90,7 @@ def run():
     )
 
     allow_maxshield = False
-    if opt.raw_fname.endswith(".fif"):
+    if str(opt.raw_fname).endswith(".fif"):
         allow_maxshield = "yes"
 
     raw = _read_raw(
