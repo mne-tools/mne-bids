@@ -6,9 +6,8 @@ For each supported coordinate frame, implement a test.
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
-import os.path as op
 import warnings
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -31,7 +30,7 @@ from mne_bids.dig import (
     template_to_head,
 )
 
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
 session_id = "01"
 run = "01"
@@ -48,7 +47,7 @@ data_path = testing.data_path(download=False)
 
 def _load_raw():
     """Load the sample raw data."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw(raw_fname)
     raw.drop_channels(raw.info["bads"])
     raw.info["line_freq"] = 60
@@ -61,7 +60,7 @@ def test_dig_io(tmp_path):
     bids_root = tmp_path / "bids1"
     raw = _load_raw()
     for datatype in ("eeg", "ieeg"):
-        os.makedirs(op.join(bids_root, "sub-01", "ses-01", datatype))
+        (bids_root / "sub-01" / "ses-01" / datatype).mkdir(exist_ok=True, parents=True)
 
     # test no coordinate frame in dig or in bids_path.space
     montage = raw.get_montage()
@@ -106,8 +105,8 @@ def test_dig_pixels(tmp_path):
     bids_path = _bids_path.copy().update(
         root=bids_root, datatype="ieeg", space="Pixels"
     )
-    os.makedirs(
-        op.join(bids_root, "sub-01", "ses-01", bids_path.datatype), exist_ok=True
+    (bids_root / "sub-01" / "ses-01" / bids_path.datatype).mkdir(
+        exist_ok=True, parents=True
     )
     raw = _load_raw()
     raw.pick(["eeg"])
@@ -280,12 +279,10 @@ def test_template_to_head():
     _set_montage_no_trans(raw, montage)
     trans = template_to_head(raw.info, "fsaverage", "mri")[1]
     trans2 = mne.read_trans(
-        op.join(
-            op.dirname(op.dirname(mne_bids.__file__)),
-            "mne_bids",
-            "data",
-            "space-fsaverage_trans.fif",
-        )
+        Path(mne_bids.__file__).parent.parent
+        / "mne_bids"
+        / "data"
+        / "space-fsaverage_trans.fif"
     )
     assert_almost_equal(trans["trans"], trans2["trans"])
 
@@ -337,11 +334,11 @@ def test_convert_montage():
     raw = _load_raw()
     montage = raw.get_montage()
     trans = mne.read_trans(
-        op.join(data_path, "MEG", "sample", "sample_audvis_trunc-trans.fif")
+        data_path / "MEG" / "sample" / "sample_audvis_trunc-trans.fif"
     )
     montage.apply_trans(trans)
 
-    subjects_dir = op.join(data_path, "subjects")
+    subjects_dir = data_path / "subjects"
     # test read
     with pytest.raises(RuntimeError, match="incorrectly formatted"):
         convert_montage_to_mri(montage, "foo", subjects_dir)

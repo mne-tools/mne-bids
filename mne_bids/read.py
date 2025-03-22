@@ -5,7 +5,6 @@
 
 import json
 import os
-import os.path as op
 import re
 from datetime import datetime, timedelta, timezone
 from difflib import get_close_matches
@@ -985,7 +984,7 @@ def read_raw_bids(
     # read in associated subject info from participants.tsv
     participants_tsv_path = bids_root / "participants.tsv"
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_path):
+    if participants_tsv_path.exists():
         raw = _handle_participants_reading(
             participants_fname=participants_tsv_path, raw=raw, subject=subject
         )
@@ -1180,7 +1179,7 @@ def get_head_mri_trans(
         fs_subject = f"sub-{meg_bids_path.subject}"
 
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
-    fs_t1_path = Path(fs_subjects_dir) / fs_subject / "mri" / "T1.mgz"
+    fs_t1_path = fs_subjects_dir / fs_subject / "mri" / "T1.mgz"
     if not fs_t1_path.exists():
         raise ValueError(
             f"Could not find {fs_t1_path}. Consider running FreeSurfer's "

@@ -418,7 +418,7 @@ def _readme(datatype, fname, overwrite=False):
         MNE-BIDS citation to the existing README, unless it
         already contains that citation.
     """
-    if os.path.isfile(fname) and not overwrite:
+    if fname.is_file() and not overwrite:
         with open(fname, encoding="utf-8-sig") as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES["mne-bids"] in orig_data
@@ -1970,7 +1970,7 @@ def write_raw_bids(
             "This violates the BIDS specifications. "
             "Please ensure there is only one README file."
         )
-    readme_fname = str((found_readmes or [bids_path.root / "README"])[0])
+    readme_fname = Path((found_readmes or [bids_path.root / "README"])[0])
 
     participants_tsv_fname = op.join(bids_path.root, "participants.tsv")
     participants_json_fname = participants_tsv_fname.replace(".tsv", ".json")
@@ -2353,7 +2353,7 @@ def _get_t1w_mgh(fs_subject, fs_subjects_dir):
     import nibabel as nib
 
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=True)
-    t1_fname = Path(fs_subjects_dir) / fs_subject / "mri" / "T1.mgz"
+    t1_fname = fs_subjects_dir / fs_subject / "mri" / "T1.mgz"
     if not t1_fname.exists():
         raise ValueError(
             "Freesurfer recon-all subject folder "
@@ -2728,9 +2728,9 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
     Examples
     --------
     >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
-    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat') # doctest: +SKIP
+    >>> calibration_fname = data_path / 'SSS' / 'sss_cal_3053.dat' # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    ...                      root=data_path / 'mne_bids') # doctest: +SKIP
     >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +SKIP
     Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...
     """  # noqa: E501

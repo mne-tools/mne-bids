@@ -28,7 +28,6 @@ format and how to retrieve them.
 #
 # Let us first import mne_bids.
 
-import os.path as op
 import shutil
 from datetime import datetime, timezone
 
@@ -41,9 +40,9 @@ from mne_bids import BIDSPath, print_dir_tree, read_raw_bids, write_raw_bids
 # And define the paths and event_id dictionary.
 
 data_path = sample.data_path()
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
 
-bids_root = op.join(data_path, "..", "MNE-sample-data-bids")
+bids_root = data_path.parent / "MNE-sample-data-bids"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -52,7 +51,7 @@ bids_root = op.join(data_path, "..", "MNE-sample-data-bids")
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%
@@ -68,7 +67,7 @@ write_raw_bids(raw, bids_path, overwrite=True)
 
 # %%
 # Specify some empty room data and run BIDS conversion on it.
-er_raw_fname = op.join(data_path, "MEG", "sample", "ernoise_raw.fif")
+er_raw_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"
 er_raw = mne.io.read_raw_fif(er_raw_fname)
 er_raw.info["line_freq"] = 60  # specify power line frequency as req. by BIDS
 
