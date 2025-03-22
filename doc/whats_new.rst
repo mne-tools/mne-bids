@@ -43,7 +43,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Nothing yet
+- :func:`mne_bids.make_dataset_description` will now auto-generate basic ``GeneratedBy`` fields if ``generated_by=None``. To suppress the auto-generated fields, pass an empty list. By `Daniel McCloy`_ (:gh:`1384`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
