@@ -7,7 +7,6 @@ see: github.com/mne-tools/mne-python/blob/main/doc/sphinxext/gen_commands.py
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import glob
 import shutil
 import sys
 from pathlib import Path
@@ -61,9 +60,7 @@ def generate_cli_rst(app=None):
     out_fname = out_dir / "cli.rst.new"
 
     cli_path = Path(__file__).resolve().parent.parent.parent / "mne_bids" / "commands"
-    fnames = sorted(
-        [Path(fname).name for fname in glob.glob(str(cli_path / "mne_bids*.py"))]
-    )
+    fnames = sorted([fname.name for fname in cli_path.glob("mne_bids*.py")])
     iterator = sphinx.util.display.status_iterator(
         fnames, "generating MNE-BIDS cli help ... ", length=len(fnames)
     )
