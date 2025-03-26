@@ -79,7 +79,6 @@ from mne_bids.utils import (
     _handle_datatype,
     _import_nibabel,
     _infer_eeg_placement_scheme,
-    _infer_emg_placement_scheme,
     _stamp_to_dt,
     _write_json,
     _write_text,
@@ -1009,8 +1008,9 @@ def _sidecar_json(
     ch_info_json_emg = [
         ("EMGReference", "n/a"),
         ("EMGGround", "n/a"),
-        # TODO EMG: must be one of Measured, ChannelSpecific, Other
-        ("EMGPlacementScheme", _infer_emg_placement_scheme(raw)),
+        # TODO EMG: must be one of Measured, ChannelSpecific, or Other, so writing `n/a`
+        # will lead to a dataset that doesn't validate.
+        ("EMGPlacementScheme", "n/a"),
         ("Manufacturer", manufacturer),
     ]
 
@@ -2047,15 +2047,21 @@ def write_raw_bids(
             datatype=bids_path.datatype,
             overwrite=overwrite,
         )
-    elif bids_path.datatype in ["eeg", "ieeg", "nirs"]:
+    elif bids_path.datatype in ["eeg", "emg", "ieeg", "nirs"]:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
-        if montage is not None or (raw.info["dig"] is not None and raw.info["dig"]):
+        if montage is not None or raw.info["dig"]:
             _write_dig_bids(bids_path, raw, montage, acpc_aligned, overwrite)
-    elif bids_path.datatype == "emg":
-        # TODO EMG: this is where to handle EMG coordsystem. We're not going to have a
-        #           DigMontage (probably) so need another way to intake the info
-        pass
+        elif bids_path.datatype == "emg":
+            # TODO EMG: Handle EMG coordsystem if it's not in `raw.info["dig"]`.
+            # In theory we could make a helper func for creating a `DigMontage` from
+            # EMG electrode location info, and users could pass that into
+            # `write_raw_bids`...
+            warn(
+                "No electrode location info found in raw file, so not writing "
+                "coordinate system info for EMG data. Please add `coordsystem.json` "
+                "file manually."
+            )
     else:
         logger.info(
             f"Writing of electrodes.tsv is not supported "
@@ -2213,8 +2219,8 @@ def write_raw_bids(
             bids_path.update(extension=".edf")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         elif bids_path.datatype in ["emg"] and format == "BDF":
-            # TODO EMG
-            raise NotImplementedError("Conversion to BDF not yet supported.")
+            # TODO EMG cf: https://github.com/the-siesta-group/edfio/issues/62
+            raise NotImplementedError("Conversion to BDF is not yet supported.")
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)

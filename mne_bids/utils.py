@@ -294,11 +294,6 @@ def _get_mrk_meas_date(mrk):
     return meas_datetime
 
 
-def _infer_emg_placement_scheme(raw):
-    # TODO EMG: just a placeholder, may not even need to exist in the end
-    pass
-
-
 def _infer_eeg_placement_scheme(raw):
     """Based on the channel names, try to infer an EEG placement scheme.
 
