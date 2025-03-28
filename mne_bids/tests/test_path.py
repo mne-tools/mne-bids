@@ -1652,7 +1652,8 @@ def test_dont_create_dirs_on_fpath_access(tmp_path):
 
 def test_fpath_common_prefix(tmp_path):
     """Tests that fpath does not match multiple files with the same prefix.
-    This might happen if indices are not zero-paddded."""
+    This might happen if indices are not zero-paddded.
+    """
     sub_dir = tmp_path / "sub-1" / "eeg"
     sub_dir.mkdir(exist_ok=True, parents=True)
     (sub_dir / "sub-1_run-1_raw.fif").touch()
