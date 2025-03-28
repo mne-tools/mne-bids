@@ -1652,6 +1652,7 @@ def test_dont_create_dirs_on_fpath_access(tmp_path):
 
 def test_fpath_common_prefix(tmp_path):
     """Tests that fpath does not match multiple files with the same prefix.
+
     This might happen if indices are not zero-paddded.
     """
     sub_dir = tmp_path / "sub-1" / "eeg"
