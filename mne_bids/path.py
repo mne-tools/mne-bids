@@ -1390,7 +1390,9 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
             search_str = op.join(search_str, datatype)
         else:
             search_str = op.join(search_str, "**")
-        search_str = op.join(search_str, f"{basename}*")
+        # The basename should end with a separator "_" or a period "."
+        # to avoid matching only the beggining of a value.
+        search_str = op.join(search_str, f"{basename}[_.]*")
 
         # Find all matching files in all supported formats.
         valid_exts = ALLOWED_FILENAME_EXTENSIONS
