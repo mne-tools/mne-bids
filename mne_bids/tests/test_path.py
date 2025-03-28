@@ -1648,3 +1648,22 @@ def test_dont_create_dirs_on_fpath_access(tmp_path):
     bp = BIDSPath(subject="01", datatype="eeg", root=tmp_path)
     bp.fpath  # accessing .fpath is required for this regression test
     assert not (tmp_path / "sub-01").exists()
+
+
+def test_fpath_common_prefix(tmp_path):
+    sub_dir = tmp_path / "sub-1" / "eeg"
+    sub_dir.mkdir(exist_ok=True, parents=True)
+    (sub_dir / "sub-1_run-1_raw.fif").touch()
+    (sub_dir / "sub-1_run-2.edf").touch()
+    # Other valid BIDS paths with the same basename prefix:
+    (sub_dir / "sub-1_run-10_raw.fif").touch()
+    (sub_dir / "sub-1_run-20.edf").touch()
+
+    assert (
+        BIDSPath(root=tmp_path, subject="1", run="1").fpath
+        == sub_dir / "sub-1_run-1_raw.fif"
+    )
+    assert (
+        BIDSPath(root=tmp_path, subject="1", run="2").fpath
+        == sub_dir / "sub-1_run-2.edf"
+    )
