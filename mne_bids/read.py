@@ -524,9 +524,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
 
 def _events_file_to_annotation_kwargs(events_fname: str) -> dict:
-    """Read the `events.tsv` file and extract onset, duration, and description
-    used to set annotation to an mne.io.BaseRaw."""
-
+    """Read the `events.tsv` file and extract onset, duration, and description."""
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
@@ -608,7 +606,6 @@ def _events_file_to_annotation_kwargs(events_fname: str) -> dict:
 
 def _handle_events_reading(events_fname, raw):
     """Read associated events.tsv and convert valid events to annotations on Raw."""
-
     annotations_info = _events_file_to_annotation_kwargs(events_fname)
     event_id = annotations_info["event_id"]
 
