@@ -1463,6 +1463,8 @@ def test_gsr_and_temp_reading():
 
 
 def test_events_file_to_annotation_kwargs(tmp_path):
+    """Test that events file is read correctly."""
+
     bids_path = BIDSPath(
         subject="01", session="eeg", task="rest", datatype="eeg", root=tiny_bids_root
     )
