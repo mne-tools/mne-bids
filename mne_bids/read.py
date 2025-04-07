@@ -523,8 +523,49 @@ def _handle_info_reading(sidecar_fname, raw):
     return raw
 
 
-def _events_file_to_annotation_kwargs(events_fname: str) -> dict:
-    """Read the `events.tsv` file and extract onset, duration, and description."""
+def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
+    """
+    Read the `events.tsv` file and extract onset, duration, and description.
+
+    This function reads an events file in TSV format and extracts the onset,
+    duration, and description of events.
+
+    Parameters
+    ----------
+    events_fname : str
+        The file path to the `events.tsv` file.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the following keys:
+        - 'onset' : np.ndarray
+            The onset times of the events in seconds.
+        - 'duration' : np.ndarray
+            The durations of the events in seconds.
+        - 'description' : np.ndarray
+            The descriptions of the events.
+        - 'event_id' : dict
+            A dictionary mapping event descriptions to integer event IDs.
+
+    Notes
+    -----
+    The function handles the following cases:
+    - If the `trial_type` column is available, it uses it for event descriptions.
+    - If the `stim_type` column is available, it uses it for backward compatibility.
+    - If the `value` column is available, it uses it to create the `event_id`.
+    - If none of the above columns are available, it defaults to using 'n/a' for
+      descriptions and 1 for event IDs.
+
+    Examples (TBD REWORK THIS)
+    --------
+    >>> events_dict = events_file_to_annotation_kwargs('path/to/events.tsv')
+    >>> print(events_dict['onset'])
+    [0.1, 0.2, 0.3]
+    >>> print(events_dict['event_id'])
+    {'event1': 1, 'event2': 2}
+
+    """
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
@@ -606,7 +647,7 @@ def _events_file_to_annotation_kwargs(events_fname: str) -> dict:
 
 def _handle_events_reading(events_fname, raw):
     """Read associated events.tsv and convert valid events to annotations on Raw."""
-    annotations_info = _events_file_to_annotation_kwargs(events_fname)
+    annotations_info = events_file_to_annotation_kwargs(events_fname)
     event_id = annotations_info["event_id"]
 
     # Add events as Annotations, but keep essential Annotations present in raw file
