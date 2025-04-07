@@ -524,7 +524,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
 
 def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
-    """
+    r"""
     Read the `events.tsv` file and extract onset, duration, and description.
 
     This function reads an events file in TSV format and extracts the onset,
@@ -557,13 +557,34 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     - If none of the above columns are available, it defaults to using 'n/a' for
       descriptions and 1 for event IDs.
 
-    Examples (TBD REWORK THIS)
+    Examples
     --------
-    >>> events_dict = events_file_to_annotation_kwargs('path/to/events.tsv')
-    >>> print(events_dict['onset'])
-    [0.1, 0.2, 0.3]
-    >>> print(events_dict['event_id'])
-    {'event1': 1, 'event2': 2}
+    >>> import pandas as pd
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>>
+    >>> # Create a sample DataFrame
+    >>> data = {
+    ...     'onset': [0.1, 0.2, 0.3],
+    ...     'duration': [0.1, 0.1, 0.1],
+    ...     'trial_type': ['event1', 'event2', 'event1'],
+    ...     'value': [1, 2, 1],
+    ...     'sample': [10, 20, 30]
+    ... }
+    >>> df = pd.DataFrame(data)
+    >>>
+    >>> # Write the DataFrame to a temporary file
+    >>> temp_dir = tempfile.gettempdir()
+    >>> events_file = Path(temp_dir) / 'events.tsv'
+    >>> df.to_csv(events_file, sep='\t', index=False)
+    >>>
+    >>> # Read the events file using the function
+    >>> events_dict = events_file_to_annotation_kwargs(events_file)
+    >>> events_dict
+    {'onset': array([0.1, 0.2, 0.3]),
+    'duration': array([0.1, 0.1, 0.1]),
+    'description': array(['event1', 'event2', 'event1'], dtype='<U6'),
+    'event_id': {'event1': 1, 'event2': 2}}
 
     """
     logger.info(f"Reading events from {events_fname}.")
