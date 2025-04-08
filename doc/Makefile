@@ -26,4 +26,3 @@ view:
 
 clean:
 	-rm -rf _build auto_examples generated
-
