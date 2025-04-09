@@ -22,7 +22,11 @@ from mne_bids.path import (
     get_bids_path_from_fname,
     find_matching_paths,
 )
-from mne_bids.read import (get_head_mri_trans, read_raw_bids, events_file_to_annotation_kwargs)
+from mne_bids.read import (
+    get_head_mri_trans,
+    read_raw_bids,
+    events_file_to_annotation_kwargs,
+)
 from mne_bids.utils import get_anonymization_daysback
 from mne_bids.write import (
     make_dataset_description,
