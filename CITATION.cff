@@ -206,6 +206,10 @@ authors:
       family-names: Gerçek
       affiliation: 'University of Geneva, Department of Fundamental Neuroscience'
       orcid: 'https://orcid.org/0000-0003-1063-6769'
+    - given-names: Matthias
+      family-names: Dold
+      affiliation: 'Donders Institute for Brain, Cognition and Behaviour, Radboud University, Nijmegen, Netherlands'
+      orcid: 'https://orcid.org/0009-0003-1477-4912'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
