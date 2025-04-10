@@ -525,20 +525,19 @@ def _handle_info_reading(sidecar_fname, raw):
 
 def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     r"""
-    Read the `events.tsv` file and extract onset, duration, and description.
-
-    This function reads an events file in TSV format and extracts the onset,
-    duration, and description of events.
+    Read the ``events.tsv`` file and extract onset, duration, and description.
 
     Parameters
     ----------
     events_fname : str
-        The file path to the `events.tsv` file.
+        The file path to the ``events.tsv`` file.
 
     Returns
     -------
-    dict
+    kwargs_dict : dict
+
         A dictionary containing the following keys:
+
         - 'onset' : np.ndarray
             The onset times of the events in seconds.
         - 'duration' : np.ndarray
@@ -551,9 +550,10 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     Notes
     -----
     The function handles the following cases:
-    - If the `trial_type` column is available, it uses it for event descriptions.
-    - If the `stim_type` column is available, it uses it for backward compatibility.
-    - If the `value` column is available, it uses it to create the `event_id`.
+
+    - If the ``trial_type`` column is available, it uses it for event descriptions.
+    - If the ``stim_type`` column is available, it uses it for backward compatibility.
+    - If the ``value`` column is available, it uses it to create the ``event_id``.
     - If none of the above columns are available, it defaults to using 'n/a' for
       descriptions and 1 for event IDs.
 
