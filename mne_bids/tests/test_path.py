@@ -64,9 +64,7 @@ def return_bids_test_dir(tmp_path_factory):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
     cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
     crosstalk_fname = op.join(data_path, "SSS", "ct_sparse.fif")
 

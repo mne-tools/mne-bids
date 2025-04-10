@@ -217,7 +217,7 @@ def test_write_participants(_bids_validate, tmp_path):
     files are kept, and mne-bids correctly writes all
     the subject info it can using ``raw.info['subject_info']``.
     """
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
 
     # add fake participants data
@@ -319,7 +319,7 @@ def test_write_participants(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_write_correct_inputs():
     """Test that inputs of write_raw_bids is correct."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
 
     bids_path_str = "sub-01_ses-01_meg.fif"
@@ -441,7 +441,7 @@ def test_stamp_to_dt():
 @testing.requires_testing_data
 def test_get_anonymization_daysback():
     """Test daysback querying for anonymization."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
     daysback_min, daysback_max = _get_anonymization_daysback(raw)
     # max_val off by 1 on Windows for some reason
@@ -521,7 +521,7 @@ def test_fif(_bids_validate, tmp_path):
     pytest.importorskip("pybv", PYBV_VERSION)
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -531,9 +531,7 @@ def test_fif(_bids_validate, tmp_path):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -899,7 +897,7 @@ def test_chpi(_bids_validate, tmp_path, fmt):
 def test_fif_dtype(_bids_validate, tmp_path):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     desired_fmt = "int"
     raw = _read_raw_fif(raw_fname)
 
@@ -919,7 +917,7 @@ def test_fif_anonymize(_bids_validate, tmp_path):
     """Test write_raw_bids() with anonymization fif."""
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root)
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -929,9 +927,7 @@ def test_fif_anonymize(_bids_validate, tmp_path):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -1006,7 +1002,7 @@ def test_fif_anonymize(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_fif_ias(tmp_path):
     """Test writing FIF files with internal active shielding."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
 
     raw.set_channel_types({raw.ch_names[0]: "ias"})
@@ -1022,7 +1018,7 @@ def test_fif_ias(tmp_path):
 @testing.requires_testing_data
 def test_fif_exci(tmp_path):
     """Test writing FIF files with excitation channel."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
 
     raw.set_channel_types({raw.ch_names[0]: "exci"})
@@ -1983,10 +1979,11 @@ def test_get_anat_landmarks():
     # Needs to be converted to Nifti because we only have mgh in our test base
     t1w_mgh = op.join(data_path, "subjects", "sample", "mri", "T1.mgz")
     fs_subjects_dir = op.join(data_path, "subjects")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    base_path = data_path / "MEG" / "sample"
+    raw_fname = base_path / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
     # Write some MRI data and supply a `trans`
-    trans_fname = raw_fname.replace("_raw.fif", "-trans.fif")
+    trans_fname = base_path / "sample_audvis_trunc-trans.fif"
     trans = mne.read_trans(trans_fname)
 
     # define some keyword arguments to simplify testing
@@ -2094,7 +2091,8 @@ def test_write_anat(_bids_validate, tmp_path):
     )
 
     # write base bids directory
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    base_fpath = data_path / "MEG" / "sample"
+    raw_fname = base_fpath / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -2104,9 +2102,7 @@ def test_write_anat(_bids_validate, tmp_path):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = base_fpath / "sample_audvis_trunc_raw-eve.fif"
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -2219,7 +2215,7 @@ def test_write_anat(_bids_validate, tmp_path):
 
     # Test now using FLASH
     flash_mgh = op.join(data_path, "subjects", "sample", "mri", "flash", "mef05.mgz")
-    trans_fname = raw_fname.replace("_raw.fif", "-trans.fif")
+    trans_fname = base_fpath / "sample_audvis_trunc-trans.fif"
     landmarks = get_anat_landmarks(
         flash_mgh, raw.info, trans_fname, "sample", op.join(data_path, "subjects")
     )
@@ -2254,7 +2250,7 @@ def test_write_anat(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_write_raw_pathlike(tmp_path):
     """Ensure writing pathlib.Path works."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     event_id = {
         "Auditory/Left": 1,
         "Auditory/Right": 2,
@@ -2285,7 +2281,7 @@ def test_write_raw_pathlike(tmp_path):
 @testing.requires_testing_data
 def test_write_raw_no_dig(tmp_path):
     """Test writing without dig."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
     bids_root = tmp_path
     bids_path = _bids_path.copy().update(root=bids_root)
@@ -2305,8 +2301,9 @@ def test_write_raw_no_dig(tmp_path):
 def test_write_anat_pathlike(tmp_path):
     """Test writing anatomical data with pathlib.Paths."""
     pytest.importorskip("nibabel")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
-    trans_fname = raw_fname.replace("_raw.fif", "-trans.fif")
+    base_path = data_path / "MEG" / "sample"
+    raw_fname = base_path / "sample_audvis_trunc_raw.fif"
+    trans_fname = base_path / "sample_audvis_trunc-trans.fif"
     raw = _read_raw_fif(raw_fname)
     trans = mne.read_trans(trans_fname)
 
@@ -2338,10 +2335,8 @@ def test_write_anat_pathlike(tmp_path):
 @testing.requires_testing_data
 def test_write_does_not_alter_events_inplace(tmp_path):
     """Test that writing does not modify the passed events array."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     raw = _read_raw_fif(raw_fname)
     events = mne.read_events(events_fname)
@@ -2419,7 +2414,7 @@ def test_mark_channels(
     # Setup: Create a fresh BIDS dataset.
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", suffix="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     event_id = {
         "Auditory/Left": 1,
         "Auditory/Right": 2,
@@ -2428,9 +2423,7 @@ def test_mark_channels(
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -2531,7 +2524,7 @@ def test_mark_channel_roundtrip(tmp_path):
     # Setup: Create a fresh BIDS dataset.
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", suffix="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     event_id = {
         "Auditory/Left": 1,
         "Auditory/Right": 2,
@@ -2540,9 +2533,7 @@ def test_mark_channel_roundtrip(tmp_path):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -2583,7 +2574,7 @@ def test_error_mark_channels(tmp_path):
     # Setup: Create a fresh BIDS dataset.
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", suffix="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     event_id = {
         "Auditory/Left": 1,
         "Auditory/Right": 2,
@@ -2592,9 +2583,7 @@ def test_error_mark_channels(tmp_path):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     # Drop unknown events.
     events = mne.read_events(events_fname)
@@ -2660,7 +2649,7 @@ def test_write_meg_calibration(_bids_validate, tmp_path):
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root)
 
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path=bids_path, verbose=False)
 
@@ -2707,7 +2696,7 @@ def test_write_meg_crosstalk(_bids_validate, tmp_path):
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, suffix="meg")
 
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path=bids_path, verbose=False)
 
@@ -2746,10 +2735,8 @@ def test_annotations(_bids_validate, bad_segments, tmp_path):
     """Test that Annotations are stored as events."""
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     events = mne.read_events(events_fname)
     event_id = {
@@ -2890,10 +2877,8 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events, tmp_path):
     """Test we're raising if event descriptions are missing."""
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     events = mne.read_events(events_fname)
     if drop_undescribed_events:
@@ -2940,10 +2925,8 @@ def test_event_storage(tmp_path):
     """Test we're retaining the original event IDs when storing events."""
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
     events_tsv_fname = bids_path.copy().update(suffix="events", extension=".tsv")
 
     events = mne.read_events(events_fname)
@@ -3281,10 +3264,8 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     """Test we're properly encoding text as UTF8."""
     bids_root = tmp_path / "bids1"
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
 
     raw = _read_raw_fif(raw_fname)
     events = mne.read_events(events_fname)
@@ -3668,7 +3649,7 @@ def test_symlink(tmp_path):
 def test_write_associated_emptyroom(_bids_validate, tmp_path, empty_room_dtype):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_root = tmp_path / "bids1"
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
     meas_date = datetime(year=2020, month=1, day=10, tzinfo=timezone.utc)
 
@@ -3760,7 +3741,7 @@ def test_preload(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_write_raw_special_paths(tmp_path, dir_name):
     """Test writing to locations containing strings with special meaning."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = _read_raw_fif(raw_fname)
 
     root = tmp_path / dir_name
