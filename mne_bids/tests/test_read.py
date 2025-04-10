@@ -226,9 +226,7 @@ def test_get_head_mri_trans(tmp_path):
     """Test getting a trans object from BIDS data."""
     nib = pytest.importorskip("nibabel")
 
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
     subjects_dir = op.join(data_path, "subjects")
 
     # Drop unknown events.
