@@ -40,7 +40,7 @@ Detailed list of changes
 - Empty-room matching now preferentially finds recordings in the subject directory tagged as `task-noise` before looking in the `sub-emptyroom` directories. This adds support for a part of the BIDS specification for ER recordings, by `Berk Gerçek`_ (:gh:`1364`)
 - Path matching is now implemenented in a more efficient manner within :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths()`, by `Arne Gottwald` (:gh:`1355`)
 - :func:`mne_bids.get_entity_vals()` has a new parameter ``include_match`` to prefilter item matching and ignore non-matched items from begin of directory scan, by `Arne Gottwald` (:gh:`1355`)
-- Data from ``events.tsv`` can now be read into an OrderedDict using :func:`mne_bids.events_file_to_annotation_kwargs()`, by `Matthias Dold` (:gh:`1389`)
+- Data from ``events.tsv`` can now be read into an OrderedDict using :func:`mne_bids.events_file_to_annotation_kwargs`, by `Matthias Dold` (:gh:`1389`)
 
 
 🧐 API and behavior changes
