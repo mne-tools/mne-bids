@@ -3,7 +3,6 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-
 import json
 import os
 import os.path as op
@@ -858,7 +857,9 @@ def test_handle_chpi_reading(tmp_path):
     meg_json_data_freq_mismatch["HeadCoilFrequency"][0] = 123
     _write_json(meg_json_path, meg_json_data_freq_mismatch, overwrite=True)
 
-    with (pytest.warns(RuntimeWarning, match="Defaulting to .* mne.Raw object"),):
+    with (
+        pytest.warns(RuntimeWarning, match="Defaulting to .* mne.Raw object"),
+    ):
         raw_read = read_raw_bids(bids_path, extra_params=dict(allow_maxshield="yes"))
 
     # cHPI "off" according to sidecar, but present in the data
@@ -1079,7 +1080,9 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     _to_tsv(electrodes_dict, electrodes_fname)
     # popping off channels should not result in an error
     # however, a warning will be raised through mne-python
-    with (pytest.warns(RuntimeWarning, match="DigMontage is only a subset of info"),):
+    with (
+        pytest.warns(RuntimeWarning, match="DigMontage is only a subset of info"),
+    ):
         read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
@@ -1095,7 +1098,9 @@ def test_handle_ieeg_coords_reading(bids_path, tmp_path):
     # electrode coordinates should be nan
     # when coordinate is 'n/a'
     nan_chs = [electrodes_dict["name"][i] for i in [0, 3]]
-    with (pytest.warns(RuntimeWarning, match="There are channels without locations"),):
+    with (
+        pytest.warns(RuntimeWarning, match="There are channels without locations"),
+    ):
         raw = read_raw_bids(bids_path=bids_fname, verbose=False)
         for idx, ch in enumerate(raw.info["chs"]):
             if ch["ch_name"] in nan_chs:
@@ -1223,7 +1228,9 @@ def test_handle_non_mne_channel_type(tmp_path):
     channels_data["type"][ch_idx] = "FOOBAR"
     _to_tsv(data=channels_data, fname=channels_tsv_path)
 
-    with (pytest.warns(RuntimeWarning, match='will be set to "misc"'),):
+    with (
+        pytest.warns(RuntimeWarning, match='will be set to "misc"'),
+    ):
         raw = read_raw_bids(bids_path)
 
     # Should be a 'misc' channel.
