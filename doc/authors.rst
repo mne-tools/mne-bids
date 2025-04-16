@@ -35,6 +35,7 @@
 .. _Mara Wolter: https://github.com/marakw
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Mathieu Scheltienne: https://github.com/mscheltienne
+.. _Matthias Dold: https://github.com/matthiasdold
 .. _Matt Sanderson: https://github.com/monkeyman192
 .. _Maximilien Chaumon: https://github.com/dnacombo
 .. _Moritz Gerster: http://moritz-gerster.com

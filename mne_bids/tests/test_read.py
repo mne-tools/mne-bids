@@ -14,6 +14,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
+import pandas as pd
 import pytest
 from mne.datasets import testing
 from mne.io.constants import FIFF
@@ -32,6 +33,7 @@ from mne_bids.read import (
     _handle_events_reading,
     _handle_scans_reading,
     _read_raw,
+    events_file_to_annotation_kwargs,
     get_head_mri_trans,
     read_raw_bids,
 )
@@ -1464,3 +1466,78 @@ def test_gsr_and_temp_reading():
     raw = read_raw_bids(bids_path)
     assert raw.get_channel_types(["GSR"]) == ["gsr"]
     assert raw.get_channel_types(["Temperature"]) == ["temperature"]
+
+
+def test_events_file_to_annotation_kwargs(tmp_path):
+    """Test that events file is read correctly."""
+    bids_path = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=tiny_bids_root
+    )
+    events_fname = _find_matching_sidecar(bids_path, suffix="events", extension=".tsv")
+
+    # ---------------- plain read --------------------------------------------
+    df = pd.read_csv(events_fname, sep="\t")
+    ev_kwargs = events_file_to_annotation_kwargs(events_fname=events_fname)
+
+    np.testing.assert_equal(ev_kwargs["onset"], df["onset"].values)
+    np.testing.assert_equal(ev_kwargs["duration"], df["duration"].values)
+    np.testing.assert_equal(ev_kwargs["description"], df["trial_type"].values)
+
+    # ---------------- filtering out n/a values ------------------------------
+    tmp_tsv_file = tmp_path / "events.tsv"
+    dext = pd.concat(
+        [df.copy().assign(onset=df.onset + i) for i in range(5)]
+    ).reset_index(drop=True)
+
+    dext = dext.assign(
+        ix=range(len(dext)),
+        value=dext.trial_type.map({"start_experiment": 1, "show_stimulus": 2}),
+        duration=1.0,
+    )
+
+    # nan values for `_drop` must be string values, `_drop` is called on
+    # `onset`, `value` and `trial_type`. `duration` n/a should end up as float 0
+    for c in ["onset", "value", "trial_type", "duration"]:
+        dext[c] = dext[c].astype(str)
+
+    dext.loc[0, "onset"] = "n/a"
+    dext.loc[1, "duration"] = "n/a"
+    dext.loc[4, "trial_type"] = "n/a"
+    dext.loc[4, "value"] = (
+        "n/a"  # to check that filtering is also applied when we drop the `trial_type`
+    )
+    dext.to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_filtered = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+
+    dext_f = dext[
+        (dext["onset"] != "n/a")
+        & (dext["trial_type"] != "n/a")
+        & (dext["value"] != "n/a")
+    ]
+
+    assert (ev_kwargs_filtered["onset"] == dext_f["onset"].astype(float).values).all()
+    assert (
+        ev_kwargs_filtered["duration"]
+        == dext_f["duration"].replace("n/a", "0.0").astype(float).values
+    ).all()
+    assert (ev_kwargs_filtered["description"] == dext_f["trial_type"].values).all()
+    assert (
+        ev_kwargs_filtered["duration"][0] == 0.0
+    )  # now idx=0, as first row is filtered out
+
+    # ---------------- default if missing trial_type  ------------------------
+    dext.drop(columns="trial_type").to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_default = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+    np.testing.assert_array_equal(
+        ev_kwargs_default["onset"], dext_f["onset"].astype(float).values
+    )
+    np.testing.assert_array_equal(
+        ev_kwargs_default["duration"],
+        dext_f["duration"].replace("n/a", "0.0").astype(float).values,
+    )
+    np.testing.assert_array_equal(
+        np.sort(np.unique(ev_kwargs_default["description"])),
+        np.sort(dext_f["value"].unique()),
+    )
