@@ -78,7 +78,7 @@ default_role = "autolink"  # XXX silently allows bad syntax, someone should fix
 
 # configure linkcheck
 # https://sphinx-doc.org/en/master/usage/configuration.html?#options-for-the-linkcheck-builder
-linkcheck_retries = 2
+linkcheck_retries = 3
 linkcheck_rate_limit_timeout = 15.0
 linkcheck_ignore = [
     r"https://www.researchgate.net/profile/.*",
