@@ -407,7 +407,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
         else:
             # if timezone is not set, assume machine's local timezone
             if acq_time.tzinfo is None:
-                local_tz = datetime.now(timezone.utc).astimezone().tzinfo
+                local_tz = datetime.now().astimezone().tzinfo
                 acq_time = acq_time.replace(tzinfo=local_tz)
             # Convert time offset to UTC
             acq_time = acq_time.astimezone(timezone.utc)
