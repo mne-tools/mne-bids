@@ -405,6 +405,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
             # Enforce setting timezone to UTC without additonal conversion
             acq_time = acq_time.replace(tzinfo=timezone.utc)
         else:
+            # Convert time offset to UTC
             acq_time = acq_time.astimezone(timezone.utc)
 
         logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
