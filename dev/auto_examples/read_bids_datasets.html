@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Read BIDS datasets &#8212; MNE-BIDS 0.17.0.dev44+gc42aa51b documentation</title>
+    <title>Read BIDS datasets &#8212; MNE-BIDS 0.17.0.dev45+g19fa17fa documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=dabca2a4"></script>
+    <script src="../_static/documentation_options.js?v=40c46190"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.17.0.dev44+gc42aa51b" />
+  <meta name="docsearch:version" content="0.17.0.dev45+g19fa17fa" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.17.0.dev44+gc42aa51b documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.17.0.dev45+g19fa17fa documentation</p>
   
 </a></div>
     
@@ -581,26 +581,35 @@ Attempting to create new mne-python configuration file:
 🌍 Preparing to download ds002778 …
 
 📁 Traversing directories for ds002778 : 0 entities [00:00, ? entities/s]
-📁 Traversing directories for ds002778 : 7 entities [00:02,  2.39 entities/s]
+📁 Traversing directories for ds002778 : 7 entities [00:02,  2.37 entities/s]
 📁 Traversing directories for ds002778 : 8 entities [00:03,  2.57 entities/s]
-📁 Traversing directories for ds002778 : 14 entities [00:03,  5.63 entities/s]
-📁 Traversing directories for ds002778 : 17 entities [00:03,  7.00 entities/s]
-📁 Traversing directories for ds002778 : 20 entities [00:03,  5.49 entities/s]
+📁 Traversing directories for ds002778 : 14 entities [00:03,  5.61 entities/s]
+📁 Traversing directories for ds002778 : 17 entities [00:03,  6.94 entities/s]
+📁 Traversing directories for ds002778 : 20 entities [00:03,  5.46 entities/s]
 📥 Retrieving up to 19 files (5 concurrent downloads).
-
-Skipping participants.tsv: already downloaded.: 100%|██████████| 1.62k/1.62k [00:00&lt;?, ?B/s]
-
 
 Skipping participants.json: already downloaded.: 100%|██████████| 1.24k/1.24k [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
+Skipping participants.tsv: already downloaded.: 100%|██████████| 1.62k/1.62k [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-off_scans.tsv: already downloaded.: 100%|██████████| 75.0/75.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-off_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
+Skipping sub-pd6_ses-off_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██████████| 66.0/66.0 [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
 
 
 Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|██████████| 433/433 [00:00&lt;?, ?B/s]
@@ -609,40 +618,32 @@ Skipping sub-pd6_ses-on_task-rest_beh.json: already downloaded.: 100%|███�
 Skipping sub-pd6_ses-on_scans.tsv: already downloaded.: 100%|██████████| 74.0/74.0 [00:00&lt;?, ?B/s]
 
 
-Skipping sub-pd6_ses-on_task-rest_beh.tsv: already downloaded.: 100%|██████████| 10.0/10.0 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-off_task-rest_events.tsv: already downloaded.: 100%|██████████| 66.0/66.0 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-off_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 11.5M/11.5M [00:00&lt;?, ?B/s]
-
-
-Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
-
-
-Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
-
+Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
 Skipping sub-pd6_ses-on_task-rest_events.tsv: already downloaded.: 100%|██████████| 51.0/51.0 [00:00&lt;?, ?B/s]
+
+
 
 
 Skipping sub-pd6_ses-on_task-rest_eeg.json: already downloaded.: 100%|██████████| 471/471 [00:00&lt;?, ?B/s]
 
 
+Skipping sub-pd6_ses-on_task-rest_channels.tsv: already downloaded.: 100%|██████████| 2.22k/2.22k [00:00&lt;?, ?B/s]
+
+
+Skipping sub-pd6_ses-off_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 11.5M/11.5M [00:00&lt;?, ?B/s]
+
+
 Skipping sub-pd6_ses-on_task-rest_eeg.bdf: already downloaded.: 100%|██████████| 17.4M/17.4M [00:00&lt;?, ?B/s]
 
 
-Re-downloading dataset_description.json: file size mismatch.: 0.00B [00:00, ?B/s]
+Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
+
+
+Re-downloading CHANGES: file size mismatch.: 0.00B [00:00, ?B/s]
 
 
 Re-downloading README: file size mismatch.: 0.00B [00:00, ?B/s]
-
-
-Re-downloading sub-pd6_ses-off_task-rest_beh.json: file size mismatch.: 0.00B [00:00, ?B/s]
 
 ✅ Finished downloading ds002778.
 
@@ -885,7 +886,7 @@ metadata.</p>
 &lt;MNEBrowseFigure size 800x800 with 4 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.864 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.863 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>
@@ -981,7 +982,7 @@ metadata.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-04-27.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-05-08.
       <br/>
     
   </p>
