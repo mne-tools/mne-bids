@@ -32,10 +32,10 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: style-0-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: style-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip==25.1.1
+        python -m pip install --upgrade pip
         pip check
         python -m pip install ruff
     - name: Display versions and environment information
@@ -61,11 +61,11 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: build-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: build-2-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip==25.1.1
+        python -m pip install --upgrade pip
         pip check
         python -m pip install build twine
 
@@ -193,12 +193,12 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: test-0-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('pyproject.toml') }}
+        key: test-1-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install Python dependencies using pip
       # This would be nicer once this feature is implemented: https://github.com/pypa/pip/issues/11440
       run: |
-        python -m pip install --upgrade pip==25.1.1
+        python -m pip install --upgrade pip
         pip check
         python -m pip install -e .[test]
 
@@ -278,7 +278,7 @@ jobs:
 
     - uses: actions/cache@v4
       with:
-        key: ${{ env.TESTING_VERSION }}
+        key: testing_data-1-${{ env.TESTING_VERSION }}
         path: ~/mne_data
       name: 'Cache testing data'
 
@@ -315,10 +315,10 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: build_docs-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: build_docs-2-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip==25.1.1
+        python -m pip install --upgrade pip
         pip check
         python -m pip install --upgrade https://github.com/mne-tools/mne-python/archive/refs/heads/main.zip
         python -m pip install -e .[test,doc]
