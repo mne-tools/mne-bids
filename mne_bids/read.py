@@ -575,6 +575,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     ...     'trial_type': ['event1', 'event2', 'event1'],
     ...     'value': [1, 2, 1],
     ...     'sample': [10, 20, 30]
+            'foo': ['a', 'b', 'c'],
     ... }
     >>> df = pd.DataFrame(data)
     >>>
@@ -590,7 +591,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     'duration': array([0.1, 0.1, 0.1]),
     'description': array(['event1', 'event2', 'event1'], dtype='<U6'),
     'event_id': {'event1': 1, 'event2': 2},
-    'extras': [{'sample': 10}, {'sample': 20}, {'sample': 30}]}
+    'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
 
     """
     logger.info(f"Reading events from {events_fname}.")
@@ -678,6 +679,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
             "value",
             "trial_type",
             "stim_type",
+            "sample",
         }
     )
     if extra_columns:
