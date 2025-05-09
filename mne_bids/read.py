@@ -717,7 +717,7 @@ def _handle_events_reading(events_fname, raw):
             warn(
                 "The version of MNE-Python you are using (<1.10) "
                 "does not support the extras argument in mne.Annotations. "
-                f"The extra columns ({annotations_info['extras'][0].keys()}) "
+                f"The extra column(s) {list(annotations_info['extras'][0].keys())} "
                 "will be ignored."
             )
         annot_from_events = mne.Annotations(
