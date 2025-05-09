@@ -18,7 +18,7 @@ import pandas as pd
 import pytest
 from mne.datasets import testing
 from mne.io.constants import FIFF
-from mne.utils import assert_dig_allclose, object_diff
+from mne.utils import assert_dig_allclose, check_version, object_diff
 from numpy.testing import assert_almost_equal
 
 import mne_bids.write
@@ -493,7 +493,19 @@ def test_get_head_mri_trans(tmp_path):
 
 
 @testing.requires_testing_data
-def test_handle_events_reading(tmp_path):
+@pytest.mark.parametrize(
+    "with_extras",
+    [
+        False,
+        pytest.param(
+            True,
+            marks=pytest.mark.skipif(
+                not check_version("mne", "1.10"), reason="not implemented"
+            ),
+        ),
+    ],
+)
+def test_handle_events_reading(tmp_path, with_extras):
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
     raw = _read_raw_fif(raw_fname)
@@ -505,6 +517,8 @@ def test_handle_events_reading(tmp_path):
         "duration": ["n/a", "n/a", "n/a"],
         "trial_type": ["rec start", "trial #1", "trial #2!"],
     }
+    if with_extras:
+        events["foo"] = ["a", "b", "c"]
     events_fname = tmp_path / "bids1" / "sub-01_task-test_events.json"
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
@@ -514,6 +528,10 @@ def test_handle_events_reading(tmp_path):
     assert list(ev_dict.values()) == [1, 2]  # auto-assigned
     want = len(events["onset"]) - 1  # one onset was n/a
     assert want == len(raw.annotations) == len(ev_arr) == len(ev_dict)
+    if with_extras:
+        for d, v in zip(raw.annotations.extras, "abc"):
+            assert "foo" in d
+            assert d["foo"] == v
 
     # Test with a `stim_type` column instead of `trial_type`.
     events = {
