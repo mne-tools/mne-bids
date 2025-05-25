@@ -278,7 +278,7 @@ jobs:
 
     - uses: actions/cache@v4
       with:
-        key: testing_data-1-${{ env.TESTING_VERSION }}
+        key: testing_data-2-${{ env.TESTING_VERSION }}
         path: ~/mne_data
       name: 'Cache testing data'
 
