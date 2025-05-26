@@ -28,8 +28,8 @@ def _bids_validate():
     has_npx = shutil.which("npx") is not None
 
     if not has_validator and not has_npx:
-        pytest.skip(
-            "bids-validator or npx is required to run BIDS validation tests. "
+        raise FileNotFoundError(
+            "⛔️ bids-validator or npx is required to run BIDS validation tests. "
             "Please install the BIDS validator or ensure npx is available."
         )
     elif not has_validator:
