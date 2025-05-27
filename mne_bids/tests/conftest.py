@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import platform
+import shutil
 
 import pytest
 from mne.utils import run_subprocess
@@ -19,9 +20,28 @@ def _bids_validate():
     else:
         shell = False
 
-    def _validate(bids_root):
-        cmd = ["bids-validator", bids_root]
-        run_subprocess(cmd, shell=shell)
+    # If neither bids-validator nor npx are available, we cannot validate BIDS
+    # datasets, so we raise an exception.
+    # If both are available, we prefer bids-validator, but we can use npx as a fallback.
+
+    has_validator = shutil.which("bids-validator") is not None
+    has_npx = shutil.which("npx") is not None
+
+    if not has_validator and not has_npx:
+        raise FileNotFoundError(
+            "⛔️ bids-validator or npx is required to run BIDS validation tests. "
+            "Please install the BIDS validator or ensure npx is available."
+        )
+    elif not has_validator:
+
+        def _validate(bids_root):
+            cmd = ["npx", "bids-validator@latest", bids_root]
+            run_subprocess(cmd, shell=shell)
+    else:
+
+        def _validate(bids_root):
+            cmd = ["bids-validator", bids_root]
+            run_subprocess(cmd, shell=shell)
 
     return _validate
 
