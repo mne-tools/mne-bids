@@ -21,7 +21,7 @@ def _bids_validate():
         shell = False
 
     # If neither bids-validator nor npx are available, we cannot validate BIDS
-    # datasets, so we skip the tests that require validation.
+    # datasets, so we raise an exception.
     # If both are available, we prefer bids-validator, but we can use npx as a fallback.
 
     has_validator = shutil.which("bids-validator") is not None
