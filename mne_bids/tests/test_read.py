@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import contextlib
+import re
 import json
 import os
 import os.path as op
@@ -516,7 +517,7 @@ def test_handle_events_reading(tmp_path, with_extras):
     with (
         pytest.warns(
             RuntimeWarning,
-            match=(
+            match=re.escape(
                 "The version of MNE-Python you are using (<1.10) "
                 "does not support the extras argument in mne.Annotations. "
                 "The extra column(s) [np.str_('foo')] will be ignored."
