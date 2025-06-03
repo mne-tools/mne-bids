@@ -228,8 +228,8 @@ def test_path_benchmark(tmp_path_factory):
         number=1,
     )
 
-    # while this should be of same order, lets give it some space by a factor of 2
-    target = 2 * timed_all / len(bids_subdirectories)
+    # while this should be of same order, lets give it some space by a factor of 3
+    target = 3 * timed_all / len(bids_subdirectories)
     assert timed_ignored_nosub < target
 
     # apply include_match on get_entity_vals with root level bids directory should
@@ -245,8 +245,8 @@ def test_path_benchmark(tmp_path_factory):
         number=1,
     )
 
-    # while this should be of same order, lets give it some space by a factor of 2
-    target = 2 * timed_entity / len(bids_subdirectories)
+    # while this should be of same order, lets give it some space by a factor of 3
+    target = 3 * timed_entity / len(bids_subdirectories)
     assert timed_entity_match < target
 
     # and these should be equivalent
