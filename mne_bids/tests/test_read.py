@@ -4,10 +4,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import contextlib
-import re
 import json
 import os
 import os.path as op
+import re
 import shutil as sh
 from collections import OrderedDict
 from contextlib import nullcontext
