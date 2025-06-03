@@ -3,9 +3,11 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import contextlib
 import json
 import os
 import os.path as op
+import re
 import shutil as sh
 from collections import OrderedDict
 from contextlib import nullcontext
@@ -18,7 +20,7 @@ import pandas as pd
 import pytest
 from mne.datasets import testing
 from mne.io.constants import FIFF
-from mne.utils import assert_dig_allclose, object_diff
+from mne.utils import assert_dig_allclose, check_version, object_diff
 from numpy.testing import assert_almost_equal
 
 import mne_bids.write
@@ -493,7 +495,8 @@ def test_get_head_mri_trans(tmp_path):
 
 
 @testing.requires_testing_data
-def test_handle_events_reading(tmp_path):
+@pytest.mark.parametrize("with_extras", [False, True])
+def test_handle_events_reading(tmp_path, with_extras):
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
     raw = _read_raw_fif(raw_fname)
@@ -505,15 +508,34 @@ def test_handle_events_reading(tmp_path):
         "duration": ["n/a", "n/a", "n/a"],
         "trial_type": ["rec start", "trial #1", "trial #2!"],
     }
+    if with_extras:
+        events["foo"] = ["a", "b", "c"]
     events_fname = tmp_path / "bids1" / "sub-01_task-test_events.json"
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw, event_id = _handle_events_reading(events_fname, raw)
+    with (
+        pytest.warns(
+            RuntimeWarning,
+            match=re.escape(
+                "The version of MNE-Python you are using (<1.10) "
+                "does not support the extras argument in mne.Annotations. "
+                "The extra column(s) [np.str_('foo')] will be ignored."
+            ),
+        )
+        if with_extras and not check_version("mne", "1.10")
+        else contextlib.nullcontext()
+    ):
+        raw, event_id = _handle_events_reading(events_fname, raw)
+
     ev_arr, ev_dict = mne.events_from_annotations(raw)
     assert list(ev_dict.values()) == [1, 2]  # auto-assigned
     want = len(events["onset"]) - 1  # one onset was n/a
     assert want == len(raw.annotations) == len(ev_arr) == len(ev_dict)
+    if with_extras and check_version("mne", "1.10"):
+        for d, v in zip(raw.annotations.extras, "abc"):
+            assert "foo" in d
+            assert d["foo"] == v
 
     # Test with a `stim_type` column instead of `trial_type`.
     events = {
