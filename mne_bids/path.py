@@ -410,8 +410,6 @@ class BIDSPath:
         ):
             raise ValueError("At least one parameter must be given.")
 
-        self.check = check
-
         self.update(
             subject=subject,
             session=session,
@@ -427,6 +425,7 @@ class BIDSPath:
             datatype=datatype,
             suffix=suffix,
             extension=extension,
+            check=check,
         )
 
     @property
