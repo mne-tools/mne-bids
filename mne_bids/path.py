@@ -1369,8 +1369,7 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
         datatype = _infer_datatype(root=bids_root, sub=sub, ses=ses)
 
     data_dir = BIDSPath(
-        subject=sub, session=ses, datatype=datatype, root=bids_root,
-        check=check
+        subject=sub, session=ses, datatype=datatype, root=bids_root, check=check
     ).directory
 
     # For BTi data, just return the directory with a '.pdf' extension

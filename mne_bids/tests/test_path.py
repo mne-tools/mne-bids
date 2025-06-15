@@ -1611,6 +1611,7 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
         == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
     )
 
+
 @testing.requires_testing_data
 def test_update_check(return_bids_test_dir):
     """Test check argument is passed BIDSPath properly."""
@@ -1619,8 +1620,10 @@ def test_update_check(return_bids_test_dir):
         check=False,
     )
     bids_path.update(datatype="eyetrack")
-    assert (bids_path.fpath.as_posix()
-            == Path(f"{return_bids_test_dir}/eyetrack").as_posix())
+    assert (
+        bids_path.fpath.as_posix()
+        == Path(f"{return_bids_test_dir}/eyetrack").as_posix()
+    )
 
 
 def test_update_fail_check_no_change():
