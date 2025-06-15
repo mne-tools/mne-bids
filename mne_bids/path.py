@@ -923,10 +923,10 @@ class BIDSPath:
         return bids_fpath
 
     def update(self, *, check=None, **kwargs):
-        """Update inplace BIDS entity key/value pairs in object.
+        """Update in-place BIDS entity key/value pairs in object.
 
         ``run`` and ``split`` are auto-converted to have two
-        digits. For example, if ``run=1``, then it will nbecome ``run='01'``.
+        digits. For example, if ``run=1``, then it will become ``run='01'``.
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
@@ -1363,12 +1363,14 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     sub, ses = bids_path.subject, bids_path.session
     datatype = bids_path.datatype
     basename, bids_root = bids_path.basename, bids_path.root
+    check = bids_path.check
 
     if datatype is None:
         datatype = _infer_datatype(root=bids_root, sub=sub, ses=ses)
 
     data_dir = BIDSPath(
-        subject=sub, session=ses, datatype=datatype, root=bids_root
+        subject=sub, session=ses, datatype=datatype, root=bids_root,
+        check=check
     ).directory
 
     # For BTi data, just return the directory with a '.pdf' extension
