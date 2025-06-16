@@ -937,7 +937,7 @@ def read_raw_bids(
             '"bids_path" must be a BIDSPath object. Please '
             "instantiate using mne_bids.BIDSPath()."
         )
-    for required in ['root', 'subject', 'task']:
+    for required in ["root", "subject", "task"]:
         if not getattr(bids_path, required):
             raise RuntimeError(
                 '"bids_path" must contain `root`, `subject`, and `task` '
