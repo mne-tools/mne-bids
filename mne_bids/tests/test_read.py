@@ -127,6 +127,10 @@ def test_read_correct_inputs():
     with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         get_head_mri_trans(bids_path)
 
+    with pytest.raises(RuntimeError, match='"bids_path" must contain `root`'):
+        bids_path = BIDSPath(root=bids_path)
+        read_raw_bids(bids_path)
+
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
@@ -1473,10 +1477,6 @@ def test_file_not_found(tmp_path):
         pytest.warns(RuntimeWarning, match=r"participants\.tsv file not found"),
     ):
         read_raw_bids(bp)  # smoke test
-
-    bp.update(task=None)
-    with pytest.raises(FileNotFoundError, match="Did you mean"):
-        read_raw_bids(bp)
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])

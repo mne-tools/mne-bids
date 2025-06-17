@@ -28,6 +28,7 @@ The following authors had contributed before. Thank you for sticking around! �
 * `Daniel McCloy`_
 * `Scott Huberty`_
 * `Pierre Guetschel`_
+* `Teon Brooks`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,6 +49,7 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - :func:`mne_bids.make_dataset_description` will now auto-generate basic ``GeneratedBy`` fields if ``generated_by=None``. To suppress the auto-generated fields, pass an empty list. By `Daniel McCloy`_ (:gh:`1384`)
+- Add requirements that ``root``, ``subject``, ``task`` attributes must be set when using :func:`mne_bids.read_raw_bids` to avoid implicit behavior and file ambiguity, by `Teon Brooks`_ (:gh:`1414`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
@@ -62,6 +64,7 @@ Detailed list of changes
 - :func:`mne_bids.make_dataset_description` now correctly encodes the dataset description as UTF-8 on disk, by `Scott Huberty`_ (:gh:`1357`)
 - Corrects extension when filtering filenames in :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths()`, by `Arne Gottwald` (:gh:`1355`)
 - Fix :class:`mne_bids.BIDSPath` partially matching a value, by `Pierre Guetschel` (:gh:`1388`)
+- Ensures that ``check`` parameter in :meth:`mne_bids.BIDSPath.update()` is passed to :class:`mne_bids.BIDSPath`, by `Teon Brooks`_ (:gh:`1411`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
