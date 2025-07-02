@@ -253,7 +253,7 @@ class BIDSPath:
     processing : str | None
         The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name. Corresponds to "rec".
+        The recording name. Corresponds to "recording".
     space : str | None
         The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
@@ -2431,7 +2431,7 @@ def find_matching_paths(
     processings : str | array-like of str | None
         The processing label. Corresponds to "proc".
     recordings : str | array-like of str | None
-        The recording name. Corresponds to "rec".
+        The recording name. Corresponds to "recording".
     spaces : str | array-like of str | None
         The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
