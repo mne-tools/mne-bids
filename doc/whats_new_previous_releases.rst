@@ -4,6 +4,8 @@
 
 .. currentmodule:: mne_bids
 
+.. include:: authors.rst
+
 What was new in previous releases?
 ==================================
 
@@ -1247,5 +1249,3 @@ People who contributed to this release (in alphabetical order):
 * `Romain Quentin`_
 * `Stefan Appelhoff`_
 * `Teon Brooks`_
-
-.. include:: authors.rst

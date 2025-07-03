@@ -7,6 +7,7 @@ import os
 import os.path as op
 import shutil
 import shutil as sh
+import timeit
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -53,7 +54,7 @@ _bids_path = BIDSPath(
 def return_bids_test_dir(tmp_path_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmp_path_factory.mktemp("mnebids_utils_test_bids_ds"))
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -63,9 +64,7 @@ def return_bids_test_dir(tmp_path_factory):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
     cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
     crosstalk_fname = op.join(data_path, "SSS", "ct_sparse.fif")
 
@@ -164,6 +163,100 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
             assert "deriv" in entities
     # Clean up
     shutil.rmtree(deriv_path)
+
+
+def test_path_benchmark(tmp_path_factory):
+    """Benchmark exploring bids tree."""
+    # This benchmark is to verify the speed-up in function call get_entity_vals with
+    # `include_match=sub-*/` in face of a bids tree hosting derivatives and sourcedata.
+    n_subjects = 10
+    n_sessions = 5
+    n_derivatives = 17
+    tmp_bids_root = tmp_path_factory.mktemp("mnebids_utils_test_bids_ds")
+
+    derivatives = [
+        Path("derivatives", "derivatives" + str(i)) for i in range(n_derivatives)
+    ]
+
+    bids_subdirectories = ["", "sourcedata", *derivatives]
+
+    # Create a BIDS compliant directory tree with high number of branches
+    for i in range(1, n_subjects):
+        for j in range(1, n_sessions):
+            for subdir in bids_subdirectories:
+                for datatype in ["eeg", "meg"]:
+                    bids_subdir = BIDSPath(
+                        subject=str(i),
+                        session=str(j),
+                        datatype=datatype,
+                        task="audvis",
+                        root=str(tmp_bids_root / subdir),
+                    )
+                    bids_subdir.mkdir(exist_ok=True)
+                    Path(bids_subdir.root / "participants.tsv").touch()
+                    Path(bids_subdir.root / "participants.csv").touch()
+                    Path(bids_subdir.root / "README").touch()
+
+                    # os.makedirs(bids_subdir.directory, exist_ok=True)
+                    Path(
+                        bids_subdir.directory, bids_subdir.basename + "_events.tsv"
+                    ).touch()
+                    Path(
+                        bids_subdir.directory, bids_subdir.basename + "_events.csv"
+                    ).touch()
+
+                    if datatype == "meg":
+                        ctf_path = Path(
+                            bids_subdir.directory, bids_subdir.basename + "_meg.ds"
+                        )
+                        ctf_path.mkdir(exist_ok=True)
+                        Path(ctf_path, bids_subdir.basename + ".meg4").touch()
+                        Path(ctf_path, bids_subdir.basename + ".hc").touch()
+                        Path(ctf_path / "hz.ds").mkdir(exist_ok=True)
+                        Path(ctf_path / "hz.ds" / "hz.meg4").touch()
+                        Path(ctf_path / "hz.ds" / "hz.hc").touch()
+
+    # apply nosub on find_matching_matchs with root level bids directory should
+    # yield a performance boost of order of length from bids_subdirectories.
+    setup = "import mne_bids\ntmp_bids_root=r'" + str(tmp_bids_root) + "'"
+    timed_all = timeit.timeit(
+        "mne_bids.find_matching_paths(tmp_bids_root)", setup=setup, number=1
+    )
+    timed_ignored_nosub = timeit.timeit(
+        "mne_bids.find_matching_paths(tmp_bids_root, ignore_nosub=True)",
+        setup=setup,
+        number=1,
+    )
+
+    # while this should be of same order, lets give it some space by a factor of 3
+    target = 3 * timed_all / len(bids_subdirectories)
+    assert timed_ignored_nosub < target
+
+    # apply include_match on get_entity_vals with root level bids directory should
+    # yield a performance boost of order of length from bids_subdirectories.
+    timed_entity = timeit.timeit(
+        "mne_bids.get_entity_vals(tmp_bids_root, 'session')",
+        setup=setup,
+        number=1,
+    )
+    timed_entity_match = timeit.timeit(
+        "mne_bids.get_entity_vals(tmp_bids_root, 'session', include_match='sub-*/')",  # noqa: E501
+        setup=setup,
+        number=1,
+    )
+
+    # while this should be of same order, lets give it some space by a factor of 3
+    target = 3 * timed_entity / len(bids_subdirectories)
+    assert timed_entity_match < target
+
+    # and these should be equivalent
+    out_1 = get_entity_vals(tmp_bids_root, "session")
+    out_2 = get_entity_vals(tmp_bids_root, "session", include_match="**/")
+    assert out_1 == out_2
+    out_3 = get_entity_vals(tmp_bids_root, "session", include_match="sub-*/")
+    assert out_2 == out_3  # all are sub-* vals
+    out_4 = get_entity_vals(tmp_bids_root, "session", include_match="none/")
+    assert out_4 == []
 
 
 def test_search_folder_for_text(capsys):
@@ -945,7 +1038,7 @@ def test_filter_fnames(entities, expected_n_matches):
 
 
 @testing.requires_testing_data
-def test_match(return_bids_test_dir):
+def test_match_basic(return_bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = Path(return_bids_test_dir)
 
@@ -1039,6 +1132,27 @@ def test_match(return_bids_test_dir):
     bids_path_01.fpath.unlink()  # clean up created file
 
 
+def test_match_advanced(tmp_path):
+    """Test additional match functionality."""
+    bids_root = tmp_path
+    fnames = (
+        "sub-01/nirs/sub-01_task-tapping_events.tsv",
+        "sub-02/nirs/sub-02_task-tapping_events.tsv",
+    )
+    for fname in fnames:
+        this_path = Path(bids_root / fname)
+        this_path.parent.mkdir(parents=True, exist_ok=True)
+        this_path.touch()
+    path = BIDSPath(
+        root=bids_root,
+        datatype="nirs",
+        suffix="events",
+        extension=".tsv",
+    )
+    matches = path.match()
+    assert len(matches) == len(fnames), path
+
+
 @testing.requires_testing_data
 def test_find_matching_paths(return_bids_test_dir):
     """We test by yielding the same results as BIDSPath.match().
@@ -1126,7 +1240,7 @@ def test_find_matching_paths(return_bids_test_dir):
 @testing.requires_testing_data
 def test_find_empty_room(return_bids_test_dir, tmp_path):
     """Test reading of empty room data."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     bids_root = tmp_path / "bids"
     bids_root.mkdir()
 
@@ -1310,7 +1424,7 @@ def test_find_empty_room(return_bids_test_dir, tmp_path):
 @testing.requires_testing_data
 def test_find_emptyroom_ties(tmp_path):
     """Test that we receive a warning on a date tie."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     bids_root = str(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg")
@@ -1324,7 +1438,7 @@ def test_find_emptyroom_ties(tmp_path):
 
     raw = _read_raw_fif(raw_fname)
 
-    er_raw_fname = op.join(data_path, "MEG", "sample", "ernoise_raw.fif")
+    er_raw_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
     raw.set_meas_date(meas_date)
@@ -1347,7 +1461,7 @@ def test_find_emptyroom_ties(tmp_path):
 @testing.requires_testing_data
 def test_find_emptyroom_no_meas_date(tmp_path):
     """Test that we warn if measurement date can be read or inferred."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     bids_root = str(tmp_path)
     bids_path = _bids_path.copy().update(root=bids_root)
@@ -1365,7 +1479,7 @@ def test_find_emptyroom_no_meas_date(tmp_path):
     er_basename = er_bids_path.basename
     raw = _read_raw_fif(raw_fname)
 
-    er_raw_fname = op.join(data_path, "MEG", "sample", "ernoise_raw.fif")
+    er_raw_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
     er_raw.set_meas_date(er_meas_date)
@@ -1498,6 +1612,20 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
     )
 
 
+@testing.requires_testing_data
+def test_update_check(return_bids_test_dir):
+    """Test check argument is passed BIDSPath properly."""
+    bids_path = BIDSPath(
+        root=return_bids_test_dir,
+        check=False,
+    )
+    bids_path.update(datatype="eyetrack")
+    assert (
+        bids_path.fpath.as_posix()
+        == Path(f"{return_bids_test_dir}/eyetrack").as_posix()
+    )
+
+
 def test_update_fail_check_no_change():
     """Test BIDSPath.check works in preventing invalid changes."""
     bids_path = BIDSPath(subject="test")
@@ -1532,3 +1660,26 @@ def test_dont_create_dirs_on_fpath_access(tmp_path):
     bp = BIDSPath(subject="01", datatype="eeg", root=tmp_path)
     bp.fpath  # accessing .fpath is required for this regression test
     assert not (tmp_path / "sub-01").exists()
+
+
+def test_fpath_common_prefix(tmp_path):
+    """Tests that fpath does not match multiple files with the same prefix.
+
+    This might happen if indices are not zero-paddded.
+    """
+    sub_dir = tmp_path / "sub-1" / "eeg"
+    sub_dir.mkdir(exist_ok=True, parents=True)
+    (sub_dir / "sub-1_run-1_raw.fif").touch()
+    (sub_dir / "sub-1_run-2.edf").touch()
+    # Other valid BIDS paths with the same basename prefix:
+    (sub_dir / "sub-1_run-10_raw.fif").touch()
+    (sub_dir / "sub-1_run-20.edf").touch()
+
+    assert (
+        BIDSPath(root=tmp_path, subject="1", run="1").fpath
+        == sub_dir / "sub-1_run-1_raw.fif"
+    )
+    assert (
+        BIDSPath(root=tmp_path, subject="1", run="2").fpath
+        == sub_dir / "sub-1_run-2.edf"
+    )

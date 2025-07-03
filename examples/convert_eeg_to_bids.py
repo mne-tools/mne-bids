@@ -18,7 +18,7 @@ data. Specifically, we will follow these steps:
 .. currentmodule:: mne_bids
 
 .. _BrainVision format: https://www.brainproducts.com/support-resources/brainvision-core-data-format-1-0/
-.. _CapTrak: https://www.fieldtriptoolbox.org/faq/coordsys/#details-of-the-captrak-coordinate-system
+.. _CapTrak: https://www.fieldtriptoolbox.org/faq/source/coordsys/#details-of-the-captrak-coordinate-system
 """  # noqa: E501 D205 D400
 
 # Authors: The MNE-BIDS developers
@@ -26,8 +26,8 @@ data. Specifically, we will follow these steps:
 
 # %%
 # We are importing everything we need for this example:
-import os.path as op
 import shutil
+from pathlib import Path
 
 import mne
 from mne.datasets import eegbci
@@ -66,8 +66,8 @@ eegbci.load_data(subjects=subject, runs=run, update_path=True)
 # of the directory tree.
 
 # get MNE directory with example data
-mne_data_dir = mne.get_config("MNE_DATASETS_EEGBCI_PATH")
-data_dir = op.join(mne_data_dir, "MNE-eegbci-data")
+mne_data_dir = Path(mne.get_config("MNE_DATASETS_EEGBCI_PATH"))
+data_dir = mne_data_dir / "MNE-eegbci-data"
 
 print_dir_tree(data_dir)
 
@@ -114,7 +114,7 @@ raw.info["line_freq"] = 50  # specify power line frequency as required by BIDS
 
 # Get the electrode coordinates
 testing_data = mne.datasets.testing.data_path()
-captrak_path = op.join(testing_data, "montage", "captrak_coords.bvct")
+captrak_path = testing_data / "montage" / "captrak_coords.bvct"
 montage = mne.channels.read_dig_captrak(captrak_path)
 
 # Rename the montage channel names only for this example, because as said
@@ -156,7 +156,7 @@ subject_id = "001"
 
 # define a task name and a directory where to save the data to
 task = "RestEyesClosed"
-bids_root = op.join(mne_data_dir, "eegmmidb_bids_eeg_example")
+bids_root = mne_data_dir / "eegmmidb_bids_eeg_example"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -165,7 +165,7 @@ bids_root = op.join(mne_data_dir, "eegmmidb_bids_eeg_example")
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(bids_root):
+if bids_root.exists():
     shutil.rmtree(bids_root)
 
 # %%
@@ -218,7 +218,7 @@ counts
 #
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = op.join(bids_root, "README")
+readme = bids_root / "README"
 with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)

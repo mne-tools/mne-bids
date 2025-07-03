@@ -37,6 +37,7 @@ from scipy import linalg
 
 from mne_bids import (
     BIDSPath,
+    __version__,
     get_anonymization_daysback,
     get_bids_path_from_fname,
     read_raw_bids,
@@ -417,7 +418,7 @@ def _readme(datatype, fname, overwrite=False):
         MNE-BIDS citation to the existing README, unless it
         already contains that citation.
     """
-    if os.path.isfile(fname) and not overwrite:
+    if fname.is_file() and not overwrite:
         with open(fname, encoding="utf-8-sig") as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES["mne-bids"] in orig_data
@@ -1297,7 +1298,9 @@ def make_dataset_description(
         doi:10.5281/zenodo.3686061).
     generated_by : list of dict | None
         Used to specify provenance of the dataset. See BIDS specification
-        for details.
+        for details. If ``None``, a basic description containing MNE-BIDS name, version,
+        and URL will be generated for you. To suppress this behavior, pass an empty
+        list.
     source_datasets : list of dict | None
         Used to specify the locations and relevant attributes of all source
         datasets. Each dict in the list represents one source dataset and
@@ -1349,9 +1352,16 @@ def make_dataset_description(
                 )
             if not set(i.keys()).issubset(generated_by_keys):
                 raise ValueError(msg_key.format(i.keys() - generated_by_keys))
+    elif generated_by is not None:
+        raise ValueError(msg_type.format("generated_by"))
     else:
-        if generated_by is not None:
-            raise ValueError(msg_type.format("generated_by"))
+        generated_by = [
+            dict(
+                Name="MNE-BIDS",
+                Version=__version__,
+                CodeURL="https://mne.tools/mne-bids/",
+            )
+        ]
 
     source_ds_keys = set(["URL", "DOI", "Version"])
     if isinstance(source_datasets, list):
@@ -1960,7 +1970,7 @@ def write_raw_bids(
             "This violates the BIDS specifications. "
             "Please ensure there is only one README file."
         )
-    readme_fname = str((found_readmes or [bids_path.root / "README"])[0])
+    readme_fname = Path((found_readmes or [bids_path.root / "README"])[0])
 
     participants_tsv_fname = op.join(bids_path.root, "participants.tsv")
     participants_json_fname = participants_tsv_fname.replace(".tsv", ".json")
@@ -2343,7 +2353,7 @@ def _get_t1w_mgh(fs_subject, fs_subjects_dir):
     import nibabel as nib
 
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=True)
-    t1_fname = Path(fs_subjects_dir) / fs_subject / "mri" / "T1.mgz"
+    t1_fname = fs_subjects_dir / fs_subject / "mri" / "T1.mgz"
     if not t1_fname.exists():
         raise ValueError(
             "Freesurfer recon-all subject folder "
@@ -2718,9 +2728,9 @@ def write_meg_calibration(calibration, bids_path, *, verbose=None):
     Examples
     --------
     >>> data_path = mne.datasets.testing.data_path(download=False) # doctest: +SKIP
-    >>> calibration_fname = op.join(data_path, 'SSS', 'sss_cal_3053.dat') # doctest: +SKIP
+    >>> calibration_fname = data_path / 'SSS' / 'sss_cal_3053.dat' # doctest: +SKIP
     >>> bids_path = BIDSPath(subject='01', session='test',
-    ...                      root=op.join(data_path, 'mne_bids')) # doctest: +SKIP
+    ...                      root=data_path / 'mne_bids') # doctest: +SKIP
     >>> write_meg_calibration(calibration_fname, bids_path) # doctest: +SKIP
     Writing fine-calibration file to ...sub-01_ses-test_acq-calibration_meg.dat...
     """  # noqa: E501

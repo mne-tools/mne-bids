@@ -410,8 +410,6 @@ class BIDSPath:
         ):
             raise ValueError("At least one parameter must be given.")
 
-        self.check = check
-
         self.update(
             subject=subject,
             session=session,
@@ -427,6 +425,7 @@ class BIDSPath:
             datatype=datatype,
             suffix=suffix,
             extension=extension,
+            check=check,
         )
 
     @property
@@ -924,10 +923,10 @@ class BIDSPath:
         return bids_fpath
 
     def update(self, *, check=None, **kwargs):
-        """Update inplace BIDS entity key/value pairs in object.
+        """Update in-place BIDS entity key/value pairs in object.
 
         ``run`` and ``split`` are auto-converted to have two
-        digits. For example, if ``run=1``, then it will nbecome ``run='01'``.
+        digits. For example, if ``run=1``, then it will become ``run='01'``.
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
@@ -1364,12 +1363,13 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     sub, ses = bids_path.subject, bids_path.session
     datatype = bids_path.datatype
     basename, bids_root = bids_path.basename, bids_path.root
+    check = bids_path.check
 
     if datatype is None:
         datatype = _infer_datatype(root=bids_root, sub=sub, ses=ses)
 
     data_dir = BIDSPath(
-        subject=sub, session=ses, datatype=datatype, root=bids_root
+        subject=sub, session=ses, datatype=datatype, root=bids_root, check=check
     ).directory
 
     # For BTi data, just return the directory with a '.pdf' extension
@@ -1390,7 +1390,9 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
             search_str = op.join(search_str, datatype)
         else:
             search_str = op.join(search_str, "**")
-        search_str = op.join(search_str, f"{basename}*")
+        # The basename should end with a separator "_" or a period "."
+        # to avoid matching only the beggining of a value.
+        search_str = op.join(search_str, f"{basename}[_.]*")
 
         # Find all matching files in all supported formats.
         valid_exts = ALLOWED_FILENAME_EXTENSIONS
@@ -1462,9 +1464,11 @@ def _truncate_tsv_line(line, lim=10):
     """Truncate a line to the specified number of characters."""
     return "".join(
         [
-            str(val) + (lim - len(val)) * " "
-            if len(val) < lim
-            else f"{val[: lim - 1]} "
+            (
+                str(val) + (lim - len(val)) * " "
+                if len(val) < lim
+                else f"{val[: lim - 1]} "
+            )
             for val in line.split("\t")
         ]
     )
@@ -1946,6 +1950,7 @@ def get_entity_vals(
     ignore_datatypes=None,
     ignore_dirs=("derivatives", "sourcedata"),
     ignore_suffixes=None,
+    include_match=None,
     with_key=False,
     verbose=None,
 ):
@@ -2010,6 +2015,12 @@ def get_entity_vals(
     ignore_suffixes : str | array-like of str | None
         Suffixes to ignore. If ``None``, include all suffixes. This can be helpful for
         ignoring non-data sidecars such as `*_scans.tsv` or `*_coordsystem.json`.
+
+        .. versionadded:: 0.17
+    include_match : str | array-like of str | None
+        Glob-style pattern(s) of *directories* to include in the search (i.e., each
+        must end with ``"/"``). ``None`` (the default) is equivalent to ``"**/"``
+        (search within any subdirectory of the BIDS root).
 
         .. versionadded:: 0.17
     with_key : bool
@@ -2107,7 +2118,12 @@ def get_entity_vals(
 
     p = re.compile(rf"{entity_long_abbr_map[entity_key]}-(.*?)_")
     values = list()
-    filenames = root.glob(f"**/*{entity_long_abbr_map[entity_key]}-*_*")
+    search_str = f"**/*{entity_long_abbr_map[entity_key]}-*_*"
+    if include_match is not None:
+        include_match = _ensure_tuple(include_match)
+        filenames = [f for im in include_match for f in root.glob(im + search_str)]
+    else:
+        filenames = root.glob(search_str)
 
     for filename in filenames:
         # Skip ignored directories
@@ -2358,7 +2374,7 @@ def _filter_fnames(
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
-    ext_str = r"(" + "|".join(extension) + ")" if extension else r".([^_]+)"
+    ext_str = r"(" + "|".join(extension) + ")$" if extension else r".([^_]+)"
 
     regexp = (
         leading_path_str
@@ -2502,7 +2518,7 @@ def find_matching_paths(
 
 
 def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False):
-    """Return all file paths in root.
+    """Return all file paths + .ds paths in root.
 
     Can be filtered by datatype (which is present in the path but not in
     the BIDSPath basename). Can also be list of datatypes.
@@ -2523,29 +2539,49 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     Returns
     -------
     paths : list of pathlib.Path
-        All paths in `root`, filtered according to the function parameters.
+        All files + .ds paths in `root`, filtered according to the function parameters.
     """
     root = Path(root)  # if root is str
 
-    if datatype is not None:
-        datatype = _ensure_tuple(datatype)
-        search_str = f"*/{'|'.join(datatype)}/*"
+    if datatype is None and not ignore_nosub:
+        paths = root.rglob("*.*")
     else:
-        search_str = "*.*"
+        if datatype is not None:
+            datatype = _ensure_tuple(datatype)
+            search_str = f"**/{'|'.join(datatype)}/*.*"
+        else:
+            search_str = "**/*.*"
 
-    paths = root.rglob(search_str)
+        # only browse files which are of the form root/sub-*,
+        # such that we truely only look in 'sub'-folders:
+        if ignore_nosub:
+            search_str = f"sub-*/{search_str}"
+        # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
+        # Most of the speedup is from using glob.iglob here.
+        paths = [
+            Path(root, fn)
+            for fn in glob.iglob(search_str, root_dir=root, recursive=True)
+        ]
+
     # Only keep files (not directories), ...
     # and omit the JSON sidecars if `ignore_json` is True.
     if ignore_json:
-        paths = [p for p in paths if p.is_file() and p.suffix != ".json"]
+        paths = [
+            p
+            for p in paths
+            if (p.is_file() and p.suffix != ".json")
+            # XXX: generalize with a private func that takes
+            # a config of which "data format" are to be expected like .ds
+            or (p.is_dir() and p.suffix == ".ds")
+        ]
     else:
-        paths = [p for p in paths if p.is_file()]
-
-    # only keep files which are of the form root/sub-*,
-    # such that we only look in 'sub'-folders:
-    if ignore_nosub:
-        root_sub = str(root / "sub-")
-        paths = [p for p in paths if str(p).startswith(root_sub)]
+        paths = [
+            p
+            for p in paths
+            if p.is_file()
+            # XXX: see above, generalize with private func
+            or (p.is_dir() and p.suffix == ".ds")
+        ]
 
     return paths
 

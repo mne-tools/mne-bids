@@ -5,7 +5,6 @@
 
 import json
 import os
-import os.path as op
 import re
 from datetime import datetime, timedelta, timezone
 from difflib import get_close_matches
@@ -524,8 +523,77 @@ def _handle_info_reading(sidecar_fname, raw):
     return raw
 
 
-def _handle_events_reading(events_fname, raw):
-    """Read associated events.tsv and convert valid events to annotations on Raw."""
+def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
+    r"""
+    Read the ``events.tsv`` file and extract onset, duration, and description.
+
+    Parameters
+    ----------
+    events_fname : str
+        The file path to the ``events.tsv`` file.
+
+    Returns
+    -------
+    kwargs_dict : dict
+
+        A dictionary containing the following keys:
+
+        - 'onset' : np.ndarray
+            The onset times of the events in seconds.
+        - 'duration' : np.ndarray
+            The durations of the events in seconds.
+        - 'description' : np.ndarray
+            The descriptions of the events.
+        - 'event_id' : dict
+            A dictionary mapping event descriptions to integer event IDs.
+        - 'extras' : list of dict
+            A list of dictionaries containing additional columns from the
+            ``events.tsv`` file. Each dictionary corresponds to a row.
+            This corresponds to the ``extras`` argument of class
+            :class:`mne.Annotations`.
+
+    Notes
+    -----
+    The function handles the following cases:
+
+    - If the ``trial_type`` column is available, it uses it for event descriptions.
+    - If the ``stim_type`` column is available, it uses it for backward compatibility.
+    - If the ``value`` column is available, it uses it to create the ``event_id``.
+    - If none of the above columns are available, it defaults to using 'n/a' for
+      descriptions and 1 for event IDs.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> from pathlib import Path
+    >>> import tempfile
+    >>>
+    >>> # Create a sample DataFrame
+    >>> data = {
+    ...     'onset': [0.1, 0.2, 0.3],
+    ...     'duration': [0.1, 0.1, 0.1],
+    ...     'trial_type': ['event1', 'event2', 'event1'],
+    ...     'value': [1, 2, 1],
+    ...     'sample': [10, 20, 30]
+            'foo': ['a', 'b', 'c'],
+    ... }
+    >>> df = pd.DataFrame(data)
+    >>>
+    >>> # Write the DataFrame to a temporary file
+    >>> temp_dir = tempfile.gettempdir()
+    >>> events_file = Path(temp_dir) / 'events.tsv'
+    >>> df.to_csv(events_file, sep='\t', index=False)
+    >>>
+    >>> # Read the events file using the function
+    >>> events_dict = events_file_to_annotation_kwargs(events_file)
+    >>> events_dict
+    {'onset': array([0.1, 0.2, 0.3]),
+    'duration': array([0.1, 0.1, 0.1]),
+    'description': array(['event1', 'event2', 'event1'], dtype='<U6'),
+    'event_id': {'event1': 1, 'event2': 2},
+    'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
+
+    """
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
@@ -602,9 +670,63 @@ def _handle_events_reading(events_fname, raw):
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
+    extras = None
+    extra_columns = list(
+        set(events_dict)
+        - {
+            "onset",
+            "duration",
+            "value",
+            "trial_type",
+            "stim_type",
+            "sample",
+        }
+    )
+    if extra_columns:
+        extras = [
+            dict(zip(extra_columns, values))
+            for values in zip(*[events_dict[col] for col in extra_columns])
+        ]
+
+    return {
+        "onset": ons,
+        "duration": durs,
+        "description": descrs,
+        "event_id": event_id,
+        "extras": extras,
+    }
+
+
+def _handle_events_reading(events_fname, raw):
+    """Read associated events.tsv and convert valid events to annotations on Raw."""
+    annotations_info = events_file_to_annotation_kwargs(events_fname)
+    event_id = annotations_info["event_id"]
+
     # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
-    annot_from_events = mne.Annotations(onset=ons, duration=durs, description=descrs)
+    try:
+        annot_from_events = mne.Annotations(
+            onset=annotations_info["onset"],
+            duration=annotations_info["duration"],
+            description=annotations_info["description"],
+            extras=annotations_info["extras"],
+        )
+    except TypeError:
+        if (
+            annotations_info["extras"] is not None
+            and len(annotations_info["extras"]) > 0
+        ):
+            warn(
+                "The version of MNE-Python you are using (<1.10) "
+                "does not support the extras argument in mne.Annotations. "
+                f"The extra column(s) {list(annotations_info['extras'][0].keys())} "
+                "will be ignored."
+            )
+        annot_from_events = mne.Annotations(
+            onset=annotations_info["onset"],
+            duration=annotations_info["duration"],
+            description=annotations_info["description"],
+        )
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [
@@ -815,6 +937,12 @@ def read_raw_bids(
             '"bids_path" must be a BIDSPath object. Please '
             "instantiate using mne_bids.BIDSPath()."
         )
+    for required in ["root", "subject", "task"]:
+        if not getattr(bids_path, required):
+            raise RuntimeError(
+                '"bids_path" must contain `root`, `subject`, and `task` '
+                f"attributes but it's missing `{required}`."
+            )
 
     bids_path = bids_path.copy()
     sub = bids_path.subject
@@ -985,7 +1113,7 @@ def read_raw_bids(
     # read in associated subject info from participants.tsv
     participants_tsv_path = bids_root / "participants.tsv"
     subject = f"sub-{bids_path.subject}"
-    if op.exists(participants_tsv_path):
+    if participants_tsv_path.exists():
         raw = _handle_participants_reading(
             participants_fname=participants_tsv_path, raw=raw, subject=subject
         )
@@ -1180,7 +1308,7 @@ def get_head_mri_trans(
         fs_subject = f"sub-{meg_bids_path.subject}"
 
     fs_subjects_dir = get_subjects_dir(fs_subjects_dir, raise_error=False)
-    fs_t1_path = Path(fs_subjects_dir) / fs_subject / "mri" / "T1.mgz"
+    fs_t1_path = fs_subjects_dir / fs_subject / "mri" / "T1.mgz"
     if not fs_t1_path.exists():
         raise ValueError(
             f"Could not find {fs_t1_path}. Consider running FreeSurfer's "

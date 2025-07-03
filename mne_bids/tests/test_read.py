@@ -3,9 +3,11 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import contextlib
 import json
 import os
 import os.path as op
+import re
 import shutil as sh
 from collections import OrderedDict
 from contextlib import nullcontext
@@ -14,10 +16,11 @@ from pathlib import Path
 
 import mne
 import numpy as np
+import pandas as pd
 import pytest
 from mne.datasets import testing
 from mne.io.constants import FIFF
-from mne.utils import assert_dig_allclose, object_diff
+from mne.utils import assert_dig_allclose, check_version, object_diff
 from numpy.testing import assert_almost_equal
 
 import mne_bids.write
@@ -32,6 +35,7 @@ from mne_bids.read import (
     _handle_events_reading,
     _handle_scans_reading,
     _read_raw,
+    events_file_to_annotation_kwargs,
     get_head_mri_trans,
     read_raw_bids,
 )
@@ -63,7 +67,7 @@ _bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
 data_path = testing.data_path(download=False)
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
 # Data with cHPI info
 raw_fname_chpi = op.join(data_path, "SSS", "test_move_anon_raw.fif")
@@ -122,6 +126,10 @@ def test_read_correct_inputs():
 
     with pytest.raises(RuntimeError, match='"bids_path" must be a BIDSPath object'):
         get_head_mri_trans(bids_path)
+
+    with pytest.raises(RuntimeError, match='"bids_path" must contain `root`'):
+        bids_path = BIDSPath(root=bids_path)
+        read_raw_bids(bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -226,9 +234,7 @@ def test_get_head_mri_trans(tmp_path):
     """Test getting a trans object from BIDS data."""
     nib = pytest.importorskip("nibabel")
 
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
     subjects_dir = op.join(data_path, "subjects")
 
     # Drop unknown events.
@@ -249,7 +255,7 @@ def test_get_head_mri_trans(tmp_path):
         )
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
-    trans = mne.read_trans(raw_fname.replace("_raw.fif", "-trans.fif"))
+    trans = mne.read_trans(str(raw_fname).replace("_raw.fif", "-trans.fif"))
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path
@@ -493,7 +499,8 @@ def test_get_head_mri_trans(tmp_path):
 
 
 @testing.requires_testing_data
-def test_handle_events_reading(tmp_path):
+@pytest.mark.parametrize("with_extras", [False, True])
+def test_handle_events_reading(tmp_path, with_extras):
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
     raw = _read_raw_fif(raw_fname)
@@ -505,15 +512,34 @@ def test_handle_events_reading(tmp_path):
         "duration": ["n/a", "n/a", "n/a"],
         "trial_type": ["rec start", "trial #1", "trial #2!"],
     }
+    if with_extras:
+        events["foo"] = ["a", "b", "c"]
     events_fname = tmp_path / "bids1" / "sub-01_task-test_events.json"
     events_fname.parent.mkdir()
     _to_tsv(events, events_fname)
 
-    raw, event_id = _handle_events_reading(events_fname, raw)
+    with (
+        pytest.warns(
+            RuntimeWarning,
+            match=re.escape(
+                "The version of MNE-Python you are using (<1.10) "
+                "does not support the extras argument in mne.Annotations. "
+                "The extra column(s) [np.str_('foo')] will be ignored."
+            ),
+        )
+        if with_extras and not check_version("mne", "1.10")
+        else contextlib.nullcontext()
+    ):
+        raw, event_id = _handle_events_reading(events_fname, raw)
+
     ev_arr, ev_dict = mne.events_from_annotations(raw)
     assert list(ev_dict.values()) == [1, 2]  # auto-assigned
     want = len(events["onset"]) - 1  # one onset was n/a
     assert want == len(raw.annotations) == len(ev_arr) == len(ev_dict)
+    if with_extras and check_version("mne", "1.10"):
+        for d, v in zip(raw.annotations.extras, "abc"):
+            assert "foo" in d
+            assert d["foo"] == v
 
     # Test with a `stim_type` column instead of `trial_type`.
     events = {
@@ -1122,7 +1148,7 @@ def test_get_head_mri_trans_ctf(fname, tmp_path):
     write_raw_bids(raw_ctf, bids_path, overwrite=False)
 
     # Take a fake trans
-    trans = mne.read_trans(raw_fname.replace("_raw.fif", "-trans.fif"))
+    trans = mne.read_trans(str(raw_fname).replace("_raw.fif", "-trans.fif"))
 
     # Get the T1 weighted MRI data file ... test write_anat with a nibabel
     # image instead of a file path
@@ -1452,10 +1478,6 @@ def test_file_not_found(tmp_path):
     ):
         read_raw_bids(bp)  # smoke test
 
-    bp.update(task=None)
-    with pytest.raises(FileNotFoundError, match="Did you mean"):
-        read_raw_bids(bp)
-
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_gsr_and_temp_reading():
@@ -1466,3 +1488,78 @@ def test_gsr_and_temp_reading():
     raw = read_raw_bids(bids_path)
     assert raw.get_channel_types(["GSR"]) == ["gsr"]
     assert raw.get_channel_types(["Temperature"]) == ["temperature"]
+
+
+def test_events_file_to_annotation_kwargs(tmp_path):
+    """Test that events file is read correctly."""
+    bids_path = BIDSPath(
+        subject="01", session="eeg", task="rest", datatype="eeg", root=tiny_bids_root
+    )
+    events_fname = _find_matching_sidecar(bids_path, suffix="events", extension=".tsv")
+
+    # ---------------- plain read --------------------------------------------
+    df = pd.read_csv(events_fname, sep="\t")
+    ev_kwargs = events_file_to_annotation_kwargs(events_fname=events_fname)
+
+    np.testing.assert_equal(ev_kwargs["onset"], df["onset"].values)
+    np.testing.assert_equal(ev_kwargs["duration"], df["duration"].values)
+    np.testing.assert_equal(ev_kwargs["description"], df["trial_type"].values)
+
+    # ---------------- filtering out n/a values ------------------------------
+    tmp_tsv_file = tmp_path / "events.tsv"
+    dext = pd.concat(
+        [df.copy().assign(onset=df.onset + i) for i in range(5)]
+    ).reset_index(drop=True)
+
+    dext = dext.assign(
+        ix=range(len(dext)),
+        value=dext.trial_type.map({"start_experiment": 1, "show_stimulus": 2}),
+        duration=1.0,
+    )
+
+    # nan values for `_drop` must be string values, `_drop` is called on
+    # `onset`, `value` and `trial_type`. `duration` n/a should end up as float 0
+    for c in ["onset", "value", "trial_type", "duration"]:
+        dext[c] = dext[c].astype(str)
+
+    dext.loc[0, "onset"] = "n/a"
+    dext.loc[1, "duration"] = "n/a"
+    dext.loc[4, "trial_type"] = "n/a"
+    dext.loc[4, "value"] = (
+        "n/a"  # to check that filtering is also applied when we drop the `trial_type`
+    )
+    dext.to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_filtered = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+
+    dext_f = dext[
+        (dext["onset"] != "n/a")
+        & (dext["trial_type"] != "n/a")
+        & (dext["value"] != "n/a")
+    ]
+
+    assert (ev_kwargs_filtered["onset"] == dext_f["onset"].astype(float).values).all()
+    assert (
+        ev_kwargs_filtered["duration"]
+        == dext_f["duration"].replace("n/a", "0.0").astype(float).values
+    ).all()
+    assert (ev_kwargs_filtered["description"] == dext_f["trial_type"].values).all()
+    assert (
+        ev_kwargs_filtered["duration"][0] == 0.0
+    )  # now idx=0, as first row is filtered out
+
+    # ---------------- default if missing trial_type  ------------------------
+    dext.drop(columns="trial_type").to_csv(tmp_tsv_file, sep="\t", index=False)
+
+    ev_kwargs_default = events_file_to_annotation_kwargs(events_fname=tmp_tsv_file)
+    np.testing.assert_array_equal(
+        ev_kwargs_default["onset"], dext_f["onset"].astype(float).values
+    )
+    np.testing.assert_array_equal(
+        ev_kwargs_default["duration"],
+        dext_f["duration"].replace("n/a", "0.0").astype(float).values,
+    )
+    np.testing.assert_array_equal(
+        np.sort(np.unique(ev_kwargs_default["description"])),
+        np.sort(dext_f["value"].unique()),
+    )
