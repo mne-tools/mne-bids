@@ -1006,6 +1006,15 @@ def _sidecar_json(
         ("Manufacturer", manufacturer),
     ]
 
+    ch_info_json_emg = [
+        ("EMGReference", "n/a"),
+        ("EMGGround", "n/a"),
+        # TODO EMG: must be one of Measured, ChannelSpecific, or Other, so writing `n/a`
+        # will lead to a dataset that doesn't validate.
+        ("EMGPlacementScheme", "n/a"),
+        ("Manufacturer", manufacturer),
+    ]
+
     ch_info_json_ieeg = [
         ("iEEGReference", "n/a"),
         ("ECOGChannelCount", n_ecogchan),
@@ -1035,6 +1044,8 @@ def _sidecar_json(
         append_datatype_json = ch_info_json_meg
     elif datatype == "eeg":
         append_datatype_json = ch_info_json_eeg
+    elif datatype == "emg":
+        append_datatype_json = ch_info_json_emg
     elif datatype == "ieeg":
         append_datatype_json = ch_info_json_ieeg
     elif datatype == "nirs":
@@ -2046,11 +2057,21 @@ def write_raw_bids(
             datatype=bids_path.datatype,
             overwrite=overwrite,
         )
-    elif bids_path.datatype in ["eeg", "ieeg", "nirs"]:
+    elif bids_path.datatype in ["eeg", "emg", "ieeg", "nirs"]:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
-        if montage is not None or (raw.info["dig"] is not None and raw.info["dig"]):
+        if montage is not None or raw.info["dig"]:
             _write_dig_bids(bids_path, raw, montage, acpc_aligned, overwrite)
+        elif bids_path.datatype == "emg":
+            # TODO EMG: Handle EMG coordsystem if it's not in `raw.info["dig"]`.
+            # In theory we could make a helper func for creating a `DigMontage` from
+            # EMG electrode location info, and users could pass that into
+            # `write_raw_bids`...
+            warn(
+                "No electrode location info found in raw file, so not writing "
+                "coordinate system info for EMG data. Please add `coordsystem.json` "
+                "file manually."
+            )
     else:
         logger.info(
             f"Writing of electrodes.tsv is not supported "
@@ -2203,12 +2224,22 @@ def write_raw_bids(
                     else bids_path.fpath
                 ),
             )
-        elif bids_path.datatype in ["eeg", "ieeg"] and format == "EDF":
+        elif bids_path.datatype in ["eeg", "emg", "ieeg"] and format == "EDF":
             warn("Converting data files to EDF format")
+            bids_path.update(extension=".edf")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
+        elif bids_path.datatype in ["emg"] and format == "BDF":
+            # TODO EMG cf: https://github.com/the-siesta-group/edfio/issues/62
+            raise NotImplementedError("Conversion to BDF is not yet supported.")
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
+        elif bids_path.datatype in ["emg"]:
+            # TODO EMG: when writing to BDF is possible, that will be the default here
+            # instead. cf: https://github.com/the-siesta-group/edfio/issues/62
+            bids_path.update(extension=".edf")
+            warn("Converting data files to EDF format")
+            _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn("Converting data files to BrainVision format")
             bids_path.update(suffix=bids_path.datatype, extension=".vhdr")
