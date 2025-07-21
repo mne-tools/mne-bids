@@ -66,7 +66,7 @@ Detailed list of changes
 - Corrects extension when filtering filenames in :meth:`mne_bids.BIDSPath.match()` and :func:`mne_bids.find_matching_paths()`, by `Arne Gottwald` (:gh:`1355`)
 - Fix :class:`mne_bids.BIDSPath` partially matching a value, by `Pierre Guetschel` (:gh:`1388`)
 - Ensures that ``check`` parameter in :meth:`mne_bids.BIDSPath.update()` is passed to :class:`mne_bids.BIDSPath`, by `Teon Brooks`_ (:gh:`1411`)
-- minor: added `T2w` to the suffix allowlist, by `Harrison Ritz`_
+- minor: added `T2w` to the suffix allowlist, by `Harrison Ritz`_ (:gh:`1420`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
