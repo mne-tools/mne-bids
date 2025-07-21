@@ -174,6 +174,7 @@ ALLOWED_FILENAME_SUFFIX = [
     "eeg",
     "ieeg",
     "T1w",
+    "T2w",
     "FLASH",  # datatype
     "participants",
     "scans",

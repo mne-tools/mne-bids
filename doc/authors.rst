@@ -24,6 +24,7 @@
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault
+.. _Harrison Ritz: https://github.com/harrisonritz
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Jonathan Vanhoecke: https://sfb-retune.de/people/jonathan-vanhoecke/
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
