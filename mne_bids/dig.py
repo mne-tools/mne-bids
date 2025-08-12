@@ -385,7 +385,14 @@ def _write_coordsystem_json(
     _write_json(fname, fid_json, overwrite=True)
 
 
-def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False, overwrite=False):
+def _write_dig_bids(
+    bids_path,
+    raw,
+    montage=None,
+    acpc_aligned=False,
+    electrodes_tsv_task=False,
+    overwrite=False,
+):
     """Write BIDS formatted DigMontage from Raw instance.
 
     Handles coordsystem.json and electrodes.tsv writing
@@ -405,6 +412,9 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False, overwrite=
         must be transformed from the "head" coordinate frame.
     acpc_aligned : bool
         Whether "mri" space is aligned to ACPC.
+    electrodes_tsv_task : bool
+        Whether to add the ``task-`` entity to the ``BIDSPath`` of
+        the ``electrodes.tsv`` file. Defaults to ``False``.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -500,12 +510,16 @@ def _write_dig_bids(bids_path, raw, montage=None, acpc_aligned=False, overwrite=
         "acquisition": bids_path.acquisition,
         "space": None if bids_path.datatype == "nirs" else coord_frame,
     }
+    # add `task-` to the electrodes.tsv file if requested
+    electrode_file_entities = coord_file_entities.copy()
+    if electrodes_tsv_task and bids_path.task is not None:
+        electrode_file_entities["task"] = bids_path.task
     channels_suffix = "optodes" if bids_path.datatype == "nirs" else "electrodes"
     _channels_fun = (
         _write_optodes_tsv if bids_path.datatype == "nirs" else _write_electrodes_tsv
     )
     channels_path = BIDSPath(
-        **coord_file_entities, suffix=channels_suffix, extension=".tsv"
+        **electrode_file_entities, suffix=channels_suffix, extension=".tsv"
     )
     coordsystem_path = BIDSPath(
         **coord_file_entities, suffix="coordsystem", extension=".json"
