@@ -378,3 +378,87 @@ def test_electrodes_io(tmp_path):
         )  # don't need the header
         # only eeg chs w/ electrode pos should be written to electrodes.tsv
         assert n_entries == len(raw.get_channel_types("eeg"))
+
+
+@testing.requires_testing_data
+def test_task_specific_channels_sidecar(tmp_path):
+    """Test the optional task- entity in electrodes.tsv."""
+    raw = _load_raw()
+    raw.pick(["eeg"])
+    raw_foo = raw.copy().load_data().pick(slice(None, len(raw.ch_names) // 2))
+    raw_bar = raw.copy().load_data().pick(slice(len(raw.ch_names) // 2, None))
+
+    bids_root1 = tmp_path / "bids1"
+    bids_root2 = tmp_path / "bids2"
+
+    bpath_kwargs = dict(
+        root=bids_root1,
+        subject="01",
+        session="01",
+        run="01",
+        acquisition="01",
+        task="foo",
+    )
+
+    write_kwargs = dict(
+        allow_preload=True,
+        electrodes_tsv_task=True,
+        format="BrainVision",
+    )
+
+    bpath = mne_bids.BIDSPath(**bpath_kwargs)
+    bpath_foo = mne_bids.write_raw_bids(raw_foo, bpath, **write_kwargs)
+
+    bpath_kwargs.update(task="bar")
+    bpath = mne_bids.BIDSPath(**bpath_kwargs)
+    bpath_bar = mne_bids.write_raw_bids(raw_bar, bpath, **write_kwargs)
+
+    elpath_foo = bpath_foo.find_matching_sidecar(suffix="electrodes", extension=".tsv")
+    elpath_bar = bpath_bar.find_matching_sidecar(suffix="electrodes", extension=".tsv")
+
+    assert (
+        elpath_foo.name == "sub-01_ses-01_task-foo_acq-01_space-CapTrak_electrodes.tsv"
+    )
+    assert (
+        elpath_bar.name == "sub-01_ses-01_task-bar_acq-01_space-CapTrak_electrodes.tsv"
+    )
+
+    coordpath_foo = bpath_foo.find_matching_sidecar(
+        suffix="coordsystem", extension=".json"
+    )
+    coordpath_bar = bpath_bar.find_matching_sidecar(
+        suffix="coordsystem", extension=".json"
+    )
+
+    assert coordpath_foo.name == "sub-01_ses-01_acq-01_space-CapTrak_coordsystem.json"
+    assert coordpath_bar.name == "sub-01_ses-01_acq-01_space-CapTrak_coordsystem.json"
+
+    # Now test for no task- entity in electrodes.tsv
+
+    bpath_kwargs = dict(
+        root=bids_root2,
+        subject="01",
+        session="01",
+        run="01",
+        acquisition="01",
+        task="foo",
+    )
+
+    write_kwargs = dict(
+        allow_preload=True,
+        electrodes_tsv_task=False,
+        format="BrainVision",
+    )
+
+    bpath = mne_bids.BIDSPath(**bpath_kwargs)
+    bpath_foo = mne_bids.write_raw_bids(raw_foo, bpath, **write_kwargs)
+
+    bpath_kwargs.update(task="bar")
+    bpath = mne_bids.BIDSPath(**bpath_kwargs)
+
+    # without specifying a task, writing a second electrodes.tsv with the same
+    # filename but different contents fails
+    with pytest.raises(
+        RuntimeError, match="Trying to write electrodes.tsv, but it already exists"
+    ):
+        bpath_bar = mne_bids.write_raw_bids(raw_bar, bpath, **write_kwargs)
