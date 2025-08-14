@@ -413,8 +413,8 @@ def _write_dig_bids(
     acpc_aligned : bool
         Whether "mri" space is aligned to ACPC.
     electrodes_tsv_task : bool
-        Whether to add the ``task-`` entity to the ``BIDSPath`` of
-        the ``electrodes.tsv`` file. Defaults to ``False``.
+        Whether to add the ``task-`` entity to the ``electrodes.tsv`` filename.
+        Defaults to ``False``.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.

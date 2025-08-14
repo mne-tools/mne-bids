@@ -1432,7 +1432,6 @@ def write_raw_bids(
     event_id=None,
     event_metadata=None,
     extra_columns_descriptions=None,
-    electrodes_tsv_task=False,
     *,
     anonymize=None,
     format="auto",
@@ -1441,6 +1440,7 @@ def write_raw_bids(
     allow_preload=False,
     montage=None,
     acpc_aligned=False,
+    electrodes_tsv_task=False,
     overwrite=False,
     verbose=None,
 ):
@@ -1536,9 +1536,6 @@ def write_raw_bids(
     extra_columns_descriptions : dict | None
         A dictionary that maps column names of the ``event_metadata`` to descriptions.
         Each column of ``event_metadata`` must have a corresponding entry in this.
-    electrodes_tsv_task : bool
-        Add the ``task-`` entity to the ``BIDSPath`` of the
-        ``electrodes.tsv`` file. Defaults to ``False``.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1620,6 +1617,9 @@ def write_raw_bids(
         So, this flag is required to be True when the digitization data
         is in "mri" for intracranial data to confirm that the T1 is
         ACPC-aligned.
+    electrodes_tsv_task : bool
+        Add the ``task-`` entity to the ``electrodes.tsv`` filename.
+        Defaults to ``False``.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
