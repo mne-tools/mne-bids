@@ -6,7 +6,7 @@
 from mne import io
 from mne.io.constants import FIFF
 
-BIDS_VERSION = "1.7.0"
+BIDS_VERSION = "1.9.0"
 
 PYBV_VERSION = "0.7.3"
 EEGLABIO_VERSION = "0.0.2"
@@ -15,17 +15,19 @@ DOI = """https://doi.org/10.21105/joss.01896"""
 
 EPHY_ALLOWED_DATATYPES = ["meg", "eeg", "ieeg", "nirs"]
 
-ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh"]
+ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
 EEG_CONVERT_FORMATS = ["BrainVision", "auto"]
 IEEG_CONVERT_FORMATS = ["BrainVision", "auto"]
 NIRS_CONVERT_FORMATS = ["auto"]
+MOTION_CONVERT_FORMATS = ["tsv", "auto"]
 CONVERT_FORMATS = {
     "meg": MEG_CONVERT_FORMATS,
     "eeg": EEG_CONVERT_FORMATS,
     "ieeg": IEEG_CONVERT_FORMATS,
     "nirs": NIRS_CONVERT_FORMATS,
+    "motion": MOTION_CONVERT_FORMATS,
 }
 
 # Orientation of the coordinate system dependent on manufacturer
@@ -147,12 +149,17 @@ allowed_extensions_nirs = [
     ".snirf",  # SNIRF
 ]
 
+allowed_extensions_motion = [
+    ".tsv",  # Tab-separated values
+]
+
 # allowed extensions (data formats) in BIDS spec
 ALLOWED_DATATYPE_EXTENSIONS = {
     "meg": allowed_extensions_meg,
     "eeg": allowed_extensions_eeg,
     "ieeg": allowed_extensions_ieeg,
     "nirs": allowed_extensions_nirs,
+    "motion": allowed_extensions_motion,
 }
 
 # allow additional extensions that are not BIDS
@@ -190,6 +197,7 @@ ALLOWED_FILENAME_SUFFIX = [
     "physio",
     "stim",  # behavioral
     "nirs",
+    "motion",  # motion
 ]
 
 # converts suffix to known path modalities
@@ -227,6 +235,7 @@ ALLOWED_PATH_ENTITIES = (
     "description",
     "suffix",
     "extension",
+    "tracking-system",
 )
 ALLOWED_PATH_ENTITIES_SHORT = {
     "sub": "subject",
@@ -239,6 +248,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "recording": "recording",
     "split": "split",
     "desc": "description",
+    "track-sys": "tracking_system",
 }
 
 # Annotations to never remove during reading or writing
@@ -316,6 +326,7 @@ ALLOWED_SPACES["meg"] = ALLOWED_SPACES["eeg"] = (
 ALLOWED_SPACES["ieeg"] = BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FRAMES
 ALLOWED_SPACES["anat"] = None
 ALLOWED_SPACES["beh"] = None
+ALLOWED_SPACES["motion"] = None
 
 # See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa: E501
 ENTITY_VALUE_TYPE = {

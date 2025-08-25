@@ -58,3 +58,4 @@ Please also cite one of the following papers to credit BIDS, depending on which 
 - [EEG-BIDS](https://doi.org/10.1038/s41597-019-0104-8)
 - [iEEG-BIDS](https://doi.org/10.1038/s41597-019-0105-7)
 - [NIRS-BIDS](https://doi.org/10.31219/osf.io/7nmcp)
+- [Motion-BIDS](https://doi.org/10.1038/s41597-024-03559-8)
