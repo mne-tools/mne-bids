@@ -368,7 +368,8 @@ def _events_json(fname, extra_columns=None, has_trial_type=True, overwrite=False
         },
         "sample": {
             "Description": (
-                "The event onset time in number of sampling points.First sample is 0."
+                "The event onset time in number of sampling points."
+                "First sample is 0."
             ),
         },
         "value": {
