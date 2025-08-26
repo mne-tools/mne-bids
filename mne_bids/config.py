@@ -342,6 +342,7 @@ ENTITY_VALUE_TYPE = {
     "description": "label",
     "suffix": "label",
     "extension": "label",
+    "tracking_system": "label",
 }
 
 # mapping from supported BIDs coordinate frames -> MNE

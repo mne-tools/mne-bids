@@ -385,6 +385,7 @@ class BIDSPath:
         space=None,
         split=None,
         description=None,
+        tracking_system=None,
         root=None,
         suffix=None,
         extension=None,
