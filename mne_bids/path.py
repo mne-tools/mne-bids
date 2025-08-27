@@ -882,7 +882,9 @@ class BIDSPath:
                 if self.suffix is None or self.suffix in ALLOWED_DATATYPES:
                     # now only use valid datatype extension
                     if self.extension is None:
-                        valid_exts = sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
+                        valid_exts = ALLOWED_DATATYPE_EXTENSIONS.get(
+                            self.datatype, sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
+                        )
                     else:
                         valid_exts = [self.extension]
                     matching_paths = [
