@@ -214,6 +214,10 @@ authors:
       family-names: Ritz
       affiliation: 'Princeton Neuroscience Institute, Princeton University, Princeton, USA'
       orcid: 'https://orcid.org/0009-0003-1477-4912'
+    - given-names: Alex
+      family-names: Lopez Marquez
+      affiliation: 'Institut Guttmann, Barcelona, Spain'
+      orcid: 'https://orcid.org/0000-0002-3353-280X'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

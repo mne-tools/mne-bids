@@ -22,6 +22,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 * `Arne Gottwald`_
 * `Matthias Dold`_
 * `Harrison Ritz`_
+* `Alex Lopez Marquez`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -44,6 +45,7 @@ Detailed list of changes
 - :func:`mne_bids.get_entity_vals()` has a new parameter ``include_match`` to prefilter item matching and ignore non-matched items from begin of directory scan, by `Arne Gottwald` (:gh:`1355`)
 - Data from ``events.tsv`` can now be read into an OrderedDict using :func:`mne_bids.events_file_to_annotation_kwargs()`, by `Matthias Dold` (:gh:`1389`)
 - Read the optionally present extra columns from ``events.tsv`` and pass them to :class:`mne.Annotations`, by `Pierre Guetschel` (:gh:`1401`)
+- :func:`mne_bids.write_raw_bids()` has a new parameter `electrodes_tsv_task` which allows adding the `task` entity to the `electrodes.tsv` filepath, by `Alex Lopez Marquez`_ (:gh:`1424`)
 
 
 🧐 API and behavior changes
