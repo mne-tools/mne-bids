@@ -56,3 +56,4 @@
 .. _Tom Donoghue: https://github.com/TomDonoghue
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
+.. _Julius Welzel: https://github.com/JuliusWelzel
