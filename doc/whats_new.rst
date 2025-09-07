@@ -45,7 +45,7 @@ Detailed list of changes
 - :func:`mne_bids.get_entity_vals()` has a new parameter ``include_match`` to prefilter item matching and ignore non-matched items from begin of directory scan, by `Arne Gottwald` (:gh:`1355`)
 - Data from ``events.tsv`` can now be read into an OrderedDict using :func:`mne_bids.events_file_to_annotation_kwargs()`, by `Matthias Dold` (:gh:`1389`)
 - Read the optionally present extra columns from ``events.tsv`` and pass them to :class:`mne.Annotations`, by `Pierre Guetschel` (:gh:`1401`)
-- :func:`_filter_fnames()` now correctly checks the default extension, correcting suffix filtering, by `Nathan Azrak` (:gh:`1427`)
+- ``_filter_fnames()`` now correctly checks the default extension, correcting suffix filtering, by `Nathan Azrak` (:gh:`1427`)
 
 
 🧐 API and behavior changes
