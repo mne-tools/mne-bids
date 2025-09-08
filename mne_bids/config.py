@@ -248,7 +248,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "recording": "recording",
     "split": "split",
     "desc": "description",
-    "track-sys": "tracking_system",
+    "tracksys": "tracking-system",
 }
 
 # Annotations to never remove during reading or writing
