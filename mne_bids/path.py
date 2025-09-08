@@ -2377,7 +2377,7 @@ def _filter_fnames(
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
-    ext_str = r"(" + "|".join(extension) + ")$" if extension else r".([^_]+)"
+    ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
 
     regexp = (
         leading_path_str

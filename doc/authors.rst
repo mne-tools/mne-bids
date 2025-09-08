@@ -40,6 +40,7 @@
 .. _Matthias Dold: https://www.linkedin.com/in/matthiasdold/
 .. _Maximilien Chaumon: https://github.com/dnacombo
 .. _Moritz Gerster: http://moritz-gerster.com
+.. _Nathan Azrak: https://github.com/nathan-az
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Richard Köhler: https://github.com/richardkoehler

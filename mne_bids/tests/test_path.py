@@ -1029,6 +1029,7 @@ def test_filter_fnames(entities, expected_n_matches):
         "sub-Foo_ses-bar_meg.fif",
         "sub-Bar_task-invasive_run-1_ieeg.fif",
         "sub-3_task-fun_proc-sss_meg.fif",
+        "sub-3_task-fun_proc-sss_meg_channels.tsv",
         "sub-4_task-pain_acq-lowres_T1w.nii.gz",
         "sub-5_task-test_proc-ica_eeg.vhdr",
         "sub-6_task-test_proc-ica_eeg.vhdr",
