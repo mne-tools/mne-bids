@@ -537,6 +537,7 @@ def test_get_entities_from_fname_errors(fname):
         "recording",
         "split",
         "description",
+        "tracking-system"
     ]
 
     assert params["subject"] == "01"
