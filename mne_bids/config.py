@@ -235,7 +235,7 @@ ALLOWED_PATH_ENTITIES = (
     "description",
     "suffix",
     "extension",
-    "tracking-system",
+    "tracking_system",
 )
 ALLOWED_PATH_ENTITIES_SHORT = {
     "sub": "subject",
@@ -248,7 +248,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "recording": "recording",
     "split": "split",
     "desc": "description",
-    "tracksys": "tracking-system",
+    "tracksys": "tracking_system",
 }
 
 # Annotations to never remove during reading or writing
