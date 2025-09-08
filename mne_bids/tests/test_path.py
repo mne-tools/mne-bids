@@ -500,6 +500,7 @@ def test_get_entities_from_fname(fname):
         "recording",
         "split",
         "description",
+        "tracking_system"
     ]
 
 
@@ -537,7 +538,7 @@ def test_get_entities_from_fname_errors(fname):
         "recording",
         "split",
         "description",
-        "tracking-system",
+        "tracking_system",
     ]
 
     assert params["subject"] == "01"
