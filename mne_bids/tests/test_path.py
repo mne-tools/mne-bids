@@ -500,7 +500,7 @@ def test_get_entities_from_fname(fname):
         "recording",
         "split",
         "description",
-        "tracking_system"
+        "tracking_system",
     ]
 
 
