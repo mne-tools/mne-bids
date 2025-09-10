@@ -1,0 +1,733 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="auto">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mne_bids.events_file_to_annotation_kwargs &#8212; MNE-BIDS 0.17.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "auto";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "auto";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=81d8d220" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=1aa419d7"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=fd10adb8"></script>
+    <script async="async" src="https://www.googletagmanager.com/gtag/js?id=G-C8SH9E98QC"></script>
+    <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){ dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', 'G-C8SH9E98QC');
+            </script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_bids.events_file_to_annotation_kwargs';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/mne-tools/mne-bids/main/doc/_static/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.17.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_bids.stats.count_events" href="mne_bids.stats.count_events.html" />
+    <link rel="prev" title="mne_bids.find_matching_paths" href="mne_bids.find_matching_paths.html" />
+    <link rel="canonical" href="https://mne.tools/mne-bids/stable/generated/mne_bids.events_file_to_annotation_kwargs.html" />
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../_static/scrollfix.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.17.0" />
+
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="auto">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MNE-BIDS 0.17.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    News
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Install
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use.html">
+    Use
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Quick Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-tools/mne-bids" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github-square fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://mne.discourse.group/tags/mne-bids" title="Discourse" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-discourse fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discourse</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.write_raw_bids.html">mne_bids.write_raw_bids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.read_raw_bids.html">mne_bids.read_raw_bids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.write_meg_calibration.html">mne_bids.write_meg_calibration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.write_meg_crosstalk.html">mne_bids.write_meg_crosstalk</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.BIDSPath.html">mne_bids.BIDSPath</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.make_dataset_description.html">mne_bids.make_dataset_description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.make_report.html">mne_bids.make_report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.write_anat.html">mne_bids.write_anat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.mark_channels.html">mne_bids.mark_channels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_anat_landmarks.html">mne_bids.get_anat_landmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.update_anat_landmarks.html">mne_bids.update_anat_landmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_head_mri_trans.html">mne_bids.get_head_mri_trans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.convert_montage_to_mri.html">mne_bids.convert_montage_to_mri</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.convert_montage_to_ras.html">mne_bids.convert_montage_to_ras</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.template_to_head.html">mne_bids.template_to_head</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_anonymization_daysback.html">mne_bids.get_anonymization_daysback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.search_folder_for_text.html">mne_bids.search_folder_for_text</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.print_dir_tree.html">mne_bids.print_dir_tree</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_bids_path_from_fname.html">mne_bids.get_bids_path_from_fname</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_entities_from_fname.html">mne_bids.get_entities_from_fname</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_entity_vals.html">mne_bids.get_entity_vals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.get_datatypes.html">mne_bids.get_datatypes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.inspect_dataset.html">mne_bids.inspect_dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.update_sidecar_json.html">mne_bids.update_sidecar_json</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.anonymize_dataset.html">mne_bids.anonymize_dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.find_matching_paths.html">mne_bids.find_matching_paths</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_bids.events_file_to_annotation_kwargs</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.stats.count_events.html">mne_bids.stats.count_events</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html">mne_bids.copyfiles.copyfile_brainvision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html">mne_bids.copyfiles.copyfile_edf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html">mne_bids.copyfiles.copyfile_eeglab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html">mne_bids.copyfiles.copyfile_ctf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html">mne_bids.copyfiles.copyfile_bti</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html">mne_bids.copyfiles.copyfile_kit</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Documentation</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_bids.events_file_to_annotation_kwargs</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mne-bids-events-file-to-annotation-kwargs">
+<h1>mne_bids.events_file_to_annotation_kwargs<a class="headerlink" href="#mne-bids-events-file-to-annotation-kwargs" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="mne_bids.events_file_to_annotation_kwargs">
+<span class="sig-prename descclassname"><span class="pre">mne_bids.</span></span><span class="sig-name descname"><span class="pre">events_file_to_annotation_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">events_fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><span class="pre">Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/mne_bids/read.html#events_file_to_annotation_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.events_file_to_annotation_kwargs" title="Link to this definition">#</a></dt>
+<dd><p>Read the <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> file and extract onset, duration, and description.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>events_fname</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The file path to the <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> file.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>kwargs_dict</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>A dictionary containing the following keys:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>‘onset’<span class="classifier">np.ndarray</span></dt><dd><p>The onset times of the events in seconds.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘duration’<span class="classifier">np.ndarray</span></dt><dd><p>The durations of the events in seconds.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘description’<span class="classifier">np.ndarray</span></dt><dd><p>The descriptions of the events.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘event_id’<span class="classifier">dict</span></dt><dd><p>A dictionary mapping event descriptions to integer event IDs.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘extras’<span class="classifier">list of dict</span></dt><dd><p>A list of dictionaries containing additional columns from the
+<code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> file. Each dictionary corresponds to a row.
+This corresponds to the <code class="docutils literal notranslate"><span class="pre">extras</span></code> argument of class
+<a class="reference external" href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v1.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function handles the following cases:</p>
+<ul class="simple">
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> column is available, it uses it for event descriptions.</p></li>
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">stim_type</span></code> column is available, it uses it for backward compatibility.</p></li>
+<li><p>If the <code class="docutils literal notranslate"><span class="pre">value</span></code> column is available, it uses it to create the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>.</p></li>
+<li><p>If none of the above columns are available, it defaults to using ‘n/a’ for
+descriptions and 1 for event IDs.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a sample DataFrame</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;onset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;trial_type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;event1&#39;</span><span class="p">,</span> <span class="s1">&#39;event2&#39;</span><span class="p">,</span> <span class="s1">&#39;event1&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">&#39;sample&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">]</span>
+<span class="go">        &#39;foo&#39;: [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],</span>
+<span class="go">... }</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Write the DataFrame to a temporary file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;events.tsv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">events_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Read the events file using the function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events_dict</span> <span class="o">=</span> <span class="n">events_file_to_annotation_kwargs</span><span class="p">(</span><span class="n">events_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events_dict</span>
+<span class="go">{&#39;onset&#39;: array([0.1, 0.2, 0.3]),</span>
+<span class="go">&#39;duration&#39;: array([0.1, 0.1, 0.1]),</span>
+<span class="go">&#39;description&#39;: array([&#39;event1&#39;, &#39;event2&#39;, &#39;event1&#39;], dtype=&#39;&lt;U6&#39;),</span>
+<span class="go">&#39;event_id&#39;: {&#39;event1&#39;: 1, &#39;event2&#39;: 2},</span>
+<span class="go">&#39;extras&#39;: [{&#39;foo&#39;: &#39;a&#39;}, {&#39;foo&#39;: &#39;b&#39;}, {&#39;foo&#39;: &#39;c&#39;}]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<span class="target" id="sphx-glr-backreferences-mne-bids-events-file-to-annotation-kwargs"></span></section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mne_bids.find_matching_paths.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mne_bids.find_matching_paths</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mne_bids.stats.count_events.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_bids.stats.count_events</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_bids.events_file_to_annotation_kwargs"><code class="docutils literal notranslate"><span class="pre">events_file_to_annotation_kwargs()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
