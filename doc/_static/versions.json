@@ -7,7 +7,7 @@
     {
         "name": "0.17 (stable)",
         "version": "stable",
-        "url": "https://mne.tools/mne-bids/dev/"
+        "url": "https://mne.tools/mne-bids/v0.17/"
     },
     {
         "name": "0.16",
