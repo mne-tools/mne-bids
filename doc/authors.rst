@@ -55,5 +55,6 @@
 .. _Teon Brooks: https://teonbrooks.com
 .. _Thomas Hartmann: https://github.com/thht
 .. _Tom Donoghue: https://github.com/TomDonoghue
+.. _waldie11: https://github.com/waldie11
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
