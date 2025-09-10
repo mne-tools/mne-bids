@@ -9,7 +9,7 @@ What's new?
 
 .. _changes_0_17:
 
-Version 0.17 (unreleased)
+Version 0.17 (2025-09-10)
 -------------------------
 
 👩🏽‍💻 Authors
@@ -17,20 +17,24 @@ Version 0.17 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Christian O'Reilly`_
+* `Nathan Azrak`_
+* `Matthias Dold`_
 * `Berk Gerçek`_
 * `Arne Gottwald`_
-* `Matthias Dold`_
+* `Christian O'Reilly`_
 * `Harrison Ritz`_
-* `Nathan Azrak`_
+* `waldie11`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
 * `Stefan Appelhoff`_
-* `Daniel McCloy`_
-* `Scott Huberty`_
-* `Pierre Guetschel`_
 * `Teon Brooks`_
+* `Pierre Guetschel`_
+* `Richard Höchenberger`_
+* `Scott Huberty`_
+* `Eric Larson`_
+* `Daniel McCloy`_
+
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
