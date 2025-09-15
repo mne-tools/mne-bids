@@ -19,7 +19,7 @@ Version 0.18 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* TBD
+* `Alex Lopez Marquez`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -32,8 +32,7 @@ Detailed list of changes
 🚀 Enhancements
 ^^^^^^^^^^^^^^^
 
-- None yet
-
+- :func:`mne_bids.write_raw_bids()` has a new parameter `electrodes_tsv_task` which allows adding the `task` entity to the `electrodes.tsv` filepath, by `Alex Lopez Marquez`_ (:gh:`1424`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
