@@ -218,6 +218,9 @@ authors:
       family-names: Lopez Marquez
       affiliation: 'Institut Guttmann, Barcelona, Spain'
       orcid: 'https://orcid.org/0000-0002-3353-280X'
+    - given-names: Nathan
+      family-names: Azrak
+      orcid: 'https://orcid.org/0000-0001-7695-4634'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
