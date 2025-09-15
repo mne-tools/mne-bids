@@ -228,8 +228,8 @@ def test_path_benchmark(tmp_path_factory):
         number=1,
     )
 
-    # while this should be of same order, lets give it some space by a factor of 2
-    target = 2 * timed_all / len(bids_subdirectories)
+    # while this should be of same order, lets give it some space by a factor of 3
+    target = 3 * timed_all / len(bids_subdirectories)
     assert timed_ignored_nosub < target
 
     # apply include_match on get_entity_vals with root level bids directory should
@@ -245,8 +245,8 @@ def test_path_benchmark(tmp_path_factory):
         number=1,
     )
 
-    # while this should be of same order, lets give it some space by a factor of 2
-    target = 2 * timed_entity / len(bids_subdirectories)
+    # while this should be of same order, lets give it some space by a factor of 3
+    target = 3 * timed_entity / len(bids_subdirectories)
     assert timed_entity_match < target
 
     # and these should be equivalent
@@ -1028,6 +1028,7 @@ def test_filter_fnames(entities, expected_n_matches):
         "sub-Foo_ses-bar_meg.fif",
         "sub-Bar_task-invasive_run-1_ieeg.fif",
         "sub-3_task-fun_proc-sss_meg.fif",
+        "sub-3_task-fun_proc-sss_meg_channels.tsv",
         "sub-4_task-pain_acq-lowres_T1w.nii.gz",
         "sub-5_task-test_proc-ica_eeg.vhdr",
         "sub-6_task-test_proc-ica_eeg.vhdr",
@@ -1609,6 +1610,20 @@ def test_datasetdescription_with_bidspath(return_bids_test_dir):
     assert (
         bids_path.fpath.as_posix()
         == Path(f"{return_bids_test_dir}/dataset_description.json").as_posix()
+    )
+
+
+@testing.requires_testing_data
+def test_update_check(return_bids_test_dir):
+    """Test check argument is passed BIDSPath properly."""
+    bids_path = BIDSPath(
+        root=return_bids_test_dir,
+        check=False,
+    )
+    bids_path.update(datatype="eyetrack")
+    assert (
+        bids_path.fpath.as_posix()
+        == Path(f"{return_bids_test_dir}/eyetrack").as_posix()
     )
 
 

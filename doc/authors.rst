@@ -24,6 +24,7 @@
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault
+.. _Harrison Ritz: https://github.com/harrisonritz
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Jonathan Vanhoecke: https://sfb-retune.de/people/jonathan-vanhoecke/
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
@@ -39,6 +40,7 @@
 .. _Matthias Dold: https://www.linkedin.com/in/matthiasdold/
 .. _Maximilien Chaumon: https://github.com/dnacombo
 .. _Moritz Gerster: http://moritz-gerster.com
+.. _Nathan Azrak: https://github.com/nathan-az
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Richard Köhler: https://github.com/richardkoehler
@@ -53,5 +55,6 @@
 .. _Teon Brooks: https://teonbrooks.com
 .. _Thomas Hartmann: https://github.com/thht
 .. _Tom Donoghue: https://github.com/TomDonoghue
+.. _waldie11: https://github.com/waldie11
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla

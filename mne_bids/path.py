@@ -253,7 +253,7 @@ class BIDSPath:
     processing : str | None
         The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name. Corresponds to "rec".
+        The recording name. Corresponds to "recording".
     space : str | None
         The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
@@ -410,8 +410,6 @@ class BIDSPath:
         ):
             raise ValueError("At least one parameter must be given.")
 
-        self.check = check
-
         self.update(
             subject=subject,
             session=session,
@@ -427,6 +425,7 @@ class BIDSPath:
             datatype=datatype,
             suffix=suffix,
             extension=extension,
+            check=check,
         )
 
     @property
@@ -924,10 +923,10 @@ class BIDSPath:
         return bids_fpath
 
     def update(self, *, check=None, **kwargs):
-        """Update inplace BIDS entity key/value pairs in object.
+        """Update in-place BIDS entity key/value pairs in object.
 
         ``run`` and ``split`` are auto-converted to have two
-        digits. For example, if ``run=1``, then it will nbecome ``run='01'``.
+        digits. For example, if ``run=1``, then it will become ``run='01'``.
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
@@ -1364,12 +1363,13 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     sub, ses = bids_path.subject, bids_path.session
     datatype = bids_path.datatype
     basename, bids_root = bids_path.basename, bids_path.root
+    check = bids_path.check
 
     if datatype is None:
         datatype = _infer_datatype(root=bids_root, sub=sub, ses=ses)
 
     data_dir = BIDSPath(
-        subject=sub, session=ses, datatype=datatype, root=bids_root
+        subject=sub, session=ses, datatype=datatype, root=bids_root, check=check
     ).directory
 
     # For BTi data, just return the directory with a '.pdf' extension
@@ -2374,7 +2374,7 @@ def _filter_fnames(
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
-    ext_str = r"(" + "|".join(extension) + ")$" if extension else r".([^_]+)"
+    ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
 
     regexp = (
         leading_path_str
@@ -2447,7 +2447,7 @@ def find_matching_paths(
     processings : str | array-like of str | None
         The processing label. Corresponds to "proc".
     recordings : str | array-like of str | None
-        The recording name. Corresponds to "rec".
+        The recording name. Corresponds to "recording".
     spaces : str | array-like of str | None
         The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).

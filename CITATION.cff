@@ -210,6 +210,13 @@ authors:
       family-names: Dold
       affiliation: 'Donders Institute for Brain, Cognition and Behaviour, Radboud University, Nijmegen, Netherlands'
       orcid: 'https://orcid.org/0009-0003-1477-4912'
+    - given-names: Harrison
+      family-names: Ritz
+      affiliation: 'Princeton Neuroscience Institute, Princeton University, Princeton, USA'
+      orcid: 'https://orcid.org/0009-0003-1477-4912'
+    - given-names: Nathan
+      family-names: Azrak
+      orcid: 'https://orcid.org/0000-0001-7695-4634'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

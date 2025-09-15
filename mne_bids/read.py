@@ -546,6 +546,11 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
             The descriptions of the events.
         - 'event_id' : dict
             A dictionary mapping event descriptions to integer event IDs.
+        - 'extras' : list of dict
+            A list of dictionaries containing additional columns from the
+            ``events.tsv`` file. Each dictionary corresponds to a row.
+            This corresponds to the ``extras`` argument of class
+            :class:`mne.Annotations`.
 
     Notes
     -----
@@ -570,6 +575,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     ...     'trial_type': ['event1', 'event2', 'event1'],
     ...     'value': [1, 2, 1],
     ...     'sample': [10, 20, 30]
+            'foo': ['a', 'b', 'c'],
     ... }
     >>> df = pd.DataFrame(data)
     >>>
@@ -584,7 +590,8 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     {'onset': array([0.1, 0.2, 0.3]),
     'duration': array([0.1, 0.1, 0.1]),
     'description': array(['event1', 'event2', 'event1'], dtype='<U6'),
-    'event_id': {'event1': 1, 'event2': 2}}
+    'event_id': {'event1': 1, 'event2': 2},
+    'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
 
     """
     logger.info(f"Reading events from {events_fname}.")
@@ -663,7 +670,31 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
         [0 if du == "n/a" else du for du in events_dict["duration"]], dtype=float
     )
 
-    return {"onset": ons, "duration": durs, "description": descrs, "event_id": event_id}
+    extras = None
+    extra_columns = list(
+        set(events_dict)
+        - {
+            "onset",
+            "duration",
+            "value",
+            "trial_type",
+            "stim_type",
+            "sample",
+        }
+    )
+    if extra_columns:
+        extras = [
+            dict(zip(extra_columns, values))
+            for values in zip(*[events_dict[col] for col in extra_columns])
+        ]
+
+    return {
+        "onset": ons,
+        "duration": durs,
+        "description": descrs,
+        "event_id": event_id,
+        "extras": extras,
+    }
 
 
 def _handle_events_reading(events_fname, raw):
@@ -673,11 +704,29 @@ def _handle_events_reading(events_fname, raw):
 
     # Add events as Annotations, but keep essential Annotations present in raw file
     annot_from_raw = raw.annotations.copy()
-    annot_from_events = mne.Annotations(
-        onset=annotations_info["onset"],
-        duration=annotations_info["duration"],
-        description=annotations_info["description"],
-    )
+    try:
+        annot_from_events = mne.Annotations(
+            onset=annotations_info["onset"],
+            duration=annotations_info["duration"],
+            description=annotations_info["description"],
+            extras=annotations_info["extras"],
+        )
+    except TypeError:
+        if (
+            annotations_info["extras"] is not None
+            and len(annotations_info["extras"]) > 0
+        ):
+            warn(
+                "The version of MNE-Python you are using (<1.10) "
+                "does not support the extras argument in mne.Annotations. "
+                f"The extra column(s) {list(annotations_info['extras'][0].keys())} "
+                "will be ignored."
+            )
+        annot_from_events = mne.Annotations(
+            onset=annotations_info["onset"],
+            duration=annotations_info["duration"],
+            description=annotations_info["description"],
+        )
     raw.set_annotations(annot_from_events)
 
     annot_idx_to_keep = [
@@ -888,6 +937,12 @@ def read_raw_bids(
             '"bids_path" must be a BIDSPath object. Please '
             "instantiate using mne_bids.BIDSPath()."
         )
+    for required in ["root", "subject", "task"]:
+        if not getattr(bids_path, required):
+            raise RuntimeError(
+                '"bids_path" must contain `root`, `subject`, and `task` '
+                f"attributes but it's missing `{required}`."
+            )
 
     bids_path = bids_path.copy()
     sub = bids_path.subject
