@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.dig &#8212; MNE-BIDS 0.18.0.dev2+g66a511e28 documentation</title>
+    <title>mne_bids.dig &#8212; MNE-BIDS 0.18.0.dev3+g7ce4f0e26 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=1616805f"></script>
+    <script src="../../_static/documentation_options.js?v=d505b61b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev2+g66a511e28" />
+  <meta name="docsearch:version" content="0.18.0.dev3+g7ce4f0e26" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev2+g66a511e28 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev3+g7ce4f0e26 documentation</p>
   
 </a></div>
     
@@ -862,7 +862,14 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fid_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_write_dig_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_dig_bids</span><span class="p">(</span>
+    <span class="n">bids_path</span><span class="p">,</span>
+    <span class="n">raw</span><span class="p">,</span>
+    <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">electrodes_tsv_task</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write BIDS formatted DigMontage from Raw instance.</span>
 
 <span class="sd">    Handles coordsystem.json and electrodes.tsv writing</span>
@@ -882,6 +889,9 @@
 <span class="sd">        must be transformed from the &quot;head&quot; coordinate frame.</span>
 <span class="sd">    acpc_aligned : bool</span>
 <span class="sd">        Whether &quot;mri&quot; space is aligned to ACPC.</span>
+<span class="sd">    electrodes_tsv_task : bool</span>
+<span class="sd">        Whether to add the ``task-`` entity to the ``electrodes.tsv`` filename.</span>
+<span class="sd">        Defaults to ``False``.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
@@ -977,12 +987,16 @@
         <span class="s2">&quot;acquisition&quot;</span><span class="p">:</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">acquisition</span><span class="p">,</span>
         <span class="s2">&quot;space&quot;</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;nirs&quot;</span> <span class="k">else</span> <span class="n">coord_frame</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="c1"># add `task-` to the electrodes.tsv file if requested</span>
+    <span class="n">electrode_file_entities</span> <span class="o">=</span> <span class="n">coord_file_entities</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">electrodes_tsv_task</span> <span class="ow">and</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">electrode_file_entities</span><span class="p">[</span><span class="s2">&quot;task&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span>
     <span class="n">channels_suffix</span> <span class="o">=</span> <span class="s2">&quot;optodes&quot;</span> <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;nirs&quot;</span> <span class="k">else</span> <span class="s2">&quot;electrodes&quot;</span>
     <span class="n">_channels_fun</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">_write_optodes_tsv</span> <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;nirs&quot;</span> <span class="k">else</span> <span class="n">_write_electrodes_tsv</span>
     <span class="p">)</span>
     <span class="n">channels_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
-        <span class="o">**</span><span class="n">coord_file_entities</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">channels_suffix</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span>
+        <span class="o">**</span><span class="n">electrode_file_entities</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">channels_suffix</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tsv&quot;</span>
     <span class="p">)</span>
     <span class="n">coordsystem_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
         <span class="o">**</span><span class="n">coord_file_entities</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;coordsystem&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.json&quot;</span>
@@ -1315,7 +1329,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-15.
       <br/>
     
   </p>

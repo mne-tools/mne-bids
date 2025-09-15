@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev2+g66a511e28 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev3+g7ce4f0e26 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=1616805f"></script>
+    <script src="../../_static/documentation_options.js?v=d505b61b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev2+g66a511e28" />
+  <meta name="docsearch:version" content="0.18.0.dev3+g7ce4f0e26" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev2+g66a511e28 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev3+g7ce4f0e26 documentation</p>
   
 </a></div>
     
@@ -1922,6 +1922,7 @@
     <span class="n">allow_preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">acpc_aligned</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">electrodes_tsv_task</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
@@ -2098,6 +2099,9 @@
 <span class="sd">        So, this flag is required to be True when the digitization data</span>
 <span class="sd">        is in &quot;mri&quot; for intracranial data to confirm that the T1 is</span>
 <span class="sd">        ACPC-aligned.</span>
+<span class="sd">    electrodes_tsv_task : bool</span>
+<span class="sd">        Add the ``task-`` entity to the ``electrodes.tsv`` filename.</span>
+<span class="sd">        Defaults to ``False``.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
 <span class="sd">        Defaults to ``False``.</span>
@@ -2532,7 +2536,9 @@
         <span class="c1"># We only write electrodes.tsv and accompanying coordsystem.json</span>
         <span class="c1"># if we have an available DigMontage</span>
         <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]):</span>
-            <span class="n">_write_dig_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">_write_dig_bids</span><span class="p">(</span>
+                <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="p">,</span> <span class="n">electrodes_tsv_task</span><span class="p">,</span> <span class="n">overwrite</span>
+            <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Writing of electrodes.tsv is not supported &quot;</span>
@@ -3816,7 +3822,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-09-15.
       <br/>
     
   </p>
