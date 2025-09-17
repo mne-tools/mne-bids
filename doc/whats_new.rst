@@ -47,7 +47,7 @@ Detailed list of changes
 🪲 Bug fixes
 ^^^^^^^^^^^^
 
-- None yet
+- Fixed a bug that modified the name and help message of some of the available commands, by `Alex Lopez Marquez`_ (:gh:`1441`)
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
