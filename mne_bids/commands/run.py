@@ -11,7 +11,7 @@ import mne_bids
 
 mne_bin_dir = Path(mne_bids.__file__).parent
 valid_command_paths = sorted((mne_bin_dir / "commands").glob("mne_bids_*.py"))
-valid_commands = [cmd.stem.lstrip("mne_bids_") for cmd in valid_command_paths]
+valid_commands = [cmd.stem.removeprefix("mne_bids_") for cmd in valid_command_paths]
 
 
 def print_help():
