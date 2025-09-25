@@ -117,8 +117,11 @@ def _get_brainvision_paths(vhdr_path):
     head, tail = op.split(vhdr_path)
     eeg_file_path = op.join(head, eeg_file)
     vmrk_file_path = op.join(head, vmrk_file)
-    assert op.exists(eeg_file_path)
-    assert op.exists(vmrk_file_path)
+    for fpath in [eeg_file_path, vmrk_file_path]:
+        if not Path(fpath).exists():
+            raise RuntimeError(
+                f"{fpath} referenced in {vhdr_path} but it does not exist."
+            )
 
     # Return the paths
     return (eeg_file_path, vmrk_file_path)
@@ -355,14 +358,20 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     # Write new header and marker files, fixing the file pointer links
     # For that, we need to replace an old "basename" with a new one
     # assuming that all .eeg/.dat, .vhdr, .vmrk share one basename
-    __, basename_src = op.split(fname_src)
-    assert op.split(eeg_file_path)[-1] in [basename_src + ".eeg", basename_src + ".dat"]
-    assert basename_src + ".vmrk" == op.split(vmrk_file_path)[-1]
-    __, basename_dest = op.split(fname_dest)
+    basename_src = Path(fname_src).name
+    if Path(eeg_file_path).name not in [f"{basename_src}.eeg", f"{basename_src}.dat"]:
+        raise RuntimeError(
+            f"Unexpected eeg_file_path: {Path(eeg_file_path).name} in {vhdr_src}"
+        )
+    if Path(vmrk_file_path).name not in [f"{basename_src}.vmrk"]:
+        raise RuntimeError(
+            f"Unexpected vmrk_file_path: {Path(vmrk_file_path).name} in {vhdr_src}"
+        )
+    basename_dest = Path(fname_dest).name
     search_lines = [
-        "DataFile=" + basename_src + ".eeg",
-        "DataFile=" + basename_src + ".dat",
-        "MarkerFile=" + basename_src + ".vmrk",
+        f"DataFile={basename_src}.eeg",
+        f"DataFile={basename_src}.dat",
+        f"MarkerFile={basename_src}.vmrk",
     ]
 
     with open(vhdr_src, encoding=enc) as fin:
