@@ -2041,15 +2041,6 @@ def write_raw_bids(
             datatype=bids_path.datatype,
             overwrite=overwrite,
         )
-        _write_coordsystem_json(
-            raw=raw,
-            unit=unit,
-            hpi_coord_system=orient,
-            sensor_coord_system=sensor_coord_system,
-            fname=coordsystem_path.fpath,
-            datatype=bids_path.datatype,
-            overwrite=overwrite,
-        )
     elif bids_path.datatype in ["eeg", "ieeg", "nirs"]:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
