@@ -108,10 +108,14 @@ def _get_brainvision_paths(vhdr_path):
         vmrk_file = vmrk_file_match.groups()[0]
 
     # Make sure we are dealing with file names as is customary, not paths
-    # Paths are problematic when copying the files to another system. Instead,
-    # always use the file name and keep the file triplet in the same directory
-    assert os.sep not in eeg_file
-    assert os.sep not in vmrk_file
+    for fi in [eeg_file, vmrk_file]:
+        if os.sep in fi:
+            raise RuntimeError(
+                f"Detected a path separator in a file link: {fi}.\n\n"
+                "Paths are problematic when copying the files to another system. "
+                "Instead, always use the file name and keep the "
+                "BrainVision file triplet (eeg/dat, vhdr, vmrk) in the same directory."
+            )
 
     # Assert the paths exist
     head, tail = op.split(vhdr_path)
