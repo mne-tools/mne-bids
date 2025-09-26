@@ -119,7 +119,7 @@ def _get_brainvision_paths(vhdr_path):
     vmrk_file_path = op.join(head, vmrk_file)
     for fpath in [eeg_file_path, vmrk_file_path]:
         if not Path(fpath).exists():
-            raise RuntimeError(
+            raise FileNotFoundError(
                 f"{fpath} referenced in {vhdr_path} but it does not exist."
             )
 
@@ -359,13 +359,17 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
     # For that, we need to replace an old "basename" with a new one
     # assuming that all .eeg/.dat, .vhdr, .vmrk share one basename
     basename_src = Path(fname_src).name
-    if Path(eeg_file_path).name not in [f"{basename_src}.eeg", f"{basename_src}.dat"]:
+    eeg_expected = [f"{basename_src}.eeg", f"{basename_src}.dat"]
+    vmrk_expected = [f"{basename_src}.vmrk"]
+    if Path(eeg_file_path).name not in eeg_expected:
         raise RuntimeError(
-            f"Unexpected eeg_file_path: {Path(eeg_file_path).name} in {vhdr_src}"
+            f"Unexpected path to data file in {vhdr_src}:\n    "
+            f"-->{Path(eeg_file_path).name}\nExpected one of {eeg_expected}."
         )
-    if Path(vmrk_file_path).name not in [f"{basename_src}.vmrk"]:
+    if Path(vmrk_file_path).name not in vmrk_expected:
         raise RuntimeError(
-            f"Unexpected vmrk_file_path: {Path(vmrk_file_path).name} in {vhdr_src}"
+            f"Unexpected path to marker file in {vhdr_src}:\n    "
+            f"-->{Path(vmrk_file_path).name}\nExpected one of {vmrk_expected}."
         )
     basename_dest = Path(fname_dest).name
     search_lines = [
