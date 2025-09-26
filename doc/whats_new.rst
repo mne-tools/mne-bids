@@ -52,6 +52,6 @@ Detailed list of changes
 ⚕️ Code health
 ^^^^^^^^^^^^^^
 
-- None yet
+- Made :func:`mne_bids.copyfiles.copyfile_brainvision` output more meaningful error messages when encountering problematic files, by `Stefan Appelhoff`_ (:gh:`1444`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
