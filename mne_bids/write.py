@@ -1440,6 +1440,7 @@ def write_raw_bids(
     allow_preload=False,
     montage=None,
     acpc_aligned=False,
+    electrodes_tsv_task=False,
     overwrite=False,
     verbose=None,
 ):
@@ -1616,6 +1617,9 @@ def write_raw_bids(
         So, this flag is required to be True when the digitization data
         is in "mri" for intracranial data to confirm that the T1 is
         ACPC-aligned.
+    electrodes_tsv_task : bool
+        Add the ``task-`` entity to the ``electrodes.tsv`` filename.
+        Defaults to ``False``.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -2037,20 +2041,13 @@ def write_raw_bids(
             datatype=bids_path.datatype,
             overwrite=overwrite,
         )
-        _write_coordsystem_json(
-            raw=raw,
-            unit=unit,
-            hpi_coord_system=orient,
-            sensor_coord_system=sensor_coord_system,
-            fname=coordsystem_path.fpath,
-            datatype=bids_path.datatype,
-            overwrite=overwrite,
-        )
     elif bids_path.datatype in ["eeg", "ieeg", "nirs"]:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if montage is not None or (raw.info["dig"] is not None and raw.info["dig"]):
-            _write_dig_bids(bids_path, raw, montage, acpc_aligned, overwrite)
+            _write_dig_bids(
+                bids_path, raw, montage, acpc_aligned, electrodes_tsv_task, overwrite
+            )
     else:
         logger.info(
             f"Writing of electrodes.tsv is not supported "

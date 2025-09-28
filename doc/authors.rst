@@ -1,5 +1,6 @@
 .. _Aaron Earle-Richardson: https://github.com/Aaronearlerichardson
 .. _Adam Li: https://github.com/adam2392
+.. _Alex Lopez Marquez: https://github.com/alm180
 .. _Alex Rockhill: https://github.com/alexrockhill
 .. _Alexandre Gramfort: http://alexandre.gramfort.net
 .. _Amaia Benitez: https://github.com/AmaiaBA
@@ -55,6 +56,7 @@
 .. _Teon Brooks: https://teonbrooks.com
 .. _Thomas Hartmann: https://github.com/thht
 .. _Tom Donoghue: https://github.com/TomDonoghue
+.. _waldie11: https://github.com/waldie11
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
 .. _Julius Welzel: https://github.com/JuliusWelzel
