@@ -40,7 +40,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
--  `tracksys` accepted as argument in :class:`mne_bids.path.BIDSPath()` by `Julius Welzel`_ (:gh:`1430`)
+-  `tracksys` accepted as argument in :class:`mne_bids.BIDSPath()` by `Julius Welzel`_ (:gh:`1430`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
