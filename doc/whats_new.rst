@@ -19,19 +19,13 @@ Version 0.18 (unreleased)
 
 The following authors contributed for the first time. Thank you so much! 🤩
 
-* `Christian O'Reilly`_
-* `Berk Gerçek`_
-* `Arne Gottwald`_
-* `Matthias Dold`_
-* `Harrison Ritz`_
 * `Julius Welzel`_
-* `Nathan Azrak`_
 * `Alex Lopez Marquez`_
 
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
-* TBD
+* `Stefan Appelhoff`_
 
 
 Detailed list of changes
@@ -41,11 +35,12 @@ Detailed list of changes
 ^^^^^^^^^^^^^^^
 
 - :func:`mne_bids.write_raw_bids()` has a new parameter `electrodes_tsv_task` which allows adding the `task` entity to the `electrodes.tsv` filepath, by `Alex Lopez Marquez`_ (:gh:`1424`)
+- Extended the configuration to recognise `motion` as a valid BIDS datatype by `Julius Welzel`_ (:gh:`1430`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- None yet
+- `mne_bids.BIDSPath.__init__` now accepts an optional `tracking_system` argument by `Julius Welzel`_ (:gh:`1430`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
