@@ -2339,6 +2339,7 @@ def _filter_fnames(
     description=None,
     suffix=None,
     extension=None,
+    tracking_system=None,
 ):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
@@ -2365,6 +2366,7 @@ def _filter_fnames(
     description = _ensure_tuple(description)
     suffix = _ensure_tuple(suffix)
     extension = _ensure_tuple(extension)
+    tracking_system = _ensure_tuple(tracking_system)
 
     leading_path_str = r".*\/?"  # nothing or something ending with a `/`
     sub_str = r"sub-(" + "|".join(subject) + ")" if subject else r"sub-([^_]+)"
@@ -2389,6 +2391,9 @@ def _filter_fnames(
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
     ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
+    tracksys_str = (
+        r"tracksys-(" + "|".join(tracking_system) + ")" if tracking_system else r"(|tracksys-([^_]+))"
+    )
 
     regexp = (
         leading_path_str
@@ -2404,6 +2409,7 @@ def _filter_fnames(
         + desc_str
         + suffix_str
         + ext_str
+        + tracksys_str
     )
 
     # Convert to str so we can apply the regexp ...
