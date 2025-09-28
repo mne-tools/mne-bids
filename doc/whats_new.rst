@@ -40,7 +40,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- `mne_bids.path.BIDSPath.__init__` now accepts an optional `tracking_system` argument by `Julius Welzel`_ (:gh:`1430`)
+-  `tracksys` accepted as argument in :class:`mne_bids.path.BIDSPath()` by `Julius Welzel`_ (:gh:`1430`)
 
 🛠 Requirements
 ^^^^^^^^^^^^^^^
