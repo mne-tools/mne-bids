@@ -422,6 +422,7 @@ class BIDSPath:
             space=space,
             split=split,
             description=description,
+            tracking_system=tracking_system,
             root=root,
             datatype=datatype,
             suffix=suffix,
@@ -443,6 +444,7 @@ class BIDSPath:
             "recording": self.recording,
             "split": self.split,
             "description": self.description,
+            "tracking_system": self.tracking_system,
         }
 
     @property
@@ -575,6 +577,15 @@ class BIDSPath:
     @description.setter
     def description(self, value):
         self.update(description=value)
+
+    @property
+    def tracking_system(self) -> str | None:
+        """The tracking system entity."""
+        return self._tracking_system
+
+    @tracking_system.setter
+    def tracking_system(self, value):
+        self.update(tracking_system=value)
 
     @property
     def suffix(self) -> str | None:
