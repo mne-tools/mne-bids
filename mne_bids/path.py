@@ -385,6 +385,7 @@ class BIDSPath:
         space=None,
         split=None,
         description=None,
+        tracking_system=None,
         root=None,
         suffix=None,
         extension=None,
@@ -421,6 +422,7 @@ class BIDSPath:
             space=space,
             split=split,
             description=description,
+            tracking_system=tracking_system,
             root=root,
             datatype=datatype,
             suffix=suffix,
@@ -442,6 +444,7 @@ class BIDSPath:
             "recording": self.recording,
             "split": self.split,
             "description": self.description,
+            "tracking_system": self.tracking_system,
         }
 
     @property
@@ -574,6 +577,15 @@ class BIDSPath:
     @description.setter
     def description(self, value):
         self.update(description=value)
+
+    @property
+    def tracking_system(self) -> str | None:
+        """The tracking system entity."""
+        return self._tracking_system
+
+    @tracking_system.setter
+    def tracking_system(self, value):
+        self.update(tracking_system=value)
 
     @property
     def suffix(self) -> str | None:
@@ -881,7 +893,9 @@ class BIDSPath:
                 if self.suffix is None or self.suffix in ALLOWED_DATATYPES:
                     # now only use valid datatype extension
                     if self.extension is None:
-                        valid_exts = sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
+                        valid_exts = ALLOWED_DATATYPE_EXTENSIONS.get(
+                            self.datatype, sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
+                        )
                     else:
                         valid_exts = [self.extension]
                     matching_paths = [
@@ -2325,6 +2339,7 @@ def _filter_fnames(
     description=None,
     suffix=None,
     extension=None,
+    tracking_system=None,
 ):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
@@ -2351,6 +2366,7 @@ def _filter_fnames(
     description = _ensure_tuple(description)
     suffix = _ensure_tuple(suffix)
     extension = _ensure_tuple(extension)
+    tracking_system = _ensure_tuple(tracking_system)
 
     leading_path_str = r".*\/?"  # nothing or something ending with a `/`
     sub_str = r"sub-(" + "|".join(subject) + ")" if subject else r"sub-([^_]+)"
@@ -2375,6 +2391,11 @@ def _filter_fnames(
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
     ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
+    tracksys_str = (
+        r"tracksys-(" + "|".join(tracking_system) + ")"
+        if tracking_system
+        else r"(|tracksys-([^_]+))"
+    )
 
     regexp = (
         leading_path_str
@@ -2390,6 +2411,7 @@ def _filter_fnames(
         + desc_str
         + suffix_str
         + ext_str
+        + tracksys_str
     )
 
     # Convert to str so we can apply the regexp ...
