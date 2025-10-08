@@ -3699,10 +3699,9 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path, empty_room_dtype):
         meg_json_data = json.load(fin)
 
     assert "AssociatedEmptyRoom" in meg_json_data
-    assert bids_path_er.fpath.as_posix().endswith(  # make test work on Windows, too
-        meg_json_data["AssociatedEmptyRoom"]
-    )
-    assert meg_json_data["AssociatedEmptyRoom"].startswith("/")
+    expected_rel_path = bids_path_er.fpath.relative_to(Path(bids_path.root)).as_posix()
+    assert meg_json_data["AssociatedEmptyRoom"] == expected_rel_path
+    assert not meg_json_data["AssociatedEmptyRoom"].startswith("/")
 
 
 def test_preload(_bids_validate, tmp_path):
