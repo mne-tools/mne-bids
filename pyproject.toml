@@ -63,7 +63,7 @@ doc = [
 # Dependencies for using all mne_bids features
 full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
-  "edfio >= 0.2.1",
+  "edfio >= 0.4.10",
   "eeglabio >= 0.0.2",
   "matplotlib >= 3.6",
   "nibabel >= 3.2.1",
