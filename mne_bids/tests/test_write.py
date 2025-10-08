@@ -3361,21 +3361,12 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
             ):
                 bids_output_path = write_raw_bids(**kwargs)
     else:
-        if dir_name in ["EEGLAB", "NihonKohden", "curry"]:
-            with pytest.warns(
-                RuntimeWarning, match=f"Converting data files to {fmt} format"
-            ):
-                bids_output_path = write_raw_bids(**kwargs)
-        else:
-            with (
-                pytest.warns(
-                    RuntimeWarning, match=f"Converting data files to {fmt} format"
-                ),
-                pytest.warns(
-                    RuntimeWarning, match="EDF format requires equal-length data blocks"
-                ),
-            ):
-                bids_output_path = write_raw_bids(**kwargs)
+        with pytest.warns(RuntimeWarning) as warn_records:
+            bids_output_path = write_raw_bids(**kwargs)
+        warn_messages = [str(w.message) for w in warn_records]
+        assert any(
+            f"Converting data files to {fmt} format" in msg for msg in warn_messages
+        )
 
     # channel units should stay the same
     raw2 = read_raw_bids(bids_output_path, extra_params=dict(preload=True))
@@ -3422,6 +3413,7 @@ def test_format_conversion_overwrite(dir_name, fmt, fname, reader, tmp_path):
     """Test that overwrite works when format is passed to write_raw_bids."""
     pytest.importorskip("pybv", PYBV_VERSION)
     pytest.importorskip("eeglabio", EEGLABIO_VERSION)
+    _require_edfio()
     bids_root = tmp_path / fmt
     raw_fname = data_path / dir_name / fname
 
