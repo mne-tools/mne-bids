@@ -51,6 +51,8 @@ Detailed list of changes
 ^^^^^^^^^^^^
 
 - Fixed a bug that modified the name and help message of some of the available commands, by `Alex Lopez Marquez`_ (:gh:`1441`)
+- The ``AssociatedEmptyRoom`` entry written by :func:`mne_bids.write_raw_bids` now stores dataset-relative paths so that datasets pass validation with recent BIDS validator releases.
+- Raised the minimum ``edfio`` requirement to ``0.4.10`` and relaxed EDF padding warnings in the test suite to accommodate upstream changes.
 
 ⚕️ Code health
 ^^^^^^^^^^^^^^
