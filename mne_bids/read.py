@@ -34,6 +34,7 @@ from mne_bids.path import (
 from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
+
 @verbose
 def _read_raw(
     raw_path,

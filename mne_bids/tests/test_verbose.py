@@ -8,7 +8,9 @@ import mne_bids
 def _iter_modules():
     # include top-level package module
     yield importlib.import_module("mne_bids")
-    for module_info in pkgutil.walk_packages(mne_bids.__path__, mne_bids.__name__ + "."):
+    for module_info in pkgutil.walk_packages(
+        mne_bids.__path__, mne_bids.__name__ + "."
+    ):
         yield importlib.import_module(module_info.name)
 
 

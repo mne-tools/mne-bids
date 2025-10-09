@@ -4,8 +4,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import contextlib
-import logging
 import json
+import logging
 import os
 import os.path as op
 import re
@@ -1372,7 +1372,6 @@ def test_ignore_exclude_param(tmp_path):
 @testing.requires_testing_data
 def test_read_raw_bids_respects_verbose(tmp_path, caplog):
     """Ensure ``verbose=False`` suppresses info-level logging."""
-
     bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
