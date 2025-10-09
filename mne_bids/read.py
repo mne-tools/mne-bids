@@ -49,10 +49,6 @@ def _read_raw(
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_path)
 
-    kw_verbose = kwargs.pop("verbose", None)
-    if verbose is None:
-        verbose = kw_verbose
-
     # KIT systems
     if ext in [".con", ".sqd"]:
         raw = io.read_raw_kit(
