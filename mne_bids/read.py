@@ -333,10 +333,6 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     scans_tsv = _from_tsv(scans_fname)
     fname = bids_path.fpath.name
 
-    if fname.endswith(".pdf"):
-        # for BTi files, the scan is an entire directory
-        fname = fname.split(".")[0]
-
     # get the row corresponding to the file
     # use string concatenation instead of os.path
     # to work nicely with windows
@@ -357,7 +353,15 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
     if all(suffix in (".vhdr", ".eeg", ".vmrk") for suffix in acq_suffixes):
         ext = fnames[0].suffix
         data_fname = Path(data_fname).with_suffix(ext)
-    row_ind = _verbose_list_index(fnames, data_fname)
+    try:
+        row_ind = _verbose_list_index(fnames, data_fname)
+    except ValueError as exc:
+        if fname.endswith(".pdf"):
+            alt_fname = Path(bids_path.datatype) / Path(fname).with_suffix("")
+            row_ind = _verbose_list_index(fnames, alt_fname)
+            data_fname = alt_fname
+        else:
+            raise exc
 
     # check whether all split files have the same acq_time
     # and throw an error if they don't
@@ -968,6 +972,8 @@ def read_raw_bids(
 
     if bids_path.fpath.suffix == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
+        if not bids_raw_folder.exists():
+            bids_raw_folder = bids_raw_folder.with_suffix("")
 
         # try to find the processed data file ("pdf")
         # see: https://www.fieldtriptoolbox.org/getting_started/bti/

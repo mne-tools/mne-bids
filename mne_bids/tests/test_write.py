@@ -49,6 +49,7 @@ from mne_bids.config import (
     PYBV_VERSION,
     REFERENCES,
 )
+from mne_bids.copyfiles import _kit_marker_acq_label
 from mne_bids.path import _find_matching_sidecar, _parse_ext
 from mne_bids.pick import coil_type
 from mne_bids.sidecar_updates import _update_sidecar, update_sidecar_json
@@ -1059,11 +1060,13 @@ def test_kit(_bids_validate, tmp_path):
     read_raw_bids(bids_path=kit_bids_path)
 
     # ensure the marker file is produced in the right place
+    marker_acq = _kit_marker_acq_label(run, None)
     marker_fname = BIDSPath(
         subject=subject_id,
         session=session_id,
         task=task,
-        run=run,
+        run=None,
+        acquisition=marker_acq,
         suffix="markers",
         extension=".sqd",
         datatype="meg",
@@ -1078,7 +1081,7 @@ def test_kit(_bids_validate, tmp_path):
     _bids_validate(output_path)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = marker_fname.copy().update(
+    channels_tsv = kit_bids_path.copy().update(
         datatype="meg", suffix="channels", extension=".tsv"
     )
     data = _from_tsv(channels_tsv)
@@ -1117,10 +1120,14 @@ def test_kit(_bids_validate, tmp_path):
 
     _bids_validate(bids_root)
     # ensure the marker files are renamed correctly
-    marker_fname.update(acquisition="pre", subject=subject_id2)
+    marker_fname.update(
+        acquisition=_kit_marker_acq_label(run, "pre"),
+        run=None,
+        subject=subject_id2,
+    )
     info = get_kit_info(marker_fname, False)[0]
     assert info["meas_date"] == get_kit_info(hpi_pre_fname, False)[0]["meas_date"]
-    marker_fname.update(acquisition="post")
+    marker_fname.update(acquisition=_kit_marker_acq_label(run, "post"), run=None)
     info = get_kit_info(marker_fname, False)[0]
     assert info["meas_date"] == get_kit_info(hpi_post_fname, False)[0]["meas_date"]
 
@@ -1237,7 +1244,7 @@ def test_bti(_bids_validate, tmp_path, dataset):
         generated_by=gen_by,
         authors="a,b,c",
     )
-    write_raw_bids(raw, bids_path, verbose=True)
+    bids_output_path = write_raw_bids(raw, bids_path, verbose=True)
 
     assert op.exists(tmp_path / "participants.tsv")
     _bids_validate(tmp_path)
@@ -1246,7 +1253,7 @@ def test_bti(_bids_validate, tmp_path, dataset):
         # Reading this is impossible, because the pdf file was renamed
         # to some idiosyncratic name
         with pytest.raises(RuntimeError, match="Cannot find BTi .*"):
-            raw = read_raw_bids(bids_path=bids_path)
+            raw = read_raw_bids(bids_path=bids_output_path)
 
         # also test anonymize
         raw = _read_raw_bti(pdf_fname, **kwargs)
@@ -1257,7 +1264,7 @@ def test_bti(_bids_validate, tmp_path, dataset):
     else:
         # The other datasets can be read, as their pdf file names were
         # not changed and still fit the "standard" naming patterns
-        raw = read_raw_bids(bids_path=bids_path)
+        raw = read_raw_bids(bids_path=bids_output_path)
 
 
 @pytest.mark.filterwarnings(
@@ -3690,10 +3697,8 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path, empty_room_dtype):
         meg_json_data = json.load(fin)
 
     assert "AssociatedEmptyRoom" in meg_json_data
-    assert bids_path_er.fpath.as_posix().endswith(  # make test work on Windows, too
-        meg_json_data["AssociatedEmptyRoom"]
-    )
-    assert meg_json_data["AssociatedEmptyRoom"].startswith("/")
+    expected_rel = bids_path_er.fpath.relative_to(bids_path.root).as_posix()
+    assert meg_json_data["AssociatedEmptyRoom"] == expected_rel
 
 
 def test_preload(_bids_validate, tmp_path):

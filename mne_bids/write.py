@@ -67,7 +67,11 @@ from mne_bids.copyfiles import (
     copyfile_eeglab,
     copyfile_kit,
 )
-from mne_bids.dig import _write_coordsystem_json, _write_dig_bids
+from mne_bids.dig import (
+    _write_coordsystem_json,
+    _write_dig_bids,
+    _write_empty_ieeg_positions,
+)
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
@@ -1127,6 +1131,24 @@ def _write_raw_fif(raw, bids_fname):
     )
 
 
+def _ensure_bti_bidsignore(bids_root):
+    """Ensure vendor-specific BTi files are ignored by the validator."""
+    if bids_root is None:
+        return
+
+    bidsignore_path = Path(bids_root) / ".bidsignore"
+    pattern = "**/*_meg.pdf/*"
+
+    if bidsignore_path.exists():
+        lines = bidsignore_path.read_text(encoding="utf-8").splitlines()
+    else:
+        lines = []
+
+    if pattern not in lines:
+        lines.append(pattern)
+        bidsignore_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     """Save out the raw file in BrainVision format.
 
@@ -1933,9 +1955,7 @@ def write_raw_bids(
             )
 
         # Turn it into a path relative to the BIDS root
-        associated_er_path = Path(
-            str(associated_er_path).replace(str(bids_path.root), "")
-        )
+        associated_er_path = associated_er_path.relative_to(bids_path.root)
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 
@@ -2042,11 +2062,17 @@ def write_raw_bids(
             overwrite=overwrite,
         )
     elif bids_path.datatype in ["eeg", "ieeg", "nirs"]:
-        # We only write electrodes.tsv and accompanying coordsystem.json
-        # if we have an available DigMontage
-        if montage is not None or (raw.info["dig"] is not None and raw.info["dig"]):
+        have_dig = raw.info["dig"] is not None and bool(raw.info["dig"])
+        if montage is not None or have_dig:
             _write_dig_bids(
                 bids_path, raw, montage, acpc_aligned, electrodes_tsv_task, overwrite
+            )
+        elif bids_path.datatype == "ieeg":
+            _write_empty_ieeg_positions(
+                bids_path=bids_path,
+                raw=raw,
+                electrodes_tsv_task=electrodes_tsv_task,
+                overwrite=overwrite,
             )
     else:
         logger.info(
@@ -2240,9 +2266,10 @@ def write_raw_bids(
     elif ext == ".set":
         copyfile_eeglab(raw_fname, bids_path)
     elif ext == ".pdf":
-        raw_dir = op.join(data_path, op.splitext(bids_path.basename)[0])
+        raw_dir = bids_path.fpath
         _mkdir_p(raw_dir)
         copyfile_bti(raw_orig, raw_dir)
+        _ensure_bti_bidsignore(bids_path.root)
     elif ext in [".con", ".sqd"]:
         copyfile_kit(
             raw_fname,
@@ -3266,8 +3293,20 @@ def anonymize_dataset(
         "CHANGES",
         "dataset_description.json",
         "participants.json",
+        "participants.tsv",
     )
     for fname in additional_files:
         in_path = bids_root_in / fname
         if in_path.exists():
             shutil.copy(src=in_path, dst=bids_root_out)
+
+    participants_out_path = bids_root_out / "participants.tsv"
+    if participants_out_path.exists():
+        participants_tsv = _from_tsv(participants_out_path)
+        updated_ids = []
+        for participant_id in participants_tsv["participant_id"]:
+            participant = participant_id.replace("sub-", "")
+            new_id = subject_mapping.get(participant, participant)
+            updated_ids.append(f"sub-{new_id}")
+        participants_tsv["participant_id"] = updated_ids
+        _write_tsv(participants_out_path, participants_tsv, overwrite=True)
