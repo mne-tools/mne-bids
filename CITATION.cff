@@ -233,7 +233,7 @@ authors:
       family-names: Jas
       affiliation: 'Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA'
       orcid: 'https://orcid.org/0000-0002-3199-9027'
-    
+
 
 type: software
 repository-code: 'https://github.com/mne-tools/mne-bids'
