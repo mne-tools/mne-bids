@@ -8,6 +8,7 @@ import os
 import os.path as op
 import re
 import shutil
+import subprocess
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
@@ -92,11 +93,47 @@ from mne_bids.utils import (
 )
 
 _FIFF_SPLIT_SIZE = "2GB"  # MNE-Python default; can be altered during debugging
+_BTI_SUFFIX_CACHE: dict[str | None, bool] = {}
 
 
 def _is_numeric(n):
     return isinstance(n, np.integer | np.floating | int | float)
 
+
+def _should_use_bti_pdf_suffix() -> bool:
+    """Return ``True`` if BTi runs should retain the ``.pdf`` suffix."""
+
+    override = os.getenv("MNE_BIDS_BTI_PDF_SUFFIX")
+    if override is not None:
+        return override.lower() not in {"0", "false", "no", "legacy", "old"}
+
+    validator_path = shutil.which("bids-validator")
+    cache_key = validator_path
+    if cache_key in _BTI_SUFFIX_CACHE:
+        return _BTI_SUFFIX_CACHE[cache_key]
+
+    use_pdf_suffix = True
+
+    if validator_path is not None:
+        try:
+            res = subprocess.run(
+                [validator_path, "--version"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except Exception:
+            pass
+        else:
+            version_output = res.stdout.strip() or res.stderr.strip()
+            match = re.search(r"(\d+)\.(\d+)\.(\d+)", version_output)
+            if match:
+                major = int(match.group(1))
+                if major < 2:
+                    use_pdf_suffix = False
+
+    _BTI_SUFFIX_CACHE[cache_key] = use_pdf_suffix
+    return use_pdf_suffix
 
 def _channels_tsv(raw, fname, overwrite=False):
     """Create a channels.tsv file and save it.
@@ -1844,6 +1881,10 @@ def write_raw_bids(
 
         raw_orig = raw
 
+    use_bti_pdf_suffix = True
+    if ext == ".pdf":
+        use_bti_pdf_suffix = _should_use_bti_pdf_suffix()
+
     # Check times
     if not np.array_equal(raw.times, raw_orig.times):
         if len(raw.times) == len(raw_orig.times):
@@ -2266,10 +2307,14 @@ def write_raw_bids(
     elif ext == ".set":
         copyfile_eeglab(raw_fname, bids_path)
     elif ext == ".pdf":
-        raw_dir = bids_path.fpath
+        if use_bti_pdf_suffix:
+            raw_dir = bids_path.fpath
+        else:
+            raw_dir = op.join(data_path, op.splitext(bids_path.basename)[0])
         _mkdir_p(raw_dir)
         copyfile_bti(raw_orig, raw_dir)
-        _ensure_bti_bidsignore(bids_path.root)
+        if use_bti_pdf_suffix:
+            _ensure_bti_bidsignore(bids_path.root)
     elif ext in [".con", ".sqd"]:
         copyfile_kit(
             raw_fname,
@@ -2285,7 +2330,10 @@ def write_raw_bids(
         shutil.copyfile(raw_fname, bids_path)
 
     # write to the scans.tsv file the output file written
-    scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
+    scan_fname = bids_path.fpath.name
+    if bids_path.extension == ".pdf" and not use_bti_pdf_suffix:
+        scan_fname = op.splitext(scan_fname)[0]
+    scan_relative_fpath = op.join(bids_path.datatype, scan_fname)
     _scans_tsv(
         raw,
         raw_fname=scan_relative_fpath,
