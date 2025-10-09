@@ -221,6 +221,10 @@ authors:
     - given-names: Nathan
       family-names: Azrak
       orcid: 'https://orcid.org/0000-0001-7695-4634'
+    - given-names: Bruno
+      family-names: Aristimunha
+      affiliation: 'Université Paris-Saclay, LISN, Inria TAU/INRIA Nerv, France'
+      orcid: 'https://orcid.org/0000-0001-5258-2995'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'
@@ -229,10 +233,7 @@ authors:
       family-names: Jas
       affiliation: 'Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA'
       orcid: 'https://orcid.org/0000-0002-3199-9027'
-    - given-names: Bruno
-      family-names: Aristimunha
-      affiliation: 'Université Paris-Saclay, LISN, Inria TAU/INRIA Nerv, France'
-      orcid: 'https://orcid.org/0000-0001-5258-2995'
+    
 
 type: software
 repository-code: 'https://github.com/mne-tools/mne-bids'
@@ -327,10 +328,7 @@ preferred-citation:
       family-names: Jas
       affiliation: 'Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA'
       orcid: 'https://orcid.org/0000-0002-3199-9027'
-    - given-names: Bruno
-      family-names: Aristimunha
-      affiliation: 'Université Paris-Saclay, LISN, Inria TAU/INRIA Nerv, France'
-      orcid: 'https://orcid.org/0000-0001-5258-2995'
+
 identifiers:
   - description: "Code archive on Zenodo"
     type: doi
