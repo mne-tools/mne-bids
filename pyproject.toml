@@ -64,7 +64,7 @@ doc = [
 full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.4.10",
-  "eeglabio >= 0.0.2",
+  "eeglabio >= 0.1.0",
   "matplotlib >= 3.6",
   "nibabel >= 3.2.1",
   "pandas >= 1.3.2",
