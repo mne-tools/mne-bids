@@ -2827,7 +2827,8 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
     out_path.mkdir()
     shutil.copyfile(src=fname, dst=str(out_path))
 
-
+# Do you think we should expose the verbose parameter here?
+# question for hoechenberger
 def _get_daysback(
     *, bids_paths: list[BIDSPath], rng: np.random.Generator, show_progress_thresh: int
 ) -> int:
@@ -2916,7 +2917,9 @@ def _check_finecal_path(bids_path: BIDSPath) -> bool:
     )
     return is_finecal_path
 
-
+# This function is tricky because there is many verbose styles to consider:
+# I think global verbose maybe not good here.
+# what do you think hoechenberger?
 @verbose
 def anonymize_dataset(
     bids_root_in,
