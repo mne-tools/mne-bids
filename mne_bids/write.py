@@ -121,8 +121,10 @@ def _should_use_bti_pdf_suffix() -> bool:
                 text=True,
                 check=True,
             )
-        except Exception:
-            pass
+        except (subprocess.CalledProcessError, FileNotFoundError, OSError) as e:
+            logger.warning(
+                f"Failed to run bids-validator to check version: {e}"
+            )
         else:
             version_output = res.stdout.strip() or res.stderr.strip()
             match = re.search(r"(\d+)\.(\d+)\.(\d+)", version_output)
