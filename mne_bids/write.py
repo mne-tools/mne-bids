@@ -102,7 +102,6 @@ def _is_numeric(n):
 
 def _should_use_bti_pdf_suffix() -> bool:
     """Return ``True`` if BTi runs should retain the ``.pdf`` suffix."""
-
     override = os.getenv("MNE_BIDS_BTI_PDF_SUFFIX")
     if override is not None:
         return override.lower() not in {"0", "false", "no", "legacy", "old"}
@@ -134,6 +133,7 @@ def _should_use_bti_pdf_suffix() -> bool:
 
     _BTI_SUFFIX_CACHE[cache_key] = use_pdf_suffix
     return use_pdf_suffix
+
 
 def _channels_tsv(raw, fname, overwrite=False):
     """Create a channels.tsv file and save it.
