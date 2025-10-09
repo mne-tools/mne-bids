@@ -42,6 +42,7 @@ def _iter_functions_and_methods(module):
 
 
 def test_functions_with_verbose_are_decorated():
+    """Test that all functions with a verbose parameter are decorated."""
     missing = []
     for module in _iter_modules():
         for qualname, obj in _iter_functions_and_methods(module):
