@@ -20,7 +20,7 @@ Optional:
 
 * ``nibabel`` (>=3.2.1, for processing MRI data)
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
-* ``eeglabio`` (>=0.0.2, for writing EEGLAB data)
+* ``eeglabio`` (>=0.10.0, for writing EEGLAB data)
 * ``pymatreader`` (for other operations with EEGLAB data)
 * ``matplotlib`` (>=3.6, for using the interactive data inspector)
 * ``pandas`` (>=1.3.2, for generating event statistics)
