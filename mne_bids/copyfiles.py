@@ -397,7 +397,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
                 fout.write(line)
 
     if anonymize is not None:
-        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
+        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=verbose)
         daysback, keep_his, _ = _check_anonymize(anonymize, raw, ".vhdr")
         raw.info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         _anonymize_brainvision(fname_dest + ".vhdr", date=raw.info["meas_date"])
