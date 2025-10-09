@@ -1,3 +1,8 @@
+"""Testing utilities for the MNE BIDS verbosity."""
+
+# Authors: The MNE-BIDS developers
+# SPDX-License-Identifier: BSD-3-Clause
+
 import importlib
 import inspect
 import pkgutil
