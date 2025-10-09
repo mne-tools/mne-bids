@@ -2827,6 +2827,7 @@ def write_meg_crosstalk(fname, bids_path, verbose=None):
     out_path.mkdir()
     shutil.copyfile(src=fname, dst=str(out_path))
 
+
 # Do you think we should expose the verbose parameter here?
 # question for hoechenberger
 def _get_daysback(
@@ -2916,6 +2917,7 @@ def _check_finecal_path(bids_path: BIDSPath) -> bool:
         and bids_path.extension == ".dat"
     )
     return is_finecal_path
+
 
 # This function is tricky because there is many verbose styles to consider:
 # I think global verbose maybe not good here.
