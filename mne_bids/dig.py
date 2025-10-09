@@ -206,7 +206,7 @@ def _write_electrodes_tsv(raw, fname, datatype, overwrite=False):
             )
     _write_tsv(fname, data, overwrite=True)
 
-
+@verbose
 def _write_optodes_tsv(raw, fname, overwrite=False, verbose=True):
     """Create a optodes.tsv file and save it.
 
