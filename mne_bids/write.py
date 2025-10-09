@@ -8,6 +8,7 @@ import os
 import os.path as op
 import re
 import shutil
+import subprocess
 import sys
 import warnings
 from collections import OrderedDict, defaultdict
@@ -67,7 +68,11 @@ from mne_bids.copyfiles import (
     copyfile_eeglab,
     copyfile_kit,
 )
-from mne_bids.dig import _write_coordsystem_json, _write_dig_bids
+from mne_bids.dig import (
+    _write_coordsystem_json,
+    _write_dig_bids,
+    _write_empty_ieeg_positions,
+)
 from mne_bids.path import _mkdir_p, _parse_ext, _path_to_str
 from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
@@ -88,10 +93,46 @@ from mne_bids.utils import (
 )
 
 _FIFF_SPLIT_SIZE = "2GB"  # MNE-Python default; can be altered during debugging
+_BTI_SUFFIX_CACHE: dict[str | None, bool] = {}
 
 
 def _is_numeric(n):
     return isinstance(n, np.integer | np.floating | int | float)
+
+
+def _should_use_bti_pdf_suffix() -> bool:
+    """Return ``True`` if BTi runs should retain the ``.pdf`` suffix."""
+    override = os.getenv("MNE_BIDS_BTI_PDF_SUFFIX")
+    if override is not None:
+        return override.lower() not in {"0", "false", "no", "legacy", "old"}
+
+    validator_path = shutil.which("bids-validator")
+    cache_key = validator_path
+    if cache_key in _BTI_SUFFIX_CACHE:
+        return _BTI_SUFFIX_CACHE[cache_key]
+
+    use_pdf_suffix = True
+
+    if validator_path is not None:
+        try:
+            res = subprocess.run(
+                [validator_path, "--version"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except (subprocess.CalledProcessError, FileNotFoundError, OSError) as e:
+            logger.warning(f"Failed to run bids-validator to check version: {e}")
+        else:
+            version_output = res.stdout.strip() or res.stderr.strip()
+            match = re.search(r"(\d+)\.(\d+)\.(\d+)", version_output)
+            if match:
+                major = int(match.group(1))
+                if major < 2:
+                    use_pdf_suffix = False
+
+    _BTI_SUFFIX_CACHE[cache_key] = use_pdf_suffix
+    return use_pdf_suffix
 
 
 def _channels_tsv(raw, fname, overwrite=False):
@@ -1127,6 +1168,24 @@ def _write_raw_fif(raw, bids_fname):
     )
 
 
+def _ensure_bti_bidsignore(bids_root):
+    """Ensure vendor-specific BTi files are ignored by the validator."""
+    if bids_root is None:
+        return
+
+    bidsignore_path = Path(bids_root) / ".bidsignore"
+    pattern = "**/*_meg.pdf/*"
+
+    if bidsignore_path.exists():
+        lines = bidsignore_path.read_text(encoding="utf-8").splitlines()
+    else:
+        lines = []
+
+    if pattern not in lines:
+        lines.append(pattern)
+        bidsignore_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _write_raw_brainvision(raw, bids_fname, events, overwrite):
     """Save out the raw file in BrainVision format.
 
@@ -1822,6 +1881,10 @@ def write_raw_bids(
 
         raw_orig = raw
 
+    use_bti_pdf_suffix = True
+    if ext == ".pdf":
+        use_bti_pdf_suffix = _should_use_bti_pdf_suffix()
+
     # Check times
     if not np.array_equal(raw.times, raw_orig.times):
         if len(raw.times) == len(raw_orig.times):
@@ -1933,9 +1996,7 @@ def write_raw_bids(
             )
 
         # Turn it into a path relative to the BIDS root
-        associated_er_path = Path(
-            str(associated_er_path).replace(str(bids_path.root), "")
-        )
+        associated_er_path = associated_er_path.relative_to(bids_path.root)
         # Ensure it works on Windows too
         associated_er_path = associated_er_path.as_posix()
 
@@ -2042,11 +2103,17 @@ def write_raw_bids(
             overwrite=overwrite,
         )
     elif bids_path.datatype in ["eeg", "ieeg", "nirs"]:
-        # We only write electrodes.tsv and accompanying coordsystem.json
-        # if we have an available DigMontage
-        if montage is not None or (raw.info["dig"] is not None and raw.info["dig"]):
+        have_dig = raw.info["dig"] is not None and bool(raw.info["dig"])
+        if montage is not None or have_dig:
             _write_dig_bids(
                 bids_path, raw, montage, acpc_aligned, electrodes_tsv_task, overwrite
+            )
+        elif bids_path.datatype == "ieeg":
+            _write_empty_ieeg_positions(
+                bids_path=bids_path,
+                raw=raw,
+                electrodes_tsv_task=electrodes_tsv_task,
+                overwrite=overwrite,
             )
     else:
         logger.info(
@@ -2240,9 +2307,14 @@ def write_raw_bids(
     elif ext == ".set":
         copyfile_eeglab(raw_fname, bids_path)
     elif ext == ".pdf":
-        raw_dir = op.join(data_path, op.splitext(bids_path.basename)[0])
+        if use_bti_pdf_suffix:
+            raw_dir = bids_path.fpath
+        else:
+            raw_dir = op.join(data_path, op.splitext(bids_path.basename)[0])
         _mkdir_p(raw_dir)
         copyfile_bti(raw_orig, raw_dir)
+        if use_bti_pdf_suffix:
+            _ensure_bti_bidsignore(bids_path.root)
     elif ext in [".con", ".sqd"]:
         copyfile_kit(
             raw_fname,
@@ -2258,7 +2330,10 @@ def write_raw_bids(
         shutil.copyfile(raw_fname, bids_path)
 
     # write to the scans.tsv file the output file written
-    scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
+    scan_fname = bids_path.fpath.name
+    if bids_path.extension == ".pdf" and not use_bti_pdf_suffix:
+        scan_fname = op.splitext(scan_fname)[0]
+    scan_relative_fpath = op.join(bids_path.datatype, scan_fname)
     _scans_tsv(
         raw,
         raw_fname=scan_relative_fpath,
@@ -3266,8 +3341,20 @@ def anonymize_dataset(
         "CHANGES",
         "dataset_description.json",
         "participants.json",
+        "participants.tsv",
     )
     for fname in additional_files:
         in_path = bids_root_in / fname
         if in_path.exists():
             shutil.copy(src=in_path, dst=bids_root_out)
+
+    participants_out_path = bids_root_out / "participants.tsv"
+    if participants_out_path.exists():
+        participants_tsv = _from_tsv(participants_out_path)
+        updated_ids = []
+        for participant_id in participants_tsv["participant_id"]:
+            participant = participant_id.replace("sub-", "")
+            new_id = subject_mapping.get(participant, participant)
+            updated_ids.append(f"sub-{new_id}")
+        participants_tsv["participant_id"] = updated_ids
+        _write_tsv(participants_out_path, participants_tsv, overwrite=True)

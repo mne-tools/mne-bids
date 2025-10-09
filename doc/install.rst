@@ -20,11 +20,11 @@ Optional:
 
 * ``nibabel`` (>=3.2.1, for processing MRI data)
 * ``pybv`` (>=0.7.5, for writing BrainVision data)
-* ``eeglabio`` (>=0.0.2, for writing EEGLAB data)
+* ``eeglabio`` (>=0.1.0, for writing EEGLAB data)
 * ``pymatreader`` (for other operations with EEGLAB data)
 * ``matplotlib`` (>=3.6, for using the interactive data inspector)
 * ``pandas`` (>=1.3.2, for generating event statistics)
-* ``edfio`` (>=0.2.1, for writing EDF data)
+* ``edfio`` (>=0.4.10, for writing EDF data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
 
 We recommend installing ``mne-bids`` into an isolated Python environment,

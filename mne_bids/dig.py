@@ -385,6 +385,55 @@ def _write_coordsystem_json(
     _write_json(fname, fid_json, overwrite=True)
 
 
+def _write_empty_ieeg_positions(
+    bids_path,
+    raw,
+    electrodes_tsv_task=False,
+    overwrite=False,
+):
+    """Write placeholder iEEG electrode and coordinate files when no montage."""
+    # I need to check the BIDS documentation for iEEG
+    if bids_path.datatype != "ieeg":  # pragma: no cover
+        raise RuntimeError(
+            f"Expected datatype 'ieeg' when writing default electrodes, "
+            f"got {bids_path.datatype!r}"
+        )
+
+    coord_entities = {
+        "root": bids_path.root,
+        "datatype": bids_path.datatype,
+        "subject": bids_path.subject,
+        "session": bids_path.session,
+        "acquisition": bids_path.acquisition,
+        "space": bids_path.space,
+    }
+    electrode_entities = coord_entities.copy()
+    if electrodes_tsv_task and bids_path.task is not None:
+        electrode_entities["task"] = bids_path.task
+
+    electrodes_path = BIDSPath(
+        **electrode_entities, suffix="electrodes", extension=".tsv"
+    )
+    coordsystem_path = BIDSPath(
+        **coord_entities, suffix="coordsystem", extension=".json"
+    )
+
+    logger.info(
+        "Writing placeholder iEEG electrodes.tsv and coordsystem.json files "
+        "with coordinates marked as unavailable."
+    )
+    _write_electrodes_tsv(raw, electrodes_path.fpath, bids_path.datatype, overwrite)
+    _write_coordsystem_json(
+        raw=raw,
+        unit="n/a",
+        hpi_coord_system="n/a",
+        sensor_coord_system="Other",
+        fname=coordsystem_path,
+        datatype=bids_path.datatype,
+        overwrite=overwrite,
+    )
+
+
 def _write_dig_bids(
     bids_path,
     raw,

@@ -35,6 +35,18 @@ def _copytree(src, dst, **kwargs):
             raise
 
 
+def _kit_marker_acq_label(run, acquisition_label):
+    """Compose a BIDS acquisition label for KIT marker files."""
+    label_parts = []
+    if run is not None:
+        label_parts.append(f"run{run}")
+    if acquisition_label is not None:
+        label_parts.append(acquisition_label)
+    if not label_parts:
+        return None
+    return "".join(label_parts)
+
+
 def _get_brainvision_encoding(vhdr_file):
     """Get the encoding of .vhdr and .vmrk files.
 
@@ -228,12 +240,13 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
             _, marker_ext = _parse_ext(hpi)
             acq_map[None] = hpi
         for key, value in acq_map.items():
+            marker_acq = _kit_marker_acq_label(run, key)
             marker_path = BIDSPath(
                 subject=subject_id,
                 session=session_id,
                 task=task,
-                run=run,
-                acquisition=key,
+                run=None,
+                acquisition=marker_acq,
                 suffix="markers",
                 extension=marker_ext,
                 datatype=datatype,

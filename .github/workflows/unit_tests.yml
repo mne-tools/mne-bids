@@ -133,10 +133,11 @@ jobs:
     # 3.10 / mne-stable / full / validator-stable
     # 3.13 / mne-stable / full / validator-stable
     #
-    # 3 additional checks with alternative MNE-Python and BIDS validator versions:
-    # ubuntu / 3.13 / mne-main / full / validator-main
-    # ubuntu / 3.10 / mne-prev / full / validator-stable
-    # ubuntu / 3.13 / mne-stable / minimal / validator-stable
+    # 4 additional checks with alternative MNE-Python and BIDS validator versions:
+    # ubuntu / 3.13 / mne-main / full / validator-main -->  to test cutting edge of everything
+    # ubuntu / 3.10 / mne-prev / full / validator-stable --> to test last supported of everything
+    # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
+    # ubuntu / 3.12 / mne-stable / full / validator-main-schema --> to test next-gen BIDS validator
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     strategy:
@@ -168,7 +169,12 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: minimal
             bids-validator-version: validator-stable
-
+          # Test next gen BIDS schema validator
+          - os: ubuntu-latest
+            python-version: "3.12"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: validator-main-schema
 
     env:
       TZ: Europe/Berlin
@@ -179,10 +185,17 @@ jobs:
         fetch-depth: 0
         fetch-tags: true
 
-    - name: Set up Node.js
+    - name: Set up Node.js (validator-stable and validator-main)
+      if: matrix.bids-validator-version == 'validator-stable' || matrix.bids-validator-version == 'validator-main'
       uses: actions/setup-node@v5
       with:
         node-version: 20
+
+    - name: Set up deno (validator-main-schema)
+      if: matrix.bids-validator-version == 'validator-main-schema'
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
@@ -225,6 +238,18 @@ jobs:
       run: |
         npm install -g bids-validator
 
+    - name: Install BIDS validator (main-schema)
+      if: matrix.bids-validator-version == 'validator-main-schema'
+      # Follow documentation here:
+      #  - https://github.com/bids-standard/bids-validator/tree/master/bids-validator/src
+      #  - https://github.com/bids-standard/bids-examples/blob/7c18d6840982518a0251cfeb59fe5c4610099ea1/.github/workflows/validate_datasets.yml#L69-L75
+      #
+      # Note: in the future, we may want to make it easy to use:
+      #  - a different version of the validator (stable, main)
+      #  - a different version of the schema (stable, main)
+      run: |
+        deno install -Agf https://github.com/bids-standard/bids-validator/raw/deno-build/bids-validator.js
+
     - name: Download BIDS validator (main)
       if: matrix.bids-validator-version == 'validator-main'
       run: |
@@ -247,14 +272,16 @@ jobs:
         popd
 
     - name: Display versions and environment information
+      shell: bash
       run: |
         echo $TZ
         date
-        echo "npm"; npm --version
+        echo "(npm version)"; npm --version
         echo "node"; node --version
-        echo "bids-validator"; bids-validator --version
-        echo "python"; python --version
-        which python
+        echo "(deno version)"; deno --version || echo ""
+        echo "(bids-validator version)"; bids-validator --version
+        echo "(python version)"; python --version
+        echo "(which python)"; which python
         mne sys_info
 
     - name: Install MNE-BIDS (minimal)

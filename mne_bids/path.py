@@ -65,9 +65,6 @@ def _find_empty_room_candidates(bids_path):
     )
 
     allowed_extensions = list(reader.keys())
-    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
-    # a dedicated directory that doesn't have an extension)
-    del allowed_extensions[allowed_extensions.index(".pdf")]
 
     # Get possible noise task files in the same directory as the recording.
     noisetask_tmp = [
@@ -875,7 +872,10 @@ class BIDSPath:
         if self.suffix == "meg" and self.extension == ".ds":
             bids_fpath = op.join(data_path, self.basename)
         elif self.suffix == "meg" and self.extension == ".pdf":
-            bids_fpath = op.join(data_path, op.splitext(self.basename)[0])
+            bids_fpath = op.join(data_path, self.basename)
+            legacy_dir = op.join(data_path, op.splitext(self.basename)[0])
+            if not op.exists(bids_fpath) and op.isdir(legacy_dir):
+                bids_fpath = legacy_dir
         else:
             # if suffix and/or extension is missing, and root is
             # not None, then BIDSPath will infer the dataset
@@ -1386,12 +1386,15 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
         subject=sub, session=ses, datatype=datatype, root=bids_root, check=check
     ).directory
 
-    # For BTi data, just return the directory with a '.pdf' extension
-    # to facilitate reading in mne-bids
-    bti_dir = op.join(data_dir, f"{basename}")
-    if op.isdir(bti_dir):
+    # For BTi data, return the run directory (with or without '.pdf' suffix)
+    bti_dir_with_ext = op.join(data_dir, f"{basename}")
+    bti_dir = op.join(data_dir, op.splitext(basename)[0])
+    if op.isdir(bti_dir_with_ext):
+        logger.info(f"Assuming BTi data in {bti_dir_with_ext}")
+        matching_paths = [bti_dir_with_ext]
+    elif op.isdir(bti_dir):
         logger.info(f"Assuming BTi data in {bti_dir}")
-        matching_paths = [f"{bti_dir}.pdf"]
+        matching_paths = [bti_dir]
     # otherwise, search for valid file paths
     else:
         search_str = bids_root
