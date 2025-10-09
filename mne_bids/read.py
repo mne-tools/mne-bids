@@ -970,7 +970,7 @@ def read_raw_bids(
     if suffix is None:
         bids_path.update(suffix=datatype)
 
-    if bids_path.fpath.suffix == ".pdf":
+    if bids_path.extension == ".pdf":
         bids_raw_folder = bids_path.directory / f"{bids_path.basename}"
         if not bids_raw_folder.exists():
             bids_raw_folder = bids_raw_folder.with_suffix("")
