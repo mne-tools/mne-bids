@@ -5,6 +5,7 @@
 
 import contextlib
 import json
+import logging
 import os
 import os.path as op
 import re
@@ -1366,6 +1367,24 @@ def test_ignore_exclude_param(tmp_path):
         bids_path=bids_path, verbose=False, extra_params=dict(exclude=[ch_name])
     )
     assert ch_name in raw.ch_names
+
+
+@testing.requires_testing_data
+def test_read_raw_bids_respects_verbose(tmp_path, caplog):
+    """Ensure ``verbose=False`` suppresses info-level logging."""
+    bids_path = _bids_path.copy().update(root=tmp_path, datatype="meg")
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+    caplog.set_level("INFO", logger="mne")
+    read_raw_bids(bids_path=bids_path, verbose=False)
+
+    info_logs = [
+        record
+        for record in caplog.records
+        if record.levelno <= logging.INFO and record.name.startswith("mne")
+    ]
+    assert not info_logs
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])

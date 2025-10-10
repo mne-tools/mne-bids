@@ -410,7 +410,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
                 fout.write(line)
 
     if anonymize is not None:
-        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
+        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=verbose)
         daysback, keep_his, _ = _check_anonymize(anonymize, raw, ".vhdr")
         raw.info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         _anonymize_brainvision(fname_dest + ".vhdr", date=raw.info["meas_date"])
@@ -423,7 +423,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
         logger.info("Anonymized all dates in VHDR and VMRK.")
 
 
-def copyfile_edf(src, dest, anonymize=None):
+@verbose
+def copyfile_edf(src, dest, anonymize=None, verbose=None):
     """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.
 
     .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:
@@ -505,9 +506,9 @@ def copyfile_edf(src, dest, anonymize=None):
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
         if ext_src in [".bdf", ".BDF"]:
-            raw = read_raw_bdf(dest, preload=False, verbose=0)
+            raw = read_raw_bdf(dest, preload=False, verbose=verbose)
         elif ext_src in [".edf", ".EDF"]:
-            raw = read_raw_edf(dest, preload=False, verbose=0)
+            raw = read_raw_edf(dest, preload=False, verbose=verbose)
         else:
             raise ValueError(f"Unsupported file type ({ext_src})")
 

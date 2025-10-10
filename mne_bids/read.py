@@ -35,6 +35,7 @@ from mne_bids.tsv_handler import _drop, _from_tsv
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
 
+@verbose
 def _read_raw(
     raw_path,
     electrode=None,
@@ -42,6 +43,7 @@ def _read_raw(
     hpi=None,
     allow_maxshield=False,
     config_path=None,
+    verbose=None,
     **kwargs,
 ):
     """Read a raw file into MNE, making inferences based on extension."""
@@ -50,7 +52,13 @@ def _read_raw(
     # KIT systems
     if ext in [".con", ".sqd"]:
         raw = io.read_raw_kit(
-            raw_path, elp=electrode, hsp=hsp, mrk=hpi, preload=False, **kwargs
+            raw_path,
+            elp=electrode,
+            hsp=hsp,
+            mrk=hpi,
+            preload=False,
+            verbose=verbose,
+            **kwargs,
         )
 
     # BTi systems
@@ -60,15 +68,16 @@ def _read_raw(
             config_fname=config_path,
             head_shape_fname=hsp,
             preload=False,
+            verbose=verbose,
             **kwargs,
         )
 
     elif ext == ".fif":
-        raw = reader[ext](raw_path, allow_maxshield, **kwargs)
+        raw = reader[ext](raw_path, allow_maxshield, verbose=verbose, **kwargs)
 
     elif ext in [".ds", ".vhdr", ".set", ".edf", ".bdf", ".EDF", ".snirf", ".cdt"]:
         raw_path = Path(raw_path)
-        raw = reader[ext](raw_path, **kwargs)
+        raw = reader[ext](raw_path, verbose=verbose, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in [".mef", ".nwb"]:
@@ -1048,6 +1057,7 @@ def read_raw_bids(
         hsp=None,
         hpi=None,
         config_path=config_path,
+        verbose=verbose,
         **extra_params,
     )
 
