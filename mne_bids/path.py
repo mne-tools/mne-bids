@@ -1105,8 +1105,8 @@ class BIDSPath:
             datatype=self.datatype,
             ignore_json=ignore_json,
             ignore_nosub=ignore_nosub,
-            entities=self.entities
-         )
+            entities=self.entities,
+        )
 
         fnames = _filter_fnames(
             paths, suffix=self.suffix, extension=self.extension, **self.entities
@@ -2543,7 +2543,9 @@ def find_matching_paths(
     return bids_paths
 
 
-def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False, entities=None):
+def _return_root_paths(
+    root, datatype=None, ignore_json=True, ignore_nosub=False, entities=None
+):
     """Return all file paths + .ds paths in root with entity-aware optimization.
 
     Can be filtered by datatype (which is present in the path but not in
@@ -2573,14 +2575,14 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     root = Path(root)  # if root is str
 
     # OPTIMIZATION: Use entity-aware path construction when entities available
-    if entities and entities.get('subject'):
+    if entities and entities.get("subject"):
         # Build targeted search path starting from subject directory
         search_parts = [f"sub-{entities['subject']}"]
-        
+
         # Add session if available
-        if entities.get('session'):
+        if entities.get("session"):
             search_parts.append(f"ses-{entities['session']}")
-            
+
         # Add datatype-specific path
         if datatype is not None:
             datatype = _ensure_tuple(datatype)
@@ -2594,22 +2596,26 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
                 for dt in datatype:
                     dt_search_parts = search_parts + ["**", dt]
                     dt_search_str = "/".join(dt_search_parts) + "/*.*"
-                    paths.extend([
-                        Path(root, fn)
-                        for fn in glob.iglob(dt_search_str, root_dir=root, recursive=True)
-                    ])
+                    paths.extend(
+                        [
+                            Path(root, fn)
+                            for fn in glob.iglob(
+                                dt_search_str, root_dir=root, recursive=True
+                            )
+                        ]
+                    )
                 return _filter_paths_optimized(paths, ignore_json)
         else:
             # No datatype specified - search all datatypes under subject
             search_parts.append("**")
             search_str = "/".join(search_parts) + "/*.*"
-            
+
         # Single search with optimized path
         paths = [
             Path(root, fn)
             for fn in glob.iglob(search_str, root_dir=root, recursive=True)
         ]
-        
+
     else:
         # FALLBACK: Original implementation when entities not available or subject unknown
         if datatype is None and not ignore_nosub:
@@ -2702,4 +2708,3 @@ def _fnames_to_bidspaths(fnames, root, check=False):
 
         bids_paths.append(bids_path)
     return bids_paths
-
