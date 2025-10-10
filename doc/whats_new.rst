@@ -21,7 +21,7 @@ The following authors contributed for the first time. Thank you so much! 🤩
 
 * `Julius Welzel`_
 * `Alex Lopez Marquez`_
-
+* `Bruno Aristimunha`_
 
 The following authors had contributed before. Thank you for sticking around! 🤘
 
@@ -36,7 +36,7 @@ Detailed list of changes
 
 - :func:`mne_bids.write_raw_bids()` has a new parameter `electrodes_tsv_task` which allows adding the `task` entity to the `electrodes.tsv` filepath, by `Alex Lopez Marquez`_ (:gh:`1424`)
 - Extended the configuration to recognise `motion` as a valid BIDS datatype by `Julius Welzel`_ (:gh:`1430`)
-- Better control of verbosity in several functions, by `Bruno Aristimunha`_ (:gh:`1444`)
+- Better control of verbosity in several functions, by `Bruno Aristimunha`_ (:gh:`1449`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
