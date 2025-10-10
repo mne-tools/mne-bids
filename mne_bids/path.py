@@ -2617,7 +2617,8 @@ def _return_root_paths(
         ]
 
     else:
-        # FALLBACK: Original implementation when entities not available or subject unknown
+        # FALLBACK: Original implementation when entities not available
+        # or subject unknown
         if datatype is None and not ignore_nosub:
             paths = root.rglob("*.*")
         else:
