@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mne_bids.copyfiles.copyfile_edf &#8212; MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</title>
+    <title>mne_bids.copyfiles.copyfile_edf &#8212; MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a71e5200"></script>
+    <script src="../_static/documentation_options.js?v=3b3ae2c1"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev11+g8cf5e2794" />
+  <meta name="docsearch:version" content="0.18.0.dev13+g941a12cf7" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</p>
   
 </a></div>
     
@@ -532,7 +532,7 @@
 <h1>mne_bids.copyfiles.copyfile_edf<a class="headerlink" href="#mne-bids-copyfiles-copyfile-edf" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="mne_bids.copyfiles.copyfile_edf">
-<span class="sig-prename descclassname"><span class="pre">mne_bids.copyfiles.</span></span><span class="sig-name descname"><span class="pre">copyfile_edf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_edf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_edf" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mne_bids.copyfiles.</span></span><span class="sig-name descname"><span class="pre">copyfile_edf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_edf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_edf" title="Link to this definition">#</a></dt>
 <dd><p>Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -558,7 +558,7 @@ be parsed.</p>
 </dd>
 <dt><strong>dest</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/documentation/glossary.html#term-path-like" title="(in MNE v1.10)"><span class="xref std std-term">path-like</span></a></span></dt><dd><p>The destination path of the .edf or .bdf file.</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If None (default), no anonymization is performed.
+<dt><strong>anonymize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>If None (default), no anonymization is performed.
 If dict, data will be anonymized depending on the keys provided with
 the dict: <em class="xref py py-obj">daysback</em> is a required key, <em class="xref py py-obj">keep_his</em> is an optional key.</p>
 <dl class="simple">
@@ -675,7 +675,7 @@ will always be anonymized if present, regardless of this setting.</p>
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-07.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-10.
       <br/>
     
   </p>

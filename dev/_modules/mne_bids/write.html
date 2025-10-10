@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</title>
+    <title>mne_bids.write &#8212; MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a71e5200"></script>
+    <script src="../../_static/documentation_options.js?v=3b3ae2c1"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev11+g8cf5e2794" />
+  <meta name="docsearch:version" content="0.18.0.dev13+g941a12cf7" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</p>
   
 </a></div>
     
@@ -485,6 +485,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
@@ -544,7 +545,11 @@
     <span class="n">copyfile_eeglab</span><span class="p">,</span>
     <span class="n">copyfile_kit</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.dig</span><span class="w"> </span><span class="kn">import</span> <span class="n">_write_coordsystem_json</span><span class="p">,</span> <span class="n">_write_dig_bids</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.dig</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_write_coordsystem_json</span><span class="p">,</span>
+    <span class="n">_write_dig_bids</span><span class="p">,</span>
+    <span class="n">_write_empty_ieeg_positions</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_path_to_str</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.pick</span><span class="w"> </span><span class="kn">import</span> <span class="n">coil_type</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.read</span><span class="w"> </span><span class="kn">import</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_read_events</span>
@@ -565,10 +570,46 @@
 <span class="p">)</span>
 
 <span class="n">_FIFF_SPLIT_SIZE</span> <span class="o">=</span> <span class="s2">&quot;2GB&quot;</span>  <span class="c1"># MNE-Python default; can be altered during debugging</span>
+<span class="n">_BTI_SUFFIX_CACHE</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_should_use_bti_pdf_suffix</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return ``True`` if BTi runs should retain the ``.pdf`` suffix.&quot;&quot;&quot;</span>
+    <span class="n">override</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MNE_BIDS_BTI_PDF_SUFFIX&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">override</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">override</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;legacy&quot;</span><span class="p">,</span> <span class="s2">&quot;old&quot;</span><span class="p">}</span>
+
+    <span class="n">validator_path</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;bids-validator&quot;</span><span class="p">)</span>
+    <span class="n">cache_key</span> <span class="o">=</span> <span class="n">validator_path</span>
+    <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="n">_BTI_SUFFIX_CACHE</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_BTI_SUFFIX_CACHE</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+
+    <span class="n">use_pdf_suffix</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">validator_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">validator_path</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">],</span>
+                <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to run bids-validator to check version: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">version_output</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="n">res</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+)\.(\d+)\.(\d+)&quot;</span><span class="p">,</span> <span class="n">version_output</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">major</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">major</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">use_pdf_suffix</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">_BTI_SUFFIX_CACHE</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">use_pdf_suffix</span>
+    <span class="k">return</span> <span class="n">use_pdf_suffix</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1604,6 +1645,24 @@
     <span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_bti_bidsignore</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure vendor-specific BTi files are ignored by the validator.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">bidsignore_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;.bidsignore&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;**/*_meg.pdf/*&quot;</span>
+
+    <span class="k">if</span> <span class="n">bidsignore_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">bidsignore_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">pattern</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">bidsignore_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save out the raw file in BrainVision format.</span>
 
@@ -2304,6 +2363,10 @@
 
         <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">raw</span>
 
+    <span class="n">use_bti_pdf_suffix</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+        <span class="n">use_bti_pdf_suffix</span> <span class="o">=</span> <span class="n">_should_use_bti_pdf_suffix</span><span class="p">()</span>
+
     <span class="c1"># Check times</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">):</span>
@@ -2415,9 +2478,7 @@
             <span class="p">)</span>
 
         <span class="c1"># Turn it into a path relative to the BIDS root</span>
-        <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">associated_er_path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="c1"># Ensure it works on Windows too</span>
         <span class="n">associated_er_path</span> <span class="o">=</span> <span class="n">associated_er_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
 
@@ -2524,11 +2585,17 @@
             <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">,</span> <span class="s2">&quot;nirs&quot;</span><span class="p">]:</span>
-        <span class="c1"># We only write electrodes.tsv and accompanying coordsystem.json</span>
-        <span class="c1"># if we have an available DigMontage</span>
-        <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]):</span>
+        <span class="n">have_dig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">bool</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dig&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">montage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">have_dig</span><span class="p">:</span>
             <span class="n">_write_dig_bids</span><span class="p">(</span>
                 <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">montage</span><span class="p">,</span> <span class="n">acpc_aligned</span><span class="p">,</span> <span class="n">electrodes_tsv_task</span><span class="p">,</span> <span class="n">overwrite</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
+            <span class="n">_write_empty_ieeg_positions</span><span class="p">(</span>
+                <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+                <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+                <span class="n">electrodes_tsv_task</span><span class="o">=</span><span class="n">electrodes_tsv_task</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -2722,9 +2789,14 @@
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.set&quot;</span><span class="p">:</span>
         <span class="n">copyfile_eeglab</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
-        <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">use_bti_pdf_suffix</span><span class="p">:</span>
+            <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raw_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">raw_dir</span><span class="p">)</span>
         <span class="n">copyfile_bti</span><span class="p">(</span><span class="n">raw_orig</span><span class="p">,</span> <span class="n">raw_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_bti_pdf_suffix</span><span class="p">:</span>
+            <span class="n">_ensure_bti_bidsignore</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.con&quot;</span><span class="p">,</span> <span class="s2">&quot;.sqd&quot;</span><span class="p">]:</span>
         <span class="n">copyfile_kit</span><span class="p">(</span>
             <span class="n">raw_fname</span><span class="p">,</span>
@@ -2740,7 +2812,10 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># write to the scans.tsv file the output file written</span>
-    <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">scan_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_bti_pdf_suffix</span><span class="p">:</span>
+        <span class="n">scan_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">scan_fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">scan_fname</span><span class="p">)</span>
     <span class="n">_scans_tsv</span><span class="p">(</span>
         <span class="n">raw</span><span class="p">,</span>
         <span class="n">raw_fname</span><span class="o">=</span><span class="n">scan_relative_fpath</span><span class="p">,</span>
@@ -3766,11 +3841,23 @@
         <span class="s2">&quot;CHANGES&quot;</span><span class="p">,</span>
         <span class="s2">&quot;dataset_description.json&quot;</span><span class="p">,</span>
         <span class="s2">&quot;participants.json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;participants.tsv&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">additional_files</span><span class="p">:</span>
         <span class="n">in_path</span> <span class="o">=</span> <span class="n">bids_root_in</span> <span class="o">/</span> <span class="n">fname</span>
         <span class="k">if</span> <span class="n">in_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">in_path</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">bids_root_out</span><span class="p">)</span></div>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">in_path</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="n">bids_root_out</span><span class="p">)</span>
+
+    <span class="n">participants_out_path</span> <span class="o">=</span> <span class="n">bids_root_out</span> <span class="o">/</span> <span class="s2">&quot;participants.tsv&quot;</span>
+    <span class="k">if</span> <span class="n">participants_out_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_out_path</span><span class="p">)</span>
+        <span class="n">updated_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">participant_id</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]:</span>
+            <span class="n">participant</span> <span class="o">=</span> <span class="n">participant_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;sub-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">new_id</span> <span class="o">=</span> <span class="n">subject_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">participant</span><span class="p">,</span> <span class="n">participant</span><span class="p">)</span>
+            <span class="n">updated_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">new_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">participants_tsv</span><span class="p">[</span><span class="s2">&quot;participant_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ids</span>
+        <span class="n">_write_tsv</span><span class="p">(</span><span class="n">participants_out_path</span><span class="p">,</span> <span class="n">participants_tsv</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 </pre></div>
 
@@ -3813,7 +3900,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-07.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-10.
       <br/>
     
   </p>

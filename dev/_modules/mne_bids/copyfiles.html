@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</title>
+    <title>mne_bids.copyfiles &#8212; MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a71e5200"></script>
+    <script src="../../_static/documentation_options.js?v=3b3ae2c1"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev11+g8cf5e2794" />
+  <meta name="docsearch:version" content="0.18.0.dev13+g941a12cf7" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</p>
   
 </a></div>
     
@@ -512,6 +512,18 @@
             <span class="k">raise</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_kit_marker_acq_label</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">acquisition_label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compose a BIDS acquisition label for KIT marker files.&quot;&quot;&quot;</span>
+    <span class="n">label_parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run</span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">acquisition_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">label_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">acquisition_label</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">label_parts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">label_parts</span><span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the encoding of .vhdr and .vmrk files.</span>
 
@@ -710,12 +722,13 @@
             <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
             <span class="n">acq_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">acq_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">marker_acq</span> <span class="o">=</span> <span class="n">_kit_marker_acq_label</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="n">marker_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span>
                 <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
                 <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
-                <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-                <span class="n">acquisition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+                <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">acquisition</span><span class="o">=</span><span class="n">marker_acq</span><span class="p">,</span>
                 <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;markers&quot;</span><span class="p">,</span>
                 <span class="n">extension</span><span class="o">=</span><span class="n">marker_ext</span><span class="p">,</span>
                 <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
@@ -882,7 +895,7 @@
                 <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
         <span class="n">_anonymize_brainvision</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;meas_date&quot;</span><span class="p">])</span>
@@ -898,7 +911,8 @@
 
 <div class="viewcode-block" id="copyfile_edf">
 <a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="nd">@verbose</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
 
 <span class="sd">    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:</span>
@@ -980,9 +994,9 @@
     <span class="c1"># Anonymize EDF/BDF data, if requested</span>
     <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.BDF&quot;</span><span class="p">]:</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ext_src</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">]:</span>
-            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file type (</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
@@ -1187,7 +1201,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-07.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-10.
       <br/>
     
   </p>

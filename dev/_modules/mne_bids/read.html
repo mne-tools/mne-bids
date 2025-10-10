@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</title>
+    <title>mne_bids.read &#8212; MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=a71e5200"></script>
+    <script src="../../_static/documentation_options.js?v=3b3ae2c1"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev11+g8cf5e2794" />
+  <meta name="docsearch:version" content="0.18.0.dev13+g941a12cf7" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</p>
   
 </a></div>
     
@@ -512,6 +512,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">mne_bids.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">_import_nibabel</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">warn</span>
 
 
+<span class="nd">@verbose</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_raw</span><span class="p">(</span>
     <span class="n">raw_path</span><span class="p">,</span>
     <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -519,6 +520,7 @@
     <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">config_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a raw file into MNE, making inferences based on extension.&quot;&quot;&quot;</span>
@@ -527,7 +529,13 @@
     <span class="c1"># KIT systems</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.con&quot;</span><span class="p">,</span> <span class="s2">&quot;.sqd&quot;</span><span class="p">]:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">(</span>
-            <span class="n">raw_path</span><span class="p">,</span> <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span> <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">raw_path</span><span class="p">,</span>
+            <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span>
+            <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
+            <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span>
+            <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="c1"># BTi systems</span>
@@ -537,15 +545,16 @@
             <span class="n">config_fname</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
             <span class="n">head_shape_fname</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
             <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s2">&quot;.fif&quot;</span><span class="p">:</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.ds&quot;</span><span class="p">,</span> <span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="s2">&quot;.set&quot;</span><span class="p">,</span> <span class="s2">&quot;.edf&quot;</span><span class="p">,</span> <span class="s2">&quot;.bdf&quot;</span><span class="p">,</span> <span class="s2">&quot;.EDF&quot;</span><span class="p">,</span> <span class="s2">&quot;.snirf&quot;</span><span class="p">,</span> <span class="s2">&quot;.cdt&quot;</span><span class="p">]:</span>
         <span class="n">raw_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">raw_path</span><span class="p">)</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># MEF and NWB are allowed, but not yet implemented</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.mef&quot;</span><span class="p">,</span> <span class="s2">&quot;.nwb&quot;</span><span class="p">]:</span>
@@ -810,10 +819,6 @@
     <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scans_fname</span><span class="p">)</span>
     <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span>
 
-    <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
-        <span class="c1"># for BTi files, the scan is an entire directory</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
     <span class="c1"># get the row corresponding to the file</span>
     <span class="c1"># use string concatenation instead of os.path</span>
     <span class="c1"># to work nicely with windows</span>
@@ -834,7 +839,15 @@
     <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;.vhdr&quot;</span><span class="p">,</span> <span class="s2">&quot;.eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.vmrk&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">acq_suffixes</span><span class="p">):</span>
         <span class="n">ext</span> <span class="o">=</span> <span class="n">fnames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">suffix</span>
         <span class="n">data_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_fname</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
-    <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">data_fname</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">data_fname</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">):</span>
+            <span class="n">alt_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">row_ind</span> <span class="o">=</span> <span class="n">_verbose_list_index</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">alt_fname</span><span class="p">)</span>
+            <span class="n">data_fname</span> <span class="o">=</span> <span class="n">alt_fname</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exc</span>
 
     <span class="c1"># check whether all split files have the same acq_time</span>
     <span class="c1"># and throw an error if they don&#39;t</span>
@@ -1448,8 +1461,10 @@
     <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">:</span>
         <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_raw_folder</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="c1"># try to find the processed data file (&quot;pdf&quot;)</span>
         <span class="c1"># see: https://www.fieldtriptoolbox.org/getting_started/bti/</span>
@@ -1524,6 +1539,7 @@
         <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
         <span class="o">**</span><span class="n">extra_params</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1891,7 +1907,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-07.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-10.
       <br/>
     
   </p>

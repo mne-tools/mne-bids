@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=a71e5200"></script>
+    <script src="_static/documentation_options.js?v=3b3ae2c1"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev11+g8cf5e2794" />
+  <meta name="docsearch:version" content="0.18.0.dev13+g941a12cf7" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev11+g8cf5e2794 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</p>
   
 </a></div>
     
@@ -495,6 +495,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/JuliusWelzel">Julius Welzel</a></p></li>
 <li><p><a class="reference external" href="https://github.com/alm180">Alex Lopez Marquez</a></p></li>
+<li><p><a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
@@ -508,6 +509,7 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> has a new parameter <em class="xref py py-obj">electrodes_tsv_task</em> which allows adding the <em class="xref py py-obj">task</em> entity to the <em class="xref py py-obj">electrodes.tsv</em> filepath, by <a class="reference external" href="https://github.com/alm180">Alex Lopez Marquez</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1424">#1424</a>)</p></li>
 <li><p>Extended the configuration to recognise <em class="xref py py-obj">motion</em> as a valid BIDS datatype by <a class="reference external" href="https://github.com/JuliusWelzel">Julius Welzel</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1430">#1430</a>)</p></li>
+<li><p>Better control of verbosity in several functions, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1449">#1449</a>)</p></li>
 </ul>
 </section>
 <section id="api-and-behavior-changes">
@@ -526,12 +528,15 @@
 <h4>🪲 Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Fixed a bug that modified the name and help message of some of the available commands, by <a class="reference external" href="https://github.com/alm180">Alex Lopez Marquez</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1441">#1441</a>)</p></li>
+<li><p>Updated MEG/iEEG writers to satisfy the stricter checks in the latest BIDS validator releases: BTi/4D run folders now retain their <code class="docutils literal notranslate"><span class="pre">.pdf</span></code> suffix (falling back to the legacy naming when an older validator is detected), KIT marker files encode the run via the <code class="docutils literal notranslate"><span class="pre">acq</span></code> entity instead of <code class="docutils literal notranslate"><span class="pre">run</span></code>, datasets lacking iEEG montages receive placeholder <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code>/<code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> files, and the <code class="docutils literal notranslate"><span class="pre">AssociatedEmptyRoom</span></code> entry stores dataset-relative paths  by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1449">#1449</a>)</p></li>
 </ul>
 </section>
 <section id="code-health">
 <h4>⚕️ Code health<a class="headerlink" href="#code-health" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p>Made <a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_brainvision()</span></code></a> output more meaningful error messages when encountering problematic files, by <a class="reference external" href="https://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1444">#1444</a>)</p></li>
+<li><p>Raised the minimum <code class="docutils literal notranslate"><span class="pre">edfio</span></code> requirement to <code class="docutils literal notranslate"><span class="pre">0.4.10</span></code>,  eeglabio to <code class="docutils literal notranslate"><span class="pre">0.1.0</span></code>  by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1449">#1449</a>)</p></li>
+<li><p>Relaxed EDF padding warnings in the test suite to accommodate upstream changes by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1449">#1449</a>)</p></li>
 </ul>
 <p><a class="reference internal" href="whats_new_previous_releases.html"><span class="doc">Find out what was new in previous releases</span></a></p>
 </section>
@@ -626,7 +631,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-07.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-10.
       <br/>
     
   </p>
