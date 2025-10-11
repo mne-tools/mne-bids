@@ -15,7 +15,7 @@ import numpy as np
 from mne import events_from_annotations, io, pick_channels_regexp, read_events
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
-from mne.utils import get_subjects_dir, logger
+from mne.utils import _open_lock, get_subjects_dir, logger
 
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
@@ -442,7 +442,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
     Handle PowerLineFrequency of recording.
     """
-    with open(sidecar_fname, encoding="utf-8-sig") as fin:
+    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's and raw object's line frequency

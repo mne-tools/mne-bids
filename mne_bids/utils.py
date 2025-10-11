@@ -15,6 +15,7 @@ from mne.channels import make_standard_montage
 from mne.io.kit.kit import get_kit_info
 from mne.utils import logger, verbose
 from mne.utils import warn as _warn
+from mne.utils.config import _open_lock
 
 from mne_bids.tsv_handler import _to_tsv
 
@@ -234,7 +235,7 @@ def _write_json(fname, dictionary, overwrite=False):
         )
 
     json_output = json.dumps(dictionary, indent=4, ensure_ascii=False)
-    with open(fname, "w", encoding="utf-8") as fid:
+    with _open_lock(fname, "w", encoding="utf-8") as fid:
         fid.write(json_output)
         fid.write("\n")
 
@@ -260,7 +261,7 @@ def _write_text(fname, text, overwrite=False):
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
-    with open(fname, "w", encoding="utf-8-sig") as fid:
+    with _open_lock(fname, "w", encoding="utf-8-sig") as fid:
         fid.write(text)
         fid.write("\n")
 
@@ -535,7 +536,7 @@ def _example_sorter(filename):
     function is defined here (instead of in `conf.py`) because it must be *importable*
     in order for the sphinx gallery config dict in `conf.py` to remain serializable.
     """
-    with open(Path(__file__).parents[1] / "doc" / "example_order.json") as fid:
+    with _open_lock(Path(__file__).parents[1] / "doc" / "example_order.json") as fid:
         EXAMPLE_ORDER = json.load(fid)
 
     if filename not in EXAMPLE_ORDER:

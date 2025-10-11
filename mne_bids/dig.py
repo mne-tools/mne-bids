@@ -13,7 +13,13 @@ import mne
 import numpy as np
 from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
-from mne.utils import _check_option, _validate_type, get_subjects_dir, logger
+from mne.utils import (
+    _check_option,
+    _open_lock,
+    _validate_type,
+    get_subjects_dir,
+    logger,
+)
 
 from mne_bids.config import (
     ALLOWED_SPACES,
@@ -78,7 +84,7 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype):
     Handle reading the coordinate frame and coordinate unit
     of each electrode.
     """
-    with open(coordsystem_fpath, encoding="utf-8-sig") as fin:
+    with _open_lock(coordsystem_fpath, encoding="utf-8-sig") as fin:
         coordsystem_json = json.load(fin)
 
     if datatype == "meg":
@@ -374,7 +380,7 @@ def _write_coordsystem_json(
     # XXX: improve later when BIDS is updated
     # check that there already exists a coordsystem.json
     if Path(fname).exists() and not overwrite:
-        with open(fname, encoding="utf-8-sig") as fin:
+        with _open_lock(fname, encoding="utf-8-sig") as fin:
             coordsystem_dict = json.load(fin)
         if fid_json != coordsystem_dict:
             raise RuntimeError(

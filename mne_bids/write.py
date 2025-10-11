@@ -28,6 +28,7 @@ from mne.transforms import _get_trans, apply_trans, rotation, translation
 from mne.utils import (
     Bunch,
     ProgressBar,
+    _open_lock,
     _validate_type,
     check_version,
     get_subjects_dir,
@@ -460,7 +461,7 @@ def _readme(datatype, fname, overwrite=False):
         already contains that citation.
     """
     if fname.is_file() and not overwrite:
-        with open(fname, encoding="utf-8-sig") as fid:
+        with _open_lock(fname, encoding="utf-8-sig") as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES["mne-bids"] in orig_data
         datatype_ref = REFERENCES[datatype] in orig_data
@@ -1456,7 +1457,7 @@ def make_dataset_description(
 
     # Handle potentially existing file contents
     if op.isfile(fname):
-        with open(fname, encoding="utf-8-sig") as fin:
+        with _open_lock(fname, encoding="utf-8-sig") as fin:
             orig_cols = json.load(fin)
         if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
             warnings.warn(
