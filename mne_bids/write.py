@@ -43,7 +43,7 @@ from mne_bids import (
     get_bids_path_from_fname,
     read_raw_bids,
 )
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _file_lock, _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_INPUT_EXTENSIONS,
@@ -95,6 +95,23 @@ from mne_bids.utils import (
 
 _FIFF_SPLIT_SIZE = "2GB"  # MNE-Python default; can be altered during debugging
 _BTI_SUFFIX_CACHE: dict[str | None, bool] = {}
+
+
+def _write_tsv_locked(fname: Path | str, data: OrderedDict) -> None:
+    """Write TSV data while the caller holds the file lock."""
+    fname = Path(fname)
+    columns = list(data.keys())
+    n_rows = len(data[columns[0]]) if columns else 0
+    lines = ["\t".join(columns)]
+    for row_idx in range(n_rows):
+        lines.append("\t".join(str(data[col][row_idx]) for col in columns))
+
+    fname.parent.mkdir(parents=True, exist_ok=True)
+    with open(fname, "w", encoding="utf-8-sig") as fid:
+        fid.write("\n".join(lines))
+        fid.write("\n")
+
+    logger.info(f"Writing '{fname}'...")
 
 
 def _is_numeric(n):
@@ -574,59 +591,59 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
 
         data[key] = new_value
 
-    if os.path.exists(fname):
-        orig_data = _from_tsv(fname)
-        # whether the new data exists identically in the previous data
-        exact_included = _contains_row(
-            data=orig_data,
-            row_data={
-                "participant_id": subject_id,
-                "age": subject_age,
-                "sex": sex,
-                "hand": hand,
-                "weight": weight,
-                "height": height,
-            },
-        )
-        # whether the subject id is in the previous data
-        sid_included = subject_id in orig_data["participant_id"]
-        # if the subject data provided is different to the currently existing
-        # data and overwrite is not True raise an error
-        if (sid_included and not exact_included) and not overwrite:
-            raise FileExistsError(
-                f'"{subject_id}" already exists in '
-                f"the participant list. Please set "
-                f"overwrite to True."
+    fname = Path(fname)
+    with _file_lock(fname):
+        if fname.exists():
+            orig_data = _from_tsv(fname)
+            # whether the new data exists identically in the previous data
+            exact_included = _contains_row(
+                data=orig_data,
+                row_data={
+                    "participant_id": subject_id,
+                    "age": subject_age,
+                    "sex": sex,
+                    "hand": hand,
+                    "weight": weight,
+                    "height": height,
+                },
             )
+            # whether the subject id is in the previous data
+            sid_included = subject_id in orig_data["participant_id"]
+            # if the subject data provided is different to the currently
+            # existing data and overwrite is not True raise an error
+            if (sid_included and not exact_included) and not overwrite:
+                raise FileExistsError(
+                    f'"{subject_id}" already exists in '
+                    f"the participant list. Please set "
+                    f"overwrite to True."
+                )
 
-        # Append any columns the original data did not have, and fill them with
-        # n/a's.
-        for key in data.keys():
-            if key in orig_data:
-                continue
+            # Append any columns the original data did not have, and fill them
+            # with n/a's.
+            for key in data.keys():
+                if key in orig_data:
+                    continue
 
-            orig_data[key] = ["n/a"] * len(orig_data["participant_id"])
+                orig_data[key] = ["n/a"] * len(orig_data["participant_id"])
 
-        # Append any additional columns that original data had.
-        # Keep the original order of the data by looping over
-        # the original OrderedDict keys
-        for key in orig_data.keys():
-            if key in data:
-                continue
+            # Append any additional columns that original data had.
+            # Keep the original order of the data by looping over
+            # the original OrderedDict keys
+            for key in orig_data.keys():
+                if key in data:
+                    continue
 
-            # add original value for any user-appended columns
-            # that were not handled by mne-bids
-            p_id = data["participant_id"][0]
-            if p_id in orig_data["participant_id"]:
-                row_idx = orig_data["participant_id"].index(p_id)
-                data[key] = [orig_data[key][row_idx]]
+                # add original value for any user-appended columns
+                # that were not handled by mne-bids
+                p_id = data["participant_id"][0]
+                if p_id in orig_data["participant_id"]:
+                    row_idx = orig_data["participant_id"].index(p_id)
+                    data[key] = [orig_data[key][row_idx]]
 
-        # otherwise add the new data as new row
-        data = _combine_rows(orig_data, data, "participant_id")
+            # otherwise add the new data as new row
+            data = _combine_rows(orig_data, data, "participant_id")
 
-    # overwrite is forced to True as all issues with overwrite == False have
-    # been handled by this point
-    _write_tsv(fname, data, True)
+        _write_tsv_locked(fname, data)
 
 
 def _participants_json(fname, overwrite=False):
@@ -665,13 +682,24 @@ def _participants_json(fname, overwrite=False):
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
     fname = Path(fname)
-    if fname.exists():
-        orig_data = json.loads(
-            fname.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
-        )
-        new_data = {**orig_data, **new_data}
+    with _file_lock(fname):
+        if fname.exists():
+            if not overwrite:
+                raise FileExistsError(
+                    f'"{fname}" already exists. Please set overwrite to True.'
+                )
+            orig_data = json.loads(
+                fname.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
+            )
+            new_data = {**orig_data, **new_data}
 
-    _write_json(fname, new_data, overwrite)
+        fname.parent.mkdir(parents=True, exist_ok=True)
+        json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
+        with open(fname, "w", encoding="utf-8") as fid:
+            fid.write(json_output)
+            fid.write("\n")
+
+        logger.info(f"Writing '{fname}'...")
 
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
@@ -743,29 +771,29 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         else:
             _write_json(sidecar_json_path, sidecar_json)
 
-    if os.path.exists(fname):
-        orig_data = _from_tsv(fname)
-        # if the file name is already in the file raise an error
-        if raw_fname in orig_data["filename"] and not overwrite:
-            raise FileExistsError(
-                f'"{raw_fname}" already exists in '
-                f"the scans list. Please set "
-                f"overwrite to True."
-            )
+    fname = Path(fname)
+    with _file_lock(fname):
+        if fname.exists():
+            orig_data = _from_tsv(fname)
+            # if the file name is already in the file raise an error
+            if raw_fname in orig_data["filename"] and not overwrite:
+                raise FileExistsError(
+                    f'"{raw_fname}" already exists in '
+                    f"the scans list. Please set "
+                    f"overwrite to True."
+                )
 
-        for key in data.keys():
-            if key in orig_data:
-                continue
+            for key in data.keys():
+                if key in orig_data:
+                    continue
 
-            # add 'n/a' if any missing columns
-            orig_data[key] = ["n/a"] * len(next(iter(data.values())))
+                # add 'n/a' if any missing columns
+                orig_data[key] = ["n/a"] * len(next(iter(data.values())))
 
-        # otherwise add the new data
-        data = _combine_rows(orig_data, data, "filename")
+            # otherwise add the new data
+            data = _combine_rows(orig_data, data, "filename")
 
-    # overwrite is forced to True as all issues with overwrite == False have
-    # been handled by this point
-    _write_tsv(fname, data, True)
+        _write_tsv_locked(fname, data)
 
 
 def _load_image(image, name="image"):
