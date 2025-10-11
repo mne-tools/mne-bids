@@ -128,8 +128,8 @@ def _write_parallel_dataset(root, *, subject, run):
     write_raw_bids(raw, bids_path, allow_preload=True, format="FIF", verbose=False)
 
 
-def _joblib_write_subject(root, subject):
-    """Handle write_raw_bids call in a joblib worker."""
+def _parallel_write_subject(root, subject):
+    """Handle write_raw_bids call in a multiprocessing worker."""
     _write_parallel_dataset(root, subject=subject, run="01")
 
 
@@ -362,14 +362,20 @@ def test_write_participants(_bids_validate, tmp_path):
 )
 def test_parallel_participants_joblib(tmp_path):
     """Ensure parallel writes keep all participants entries."""
-    joblib = pytest.importorskip("joblib")
     bids_root = tmp_path / "parallel_joblib"
     subjects = [f"{i:02d}" for i in range(1, 50)]
 
-    joblib.Parallel(n_jobs=len(subjects), backend="loky")(
-        joblib.delayed(_joblib_write_subject)(str(bids_root), subject)
-        for subject in subjects
-    )
+    processes = []
+    for subject in subjects:
+        proc = mp.Process(
+            target=_parallel_write_subject, args=(str(bids_root), subject)
+        )
+        proc.start()
+        processes.append(proc)
+
+    for proc in processes:
+        proc.join()
+        assert proc.exitcode == 0
 
     participants_path = bids_root / "participants.tsv"
     assert participants_path.exists()
