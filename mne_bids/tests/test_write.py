@@ -368,7 +368,7 @@ def test_parallel_participants_joblib(tmp_path):
     """Ensure parallel writes keep all participants entries."""
     joblib = pytest.importorskip("joblib")
     bids_root = tmp_path / "parallel_joblib"
-    subjects = ["01", "02"]
+    subjects = [f"{i:02d}" for i in range(1, 50)]
 
     joblib.Parallel(n_jobs=len(subjects), backend="loky")(
         joblib.delayed(_joblib_write_subject)(str(bids_root), subject)
@@ -390,7 +390,7 @@ def test_parallel_participants_joblib(tmp_path):
 def test_parallel_scans_multiprocessing(tmp_path):
     """Ensure multiprocessing writes add all runs to scans.tsv."""
     bids_root = tmp_path / "parallel_multiprocessing"
-    runs = ["01", "02"]
+    runs = [f"{i:02d}" for i in range(1, 50)]
 
     processes = []
     for run in runs:
