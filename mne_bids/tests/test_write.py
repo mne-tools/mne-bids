@@ -360,9 +360,9 @@ def test_write_participants(_bids_validate, tmp_path):
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
 )
-def test_parallel_participants_joblib(tmp_path):
+def test_parallel_participants_multiprocess(tmp_path):
     """Ensure parallel writes keep all participants entries."""
-    bids_root = tmp_path / "parallel_joblib"
+    bids_root = tmp_path / "parallel_multiprocess"
     subjects = [f"{i:02d}" for i in range(1, 50)]
 
     processes = []
