@@ -97,23 +97,6 @@ _FIFF_SPLIT_SIZE = "2GB"  # MNE-Python default; can be altered during debugging
 _BTI_SUFFIX_CACHE: dict[str | None, bool] = {}
 
 
-def _write_tsv_locked(fname: Path | str, data: OrderedDict) -> None:
-    """Write TSV data while the caller holds the file lock."""
-    fname = Path(fname)
-    columns = list(data.keys())
-    n_rows = len(data[columns[0]]) if columns else 0
-    lines = ["\t".join(columns)]
-    for row_idx in range(n_rows):
-        lines.append("\t".join(str(data[col][row_idx]) for col in columns))
-
-    fname.parent.mkdir(parents=True, exist_ok=True)
-    with open(fname, "w", encoding="utf-8-sig") as fid:
-        fid.write("\n".join(lines))
-        fid.write("\n")
-
-    logger.info(f"Writing '{fname}'...")
-
-
 def _is_numeric(n):
     return isinstance(n, np.integer | np.floating | int | float)
 
@@ -643,7 +626,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             # otherwise add the new data as new row
             data = _combine_rows(orig_data, data, "participant_id")
 
-        _write_tsv_locked(fname, data)
+        _write_tsv(fname, data, overwrite=True)
 
 
 def _participants_json(fname, overwrite=False):
@@ -793,7 +776,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             # otherwise add the new data
             data = _combine_rows(orig_data, data, "filename")
 
-        _write_tsv_locked(fname, data)
+        _write_tsv(fname, data, overwrite=True)
 
 
 def _load_image(image, name="image"):

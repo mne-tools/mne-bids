@@ -8,7 +8,7 @@ from copy import deepcopy
 
 import numpy as np
 
-from mne_bids._fileio import _open_lock
+from mne_bids._fileio import _open_lock, _path_is_locked
 
 
 def _combine_rows(data1, data2, drop_column=None):
@@ -188,9 +188,14 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with _open_lock(fname, "w", encoding="utf-8-sig") as f:
-        f.write(output)
-        f.write("\n")
+    if _path_is_locked(fname):
+        with open(fname, "w", encoding="utf-8-sig") as f:
+            f.write(output)
+            f.write("\n")
+    else:
+        with _open_lock(fname, "w", encoding="utf-8-sig") as f:
+            f.write(output)
+            f.write("\n")
 
 
 def _tsv_to_str(data, rows=5):

@@ -255,6 +255,21 @@ def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
     logger.info(f"Writing '{fname}'...")
 
 
+def _write_tsv_locked(fname: Path | str, data) -> None:
+    """Write TSV data while the caller holds the file lock."""
+    fname = Path(fname)
+    columns = list(data.keys())
+    n_rows = len(data[columns[0]]) if columns else 0
+    lines = ["\t".join(columns)]
+    for row_idx in range(n_rows):
+        lines.append("\t".join(str(data[col][row_idx]) for col in columns))
+
+    fname.parent.mkdir(parents=True, exist_ok=True)
+    with open(fname, "w", encoding="utf-8-sig") as fid:
+        fid.write("\n".join(lines))
+        fid.write("\n")
+
+
 def _write_text(fname, text, overwrite=False):
     """Write text to a file."""
     if fname.exists() and not overwrite:
