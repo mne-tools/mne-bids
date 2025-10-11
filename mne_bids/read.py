@@ -17,6 +17,7 @@ from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import get_subjects_dir, logger
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
@@ -32,7 +33,6 @@ from mne_bids.path import (
     get_bids_path_from_fname,
 )
 from mne_bids.tsv_handler import _drop, _from_tsv
-from mne_bids._fileio import _open_lock
 from mne_bids.utils import _get_ch_type_mapping, _import_nibabel, verbose, warn
 
 

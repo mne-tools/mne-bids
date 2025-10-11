@@ -19,6 +19,7 @@ from textwrap import indent
 import numpy as np
 from mne.utils import _check_fname, _validate_type, logger, verbose
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_DATATYPES,
@@ -31,7 +32,6 @@ from mne_bids.config import (
     reader,
 )
 from mne_bids.tsv_handler import _drop, _from_tsv, _to_tsv
-from mne_bids._fileio import _open_lock
 from mne_bids.utils import (
     _check_empty_room_basename,
     _check_key_val,

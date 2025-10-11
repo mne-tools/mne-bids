@@ -43,6 +43,7 @@ from mne_bids import (
     get_bids_path_from_fname,
     read_raw_bids,
 )
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_INPUT_EXTENSIONS,
@@ -78,7 +79,6 @@ from mne_bids.pick import coil_type
 from mne_bids.read import _find_matching_sidecar, _read_events
 from mne_bids.sidecar_updates import update_sidecar_json
 from mne_bids.tsv_handler import _combine_rows, _contains_row, _drop, _from_tsv
-from mne_bids._fileio import _open_lock
 from mne_bids.utils import (
     _age_on_date,
     _check_anonymize,

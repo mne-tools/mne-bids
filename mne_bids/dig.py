@@ -20,6 +20,7 @@ from mne.utils import (
     logger,
 )
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_SPACES,
     BIDS_COORD_FRAME_DESCRIPTIONS,
@@ -32,7 +33,6 @@ from mne_bids.config import (
 )
 from mne_bids.path import BIDSPath
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids._fileio import _open_lock
 from mne_bids.utils import (
     _import_nibabel,
     _scale_coord_to_meters,

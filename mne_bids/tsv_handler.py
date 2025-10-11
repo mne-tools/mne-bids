@@ -7,6 +7,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 import numpy as np
+
 from mne_bids._fileio import _open_lock
 
 

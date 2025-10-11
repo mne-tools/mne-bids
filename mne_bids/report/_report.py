@@ -11,6 +11,7 @@ import jinja2
 import numpy as np
 from mne.utils import logger, verbose
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import ALLOWED_DATATYPES, DOI
 from mne_bids.path import (
     BIDSPath,
@@ -21,7 +22,6 @@ from mne_bids.path import (
     get_entity_vals,
 )
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids._fileio import _open_lock
 from mne_bids.utils import warn
 
 jinja_env = jinja2.Environment(
