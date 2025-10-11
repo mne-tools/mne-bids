@@ -184,7 +184,6 @@ def _to_tsv(data, fname):
         Ordered dictionary containing data to be written to a tsv file.
     fname : str
         Path to the file being written.
-
     """
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)

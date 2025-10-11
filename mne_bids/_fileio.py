@@ -13,57 +13,61 @@ from pathlib import Path
 from mne.utils import _soft_import, warn
 
 
-@contextlib.contextmanager
-def _mne_open_lock(path, *args, **kwargs):
-    """
-    Context manager that opens a file with an optional file lock.
-
-    If the `filelock` package is available, a lock is acquired on a lock file
-    based on the given path (by appending '.lock').
-
-    Otherwise, a null context is used. The path is then opened in the
-    specified mode.
-
-    Parameters
-    ----------
-    path : str
-        The path to the file to be opened.
-    *args, **kwargs : optional
-        Additional arguments and keyword arguments to be passed to the
-        `open` function.
-
-    """
+def _get_lock_context(path):
+    """Return a context manager that locks ``path`` if possible."""
     filelock = _soft_import(
         "filelock", purpose="parallel config set and get", strict=False
     )
 
-    lock_context = contextlib.nullcontext()  # default to no lock
+    lock_context = contextlib.nullcontext()
+    lock_path = Path(f"{os.fspath(path)}.lock")
+    have_lock = False
 
     if filelock:
-        lock_path = f"{path}.lock"
         try:
             lock_context = filelock.FileLock(lock_path, timeout=5)
             lock_context.acquire()
+            have_lock = True
         except TimeoutError:
             warn(
                 "Could not acquire lock file after 5 seconds, consider deleting it "
                 f"if you know the corresponding file is usable:\n{lock_path}"
             )
             lock_context = contextlib.nullcontext()
+        except OSError:
+            warn(
+                "Could not create lock file due to insufficient permissions. "
+                "Proceeding without a lock."
+            )
+            lock_context = contextlib.nullcontext()
 
-    with lock_context, open(path, *args, **kwargs) as fid:
-        yield fid
+    return lock_context, lock_path, have_lock
 
 
 @contextmanager
 def _open_lock(path, *args, **kwargs):
     """Wrap :func:`mne.utils.config._open_lock` and remove stale ``.lock`` files."""
-    lock_path = Path(f"{os.fspath(path)}.lock")
+    lock_context, lock_path, have_lock = _get_lock_context(path)
     try:
-        with _mne_open_lock(path, *args, **kwargs) as fid:
+        with lock_context, open(path, *args, **kwargs) as fid:
             yield fid
     finally:
-        if lock_path.exists():
+        if have_lock and lock_path.exists():
+            try:
+                lock_path.unlink()
+            except OSError:
+                pass
+
+
+@contextmanager
+def _file_lock(path):
+    """Acquire a lock on ``path`` without opening the file."""
+    lock_context, lock_path, have_lock = _get_lock_context(path)
+    try:
+        with lock_context:
+            yield
+    finally:
+        if have_lock and lock_path.exists():
             try:
                 lock_path.unlink()
             except OSError:
