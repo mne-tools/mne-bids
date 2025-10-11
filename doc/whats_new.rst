@@ -61,5 +61,6 @@ Detailed list of changes
 - Made :func:`mne_bids.copyfiles.copyfile_brainvision` output more meaningful error messages when encountering problematic files, by `Stefan Appelhoff`_ (:gh:`1444`)
 - Raised the minimum ``edfio`` requirement to ``0.4.10``,  eeglabio to ``0.1.0``  by `Bruno Aristimunha`_ (:gh:`1449`)
 - Relaxed EDF padding warnings in the test suite to accommodate upstream changes by `Bruno Aristimunha`_ (:gh:`1449`)
+- Adjusted the test suite to source canonical sample files from the MNE-Python testing dataset, ensuring compatibility with wheel distributions that omit internal test data, by `Bruno Aristimunha`_
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`

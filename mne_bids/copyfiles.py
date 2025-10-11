@@ -18,10 +18,10 @@ from pathlib import Path
 import numpy as np
 from mne.io import anonymize_info, read_raw_bdf, read_raw_brainvision, read_raw_edf
 from mne.utils import logger, verbose
-from mne.utils.config import _open_lock
 from scipy.io import loadmat, savemat
 
 from mne_bids.path import BIDSPath, _mkdir_p, _parse_ext
+from mne_bids._fileio import _open_lock
 from mne_bids.utils import _check_anonymize, _get_mrk_meas_date, warn
 
 
@@ -275,11 +275,12 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
 def _replace_file(fname, pattern, replace):
     """Overwrite file, replacing end of lines matching pattern with replace."""
     new_content = []
-    for line in _open_lock(fname):
-        match = re.match(pattern, line)
-        if match:
-            line = match.group()[: -len(replace)] + replace + "\n"
-        new_content.append(line)
+    with _open_lock(fname) as fin:
+        for line in fin:
+            match = re.match(pattern, line)
+            if match:
+                line = match.group()[: -len(replace)] + replace + "\n"
+            new_content.append(line)
 
     with _open_lock(fname, "w", encoding="utf-8") as fout:
         fout.writelines(new_content)

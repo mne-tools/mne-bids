@@ -13,13 +13,13 @@ from mne.io.constants import FIFF
 from mne.utils import (
     _check_on_missing,
     _on_missing,
-    _open_lock,
     _validate_type,
     logger,
     verbose,
 )
 
 from mne_bids import BIDSPath
+from mne_bids._fileio import _open_lock
 from mne_bids.utils import _write_json
 
 

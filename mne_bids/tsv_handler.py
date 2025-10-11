@@ -7,7 +7,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 import numpy as np
-from mne.utils.config import _open_lock
+from mne_bids._fileio import _open_lock
 
 
 def _combine_rows(data1, data2, drop_column=None):

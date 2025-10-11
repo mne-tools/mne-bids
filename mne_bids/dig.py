@@ -15,7 +15,6 @@ from mne.io.constants import FIFF
 from mne.io.pick import _picks_to_idx
 from mne.utils import (
     _check_option,
-    _open_lock,
     _validate_type,
     get_subjects_dir,
     logger,
@@ -33,6 +32,7 @@ from mne_bids.config import (
 )
 from mne_bids.path import BIDSPath
 from mne_bids.tsv_handler import _from_tsv
+from mne_bids._fileio import _open_lock
 from mne_bids.utils import (
     _import_nibabel,
     _scale_coord_to_meters,
