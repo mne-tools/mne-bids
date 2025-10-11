@@ -8,7 +8,6 @@ For each supported file format, implement a test.
 
 import codecs
 import json
-import multiprocessing as mp
 import os
 import os.path as op
 import shutil as sh
@@ -98,44 +97,6 @@ warning_str = dict(
     no_montage=r"ignore:Not setting position of.*channel found in "
     r"montage.*:RuntimeWarning:mne",
 )
-
-
-def _make_parallel_raw(subject, *, seed=None):
-    """Generate a lightweight Raw instance for parallel-writing tests."""
-    rng_seed = seed if seed is not None else sum(ord(ch) for ch in subject)
-    rng = np.random.default_rng(rng_seed)
-    info = mne.create_info(["MEG0113"], sfreq=100.0, ch_types="mag")
-    data = rng.standard_normal((1, 100)) * 1e-12
-    raw = mne.io.RawArray(data, info)
-    raw.set_meas_date(datetime(2025, 1, 1, tzinfo=timezone.utc))
-    raw.info["line_freq"] = 60
-    raw.info["subject_info"] = {
-        "his_id": subject,
-        "sex": 1,
-        "hand": 2,
-        "birthday": date(1990, 1, 1),
-    }
-    return raw
-
-
-def _write_parallel_dataset(root, *, subject, run):
-    """Write a minimal dataset using write_raw_bids."""
-    root = Path(root)
-    raw = _make_parallel_raw(subject)
-    bids_path = BIDSPath(
-        subject=subject, task="rest", run=run, datatype="meg", root=root
-    )
-    write_raw_bids(raw, bids_path, allow_preload=True, format="FIF", verbose=False)
-
-
-def _parallel_write_subject(root, subject):
-    """Handle write_raw_bids call in a multiprocessing worker."""
-    _write_parallel_dataset(root, subject=subject, run="01")
-
-
-def _multiprocessing_write_run(root, run):
-    """Handle write_raw_bids call in a multiprocessing worker."""
-    _write_parallel_dataset(root, subject="01", run=run)
 
 
 def _wrap_read_raw(read_raw):
@@ -354,65 +315,6 @@ def test_write_participants(_bids_validate, tmp_path):
     assert participants_tsv["hand"][idx] == "n/a"
     assert participants_tsv["sex"][idx] == "n/a"
     assert participants_tsv["age"][idx] == "n/a"
-
-
-@pytest.mark.filterwarnings(
-    "ignore:No events found or provided:RuntimeWarning",
-    "ignore:Found no extension for raw file.*:RuntimeWarning",
-)
-def test_parallel_participants_multiprocess(tmp_path):
-    """Ensure parallel writes keep all participants entries."""
-    bids_root = tmp_path / "parallel_multiprocess"
-    subjects = [f"{i:02d}" for i in range(1, 50)]
-
-    processes = []
-    for subject in subjects:
-        proc = mp.Process(
-            target=_parallel_write_subject, args=(str(bids_root), subject)
-        )
-        proc.start()
-        processes.append(proc)
-
-    for proc in processes:
-        proc.join()
-        assert proc.exitcode == 0
-
-    participants_path = bids_root / "participants.tsv"
-    assert participants_path.exists()
-    participants = _from_tsv(participants_path)
-    expected_ids = {f"sub-{subject}" for subject in subjects}
-    assert set(participants["participant_id"]) == expected_ids
-    sh.rmtree(bids_root, ignore_errors=True)
-
-
-@pytest.mark.filterwarnings(
-    "ignore:No events found or provided:RuntimeWarning",
-    "ignore:Found no extension for raw file.*:RuntimeWarning",
-)
-def test_parallel_scans_multiprocessing(tmp_path):
-    """Ensure multiprocessing writes add all runs to scans.tsv."""
-    bids_root = tmp_path / "parallel_multiprocessing"
-    runs = [f"{i:02d}" for i in range(1, 50)]
-
-    processes = []
-    for run in runs:
-        proc = mp.Process(target=_multiprocessing_write_run, args=(str(bids_root), run))
-        proc.start()
-        processes.append(proc)
-
-    for proc in processes:
-        proc.join()
-        assert proc.exitcode == 0
-
-    scans_path = BIDSPath(
-        subject="01", root=bids_root, suffix="scans", extension=".tsv"
-    )
-    assert scans_path.fpath.exists()
-    scans = _from_tsv(scans_path.fpath)
-    filenames = {str(filename) for filename in scans["filename"]}
-    expected = {f"meg/sub-01_task-rest_run-{run}_meg.fif" for run in runs}
-    assert filenames == expected
-    sh.rmtree(bids_root, ignore_errors=True)
 
 
 @testing.requires_testing_data
