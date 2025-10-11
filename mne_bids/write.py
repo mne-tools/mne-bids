@@ -43,6 +43,7 @@ from mne_bids import (
     get_bids_path_from_fname,
     read_raw_bids,
 )
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_INPUT_EXTENSIONS,
@@ -460,7 +461,7 @@ def _readme(datatype, fname, overwrite=False):
         already contains that citation.
     """
     if fname.is_file() and not overwrite:
-        with open(fname, encoding="utf-8-sig") as fid:
+        with _open_lock(fname, encoding="utf-8-sig") as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES["mne-bids"] in orig_data
         datatype_ref = REFERENCES[datatype] in orig_data
@@ -1456,7 +1457,7 @@ def make_dataset_description(
 
     # Handle potentially existing file contents
     if op.isfile(fname):
-        with open(fname, encoding="utf-8-sig") as fin:
+        with _open_lock(fname, encoding="utf-8-sig") as fin:
             orig_cols = json.load(fin)
         if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
             warnings.warn(

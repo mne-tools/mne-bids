@@ -8,6 +8,8 @@ from copy import deepcopy
 
 import numpy as np
 
+from mne_bids._fileio import _open_lock
+
 
 def _combine_rows(data1, data2, drop_column=None):
     """Add two OrderedDict's together and optionally drop repeated data.
@@ -187,7 +189,7 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with open(fname, "w", encoding="utf-8-sig") as f:
+    with _open_lock(fname, "w", encoding="utf-8-sig") as f:
         f.write(output)
         f.write("\n")
 
