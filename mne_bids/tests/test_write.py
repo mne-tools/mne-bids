@@ -100,16 +100,12 @@ warning_str = dict(
 )
 
 
-_PARALLEL_SFREQ = 100.0
-_PARALLEL_NSAMPLES = int(_PARALLEL_SFREQ)
-
-
 def _make_parallel_raw(subject, *, seed=None):
     """Generate a lightweight Raw instance for parallel-writing tests."""
     rng_seed = seed if seed is not None else sum(ord(ch) for ch in subject)
     rng = np.random.default_rng(rng_seed)
-    info = mne.create_info(["MEG0113"], _PARALLEL_SFREQ, ch_types="mag")
-    data = rng.standard_normal((1, _PARALLEL_NSAMPLES)) * 1e-12
+    info = mne.create_info(["MEG0113"], sfreq=100.0, ch_types="mag")
+    data = rng.standard_normal((1, 100)) * 1e-12
     raw = mne.io.RawArray(data, info)
     raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
     raw.info["line_freq"] = 60
