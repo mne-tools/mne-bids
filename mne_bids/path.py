@@ -2624,20 +2624,26 @@ def _return_root_paths(
         else:
             if datatype is not None:
                 datatype = _ensure_tuple(datatype)
-                search_str = f"**/{'|'.join(datatype)}/*.*"
+                # If multiple datatypes are provided, search each separately
+                # (glob does not support alternation with '|').
+                paths = []
+                for dt in datatype:
+                    dt_search = f"**/{dt}/*.*"
+                    if ignore_nosub:
+                        dt_search = f"sub-*/{dt_search}"
+                    paths.extend(
+                        [Path(root, fn) for fn in glob.iglob(dt_search, root_dir=root, recursive=True)]
+                    )
             else:
                 search_str = "**/*.*"
-
-            # only browse files which are of the form root/sub-*,
-            # such that we truely only look in 'sub'-folders:
-            if ignore_nosub:
-                search_str = f"sub-*/{search_str}"
-            # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
-            # Most of the speedup is from using glob.iglob here.
-            paths = [
-                Path(root, fn)
-                for fn in glob.iglob(search_str, root_dir=root, recursive=True)
-            ]
+                if ignore_nosub:
+                    search_str = f"sub-*/{search_str}"
+                # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
+                # Most of the speedup is from using glob.iglob here.
+                paths = [
+                    Path(root, fn)
+                    for fn in glob.iglob(search_str, root_dir=root, recursive=True)
+                ]
 
     return _filter_paths_optimized(paths, ignore_json)
 
