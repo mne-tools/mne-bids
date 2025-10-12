@@ -1267,7 +1267,12 @@ def test_return_root_paths_entity_aware(tmp_path):
     assert len(all_paths) >= 2
 
     # Entity-aware scan for subjA should only return files under sub-subjA
-    subj_paths = _return_root_paths(root_str, datatype=("meg", "eeg"), ignore_json=True, entities={"subject": "subjA"})
+    subj_paths = _return_root_paths(
+        root_str,
+        datatype=("meg", "eeg"),
+        ignore_json=True,
+        entities={"subject": "subjA"},
+    )
     assert len(subj_paths) < len(all_paths)
     assert all("sub-subjA" in str(p) for p in subj_paths)
 
@@ -1303,18 +1308,32 @@ def test_return_root_paths_monkeypatched_glob(monkeypatch):
 
     def fake_filter(paths, ignore_json):
         # convert returned strings into Path objects rooted at fake_root
-        return [Path(fake_root, p) for p in fake_results if (not ignore_json) or (not p.endswith('.json'))]
+        return [
+            Path(fake_root, p)
+            for p in fake_results
+            if (not ignore_json) or (not p.endswith(".json"))
+        ]
 
     monkeypatch.setattr(mb_path, "_filter_paths_optimized", fake_filter)
 
     # ignore_json=True should filter out the .json entry
-    paths = _return_root_paths(fake_root, datatype=("meg", "eeg"), ignore_json=True, entities={"subject": "subjA"})
+    paths = _return_root_paths(
+        fake_root,
+        datatype=("meg", "eeg"),
+        ignore_json=True,
+        entities={"subject": "subjA"},
+    )
     assert all(isinstance(p, Path) for p in paths)
     # only the .fif entry for subjA should remain
     assert any(p.suffix == ".fif" and "sub-subjA" in str(p) for p in paths)
 
     # ignore_json=False should include the .json entry
-    paths_all = _return_root_paths(fake_root, datatype=("meg", "eeg"), ignore_json=False, entities={"subject": "subjA"})
+    paths_all = _return_root_paths(
+        fake_root,
+        datatype=("meg", "eeg"),
+        ignore_json=False,
+        entities={"subject": "subjA"},
+    )
     assert any(str(p).endswith(".json") for p in paths_all)
 
 

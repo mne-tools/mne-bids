@@ -2632,7 +2632,12 @@ def _return_root_paths(
                     if ignore_nosub:
                         dt_search = f"sub-*/{dt_search}"
                     paths.extend(
-                        [Path(root, fn) for fn in glob.iglob(dt_search, root_dir=root, recursive=True)]
+                        [
+                            Path(root, fn)
+                            for fn in glob.iglob(
+                                dt_search, root_dir=root, recursive=True
+                            )
+                        ]
                     )
             else:
                 search_str = "**/*.*"
