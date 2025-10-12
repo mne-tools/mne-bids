@@ -1238,6 +1238,86 @@ def test_find_matching_paths(return_bids_test_dir):
     bids_path_01.fpath.unlink()  # clean up created file
 
 
+def test_return_root_paths_entity_aware(tmp_path):
+    """Test that `_return_root_paths` respects `entities['subject']` and
+    returns only paths under that subject when provided.
+
+    This validates the entity-aware optimization added to reduce filesystem
+    scanning when the subject (and optionally session) is known.
+    """
+    from mne_bids.path import _return_root_paths
+
+    root = tmp_path / "bids"
+    # Create two subjects each with meg and eeg directories and a file
+    for subj in ("subjA", "subjB"):
+        for dtype in ("meg", "eeg"):
+            p = BIDSPath(subject=subj, session="sesA", datatype=dtype, root=root)
+            p.mkdir(exist_ok=True)
+            # create a predictable dummy data file so glob matches reliably
+            ext = "fif" if dtype == "meg" else "edf"
+            fname = f"sub-{subj}_ses-sesA_{dtype}.{ext}"
+            (p.directory / fname).touch()
+
+    # Full scan (no entities) should return files for both subjects
+    # Pass root as string to match how glob.iglob expects root_dir
+    root_str = str(root)
+    # ensure directories exist
+    assert (root / "sub-subjA").exists()
+    all_paths = _return_root_paths(root_str, datatype=("meg", "eeg"), ignore_json=True)
+    assert len(all_paths) >= 2
+
+    # Entity-aware scan for subjA should only return files under sub-subjA
+    subj_paths = _return_root_paths(root_str, datatype=("meg", "eeg"), ignore_json=True, entities={"subject": "subjA"})
+    assert len(subj_paths) < len(all_paths)
+    assert all("sub-subjA" in str(p) for p in subj_paths)
+
+
+def test_return_root_paths_monkeypatched_glob(monkeypatch):
+    """Unit test for `_return_root_paths` that monkeypatches glob.iglob.
+
+    This avoids relying on filesystem behavior and asserts that the
+    function converts strings returned by glob.iglob into Path objects and
+    applies the `ignore_json` filter correctly.
+    """
+    from mne_bids.path import _return_root_paths
+
+    fake_root = "/fake/root"
+
+    # Simulate iglob returning a mix of json and data files (relative paths)
+    fake_results = [
+        "sub-subjA/ses-sesA/meg/sub-subjA_ses-sesA_meg.fif",
+        "sub-subjA/ses-sesA/meg/sub-subjA_ses-sesA_meg.json",
+        "sub-subjB/ses-sesA/eeg/sub-subjB_ses-sesA_eeg.edf",
+    ]
+
+    def fake_iglob(pattern, root_dir=None, recursive=False):
+        # ensure pattern was constructed as relative to root
+        assert str(root_dir) == fake_root
+        return iter(fake_results)
+
+    # monkeypatch glob.iglob to return our fake results
+    monkeypatch.setattr("glob.iglob", fake_iglob)
+
+    # monkeypatch _filter_paths_optimized to avoid filesystem checks
+    from mne_bids import path as mb_path
+
+    def fake_filter(paths, ignore_json):
+        # convert returned strings into Path objects rooted at fake_root
+        return [Path(fake_root, p) for p in fake_results if (not ignore_json) or (not p.endswith('.json'))]
+
+    monkeypatch.setattr(mb_path, "_filter_paths_optimized", fake_filter)
+
+    # ignore_json=True should filter out the .json entry
+    paths = _return_root_paths(fake_root, datatype=("meg", "eeg"), ignore_json=True, entities={"subject": "subjA"})
+    assert all(isinstance(p, Path) for p in paths)
+    # only the .fif entry for subjA should remain
+    assert any(p.suffix == ".fif" and "sub-subjA" in str(p) for p in paths)
+
+    # ignore_json=False should include the .json entry
+    paths_all = _return_root_paths(fake_root, datatype=("meg", "eeg"), ignore_json=False, entities={"subject": "subjA"})
+    assert any(str(p).endswith(".json") for p in paths_all)
+
+
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
