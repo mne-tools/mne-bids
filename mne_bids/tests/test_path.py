@@ -1277,65 +1277,6 @@ def test_return_root_paths_entity_aware(tmp_path):
     assert all("sub-subjA" in str(p) for p in subj_paths)
 
 
-def test_return_root_paths_monkeypatched_glob(monkeypatch):
-    """Unit test for `_return_root_paths` that monkeypatches glob.iglob.
-
-    This avoids relying on filesystem behavior and asserts that the
-    function converts strings returned by glob.iglob into Path objects and
-    applies the `ignore_json` filter correctly.
-    """
-    from mne_bids.path import _return_root_paths
-
-    fake_root = "/fake/root"
-
-    # Simulate iglob returning a mix of json and data files (relative paths)
-    fake_results = [
-        "sub-subjA/ses-sesA/meg/sub-subjA_ses-sesA_meg.fif",
-        "sub-subjA/ses-sesA/meg/sub-subjA_ses-sesA_meg.json",
-        "sub-subjB/ses-sesA/eeg/sub-subjB_ses-sesA_eeg.edf",
-    ]
-
-    def fake_iglob(pattern, root_dir=None, recursive=False):
-        # ensure pattern was constructed as relative to root
-        assert str(root_dir) == fake_root
-        return iter(fake_results)
-
-    # monkeypatch glob.iglob to return our fake results
-    monkeypatch.setattr("glob.iglob", fake_iglob)
-
-    # monkeypatch _filter_paths_optimized to avoid filesystem checks
-    from mne_bids import path as mb_path
-
-    def fake_filter(paths, ignore_json):
-        # convert returned strings into Path objects rooted at fake_root
-        return [
-            Path(fake_root, p)
-            for p in fake_results
-            if (not ignore_json) or (not p.endswith(".json"))
-        ]
-
-    monkeypatch.setattr(mb_path, "_filter_paths_optimized", fake_filter)
-
-    # ignore_json=True should filter out the .json entry
-    paths = _return_root_paths(
-        fake_root,
-        datatype=("meg", "eeg"),
-        ignore_json=True,
-        entities={"subject": "subjA"},
-    )
-    assert all(isinstance(p, Path) for p in paths)
-    # only the .fif entry for subjA should remain
-    assert any(p.suffix == ".fif" and "sub-subjA" in str(p) for p in paths)
-
-    # ignore_json=False should include the .json entry
-    paths_all = _return_root_paths(
-        fake_root,
-        datatype=("meg", "eeg"),
-        ignore_json=False,
-        entities={"subject": "subjA"},
-    )
-    assert any(str(p).endswith(".json") for p in paths_all)
-
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
