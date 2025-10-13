@@ -1239,8 +1239,9 @@ def test_find_matching_paths(return_bids_test_dir):
 
 
 def test_return_root_paths_entity_aware(tmp_path):
-    """Test that `_return_root_paths` respects `entities['subject']` and
-    returns only paths under that subject when provided.
+    """Test that `_return_root_paths` respects `entities['subject']`.
+
+    Returns only paths under that subject when provided.
 
     This validates the entity-aware optimization added to reduce filesystem
     scanning when the subject (and optionally session) is known.
