@@ -1277,7 +1277,6 @@ def test_return_root_paths_entity_aware(tmp_path):
     assert all("sub-subjA" in str(p) for p in subj_paths)
 
 
-
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 @testing.requires_testing_data
