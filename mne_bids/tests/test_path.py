@@ -9,7 +9,6 @@ import shutil
 import shutil as sh
 import timeit
 from datetime import datetime, timezone
-from functools import partial
 from pathlib import Path
 
 import mne
@@ -271,8 +270,8 @@ def _scan_targeted_meg(root, entities=None):
     )
 
 
-def test_entity_targeted_scan_benchmark(tmp_path_factory, benchmark):
-    """Benchmark the entity-aware root scan optimisation."""
+def test_entity_targeted_scan_speed(tmp_path_factory):
+    """Ensure entity-aware root scan is significantly faster."""
     bids_root = Path(tmp_path_factory.mktemp("mnebids_entity_scan"))
 
     n_subjects = 60
@@ -300,20 +299,23 @@ def test_entity_targeted_scan_benchmark(tmp_path_factory, benchmark):
     # Warm-up to mitigate cold-cache effects.
     _scan_targeted_meg(bids_root)
     baseline_durations = []
-    for _ in range(3):
+    for _ in range(5):
         start = timer()
         _scan_targeted_meg(bids_root)
         baseline_durations.append(timer() - start)
-    baseline_mean = sum(baseline_durations) / len(baseline_durations)
+    baseline_durations.sort()
+    baseline_mean = sum(baseline_durations[1:-1]) / 3
 
+    optimized_durations = []
+    for _ in range(5):
+        start = timer()
+        _scan_targeted_meg(bids_root, entities=target_entities)
+        optimized_durations.append(timer() - start)
+    optimized_durations.sort()
+    optimized_mean = sum(optimized_durations[1:-1]) / 3
+
+    optimized_paths = _scan_targeted_meg(bids_root, entities=target_entities)
     expected_len = n_runs
-    optimized_paths = benchmark(
-        partial(_scan_targeted_meg, bids_root, entities=target_entities)
-    )
-    optimized_mean = benchmark.stats.stats.mean
-    benchmark.extra_info["baseline_mean"] = baseline_mean
-    benchmark.extra_info["optimized_mean"] = optimized_mean
-
     assert all(
         target_sub in path.as_posix() and target_ses in path.as_posix()
         for path in optimized_paths
