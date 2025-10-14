@@ -9,6 +9,7 @@ import shutil
 import shutil as sh
 import timeit
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 
 import mne
@@ -32,6 +33,7 @@ from mne_bids.path import (
     _filter_fnames,
     _find_best_candidates,
     _parse_ext,
+    _return_root_paths,
     find_matching_paths,
     get_bids_path_from_fname,
     get_entities_from_fname,
@@ -257,6 +259,68 @@ def test_path_benchmark(tmp_path_factory):
     assert out_2 == out_3  # all are sub-* vals
     out_4 = get_entity_vals(tmp_bids_root, "session", include_match="none/")
     assert out_4 == []
+
+
+def _scan_targeted_meg(root, entities=None):
+    return _return_root_paths(
+        root,
+        datatype="meg",
+        ignore_json=True,
+        ignore_nosub=False,
+        entities=entities,
+    )
+
+
+def test_entity_targeted_scan_benchmark(tmp_path_factory, benchmark):
+    """Benchmark the entity-aware root scan optimisation."""
+    bids_root = Path(tmp_path_factory.mktemp("mnebids_entity_scan"))
+
+    n_subjects = 60
+    n_sessions = 4
+    n_runs = 12
+
+    target_entities = {"subject": "01", "session": "02"}
+    target_sub = f"sub-{target_entities['subject']}"
+    target_ses = f"ses-{target_entities['session']}"
+
+    for subj_idx in range(1, n_subjects + 1):
+        sub_label = f"{subj_idx:02d}"
+        for ses_idx in range(1, n_sessions + 1):
+            ses_label = f"{ses_idx:02d}"
+            meg_dir = bids_root / f"sub-{sub_label}" / f"ses-{ses_label}" / "meg"
+            meg_dir.mkdir(parents=True, exist_ok=True)
+            for run_idx in range(1, n_runs + 1):
+                fname = (
+                    f"sub-{sub_label}_ses-{ses_label}_task-"
+                    f"task_run-{run_idx:02d}_meg.fif"
+                )
+                (meg_dir / fname).touch()
+
+    timer = timeit.default_timer
+    # Warm-up to mitigate cold-cache effects.
+    _scan_targeted_meg(bids_root)
+    baseline_durations = []
+    for _ in range(3):
+        start = timer()
+        _scan_targeted_meg(bids_root)
+        baseline_durations.append(timer() - start)
+    baseline_mean = sum(baseline_durations) / len(baseline_durations)
+
+    expected_len = n_runs
+    optimized_paths = benchmark(
+        partial(_scan_targeted_meg, bids_root, entities=target_entities)
+    )
+    optimized_mean = benchmark.stats.stats.mean
+    benchmark.extra_info["baseline_mean"] = baseline_mean
+    benchmark.extra_info["optimized_mean"] = optimized_mean
+
+    assert all(
+        target_sub in path.as_posix() and target_ses in path.as_posix()
+        for path in optimized_paths
+    )
+    assert len(optimized_paths) == expected_len
+    # Require a substantial speed-up to guard against regressions.
+    assert optimized_mean < baseline_mean * 0.5
 
 
 def test_search_folder_for_text(capsys):
