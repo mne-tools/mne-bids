@@ -181,7 +181,7 @@ intersphinx_mapping = get_intersphinx_mapping(
     }
 )
 intersphinx_mapping["mne-gui-addons"] = ("https://mne.tools/mne-gui-addons", None)
-intersphinx_timeout = 5
+intersphinx_timeout = 30
 
 sphinx_gallery_conf = {
     "doc_module": "mne_bids",
