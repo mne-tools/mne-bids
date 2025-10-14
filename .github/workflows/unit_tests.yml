@@ -32,7 +32,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: style-1-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
+        key: style-1-${{ env.pythonLocation }}-6984f3efeb92a7e7a9d28b0a455b6d7239d9b0b360fc94531253be6e301853c2
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
