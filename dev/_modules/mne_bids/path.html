@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path &#8212; MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</title>
+    <title>mne_bids.path &#8212; MNE-BIDS 0.18.0.dev15+gb805ada3b documentation</title>
   
   
   
@@ -43,7 +43,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=3b3ae2c1"></script>
+    <script src="../../_static/documentation_options.js?v=bfee968e"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -71,7 +71,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev13+g941a12cf7" />
+  <meta name="docsearch:version" content="0.18.0.dev15+gb805ada3b" />
 
   </head>
   
@@ -134,7 +134,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev13+g941a12cf7 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev15+gb805ada3b documentation</p>
   
 </a></div>
     
@@ -1598,6 +1598,7 @@
             <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
             <span class="n">ignore_json</span><span class="o">=</span><span class="n">ignore_json</span><span class="p">,</span>
             <span class="n">ignore_nosub</span><span class="o">=</span><span class="n">ignore_nosub</span><span class="p">,</span>
+            <span class="n">entities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span>
@@ -3067,8 +3068,10 @@
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_return_root_paths</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nosub</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all file paths + .ds paths in root.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_return_root_paths</span><span class="p">(</span>
+    <span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_json</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ignore_nosub</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">entities</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all file paths + .ds paths in root with entity-aware optimization.</span>
 
 <span class="sd">    Can be filtered by datatype (which is present in the path but not in</span>
 <span class="sd">    the BIDSPath basename). Can also be list of datatypes.</span>
@@ -3085,6 +3088,9 @@
 <span class="sd">    ignore_nosub : bool</span>
 <span class="sd">        If ``True``, return only files of the form ``root/sub-*``. Defaults to</span>
 <span class="sd">        ``False``.</span>
+<span class="sd">    entities : dict | None</span>
+<span class="sd">        Dictionary of BIDS entities to enable targeted directory scanning.</span>
+<span class="sd">        If provided with &#39;subject&#39;, will scan only that subject&#39;s directory.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3093,30 +3099,91 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>  <span class="c1"># if root is str</span>
 
-    <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_nosub</span><span class="p">:</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.*&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="c1"># OPTIMIZATION: Use entity-aware path construction when entities available</span>
+    <span class="k">if</span> <span class="n">entities</span> <span class="ow">and</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">):</span>
+        <span class="c1"># Build targeted search path starting from subject directory</span>
+        <span class="n">search_parts</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">entities</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Add session if available</span>
+        <span class="k">if</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;session&quot;</span><span class="p">):</span>
+            <span class="n">search_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ses-</span><span class="si">{</span><span class="n">entities</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add datatype-specific path</span>
         <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">datatype</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
-            <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**/</span><span class="si">{</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span><span class="si">}</span><span class="s2">/*.*&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Single datatype - construct direct path</span>
+                <span class="n">search_parts</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;**&quot;</span><span class="p">,</span> <span class="n">datatype</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+                <span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_parts</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/*.*&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Multiple datatypes - search each separately</span>
+                <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">datatype</span><span class="p">:</span>
+                    <span class="n">dt_search_parts</span> <span class="o">=</span> <span class="n">search_parts</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;**&quot;</span><span class="p">,</span> <span class="n">dt</span><span class="p">]</span>
+                    <span class="n">dt_search_str</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dt_search_parts</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/*.*&quot;</span>
+                    <span class="n">paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span>
+                                <span class="n">dt_search_str</span><span class="p">,</span> <span class="n">root_dir</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
+                            <span class="p">)</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="k">return</span> <span class="n">_filter_paths_optimized</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">ignore_json</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;**/*.*&quot;</span>
+            <span class="c1"># No datatype specified - search all datatypes under subject</span>
+            <span class="n">search_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;**&quot;</span><span class="p">)</span>
+            <span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_parts</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/*.*&quot;</span>
 
-        <span class="c1"># only browse files which are of the form root/sub-*,</span>
-        <span class="c1"># such that we truely only look in &#39;sub&#39;-folders:</span>
-        <span class="k">if</span> <span class="n">ignore_nosub</span><span class="p">:</span>
-            <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-*/</span><span class="si">{</span><span class="n">search_str</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="c1"># TODO: Why is this not equivalent to list(root.rglob(search_str)) ?</span>
-        <span class="c1"># Most of the speedup is from using glob.iglob here.</span>
+        <span class="c1"># Single search with optimized path</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="n">root_dir</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">]</span>
 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># FALLBACK: Original implementation when entities not available</span>
+        <span class="c1"># or subject unknown</span>
+        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore_nosub</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.*&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">datatype</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
+                <span class="c1"># If multiple datatypes are provided, search each separately</span>
+                <span class="c1"># (glob does not support alternation with &#39;|&#39;).</span>
+                <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">datatype</span><span class="p">:</span>
+                    <span class="n">dt_search</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;**/</span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2">/*.*&quot;</span>
+                    <span class="k">if</span> <span class="n">ignore_nosub</span><span class="p">:</span>
+                        <span class="n">dt_search</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-*/</span><span class="si">{</span><span class="n">dt_search</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span>
+                                <span class="n">dt_search</span><span class="p">,</span> <span class="n">root_dir</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
+                            <span class="p">)</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">search_str</span> <span class="o">=</span> <span class="s2">&quot;**/*.*&quot;</span>
+                <span class="k">if</span> <span class="n">ignore_nosub</span><span class="p">:</span>
+                    <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-*/</span><span class="si">{</span><span class="n">search_str</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="c1"># TODO: Why is this not equivalent to list(root.rglob(search_str)) ?</span>
+                <span class="c1"># Most of the speedup is from using glob.iglob here.</span>
+                <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="n">root_dir</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_filter_paths_optimized</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">ignore_json</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_paths_optimized</span><span class="p">(</span><span class="n">paths</span><span class="p">,</span> <span class="n">ignore_json</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter paths based on file type criteria - extracted for reuse.&quot;&quot;&quot;</span>
     <span class="c1"># Only keep files (not directories), ...</span>
     <span class="c1"># and omit the JSON sidecars if `ignore_json` is True.</span>
     <span class="k">if</span> <span class="n">ignore_json</span><span class="p">:</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="k">return</span> <span class="p">[</span>
             <span class="n">p</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;.json&quot;</span><span class="p">)</span>
@@ -3125,15 +3192,13 @@
             <span class="ow">or</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.ds&quot;</span><span class="p">)</span>
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="k">return</span> <span class="p">[</span>
             <span class="n">p</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
             <span class="c1"># XXX: see above, generalize with private func</span>
             <span class="ow">or</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.ds&quot;</span><span class="p">)</span>
         <span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">paths</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_fnames_to_bidspaths</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -3221,7 +3286,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-10.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-15.
       <br/>
     
   </p>
