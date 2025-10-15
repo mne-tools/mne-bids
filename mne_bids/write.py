@@ -670,6 +670,8 @@ def _participants_json(fname, overwrite=False):
     # Use _open_lock for atomic read-modify-write operation
     # This ensures the file is locked during the entire operation
     # This prevents race conditions when multiple processes write simultaneously
+    # Use 'a+' mode to ensure the file is created if it does not exist.
+    # 'r+' would fail if the file does not exist.
     with _open_lock(fname, "a+", encoding="utf-8") as fid:
         # Move to beginning of file for reading
         fid.seek(0)
@@ -677,7 +679,11 @@ def _participants_json(fname, overwrite=False):
 
         # Try to parse existing content
         orig_data = {}
-        if file_content:
+        if not file_content:
+            # File exists but is empty or contains only whitespace
+            # Treat as no original data; proceed to write new schema
+            pass
+        else:
             try:
                 orig_data = json.loads(file_content, object_pairs_hook=OrderedDict)
                 # File exists with valid JSON content
@@ -691,7 +697,7 @@ def _participants_json(fname, overwrite=False):
                 # when one process truncates while another reads
                 logger.debug(
                     f"Could not parse JSON in '{fname}': {e}. "
-                    "This may occur in parallel writes. Treating as empty."
+                    "This may occur when reading during concurrent writes. Treating as empty."
                 )
                 # Treat as empty file and just write the schema
 

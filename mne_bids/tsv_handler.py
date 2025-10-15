@@ -188,14 +188,10 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    if _path_is_locked(fname):
-        with open(fname, "w", encoding="utf-8-sig") as f:
-            f.write(output)
-            f.write("\n")
-    else:
-        with _open_lock(fname, "w", encoding="utf-8-sig") as f:
-            f.write(output)
-            f.write("\n")
+    file_opener = open if _path_is_locked(fname) else _open_lock
+    with file_opener(fname, "w", encoding="utf-8-sig") as f:
+        f.write(output)
+        f.write("\n")
 
 
 def _tsv_to_str(data, rows=5):
