@@ -4264,7 +4264,7 @@ def test_parallel_write_many_subjects(tmp_path):
     assert participants_path.exists()
     participants = _from_tsv(participants_path)
     expected_ids = {f"sub-{subject}" for subject in subjects}
-    assert set(participants["participant_id"]) == expected_ids
+    assert set(participants["participant_id"]) == set(expected_ids)
 
     # All subjects should be discoverable via entity lookup.
     subjects_found = get_entity_vals(bids_root, "subject")
