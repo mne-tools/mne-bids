@@ -89,6 +89,10 @@ class _FileLockContext:
         """Release the lock if we acquired it."""
         if self._is_locked:
             try:
+                # Use force=False to ensure we only release the lock if it was acquired
+                # by this process. Setting force=True would forcibly release the lock,
+                # which can be unsafe if other processes are still using it. Here,
+                # force=False is correct to avoid interfering with other processes.
                 self.lock_obj.release(force=False)
             except Exception:
                 # Ignore errors during release
