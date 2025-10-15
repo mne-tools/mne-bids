@@ -48,7 +48,12 @@ def _get_lock_context(path):
 
     if filelock:
         try:
-            lock_obj = filelock.FileLock(lock_path, timeout=30)  # timeout in seconds
+            # Attempt to acquire the file lock with a 30-second timeout.
+            # The timeout is for acquiring the lock (not for holding it).
+            # 30 seconds was chosen as a balance between responsiveness and allowing
+            # for slow file operations. If the lock cannot be acquired within this
+            # period, an exception is raised and we proceed without a lock.
+            lock_obj = filelock.FileLock(lock_path, timeout=30)
             lock_context = _FileLockContext(lock_obj)
             have_lock = True
             backend = "filelock"
