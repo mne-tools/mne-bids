@@ -48,11 +48,7 @@ def _get_lock_context(path):
 
     if filelock:
         try:
-            # Use FileLock (not SoftFileLock) for inter-process synchronization
-            # SoftFileLock is more lenient but doesn't prevent concurrent writes
-            # Timeout of 30 seconds prevents indefinite blocking
-            # We use a wrapper to handle the lock lifecycle better
-            lock_obj = filelock.FileLock(lock_path, timeout=30)
+            lock_obj = filelock.FileLock(lock_path, timeout=30)  # timeout in seconds
             lock_context = _FileLockContext(lock_obj)
             have_lock = True
             backend = "filelock"
@@ -108,12 +104,8 @@ def _open_lock(path, *args, **kwargs):
         return
 
     lock_context, lock_path, have_lock, backend = _get_lock_context(path)
-    try:
-        with lock_context, open(path, *args, **kwargs) as fid:
-            yield fid
-    finally:
-        if have_lock:
-            _cleanup_lock_file(lock_path, backend)
+    with lock_context, open(path, *args, **kwargs) as fid:
+        yield fid
 
 
 @contextmanager
@@ -136,19 +128,3 @@ def _file_lock(path):
     finally:
         if token is not None:
             _LOCKED_PATHS.reset(token)
-        if have_lock:
-            _cleanup_lock_file(lock_path, backend)
-
-
-def _cleanup_lock_file(lock_path: Path, backend: str | None) -> None:
-    """Cleanup lock file - but don't manually delete for FileLock.
-
-    For FileLock, the library manages the lock file lifecycle automatically.
-    We should NOT manually delete it as this causes race conditions when
-    multiple processes try to delete the same file simultaneously.
-
-    The lock file will be cleaned up by the OS eventually.
-    """
-    # Don't manually delete filelock's lock files - let the library manage them
-    # If we need to clean up stale lock files, do it only at process startup
-    pass
