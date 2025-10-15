@@ -35,6 +35,7 @@ def _get_lock_context(path):
 
     lock_context = contextlib.nullcontext()
     lock_path = Path(f"{os.fspath(path)}.lock")
+    lock_path = _normalize_lock_path(lock_path)
     have_lock = False
 
     if filelock:
@@ -77,9 +78,9 @@ def _open_lock(path, *args, **kwargs):
         with lock_context, open(path, *args, **kwargs) as fid:
             yield fid
     finally:
-        if have_lock and lock_path.exists():
+        if have_lock:
             try:
-                lock_path.unlink()
+                lock_path.unlink(missing_ok=True)
             except OSError:
                 pass
 
@@ -87,10 +88,15 @@ def _open_lock(path, *args, **kwargs):
 @contextmanager
 def _file_lock(path):
     """Acquire a lock on ``path`` without opening the file."""
-    lock_context, lock_path, have_lock = _get_lock_context(path)
     normalized = _normalize_lock_path(path)
+    lock_path = _normalize_lock_path(Path(f"{os.fspath(path)}.lock"))
+    already_locked = _path_is_locked(normalized)
+    if already_locked:
+        lock_context, have_lock = contextlib.nullcontext(), False
+    else:
+        lock_context, lock_path, have_lock = _get_lock_context(path)
     token = None
-    if not _path_is_locked(normalized):
+    if have_lock and not already_locked:
         current = _LOCKED_PATHS.get()
         token = _LOCKED_PATHS.set(current + (normalized,))
     try:
@@ -99,8 +105,8 @@ def _file_lock(path):
     finally:
         if token is not None:
             _LOCKED_PATHS.reset(token)
-        if have_lock and lock_path.exists():
+        if have_lock:
             try:
-                lock_path.unlink()
+                lock_path.unlink(missing_ok=True)
             except OSError:
                 pass
