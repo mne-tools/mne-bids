@@ -32,6 +32,7 @@ from mne_bids.path import (
     _filter_fnames,
     _find_best_candidates,
     _parse_ext,
+    _return_root_paths,
     find_matching_paths,
     get_bids_path_from_fname,
     get_entities_from_fname,
@@ -257,6 +258,71 @@ def test_path_benchmark(tmp_path_factory):
     assert out_2 == out_3  # all are sub-* vals
     out_4 = get_entity_vals(tmp_bids_root, "session", include_match="none/")
     assert out_4 == []
+
+
+def _scan_targeted_meg(root, entities=None):
+    return _return_root_paths(
+        root,
+        datatype="meg",
+        ignore_json=True,
+        ignore_nosub=False,
+        entities=entities,
+    )
+
+
+def test_entity_targeted_scan_speed(tmp_path_factory):
+    """Ensure entity-aware root scan is significantly faster."""
+    bids_root = Path(tmp_path_factory.mktemp("mnebids_entity_scan"))
+
+    n_subjects = 60
+    n_sessions = 4
+    n_runs = 12
+
+    target_entities = {"subject": "01", "session": "02"}
+    target_sub = f"sub-{target_entities['subject']}"
+    target_ses = f"ses-{target_entities['session']}"
+
+    for subj_idx in range(1, n_subjects + 1):
+        sub_label = f"{subj_idx:02d}"
+        for ses_idx in range(1, n_sessions + 1):
+            ses_label = f"{ses_idx:02d}"
+            meg_dir = bids_root / f"sub-{sub_label}" / f"ses-{ses_label}" / "meg"
+            meg_dir.mkdir(parents=True, exist_ok=True)
+            for run_idx in range(1, n_runs + 1):
+                fname = (
+                    f"sub-{sub_label}_ses-{ses_label}_task-"
+                    f"task_run-{run_idx:02d}_meg.fif"
+                )
+                (meg_dir / fname).touch()
+
+    timer = timeit.default_timer
+    # Warm-up to mitigate cold-cache effects.
+    _scan_targeted_meg(bids_root)
+    baseline_durations = []
+    for _ in range(5):
+        start = timer()
+        _scan_targeted_meg(bids_root)
+        baseline_durations.append(timer() - start)
+    baseline_durations.sort()
+    baseline_mean = sum(baseline_durations[1:-1]) / 3
+
+    optimized_durations = []
+    for _ in range(5):
+        start = timer()
+        _scan_targeted_meg(bids_root, entities=target_entities)
+        optimized_durations.append(timer() - start)
+    optimized_durations.sort()
+    optimized_mean = sum(optimized_durations[1:-1]) / 3
+
+    optimized_paths = _scan_targeted_meg(bids_root, entities=target_entities)
+    expected_len = n_runs
+    assert all(
+        target_sub in path.as_posix() and target_ses in path.as_posix()
+        for path in optimized_paths
+    )
+    assert len(optimized_paths) == expected_len
+    # Require a substantial speed-up to guard against regressions.
+    assert optimized_mean < baseline_mean * 0.5
 
 
 def test_search_folder_for_text(capsys):
@@ -1236,6 +1302,46 @@ def test_find_matching_paths(return_bids_test_dir):
     )
     assert paths_match == paths_find
     bids_path_01.fpath.unlink()  # clean up created file
+
+
+def test_return_root_paths_entity_aware(tmp_path):
+    """Test that `_return_root_paths` respects `entities['subject']`.
+
+    Returns only paths under that subject when provided.
+
+    This validates the entity-aware optimization added to reduce filesystem
+    scanning when the subject (and optionally session) is known.
+    """
+    from mne_bids.path import _return_root_paths
+
+    root = tmp_path / "bids"
+    # Create two subjects each with meg and eeg directories and a file
+    for subj in ("subjA", "subjB"):
+        for dtype in ("meg", "eeg"):
+            p = BIDSPath(subject=subj, session="sesA", datatype=dtype, root=root)
+            p.mkdir(exist_ok=True)
+            # create a predictable dummy data file so glob matches reliably
+            ext = "fif" if dtype == "meg" else "edf"
+            fname = f"sub-{subj}_ses-sesA_{dtype}.{ext}"
+            (p.directory / fname).touch()
+
+    # Full scan (no entities) should return files for both subjects
+    # Pass root as string to match how glob.iglob expects root_dir
+    root_str = str(root)
+    # ensure directories exist
+    assert (root / "sub-subjA").exists()
+    all_paths = _return_root_paths(root_str, datatype=("meg", "eeg"), ignore_json=True)
+    assert len(all_paths) >= 2
+
+    # Entity-aware scan for subjA should only return files under sub-subjA
+    subj_paths = _return_root_paths(
+        root_str,
+        datatype=("meg", "eeg"),
+        ignore_json=True,
+        entities={"subject": "subjA"},
+    )
+    assert len(subj_paths) < len(all_paths)
+    assert all("sub-subjA" in str(p) for p in subj_paths)
 
 
 @pytest.mark.filterwarnings(warning_str["meas_date_set_to_none"])
