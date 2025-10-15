@@ -74,16 +74,8 @@ class _FileLockContext:
 
     def __enter__(self):
         """Acquire the lock."""
-        try:
-            self.lock_obj.acquire()
-            self._is_locked = True
-        except (OSError, getattr(self.lock_obj, "Timeout", type(None))):
-            # If we can't acquire the lock, log a warning and continue without it
-            warn(
-                f"Could not acquire file lock for {self.lock_obj.lock_file}. "
-                "Proceeding without a lock."
-            )
-            self._is_locked = False
+        self.lock_obj.acquire()
+        self._is_locked = True
         return self
 
     def __exit__(self, *args):
