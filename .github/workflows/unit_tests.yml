@@ -32,7 +32,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: style-1-${{ env.pythonLocation }}-
+        key: style-2-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -61,7 +61,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: build-2-${{ env.pythonLocation }}-
+        key: build-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install dependencies
       run: |
@@ -206,7 +206,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: test-1-${{ env.pythonLocation }}-${{ env.os }}-
+        key: test-2-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install Python dependencies using pip
       # This would be nicer once this feature is implemented: https://github.com/pypa/pip/issues/11440
@@ -342,7 +342,7 @@ jobs:
     - uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: build_docs-2-${{ env.pythonLocation }}-
+        key: build_docs-3-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
