@@ -45,6 +45,7 @@ def _get_lock_context(path):
         try:
             # a FileLock instance is itself a context manager and blocks
             # until the lock becomes available (timeout=-1).
+            lock_path.touch(exist_ok=True)
             lock_context = filelock.FileLock(lock_path, timeout=-1)
             have_lock = True
         except OSError as exc:
