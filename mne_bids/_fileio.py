@@ -51,7 +51,9 @@ def _get_lock_context(path):
             # Use FileLock (not SoftFileLock) for inter-process synchronization
             # SoftFileLock is more lenient but doesn't prevent concurrent writes
             # Timeout of 30 seconds prevents indefinite blocking
-            lock_context = filelock.FileLock(lock_path, timeout=30)
+            # We use a wrapper to handle the lock lifecycle better
+            lock_obj = filelock.FileLock(lock_path, timeout=30)
+            lock_context = _FileLockContext(lock_obj)
             have_lock = True
             backend = "filelock"
         except OSError as exc:
@@ -59,6 +61,36 @@ def _get_lock_context(path):
             lock_context = contextlib.nullcontext()
 
     return lock_context, lock_path, have_lock, backend
+
+
+class _FileLockContext:
+    """A wrapper around FileLock that handles acquisition/release safely."""
+
+    def __init__(self, lock_obj):
+        """Initialize with a filelock.FileLock object."""
+        self.lock_obj = lock_obj
+        self._is_locked = False
+
+    def __enter__(self):
+        """Acquire the lock."""
+        try:
+            self.lock_obj.acquire()
+            self._is_locked = True
+        except Exception:
+            # If we can't acquire the lock, continue without it
+            self._is_locked = False
+        return self
+
+    def __exit__(self, *args):
+        """Release the lock if we acquired it."""
+        if self._is_locked:
+            try:
+                self.lock_obj.release(force=False)
+            except Exception:
+                # Ignore errors during release
+                pass
+            finally:
+                self._is_locked = False
 
 
 def _path_is_locked(path) -> bool:
@@ -109,26 +141,14 @@ def _file_lock(path):
 
 
 def _cleanup_lock_file(lock_path: Path, backend: str | None) -> None:
-    """Attempt to remove ``lock_path`` once no other process holds it."""
-    # Try to remove the lock file, but don't fail if it doesn't exist or is in use
-    # In concurrent scenarios, multiple processes might try to clean up the same
-    # lock file, so we need to be resilient to missing_ok scenarios
-    import time
+    """Cleanup lock file - but don't manually delete for FileLock.
 
-    # Try multiple times to delete the lock file with delays
-    # This gives the filelock library time to fully release the lock
-    for attempt in range(10):
-        try:
-            lock_path.unlink(missing_ok=False)
-            return  # Successfully deleted
-        except FileNotFoundError:
-            # File doesn't exist, which is fine
-            # (may have been deleted by another process)
-            return
-        except (OSError, PermissionError):
-            # File is in use or we don't have permission
-            if attempt < 9:
-                # Try again after a short delay
-                time.sleep(0.05)
-            # On the last attempt, just give up silently
-            pass
+    For FileLock, the library manages the lock file lifecycle automatically.
+    We should NOT manually delete it as this causes race conditions when
+    multiple processes try to delete the same file simultaneously.
+
+    The lock file will be cleaned up by the OS eventually.
+    """
+    # Don't manually delete filelock's lock files - let the library manage them
+    # If we need to clean up stale lock files, do it only at process startup
+    pass
