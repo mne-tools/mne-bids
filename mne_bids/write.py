@@ -677,12 +677,7 @@ def _participants_json(fname, overwrite=False):
             new_data = {**orig_data, **new_data}
 
         fname.parent.mkdir(parents=True, exist_ok=True)
-        json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
-        with open(fname, "w", encoding="utf-8") as fid:
-            fid.write(json_output)
-            fid.write("\n")
-
-        logger.info(f"Writing '{fname}'...")
+        _write_json(fname, new_data, overwrite=True)
 
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
