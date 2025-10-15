@@ -697,7 +697,8 @@ def _participants_json(fname, overwrite=False):
                 # when one process truncates while another reads
                 logger.debug(
                     f"Could not parse JSON in '{fname}': {e}. "
-                    "This may occur when reading during concurrent writes. Treating as empty."
+                    "This may occur when reading during concurrent writes. "
+                    "Treating as empty."
                 )
                 # Treat as empty file and just write the schema
 

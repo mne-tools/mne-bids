@@ -80,7 +80,8 @@ class _FileLockContext:
         except (OSError, getattr(self.lock_obj, "Timeout", type(None))):
             # If we can't acquire the lock, log a warning and continue without it
             warn(
-                f"Could not acquire file lock for {self.lock_obj.lock_file}. Proceeding without a lock."
+                f"Could not acquire file lock for {self.lock_obj.lock_file}. "
+                "Proceeding without a lock."
             )
             self._is_locked = False
         return self
