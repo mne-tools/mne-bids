@@ -40,19 +40,18 @@ def _get_lock_context(path):
     lock_path.parent.mkdir(parents=True, exist_ok=True)
 
     have_lock = False
+    backend = None
 
     if filelock:
         try:
-            # a FileLock instance is itself a context manager and blocks
-            # until the lock becomes available (timeout=-1).
-            lock_path.touch(exist_ok=True)
-            lock_context = filelock.FileLock(lock_path, timeout=-1)
+            lock_context = filelock.SoftFileLock(lock_path, timeout=-1)
             have_lock = True
+            backend = "soft-filelock"
         except OSError as exc:
             warn(f"Could not create lock file. Proceeding without a lock. ({exc})")
             lock_context = contextlib.nullcontext()
 
-    return lock_context, lock_path, have_lock
+    return lock_context, lock_path, have_lock, backend
 
 
 def _path_is_locked(path) -> bool:
@@ -69,16 +68,13 @@ def _open_lock(path, *args, **kwargs):
             yield fid
         return
 
-    lock_context, lock_path, have_lock = _get_lock_context(path)
+    lock_context, lock_path, have_lock, backend = _get_lock_context(path)
     try:
         with lock_context, open(path, *args, **kwargs) as fid:
             yield fid
     finally:
         if have_lock:
-            try:
-                lock_path.unlink(missing_ok=True)
-            except OSError:
-                pass
+            _cleanup_lock_file(lock_path, backend)
 
 
 @contextmanager
@@ -88,9 +84,9 @@ def _file_lock(path):
     lock_path = _normalize_lock_path(Path(f"{os.fspath(path)}.lock"))
     already_locked = _path_is_locked(normalized)
     if already_locked:
-        lock_context, have_lock = contextlib.nullcontext(), False
+        lock_context, have_lock, backend = contextlib.nullcontext(), False, None
     else:
-        lock_context, lock_path, have_lock = _get_lock_context(path)
+        lock_context, lock_path, have_lock, backend = _get_lock_context(path)
     token = None
     if have_lock and not already_locked:
         current = _LOCKED_PATHS.get()
@@ -102,7 +98,21 @@ def _file_lock(path):
         if token is not None:
             _LOCKED_PATHS.reset(token)
         if have_lock:
-            try:
-                lock_path.unlink(missing_ok=True)
-            except OSError:
-                pass
+            _cleanup_lock_file(lock_path, backend)
+
+
+def _cleanup_lock_file(lock_path: Path, backend: str | None) -> None:
+    """Attempt to remove ``lock_path`` once no other process holds it."""
+    if backend == "soft-filelock":
+        # SoftFileLock removes the lock file upon release, so no further action
+        # is required. Still, try to clean up in case the release was skipped.
+        try:
+            lock_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+        return
+
+    try:
+        lock_path.unlink(missing_ok=True)
+    except OSError:
+        pass
