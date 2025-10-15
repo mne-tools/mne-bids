@@ -35,13 +35,15 @@ def _get_lock_context(path):
 
     lock_context = contextlib.nullcontext()
     lock_path = Path(f"{os.fspath(path)}.lock")
+
     lock_path = _normalize_lock_path(lock_path)
+
     have_lock = False
 
     if filelock:
         try:
-            lock_context = filelock.FileLock(lock_path, timeout=5)
-            lock_context.acquire()
+            lock = filelock.FileLock(lock_path, timeout=5)
+            lock_context = lock.acquire()
             have_lock = True
         except TimeoutError:
             warn(
@@ -49,11 +51,8 @@ def _get_lock_context(path):
                 f"if you know the corresponding file is usable:\n{lock_path}"
             )
             lock_context = contextlib.nullcontext()
-        except OSError:
-            warn(
-                "Could not create lock file due to insufficient permissions. "
-                "Proceeding without a lock."
-            )
+        except OSError as exc:
+            warn(f"Could not create lock file. Proceeding without a lock. ({exc})")
             lock_context = contextlib.nullcontext()
 
     return lock_context, lock_path, have_lock
