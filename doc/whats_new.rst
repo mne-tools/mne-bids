@@ -38,6 +38,7 @@ Detailed list of changes
 - Extended the configuration to recognise `motion` as a valid BIDS datatype by `Julius Welzel`_ (:gh:`1430`)
 - Better control of verbosity in several functions, by `Bruno Aristimunha`_ (:gh:`1449`)
 - Added parallel reading and writing in all the `open` operations using `_open_lock` mechanism from mne, creating small wrapper to manage the locks by `Bruno Aristimunha`_ (:gh:`1449`)
+- :meth:`mne_bids.BIDSPath.match()` now short-circuits root directory scans when ``subject``, ``session``, or ``datatype`` entities are known, reducing lookup time on large datasets, by `Bruno Aristimunha`_ and `Maximilien Chaumon`_ (:gh:`1450`)
 
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
