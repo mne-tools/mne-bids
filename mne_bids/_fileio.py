@@ -28,9 +28,13 @@ _LOCKED_PATHS: ContextVar[tuple[Path, ...]] = ContextVar(
 
 
 def _get_lock_context(path):
-    """Return a context manager that locks ``path`` if possible."""
+    """Return a context manager that locks ``path`` if possible.
+
+    This uses file-based locking (filelock library) which works across
+    different processes, unlike ContextVar which is process-local.
+    """
     filelock = _soft_import(
-        "filelock", purpose="parallel config set and get", strict=False
+        "filelock", purpose="parallel file I/O locking", strict=False
     )
 
     lock_context = contextlib.nullcontext()
@@ -44,9 +48,12 @@ def _get_lock_context(path):
 
     if filelock:
         try:
-            lock_context = filelock.SoftFileLock(lock_path, timeout=-1)
+            # Use FileLock (not SoftFileLock) for inter-process synchronization
+            # SoftFileLock is more lenient but doesn't prevent concurrent writes
+            # Timeout of 30 seconds prevents indefinite blocking
+            lock_context = filelock.FileLock(lock_path, timeout=30)
             have_lock = True
-            backend = "soft-filelock"
+            backend = "filelock"
         except OSError as exc:
             warn(f"Could not create lock file. Proceeding without a lock. ({exc})")
             lock_context = contextlib.nullcontext()
@@ -103,16 +110,25 @@ def _file_lock(path):
 
 def _cleanup_lock_file(lock_path: Path, backend: str | None) -> None:
     """Attempt to remove ``lock_path`` once no other process holds it."""
-    if backend == "soft-filelock":
-        # SoftFileLock removes the lock file upon release, so no further action
-        # is required. Still, try to clean up in case the release was skipped.
-        try:
-            lock_path.unlink(missing_ok=True)
-        except OSError:
-            pass
-        return
+    # Try to remove the lock file, but don't fail if it doesn't exist or is in use
+    # In concurrent scenarios, multiple processes might try to clean up the same
+    # lock file, so we need to be resilient to missing_ok scenarios
+    import time
 
-    try:
-        lock_path.unlink(missing_ok=True)
-    except OSError:
-        pass
+    # Try multiple times to delete the lock file with delays
+    # This gives the filelock library time to fully release the lock
+    for attempt in range(10):
+        try:
+            lock_path.unlink(missing_ok=False)
+            return  # Successfully deleted
+        except FileNotFoundError:
+            # File doesn't exist, which is fine
+            # (may have been deleted by another process)
+            return
+        except (OSError, PermissionError):
+            # File is in use or we don't have permission
+            if attempt < 9:
+                # Try again after a short delay
+                time.sleep(0.05)
+            # On the last attempt, just give up silently
+            pass

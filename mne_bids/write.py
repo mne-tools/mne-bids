@@ -665,19 +665,51 @@ def _participants_json(fname, overwrite=False):
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
     fname = Path(fname)
-    with _file_lock(fname):
-        if fname.exists():
-            if not overwrite:
-                raise FileExistsError(
-                    f'"{fname}" already exists. Please set overwrite to True.'
-                )
-            orig_data = json.loads(
-                fname.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
-            )
-            new_data = {**orig_data, **new_data}
+    fname.parent.mkdir(parents=True, exist_ok=True)
 
-        fname.parent.mkdir(parents=True, exist_ok=True)
-        _write_json(fname, new_data, overwrite=True)
+    # Use _open_lock for atomic read-modify-write operation
+    # This ensures the file is locked during the entire operation
+    # This prevents race conditions when multiple processes write simultaneously
+    with _open_lock(fname, "a+", encoding="utf-8") as fid:
+        # Move to beginning of file for reading
+        fid.seek(0)
+        file_content = fid.read().strip()
+
+        # Try to parse existing content
+        orig_data = {}
+        if file_content:
+            try:
+                orig_data = json.loads(file_content, object_pairs_hook=OrderedDict)
+                # File exists with valid JSON content
+                if not overwrite:
+                    # Only raise if the file truly has non-default content
+                    raise FileExistsError(
+                        f'"{fname}" already exists. Please set overwrite to True.'
+                    )
+            except json.JSONDecodeError as e:
+                # File is corrupted/incomplete - this can happen in a race condition
+                # when one process truncates while another reads
+                logger.debug(
+                    f"Could not parse JSON in '{fname}': {e}. "
+                    "This may occur in parallel writes. Treating as empty."
+                )
+                # Treat as empty file and just write the schema
+
+        # Merge new schema with any existing user-added fields
+        # The new_data schema will overwrite age, sex, hand as intended
+        if orig_data:
+            # Keep any user-added fields not in new_data
+            for key in orig_data.keys():
+                if key not in new_data:
+                    new_data[key] = orig_data[key]
+
+        # Write JSON data atomically within the lock context
+        json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
+        fid.seek(0)
+        fid.truncate()
+        fid.write(json_output)
+        fid.write("\n")
+        logger.info(f"Writing '{fname}'...")
 
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
