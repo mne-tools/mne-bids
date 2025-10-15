@@ -37,20 +37,16 @@ def _get_lock_context(path):
     lock_path = Path(f"{os.fspath(path)}.lock")
 
     lock_path = _normalize_lock_path(lock_path)
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
 
     have_lock = False
 
     if filelock:
         try:
-            lock = filelock.FileLock(lock_path, timeout=5)
-            lock_context = lock.acquire()
+            # a FileLock instance is itself a context manager and blocks
+            # until the lock becomes available (timeout=-1).
+            lock_context = filelock.FileLock(lock_path, timeout=-1)
             have_lock = True
-        except TimeoutError:
-            warn(
-                "Could not acquire lock file after 5 seconds, consider deleting it "
-                f"if you know the corresponding file is usable:\n{lock_path}"
-            )
-            lock_context = contextlib.nullcontext()
         except OSError as exc:
             warn(f"Could not create lock file. Proceeding without a lock. ({exc})")
             lock_context = contextlib.nullcontext()
