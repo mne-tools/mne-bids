@@ -168,20 +168,25 @@ html_context = {
 html_sidebars = {}
 
 # Example configuration for intersphinx: refer to the Python standard library.
-# No SciPy mapping here because docs.scipy.org frequently times out during CI,
-# and our builds treat warnings as errors.
-intersphinx_mapping = get_intersphinx_mapping(
-    packages={
-        "matplotlib",
-        "mne",
-        "nibabel",
-        "nilearn",
-        "numpy",
-        "pandas",
-        "python",
-    }
+# When https://github.com/scipy/docs.scipy.org/issues/102 is resolved, we can
+# remove the scipy entry below and rely on intersphinx_registry.
+intersphinx_mapping = {
+    "scipy": ("https://scipy.github.io/devdocs/", None),
+    "mne-gui-addons": ("https://mne.tools/mne-gui-addons", None),
+}
+intersphinx_mapping.update(
+    get_intersphinx_mapping(
+        packages={
+            "matplotlib",
+            "mne",
+            "nibabel",
+            "nilearn",
+            "numpy",
+            "pandas",
+            "python",
+        }
+    )
 )
-intersphinx_mapping["mne-gui-addons"] = ("https://mne.tools/mne-gui-addons", None)
 intersphinx_timeout = 30
 
 sphinx_gallery_conf = {
