@@ -221,6 +221,10 @@ authors:
     - given-names: Nathan
       family-names: Azrak
       orcid: 'https://orcid.org/0000-0001-7695-4634'
+    - given-names: Bruno
+      family-names: Aristimunha
+      affiliation: 'Université Paris-Saclay, LISN, Inria TAU/INRIA Nerv, France'
+      orcid: 'https://orcid.org/0000-0001-5258-2995'
     - given-names: Alexandre
       family-names: Gramfort
       affiliation: 'Université Paris-Saclay, Inria, CEA, Palaiseau, France'

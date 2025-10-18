@@ -15,6 +15,7 @@ from mne_bids import BIDSPath
 from mne_bids.copyfiles import (
     _get_brainvision_encoding,
     _get_brainvision_paths,
+    _kit_marker_acq_label,
     copyfile_brainvision,
     copyfile_bti,
     copyfile_edf,
@@ -259,11 +260,22 @@ def test_copyfile_kit(tmp_path):
     )
     assert bids_fname.exists()
     _, ext = _parse_ext(hpi_fname)
+    marker_acq = _kit_marker_acq_label(run, None)
     if ext == ".sqd":
-        kit_bids_path.update(suffix="markers", extension=".sqd")
+        kit_bids_path.update(
+            suffix="markers",
+            extension=".sqd",
+            run=None,
+            acquisition=marker_acq,
+        )
         assert kit_bids_path.fpath.exists()
     elif ext == ".mrk":
-        kit_bids_path.update(suffix="markers", extension=".mrk")
+        kit_bids_path.update(
+            suffix="markers",
+            extension=".mrk",
+            run=None,
+            acquisition=marker_acq,
+        )
         assert kit_bids_path.fpath.exists()
 
     if electrode_fname.exists():

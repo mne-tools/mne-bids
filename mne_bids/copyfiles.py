@@ -35,6 +35,18 @@ def _copytree(src, dst, **kwargs):
             raise
 
 
+def _kit_marker_acq_label(run, acquisition_label):
+    """Compose a BIDS acquisition label for KIT marker files."""
+    label_parts = []
+    if run is not None:
+        label_parts.append(f"run{run}")
+    if acquisition_label is not None:
+        label_parts.append(acquisition_label)
+    if not label_parts:
+        return None
+    return "".join(label_parts)
+
+
 def _get_brainvision_encoding(vhdr_file):
     """Get the encoding of .vhdr and .vmrk files.
 
@@ -228,12 +240,13 @@ def copyfile_kit(src, dest, subject_id, session_id, task, run, _init_kwargs):
             _, marker_ext = _parse_ext(hpi)
             acq_map[None] = hpi
         for key, value in acq_map.items():
+            marker_acq = _kit_marker_acq_label(run, key)
             marker_path = BIDSPath(
                 subject=subject_id,
                 session=session_id,
                 task=task,
-                run=run,
-                acquisition=key,
+                run=None,
+                acquisition=marker_acq,
                 suffix="markers",
                 extension=marker_ext,
                 datatype=datatype,
@@ -397,7 +410,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
                 fout.write(line)
 
     if anonymize is not None:
-        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
+        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=verbose)
         daysback, keep_his, _ = _check_anonymize(anonymize, raw, ".vhdr")
         raw.info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         _anonymize_brainvision(fname_dest + ".vhdr", date=raw.info["meas_date"])
@@ -410,7 +423,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=None):
         logger.info("Anonymized all dates in VHDR and VMRK.")
 
 
-def copyfile_edf(src, dest, anonymize=None):
+@verbose
+def copyfile_edf(src, dest, anonymize=None, verbose=None):
     """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.
 
     .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:
@@ -492,9 +506,9 @@ def copyfile_edf(src, dest, anonymize=None):
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
         if ext_src in [".bdf", ".BDF"]:
-            raw = read_raw_bdf(dest, preload=False, verbose=0)
+            raw = read_raw_bdf(dest, preload=False, verbose=verbose)
         elif ext_src in [".edf", ".EDF"]:
-            raw = read_raw_edf(dest, preload=False, verbose=0)
+            raw = read_raw_edf(dest, preload=False, verbose=verbose)
         else:
             raise ValueError(f"Unsupported file type ({ext_src})")
 
