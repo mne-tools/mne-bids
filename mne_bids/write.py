@@ -679,10 +679,6 @@ def _participants_json(fname, overwrite=False):
     fname.parent.mkdir(parents=True, exist_ok=True)
 
     # Use _open_lock for atomic read-modify-write operation
-    # This ensures the file is locked during the entire operation
-    # This prevents race conditions when multiple processes write simultaneously
-    # Use 'a+' mode to ensure the file is created if it does not exist.
-    # 'r+' would fail if the file does not exist.
     with _open_lock(fname, "a+", encoding="utf-8") as fid:
         # Move to beginning of file for reading
         fid.seek(0)
@@ -722,6 +718,8 @@ def _participants_json(fname, overwrite=False):
                     new_data[key] = orig_data[key]
 
         # Write JSON data atomically within the lock context
+        # I could not use the _write_json helper here because it also
+        # handles file locking and I need to manage that manually
         json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
         fid.seek(0)
         fid.truncate()
