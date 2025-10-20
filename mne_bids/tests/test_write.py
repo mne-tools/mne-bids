@@ -4250,10 +4250,11 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
 )
 def test_parallel_write_many_subjects(tmp_path):
     """Ensure parallel writes combine all subjects into a single dataset."""
+    pytest.importorskip("filelock")
     bids_root = tmp_path / "parallel_write_many_subjects"
     bids_root.mkdir(parents=True, exist_ok=True)
     subjects = [f"{idx:03d}" for idx in range(1, 301)]
-    max_workers = min(8, max(1, os.cpu_count() or 1))
+    max_workers = 8
     tasks = [(os.fspath(bids_root), subject, "01") for subject in subjects]
 
     with ProcessPoolExecutor(max_workers=max_workers) as pool:
