@@ -13,7 +13,7 @@ from mne.utils import _soft_import, warn
 
 
 @contextmanager
-def _get_lock_context(path, timeout=60):
+def _get_lock_context(path, timeout=5):
     """Get a file lock context for the given path.
 
     Internal helper function that creates a FileLock if available,
@@ -77,7 +77,7 @@ def _open_lock(path, *args, **kwargs):
         File object if file opening args were provided, None otherwise.
 
     """
-    with _get_lock_context(path, timeout=60) as lock_context:
+    with _get_lock_context(path, timeout=5) as lock_context:
         try:
             with lock_context:
                 if args or kwargs:
@@ -91,7 +91,7 @@ def _open_lock(path, *args, **kwargs):
             # Lock files are left behind to avoid race conditions with concurrent
             # processes. They should be cleaned up explicitly after all parallel
             # operations complete via cleanup_lock_files().
-            pass
+            cleanup_lock_files(path)
 
 
 def cleanup_lock_files(root_path):
