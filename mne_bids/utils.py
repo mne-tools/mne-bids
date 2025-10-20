@@ -551,7 +551,9 @@ def _example_sorter(filename):
     function is defined here (instead of in `conf.py`) because it must be *importable*
     in order for the sphinx gallery config dict in `conf.py` to remain serializable.
     """
-    with _open_lock(Path(__file__).parents[1] / "doc" / "example_order.json") as fid:
+    with _open_lock(
+        Path(__file__).parents[1] / "doc" / "example_order.json", encoding="utf-8"
+    ) as fid:
         EXAMPLE_ORDER = json.load(fid)
 
     if filename not in EXAMPLE_ORDER:
