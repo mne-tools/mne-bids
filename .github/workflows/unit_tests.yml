@@ -128,8 +128,8 @@ jobs:
     # For GitHub "required" CI checks, add in branch protection:
     #
     # 8 checks:
-    # for each machine type (ubuntu, macos, macos-13, windows):
-    # (NOTE: macos-13=x86_64, macos>13=arm64)
+    # for each machine type (ubuntu, macos, macos-15-intel, windows):
+    # (NOTE: macos-15-intel=x86_64, macos=arm64)
     # 3.10 / mne-stable / full / validator-stable
     # 3.13 / mne-stable / full / validator-stable
     #
@@ -143,7 +143,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-13, windows-latest]
+        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
         python-version: ["3.10", "3.13"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
