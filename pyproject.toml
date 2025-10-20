@@ -65,6 +65,7 @@ full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.4.10",
   "eeglabio >= 0.1.0",
+  "filelock",
   "h5py!=3.15.0",  # temporary fix until h5py 3.15.1 is released
   "matplotlib >= 3.6",
   "nibabel >= 3.2.1",
