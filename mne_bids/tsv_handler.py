@@ -154,11 +154,11 @@ def _from_tsv(fname, dtypes=None):
     if data.size == 0:
         warn(f"TSV file is empty: '{fname}'")
         return OrderedDict()
-    
+
     # If data is 1-dimensional (only header), make it 2D
     if data.ndim == 1:
         data = data.reshape(1, -1)
-    
+
     column_names = data[0, :]
     info = data[1:, :]
     data_dict = OrderedDict()

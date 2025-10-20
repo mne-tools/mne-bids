@@ -582,7 +582,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             # We should still treat this as having the file structure, just no rows
         else:
             orig_data = None
-            
+
         if orig_data is not None:
             # whether the new data exists identically in the previous data
             # Use .get() with empty list default in case participant_id column is empty
