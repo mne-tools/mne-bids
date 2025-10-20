@@ -93,17 +93,19 @@ class _FileLockContext:
                 pass
             finally:
                 self._is_locked = False
-                # After releasing, try to clean up the lock file if no one else is using it
+                # After releasing, try to clean up the lock file
+                #  if no one else is using it
                 # This helps reduce accumulation of stale lock files
                 try:
                     if self.lock_path.exists():
-                        # Check if the lock is still in use (is_locked is a property in filelock)
-                        if hasattr(self.lock_obj, 'is_locked'):
+                        # Check if the lock is still in use
+                        # (is_locked is a property in filelock)
+                        if hasattr(self.lock_obj, "is_locked"):
                             is_locked = self.lock_obj.is_locked
                         else:
                             # Fallback: try to treat it as a method or skip cleanup
                             is_locked = False
-                        
+
                         if not is_locked:
                             self.lock_path.unlink()
                 except (OSError, AttributeError):
@@ -155,10 +157,10 @@ def _file_lock(path):
 
 def cleanup_lock_files(root_path):
     """Remove all .lock files in a directory tree.
-    
+
     This function should be called after parallel operations complete to clean up
     lock files that may have been left behind.
-    
+
     Parameters
     ----------
     root_path : str | Path
@@ -167,7 +169,7 @@ def cleanup_lock_files(root_path):
     root_path = Path(root_path)
     if not root_path.exists():
         return
-    
+
     # Find and remove all .lock files
     for lock_file in root_path.rglob("*.lock"):
         try:

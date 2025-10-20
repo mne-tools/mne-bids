@@ -578,8 +578,10 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
     with _file_lock(fname):
         if fname.exists():
             orig_data = _from_tsv(fname)
-            # If we read an empty OrderedDict, it means the file exists but is empty/just has headers
-            # We should still treat this as having the file structure, just no rows
+            # If we read an empty OrderedDict, it means
+            # the file exists but is empty/just has headers
+            # We should still treat this as having the file structure,
+            # just no rows
         else:
             orig_data = None
 
