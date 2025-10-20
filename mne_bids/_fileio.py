@@ -13,12 +13,51 @@ from mne.utils import _soft_import, warn
 
 
 @contextmanager
+def _get_lock_context(path, timeout=60):
+    """Get a file lock context for the given path.
+
+    Internal helper function that creates a FileLock if available,
+    or returns a nullcontext() as fallback.
+
+    Parameters
+    ----------
+    path : str
+        The path to acquire a lock for.
+    timeout : float
+        Timeout in seconds for acquiring the lock (default 60).
+
+    Yields
+    ------
+    context : context manager
+        Either a FileLock or nullcontext.
+    """
+    filelock = _soft_import(
+        "filelock", purpose="parallel file I/O locking", strict=False
+    )
+
+    lock_path = f"{path}.lock"
+    lock_context = contextlib.nullcontext()
+
+    if filelock:
+        try:
+            # Ensure parent directory exists
+            Path(lock_path).parent.mkdir(parents=True, exist_ok=True)
+            lock_context = filelock.FileLock(lock_path, timeout=timeout)
+        except (OSError, TypeError):
+            # OSError: permission issues creating lock file
+            # TypeError: invalid timeout parameter
+            warn("Could not create lock. Proceeding without a lock.")
+
+    yield lock_context
+
+
+@contextmanager
 def _open_lock(path, *args, **kwargs):
     """Context manager that opens a file with an optional file lock.
 
     If the `filelock` package is available, a lock is acquired on a lock file
-    based on the given path (by appending '.lock'). The lock file is
-    automatically removed after the lock is released.
+    based on the given path (by appending '.lock'). Lock files are left behind
+    to avoid race conditions during concurrent operations.
 
     Otherwise, a null context is used. The path is then opened in the
     specified mode.
@@ -32,30 +71,16 @@ def _open_lock(path, *args, **kwargs):
         `open` function.
 
     """
-    filelock = _soft_import(
-        "filelock", purpose="parallel file I/O locking", strict=False
-    )
-
-    lock_path = f"{path}.lock"
-    lock_context = contextlib.nullcontext()
-
-    if filelock:
+    with _get_lock_context(path, timeout=60) as lock_context:
         try:
-            # Ensure parent directory exists
-            Path(lock_path).parent.mkdir(parents=True, exist_ok=True)
-            lock_context = filelock.FileLock(lock_path, timeout=60)
-        except (OSError, TypeError):
-            # TypeError for invalid timeout
-            warn("Could not create lock. Proceeding without a lock.")
-
-    try:
-        with lock_context:
-            with open(path, *args, **kwargs) as fid:
-                yield fid
-    finally:
-        # Lock files are left behind to avoid race conditions with concurrent processes.
-        # They should be cleaned up explicitly after all parallel operations complete.
-        pass
+            with lock_context:
+                with open(path, *args, **kwargs) as fid:
+                    yield fid
+        finally:
+            # Lock files are left behind to avoid race conditions with concurrent
+            # processes. They should be cleaned up explicitly after all parallel
+            # operations complete via cleanup_lock_files().
+            pass
 
 
 @contextmanager
@@ -63,8 +88,8 @@ def _file_lock(path):
     """Acquire a lock on ``path`` without opening the file.
 
     If the `filelock` package is available, a lock is acquired on a lock file
-    based on the given path (by appending '.lock'). The lock file is
-    automatically removed after the lock is released.
+    based on the given path (by appending '.lock'). Lock files are left behind
+    to avoid race conditions during concurrent operations.
 
     Parameters
     ----------
@@ -72,29 +97,15 @@ def _file_lock(path):
         The path to acquire a lock for.
 
     """
-    filelock = _soft_import(
-        "filelock", purpose="parallel file I/O locking", strict=False
-    )
-
-    lock_path = f"{path}.lock"
-    lock_context = contextlib.nullcontext()
-
-    if filelock:
+    with _get_lock_context(path, timeout=60) as lock_context:
         try:
-            # Ensure parent directory exists
-            Path(lock_path).parent.mkdir(parents=True, exist_ok=True)
-            lock_context = filelock.FileLock(lock_path, timeout=60)
-        except (OSError, TypeError):
-            # TypeError for invalid timeout
-            warn("Could not create lock. Proceeding without a lock.")
-
-    try:
-        with lock_context:
-            yield
-    finally:
-        # Lock files are left behind to avoid race conditions with concurrent processes.
-        # They should be cleaned up explicitly after all parallel operations complete.
-        pass
+            with lock_context:
+                yield
+        finally:
+            # Lock files are left behind to avoid race conditions with concurrent
+            # processes. They should be cleaned up explicitly after all parallel
+            # operations complete via cleanup_lock_files().
+            pass
 
 
 def cleanup_lock_files(root_path):
