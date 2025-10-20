@@ -53,54 +53,40 @@ def _get_lock_context(path, timeout=60):
 
 @contextmanager
 def _open_lock(path, *args, **kwargs):
-    """Context manager that opens a file with an optional file lock.
+    """Context manager that acquires a file lock with optional file opening.
 
     If the `filelock` package is available, a lock is acquired on a lock file
     based on the given path (by appending '.lock'). Lock files are left behind
     to avoid race conditions during concurrent operations.
 
-    Otherwise, a null context is used. The path is then opened in the
-    specified mode.
+    If file opening arguments (*args, **kwargs) are provided, the file is opened
+    in the specified mode. Otherwise, just the lock is acquired.
 
     Parameters
     ----------
     path : str
-        The path to the file to be opened.
+        The path to acquire a lock for (and optionally open).
     *args, **kwargs : optional
         Additional arguments and keyword arguments to be passed to the
-        `open` function.
+        `open` function. If provided, the file will be opened. If empty,
+        only the lock will be acquired.
+
+    Yields
+    ------
+    fid : file object or None
+        File object if file opening args were provided, None otherwise.
 
     """
     with _get_lock_context(path, timeout=60) as lock_context:
         try:
             with lock_context:
-                with open(path, *args, **kwargs) as fid:
-                    yield fid
-        finally:
-            # Lock files are left behind to avoid race conditions with concurrent
-            # processes. They should be cleaned up explicitly after all parallel
-            # operations complete via cleanup_lock_files().
-            pass
-
-
-@contextmanager
-def _file_lock(path):
-    """Acquire a lock on ``path`` without opening the file.
-
-    If the `filelock` package is available, a lock is acquired on a lock file
-    based on the given path (by appending '.lock'). Lock files are left behind
-    to avoid race conditions during concurrent operations.
-
-    Parameters
-    ----------
-    path : str
-        The path to acquire a lock for.
-
-    """
-    with _get_lock_context(path, timeout=60) as lock_context:
-        try:
-            with lock_context:
-                yield
+                if args or kwargs:
+                    # File opening arguments provided - open the file
+                    with open(path, *args, **kwargs) as fid:
+                        yield fid
+                else:
+                    # No file opening arguments - just yield the lock context
+                    yield None
         finally:
             # Lock files are left behind to avoid race conditions with concurrent
             # processes. They should be cleaned up explicitly after all parallel

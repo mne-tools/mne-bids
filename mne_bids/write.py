@@ -43,7 +43,7 @@ from mne_bids import (
     get_bids_path_from_fname,
     read_raw_bids,
 )
-from mne_bids._fileio import _file_lock, _open_lock
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_INPUT_EXTENSIONS,
@@ -575,7 +575,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         data[key] = new_value
 
     fname = Path(fname)
-    with _file_lock(fname):
+    with _open_lock(fname):
         if fname.exists():
             orig_data = _from_tsv(fname)
             # If we read an empty OrderedDict, it means
@@ -800,7 +800,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             _write_json(sidecar_json_path, sidecar_json)
 
     fname = Path(fname)
-    with _file_lock(fname):
+    with _open_lock(fname):
         if fname.exists():
             orig_data = _from_tsv(fname)
             # if the file name is already in the file raise an error
@@ -1512,7 +1512,7 @@ def make_dataset_description(
     )
 
     # Handle potentially existing file contents
-    with _file_lock(fname):
+    with _open_lock(fname):
         if op.isfile(fname):
             try:
                 with open(fname, encoding="utf-8-sig") as fin:
