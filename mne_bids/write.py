@@ -578,7 +578,15 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
     with _file_lock(fname):
         if fname.exists():
             orig_data = _from_tsv(fname)
+            # If we read an empty OrderedDict, it means the file exists but is empty/just has headers
+            # We should still treat this as having the file structure, just no rows
+        else:
+            orig_data = None
+            
+        if orig_data is not None:
             # whether the new data exists identically in the previous data
+            # Use .get() with empty list default in case participant_id column is empty
+            existing_participants = orig_data.get("participant_id", [])
             exact_included = _contains_row(
                 data=orig_data,
                 row_data={
@@ -591,7 +599,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
                 },
             )
             # whether the subject id is in the previous data
-            sid_included = subject_id in orig_data["participant_id"]
+            sid_included = subject_id in existing_participants
             # if the subject data provided is different to the currently
             # existing data and overwrite is not True raise an error
             if (sid_included and not exact_included) and not overwrite:
@@ -607,7 +615,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
                 if key in orig_data:
                     continue
 
-                orig_data[key] = ["n/a"] * len(orig_data["participant_id"])
+                orig_data[key] = ["n/a"] * len(existing_participants)
 
             # Append any additional columns that original data had.
             # Keep the original order of the data by looping over
@@ -619,12 +627,13 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
                 # add original value for any user-appended columns
                 # that were not handled by mne-bids
                 p_id = data["participant_id"][0]
-                if p_id in orig_data["participant_id"]:
-                    row_idx = orig_data["participant_id"].index(p_id)
+                if p_id in existing_participants:
+                    row_idx = existing_participants.index(p_id)
                     data[key] = [orig_data[key][row_idx]]
 
-            # otherwise add the new data as new row
-            data = _combine_rows(orig_data, data, "participant_id")
+            # otherwise add the new data as new row if there's existing data
+            if existing_participants:
+                data = _combine_rows(orig_data, data, "participant_id")
 
         _write_tsv(fname, data, overwrite=True)
 
@@ -1501,32 +1510,37 @@ def make_dataset_description(
     )
 
     # Handle potentially existing file contents
-    if op.isfile(fname):
-        with _open_lock(fname, encoding="utf-8-sig") as fin:
-            orig_cols = json.load(fin)
-        if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
-            warnings.warn(
-                "Conflicting BIDSVersion found in dataset_description.json! "
-                "Consider setting BIDS root to a new directory and redo "
-                "conversion after ensuring all software has been updated. "
-                "Original dataset description will not be overwritten."
-            )
-            overwrite = False
-        for key in description:
-            if description[key] is None or not overwrite:
-                description[key] = orig_cols.get(key, None)
+    with _file_lock(fname):
+        if op.isfile(fname):
+            try:
+                with open(fname, encoding="utf-8-sig") as fin:
+                    orig_cols = json.load(fin)
+            except (json.JSONDecodeError, OSError):
+                # File is empty, corrupted, or being written to by another process
+                orig_cols = {}
+            if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
+                warnings.warn(
+                    "Conflicting BIDSVersion found in dataset_description.json! "
+                    "Consider setting BIDS root to a new directory and redo "
+                    "conversion after ensuring all software has been updated. "
+                    "Original dataset description will not be overwritten."
+                )
+                overwrite = False
+            for key in description:
+                if description[key] is None or not overwrite:
+                    description[key] = orig_cols.get(key, None)
 
-    # default author to make dataset description BIDS compliant
-    # if the user passed an author don't overwrite,
-    # if there was an author there, only overwrite if `overwrite=True`
-    if authors is None and (description["Authors"] is None or overwrite):
-        description["Authors"] = ["[Unspecified1]", "[Unspecified2]"]
+        # default author to make dataset description BIDS compliant
+        # if the user passed an author don't overwrite,
+        # if there was an author there, only overwrite if `overwrite=True`
+        if authors is None and (description["Authors"] is None or overwrite):
+            description["Authors"] = ["[Unspecified1]", "[Unspecified2]"]
 
-    # Only write data that is not None
-    pop_keys = [key for key, val in description.items() if val is None]
-    for key in pop_keys:
-        description.pop(key)
-    _write_json(fname, description, overwrite=True)
+        # Only write data that is not None
+        pop_keys = [key for key, val in description.items() if val is None]
+        for key in pop_keys:
+            description.pop(key)
+        _write_json(fname, description, overwrite=True)
 
 
 @verbose

@@ -150,6 +150,15 @@ def _from_tsv(fname, dtypes=None):
     data = np.loadtxt(
         fname, dtype=str, delimiter="\t", ndmin=2, comments=None, encoding="utf-8-sig"
     )
+    # Handle empty files - data may be empty or only have a header
+    if data.size == 0:
+        warn(f"TSV file is empty: '{fname}'")
+        return OrderedDict()
+    
+    # If data is 1-dimensional (only header), make it 2D
+    if data.ndim == 1:
+        data = data.reshape(1, -1)
+    
     column_names = data[0, :]
     info = data[1:, :]
     data_dict = OrderedDict()
@@ -192,6 +201,7 @@ def _to_tsv(data, fname):
     with file_opener(fname, "w", encoding="utf-8-sig") as f:
         f.write(output)
         f.write("\n")
+        f.flush()  # Ensure data is written to disk before lock is released
 
 
 def _tsv_to_str(data, rows=5):
