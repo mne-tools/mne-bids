@@ -54,7 +54,7 @@ def _get_lock_context(path):
             # for slow file operations. If the lock cannot be acquired within this
             # period, an exception is raised and we proceed without a lock.
             lock_obj = filelock.FileLock(lock_path, timeout=30)
-            lock_context = _FileLockContext(lock_obj)
+            lock_context = _FileLockContext(lock_obj, lock_path)
             have_lock = True
             backend = "filelock"
         except OSError as exc:
@@ -67,9 +67,10 @@ def _get_lock_context(path):
 class _FileLockContext:
     """A wrapper around FileLock that handles acquisition/release safely."""
 
-    def __init__(self, lock_obj):
-        """Initialize with a filelock.FileLock object."""
+    def __init__(self, lock_obj, lock_path):
+        """Initialize with a filelock.FileLock object and path."""
         self.lock_obj = lock_obj
+        self.lock_path = lock_path
         self._is_locked = False
 
     def __enter__(self):
@@ -92,6 +93,23 @@ class _FileLockContext:
                 pass
             finally:
                 self._is_locked = False
+                # After releasing, try to clean up the lock file if no one else is using it
+                # This helps reduce accumulation of stale lock files
+                try:
+                    if self.lock_path.exists():
+                        # Check if the lock is still in use (is_locked is a property in filelock)
+                        if hasattr(self.lock_obj, 'is_locked'):
+                            is_locked = self.lock_obj.is_locked
+                        else:
+                            # Fallback: try to treat it as a method or skip cleanup
+                            is_locked = False
+                        
+                        if not is_locked:
+                            self.lock_path.unlink()
+                except (OSError, AttributeError):
+                    # OSError: file might be in use by another process
+                    # AttributeError: is_locked attribute might not exist
+                    pass
 
 
 def _path_is_locked(path) -> bool:
@@ -133,3 +151,27 @@ def _file_lock(path):
     finally:
         if token is not None:
             _LOCKED_PATHS.reset(token)
+
+
+def cleanup_lock_files(root_path):
+    """Remove all .lock files in a directory tree.
+    
+    This function should be called after parallel operations complete to clean up
+    lock files that may have been left behind.
+    
+    Parameters
+    ----------
+    root_path : str | Path
+        Root directory to search for .lock files.
+    """
+    root_path = Path(root_path)
+    if not root_path.exists():
+        return
+    
+    # Find and remove all .lock files
+    for lock_file in root_path.rglob("*.lock"):
+        try:
+            lock_file.unlink()
+        except OSError:
+            # If we can't remove it, skip it (might be in use by another process)
+            pass
