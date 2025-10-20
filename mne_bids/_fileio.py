@@ -6,10 +6,11 @@
 from __future__ import annotations
 
 import contextlib
+import inspect
 from contextlib import contextmanager
 from pathlib import Path
 
-from mne.utils import _soft_import, warn
+from mne.utils import _soft_import, logger, warn
 
 
 @contextmanager
@@ -36,7 +37,21 @@ def _get_lock_context(path, timeout=5):
     )
 
     lock_path = f"{path}.lock"
-    lock_context = contextlib.nullcontext()
+    lock_context = contextlib.nullcontext(enter_result=path)
+
+    stack = "unknown"
+    try:  # this should always work but let's be safe
+        # [0] = here
+        # [1] = contextlib __enter__
+        # [2] = _open_lock
+        # [3] = contextlib __enter__
+        # [4] = caller of _open_lock
+        where = inspect.stack()[4]
+        stack = f"{where.filename}:{where.lineno} {where.function}"
+        del where
+    except Exception:
+        pass
+    logger.debug(f"Lock: acquiring {path} from {stack}")
 
     if filelock:
         try:
@@ -47,8 +62,13 @@ def _get_lock_context(path, timeout=5):
             # OSError: permission issues creating lock file
             # TypeError: invalid timeout parameter
             warn("Could not create lock. Proceeding without a lock.")
-
-    yield lock_context
+    try:
+        yield lock_context
+    except Exception:
+        logger.debug(f"Lock: exception {path} from {stack}")
+        raise
+    finally:
+        logger.debug(f"Lock: released  {path} from {stack}")
 
 
 @contextmanager
@@ -85,7 +105,7 @@ def _open_lock(path, *args, **kwargs):
                     with open(path, *args, **kwargs) as fid:
                         yield fid
                 else:
-                    # No file opening arguments - just yield the lock context
+                    # No file opening arguments - just yield None
                     yield None
         finally:
             # Lock files are left behind to avoid race conditions with concurrent
