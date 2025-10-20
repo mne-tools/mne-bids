@@ -187,7 +187,7 @@ jobs:
 
     - name: Set up Node.js (validator-stable and validator-main)
       if: matrix.bids-validator-version == 'validator-stable' || matrix.bids-validator-version == 'validator-main'
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v6
       with:
         node-version: 20
 
