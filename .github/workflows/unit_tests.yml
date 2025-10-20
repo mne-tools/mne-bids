@@ -175,6 +175,7 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: validator-main-schema
+          # Test macos on x86_64 architecture
           - os: macos-15-intel
             python-version: "3.13"
             mne-version: mne-stable
