@@ -128,8 +128,7 @@ jobs:
     # For GitHub "required" CI checks, add in branch protection:
     #
     # 8 checks:
-    # for each machine type (ubuntu, macos, macos-15-intel, windows):
-    # (NOTE: macos-15-intel=x86_64, macos=arm64)
+    # for each machine type (ubuntu, macos, windows):
     # 3.10 / mne-stable / full / validator-stable
     # 3.13 / mne-stable / full / validator-stable
     #
@@ -138,12 +137,13 @@ jobs:
     # ubuntu / 3.10 / mne-prev / full / validator-stable --> to test last supported of everything
     # ubuntu / 3.13 / mne-stable / minimal / validator-stable --> to test a minimal installation
     # ubuntu / 3.12 / mne-stable / full / validator-main-schema --> to test next-gen BIDS validator
+    # macos-15-intel / 3.13 / mne-stable / full / validator-stable --> to test macos x86_64
     timeout-minutes: 60
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-15-intel, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.13"]  # Oldest and newest supported versions
         mne-version: [mne-stable]
         mne-bids-install: [full]
@@ -175,6 +175,11 @@ jobs:
             mne-version: mne-stable
             mne-bids-install: full
             bids-validator-version: validator-main-schema
+          - os: macos-15-intel
+            python-version: "3.13"
+            mne-version: mne-stable
+            mne-bids-install: full
+            bids-validator-version: validator-stable
 
     env:
       TZ: Europe/Berlin
