@@ -414,7 +414,7 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
 
         acq_time = datetime.strptime(acq_time, date_format)
 
-        if acq_time_is_utc:
+        if acq_time_is_utc or acq_time.tzinfo is None:
             # Enforce setting timezone to UTC without additonal conversion
             acq_time = acq_time.replace(tzinfo=timezone.utc)
         else:
