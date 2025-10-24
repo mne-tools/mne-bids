@@ -13,7 +13,7 @@ EEGLABIO_VERSION = "0.0.2"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-EPHY_ALLOWED_DATATYPES = ["meg", "eeg", "ieeg", "nirs", "emg"]
+EPHY_ALLOWED_DATATYPES = ["eeg", "emg", "ieeg", "meg", "nirs"]
 
 ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
 
@@ -88,7 +88,12 @@ ieeg_manufacturers = {
     ".EEG": "Nihon Kohden",
 }
 
-emg_manufacturers = {}  # TODO
+emg_manufacturers = {
+    ".edf": "n/a",
+    ".EDF": "n/a",
+    ".bdf": "Biosemi",
+    ".BDF": "Biosemi",
+}
 
 nirs_manufacturers = {".snirf": "SNIRF"}
 
@@ -145,8 +150,6 @@ allowed_extensions_eeg = [
 allowed_extensions_emg = [
     ".edf",  # European Data Format
     ".bdf",  # Biosemi
-    # TODO EMG: .bdf support awaits https://github.com/the-siesta-group/edfio/issues/62
-    # and corresponding downstream changes in MNE-Python and here in MNE-BIDS
 ]
 
 allowed_extensions_ieeg = [
@@ -340,6 +343,18 @@ BIDS_SHARED_COORDINATE_FRAMES = (
     + coordsys_wildcard
 )
 
+
+# EMG allows arbitrary (user-defined) coord frames
+class EmgCoordFrames(list):
+    """Container for arbitrary (user-defined) coordinate frames (spaces)."""
+
+    def __contains__(self, item):
+        """Pretends to contain any non-empty string."""
+        return isinstance(item, str) and len(item)
+
+
+BIDS_EMG_COORDINATE_FRAMES = EmgCoordFrames()
+
 ALLOWED_SPACES = dict()
 ALLOWED_SPACES["meg"] = ALLOWED_SPACES["eeg"] = (
     BIDS_SHARED_COORDINATE_FRAMES
@@ -347,7 +362,7 @@ ALLOWED_SPACES["meg"] = ALLOWED_SPACES["eeg"] = (
     + BIDS_EEG_COORDINATE_FRAMES
 )
 ALLOWED_SPACES["ieeg"] = BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FRAMES
-ALLOWED_SPACES["emg"] = None  # TODO revise if we support digitization of EMG sensors?
+ALLOWED_SPACES["emg"] = BIDS_EMG_COORDINATE_FRAMES
 ALLOWED_SPACES["anat"] = None
 ALLOWED_SPACES["beh"] = None
 ALLOWED_SPACES["motion"] = None

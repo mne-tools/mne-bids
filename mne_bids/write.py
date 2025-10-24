@@ -879,7 +879,15 @@ def _mri_scanner_ras_to_mri_voxels(ras_landmarks, img_mgh):
 
 
 def _sidecar_json(
-    raw, task, manufacturer, fname, datatype, emptyroom_fname=None, overwrite=False
+    raw,
+    task,
+    manufacturer,
+    fname,
+    datatype,
+    *,
+    emg_placement=None,
+    emptyroom_fname=None,
+    overwrite=False,
 ):
     """Create a sidecar json file depending on the suffix and save it.
 
@@ -899,6 +907,9 @@ def _sidecar_json(
         Filename to save the sidecar json to.
     datatype : str
         Type of the data as in ALLOWED_ELECTROPHYSIO_DATATYPE.
+    emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
+        How the EMG sensor locations were determined. Must be one of the literal strings
+        if ``datatype="emg"`` and should be ``None`` for all other datatypes.
     emptyroom_fname : str | mne_bids.BIDSPath
         For MEG recordings, the path to an empty-room data file to be
         associated with ``raw``. Only supported for MEG.
@@ -1050,9 +1061,9 @@ def _sidecar_json(
     ch_info_json_emg = [
         ("EMGReference", "n/a"),
         ("EMGGround", "n/a"),
-        # TODO EMG: must be one of Measured, ChannelSpecific, or Other, so writing `n/a`
-        # will lead to a dataset that doesn't validate.
-        ("EMGPlacementScheme", "n/a"),
+        # n/a will fail to validate, but if emg_placement is None that's our bug:
+        # the user-called function write_raw_bids should guarantee a valid string here
+        ("EMGPlacementScheme", emg_placement or "n/a"),
         ("Manufacturer", manufacturer),
     ]
 
@@ -1267,6 +1278,22 @@ def _write_raw_brainvision(raw, bids_fname, events, overwrite):
         fmt=fmt,
         meas_date=None,
     )
+
+
+def _write_raw_bdf(raw, bids_fname, overwrite):
+    """Store data as BDF.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Raw data to save.
+    bids_fname : str
+        The output filename.
+    overwrite : bool
+        Whether to overwrite an existing file or not.
+    """
+    assert str(bids_fname).endswith(".bdf")
+    raw.export(bids_fname, overwrite=overwrite)
 
 
 def _write_raw_edf(raw, bids_fname, overwrite):
@@ -1511,6 +1538,7 @@ def write_raw_bids(
     montage=None,
     acpc_aligned=False,
     electrodes_tsv_task=False,
+    emg_placement=None,
     overwrite=False,
     verbose=None,
 ):
@@ -1690,6 +1718,9 @@ def write_raw_bids(
     electrodes_tsv_task : bool
         Add the ``task-`` entity to the ``electrodes.tsv`` filename.
         Defaults to ``False``.
+    emg_placement : "Measured" | "ChannelSpecific" | "Other" | None
+        How the EMG sensor locations were determined. Must be one of the literal strings
+        if datatype is "emg" and should be ``None`` for all other datatypes.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to ``False``.
@@ -1926,6 +1957,12 @@ def write_raw_bids(
     bids_path = bids_path.copy().update(
         datatype=datatype, suffix=datatype, extension=ext
     )
+
+    if datatype == "emg" and emg_placement is None:
+        raise ValueError(
+            '`emg_placement` must be one of "Measured", "ChannelSpecific", or "Other" '
+            f"(got {emg_placement})"
+        )
 
     # Check whether provided info and raw indicates valid MEG emptyroom data
     data_is_emptyroom = False
@@ -2188,6 +2225,7 @@ def write_raw_bids(
         fname=sidecar_path.fpath,
         datatype=bids_path.datatype,
         emptyroom_fname=associated_er_path,
+        emg_placement=emg_placement,
         overwrite=overwrite,
     )
     _channels_tsv(raw, channels_path.fpath, overwrite)
@@ -2293,16 +2331,14 @@ def write_raw_bids(
             bids_path.update(extension=".edf")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         elif bids_path.datatype in ["emg"] and format == "BDF":
-            # TODO EMG cf: https://github.com/the-siesta-group/edfio/issues/62
-            raise NotImplementedError("Conversion to BDF is not yet supported.")
+            bids_path.update(extension=".bdf")
+            _write_raw_bdf(raw, bids_path.fpath, overwrite=overwrite)
         elif bids_path.datatype in ["eeg", "ieeg"] and format == "EEGLAB":
             warn("Converting data files to EEGLAB format")
             _write_raw_eeglab(raw, bids_path.fpath, overwrite=overwrite)
         elif bids_path.datatype in ["emg"]:
-            # TODO EMG: when writing to BDF is possible, that will be the default here
-            # instead. cf: https://github.com/the-siesta-group/edfio/issues/62
-            bids_path.update(extension=".edf")
-            warn("Converting data files to EDF format")
+            bids_path.update(extension=".bdf")
+            warn("Converting data files to BDF format")
             _write_raw_edf(raw, bids_path.fpath, overwrite=overwrite)
         else:
             warn("Converting data files to BrainVision format")
