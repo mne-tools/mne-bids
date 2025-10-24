@@ -67,11 +67,11 @@ def run():
 
     # Attempt to do the copying. Errors will be raised by the copyfile
     # functions if there are issues with the file formats
-    if opt.input.endswith(".vhdr"):
+    if str(opt.input).endswith(".vhdr"):
         copyfile_brainvision(opt.input, opt.output, opt.verbose)
-    elif opt.input.endswith(".set"):
+    elif str(opt.input).endswith(".set"):
         copyfile_eeglab(opt.input, opt.output)
-    elif opt.input.endswith(".ds"):
+    elif str(opt.input).endswith(".ds"):
         copyfile_ctf(opt.input, opt.output)
     else:
         parser.error(f'{accepted_formats_msg} You supplied: "{opt}"')

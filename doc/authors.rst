@@ -1,5 +1,6 @@
 .. _Aaron Earle-Richardson: https://github.com/Aaronearlerichardson
 .. _Adam Li: https://github.com/adam2392
+.. _Alex Lopez Marquez: https://github.com/alm180
 .. _Alex Rockhill: https://github.com/alexrockhill
 .. _Alexandre Gramfort: http://alexandre.gramfort.net
 .. _Amaia Benitez: https://github.com/AmaiaBA
@@ -8,22 +9,24 @@
 .. _Arne Gottwald: https://github.com/waldie11
 .. _Austin Hurst: https://github.com/a-hurst
 .. _Berk Gerçek: https://github.com/berkgercek
+.. _Bruno Aristimunha: https://github.com/bruAristimunha
 .. _Bruno Hebling Vieira: https://github.com/bhvieira
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
 .. _Christian O'Reilly: https://github.com/christian-oreilly
 .. _Clemens Brunner: https://github.com/cbrnr
 .. _Daniel McCloy: http://dan.mccloy.info
 .. _Denis Engemann: https://github.com/dengemann
-.. _Diego Lozano-Soldevilla: https://github.com/dieloz
+.. _Diego Lozano-Soldevilla: https://orcid.org/0000-0003-1794-8204
 .. _Dominik Welke: https://github.com/dominikwelke
 .. _Eduard Ort: https://github.com/eort
-.. _Eric Larson: https://github.com/larsoner
+.. _Eric Larson: https://larsoner.com/
 .. _Ethan Knights: https://github.com/ethanknights
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
 .. _Ford McDonald: https://github.com/fordmcdonald
 .. _Franziska von Albedyll: https://www.researchgate.net/profile/Franziska-Von-Albedyll
 .. _Fu-Te Wong: https://github.com/zuxfoucault
+.. _Harrison Ritz: https://github.com/harrisonritz
 .. _Jean-Rémi King: https://kingjr.github.io
 .. _Jonathan Vanhoecke: https://sfb-retune.de/people/jonathan-vanhoecke/
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
@@ -32,12 +35,14 @@
 .. _Kambiz Tavabi: https://github.com/ktavabi
 .. _Laetitia Fesselier: https://github.com/laemtl
 .. _Mainak Jas: https://jasmainak.github.io/
-.. _Mara Wolter: https://github.com/marakw
+.. _Mara Wolter: https://www.linkedin.com/in/marawolter/
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Mathieu Scheltienne: https://github.com/mscheltienne
 .. _Matt Sanderson: https://github.com/monkeyman192
+.. _Matthias Dold: https://www.linkedin.com/in/matthiasdold/
 .. _Maximilien Chaumon: https://github.com/dnacombo
 .. _Moritz Gerster: http://moritz-gerster.com
+.. _Nathan Azrak: https://github.com/nathan-az
 .. _Pierre Guetschel: https://github.com/PierreGtch
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Richard Köhler: https://github.com/richardkoehler
@@ -52,5 +57,7 @@
 .. _Teon Brooks: https://teonbrooks.com
 .. _Thomas Hartmann: https://github.com/thht
 .. _Tom Donoghue: https://github.com/TomDonoghue
+.. _waldie11: https://github.com/waldie11
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
+.. _Julius Welzel: https://github.com/JuliusWelzel

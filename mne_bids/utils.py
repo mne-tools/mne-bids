@@ -7,7 +7,6 @@ import json
 import os
 import re
 from datetime import date, datetime, timedelta, timezone
-from os import path as op
 from pathlib import Path
 
 import numpy as np
@@ -232,7 +231,8 @@ def _check_types(variables):
 
 def _write_json(fname, dictionary, overwrite=False):
     """Write JSON to a file."""
-    if op.exists(fname) and not overwrite:
+    fname = Path(fname)
+    if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
@@ -248,7 +248,8 @@ def _write_json(fname, dictionary, overwrite=False):
 @verbose
 def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
     """Write an ordered dictionary to a .tsv file."""
-    if op.exists(fname) and not overwrite:
+    fname = Path(fname)
+    if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )
@@ -259,7 +260,7 @@ def _write_tsv(fname, dictionary, overwrite=False, verbose=None):
 
 def _write_text(fname, text, overwrite=False):
     """Write text to a file."""
-    if op.exists(fname) and not overwrite:
+    if fname.exists() and not overwrite:
         raise FileExistsError(
             f'"{fname}" already exists. Please set overwrite to True.'
         )

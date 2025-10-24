@@ -6,7 +6,7 @@
 from mne import io
 from mne.io.constants import FIFF
 
-BIDS_VERSION = "1.7.0"
+BIDS_VERSION = "1.9.0"
 
 PYBV_VERSION = "0.7.3"
 EEGLABIO_VERSION = "0.0.2"
@@ -15,19 +15,21 @@ DOI = """https://doi.org/10.21105/joss.01896"""
 
 EPHY_ALLOWED_DATATYPES = ["meg", "eeg", "ieeg", "nirs", "emg"]
 
-ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh"]
+ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ["anat", "beh", "motion"]
 
 MEG_CONVERT_FORMATS = ["FIF", "auto"]
 EEG_CONVERT_FORMATS = ["BrainVision", "auto"]
 EMG_CONVERT_FORMATS = ["EDF", "BDF", "auto"]
 IEEG_CONVERT_FORMATS = ["BrainVision", "auto"]
 NIRS_CONVERT_FORMATS = ["auto"]
+MOTION_CONVERT_FORMATS = ["tsv", "auto"]
 CONVERT_FORMATS = {
     "meg": MEG_CONVERT_FORMATS,
     "eeg": EEG_CONVERT_FORMATS,
     "emg": EMG_CONVERT_FORMATS,
     "ieeg": IEEG_CONVERT_FORMATS,
     "nirs": NIRS_CONVERT_FORMATS,
+    "motion": MOTION_CONVERT_FORMATS,
 }
 
 # Orientation of the coordinate system dependent on manufacturer
@@ -159,6 +161,10 @@ allowed_extensions_nirs = [
     ".snirf",  # SNIRF
 ]
 
+allowed_extensions_motion = [
+    ".tsv",  # Tab-separated values
+]
+
 # allowed extensions (data formats) in BIDS spec
 ALLOWED_DATATYPE_EXTENSIONS = {
     "meg": allowed_extensions_meg,
@@ -166,6 +172,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {
     "emg": allowed_extensions_emg,
     "ieeg": allowed_extensions_ieeg,
     "nirs": allowed_extensions_nirs,
+    "motion": allowed_extensions_motion,
 }
 
 # allow additional extensions that are not BIDS
@@ -194,6 +201,7 @@ ALLOWED_FILENAME_SUFFIX = [
     "emg",
     "nirs",
     "T1w",
+    "T2w",
     "FLASH",
     # sidecars:
     "participants",
@@ -211,6 +219,7 @@ ALLOWED_FILENAME_SUFFIX = [
     "beh",
     "physio",
     "stim",
+    "motion",
 ]
 
 # converts suffix to known path modalities
@@ -249,6 +258,7 @@ ALLOWED_PATH_ENTITIES = (
     "description",
     "suffix",
     "extension",
+    "tracking_system",
 )
 ALLOWED_PATH_ENTITIES_SHORT = {
     "sub": "subject",
@@ -261,6 +271,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {
     "recording": "recording",
     "split": "split",
     "desc": "description",
+    "tracksys": "tracking_system",
 }
 
 # Annotations to never remove during reading or writing
@@ -339,6 +350,7 @@ ALLOWED_SPACES["ieeg"] = BIDS_SHARED_COORDINATE_FRAMES + BIDS_IEEG_COORDINATE_FR
 ALLOWED_SPACES["emg"] = None  # TODO revise if we support digitization of EMG sensors?
 ALLOWED_SPACES["anat"] = None
 ALLOWED_SPACES["beh"] = None
+ALLOWED_SPACES["motion"] = None
 
 # See: https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa: E501
 ENTITY_VALUE_TYPE = {
@@ -354,6 +366,7 @@ ENTITY_VALUE_TYPE = {
     "description": "label",
     "suffix": "label",
     "extension": "label",
+    "tracking_system": "label",
 }
 
 # mapping from supported BIDs coordinate frames -> MNE

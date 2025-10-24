@@ -45,6 +45,7 @@ mne_bids
    update_sidecar_json
    anonymize_dataset
    find_matching_paths
+   events_file_to_annotation_kwargs
 
 mne_bids.stats
 --------------

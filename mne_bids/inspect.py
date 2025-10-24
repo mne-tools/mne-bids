@@ -124,7 +124,11 @@ def inspect_dataset(
 _global_vars = dict(raw_fig=None, dialog_fig=None, mne_close_key=None)
 
 
-def _inspect_raw(*, bids_path, l_freq, h_freq, find_flat, show_annotations):
+# do you think we should expose the verbose of this functions?
+@verbose
+def _inspect_raw(
+    *, bids_path, l_freq, h_freq, find_flat, show_annotations, verbose=None
+):
     """Raw data inspection."""
     # Delay the import
     import matplotlib

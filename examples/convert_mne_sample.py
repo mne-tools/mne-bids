@@ -11,7 +11,7 @@ In this example we will use MNE-BIDS to organize the MNE sample data according
 to the BIDS standard.
 In a second step we will read the organized dataset using MNE-BIDS.
 
-.. _BIDS dataset_description.json definition: https://bids-specification.readthedocs.io/en/latest/modality-agnostic-files.html#dataset-description
+.. _BIDS dataset_description.json definition: https://bids-specification.readthedocs.io/en/latest/modality-agnostic-files.html
 .. _ds000248 dataset_description.json: https://github.com/sappelhoff/bids-examples/blob/master/ds000248/dataset_description.json
 """  # noqa: D400 E501
 
@@ -23,7 +23,6 @@ In a second step we will read the organized dataset using MNE-BIDS.
 # sample data, and then finally the MNE-BIDS functions we need for this example
 
 import json
-import os.path as op
 import shutil
 from pprint import pprint
 
@@ -58,10 +57,10 @@ event_id = {
     "Button": 32,
 }
 
-raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw.fif")
-er_fname = op.join(data_path, "MEG", "sample", "ernoise_raw.fif")  # empty room
-events_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-eve.fif")
-output_path = op.join(data_path, "..", "MNE-sample-data-bids")
+raw_fname = data_path / "MEG" / "sample" / "sample_audvis_raw.fif"
+er_fname = data_path / "MEG" / "sample" / "ernoise_raw.fif"  # empty room
+events_fname = data_path / "MEG" / "sample" / "sample_audvis_raw-eve.fif"
+output_path = data_path.parent / "MNE-sample-data-bids"
 
 # %%
 # To ensure the output path doesn't contain any leftover files from previous
@@ -70,7 +69,7 @@ output_path = op.join(data_path, "..", "MNE-sample-data-bids")
 # .. warning:: Do not delete directories that may contain important data!
 #
 
-if op.exists(output_path):
+if output_path.exists():
     shutil.rmtree(output_path)
 
 # %%
@@ -122,8 +121,8 @@ print(sidecar_json_content)
 # are required when processing Elekta/Neuromag/MEGIN data using MaxFilter®.
 # Let's store these data in appropriate places, too.
 
-cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
-ct_fname = op.join(data_path, "SSS", "ct_sparse_mgh.fif")
+cal_fname = data_path / "SSS" / "sss_cal_mgh.dat"
+ct_fname = data_path / "SSS" / "ct_sparse_mgh.fif"
 
 write_meg_calibration(cal_fname, bids_path)
 write_meg_crosstalk(ct_fname, bids_path)
@@ -174,7 +173,7 @@ print(bids_path.meg_crosstalk_fpath)
 # The README created by :func:`write_raw_bids` also takes care of the citation
 # for mne-bids. If you are preparing a manuscript, please make sure to also
 # cite MNE-BIDS there.
-readme = op.join(output_path, "README")
+readme = output_path / "README"
 with open(readme, encoding="utf-8-sig") as fid:
     text = fid.read()
 print(text)

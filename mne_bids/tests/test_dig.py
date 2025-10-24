@@ -6,9 +6,8 @@ For each supported coordinate frame, implement a test.
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
-import os.path as op
 import warnings
+from pathlib import Path
 
 import mne
 import numpy as np
@@ -31,7 +30,7 @@ from mne_bids.dig import (
     template_to_head,
 )
 
-base_path = op.join(op.dirname(mne.__file__), "io")
+base_path = Path(mne.__file__).parent / "io"
 subject_id = "01"
 session_id = "01"
 run = "01"
@@ -48,7 +47,7 @@ data_path = testing.data_path(download=False)
 
 def _load_raw():
     """Load the sample raw data."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
     raw = mne.io.read_raw(raw_fname)
     raw.drop_channels(raw.info["bads"])
     raw.info["line_freq"] = 60
@@ -61,7 +60,7 @@ def test_dig_io(tmp_path):
     bids_root = tmp_path / "bids1"
     raw = _load_raw()
     for datatype in ("eeg", "ieeg"):
-        os.makedirs(op.join(bids_root, "sub-01", "ses-01", datatype))
+        (bids_root / "sub-01" / "ses-01" / datatype).mkdir(exist_ok=True, parents=True)
 
     # test no coordinate frame in dig or in bids_path.space
     montage = raw.get_montage()
@@ -106,8 +105,8 @@ def test_dig_pixels(tmp_path):
     bids_path = _bids_path.copy().update(
         root=bids_root, datatype="ieeg", space="Pixels"
     )
-    os.makedirs(
-        op.join(bids_root, "sub-01", "ses-01", bids_path.datatype), exist_ok=True
+    (bids_root / "sub-01" / "ses-01" / bids_path.datatype).mkdir(
+        exist_ok=True, parents=True
     )
     raw = _load_raw()
     raw.pick(["eeg"])
@@ -280,12 +279,10 @@ def test_template_to_head():
     _set_montage_no_trans(raw, montage)
     trans = template_to_head(raw.info, "fsaverage", "mri")[1]
     trans2 = mne.read_trans(
-        op.join(
-            op.dirname(op.dirname(mne_bids.__file__)),
-            "mne_bids",
-            "data",
-            "space-fsaverage_trans.fif",
-        )
+        Path(mne_bids.__file__).parent.parent
+        / "mne_bids"
+        / "data"
+        / "space-fsaverage_trans.fif"
     )
     assert_almost_equal(trans["trans"], trans2["trans"])
 
@@ -337,11 +334,11 @@ def test_convert_montage():
     raw = _load_raw()
     montage = raw.get_montage()
     trans = mne.read_trans(
-        op.join(data_path, "MEG", "sample", "sample_audvis_trunc-trans.fif")
+        data_path / "MEG" / "sample" / "sample_audvis_trunc-trans.fif"
     )
     montage.apply_trans(trans)
 
-    subjects_dir = op.join(data_path, "subjects")
+    subjects_dir = data_path / "subjects"
     # test read
     with pytest.raises(RuntimeError, match="incorrectly formatted"):
         convert_montage_to_mri(montage, "foo", subjects_dir)
@@ -381,3 +378,75 @@ def test_electrodes_io(tmp_path):
         )  # don't need the header
         # only eeg chs w/ electrode pos should be written to electrodes.tsv
         assert n_entries == len(raw.get_channel_types("eeg"))
+
+
+@testing.requires_testing_data
+def test_task_specific_electrodes_sidecar(tmp_path):
+    """Test the optional task- entity in electrodes.tsv."""
+    raw = _load_raw()
+    raw.pick(["eeg"])
+    raw_foo = raw.copy().load_data().pick(slice(None, len(raw.ch_names) // 2))
+    raw_bar = raw.copy().load_data().pick(slice(len(raw.ch_names) // 2, None))
+
+    bids_root1 = tmp_path / "bids1"
+    bids_root2 = tmp_path / "bids2"
+
+    bpath_kwargs = dict(
+        root=bids_root1,
+        subject="01",
+        session="01",
+        run="01",
+        acquisition="01",
+        task="foo",
+    )
+
+    write_kwargs = dict(
+        allow_preload=True,
+        electrodes_tsv_task=True,
+        format="BrainVision",
+    )
+
+    bpath = mne_bids.BIDSPath(**bpath_kwargs)
+    bpath_foo = mne_bids.write_raw_bids(raw_foo, bpath, **write_kwargs)
+
+    bpath_kwargs.update(task="bar")
+    bpath = mne_bids.BIDSPath(**bpath_kwargs)
+    bpath_bar = mne_bids.write_raw_bids(raw_bar, bpath, **write_kwargs)
+
+    elpath_foo = bpath_foo.find_matching_sidecar(suffix="electrodes", extension=".tsv")
+    elpath_bar = bpath_bar.find_matching_sidecar(suffix="electrodes", extension=".tsv")
+
+    assert (
+        elpath_foo.name == "sub-01_ses-01_task-foo_acq-01_space-CapTrak_electrodes.tsv"
+    )
+    assert (
+        elpath_bar.name == "sub-01_ses-01_task-bar_acq-01_space-CapTrak_electrodes.tsv"
+    )
+
+    coordpath_foo = bpath_foo.find_matching_sidecar(
+        suffix="coordsystem", extension=".json"
+    )
+    coordpath_bar = bpath_bar.find_matching_sidecar(
+        suffix="coordsystem", extension=".json"
+    )
+
+    assert coordpath_foo.name == "sub-01_ses-01_acq-01_space-CapTrak_coordsystem.json"
+    assert coordpath_bar.name == "sub-01_ses-01_acq-01_space-CapTrak_coordsystem.json"
+
+    # make sure we are reading the correct electrodes sidecar
+    raw_foo_want_pos = raw_foo.get_montage().get_positions()["ch_pos"]["EEG 029"]
+    raw_foo = mne_bids.read_raw_bids(bpath_foo)
+    np.testing.assert_allclose(
+        raw_foo.get_montage().get_positions()["ch_pos"]["EEG 029"], raw_foo_want_pos
+    )
+
+    # Now test for no task- entity in electrodes.tsv
+
+    bpath_kwargs.update(root=bids_root2)
+    write_kwargs.update(electrodes_tsv_task=False)
+
+    bpath = mne_bids.BIDSPath(**bpath_kwargs)
+    bpath_foo = mne_bids.write_raw_bids(raw_foo, bpath, **write_kwargs)
+
+    elpath_foo = bpath_foo.find_matching_sidecar(suffix="electrodes", extension=".tsv")
+    assert elpath_foo.name == "sub-01_ses-01_acq-01_space-CapTrak_electrodes.tsv"

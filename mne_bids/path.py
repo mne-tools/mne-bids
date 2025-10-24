@@ -65,9 +65,6 @@ def _find_empty_room_candidates(bids_path):
     )
 
     allowed_extensions = list(reader.keys())
-    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
-    # a dedicated directory that doesn't have an extension)
-    del allowed_extensions[allowed_extensions.index(".pdf")]
 
     # Get possible noise task files in the same directory as the recording.
     noisetask_tmp = [
@@ -253,7 +250,7 @@ class BIDSPath:
     processing : str | None
         The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name. Corresponds to "rec".
+        The recording name. Corresponds to "recording".
     space : str | None
         The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
@@ -385,6 +382,7 @@ class BIDSPath:
         space=None,
         split=None,
         description=None,
+        tracking_system=None,
         root=None,
         suffix=None,
         extension=None,
@@ -410,8 +408,6 @@ class BIDSPath:
         ):
             raise ValueError("At least one parameter must be given.")
 
-        self.check = check
-
         self.update(
             subject=subject,
             session=session,
@@ -423,10 +419,12 @@ class BIDSPath:
             space=space,
             split=split,
             description=description,
+            tracking_system=tracking_system,
             root=root,
             datatype=datatype,
             suffix=suffix,
             extension=extension,
+            check=check,
         )
 
     @property
@@ -443,6 +441,7 @@ class BIDSPath:
             "recording": self.recording,
             "split": self.split,
             "description": self.description,
+            "tracking_system": self.tracking_system,
         }
 
     @property
@@ -575,6 +574,15 @@ class BIDSPath:
     @description.setter
     def description(self, value):
         self.update(description=value)
+
+    @property
+    def tracking_system(self) -> str | None:
+        """The tracking system entity."""
+        return self._tracking_system
+
+    @tracking_system.setter
+    def tracking_system(self, value):
+        self.update(tracking_system=value)
 
     @property
     def suffix(self) -> str | None:
@@ -864,7 +872,10 @@ class BIDSPath:
         if self.suffix == "meg" and self.extension == ".ds":
             bids_fpath = op.join(data_path, self.basename)
         elif self.suffix == "meg" and self.extension == ".pdf":
-            bids_fpath = op.join(data_path, op.splitext(self.basename)[0])
+            bids_fpath = op.join(data_path, self.basename)
+            legacy_dir = op.join(data_path, op.splitext(self.basename)[0])
+            if not op.exists(bids_fpath) and op.isdir(legacy_dir):
+                bids_fpath = legacy_dir
         else:
             # if suffix and/or extension is missing, and root is
             # not None, then BIDSPath will infer the dataset
@@ -882,7 +893,9 @@ class BIDSPath:
                 if self.suffix is None or self.suffix in ALLOWED_DATATYPES:
                     # now only use valid datatype extension
                     if self.extension is None:
-                        valid_exts = sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
+                        valid_exts = ALLOWED_DATATYPE_EXTENSIONS.get(
+                            self.datatype, sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
+                        )
                     else:
                         valid_exts = [self.extension]
                     matching_paths = [
@@ -924,10 +937,10 @@ class BIDSPath:
         return bids_fpath
 
     def update(self, *, check=None, **kwargs):
-        """Update inplace BIDS entity key/value pairs in object.
+        """Update in-place BIDS entity key/value pairs in object.
 
         ``run`` and ``split`` are auto-converted to have two
-        digits. For example, if ``run=1``, then it will nbecome ``run='01'``.
+        digits. For example, if ``run=1``, then it will become ``run='01'``.
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
@@ -1092,6 +1105,7 @@ class BIDSPath:
             datatype=self.datatype,
             ignore_json=ignore_json,
             ignore_nosub=ignore_nosub,
+            entities=self.entities,
         )
 
         fnames = _filter_fnames(
@@ -1364,20 +1378,24 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     sub, ses = bids_path.subject, bids_path.session
     datatype = bids_path.datatype
     basename, bids_root = bids_path.basename, bids_path.root
+    check = bids_path.check
 
     if datatype is None:
         datatype = _infer_datatype(root=bids_root, sub=sub, ses=ses)
 
     data_dir = BIDSPath(
-        subject=sub, session=ses, datatype=datatype, root=bids_root
+        subject=sub, session=ses, datatype=datatype, root=bids_root, check=check
     ).directory
 
-    # For BTi data, just return the directory with a '.pdf' extension
-    # to facilitate reading in mne-bids
-    bti_dir = op.join(data_dir, f"{basename}")
-    if op.isdir(bti_dir):
+    # For BTi data, return the run directory (with or without '.pdf' suffix)
+    bti_dir_with_ext = op.join(data_dir, f"{basename}")
+    bti_dir = op.join(data_dir, op.splitext(basename)[0])
+    if op.isdir(bti_dir_with_ext):
+        logger.info(f"Assuming BTi data in {bti_dir_with_ext}")
+        matching_paths = [bti_dir_with_ext]
+    elif op.isdir(bti_dir):
         logger.info(f"Assuming BTi data in {bti_dir}")
-        matching_paths = [f"{bti_dir}.pdf"]
+        matching_paths = [bti_dir]
     # otherwise, search for valid file paths
     else:
         search_str = bids_root
@@ -1390,7 +1408,9 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
             search_str = op.join(search_str, datatype)
         else:
             search_str = op.join(search_str, "**")
-        search_str = op.join(search_str, f"{basename}*")
+        # The basename should end with a separator "_" or a period "."
+        # to avoid matching only the beggining of a value.
+        search_str = op.join(search_str, f"{basename}[_.]*")
 
         # Find all matching files in all supported formats.
         valid_exts = ALLOWED_FILENAME_EXTENSIONS
@@ -2323,6 +2343,7 @@ def _filter_fnames(
     description=None,
     suffix=None,
     extension=None,
+    tracking_system=None,
 ):
     """Filter a list of BIDS filenames / paths based on BIDS entity values.
 
@@ -2349,6 +2370,7 @@ def _filter_fnames(
     description = _ensure_tuple(description)
     suffix = _ensure_tuple(suffix)
     extension = _ensure_tuple(extension)
+    tracking_system = _ensure_tuple(tracking_system)
 
     leading_path_str = r".*\/?"  # nothing or something ending with a `/`
     sub_str = r"sub-(" + "|".join(subject) + ")" if subject else r"sub-([^_]+)"
@@ -2372,7 +2394,12 @@ def _filter_fnames(
         r"_desc-(" + "|".join(description) + ")" if description else r"(|_desc-([^_]+))"
     )
     suffix_str = r"_(" + "|".join(suffix) + ")" if suffix else r"_([^_]+)"
-    ext_str = r"(" + "|".join(extension) + ")$" if extension else r".([^_]+)"
+    ext_str = r"(" + "|".join(extension) + ")$" if extension else r"\.([^_]+)"
+    tracksys_str = (
+        r"tracksys-(" + "|".join(tracking_system) + ")"
+        if tracking_system
+        else r"(|tracksys-([^_]+))"
+    )
 
     regexp = (
         leading_path_str
@@ -2388,6 +2415,7 @@ def _filter_fnames(
         + desc_str
         + suffix_str
         + ext_str
+        + tracksys_str
     )
 
     # Convert to str so we can apply the regexp ...
@@ -2445,7 +2473,7 @@ def find_matching_paths(
     processings : str | array-like of str | None
         The processing label. Corresponds to "proc".
     recordings : str | array-like of str | None
-        The recording name. Corresponds to "rec".
+        The recording name. Corresponds to "recording".
     spaces : str | array-like of str | None
         The coordinate space for anatomical and sensor location
         files (e.g., ``*_electrodes.tsv``, ``*_markers.mrk``).
@@ -2515,8 +2543,10 @@ def find_matching_paths(
     return bids_paths
 
 
-def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False):
-    """Return all file paths + .ds paths in root.
+def _return_root_paths(
+    root, datatype=None, ignore_json=True, ignore_nosub=False, entities=None
+):
+    """Return all file paths + .ds paths in root with entity-aware optimization.
 
     Can be filtered by datatype (which is present in the path but not in
     the BIDSPath basename). Can also be list of datatypes.
@@ -2533,6 +2563,9 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     ignore_nosub : bool
         If ``True``, return only files of the form ``root/sub-*``. Defaults to
         ``False``.
+    entities : dict | None
+        Dictionary of BIDS entities to enable targeted directory scanning.
+        If provided with 'subject', will scan only that subject's directory.
 
     Returns
     -------
@@ -2541,30 +2574,91 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
     """
     root = Path(root)  # if root is str
 
-    if datatype is None and not ignore_nosub:
-        paths = root.rglob("*.*")
-    else:
+    # OPTIMIZATION: Use entity-aware path construction when entities available
+    if entities and entities.get("subject"):
+        # Build targeted search path starting from subject directory
+        search_parts = [f"sub-{entities['subject']}"]
+
+        # Add session if available
+        if entities.get("session"):
+            search_parts.append(f"ses-{entities['session']}")
+
+        # Add datatype-specific path
         if datatype is not None:
             datatype = _ensure_tuple(datatype)
-            search_str = f"**/{'|'.join(datatype)}/*.*"
+            if len(datatype) == 1:
+                # Single datatype - construct direct path
+                search_parts.extend(["**", datatype[0]])
+                search_str = "/".join(search_parts) + "/*.*"
+            else:
+                # Multiple datatypes - search each separately
+                paths = []
+                for dt in datatype:
+                    dt_search_parts = search_parts + ["**", dt]
+                    dt_search_str = "/".join(dt_search_parts) + "/*.*"
+                    paths.extend(
+                        [
+                            Path(root, fn)
+                            for fn in glob.iglob(
+                                dt_search_str, root_dir=root, recursive=True
+                            )
+                        ]
+                    )
+                return _filter_paths_optimized(paths, ignore_json)
         else:
-            search_str = "**/*.*"
+            # No datatype specified - search all datatypes under subject
+            search_parts.append("**")
+            search_str = "/".join(search_parts) + "/*.*"
 
-        # only browse files which are of the form root/sub-*,
-        # such that we truely only look in 'sub'-folders:
-        if ignore_nosub:
-            search_str = f"sub-*/{search_str}"
-        # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
-        # Most of the speedup is from using glob.iglob here.
+        # Single search with optimized path
         paths = [
             Path(root, fn)
             for fn in glob.iglob(search_str, root_dir=root, recursive=True)
         ]
 
+    else:
+        # FALLBACK: Original implementation when entities not available
+        # or subject unknown
+        if datatype is None and not ignore_nosub:
+            paths = root.rglob("*.*")
+        else:
+            if datatype is not None:
+                datatype = _ensure_tuple(datatype)
+                # If multiple datatypes are provided, search each separately
+                # (glob does not support alternation with '|').
+                paths = []
+                for dt in datatype:
+                    dt_search = f"**/{dt}/*.*"
+                    if ignore_nosub:
+                        dt_search = f"sub-*/{dt_search}"
+                    paths.extend(
+                        [
+                            Path(root, fn)
+                            for fn in glob.iglob(
+                                dt_search, root_dir=root, recursive=True
+                            )
+                        ]
+                    )
+            else:
+                search_str = "**/*.*"
+                if ignore_nosub:
+                    search_str = f"sub-*/{search_str}"
+                # TODO: Why is this not equivalent to list(root.rglob(search_str)) ?
+                # Most of the speedup is from using glob.iglob here.
+                paths = [
+                    Path(root, fn)
+                    for fn in glob.iglob(search_str, root_dir=root, recursive=True)
+                ]
+
+    return _filter_paths_optimized(paths, ignore_json)
+
+
+def _filter_paths_optimized(paths, ignore_json):
+    """Filter paths based on file type criteria - extracted for reuse."""
     # Only keep files (not directories), ...
     # and omit the JSON sidecars if `ignore_json` is True.
     if ignore_json:
-        paths = [
+        return [
             p
             for p in paths
             if (p.is_file() and p.suffix != ".json")
@@ -2573,15 +2667,13 @@ def _return_root_paths(root, datatype=None, ignore_json=True, ignore_nosub=False
             or (p.is_dir() and p.suffix == ".ds")
         ]
     else:
-        paths = [
+        return [
             p
             for p in paths
             if p.is_file()
             # XXX: see above, generalize with private func
             or (p.is_dir() and p.suffix == ".ds")
         ]
-
-    return paths
 
 
 def _fnames_to_bidspaths(fnames, root, check=False):

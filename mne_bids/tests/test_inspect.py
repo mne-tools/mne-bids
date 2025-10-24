@@ -3,8 +3,6 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os.path as op
-
 import mne
 import numpy as np
 import pytest
@@ -32,7 +30,7 @@ data_path = testing.data_path(download=False)
 
 def setup_bids_test_dir(bids_root):
     """Return path to a written test BIDS dir."""
-    raw_fname = op.join(data_path, "MEG", "sample", "sample_audvis_trunc_raw.fif")
+    raw_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw.fif"
 
     event_id = {
         "Auditory/Left": 1,
@@ -42,11 +40,9 @@ def setup_bids_test_dir(bids_root):
         "Smiley": 5,
         "Button": 32,
     }
-    events_fname = op.join(
-        data_path, "MEG", "sample", "sample_audvis_trunc_raw-eve.fif"
-    )
-    cal_fname = op.join(data_path, "SSS", "sss_cal_mgh.dat")
-    crosstalk_fname = op.join(data_path, "SSS", "ct_sparse.fif")
+    events_fname = data_path / "MEG" / "sample" / "sample_audvis_trunc_raw-eve.fif"
+    cal_fname = data_path / "SSS" / "sss_cal_mgh.dat"
+    crosstalk_fname = data_path / "SSS" / "ct_sparse.fif"
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info["line_freq"] = 60

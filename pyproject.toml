@@ -14,6 +14,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python",
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering",
@@ -57,13 +58,14 @@ doc = [
   "seaborn",
   "sphinx-copybutton",
   "sphinx>=7.4.7",
-  "sphinx_gallery @ https://github.com/sphinx-gallery/sphinx-gallery/archive/refs/heads/master.zip",
+  "sphinx_gallery",
 ]
 # Dependencies for using all mne_bids features
 full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
-  "edfio >= 0.2.1",
-  "eeglabio >= 0.0.2",
+  "edfio >= 0.4.10",
+  "eeglabio >= 0.1.0",
+  "h5py!=3.15.0",  # temporary fix until h5py 3.15.1 is released
   "matplotlib >= 3.6",
   "nibabel >= 3.2.1",
   "pandas >= 1.3.2",
