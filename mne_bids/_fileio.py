@@ -205,55 +205,46 @@ def _increment_lock_refcount(file_path):
         The original file path (not the lock file path).
     """
     file_path = Path(file_path)
-    refcount_file = file_path.parent / f"{file_path.name}.lock.refcount"
+    refcount_path = file_path.parent / f"{file_path.name}.lock.refcount"
+    refcount_lock_path = Path(f"{refcount_path}.lock")
 
+    filelock = _soft_import("filelock", purpose="lock refcounting", strict=False)
+    if filelock is None:
+        return
+
+    refcount_lock = filelock.FileLock(str(refcount_lock_path), timeout=5.0)
     try:
-        from filelock import FileLock
-
-        # Use the refcount file as a lock for atomic refcount operations
-        refcount_lock = FileLock(f"{refcount_file}.lock", timeout=5.0)
-
-        try:
-            with refcount_lock:
-                # Read current refcount
+        with refcount_lock:
+            # Read current refcount or initialize to 0
+            current_count = 0
+            if refcount_path.exists():
                 try:
-                    if refcount_file.exists():
-                        count = int(refcount_file.read_text().strip())
-                    else:
-                        count = 0
+                    current_count = int(refcount_path.read_text().strip())
                 except (ValueError, OSError):
-                    count = 0
+                    logger.debug(f"Could not read refcount from {refcount_path}")
 
-                # Increment refcount
-                count += 1
-
-                # Write back incremented count
-                try:
-                    refcount_file.write_text(str(count))
-                except OSError:
-                    pass
-        except TimeoutError:
-            # Another process is updating refcount, that's OK
-            pass
-        finally:
-            # Clean up the refcount lock file
+            # Increment and write back
+            current_count += 1
             try:
-                refcount_lock_file = Path(f"{refcount_file}.lock")
-                if refcount_lock_file.exists():
-                    refcount_lock_file.unlink()
-            except OSError:
-                pass
-
-    except ImportError:
-        # filelock not available, skip refcounting
-        pass
-    except Exception:
-        # Any other error, skip refcounting
-        pass
+                refcount_path.write_text(str(current_count))
+            except OSError as exp:
+                logger.debug(f"Could not write refcount to {refcount_path}: {exp}")
+    except TimeoutError:
+        # Another process is updating refcount concurrently
+        logger.debug(f"Timeout acquiring refcount lock for {file_path}")
+    except Exception as exp:
+        logger.debug(f"Error incrementing refcount for {file_path}: {exp}")
+    finally:
+        # Clean up the refcount lock file
+        try:
+            if refcount_lock_path.exists():
+                refcount_lock_path.unlink()
+        except OSError:
+            pass
 
 
 def _decrement_and_cleanup_lock_file(file_path):
-    """Safely remove a lock file using multiprocess reference counting.
+    """Decrement refcount and remove lock file if no longer in use.
 
     Maintains a reference count in a .refcount file to track how many processes
     are currently using or waiting for the lock. Only deletes the lock file when
@@ -264,75 +255,70 @@ def _decrement_and_cleanup_lock_file(file_path):
     file_path : Path
         The original file path (not the lock file path).
     """
-    file_path = Path(file_path)
-    lock_file = file_path.parent / f"{file_path.name}.lock"
-    refcount_file = file_path.parent / f"{file_path.name}.lock.refcount"
+    from pathlib import Path
 
-    # Don't try to cleanup if the lock file doesn't exist
-    if not lock_file.exists():
-        # Clean up refcount file if it exists but lock doesn't
+    file_path = Path(file_path)
+    lock_path = file_path.parent / f"{file_path.name}.lock"
+    refcount_path = file_path.parent / f"{file_path.name}.lock.refcount"
+    refcount_lock_path = Path(f"{refcount_path}.lock")
+
+    # Early return if lock file doesn't exist
+    if not lock_path.exists():
+        # Clean up orphaned refcount file if it exists
         try:
-            if refcount_file.exists():
-                refcount_file.unlink()
+            if refcount_path.exists():
+                refcount_path.unlink()
         except OSError:
             pass
         return
 
+    filelock = _soft_import("filelock", purpose="lock refcounting", strict=False)
+    if filelock is None:
+        return
+
+    refcount_lock = filelock.FileLock(str(refcount_lock_path), timeout=5.0)
     try:
-        from filelock import FileLock
-
-        # Use the refcount file as a lock for atomic refcount operations
-        refcount_lock = FileLock(f"{refcount_file}.lock", timeout=5.0)
-
-        try:
-            with refcount_lock:
-                # Read current refcount
+        with refcount_lock:
+            # Read current refcount or initialize to 0
+            current_count = 0
+            if refcount_path.exists():
                 try:
-                    if refcount_file.exists():
-                        count = int(refcount_file.read_text().strip())
-                    else:
-                        count = 0
+                    current_count = int(refcount_path.read_text().strip())
                 except (ValueError, OSError):
-                    count = 0
+                    logger.debug(f"Could not read refcount from {refcount_path}")
 
-                # Decrement refcount
-                count = max(0, count - 1)
+            # Decrement refcount, ensuring it doesn't go negative
+            current_count = max(0, current_count - 1)
 
-                if count == 0:
-                    # No more processes using this lock, safe to delete
-                    try:
-                        lock_file.unlink()
-                    except OSError:
-                        pass
-                    try:
-                        if refcount_file.exists():
-                            refcount_file.unlink()
-                    except OSError:
-                        pass
-                else:
-                    # Write back decremented count
-                    try:
-                        refcount_file.write_text(str(count))
-                    except OSError:
-                        pass
-        except TimeoutError:
-            # Another process is updating refcount, skip cleanup
+            if current_count == 0:
+                # No more processes using this lock, safe to delete
+                try:
+                    lock_path.unlink()
+                except OSError as exp:
+                    logger.debug(f"Could not remove lock file {lock_path}: {exp}")
+                try:
+                    if refcount_path.exists():
+                        refcount_path.unlink()
+                except OSError as exp:
+                    logger.debug(f"Could not remove refcount {refcount_path}: {exp}")
+            else:
+                # Write back decremented count
+                try:
+                    refcount_path.write_text(str(current_count))
+                except OSError as exp:
+                    logger.debug(f"Could not write refcount to {refcount_path}: {exp}")
+    except TimeoutError:
+        # Another process is updating refcount, it will handle cleanup
+        logger.debug(f"Timeout acquiring refcount lock for {file_path}")
+    except Exception as exp:
+        logger.debug(f"Error decrementing refcount for {file_path}: {exp}")
+    finally:
+        # Clean up the refcount lock file
+        try:
+            if refcount_lock_path.exists():
+                refcount_lock_path.unlink()
+        except OSError:
             pass
-        finally:
-            # Clean up the refcount lock file
-            try:
-                refcount_lock_file = Path(f"{refcount_file}.lock")
-                if refcount_lock_file.exists():
-                    refcount_lock_file.unlink()
-            except OSError:
-                pass
-
-    except ImportError:
-        # filelock not available, skip cleanup to be safe
-        pass
-    except Exception:
-        # Any other error, skip cleanup
-        pass
 
 
 def cleanup_lock_files(root_path):
