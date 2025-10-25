@@ -67,7 +67,9 @@ def _get_bids_test_dir(tmp_path_factory):
     # Write multiple runs for test_purposes
     for run_idx in [run, "02"]:
         name = bids_path.copy().update(run=run_idx)
-        write_raw_bids(raw, name, events=events, event_id=event_id, overwrite=True)
+        write_raw_bids(
+            raw, name, events=events, event_id=event_id, overwrite=True, verbose="debug"
+        )
 
     write_meg_calibration(cal_fname, bids_path=bids_path)
     write_meg_crosstalk(crosstalk_fname, bids_path=bids_path)
