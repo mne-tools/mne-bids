@@ -212,7 +212,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ env.pythonLocation }}
-        key: test-2-${{ env.pythonLocation }}-${{ env.os }}-${{ hashFiles('pyproject.toml') }}
+        key: test-2-${{ env.pythonLocation }}-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.mne-version }}-${{ hashFiles('pyproject.toml') }}
 
     - name: Install Python dependencies using pip
       # This would be nicer once this feature is implemented: https://github.com/pypa/pip/issues/11440
