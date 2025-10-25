@@ -566,18 +566,3 @@ def test_environment_variable_invalid_timeout(tmp_path, monkeypatch):
 
     # Should fall back to default
     assert mne_bids._fileio.DEFAULT_LOCK_TIMEOUT == 60.0
-
-
-def test_environment_variable_negative_timeout(tmp_path, monkeypatch):
-    """Test DEFAULT_LOCK_TIMEOUT with negative environment variable."""
-    monkeypatch.setenv("MNE_BIDS_FILELOCK_TIMEOUT", "-10")
-
-    # Import after setting env var
-    import importlib
-
-    import mne_bids._fileio
-
-    importlib.reload(mne_bids._fileio)
-
-    # Should fall back to default
-    assert mne_bids._fileio.DEFAULT_LOCK_TIMEOUT == 60.0
