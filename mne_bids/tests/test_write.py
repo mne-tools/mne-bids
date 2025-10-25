@@ -106,7 +106,7 @@ def _make_parallel_raw(subject, *, seed=None):
     rng = np.random.default_rng(rng_seed)
     info = mne.create_info(["MEG0113"], 100, ch_types="mag")
     data = rng.standard_normal((1, 100)) * 1e-12
-    raw = mne.io.RawArray(data, info)
+    raw = mne.io.RawArray(data, info, verbose=False)
     raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
     raw.info["line_freq"] = 60
     raw.info["subject_info"] = {

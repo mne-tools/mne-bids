@@ -637,7 +637,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
             if existing_participants:
                 data = _combine_rows(orig_data, data, "participant_id")
 
-        _write_tsv(fname, data)
+        _write_tsv(fname, data, overwrite=True)
 
 
 def _participants_json(fname, overwrite=False):
@@ -819,7 +819,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             # otherwise add the new data
             data = _combine_rows(orig_data, data, "filename")
 
-        _write_tsv(fname, data)
+        _write_tsv(fname, data, overwrite=True)
 
 
 def _load_image(image, name="image"):
