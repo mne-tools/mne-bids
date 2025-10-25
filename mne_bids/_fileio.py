@@ -155,15 +155,12 @@ def _open_lock(path, *args, lock_timeout=None, **kwargs):
             canonical_path,
             timeout=lock_timeout,
         ) as lock_context:
-            try:
-                with lock_context:
-                    if args or kwargs:
-                        with open(canonical_path, *args, **kwargs) as fid:
-                            yield fid
-                    else:
-                        yield None
-            finally:
-                cleanup_lock_files(canonical_path)
+            with lock_context:
+                if args or kwargs:
+                    with open(canonical_path, *args, **kwargs) as fid:
+                        yield fid
+                else:
+                    yield None
     finally:
         with _ACTIVE_LOCKS_GUARD:
             _ACTIVE_LOCKS[lock_key] -= 1
