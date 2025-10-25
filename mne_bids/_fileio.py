@@ -27,7 +27,6 @@ except ValueError:
 
 _ACTIVE_LOCKS: dict[str, int] = {}
 _ACTIVE_LOCKS_GUARD = threading.RLock()
-_LOCK_ACQUIRE_MAX_RETRIES = 3
 
 
 def _canonical_lock_path(path: str | os.PathLike[str]) -> Path:
@@ -155,34 +154,16 @@ def _open_lock(path, *args, lock_timeout=None, **kwargs):
         # Increment multiprocess refcount before acquiring lock
         _increment_lock_refcount(canonical_path)
 
-        lock_path = canonical_path.with_name(f"{canonical_path.name}.lock")
-        lock_dir = lock_path.parent
-        for attempt in range(_LOCK_ACQUIRE_MAX_RETRIES + 1):
-            try:
-                with _get_lock_context(
-                    canonical_path,
-                    timeout=lock_timeout,
-                ) as lock_context:
-                    with lock_context:
-                        if args or kwargs:
-                            with open(canonical_path, *args, **kwargs) as fid:
-                                yield fid
-                        else:
-                            yield None
-                break
-            except FileNotFoundError:
-                lock_dir.mkdir(parents=True, exist_ok=True)
-                if attempt == _LOCK_ACQUIRE_MAX_RETRIES:
-                    warn(
-                        "Could not create lock after repeated attempts. "
-                        "Proceeding without a lock."
-                    )
-                    if args or kwargs:
-                        with open(canonical_path, *args, **kwargs) as fid:
-                            yield fid
-                    else:
-                        yield None
-                    break
+        with _get_lock_context(
+            canonical_path,
+            timeout=lock_timeout,
+        ) as lock_context:
+            with lock_context:
+                if args or kwargs:
+                    with open(canonical_path, *args, **kwargs) as fid:
+                        yield fid
+                else:
+                    yield None
     finally:
         with _ACTIVE_LOCKS_GUARD:
             _ACTIVE_LOCKS[lock_key] -= 1
