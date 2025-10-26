@@ -574,7 +574,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
 
         data[key] = new_value
 
-    fname = Path(fname)
+    fpath = Path(fname)
     with _open_lock(fname):
         if fname.exists():
             orig_data = _from_tsv(fname)
