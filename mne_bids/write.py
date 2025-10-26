@@ -575,8 +575,8 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         data[key] = new_value
 
     fpath = Path(fname)
-    with _open_lock(fname):
-        if fname.exists():
+    with _open_lock(fpath, encoding="utf-8"):
+        if fpath.exists():
             orig_data = _from_tsv(fname)
             # If we read an empty OrderedDict, it means
             # the file exists but is empty/just has headers
@@ -676,10 +676,10 @@ def _participants_json(fname, overwrite=False):
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
     fpath = Path(fname)
-    fname.parent.mkdir(parents=True, exist_ok=True)
+    fpath.parent.mkdir(parents=True, exist_ok=True)
 
     # Use _open_lock for atomic read-modify-write operation
-    with _open_lock(fname, "a+", encoding="utf-8") as fid:
+    with _open_lock(fpath, "a+", encoding="utf-8") as fid:
         # Move to beginning of file for reading
         fid.seek(0)
         file_content = fid.read().strip()
@@ -797,9 +797,9 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         else:
             _write_json(sidecar_json_path, sidecar_json)
 
-    fname = Path(fname)
-    with _open_lock(fname):
-        if fname.exists():
+    fpath = Path(fname)
+    with _open_lock(fpath, encoding="utf-8"):
+        if fpath.exists():
             orig_data = _from_tsv(fname)
             # if the file name is already in the file raise an error
             if raw_fname in orig_data["filename"] and not overwrite:
@@ -819,7 +819,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             # otherwise add the new data
             data = _combine_rows(orig_data, data, "filename")
 
-        _write_tsv(fname, data, overwrite=True)
+        _write_tsv(fpath, data, overwrite=True)
 
 
 def _load_image(image, name="image"):
