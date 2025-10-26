@@ -675,7 +675,7 @@ def _participants_json(fname, overwrite=False):
     # make sure to append any JSON fields added by the user
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
-    fname = Path(fname)
+    fpath = Path(fname)
     fname.parent.mkdir(parents=True, exist_ok=True)
 
     # Use _open_lock for atomic read-modify-write operation
