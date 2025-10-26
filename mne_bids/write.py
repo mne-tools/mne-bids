@@ -575,7 +575,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
         data[key] = new_value
 
     fpath = Path(fname)
-    with _open_lock(fpath, encoding="utf-8"):
+    with _open_lock(fpath):
         if fpath.exists():
             orig_data = _from_tsv(fname)
             # If we read an empty OrderedDict, it means
@@ -798,7 +798,7 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
             _write_json(sidecar_json_path, sidecar_json)
 
     fpath = Path(fname)
-    with _open_lock(fpath, encoding="utf-8"):
+    with _open_lock(fpath):
         if fpath.exists():
             orig_data = _from_tsv(fname)
             # if the file name is already in the file raise an error
