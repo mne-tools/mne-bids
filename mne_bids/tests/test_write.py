@@ -96,6 +96,8 @@ warning_str = dict(
     no_hand=r"ignore:Unable to map.*\n.*subject handedness.*:RuntimeWarning:mne",
     no_montage=r"ignore:Not setting position of.*channel found in "
     r"montage.*:RuntimeWarning:mne",
+    emg_coords_missing=r"ignore:No electrode location info found.*:RuntimeWarning",
+    converting_to_edf=r"ignore:Converting data files to EDF format:RuntimeWarning",
 )
 
 
@@ -173,6 +175,10 @@ test_converteeg_data = [
     ("NihonKohden", "EDF", "MB0400FU.EEG", _read_raw_nihon),
     ("CNT", "EDF", "scan41_short.cnt", _read_raw_cnt),
     ("curry", "EDF", "test_bdf_stim_channel Curry 8.cdt", _read_raw_curry),
+]
+test_convertemg_data = [
+    ("BDF", "EDF", "test_generator_2.bdf", _read_raw_bdf),
+    ("EDF", "BDF", "test_generator_2.edf", _read_raw_edf),
 ]
 
 data_path = testing.data_path(download=False)
@@ -3317,6 +3323,38 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     # Read back the data
     raw_read = read_raw_bids(bids_path)
     assert_array_equal(raw.annotations.description, raw_read.annotations.description)
+
+
+@pytest.mark.parametrize("dir_name, fmt, fname, reader", test_convertemg_data)
+@pytest.mark.filterwarnings(
+    warning_str["emg_coords_missing"],
+    warning_str["converting_to_edf"],
+)
+@testing.requires_testing_data
+def test_convert_emg_formats(tmp_path, dir_name, fmt, fname, reader):
+    """Test EDF ←→ BDF conversion of EMG datasets."""
+    bids_root = tmp_path / fmt
+    raw_fname = data_path / dir_name / fname
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="emg")
+    raw = reader(raw_fname)
+    raw.set_channel_types({ch: "emg" for ch in raw.ch_names})  # HACK eeg → emg
+    raw = raw.pick(["emg"])  # drop misc
+    # make sure it's possible to define arbitrarily-named coordsys spaces for EMG
+    bids_path.update(space="foo", check=True)
+    bids_output_path = write_raw_bids(
+        raw=raw,
+        format=fmt,
+        bids_path=bids_path,
+        overwrite=True,
+        verbose=False,
+        emg_placement="Other",
+    )
+    # make sure the file extension is correct (different from what we started with)
+    outdir = tmp_path / fmt / "sub-01" / "ses-01" / "emg"
+    dont_want = list((outdir).glob(f"*{raw_fname.suffix}"))
+    want = list((outdir).glob(f"*.{fmt.lower()}"))
+    assert len(dont_want) == 0
+    assert want == [bids_output_path.fpath]
 
 
 @pytest.mark.parametrize("dir_name, fmt, fname, reader", test_converteeg_data)
