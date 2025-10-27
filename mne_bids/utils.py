@@ -491,7 +491,7 @@ def _check_datatype(raw, datatype):
     -------
     None
     """
-    supported_types = ("meg", "eeg", "emg", "ieeg", "nirs")
+    supported_types = ("eeg", "emg", "ieeg", "meg", "nirs")
     if datatype not in supported_types:
         raise ValueError(
             f"The specified datatype {datatype} is currently not supported. "
