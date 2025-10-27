@@ -1939,7 +1939,18 @@ def get_datatypes(root, verbose=None):
     # Take all possible data types from "entity" table
     # (Appendix in BIDS spec)
     # https://bids-specification.readthedocs.io/en/latest/appendices/entity-table.html
-    datatype_list = ("anat", "func", "dwi", "fmap", "beh", "meg", "eeg", "ieeg", "nirs")
+    datatype_list = (
+        "anat",
+        "beh",
+        "dwi",
+        "eeg",
+        "emg",
+        "fmap",
+        "func",
+        "ieeg",
+        "meg",
+        "nirs",
+    )
     datatypes = list()
     for root, dirs, files in os.walk(root):
         for _dir in dirs:
@@ -2301,7 +2312,7 @@ def _infer_datatype(*, root, sub, ses):
     modalities = _get_datatypes_for_sub(root=root, sub=sub, ses=ses)
 
     # We only want to handle electrophysiological data here.
-    allowed_recording_modalities = ["meg", "eeg", "ieeg"]
+    allowed_recording_modalities = ["eeg", "emg", "ieeg", "meg"]
     modalities = list(set(modalities) & set(allowed_recording_modalities))
     if not modalities:
         raise ValueError("No electrophysiological data found.")
