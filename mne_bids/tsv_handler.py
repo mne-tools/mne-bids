@@ -156,8 +156,7 @@ def _from_tsv(fname, dtypes=None):
         return OrderedDict()
 
     # If data is 1-dimensional (only header), make it 2D
-    if data.ndim == 1:
-        data = data.reshape(1, -1)
+    data = np.atleast_2d(data)
 
     column_names = data[0, :]
     info = data[1:, :]
