@@ -693,12 +693,6 @@ def _participants_json(fname, overwrite=False):
         else:
             try:
                 orig_data = json.loads(file_content, object_pairs_hook=OrderedDict)
-                # File exists with valid JSON content
-                if not overwrite:
-                    # Only raise if the file truly has non-default content
-                    raise FileExistsError(
-                        f'"{fname}" already exists. Please set overwrite to True.'
-                    )
             except json.JSONDecodeError as e:
                 # File is corrupted/incomplete - this can happen in a race condition
                 # when one process truncates while another reads
@@ -708,6 +702,12 @@ def _participants_json(fname, overwrite=False):
                     "Treating as empty."
                 )
                 # Treat as empty file and just write the schema
+            else:
+                # File exists with valid JSON content
+                if not overwrite:
+                    raise FileExistsError(
+                        f'"{fname}" already exists. Please set overwrite to True.'
+                    )
 
         # Merge new schema with any existing user-added fields
         # The new_data schema will overwrite age, sex, hand as intended
