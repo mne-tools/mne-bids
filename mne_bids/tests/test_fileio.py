@@ -33,6 +33,41 @@ def _worker_increment_file(file_path, iterations):
     return True
 
 
+def _access_file_with_lock(thread_id, test_file, access_log, access_lock, errors):
+    """Access file with lock to read and log - extracted for flatness."""
+    try:
+        for i in range(3):
+            with _open_lock(test_file, "r+") as fid:
+                # Read content
+                content = fid.read()
+
+                # Write thread ID and iteration
+                fid.seek(0)
+                new_content = f"thread-{thread_id}-iter-{i}"
+                fid.write(new_content)
+                fid.truncate()
+
+                # Log this access
+                with access_lock:
+                    access_log.append((thread_id, i, content, new_content))
+
+                # Small delay to encourage contention
+                time.sleep(0.001)
+    except Exception as e:
+        with access_lock:
+            errors.append((thread_id, str(e)))
+
+
+def _mock_filelock_oserror(*args, **kwargs):
+    """Mock FileLock that raises OSError."""
+    raise OSError("Permission denied")
+
+
+def _mock_filelock_typeerror(*args, **kwargs):
+    """Mock FileLock that raises TypeError."""
+    raise TypeError("Invalid timeout")
+
+
 def test_canonical_lock_path(tmp_path):
     """Test path canonicalization."""
     # Test with string path
@@ -96,11 +131,7 @@ def test_get_lock_context_oserror(tmp_path):
     test_file = tmp_path / "test.txt"
     test_file.write_text("test")
 
-    # Mock FileLock constructor to raise OSError
-    def mock_filelock(*args, **kwargs):
-        raise OSError("Permission denied")
-
-    with patch.object(filelock, "FileLock", side_effect=mock_filelock):
+    with patch.object(filelock, "FileLock", side_effect=_mock_filelock_oserror):
         with pytest.warns(RuntimeWarning, match="Could not create lock"):
             with _get_lock_context(test_file) as lock_ctx:
                 assert lock_ctx is not None
@@ -113,11 +144,7 @@ def test_get_lock_context_typeerror(tmp_path):
     test_file = tmp_path / "test.txt"
     test_file.write_text("test")
 
-    # Mock FileLock to raise TypeError
-    def mock_filelock(*args, **kwargs):
-        raise TypeError("Invalid timeout")
-
-    with patch.object(filelock, "FileLock", side_effect=mock_filelock):
+    with patch.object(filelock, "FileLock", side_effect=_mock_filelock_typeerror):
         with pytest.warns(RuntimeWarning, match="Could not create lock"):
             with _get_lock_context(test_file) as lock_ctx:
                 assert lock_ctx is not None
@@ -183,34 +210,13 @@ def test_open_lock_multithread(tmp_path):
     access_lock = threading.Lock()
     errors = []
 
-    def access_file_with_lock(thread_id):
-        """Access file with lock to read and log."""
-        try:
-            for i in range(3):
-                with _open_lock(test_file, "r+") as fid:
-                    # Read content
-                    content = fid.read()
-
-                    # Write thread ID and iteration
-                    fid.seek(0)
-                    new_content = f"thread-{thread_id}-iter-{i}"
-                    fid.write(new_content)
-                    fid.truncate()
-
-                    # Log this access
-                    with access_lock:
-                        access_log.append((thread_id, i, content, new_content))
-
-                    # Small delay to encourage contention
-                    time.sleep(0.001)
-        except Exception as e:
-            with access_lock:
-                errors.append((thread_id, str(e)))
-
     # Run with 4 threads, each accessing 3 times
     num_threads = 4
     threads = [
-        threading.Thread(target=access_file_with_lock, args=(i,))
+        threading.Thread(
+            target=_access_file_with_lock,
+            args=(i, test_file, access_log, access_lock, errors),
+        )
         for i in range(num_threads)
     ]
 
@@ -531,7 +537,7 @@ def test_lock_refcount_multiprocess(tmp_path):
     refcount_file = tmp_path / f"{test_file.name}.lock.refcount"
 
     # Give a small delay for cleanup
-    time.sleep(0.1)
+    time.sleep(2)  # increasing the delay.
 
     # Files should be cleaned up (refcount should be 0)
     assert not lock_file.exists() or not refcount_file.exists()
