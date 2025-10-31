@@ -108,7 +108,7 @@ def test_handle_datatype():
             _handle_datatype(raw, datatype)
     # if proper channel type (iEEG, EEG or MEG) is not found, raise ValueError
     ch_type = ["misc"]
-    with pytest.raises(ValueError, match="No MEG, EEG or iEEG channels found"):
+    with pytest.raises(ValueError, match="No MEG, EEG, iEEG, or EMG channels found"):
         info = mne.create_info(n_channels, sampling_rate, ch_types=ch_type * 2)
         raw = mne.io.RawArray(data, info)
         _handle_datatype(raw, datatype)
