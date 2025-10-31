@@ -359,7 +359,7 @@ jobs:
       run: |
         make build-doc
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: documentation
         path: doc/_build/html
