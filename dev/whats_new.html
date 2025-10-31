@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev24+gf61e0e049 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev25+gb99986571 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=7c345cfe"></script>
+    <script src="_static/documentation_options.js?v=d95e489f"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev24+gf61e0e049" />
+  <meta name="docsearch:version" content="0.18.0.dev25+gb99986571" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev24+gf61e0e049 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev25+gb99986571 documentation</p>
   
 </a></div>
     
@@ -510,6 +510,7 @@
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> has a new parameter <em class="xref py py-obj">electrodes_tsv_task</em> which allows adding the <em class="xref py py-obj">task</em> entity to the <em class="xref py py-obj">electrodes.tsv</em> filepath, by <a class="reference external" href="https://github.com/alm180">Alex Lopez Marquez</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1424">#1424</a>)</p></li>
 <li><p>Extended the configuration to recognise <em class="xref py py-obj">motion</em> as a valid BIDS datatype by <a class="reference external" href="https://github.com/JuliusWelzel">Julius Welzel</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1430">#1430</a>)</p></li>
 <li><p>Better control of verbosity in several functions, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1449">#1449</a>)</p></li>
+<li><p>Added parallel reading and writing in all the <em class="xref py py-obj">open</em> operations using <em class="xref py py-obj">_open_lock</em> mechanism from mne, creating a small wrapper to manage the locks by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1451">#1451</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_bids.BIDSPath.match()</span></code></a> now short-circuits root directory scans when <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code>, or <code class="docutils literal notranslate"><span class="pre">datatype</span></code> entities are known, reducing lookup time on large datasets, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> and <a class="reference external" href="https://github.com/dnacombo">Maximilien Chaumon</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1450">#1450</a>)</p></li>
 </ul>
 </section>
@@ -522,6 +523,7 @@
 <section id="requirements">
 <h4>🛠 Requirements<a class="headerlink" href="#requirements" title="Link to this heading">#</a></h4>
 <ul class="simple">
+<li><p>Including <code class="docutils literal notranslate"><span class="pre">filelock</span></code> as a dependency to handle atomic file writing and parallel processing support by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1451">#1451</a>)</p></li>
 <li><p>None yet</p></li>
 </ul>
 </section>
@@ -632,7 +634,7 @@
 
   <p class="copyright">
     
-      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-27.
+      © Copyright 2017, The MNE-BIDS developers. Last updated on 2025-10-31.
       <br/>
     
   </p>
