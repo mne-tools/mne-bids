@@ -26,6 +26,7 @@ Optional:
 * ``pandas`` (>=1.3.2, for generating event statistics)
 * ``edfio`` (>=0.4.10, for writing EDF data)
 * ``defusedxml`` (for writing reading EGI MFF data and BrainVision montages)
+* ``filelock`` (for atomic file writing, and parallel processing support)
 
 We recommend installing ``mne-bids`` into an isolated Python environment,
 for example created via ``conda``
