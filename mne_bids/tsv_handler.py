@@ -200,7 +200,6 @@ def _to_tsv(data, fname):
     with _open_lock(fname, "w", encoding="utf-8-sig") as f:
         f.write(output)
         f.write("\n")
-        f.flush()  # Ensure data is written to disk before lock is released
 
 
 def _tsv_to_str(data, rows=5):

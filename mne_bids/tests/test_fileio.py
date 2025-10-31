@@ -3,6 +3,7 @@
 # Authors: The MNE-BIDS developers
 # SPDX-License-Identifier: BSD-3-Clause
 
+import importlib
 import threading
 import time
 from concurrent.futures import ProcessPoolExecutor
@@ -11,6 +12,7 @@ from unittest.mock import patch
 
 import pytest
 
+import mne_bids._fileio
 from mne_bids._fileio import (
     _canonical_lock_path,
     _decrement_and_cleanup_lock_file,
@@ -549,11 +551,6 @@ def test_environment_variable_timeout(tmp_path, monkeypatch):
     # We need to reload the module with the env var set
     monkeypatch.setenv("MNE_BIDS_FILELOCK_TIMEOUT", "120")
 
-    # Import after setting env var
-    import importlib
-
-    import mne_bids._fileio
-
     importlib.reload(mne_bids._fileio)
 
     assert mne_bids._fileio.DEFAULT_LOCK_TIMEOUT == 120.0
@@ -562,11 +559,6 @@ def test_environment_variable_timeout(tmp_path, monkeypatch):
 def test_environment_variable_invalid_timeout(tmp_path, monkeypatch):
     """Test DEFAULT_LOCK_TIMEOUT with invalid environment variable."""
     monkeypatch.setenv("MNE_BIDS_FILELOCK_TIMEOUT", "invalid")
-
-    # Import after setting env var
-    import importlib
-
-    import mne_bids._fileio
 
     importlib.reload(mne_bids._fileio)
 

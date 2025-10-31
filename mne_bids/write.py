@@ -702,7 +702,7 @@ def _participants_json(fname, overwrite=False):
             except json.JSONDecodeError as e:
                 # File is corrupted/incomplete - this can happen in a race condition
                 # when one process truncates while another reads
-                logger.debug(
+                logger.warning(
                     f"Could not parse JSON in '{fname}': {e}. "
                     "This may occur when reading during concurrent writes. "
                     "Treating as empty."
