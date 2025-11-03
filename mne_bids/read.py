@@ -766,26 +766,26 @@ def _get_bads_from_tsv_data(tsv_data):
     return bads
 
 
-def _handle_channel_mismatch(channels_fname, raw, ch_name_mismatch, ch_names_tsv):
+def _handle_channel_mismatch(channels_fname, raw, on_ch_mismatch, ch_names_tsv):
     """Handle mismatch between channels.tsv and raw channel names."""
-    if ch_name_mismatch == "raise":
+    if on_ch_mismatch == "raise":
         raise RuntimeError(
             f"Channel mismatch between {channels_fname} and the raw data file detected."
         )
     warn(
         "Channel mismatch between "
         f"{channels_fname} and the raw data file detected. "
-        f"Using mismatch strategy: {ch_name_mismatch}."
+        f"Using mismatch strategy: {on_ch_mismatch}."
     )
-    if ch_name_mismatch == "reorder":
+    if on_ch_mismatch == "reorder":
         raw.reorder_channels(ch_names_tsv)
-    elif ch_name_mismatch == "rename":
+    elif on_ch_mismatch == "rename":
         raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
     else:
-        raise ValueError("ch_name_mismatch must be one of {'reorder','raise','rename'}")
+        raise ValueError("on_ch_mismatch must be one of {'reorder','raise','rename'}")
 
 
-def _handle_channels_reading(channels_fname, raw, ch_name_mismatch="raise"):
+def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     """Read associated channels.tsv and populate raw.
 
     Updates status (bad) and types of channels.
@@ -868,9 +868,7 @@ def _handle_channels_reading(channels_fname, raw, ch_name_mismatch="raise"):
     else:
         orig_names = list(raw.ch_names)
         if orig_names != ch_names_tsv:
-            _handle_channel_mismatch(
-                channels_fname, raw, ch_name_mismatch, ch_names_tsv
-            )
+            _handle_channel_mismatch(channels_fname, raw, on_ch_mismatch, ch_names_tsv)
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
@@ -914,7 +912,7 @@ def read_raw_bids(
     extra_params=None,
     *,
     return_event_dict=False,
-    ch_name_mismatch="raise",
+    on_ch_mismatch="raise",
     verbose=None,
 ):
     """Read BIDS compatible data.
@@ -946,7 +944,7 @@ def read_raw_bids(
         event IDs, in addition to the :class:`~mne.io.Raw` object. If a ``value`` column
         is present in the ``*_events.tsv`` file, it will be used as the source of the
         integer event ID values (events with ``value="n/a"`` will be omitted).
-    ch_name_mismatch : str
+    on_ch_mismatch : str
         How to handle a mismatch between channel names in ``channels.tsv`` file
         and channel names in the raw data file.
         Must be one of {'raise', 'reorder', 'rename'}. Default is 'raise'.
@@ -985,7 +983,7 @@ def read_raw_bids(
 
     RuntimeError
         If ``channels.tsv`` and the raw file have a channel-name mismatch
-        and ``ch_name_mismatch`` is 'raise'.
+        and ``on_ch_mismatch`` is 'raise'.
     """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError(
@@ -1125,7 +1123,7 @@ def read_raw_bids(
     )
     if channels_fname is not None:
         raw = _handle_channels_reading(
-            channels_fname, raw, ch_name_mismatch=ch_name_mismatch
+            channels_fname, raw, on_ch_mismatch=on_ch_mismatch
         )
 
     # Try to find an associated electrodes.tsv and coordsystem.json

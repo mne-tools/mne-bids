@@ -1493,7 +1493,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     # Reading the file back should still work, even though we've renamed
     # some channels (there's now a mismatch between BIDS and Raw channel
     # names, and BIDS should take precedence)
-    raw_read = read_raw_bids(bids_path=bids_path, ch_name_mismatch="rename")
+    raw_read = read_raw_bids(bids_path=bids_path, on_ch_mismatch="rename")
     assert raw_read.ch_names[0] == "EOGtest"
     assert raw_read.ch_names[1] == "EMG"
 

@@ -1473,7 +1473,7 @@ def test_channels_tsv_raw_mismatch(tmp_path):
             ),
         ),
     ):
-        raw = read_raw_bids(bids_path, ch_name_mismatch="reorder")
+        raw = read_raw_bids(bids_path, on_ch_mismatch="reorder")
     assert raw.ch_names == ch_names_orig
 
 
@@ -1562,7 +1562,7 @@ def _setup_nirs_channel_mismatch(tmp_path):
 
 
 def test_channel_mismatch_raise(tmp_path):
-    """Raise error when ``ch_name_mismatch='raise'`` and names differ."""
+    """Raise error when ``on_ch_mismatch='raise'`` and names differ."""
     raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
     with pytest.raises(
         RuntimeError,
@@ -1570,7 +1570,7 @@ def test_channel_mismatch_raise(tmp_path):
             r"Channel mismatch between .*channels\.tsv and the raw data file detected\."
         ),
     ):
-        _handle_channels_reading(channels_fname, raw.copy(), ch_name_mismatch="raise")
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
 
 
 def test_channel_mismatch_reorder(tmp_path):
@@ -1588,7 +1588,7 @@ def test_channel_mismatch_reorder(tmp_path):
         ),
     ):
         raw_out = _handle_channels_reading(
-            channels_fname, raw, ch_name_mismatch="reorder"
+            channels_fname, raw, on_ch_mismatch="reorder"
         )
     assert raw_out.ch_names == ch_order_bids
     for i, new_name in enumerate(raw_out.ch_names):
@@ -1620,7 +1620,7 @@ def test_channel_mismatch_rename(tmp_path):
         ),
     ):
         raw_out_rename = _handle_channels_reading(
-            channels_fname, raw.copy(), ch_name_mismatch="rename"
+            channels_fname, raw.copy(), on_ch_mismatch="rename"
         )
     assert raw_out_rename.ch_names == ch_order_bids
     for i in range(len(ch_order_bids)):
