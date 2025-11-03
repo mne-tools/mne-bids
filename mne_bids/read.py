@@ -774,7 +774,7 @@ def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
             f"Either align channel names in channels.tsv with the raw file, or call "
             f"read_raw_bids(on_ch_mismatch='reorder'|'rename') to proceed."
         )
-    warn(
+    logger.info(
         "Channel mismatch between "
         f"{channels_fname} and the raw data file detected. "
         f"Using mismatch strategy: {on_ch_mismatch}."

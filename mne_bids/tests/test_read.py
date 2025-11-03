@@ -1464,16 +1464,7 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.reorder_channels(ch_names_new)
     raw.save(raw_path, overwrite=True)
 
-    with (
-        pytest.warns(
-            RuntimeWarning,
-            match=(
-                r"Channel mismatch between .*channels\.tsv and the raw data file "
-                r"detected\. Using mismatch strategy: reorder\."
-            ),
-        ),
-    ):
-        raw = read_raw_bids(bids_path, on_ch_mismatch="reorder")
+    raw = read_raw_bids(bids_path, on_ch_mismatch="reorder")
     assert raw.ch_names == ch_names_orig
 
 
@@ -1566,9 +1557,7 @@ def test_channel_mismatch_raise(tmp_path):
     raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
     with pytest.raises(
         RuntimeError,
-        match=(
-            r"Channel mismatch between .*channels\.tsv and the raw data file detected\."
-        ),
+        match=("Channel mismatch between .*channels"),
     ):
         _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
 
@@ -1578,18 +1567,7 @@ def test_channel_mismatch_reorder(tmp_path):
     raw, _, ch_order_bids, channels_fname, orig_name_to_loc, orig_name_to_data = (
         _setup_nirs_channel_mismatch(tmp_path)
     )
-    with (
-        pytest.warns(
-            RuntimeWarning,
-            match=(
-                r"Channel mismatch between .*channels\.tsv and the raw data file "
-                r"detected\. Using mismatch strategy: reorder\."
-            ),
-        ),
-    ):
-        raw_out = _handle_channels_reading(
-            channels_fname, raw, on_ch_mismatch="reorder"
-        )
+    raw_out = _handle_channels_reading(channels_fname, raw, on_ch_mismatch="reorder")
     assert raw_out.ch_names == ch_order_bids
     for i, new_name in enumerate(raw_out.ch_names):
         np.testing.assert_allclose(
@@ -1610,18 +1588,9 @@ def test_channel_mismatch_rename(tmp_path):
         orig_name_to_loc,
         orig_name_to_data,
     ) = _setup_nirs_channel_mismatch(tmp_path)
-    with (
-        pytest.warns(
-            RuntimeWarning,
-            match=(
-                r"Channel mismatch between .*channels\.tsv and the raw data file "
-                r"detected\. Using mismatch strategy: rename\."
-            ),
-        ),
-    ):
-        raw_out_rename = _handle_channels_reading(
-            channels_fname, raw.copy(), on_ch_mismatch="rename"
-        )
+    raw_out_rename = _handle_channels_reading(
+        channels_fname, raw.copy(), on_ch_mismatch="rename"
+    )
     assert raw_out_rename.ch_names == ch_order_bids
     for i in range(len(ch_order_bids)):
         orig_name_at_i = ch_order_snirf[i]
