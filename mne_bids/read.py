@@ -766,6 +766,25 @@ def _get_bads_from_tsv_data(tsv_data):
     return bads
 
 
+def _handle_channel_mismatch(channels_fname, raw, ch_name_mismatch, ch_names_tsv):
+    """Handle mismatch between channels.tsv and raw channel names."""
+    if ch_name_mismatch == "raise":
+        raise RuntimeError(
+            f"Channel mismatch between {channels_fname} and the raw data file detected."
+        )
+    warn(
+        "Channel mismatch between "
+        f"{channels_fname} and the raw data file detected. "
+        f"Using mismatch strategy: {ch_name_mismatch}."
+    )
+    if ch_name_mismatch == "reorder":
+        raw.reorder_channels(ch_names_tsv)
+    elif ch_name_mismatch == "rename":
+        raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
+    else:
+        raise ValueError("ch_name_mismatch must be one of {'reorder','raise','rename'}")
+
+
 def _handle_channels_reading(channels_fname, raw, ch_name_mismatch="raise"):
     """Read associated channels.tsv and populate raw.
 
@@ -849,24 +868,9 @@ def _handle_channels_reading(channels_fname, raw, ch_name_mismatch="raise"):
     else:
         orig_names = list(raw.ch_names)
         if orig_names != ch_names_tsv:
-            if ch_name_mismatch == "raise":
-                raise RuntimeError(
-                    "Channel mismatch between "
-                    f"{channels_fname} and the raw data file detected."
-                )
-            warn(
-                "Channel mismatch between "
-                f"{channels_fname} and the raw data file detected. "
-                f"Using mismatch strategy: {ch_name_mismatch}."
+            _handle_channel_mismatch(
+                channels_fname, raw, ch_name_mismatch, ch_names_tsv
             )
-            if ch_name_mismatch == "reorder":
-                raw.reorder_channels(ch_names_tsv)
-            elif ch_name_mismatch == "rename":
-                raw.rename_channels(dict(zip(raw.ch_names, ch_names_tsv)))
-            else:
-                raise ValueError(
-                    "ch_name_mismatch must be one of {'reorder','raise','rename'}"
-                )
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
