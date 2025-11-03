@@ -851,10 +851,13 @@ def _handle_channels_reading(channels_fname, raw, ch_name_mismatch="raise"):
         if orig_names != ch_names_tsv:
             if ch_name_mismatch == "raise":
                 raise RuntimeError(
-                    f"Channel mismatch between {channels_fname} and the raw data file detected."
+                    "Channel mismatch between "
+                    f"{channels_fname} and the raw data file detected."
                 )
             warn(
-                f"Channel mismatch between {channels_fname} and the raw data file detected. Using mismatch strategy: {ch_name_mismatch}."
+                "Channel mismatch between "
+                f"{channels_fname} and the raw data file detected. "
+                f"Using mismatch strategy: {ch_name_mismatch}."
             )
             if ch_name_mismatch == "reorder":
                 raw.reorder_channels(ch_names_tsv)
@@ -940,11 +943,12 @@ def read_raw_bids(
         is present in the ``*_events.tsv`` file, it will be used as the source of the
         integer event ID values (events with ``value="n/a"`` will be omitted).
     ch_name_mismatch : str
-        What to do if the channel names in the channels.tsv file do not match the channel names in the raw data file.
-        Must be one of {'raise', 'reorder', 'rename'}. Default is 'raise'.
-        - 'raise' will raise a RuntimeError if there is a channel mismatch.
-        - 'reorder' will reorder the channels in the raw data file to match the channel names in the channels.tsv file.
-        - 'rename' will rename the channels in the raw data file to match the channel names in the channels.tsv file.
+        How to handle mismatch between channel names in ``channels.tsv`` and
+        the channel names in the raw data file.
+        Must be one of {'raise', 'reorder', 'rename'} (default 'raise').
+        - 'raise': raise a RuntimeError if there is a channel mismatch.
+        - 'reorder': reorder raw channels to match the order in ``channels.tsv``.
+        - 'rename': rename raw channels to match the names in ``channels.tsv``.
     %(verbose)s
 
     Returns
@@ -972,7 +976,8 @@ def read_raw_bids(
         If the specified ``datatype`` cannot be found in the dataset.
 
     RuntimeError
-        If channels.tsv and raw data file have a channel name mismatch and ch_name_mismatch is 'raise'.
+        If ``channels.tsv`` and the raw file have a channel-name mismatch
+        and ``ch_name_mismatch`` is 'raise'.
     """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError(

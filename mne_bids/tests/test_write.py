@@ -96,7 +96,10 @@ warning_str = dict(
     no_hand=r"ignore:Unable to map.*\n.*subject handedness.*:RuntimeWarning:mne",
     no_montage=r"ignore:Not setting position of.*channel found in "
     r"montage.*:RuntimeWarning:mne",
-    channel_mismatch="ignore:Channel mismatch between .*channels\\.tsv and the raw data file detected\\.:RuntimeWarning:mne",
+    channel_mismatch=(
+        "ignore:Channel mismatch between .*channels\\.tsv and the raw data file "
+        "detected\\.:RuntimeWarning:mne"
+    ),
 )
 
 
