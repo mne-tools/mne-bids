@@ -943,12 +943,16 @@ def read_raw_bids(
         is present in the ``*_events.tsv`` file, it will be used as the source of the
         integer event ID values (events with ``value="n/a"`` will be omitted).
     ch_name_mismatch : str
-        How to handle mismatch between channel names in ``channels.tsv`` and
-        the channel names in the raw data file.
-        Must be one of {'raise', 'reorder', 'rename'} (default 'raise').
-        - 'raise': raise a RuntimeError if there is a channel mismatch.
-        - 'reorder': reorder raw channels to match the order in ``channels.tsv``.
-        - 'rename': rename raw channels to match the names in ``channels.tsv``.
+        How to handle a mismatch between channel names in ``channels.tsv`` file
+        and channel names in the raw data file.
+        Must be one of {'raise', 'reorder', 'rename'}. Default is 'raise'.
+
+        * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
+        * ``'reorder'`` will reorder the channels in the raw data file to match the
+          channel names in the channels.tsv file.
+        * ``'rename'`` will rename the channels in the raw data file to match the
+          channel names in the channels.tsv file.
+
     %(verbose)s
 
     Returns
