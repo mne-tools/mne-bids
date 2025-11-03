@@ -947,9 +947,9 @@ def read_raw_bids(
         is present in the ``*_events.tsv`` file, it will be used as the source of the
         integer event ID values (events with ``value="n/a"`` will be omitted).
     on_ch_mismatch : str
-        How to handle a mismatch between channel names in ``channels.tsv`` file
+        How to handle a mismatch between channel names in channels.tsv file
         and channel names in the raw data file.
-        Must be one of {'raise', 'reorder', 'rename'}. Default is 'raise'.
+        Must be one of ``'raise'``, ``'reorder'``, ``'rename'`` (default ``'raise'``).
 
         * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
         * ``'reorder'`` will reorder the channels in the raw data file to match the
@@ -984,7 +984,7 @@ def read_raw_bids(
         If the specified ``datatype`` cannot be found in the dataset.
 
     RuntimeError
-        If ``channels.tsv`` and the raw file have a channel-name mismatch
+        If channels.tsv and the raw file have a channel-name mismatch
         and ``on_ch_mismatch`` is 'raise'.
     """
     if not isinstance(bids_path, BIDSPath):
