@@ -953,7 +953,7 @@ def read_raw_bids(
 
         * ``'raise'`` will raise a RuntimeError if there is a channel mismatch.
         * ``'reorder'`` will reorder the channels in the raw data file to match the
-          channel names in the channels.tsv file.
+          channel order in the channels.tsv file.
         * ``'rename'`` will rename the channels in the raw data file to match the
           channel names in the channels.tsv file.
 
