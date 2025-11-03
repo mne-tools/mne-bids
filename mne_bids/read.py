@@ -853,7 +853,9 @@ def _handle_channels_reading(channels_fname, raw, ch_name_mismatch="raise"):
                 raise RuntimeError(
                     f"Channel mismatch between {channels_fname} and the raw data file detected."
                 )
-            warn(f"Channel mismatch between {channels_fname} and the raw data file detected. Using mismatch strategy: {ch_name_mismatch}.")
+            warn(
+                f"Channel mismatch between {channels_fname} and the raw data file detected. Using mismatch strategy: {ch_name_mismatch}."
+            )
             if ch_name_mismatch == "reorder":
                 raw.reorder_channels(ch_names_tsv)
             elif ch_name_mismatch == "rename":
@@ -901,7 +903,12 @@ def _handle_channels_reading(channels_fname, raw, ch_name_mismatch="raise"):
 
 @verbose
 def read_raw_bids(
-    bids_path, extra_params=None, *, return_event_dict=False, ch_name_mismatch="raise", verbose=None
+    bids_path,
+    extra_params=None,
+    *,
+    return_event_dict=False,
+    ch_name_mismatch="raise",
+    verbose=None,
 ):
     """Read BIDS compatible data.
 
@@ -1104,7 +1111,9 @@ def read_raw_bids(
         bids_path, suffix="channels", extension=".tsv", on_error="warn"
     )
     if channels_fname is not None:
-        raw = _handle_channels_reading(channels_fname, raw, ch_name_mismatch=ch_name_mismatch)
+        raw = _handle_channels_reading(
+            channels_fname, raw, ch_name_mismatch=ch_name_mismatch
+        )
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
