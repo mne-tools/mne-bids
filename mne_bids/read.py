@@ -766,7 +766,7 @@ def _get_bads_from_tsv_data(tsv_data):
     return bads
 
 
-def _handle_channel_mismatch(channels_fname, raw, on_ch_mismatch, ch_names_tsv):
+def _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname):
     """Handle mismatch between channels.tsv and raw channel names."""
     if on_ch_mismatch == "raise":
         raise RuntimeError(
@@ -868,7 +868,7 @@ def _handle_channels_reading(channels_fname, raw, on_ch_mismatch="raise"):
     else:
         orig_names = list(raw.ch_names)
         if orig_names != ch_names_tsv:
-            _handle_channel_mismatch(channels_fname, raw, on_ch_mismatch, ch_names_tsv)
+            _handle_channel_mismatch(raw, on_ch_mismatch, ch_names_tsv, channels_fname)
 
     # Set the channel types in the raw data according to channels.tsv
     channel_type_bids_mne_map_available_channels = {
