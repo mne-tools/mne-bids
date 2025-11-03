@@ -61,3 +61,4 @@
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
 .. _Julius Welzel: https://github.com/JuliusWelzel
+.. _Kalle Mäkelä: https://github.com/Kallemakela
