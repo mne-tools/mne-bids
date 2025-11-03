@@ -834,6 +834,21 @@ def test_handle_scans_reading(tmp_path):
         new_acq_time = datetime.strptime(new_acq_time_str, date_format)
         assert raw_03.info["meas_date"] == new_acq_time.astimezone(timezone.utc)
 
+    # Regression for naive, pre-epoch acquisition times (Windows bug GH-1399)
+    pre_epoch_str = "1950-06-15T13:45:30"
+    scans_tsv["acq_time"][0] = pre_epoch_str
+    _to_tsv(scans_tsv, scans_path)
+
+    raw_pre_epoch = read_raw_bids(bids_path)
+    pre_epoch_naive = datetime.strptime(pre_epoch_str, "%Y-%m-%dT%H:%M:%S")
+    local_tz = datetime.now().astimezone().tzinfo or timezone.utc
+    expected_pre_epoch = pre_epoch_naive.replace(tzinfo=local_tz).astimezone(
+        timezone.utc
+    )
+    assert raw_pre_epoch.info["meas_date"] == expected_pre_epoch
+    if raw_pre_epoch.annotations.orig_time is not None:
+        assert raw_pre_epoch.annotations.orig_time == expected_pre_epoch
+
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
 def test_handle_scans_reading_brainvision(tmp_path):
