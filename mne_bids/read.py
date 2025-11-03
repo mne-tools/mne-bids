@@ -420,6 +420,10 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
             acq_time = acq_time.replace(tzinfo=timezone.utc)
         else:
             # Convert time offset to UTC
+            if acq_time.tzinfo is None:
+                # Windows needs an explicit local tz for naive, pre-epoch times.
+                local_tz = datetime.now().astimezone().tzinfo or timezone.utc
+                acq_time = acq_time.replace(tzinfo=local_tz)
             acq_time = acq_time.astimezone(timezone.utc)
 
         logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
