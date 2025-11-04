@@ -190,7 +190,7 @@ def _increment_lock_refcount(file_path):
     refcount_lock_path = Path(f"{refcount_path}.lock")
 
     filelock = _soft_import("filelock", purpose="lock refcounting", strict=False)
-    if filelock is None:
+    if not filelock:
         return
 
     refcount_lock = filelock.FileLock(str(refcount_lock_path), timeout=5.0)
@@ -254,7 +254,7 @@ def _decrement_and_cleanup_lock_file(file_path):
         return
 
     filelock = _soft_import("filelock", purpose="lock refcounting", strict=False)
-    if filelock is None:
+    if not filelock:
         return
 
     refcount_lock = filelock.FileLock(str(refcount_lock_path), timeout=5.0)
