@@ -58,7 +58,7 @@ doc = [
   "seaborn",
   "sphinx-copybutton",
   "sphinx>=7.4.7",
-  "sphinx_gallery",
+  "sphinx_gallery>=0.19.0",
 ]
 # Dependencies for using all mne_bids features
 full = [
