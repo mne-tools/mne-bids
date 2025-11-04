@@ -13,6 +13,7 @@ import os.path as op
 import shutil as sh
 import sys
 import warnings
+from concurrent.futures import ProcessPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 from glob import glob
 from pathlib import Path
@@ -98,7 +99,47 @@ warning_str = dict(
     r"montage.*:RuntimeWarning:mne",
     emg_coords_missing=r"ignore:No electrode location info found.*:RuntimeWarning",
     converting_to_edf=r"ignore:Converting data files to EDF format:RuntimeWarning",
+    channel_mismatch=(
+        "ignore:Channel mismatch between .*channels\\.tsv and the raw data file "
+        "detected\\.:RuntimeWarning:mne"
+    ),
 )
+
+
+def _make_parallel_raw(subject, *, seed=None):
+    """Generate a lightweight Raw instance for parallel-writing tests."""
+    rng_seed = seed if seed is not None else sum(ord(ch) for ch in subject)
+    rng = np.random.default_rng(rng_seed)
+    info = mne.create_info(["MEG0113"], 100, ch_types="mag")
+    data = rng.standard_normal((1, 100)) * 1e-12
+    raw = mne.io.RawArray(data, info, verbose=False)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
+    raw.info["line_freq"] = 60
+    raw.info["subject_info"] = {
+        "his_id": subject,
+        "sex": 1,
+        "hand": 2,
+        "birthday": date(1996, 9, 24),
+    }
+    return raw
+
+
+def _write_parallel_subject(root, *, subject, run):
+    """Write a minimal MEG dataset for a single subject."""
+    root = Path(root)
+    root.mkdir(parents=True, exist_ok=True)
+    raw = _make_parallel_raw(subject)
+    bids_path = BIDSPath(
+        subject=subject, task="rest", run=run, datatype="meg", root=root
+    )
+    write_raw_bids(raw, bids_path, allow_preload=True, format="FIF", verbose=False)
+
+
+def _write_parallel_subject_runner(args):
+    """Execute `_write_parallel_subject` in process pools."""
+    root, subject, run = args
+    _write_parallel_subject(root, subject=subject, run=run)
+    return subject
 
 
 def _wrap_read_raw(read_raw):
@@ -1404,6 +1445,7 @@ def test_vhdr(_bids_validate, tmp_path):
     warning_str["cnt_warning2"],
     warning_str["no_hand"],
     warning_str["no_montage"],
+    warning_str["channel_mismatch"],
 )
 @testing.requires_testing_data
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
@@ -1494,7 +1536,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     # Reading the file back should still work, even though we've renamed
     # some channels (there's now a mismatch between BIDS and Raw channel
     # names, and BIDS should take precedence)
-    raw_read = read_raw_bids(bids_path=bids_path)
+    raw_read = read_raw_bids(bids_path=bids_path, on_ch_mismatch="rename")
     assert raw_read.ch_names[0] == "EOGtest"
     assert raw_read.ch_names[1] == "EMG"
 
@@ -4244,3 +4286,45 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
 
     bids_path = _bids_path.copy().update(root=bids_root, datatype="meg", run=3)
     write_raw_bids(raw, bids_path=bids_path)
+
+
+@pytest.mark.filterwarnings(
+    "ignore:No events found or provided:RuntimeWarning",
+    "ignore:Found no extension for raw file.*:RuntimeWarning",
+)
+def test_parallel_write_many_subjects(tmp_path):
+    """Ensure parallel writes combine all subjects into a single dataset."""
+    pytest.importorskip("filelock")
+    bids_root = tmp_path / "parallel_write_many_subjects"
+    bids_root.mkdir(parents=True, exist_ok=True)
+    subjects = [f"{idx:03d}" for idx in range(1, 301)]
+    max_workers = 8
+    tasks = [(os.fspath(bids_root), subject, "01") for subject in subjects]
+
+    with ProcessPoolExecutor(max_workers=max_workers) as pool:
+        completed_subjects = set(pool.map(_write_parallel_subject_runner, tasks))
+    assert completed_subjects == set(subjects)
+
+    participants_path = bids_root / "participants.tsv"
+    assert participants_path.exists()
+    participants = _from_tsv(participants_path)
+    expected_ids = {f"sub-{subject}" for subject in subjects}
+    assert set(participants["participant_id"]) == set(expected_ids)
+
+    # All subjects should be discoverable via entity lookup.
+    subjects_found = get_entity_vals(bids_root, "subject")
+    assert set(subjects_found) == set(subjects)
+
+    dataset_description = bids_root / "dataset_description.json"
+    assert dataset_description.exists()
+
+    # Clean up remaining lock files created during parallel writes
+    for lock_file in bids_root.rglob("*.lock"):
+        try:
+            lock_file.unlink()
+        except OSError:
+            # In case lock is still held or file is in use, that's OK
+            pass
+
+    # No stale lock files should remain after the parallel writes complete.
+    assert not any(bids_root.rglob("*.lock"))

@@ -32,6 +32,7 @@
 .. _Julia Guiomar Niso Galán: https://github.com/guiomar
 .. _Julius Welzel: https://github.com/JuliusWelzel
 .. _Kaare Mikkelsen: https://github.com/kaare-mikkelsen
+.. _Kalle Mäkelä: https://github.com/Kallemakela
 .. _Kambiz Tavabi: https://github.com/ktavabi
 .. _Laetitia Fesselier: https://github.com/laemtl
 .. _Mainak Jas: https://jasmainak.github.io/
@@ -60,4 +61,3 @@
 .. _waldie11: https://github.com/waldie11
 .. _William Turner: https://bootstrapbill.github.io/
 .. _Yorguin Mantilla: https://github.com/yjmantilla
-.. _Julius Welzel: https://github.com/JuliusWelzel
