@@ -83,7 +83,7 @@ def test_to_tsv_without_filelock(monkeypatch, tmp_path):
     lock_path = tsv_path.parent / f"{tsv_path.name}.lock"
     refcount_path = tsv_path.parent / f"{tsv_path.name}.lock.refcount"
 
-    monkeypatch.setattr(_fileio, "_soft_import", lambda *args, **kwargs: None)
+    monkeypatch.setattr(_fileio, "_soft_import", lambda *args, **kwargs: False)
 
     _to_tsv(data, tsv_path)
 
