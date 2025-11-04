@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev30+g465dd55ff documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev31+g60830be10 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=e3b5edbb"></script>
+    <script src="_static/documentation_options.js?v=ed6986aa"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev30+g465dd55ff" />
+  <meta name="docsearch:version" content="0.18.0.dev31+g60830be10" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev30+g465dd55ff documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev31+g60830be10 documentation</p>
   
 </a></div>
     
@@ -496,6 +496,7 @@
 <li><p><a class="reference external" href="https://github.com/JuliusWelzel">Julius Welzel</a></p></li>
 <li><p><a class="reference external" href="https://github.com/alm180">Alex Lopez Marquez</a></p></li>
 <li><p><a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a></p></li>
+<li><p><a class="reference external" href="https://github.com/Kallemakela">Kalle Mäkelä</a></p></li>
 </ul>
 <p>The following authors had contributed before. Thank you for sticking around! 🤘</p>
 <ul class="simple">
@@ -518,6 +519,7 @@
 <h4>🧐 API and behavior changes<a class="headerlink" href="#api-and-behavior-changes" title="Link to this heading">#</a></h4>
 <ul class="simple">
 <li><p><em class="xref py py-obj">tracksys</em> accepted as argument in <a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a> by <a class="reference external" href="https://github.com/JuliusWelzel">Julius Welzel</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1430">#1430</a>)</p></li>
+<li><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> has a new parameter <code class="docutils literal notranslate"><span class="pre">on_ch_mismatch</span></code> that controls behaviour when there is a mismatch between channel names in <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and the raw data; accepted values are <code class="docutils literal notranslate"><span class="pre">'raise'</span></code> (default), <code class="docutils literal notranslate"><span class="pre">'reorder'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'rename'</span></code>, by <a class="reference external" href="https://github.com/Kallemakela">Kalle Mäkelä</a>.</p></li>
 </ul>
 </section>
 <section id="requirements">
