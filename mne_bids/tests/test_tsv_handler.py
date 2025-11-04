@@ -7,6 +7,7 @@ from collections import OrderedDict as odict
 
 import pytest
 
+import mne_bids._fileio as _fileio
 from mne_bids.tsv_handler import (
     _combine_rows,
     _contains_row,
@@ -73,6 +74,23 @@ def test_tsv_handler(tmp_path):
     with pytest.warns(RuntimeWarning, match="TSV file is empty"):
         d = _from_tsv(d_path)
     d = _drop(d, "n/a", "trial_type")
+
+
+def test_to_tsv_without_filelock(monkeypatch, tmp_path):
+    """Ensure TSV writes succeed when filelock is unavailable."""
+    data = odict(a=[1, 2], b=["five", "six"])
+    tsv_path = tmp_path / "file.tsv"
+    lock_path = tsv_path.parent / f"{tsv_path.name}.lock"
+    refcount_path = tsv_path.parent / f"{tsv_path.name}.lock.refcount"
+
+    monkeypatch.setattr(_fileio, "_soft_import", lambda *args, **kwargs: None)
+
+    _to_tsv(data, tsv_path)
+
+    assert tsv_path.exists()
+    assert tsv_path.read_text().strip()
+    assert not lock_path.exists()
+    assert not refcount_path.exists()
 
 
 def test_contains_row_different_types():
