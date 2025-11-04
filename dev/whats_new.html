@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev27+g51126eb90 documentation</title>
+    <title>What’s new? &#8212; MNE-BIDS 0.18.0.dev29+g5102e1180 documentation</title>
   
   
   
@@ -44,7 +44,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=4e3015f2"></script>
+    <script src="_static/documentation_options.js?v=11032222"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -74,7 +74,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.18.0.dev27+g51126eb90" />
+  <meta name="docsearch:version" content="0.18.0.dev29+g5102e1180" />
 
   </head>
   
@@ -137,7 +137,7 @@
   
   
   
-    <p class="title logo__title">MNE-BIDS 0.18.0.dev27+g51126eb90 documentation</p>
+    <p class="title logo__title">MNE-BIDS 0.18.0.dev29+g5102e1180 documentation</p>
   
 </a></div>
     
@@ -532,6 +532,7 @@
 <ul class="simple">
 <li><p>Fixed a bug that modified the name and help message of some of the available commands, by <a class="reference external" href="https://github.com/alm180">Alex Lopez Marquez</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1441">#1441</a>)</p></li>
 <li><p>Updated MEG/iEEG writers to satisfy the stricter checks in the latest BIDS validator releases: BTi/4D run folders now retain their <code class="docutils literal notranslate"><span class="pre">.pdf</span></code> suffix (falling back to the legacy naming when an older validator is detected), KIT marker files encode the run via the <code class="docutils literal notranslate"><span class="pre">acq</span></code> entity instead of <code class="docutils literal notranslate"><span class="pre">run</span></code>, datasets lacking iEEG montages receive placeholder <code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code>/<code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code> files, and the <code class="docutils literal notranslate"><span class="pre">AssociatedEmptyRoom</span></code> entry stores dataset-relative paths  by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1449">#1449</a>)</p></li>
+<li><p>Made the lock helpers skip reference counting when the optional <code class="docutils literal notranslate"><span class="pre">filelock</span></code> dependency is missing, preventing spurious <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> crashes during reads, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1469">#1469</a>)</p></li>
 <li><p>Fixed a bug in <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> that caused it to fail when reading BIDS datasets where the acquisition time was specified in local time rather than UTC only in Windows, by <a class="reference external" href="https://github.com/bruAristimunha">Bruno Aristimunha</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/1452">#1452</a>)</p></li>
 </ul>
 </section>
