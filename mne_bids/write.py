@@ -1066,6 +1066,10 @@ def _sidecar_json(
         ("EMGPlacementScheme", emg_placement or "n/a"),
         ("Manufacturer", manufacturer),
     ]
+    if emg_placement == "Other":
+        ch_info_json_emg.append(
+            ("EMGPlacementSchemeDescription", "TODO FIXME please complete this field")
+        )
 
     ch_info_json_ieeg = [
         ("iEEGReference", "n/a"),
