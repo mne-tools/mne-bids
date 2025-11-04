@@ -19,6 +19,7 @@ from textwrap import indent
 import numpy as np
 from mne.utils import _check_fname, _validate_type, logger, verbose
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_DATATYPES,
@@ -1225,7 +1226,7 @@ class BIDSPath:
             .update(datatype=None, suffix="meg")
             .find_matching_sidecar(extension=".json")
         )
-        with open(sidecar_fname, encoding="utf-8") as f:
+        with _open_lock(sidecar_fname, encoding="utf-8") as f:
             sidecar_json = json.load(f)
 
         if "AssociatedEmptyRoom" in sidecar_json:
@@ -1454,7 +1455,7 @@ def _print_lines_with_entry(file, entry, folder, is_tsv, line_numbers, outfile):
         prints to the console, else a string is printed to.
     """
     entry_lines = list()
-    with open(file, encoding="utf-8-sig") as fid:
+    with _open_lock(file, encoding="utf-8-sig") as fid:
         if is_tsv:  # format tsv files nicely
             header = _truncate_tsv_line(fid.readline())
             if line_numbers:

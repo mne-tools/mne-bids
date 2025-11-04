@@ -17,6 +17,7 @@ from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 from mne.utils import get_subjects_dir, logger
 
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ANNOTATIONS_TO_KEEP,
@@ -419,6 +420,10 @@ def _handle_scans_reading(scans_fname, raw, bids_path):
             acq_time = acq_time.replace(tzinfo=timezone.utc)
         else:
             # Convert time offset to UTC
+            if acq_time.tzinfo is None:
+                # Windows needs an explicit local tz for naive, pre-epoch times.
+                local_tz = datetime.now().astimezone().tzinfo or timezone.utc
+                acq_time = acq_time.replace(tzinfo=local_tz)
             acq_time = acq_time.astimezone(timezone.utc)
 
         logger.debug(f"Loaded {scans_fname} scans file to set acq_time as {acq_time}.")
@@ -442,7 +447,7 @@ def _handle_info_reading(sidecar_fname, raw):
 
     Handle PowerLineFrequency of recording.
     """
-    with open(sidecar_fname, encoding="utf-8-sig") as fin:
+    with _open_lock(sidecar_fname, encoding="utf-8-sig") as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's and raw object's line frequency

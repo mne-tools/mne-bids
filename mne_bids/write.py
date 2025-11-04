@@ -43,6 +43,7 @@ from mne_bids import (
     get_bids_path_from_fname,
     read_raw_bids,
 )
+from mne_bids._fileio import _open_lock
 from mne_bids.config import (
     ALLOWED_DATATYPE_EXTENSIONS,
     ALLOWED_INPUT_EXTENSIONS,
@@ -460,7 +461,7 @@ def _readme(datatype, fname, overwrite=False):
         already contains that citation.
     """
     if fname.is_file() and not overwrite:
-        with open(fname, encoding="utf-8-sig") as fid:
+        with _open_lock(fname, encoding="utf-8-sig") as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES["mne-bids"] in orig_data
         datatype_ref = REFERENCES[datatype] in orig_data
@@ -573,59 +574,70 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False):
 
         data[key] = new_value
 
-    if os.path.exists(fname):
-        orig_data = _from_tsv(fname)
-        # whether the new data exists identically in the previous data
-        exact_included = _contains_row(
-            data=orig_data,
-            row_data={
-                "participant_id": subject_id,
-                "age": subject_age,
-                "sex": sex,
-                "hand": hand,
-                "weight": weight,
-                "height": height,
-            },
-        )
-        # whether the subject id is in the previous data
-        sid_included = subject_id in orig_data["participant_id"]
-        # if the subject data provided is different to the currently existing
-        # data and overwrite is not True raise an error
-        if (sid_included and not exact_included) and not overwrite:
-            raise FileExistsError(
-                f'"{subject_id}" already exists in '
-                f"the participant list. Please set "
-                f"overwrite to True."
+    fpath = Path(fname)
+    with _open_lock(fpath):
+        if fpath.exists():
+            orig_data = _from_tsv(fname)
+            # If we read an empty OrderedDict, it means
+            # the file exists but is empty/just has headers
+            # We should still treat this as having the file structure,
+            # just no rows
+        else:
+            orig_data = None
+
+        if orig_data is not None:
+            # whether the new data exists identically in the previous data
+            # Use .get() with empty list default in case participant_id column is empty
+            existing_participants = orig_data.get("participant_id", [])
+            exact_included = _contains_row(
+                data=orig_data,
+                row_data={
+                    "participant_id": subject_id,
+                    "age": subject_age,
+                    "sex": sex,
+                    "hand": hand,
+                    "weight": weight,
+                    "height": height,
+                },
             )
+            # whether the subject id is in the previous data
+            sid_included = subject_id in existing_participants
+            # if the subject data provided is different to the currently
+            # existing data and overwrite is not True raise an error
+            if (sid_included and not exact_included) and not overwrite:
+                raise FileExistsError(
+                    f'"{subject_id}" already exists in '
+                    f"the participant list. Please set "
+                    f"overwrite to True."
+                )
 
-        # Append any columns the original data did not have, and fill them with
-        # n/a's.
-        for key in data.keys():
-            if key in orig_data:
-                continue
+            # Append any columns the original data did not have, and fill them
+            # with n/a's.
+            for key in data.keys():
+                if key in orig_data:
+                    continue
 
-            orig_data[key] = ["n/a"] * len(orig_data["participant_id"])
+                orig_data[key] = ["n/a"] * len(existing_participants)
 
-        # Append any additional columns that original data had.
-        # Keep the original order of the data by looping over
-        # the original OrderedDict keys
-        for key in orig_data.keys():
-            if key in data:
-                continue
+            # Append any additional columns that original data had.
+            # Keep the original order of the data by looping over
+            # the original OrderedDict keys
+            for key in orig_data.keys():
+                if key in data:
+                    continue
 
-            # add original value for any user-appended columns
-            # that were not handled by mne-bids
-            p_id = data["participant_id"][0]
-            if p_id in orig_data["participant_id"]:
-                row_idx = orig_data["participant_id"].index(p_id)
-                data[key] = [orig_data[key][row_idx]]
+                # add original value for any user-appended columns
+                # that were not handled by mne-bids
+                p_id = data["participant_id"][0]
+                if p_id in existing_participants:
+                    row_idx = existing_participants.index(p_id)
+                    data[key] = [orig_data[key][row_idx]]
 
-        # otherwise add the new data as new row
-        data = _combine_rows(orig_data, data, "participant_id")
+            # otherwise add the new data as new row if there's existing data
+            if existing_participants:
+                data = _combine_rows(orig_data, data, "participant_id")
 
-    # overwrite is forced to True as all issues with overwrite == False have
-    # been handled by this point
-    _write_tsv(fname, data, True)
+        _write_tsv(fname, data, overwrite=True)
 
 
 def _participants_json(fname, overwrite=False):
@@ -663,14 +675,57 @@ def _participants_json(fname, overwrite=False):
     # make sure to append any JSON fields added by the user
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
-    fname = Path(fname)
-    if fname.exists():
-        orig_data = json.loads(
-            fname.read_text(encoding="utf-8"), object_pairs_hook=OrderedDict
-        )
-        new_data = {**orig_data, **new_data}
+    fpath = Path(fname)
+    fpath.parent.mkdir(parents=True, exist_ok=True)
 
-    _write_json(fname, new_data, overwrite)
+    # Use _open_lock for atomic read-modify-write operation
+    with _open_lock(fpath, "a+", encoding="utf-8") as fid:
+        # Move to beginning of file for reading
+        fid.seek(0)
+        file_content = fid.read().strip()
+
+        # Try to parse existing content
+        orig_data = {}
+        if not file_content:
+            # File exists but is empty or contains only whitespace
+            # Treat as no original data; proceed to write new schema
+            pass
+        else:
+            try:
+                orig_data = json.loads(file_content, object_pairs_hook=OrderedDict)
+            except json.JSONDecodeError as e:
+                # File is corrupted/incomplete - this can happen in a race condition
+                # when one process truncates while another reads
+                logger.warning(
+                    f"Could not parse JSON in '{fname}': {e}. "
+                    "This may occur when reading during concurrent writes. "
+                    "Treating as empty."
+                )
+                # Treat as empty file and just write the schema
+            else:
+                # File exists with valid JSON content
+                if not overwrite:
+                    raise FileExistsError(
+                        f'"{fname}" already exists. Please set overwrite to True.'
+                    )
+
+        # Merge new schema with any existing user-added fields
+        # The new_data schema will overwrite age, sex, hand as intended
+        if orig_data:
+            # Keep any user-added fields not in new_data
+            for key in orig_data.keys():
+                if key not in new_data:
+                    new_data[key] = orig_data[key]
+
+        # Write JSON data atomically within the lock context
+        # I could not use the _write_json helper here because it also
+        # handles file locking and I need to manage that manually
+        json_output = json.dumps(new_data, indent=4, ensure_ascii=False)
+        fid.seek(0)
+        fid.truncate()
+        fid.write(json_output)
+        fid.write("\n")
+        logger.info(f"Writing '{fname}'...")
 
 
 def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
@@ -742,29 +797,29 @@ def _scans_tsv(raw, raw_fname, fname, keep_source, overwrite=False):
         else:
             _write_json(sidecar_json_path, sidecar_json)
 
-    if os.path.exists(fname):
-        orig_data = _from_tsv(fname)
-        # if the file name is already in the file raise an error
-        if raw_fname in orig_data["filename"] and not overwrite:
-            raise FileExistsError(
-                f'"{raw_fname}" already exists in '
-                f"the scans list. Please set "
-                f"overwrite to True."
-            )
+    fpath = Path(fname)
+    with _open_lock(fpath):
+        if fpath.exists():
+            orig_data = _from_tsv(fname)
+            # if the file name is already in the file raise an error
+            if raw_fname in orig_data["filename"] and not overwrite:
+                raise FileExistsError(
+                    f'"{raw_fname}" already exists in '
+                    f"the scans list. Please set "
+                    f"overwrite to True."
+                )
 
-        for key in data.keys():
-            if key in orig_data:
-                continue
+            for key in data.keys():
+                if key in orig_data:
+                    continue
 
-            # add 'n/a' if any missing columns
-            orig_data[key] = ["n/a"] * len(next(iter(data.values())))
+                # add 'n/a' if any missing columns
+                orig_data[key] = ["n/a"] * len(next(iter(data.values())))
 
-        # otherwise add the new data
-        data = _combine_rows(orig_data, data, "filename")
+            # otherwise add the new data
+            data = _combine_rows(orig_data, data, "filename")
 
-    # overwrite is forced to True as all issues with overwrite == False have
-    # been handled by this point
-    _write_tsv(fname, data, True)
+        _write_tsv(fpath, data, overwrite=True)
 
 
 def _load_image(image, name="image"):
@@ -1455,32 +1510,37 @@ def make_dataset_description(
     )
 
     # Handle potentially existing file contents
-    if op.isfile(fname):
-        with open(fname, encoding="utf-8-sig") as fin:
-            orig_cols = json.load(fin)
-        if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
-            warnings.warn(
-                "Conflicting BIDSVersion found in dataset_description.json! "
-                "Consider setting BIDS root to a new directory and redo "
-                "conversion after ensuring all software has been updated. "
-                "Original dataset description will not be overwritten."
-            )
-            overwrite = False
-        for key in description:
-            if description[key] is None or not overwrite:
-                description[key] = orig_cols.get(key, None)
+    with _open_lock(fname):
+        if op.isfile(fname):
+            try:
+                with open(fname, encoding="utf-8-sig") as fin:
+                    orig_cols = json.load(fin)
+            except (json.JSONDecodeError, OSError):
+                # File is empty, corrupted, or being written to by another process
+                orig_cols = {}
+            if "BIDSVersion" in orig_cols and orig_cols["BIDSVersion"] != BIDS_VERSION:
+                warnings.warn(
+                    "Conflicting BIDSVersion found in dataset_description.json! "
+                    "Consider setting BIDS root to a new directory and redo "
+                    "conversion after ensuring all software has been updated. "
+                    "Original dataset description will not be overwritten."
+                )
+                overwrite = False
+            for key in description:
+                if description[key] is None or not overwrite:
+                    description[key] = orig_cols.get(key, None)
 
-    # default author to make dataset description BIDS compliant
-    # if the user passed an author don't overwrite,
-    # if there was an author there, only overwrite if `overwrite=True`
-    if authors is None and (description["Authors"] is None or overwrite):
-        description["Authors"] = ["[Unspecified1]", "[Unspecified2]"]
+        # default author to make dataset description BIDS compliant
+        # if the user passed an author don't overwrite,
+        # if there was an author there, only overwrite if `overwrite=True`
+        if authors is None and (description["Authors"] is None or overwrite):
+            description["Authors"] = ["[Unspecified1]", "[Unspecified2]"]
 
-    # Only write data that is not None
-    pop_keys = [key for key, val in description.items() if val is None]
-    for key in pop_keys:
-        description.pop(key)
-    _write_json(fname, description, overwrite=True)
+        # Only write data that is not None
+        pop_keys = [key for key, val in description.items() if val is None]
+        for key in pop_keys:
+            description.pop(key)
+        _write_json(fname, description, overwrite=True)
 
 
 @verbose

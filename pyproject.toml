@@ -58,13 +58,14 @@ doc = [
   "seaborn",
   "sphinx-copybutton",
   "sphinx>=7.4.7",
-  "sphinx_gallery",
+  "sphinx_gallery>=0.19.0",
 ]
 # Dependencies for using all mne_bids features
 full = [
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.4.10",
   "eeglabio >= 0.1.0",
+  "filelock",
   "h5py!=3.15.0",  # temporary fix until h5py 3.15.1 is released
   "matplotlib >= 3.6",
   "nibabel >= 3.2.1",

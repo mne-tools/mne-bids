@@ -6,13 +6,14 @@
 import contextlib
 import json
 import logging
+import multiprocessing as mp
 import os
 import os.path as op
 import re
 import shutil as sh
 from collections import OrderedDict
 from contextlib import nullcontext
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import mne
@@ -100,6 +101,49 @@ _read_raw_ctf = _wrap_read_raw(mne.io.read_raw_ctf)
 _read_raw_edf = _wrap_read_raw(mne.io.read_raw_edf)
 
 
+def _make_parallel_raw(subject, *, seed=None):
+    """Generate a lightweight Raw instance for parallel-reading tests."""
+    rng_seed = seed if seed is not None else sum(ord(ch) for ch in subject)
+    rng = np.random.default_rng(rng_seed)
+    info = mne.create_info(["MEG0113"], 100, ch_types="mag")
+    data = rng.standard_normal((1, 100)) * 1e-12
+    raw = mne.io.RawArray(data, info)
+    raw.set_meas_date(datetime(2020, 1, 1, tzinfo=timezone.utc))
+    raw.info["line_freq"] = 60
+    raw.info["subject_info"] = {
+        "his_id": subject,
+        "sex": 1,
+        "hand": 2,
+        "birthday": date(1990, 1, 1),
+    }
+    return raw
+
+
+def _write_parallel_dataset(root, *, subject, run):
+    """Write a minimal dataset using write_raw_bids."""
+    root = Path(root)
+    raw = _make_parallel_raw(subject)
+    bids_path = BIDSPath(
+        subject=subject, task="rest", run=run, datatype="meg", root=root
+    )
+    write_raw_bids(raw, bids_path, allow_preload=True, format="FIF", verbose=False)
+
+
+def _parallel_read_participants(root, expected_ids):
+    """Read participants.tsv in a multiprocessing worker."""
+    participants_path = Path(root) / "participants.tsv"
+    participants = _from_tsv(participants_path)
+    assert set(participants["participant_id"]) == set(expected_ids)
+
+
+def _parallel_read_scans(root, expected_filenames):
+    """Read scans.tsv in a multiprocessing worker."""
+    scans_path = BIDSPath(subject="01", root=root, suffix="scans", extension=".tsv")
+    scans = _from_tsv(scans_path.fpath)
+    filenames = {str(filename) for filename in scans["filename"]}
+    assert filenames == set(expected_filenames)
+
+
 def test_read_raw():
     """Test the raw reading."""
     # Use a file ending that does not exist
@@ -132,6 +176,71 @@ def test_read_correct_inputs():
     with pytest.raises(RuntimeError, match='"bids_path" must contain `root`'):
         bids_path = BIDSPath(root=bids_path)
         read_raw_bids(bids_path)
+
+
+@pytest.mark.filterwarnings(
+    "ignore:No events found or provided:RuntimeWarning",
+    "ignore:Found no extension for raw file.*:RuntimeWarning",
+)
+def test_parallel_participants_multiprocess(tmp_path):
+    """Ensure parallel reads keep all participants entries visible."""
+    bids_root = tmp_path / "parallel_multiprocess"
+    subjects = [f"{i:02d}" for i in range(1, 50)]
+
+    for subject in subjects:
+        _write_parallel_dataset(str(bids_root), subject=subject, run="01")
+
+    expected_ids = [f"sub-{subject}" for subject in subjects]
+    processes = []
+    for _ in range(len(subjects) // 10):  # spawn a few processes
+        proc = mp.Process(
+            target=_parallel_read_participants, args=(str(bids_root), expected_ids)
+        )
+        proc.start()
+        processes.append(proc)
+
+    for proc in processes:
+        proc.join()
+        assert proc.exitcode == 0
+
+    participants_path = bids_root / "participants.tsv"
+    assert participants_path.exists()
+    participants = _from_tsv(participants_path)
+    assert set(participants["participant_id"]) == set(expected_ids)
+    sh.rmtree(bids_root, ignore_errors=True)
+
+
+@pytest.mark.filterwarnings(
+    "ignore:No events found or provided:RuntimeWarning",
+    "ignore:Found no extension for raw file.*:RuntimeWarning",
+)
+def test_parallel_scans_multiprocessing(tmp_path):
+    """Ensure multiprocessing reads see all runs in scans.tsv."""
+    bids_root = tmp_path / "parallel_multiprocessing"
+    runs = [f"{i:02d}" for i in range(1, 50)]
+
+    for run in runs:
+        _write_parallel_dataset(str(bids_root), subject="01", run=run)
+
+    expected = {f"meg/sub-01_task-rest_run-{run}_meg.fif" for run in runs}
+    processes = []
+    for _ in range(4):
+        proc = mp.Process(target=_parallel_read_scans, args=(str(bids_root), expected))
+        proc.start()
+        processes.append(proc)
+
+    for proc in processes:
+        proc.join()
+        assert proc.exitcode == 0
+
+    scans_path = BIDSPath(
+        subject="01", root=bids_root, suffix="scans", extension=".tsv"
+    )
+    assert scans_path.fpath.exists()
+    scans = _from_tsv(scans_path.fpath)
+    filenames = {str(filename) for filename in scans["filename"]}
+    assert filenames == expected
+    sh.rmtree(bids_root, ignore_errors=True)
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
@@ -725,6 +834,21 @@ def test_handle_scans_reading(tmp_path):
         raw_03 = read_raw_bids(bids_path)
         new_acq_time = datetime.strptime(new_acq_time_str, date_format)
         assert raw_03.info["meas_date"] == new_acq_time.astimezone(timezone.utc)
+
+    # Regression for naive, pre-epoch acquisition times (Windows bug GH-1399)
+    pre_epoch_str = "1950-06-15T13:45:30"
+    scans_tsv["acq_time"][0] = pre_epoch_str
+    _to_tsv(scans_tsv, scans_path)
+
+    raw_pre_epoch = read_raw_bids(bids_path)
+    pre_epoch_naive = datetime.strptime(pre_epoch_str, "%Y-%m-%dT%H:%M:%S")
+    local_tz = datetime.now().astimezone().tzinfo or timezone.utc
+    expected_pre_epoch = pre_epoch_naive.replace(tzinfo=local_tz).astimezone(
+        timezone.utc
+    )
+    assert raw_pre_epoch.info["meas_date"] == expected_pre_epoch
+    if raw_pre_epoch.annotations.orig_time is not None:
+        assert raw_pre_epoch.annotations.orig_time == expected_pre_epoch
 
 
 @pytest.mark.filterwarnings(warning_str["channel_unit_changed"])
