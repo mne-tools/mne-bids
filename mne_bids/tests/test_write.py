@@ -3333,6 +3333,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 @testing.requires_testing_data
 def test_convert_emg_formats(tmp_path, dir_name, fmt, fname, reader):
     """Test EDF ←→ BDF conversion of EMG datasets."""
+    pytest.importorskip("mne", minversion="1.10.2", reason="BDF export")
     bids_root = tmp_path / fmt
     raw_fname = data_path / dir_name / fname
     bids_path = _bids_path.copy().update(root=bids_root, datatype="emg")
