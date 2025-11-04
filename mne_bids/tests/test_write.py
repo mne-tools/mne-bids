@@ -97,6 +97,10 @@ warning_str = dict(
     no_hand=r"ignore:Unable to map.*\n.*subject handedness.*:RuntimeWarning:mne",
     no_montage=r"ignore:Not setting position of.*channel found in "
     r"montage.*:RuntimeWarning:mne",
+    channel_mismatch=(
+        "ignore:Channel mismatch between .*channels\\.tsv and the raw data file "
+        "detected\\.:RuntimeWarning:mne"
+    ),
 )
 
 
@@ -1435,6 +1439,7 @@ def test_vhdr(_bids_validate, tmp_path):
     warning_str["cnt_warning2"],
     warning_str["no_hand"],
     warning_str["no_montage"],
+    warning_str["channel_mismatch"],
 )
 @testing.requires_testing_data
 def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
@@ -1525,7 +1530,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate, tmp_path):
     # Reading the file back should still work, even though we've renamed
     # some channels (there's now a mismatch between BIDS and Raw channel
     # names, and BIDS should take precedence)
-    raw_read = read_raw_bids(bids_path=bids_path)
+    raw_read = read_raw_bids(bids_path=bids_path, on_ch_mismatch="rename")
     assert raw_read.ch_names[0] == "EOGtest"
     assert raw_read.ch_names[1] == "EMG"
 

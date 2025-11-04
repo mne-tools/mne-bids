@@ -34,6 +34,7 @@ from mne_bids.config import (
 )
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.read import (
+    _handle_channels_reading,
     _handle_events_reading,
     _handle_scans_reading,
     _read_raw,
@@ -1587,7 +1588,7 @@ def test_channels_tsv_raw_mismatch(tmp_path):
     raw.reorder_channels(ch_names_new)
     raw.save(raw_path, overwrite=True)
 
-    raw = read_raw_bids(bids_path)
+    raw = read_raw_bids(bids_path, on_ch_mismatch="reorder")
     assert raw.ch_names == ch_names_orig
 
 
@@ -1631,6 +1632,105 @@ def test_gsr_and_temp_reading():
     raw = read_raw_bids(bids_path)
     assert raw.get_channel_types(["GSR"]) == ["gsr"]
     assert raw.get_channel_types(["Temperature"]) == ["temperature"]
+
+
+def _setup_nirs_channel_mismatch(tmp_path):
+    ch_order_snirf = ["S1_D1 760", "S1_D2 760", "S1_D1 850", "S1_D2 850"]
+    ch_types = ["fnirs_cw_amplitude"] * len(ch_order_snirf)
+    info = mne.create_info(ch_order_snirf, sfreq=10, ch_types=ch_types)
+    data = np.arange(len(ch_order_snirf) * 10.0).reshape(len(ch_order_snirf), 10)
+    raw = mne.io.RawArray(data, info)
+
+    for i, ch_name in enumerate(raw.ch_names):
+        loc = np.zeros(12)
+        if "S1" in ch_name:
+            loc[3:6] = np.array([0, 0, 0])
+        if "D1" in ch_name:
+            loc[6:9] = np.array([1, 0, 0])
+        elif "D2" in ch_name:
+            loc[6:9] = np.array([0, 1, 0])
+        loc[9] = int(ch_name.split(" ")[1])
+        loc[0:3] = (loc[3:6] + loc[6:9]) / 2
+        raw.info["chs"][i]["loc"] = loc
+
+    orig_name_to_loc = {
+        name: raw.info["chs"][i]["loc"].copy() for i, name in enumerate(raw.ch_names)
+    }
+    orig_name_to_data = {
+        name: raw.get_data(picks=i).copy() for i, name in enumerate(raw.ch_names)
+    }
+
+    ch_order_bids = ["S1_D1 760", "S1_D1 850", "S1_D2 760", "S1_D2 850"]
+    ch_types_bids = ["NIRSCWAMPLITUDE"] * len(ch_order_bids)
+    channels_dict = OrderedDict([("name", ch_order_bids), ("type", ch_types_bids)])
+    channels_fname = tmp_path / "channels.tsv"
+    _to_tsv(channels_dict, channels_fname)
+
+    return (
+        raw,
+        ch_order_snirf,
+        ch_order_bids,
+        channels_fname,
+        orig_name_to_loc,
+        orig_name_to_data,
+    )
+
+
+def test_channel_mismatch_raise(tmp_path):
+    """Raise error when ``on_ch_mismatch='raise'`` and names differ."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    with pytest.raises(
+        RuntimeError,
+        match=("Channel mismatch between .*channels"),
+    ):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="raise")
+
+
+def test_channel_mismatch_reorder(tmp_path):
+    """Reorder channels to match ``channels.tsv`` ordering."""
+    raw, _, ch_order_bids, channels_fname, orig_name_to_loc, orig_name_to_data = (
+        _setup_nirs_channel_mismatch(tmp_path)
+    )
+    raw_out = _handle_channels_reading(channels_fname, raw, on_ch_mismatch="reorder")
+    assert raw_out.ch_names == ch_order_bids
+    for i, new_name in enumerate(raw_out.ch_names):
+        np.testing.assert_allclose(
+            raw_out.info["chs"][i]["loc"], orig_name_to_loc[new_name]
+        )
+        np.testing.assert_allclose(
+            raw_out.get_data(picks=i), orig_name_to_data[new_name]
+        )
+
+
+def test_channel_mismatch_rename(tmp_path):
+    """Rename channels to match ``channels.tsv`` names."""
+    (
+        raw,
+        ch_order_snirf,
+        ch_order_bids,
+        channels_fname,
+        orig_name_to_loc,
+        orig_name_to_data,
+    ) = _setup_nirs_channel_mismatch(tmp_path)
+    raw_out_rename = _handle_channels_reading(
+        channels_fname, raw.copy(), on_ch_mismatch="rename"
+    )
+    assert raw_out_rename.ch_names == ch_order_bids
+    for i in range(len(ch_order_bids)):
+        orig_name_at_i = ch_order_snirf[i]
+        np.testing.assert_allclose(
+            raw_out_rename.info["chs"][i]["loc"], orig_name_to_loc[orig_name_at_i]
+        )
+        np.testing.assert_allclose(
+            raw_out_rename.get_data(picks=i), orig_name_to_data[orig_name_at_i]
+        )
+
+
+def test_channel_mismatch_invalid_option(tmp_path):
+    """Invalid ``on_ch_mismatch`` value should raise ``ValueError``."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    with pytest.raises(ValueError, match="on_ch_mismatch must be one of"):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
 
 
 def test_events_file_to_annotation_kwargs(tmp_path):
