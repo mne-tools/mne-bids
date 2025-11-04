@@ -1726,6 +1726,13 @@ def test_channel_mismatch_rename(tmp_path):
         )
 
 
+def test_channel_mismatch_invalid_option(tmp_path):
+    """Invalid ``on_ch_mismatch`` value should raise ``ValueError``."""
+    raw, _, _, channels_fname, _, _ = _setup_nirs_channel_mismatch(tmp_path)
+    with pytest.raises(ValueError, match="on_ch_mismatch must be one of"):
+        _handle_channels_reading(channels_fname, raw.copy(), on_ch_mismatch="invalid")
+
+
 def test_events_file_to_annotation_kwargs(tmp_path):
     """Test that events file is read correctly."""
     bids_path = BIDSPath(
