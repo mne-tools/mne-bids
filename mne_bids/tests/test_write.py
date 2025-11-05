@@ -87,7 +87,7 @@ warning_str = dict(
     edf_warning=r"ignore:^EDF\/EDF\+\/BDF files contain two fields .*"
     r":RuntimeWarning:mne",
     maxshield="ignore:.*Internal Active Shielding:RuntimeWarning:mne",
-    edfblocks="ignore:.*EDF format requires equal-length data "
+    edfblocks="ignore:.*[BE]DF format requires equal-length data "
     "blocks:RuntimeWarning:mne",
     brainvision_unit="ignore:Encountered unsupported non-voltage units*.:UserWarning",
     cnt_warning1="ignore:.*Could not parse meas date from the header. Setting to None.",
@@ -220,6 +220,7 @@ test_converteeg_data = [
 test_convertemg_data = [
     ("BDF", "EDF", "test_generator_2.bdf", _read_raw_bdf),
     ("EDF", "BDF", "test_generator_2.edf", _read_raw_edf),
+    ("Brainvision", "BDF", "test_NO.vhdr", _read_raw_brainvision),
 ]
 
 data_path = testing.data_path(download=False)
@@ -3369,6 +3370,7 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
 
 @pytest.mark.parametrize("dir_name, fmt, fname, reader", test_convertemg_data)
 @pytest.mark.filterwarnings(
+    warning_str["edfblocks"],
     warning_str["emg_coords_missing"],
     warning_str["converting_to_edf"],
 )
@@ -3382,6 +3384,9 @@ def test_convert_emg_formats(tmp_path, dir_name, fmt, fname, reader):
     raw = reader(raw_fname)
     raw.set_channel_types({ch: "emg" for ch in raw.ch_names})  # HACK eeg → emg
     raw = raw.pick(["emg"])  # drop misc
+    # test anonymization in one case too, for coverage
+    if dir_name == "Brainvision":
+        raw.anonymize()
     # make sure it's possible to define arbitrarily-named coordsys spaces for EMG
     bids_path.update(space="foo", check=True)
     bids_output_path = write_raw_bids(
