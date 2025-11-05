@@ -3368,6 +3368,22 @@ def test_sidecar_encoding(_bids_validate, tmp_path):
     assert_array_equal(raw.annotations.description, raw_read.annotations.description)
 
 
+@testing.requires_testing_data
+def test_emg_errors_and_warnings(tmp_path):
+    """Test EMG-specific error/warning raising."""
+    bids_root = tmp_path / "EDF"
+    raw_fname = data_path / "EDF" / "test_generator_2.edf"
+    bids_path = _bids_path.copy().update(root=bids_root, datatype="emg")
+    raw = _read_raw_edf(raw_fname)
+    raw.set_channel_types({ch: "emg" for ch in raw.ch_names})  # HACK eeg → emg
+    raw = raw.pick(["emg"])  # drop misc
+    good_kwargs = dict(raw=raw, bids_path=bids_path, verbose=False)
+    with pytest.raises(ValueError, match="`emg_placement` must be one of"):
+        write_raw_bids(**good_kwargs, emg_placement="Foo")
+    with pytest.warns(RuntimeWarning, match="add `coordsystem.json` file manually"):
+        write_raw_bids(**good_kwargs, emg_placement="Other")
+
+
 @pytest.mark.parametrize("dir_name, fmt, fname, reader", test_convertemg_data)
 @pytest.mark.filterwarnings(
     warning_str["edfblocks"],

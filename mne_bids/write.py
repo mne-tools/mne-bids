@@ -2008,7 +2008,11 @@ def write_raw_bids(
         datatype=datatype, suffix=datatype, extension=ext
     )
 
-    if datatype == "emg" and emg_placement is None:
+    if datatype == "emg" and emg_placement not in (
+        "Measured",
+        "ChannelSpecific",
+        "Other",
+    ):
         raise ValueError(
             '`emg_placement` must be one of "Measured", "ChannelSpecific", or "Other" '
             f"(got {emg_placement})"
