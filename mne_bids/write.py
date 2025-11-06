@@ -1351,7 +1351,15 @@ def _write_raw_edf_bdf(raw, bids_fname, overwrite):
     overwrite : bool
         Whether to overwrite an existing file or not.
     """
-    assert bids_fname.suffix in (".edf", ".bdf")
+    ext = bids_fname.suffix[1:].upper()
+    assert ext in ("EDF", "BDF")
+    if raw.info["meas_date"].year < 1985:
+        warn(
+            f"Attempting to write a {ext} file with a meas_date of "
+            f"{raw.info['meas_date']}. This is not supported; {ext} limits dates to "
+            "after 1985-01-01. Setting raw.info['meas_date'] to 1985-01-01."
+        )
+    raw.set_meas_date(raw.info["meas_date"].replace(year=1985, month=1, day=1))
     raw.export(bids_fname, overwrite=overwrite)
 
 

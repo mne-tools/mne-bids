@@ -135,7 +135,7 @@ def _handle_datatype(raw, datatype):
     raw : mne.io.Raw
         Raw object.
     datatype : str | None
-        Can be one of either ``'meg'``, ``'eeg'``, or ``'ieeg'``. If ``None``,
+        Can be one of either ``'meg'``, ``'eeg'``, ``'emg'`` or ``'ieeg'``. If ``None``,
         `mne.utils._handle_datatype()` will attempt to infer the datatype from
         the ``raw`` object. In case of multiple data types in the ``raw``
         object, ``datatype`` must not be ``None``.
@@ -143,7 +143,7 @@ def _handle_datatype(raw, datatype):
     Returns
     -------
     datatype : str
-        One of either ``'meg'``, ``'eeg'``, or ``'ieeg'``.
+        One of either ``'meg'``, ``'eeg'``, ``'emg'``, or ``'ieeg'``.
     """
     if datatype is not None:
         _check_datatype(raw, datatype)
@@ -173,7 +173,7 @@ def _handle_datatype(raw, datatype):
             datatypes.append("nirs")
         if len(datatypes) == 0:
             raise ValueError(
-                "No MEG, EEG, iEEG, or EMG channels found in data. "
+                "No MEG, EEG, iEEG, EMG, or fNIRS channels found in data. "
                 "Please use raw.set_channel_types to set the "
                 "channel types in the data."
             )
@@ -182,8 +182,6 @@ def _handle_datatype(raw, datatype):
                 datatype = "meg"
             elif "ieeg" in datatypes and "meg" not in datatypes:
                 datatype = "ieeg"
-            elif "emg" in datatypes:
-                datatype = "emg"
             else:
                 raise ValueError(
                     f"Multiple data types (``{datatypes}``) were "
