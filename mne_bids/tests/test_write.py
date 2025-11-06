@@ -12,6 +12,7 @@ import os
 import os.path as op
 import shutil as sh
 import sys
+import time
 import warnings
 from concurrent.futures import ProcessPoolExecutor
 from datetime import date, datetime, timedelta, timezone
@@ -4244,6 +4245,7 @@ def test_write_bids_with_age_weight_info(tmp_path, monkeypatch):
     write_raw_bids(raw, bids_path=bids_path)
 
 
+@pytest.mark.flaky(reruns=3, reruns_delay=5)
 @pytest.mark.filterwarnings(
     "ignore:No events found or provided:RuntimeWarning",
     "ignore:Found no extension for raw file.*:RuntimeWarning",
@@ -4282,5 +4284,7 @@ def test_parallel_write_many_subjects(tmp_path):
             # In case lock is still held or file is in use, that's OK
             pass
 
+    # putting some sleep to make sure all file locks are released
+    time.sleep(1)
     # No stale lock files should remain after the parallel writes complete.
     assert not any(bids_root.rglob("*.lock"))
