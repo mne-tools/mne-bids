@@ -3783,7 +3783,9 @@ def test_preload(_bids_validate, tmp_path, format, ch_type):
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq = 1024.0
     info = mne.create_info(["ch1", "ch2"], sfreq, ch_type)
-    raw = mne.io.RawArray(np.zeros((2, 100), dtype=np.float32), info)
+    data = np.zeros((2, 100), dtype=np.float32)
+    data[0, 5] = 1.0  # avoid physical_min == physical_max
+    raw = mne.io.RawArray(data, info)
     raw.orig_format = "single"
     raw.info["line_freq"] = 60
     write_raw_bids(
