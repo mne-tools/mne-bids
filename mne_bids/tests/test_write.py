@@ -103,6 +103,8 @@ warning_str = dict(
         "ignore:Channel mismatch between .*channels\\.tsv and the raw data file "
         "detected\\.:RuntimeWarning:mne"
     ),
+    converting_to_edf=r"ignore:Converting data files to [BE]DF format:RuntimeWarning",
+    edf_date="ignore:.*limits dates to after 1985-01-01:RuntimeWarning",
 )
 
 
@@ -3749,8 +3751,8 @@ def test_write_associated_emptyroom(_bids_validate, tmp_path, empty_room_dtype):
     assert meg_json_data["AssociatedEmptyRoom"] == expected_rel
 
 
-def test_preload(_bids_validate, tmp_path):
-    """Test writing custom preloaded raw objects."""
+def test_preload_errors(tmp_path):
+    """Test allow_preload error handling."""
     bids_root = tmp_path / "bids"
     bids_path = _bids_path.copy().update(root=bids_root)
     sfreq, n_points = 1024.0, int(1e6)
@@ -3760,21 +3762,35 @@ def test_preload(_bids_validate, tmp_path):
     raw.orig_format = "single"
     raw.info["line_freq"] = 60
 
+    shared_kwargs = dict(raw=raw, bids_path=bids_path, verbose=False, overwrite=True)
     # reject preloaded by default
     with pytest.raises(ValueError, match="allow_preload"):
-        write_raw_bids(raw, bids_path, verbose=False, overwrite=True)
+        write_raw_bids(**shared_kwargs)
 
     # preloaded raw must specify format
     with pytest.raises(ValueError, match="format"):
-        write_raw_bids(
-            raw, bids_path, allow_preload=True, verbose=False, overwrite=True
-        )
+        write_raw_bids(**shared_kwargs, allow_preload=True)
 
+
+@pytest.mark.filterwarnings(
+    warning_str["converting_to_edf"],
+    warning_str["edfblocks"],
+)
+@pytest.mark.parametrize("format,ch_type", (("BrainVision", "eeg"), ("EDF", "seeg")))
+def test_preload(_bids_validate, tmp_path, format, ch_type):
+    """Test writing custom preloaded raw objects."""
+    bids_root = tmp_path / "bids"
+    bids_path = _bids_path.copy().update(root=bids_root)
+    sfreq = 1024.0
+    info = mne.create_info(["ch1", "ch2"], sfreq, ch_type)
+    raw = mne.io.RawArray(np.zeros((2, 100), dtype=np.float32), info)
+    raw.orig_format = "single"
+    raw.info["line_freq"] = 60
     write_raw_bids(
         raw,
         bids_path,
         allow_preload=True,
-        format="BrainVision",
+        format=format,
         verbose=False,
         overwrite=True,
     )
