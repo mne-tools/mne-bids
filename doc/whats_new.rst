@@ -70,5 +70,6 @@ Detailed list of changes
 - Made :func:`mne_bids.copyfiles.copyfile_brainvision` output more meaningful error messages when encountering problematic files, by `Stefan Appelhoff`_ (:gh:`1444`)
 - Raised the minimum ``edfio`` requirement to ``0.4.10``,  eeglabio to ``0.1.0``  by `Bruno Aristimunha`_ (:gh:`1449`)
 - Relaxed EDF padding warnings in the test suite to accommodate upstream changes by `Bruno Aristimunha`_ (:gh:`1449`)
+- Adapt to upstream switch to new reader package for Neuroscan-Curry-format files, by `Daniel McCloy`_ (:gh:`1475`)
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`

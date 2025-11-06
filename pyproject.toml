@@ -62,6 +62,7 @@ doc = [
 ]
 # Dependencies for using all mne_bids features
 full = [
+  "curryreader >= 0.1.2",
   "defusedxml",  # For reading EGI MFF data and BrainVision montages
   "edfio >= 0.4.10",
   "eeglabio >= 0.1.0",
@@ -74,7 +75,7 @@ full = [
   "pymatreader",
 ]
 # Dependencies for running the test infrastructure
-test = ["mne_bids[full]", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "ruff"]
+test = ["curryreader", "mne_bids[full]", "pytest", "pytest-cov", "pytest-rerunfailures", "pytest-sugar", "ruff"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/mne-tools/mne-bids/issues/"
