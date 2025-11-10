@@ -604,6 +604,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     >>>
     >>> # Read the events file using the function
     >>> events_dict = events_file_to_annotation_kwargs(events_file)
+    Reading events from /tmp/events.tsv.
     >>> events_dict
     {'onset': array([0.1, 0.2, 0.3]),
     'duration': array([0.1, 0.1, 0.1]),
