@@ -193,22 +193,31 @@ def _channels_tsv(raw, fname, *, convert, overwrite=False):
         ch_type.append(map_chs[_channel_type])
         description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info["highpass"], raw.info["lowpass"])
-    # if raw data is merely copied, check `raw._orig_units`.
-    if not convert and raw._orig_units:
-        units = [raw._orig_units.get(ch, "n/a") for ch in raw.ch_names]
-    # If `raw._orig_units` is missing (or if data are being *converted*),
-    # unit is determined by destination format:
-    #   - `eeglabio.raw.export_set` always converts V to uV
-    #   - `mne.export._edf_bdf._export_raw_edf_bdf` always converts V to uV
-    #   - `pybv.write_brainvision` converts V to uV by default (and we don't alter that)
-    else:
+    # If data are being *converted*, unit is determined by destination format:
+    #   - `eeglabio.raw.export_set` always converts V to µV, cf:
+    # https://github.com/jackz314/eeglabio/blob/3961bb29daf082767ea44e7c7d9da2df10971c37/eeglabio/raw.py#L57
+    #
+    #   - `mne.export._edf_bdf._export_raw_edf_bdf` always converts V to µV, cf:
+    # https://github.com/mne-tools/mne-python/blob/1b921f4af5154bad40202d87428a2583ef896a00/mne/export/_edf_bdf.py#L61-L63
+    #
+    #   - `pybv.write_brainvision` converts V to µV by default (and we don't alter that)
+    # https://github.com/bids-standard/pybv/blob/2832c80ee00d12990a8c79f12c843c0d4ddc825b/pybv/io.py#L40
+    # https://github.com/mne-tools/mne-bids/blob/1e0a96e132fc904ba856d42beaa9ddddb985f1ed/mne_bids/write.py#L1279-L1280
+    if convert:
         units = [
             "µV"
             if ch_i["unit"] == FIFF.FIFF_UNIT_V
             else _unit2human.get(ch_i["unit"], "n/a")
             for ch_i in raw.info["chs"]
         ]
-        units = [u if u not in ["NA"] else "n/a" for u in units]
+    # if raw data is merely copied, check `raw._orig_units`
+    elif raw._orig_units:
+        units = [raw._orig_units.get(ch, "n/a") for ch in raw.ch_names]
+    # If `raw._orig_units` is missing, assume SI units
+    else:
+        units = [_unit2human.get(ch_i["unit"], "n/a") for ch_i in raw.info["chs"]]
+    # fixup "NA" (from `_unit2human`) → "n/a"
+    units = [u if u not in ["NA"] else "n/a" for u in units]
 
     # Translate from MNE to BIDS unit naming
     for idx, mne_unit in enumerate(units):
