@@ -136,7 +136,7 @@ def _should_use_bti_pdf_suffix() -> bool:
     return use_pdf_suffix
 
 
-def _channels_tsv(raw, fname, *, convert, overwrite=False):
+def _channels_tsv(raw, fname, *, convert_fmt, overwrite=False):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -145,6 +145,10 @@ def _channels_tsv(raw, fname, *, convert, overwrite=False):
         The data as MNE-Python Raw object.
     fname : str | mne_bids.BIDSPath
         Filename to save the channels.tsv to.
+    convert_fmt : str | None
+        Which format the data are being converted to (determines what gets written in
+        the "unit" column). If ``None`` then we assume no conversion is happening (the
+        raw data files are being copied from the source tree into the BIDS folder tree).
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -203,9 +207,10 @@ def _channels_tsv(raw, fname, *, convert, overwrite=False):
     #   - `pybv.write_brainvision` converts V to µV by default (and we don't alter that)
     # https://github.com/bids-standard/pybv/blob/2832c80ee00d12990a8c79f12c843c0d4ddc825b/pybv/io.py#L40
     # https://github.com/mne-tools/mne-bids/blob/1e0a96e132fc904ba856d42beaa9ddddb985f1ed/mne_bids/write.py#L1279-L1280
-    if convert:
+    if convert_fmt:
+        volt_like = "µV" if convert_fmt in ("BrainVision", "EDF", "EEGLAB") else "V"
         units = [
-            "µV"
+            volt_like
             if ch_i["unit"] == FIFF.FIFF_UNIT_V
             else _unit2human.get(ch_i["unit"], "n/a")
             for ch_i in raw.info["chs"]
@@ -2308,7 +2313,12 @@ def write_raw_bids(
             )
 
     # this can't happen until after value of `convert` has been determined
-    _channels_tsv(raw, channels_path.fpath, convert=convert, overwrite=overwrite)
+    _channels_tsv(
+        raw,
+        channels_path.fpath,
+        convert_fmt=format if convert else None,
+        overwrite=overwrite,
+    )
 
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
