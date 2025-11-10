@@ -541,7 +541,8 @@ def _handle_info_reading(sidecar_fname, raw):
     return raw
 
 
-def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
+@verbose
+def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) -> dict:
     r"""
     Read the ``events.tsv`` file and extract onset, duration, and description.
 
@@ -549,6 +550,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     ----------
     events_fname : str
         The file path to the ``events.tsv`` file.
+    %(verbose)s
 
     Returns
     -------
@@ -592,8 +594,8 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     ...     'duration': [0.1, 0.1, 0.1],
     ...     'trial_type': ['event1', 'event2', 'event1'],
     ...     'value': [1, 2, 1],
-    ...     'sample': [10, 20, 30]
-            'foo': ['a', 'b', 'c'],
+    ...     'sample': [10, 20, 30],
+    ...     'foo': ['a', 'b', 'c'],
     ... }
     >>> df = pd.DataFrame(data)
     >>>
@@ -603,15 +605,11 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     >>> df.to_csv(events_file, sep='\t', index=False)
     >>>
     >>> # Read the events file using the function
-    >>> events_dict = events_file_to_annotation_kwargs(events_file)
+    >>> events_dict = events_file_to_annotation_kwargs(events_file, verbose=False)
     >>> events_dict
-    {'onset': array([0.1, 0.2, 0.3]),
-    'duration': array([0.1, 0.1, 0.1]),
-    'description': array(['event1', 'event2', 'event1'], dtype='<U6'),
-    'event_id': {'event1': 1, 'event2': 2},
-    'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
+    {'onset': array([0.1, 0.2, 0.3]), 'duration': array([0.1, 0.1, 0.1]), 'description': array(['event1', 'event2', 'event1'], dtype='<U6'), 'event_id': {'event1': 1, 'event2': 2}, 'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
 
-    """
+    """  # noqa E501
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
@@ -677,9 +675,11 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
                     culled_vals = culled_vals.astype(int)
                 except ValueError:  # numeric, but has some non-integer values
                     pass
+            # purge any np.str_, np.int_, or np.float_ types
+            culled_vals = np.asarray(culled_vals).tolist()
             event_id = dict(zip(culled[trial_type_col_name], culled_vals))
         else:
-            event_id = dict(zip(trial_types, np.arange(len(trial_types))))
+            event_id = dict(zip(trial_types, list(range(len(trial_types)))))
         descrs = np.asarray(trial_types, dtype=str)
 
     # convert onsets & durations to floats ("n/a" onsets were already dropped)
