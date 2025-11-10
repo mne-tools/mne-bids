@@ -44,7 +44,7 @@ Detailed list of changes
 🧐 API and behavior changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
--  `tracksys` accepted as argument in :class:`mne_bids.BIDSPath()` by `Julius Welzel`_ (:gh:`1430`)
+-  ``tracksys`` accepted as argument in :class:`mne_bids.BIDSPath()` by `Julius Welzel`_ (:gh:`1430`)
 - :func:`mne_bids.read_raw_bids()` has a new parameter ``on_ch_mismatch`` that controls behaviour when there is a mismatch between channel names in ``channels.tsv`` and the raw data; accepted values are ``'raise'`` (default), ``'reorder'``, and ``'rename'``, by `Kalle Mäkelä`_.
 - Column names read from ``.tsv`` are now converted from `numpy.str_` class to built-in `str` class, by `Daniel McCloy`_.
 
