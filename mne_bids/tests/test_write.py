@@ -3431,7 +3431,7 @@ def test_convert_eeg_formats(dir_name, fmt, fname, reader, tmp_path):
     # load channels.tsv; the unit should be Volts
     channels_fname = bids_output_path.copy().update(suffix="channels", extension=".tsv")
     channels_tsv = _from_tsv(channels_fname)
-    assert channels_tsv["units"][0] == "V"
+    assert channels_tsv["units"][0] == "µV"
 
     if fmt == "BrainVision":
         assert Path(raw2.filenames[0]).suffix == ".eeg"
