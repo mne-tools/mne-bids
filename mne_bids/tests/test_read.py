@@ -635,7 +635,7 @@ def test_handle_events_reading(tmp_path, with_extras):
             match=re.escape(
                 "The version of MNE-Python you are using (<1.10) "
                 "does not support the extras argument in mne.Annotations. "
-                "The extra column(s) [np.str_('foo')] will be ignored."
+                "The extra column(s) ['foo'] will be ignored."
             ),
         )
         if with_extras and not check_version("mne", "1.10")

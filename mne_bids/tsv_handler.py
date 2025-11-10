@@ -158,7 +158,7 @@ def _from_tsv(fname, dtypes=None):
     # If data is 1-dimensional (only header), make it 2D
     data = np.atleast_2d(data)
 
-    column_names = data[0, :]
+    column_names = data[0, :].tolist()  # cast to list to avoid `np.str_()` keys in dict
     info = data[1:, :]
     data_dict = OrderedDict()
     if dtypes is None:
