@@ -592,8 +592,8 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     ...     'duration': [0.1, 0.1, 0.1],
     ...     'trial_type': ['event1', 'event2', 'event1'],
     ...     'value': [1, 2, 1],
-    ...     'sample': [10, 20, 30]
-            'foo': ['a', 'b', 'c'],
+    ...     'sample': [10, 20, 30],
+    ...     'foo': ['a', 'b', 'c'],
     ... }
     >>> df = pd.DataFrame(data)
     >>>
