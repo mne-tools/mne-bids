@@ -136,7 +136,7 @@ def _should_use_bti_pdf_suffix() -> bool:
     return use_pdf_suffix
 
 
-def _channels_tsv(raw, fname, overwrite=False):
+def _channels_tsv(raw, fname, *, convert, overwrite=False):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -193,10 +193,21 @@ def _channels_tsv(raw, fname, overwrite=False):
         ch_type.append(map_chs[_channel_type])
         description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info["highpass"], raw.info["lowpass"])
-    if raw._orig_units:
+    # if raw data is merely copied, check `raw._orig_units`.
+    if not convert and raw._orig_units:
         units = [raw._orig_units.get(ch, "n/a") for ch in raw.ch_names]
+    # If `raw._orig_units` is missing (or if data are being *converted*),
+    # unit is determined by destination format:
+    #   - `eeglabio.raw.export_set` always converts V to uV
+    #   - `mne.export._edf_bdf._export_raw_edf_bdf` always converts V to uV
+    #   - `pybv.write_brainvision` converts V to uV by default (and we don't alter that)
     else:
-        units = [_unit2human.get(ch_i["unit"], "n/a") for ch_i in raw.info["chs"]]
+        units = [
+            "µV"
+            if ch_i["unit"] == FIFF.FIFF_UNIT_V
+            else _unit2human.get(ch_i["unit"], "n/a")
+            for ch_i in raw.info["chs"]
+        ]
         units = [u if u not in ["NA"] else "n/a" for u in units]
 
     # Translate from MNE to BIDS unit naming
@@ -2229,7 +2240,6 @@ def write_raw_bids(
         emptyroom_fname=associated_er_path,
         overwrite=overwrite,
     )
-    _channels_tsv(raw, channels_path.fpath, overwrite)
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
@@ -2287,6 +2297,9 @@ def write_raw_bids(
                 f"Please use one of {CONVERT_FORMATS[datatype]} "
                 f"for {datatype} datatype."
             )
+
+    # this can't happen until after value of `convert` has been determined
+    _channels_tsv(raw, channels_path.fpath, convert=convert, overwrite=overwrite)
 
     # raise error when trying to copy files (copyfile_*) into same location
     # (src == dest, see https://github.com/mne-tools/mne-bids/issues/867)
