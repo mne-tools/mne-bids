@@ -541,7 +541,8 @@ def _handle_info_reading(sidecar_fname, raw):
     return raw
 
 
-def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
+@verbose
+def events_file_to_annotation_kwargs(events_fname: str | Path, *, verbose=None) -> dict:
     r"""
     Read the ``events.tsv`` file and extract onset, duration, and description.
 
@@ -569,6 +570,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
             ``events.tsv`` file. Each dictionary corresponds to a row.
             This corresponds to the ``extras`` argument of class
             :class:`mne.Annotations`.
+    %(verbose)s
 
     Notes
     -----
@@ -603,8 +605,8 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     >>> df.to_csv(events_file, sep='\t', index=False)
     >>>
     >>> # Read the events file using the function
-    >>> events_dict = events_file_to_annotation_kwargs(events_file)
-    Reading events from /tmp/events.tsv.
+    >>> events_dict = events_file_to_annotation_kwargs(events_file, verbose=True)  # doctest:+ELLIPSIS
+    Reading events from .../events.tsv.
     >>> events_dict
     {'onset': array([0.1, 0.2, 0.3]),
     'duration': array([0.1, 0.1, 0.1]),
@@ -612,7 +614,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
     'event_id': {'event1': 1, 'event2': 2},
     'extras': [{'foo': 'a'}, {'foo': 'b'}, {'foo': 'c'}]}
 
-    """
+    """  # noqa: E501
     logger.info(f"Reading events from {events_fname}.")
     events_dict = _from_tsv(events_fname)
 
@@ -680,7 +682,7 @@ def events_file_to_annotation_kwargs(events_fname: str | Path) -> dict:
                     pass
             event_id = dict(zip(culled[trial_type_col_name], culled_vals))
         else:
-            event_id = dict(zip(trial_types, np.arange(len(trial_types))))
+            event_id = dict(zip(trial_types, list(range(len(trial_types)))))
         descrs = np.asarray(trial_types, dtype=str)
 
     # convert onsets & durations to floats ("n/a" onsets were already dropped)

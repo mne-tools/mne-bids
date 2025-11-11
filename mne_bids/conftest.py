@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import mne
+import mne.datasets.utils
 import pytest
 
 
